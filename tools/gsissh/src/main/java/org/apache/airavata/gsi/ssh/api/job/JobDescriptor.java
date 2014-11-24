@@ -60,6 +60,13 @@ public class JobDescriptor {
         return this.jobDescriptionDocument;
     }
 
+    /**
+     * With new app catalog thrift object integration, we don't use this
+     * @param xml
+     * @return
+     * @throws XmlException
+     */
+    @Deprecated
     public static JobDescriptor fromXML(String xml)
             throws XmlException {
         JobDescriptorDocument parse = JobDescriptorDocument.Factory

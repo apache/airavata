@@ -115,21 +115,8 @@
 		<dependencySet>
 			<outputDirectory>lib</outputDirectory>
 			<includes>
-				<include>org.apache.airavata:airavata-standalone-server:jar
-				</include>
-				<include>org.apache.airavata:airavata-common-utils:jar</include>
-				<include>org.apache.airavata:airavata-registry-cpi:jar</include>
-				<include>org.apache.airavata:airavata-jpa-registry:jar</include>
-				<include>org.apache.airavata:app-catalog-cpi:jar</include>
-				<include>org.apache.airavata:app-catalog-data:jar</include>
-				<include>org.apache.airavata:airavata-data-models:jar</include>
-				<include>org.apache.airavata:airavata-credential-store:jar</include>
-				<include>org.apache.airavata:airavata-message-monitor:jar</include>
-				<include>org.apache.airavata:airavata-messenger-client:jar</include>
-				<include>org.apache.openjpa:openjpa-all:jar</include>
-				<include>org.apache.zookeeper:zookeeper</include>
-
-			</includes>
+				<include>*:*:jar</include>
+            </includes>
 		</dependencySet>
 
 	</dependencySets>

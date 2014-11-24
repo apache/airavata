@@ -66,6 +66,7 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField RESOURCE_JOB_MANAGER_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceJobManager", org.apache.thrift.protocol.TType.STRUCT, (short)3);
   private static final org.apache.thrift.protocol.TField ALTERNATIVE_SSHHOST_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("alternativeSSHHostName", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField SSH_PORT_FIELD_DESC = new org.apache.thrift.protocol.TField("sshPort", org.apache.thrift.protocol.TType.I32, (short)5);
+  private static final org.apache.thrift.protocol.TField MONITOR_MODE_FIELD_DESC = new org.apache.thrift.protocol.TField("monitorMode", org.apache.thrift.protocol.TType.I32, (short)6);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -78,6 +79,7 @@ import org.slf4j.LoggerFactory;
   private ResourceJobManager resourceJobManager; // required
   private String alternativeSSHHostName; // optional
   private int sshPort; // optional
+  private MonitorMode monitorMode; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -89,7 +91,12 @@ import org.slf4j.LoggerFactory;
     SECURITY_PROTOCOL((short)2, "securityProtocol"),
     RESOURCE_JOB_MANAGER((short)3, "resourceJobManager"),
     ALTERNATIVE_SSHHOST_NAME((short)4, "alternativeSSHHostName"),
-    SSH_PORT((short)5, "sshPort");
+    SSH_PORT((short)5, "sshPort"),
+    /**
+     * 
+     * @see MonitorMode
+     */
+    MONITOR_MODE((short)6, "monitorMode");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -114,6 +121,8 @@ import org.slf4j.LoggerFactory;
           return ALTERNATIVE_SSHHOST_NAME;
         case 5: // SSH_PORT
           return SSH_PORT;
+        case 6: // MONITOR_MODE
+          return MONITOR_MODE;
         default:
           return null;
       }
@@ -156,7 +165,7 @@ import org.slf4j.LoggerFactory;
   // isset id assignments
   private static final int __SSHPORT_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.ALTERNATIVE_SSHHOST_NAME,_Fields.SSH_PORT};
+  private _Fields optionals[] = {_Fields.ALTERNATIVE_SSHHOST_NAME,_Fields.SSH_PORT,_Fields.MONITOR_MODE};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -170,6 +179,8 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.SSH_PORT, new org.apache.thrift.meta_data.FieldMetaData("sshPort", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.MONITOR_MODE, new org.apache.thrift.meta_data.FieldMetaData("monitorMode", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, MonitorMode.class)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(SSHJobSubmission.class, metaDataMap);
   }
@@ -210,6 +221,9 @@ import org.slf4j.LoggerFactory;
       this.alternativeSSHHostName = other.alternativeSSHHostName;
     }
     this.sshPort = other.sshPort;
+    if (other.isSetMonitorMode()) {
+      this.monitorMode = other.monitorMode;
+    }
   }
 
   public SSHJobSubmission deepCopy() {
@@ -225,6 +239,7 @@ import org.slf4j.LoggerFactory;
     this.alternativeSSHHostName = null;
     this.sshPort = 22;
 
+    this.monitorMode = null;
   }
 
   public String getJobSubmissionInterfaceId() {
@@ -349,6 +364,37 @@ import org.slf4j.LoggerFactory;
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SSHPORT_ISSET_ID, value);
   }
 
+  /**
+   * 
+   * @see MonitorMode
+   */
+  public MonitorMode getMonitorMode() {
+    return this.monitorMode;
+  }
+
+  /**
+   * 
+   * @see MonitorMode
+   */
+  public void setMonitorMode(MonitorMode monitorMode) {
+    this.monitorMode = monitorMode;
+  }
+
+  public void unsetMonitorMode() {
+    this.monitorMode = null;
+  }
+
+  /** Returns true if field monitorMode is set (has been assigned a value) and false otherwise */
+  public boolean isSetMonitorMode() {
+    return this.monitorMode != null;
+  }
+
+  public void setMonitorModeIsSet(boolean value) {
+    if (!value) {
+      this.monitorMode = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case JOB_SUBMISSION_INTERFACE_ID:
@@ -391,6 +437,14 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case MONITOR_MODE:
+      if (value == null) {
+        unsetMonitorMode();
+      } else {
+        setMonitorMode((MonitorMode)value);
+      }
+      break;
+
     }
   }
 
@@ -410,6 +464,9 @@ import org.slf4j.LoggerFactory;
 
     case SSH_PORT:
       return Integer.valueOf(getSshPort());
+
+    case MONITOR_MODE:
+      return getMonitorMode();
 
     }
     throw new IllegalStateException();
@@ -432,6 +489,8 @@ import org.slf4j.LoggerFactory;
       return isSetAlternativeSSHHostName();
     case SSH_PORT:
       return isSetSshPort();
+    case MONITOR_MODE:
+      return isSetMonitorMode();
     }
     throw new IllegalStateException();
   }
@@ -491,6 +550,15 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_sshPort && that_present_sshPort))
         return false;
       if (this.sshPort != that.sshPort)
+        return false;
+    }
+
+    boolean this_present_monitorMode = true && this.isSetMonitorMode();
+    boolean that_present_monitorMode = true && that.isSetMonitorMode();
+    if (this_present_monitorMode || that_present_monitorMode) {
+      if (!(this_present_monitorMode && that_present_monitorMode))
+        return false;
+      if (!this.monitorMode.equals(that.monitorMode))
         return false;
     }
 
@@ -560,6 +628,16 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetMonitorMode()).compareTo(other.isSetMonitorMode());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetMonitorMode()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.monitorMode, other.monitorMode);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -617,6 +695,16 @@ import org.slf4j.LoggerFactory;
       if (!first) sb.append(", ");
       sb.append("sshPort:");
       sb.append(this.sshPort);
+      first = false;
+    }
+    if (isSetMonitorMode()) {
+      if (!first) sb.append(", ");
+      sb.append("monitorMode:");
+      if (this.monitorMode == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.monitorMode);
+      }
       first = false;
     }
     sb.append(")");
@@ -720,6 +808,14 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 6: // MONITOR_MODE
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.monitorMode = MonitorMode.findByValue(iprot.readI32());
+              struct.setMonitorModeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -760,6 +856,13 @@ import org.slf4j.LoggerFactory;
         oprot.writeI32(struct.sshPort);
         oprot.writeFieldEnd();
       }
+      if (struct.monitorMode != null) {
+        if (struct.isSetMonitorMode()) {
+          oprot.writeFieldBegin(MONITOR_MODE_FIELD_DESC);
+          oprot.writeI32(struct.monitorMode.getValue());
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -787,12 +890,18 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetSshPort()) {
         optionals.set(1);
       }
-      oprot.writeBitSet(optionals, 2);
+      if (struct.isSetMonitorMode()) {
+        optionals.set(2);
+      }
+      oprot.writeBitSet(optionals, 3);
       if (struct.isSetAlternativeSSHHostName()) {
         oprot.writeString(struct.alternativeSSHHostName);
       }
       if (struct.isSetSshPort()) {
         oprot.writeI32(struct.sshPort);
+      }
+      if (struct.isSetMonitorMode()) {
+        oprot.writeI32(struct.monitorMode.getValue());
       }
     }
 
@@ -806,7 +915,7 @@ import org.slf4j.LoggerFactory;
       struct.resourceJobManager = new ResourceJobManager();
       struct.resourceJobManager.read(iprot);
       struct.setResourceJobManagerIsSet(true);
-      BitSet incoming = iprot.readBitSet(2);
+      BitSet incoming = iprot.readBitSet(3);
       if (incoming.get(0)) {
         struct.alternativeSSHHostName = iprot.readString();
         struct.setAlternativeSSHHostNameIsSet(true);
@@ -814,6 +923,10 @@ import org.slf4j.LoggerFactory;
       if (incoming.get(1)) {
         struct.sshPort = iprot.readI32();
         struct.setSshPortIsSet(true);
+      }
+      if (incoming.get(2)) {
+        struct.monitorMode = MonitorMode.findByValue(iprot.readI32());
+        struct.setMonitorModeIsSet(true);
       }
     }
   }

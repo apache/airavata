@@ -21,14 +21,23 @@
 
 package org.apache.airavata.api.server.handler;
 
-import org.airavata.appcatalog.cpi.*;
+import org.airavata.appcatalog.cpi.AppCatalog;
+import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.airavata.appcatalog.cpi.ApplicationDeployment;
+import org.airavata.appcatalog.cpi.ComputeResource;
+import org.airavata.appcatalog.cpi.GwyResourceProfile;
+import org.airavata.appcatalog.cpi.WorkflowCatalog;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
-import org.apache.aiaravata.application.catalog.data.resources.*;
+import org.apache.aiaravata.application.catalog.data.resources.AbstractResource;
+import org.apache.aiaravata.application.catalog.data.resources.CloudSubmissionResource;
+import org.apache.aiaravata.application.catalog.data.resources.GridftpDataMovementResource;
+import org.apache.aiaravata.application.catalog.data.resources.LocalDataMovementResource;
+import org.apache.aiaravata.application.catalog.data.resources.LocalSubmissionResource;
+import org.apache.aiaravata.application.catalog.data.resources.ScpDataMovementResource;
+import org.apache.aiaravata.application.catalog.data.resources.SshJobSubmissionResource;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogThriftConversion;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavataAPIConstants;
-import org.apache.airavata.api.server.util.AiravataServerThreadPoolExecutor;
-import org.apache.airavata.api.server.util.DataModelUtils;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.logger.AiravataLogger;
@@ -44,31 +53,60 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
-import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
+import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.GridFTPDataMovement;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALDataMovement;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
+import org.apache.airavata.model.appcatalog.computeresource.SCPDataMovement;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
-import org.apache.airavata.model.error.*;
+import org.apache.airavata.model.error.AiravataClientConnectException;
+import org.apache.airavata.model.error.AiravataClientException;
+import org.apache.airavata.model.error.AiravataErrorType;
+import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.model.error.ExperimentNotFoundException;
+import org.apache.airavata.model.error.InvalidRequestException;
+import org.apache.airavata.model.error.ProjectNotFoundException;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
-import org.apache.airavata.model.util.ExecutionType;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
+import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
+import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.workspace.experiment.ExperimentState;
+import org.apache.airavata.model.workspace.experiment.ExperimentStatus;
+import org.apache.airavata.model.workspace.experiment.ExperimentSummary;
+import org.apache.airavata.model.workspace.experiment.JobDetails;
+import org.apache.airavata.model.workspace.experiment.JobStatus;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.orchestrator.client.OrchestratorClientFactory;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService.Client;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.*;
+import org.apache.airavata.registry.cpi.ChildDataType;
+import org.apache.airavata.registry.cpi.ParentDataType;
+import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.utils.Constants;
-import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.TaskDetailConstants;
-import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants;
 import org.apache.airavata.workflow.catalog.WorkflowCatalogFactory;
-import org.apache.airavata.workflow.engine.WorkflowEngine;
-import org.apache.airavata.workflow.engine.WorkflowEngineException;
-import org.apache.airavata.workflow.engine.WorkflowEngineFactory;
 import org.apache.thrift.TException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AiravataServerHandler implements Airavata.Iface {
     private static final AiravataLogger logger = AiravataLoggerFactory.getLogger(AiravataServerHandler.class);
@@ -897,14 +935,14 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public List<DataObjectType> getExperimentOutputs(String airavataExperimentId) throws TException {
+    public List<OutputDataObjectType> getExperimentOutputs(String airavataExperimentId) throws TException {
         try {
             registry = RegistryFactory.getDefaultRegistry();
             if (!registry.isExist(RegistryModelType.EXPERIMENT, airavataExperimentId)){
                 logger.errorId(airavataExperimentId, "Get experiment outputs failed, experiment {} doesn't exit.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
-            return (List<DataObjectType>)registry.get(RegistryModelType.EXPERIMENT_OUTPUT, airavataExperimentId);
+            return (List<OutputDataObjectType>)registry.get(RegistryModelType.EXPERIMENT_OUTPUT, airavataExperimentId);
         } catch (Exception e) {
             logger.errorId(airavataExperimentId, "Error while retrieving the experiment outputs", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -1259,7 +1297,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public List<ApplicationModule> getAllModules() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public List<ApplicationModule> getAllAppModules() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             appCatalog = AppCatalogFactory.getAppCatalog();
             return appCatalog.getApplicationInterface().getAllApplicationModules();
@@ -1375,6 +1413,26 @@ public class AiravataServerHandler implements Airavata.Iface {
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while deleting application deployment. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Fetch all Application Deployment Descriptions.
+     *
+     * @return list<applicationDeployment.
+     * Returns the list of all application Deployment Objects.
+     */
+    @Override
+    public List<ApplicationDeploymentDescription> getAllApplicationDeployments() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getApplicationDeployment().getAllApplicationDeployements();
+        } catch (AppCatalogException e) {
+            logger.error("Error while retrieving application deployments...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving application deployments. More info : " + e.getMessage());
             throw exception;
         }
     }

@@ -37,18 +37,18 @@ import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.core.utils.OutputUtils;
 import org.apache.airavata.gfac.local.utils.InputStreamToFileWriter;
 import org.apache.airavata.gfac.local.utils.InputUtils;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
+import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.TaskIdentifier;
 import org.apache.airavata.model.messaging.event.TaskOutputChangeEvent;
-import org.apache.airavata.model.workspace.experiment.DataObjectType;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.registry.cpi.RegistryModelType;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
-import org.apache.airavata.schemas.gfac.NameValuePairType;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,18 +104,16 @@ public class LocalProvider extends AbstractProvider {
 
     public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException,GFacException {
     	super.initialize(jobExecutionContext);
-        ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().
-                getApplicationDeploymentDescription().getType();
 
-        buildCommand(app.getExecutableLocation(), ProviderUtils.getInputParameters(jobExecutionContext));
-        initProcessBuilder(app);
+        buildCommand(jobExecutionContext.getExecutablePath(), ProviderUtils.getInputParameters(jobExecutionContext));
+        initProcessBuilder(jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription());
 
         // extra environment variables
-        builder.environment().put(Constants.INPUT_DATA_DIR_VAR_NAME, app.getInputDataDirectory());
-        builder.environment().put(Constants.OUTPUT_DATA_DIR_VAR_NAME, app.getOutputDataDirectory());
+        builder.environment().put(Constants.INPUT_DATA_DIR_VAR_NAME, jobExecutionContext.getInputDir());
+        builder.environment().put(Constants.OUTPUT_DATA_DIR_VAR_NAME, jobExecutionContext.getOutputDir());
 
         // set working directory
-        builder.directory(new File(app.getStaticWorkingDirectory()));
+        builder.directory(new File(jobExecutionContext.getWorkingDir()));
 
         // log info
         log.info("Command = " + InputUtils.buildCommand(cmdList));
@@ -127,21 +125,19 @@ public class LocalProvider extends AbstractProvider {
 
     public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
         jobExecutionContext.getNotifier().publish(new StartExecutionEvent());
-         ApplicationDeploymentDescriptionType app = jobExecutionContext.
-                 getApplicationContext().getApplicationDeploymentDescription().getType();
         JobDetails jobDetails = new JobDetails();
         try {
         	jobId = jobExecutionContext.getTaskData().getTaskID();
             jobDetails.setJobID(jobId);
-            jobDetails.setJobDescription(app.toString());
+            jobDetails.setJobDescription(jobExecutionContext.getApplicationContext()
+                    .getApplicationDeploymentDescription().getAppDeploymentDescription());
             jobExecutionContext.setJobDetails(jobDetails);
-            jobDetails.setJobDescription(app.toString());
             GFacUtils.saveJobStatus(jobExecutionContext,jobDetails, JobState.SETUP);
         	// running cmd
             Process process = builder.start();
 
-            Thread standardOutWriter = new InputStreamToFileWriter(process.getInputStream(), app.getStandardOutput());
-            Thread standardErrorWriter = new InputStreamToFileWriter(process.getErrorStream(), app.getStandardError());
+            Thread standardOutWriter = new InputStreamToFileWriter(process.getInputStream(), jobExecutionContext.getStandardOutput());
+            Thread standardErrorWriter = new InputStreamToFileWriter(process.getErrorStream(), jobExecutionContext.getStandardError());
 
             // start output threads
             standardOutWriter.setDaemon(true);
@@ -167,9 +163,10 @@ public class LocalProvider extends AbstractProvider {
 
             StringBuffer buf = new StringBuffer();
             buf.append("Executed ").append(InputUtils.buildCommand(cmdList))
-                    .append(" on the localHost, working directory = ").append(app.getStaticWorkingDirectory())
-                    .append(" tempDirectory = ").append(app.getScratchWorkingDirectory()).append(" With the status ")
+                    .append(" on the localHost, working directory = ").append(jobExecutionContext.getWorkingDir())
+                    .append(" tempDirectory = ").append(jobExecutionContext.getScratchLocation()).append(" With the status ")
                     .append(String.valueOf(returnValue));
+
             log.info(buf.toString());
 
             // updating the job status to complete because there's nothing to monitor in local jobs
@@ -219,12 +216,10 @@ public class LocalProvider extends AbstractProvider {
 //	}
 
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {
-        ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
-
         try {
-        	List<DataObjectType> outputArray = new ArrayList<DataObjectType>();
-            String stdOutStr = GFacUtils.readFileToString(app.getStandardOutput());
-            String stdErrStr = GFacUtils.readFileToString(app.getStandardError());
+        	List<OutputDataObjectType> outputArray = new ArrayList<OutputDataObjectType>();
+            String stdOutStr = GFacUtils.readFileToString(jobExecutionContext.getStandardOutput());
+            String stdErrStr = GFacUtils.readFileToString(jobExecutionContext.getStandardError());
 			Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
             OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr, outputArray);
             TaskDetails taskDetails = (TaskDetails)registry.get(RegistryModelType.TASK_DETAIL, jobExecutionContext.getTaskData().getTaskID());
@@ -257,15 +252,14 @@ public class LocalProvider extends AbstractProvider {
         cmdList.addAll(inputParameterList);
     }
 
-    private void initProcessBuilder(ApplicationDeploymentDescriptionType app){
+    private void initProcessBuilder(ApplicationDeploymentDescription app){
         builder = new ProcessBuilder(cmdList);
 
-        NameValuePairType[] env = app.getApplicationEnvironmentArray();
-
-        if(env != null && env.length > 0){
-            Map<String,String> builderEnv = builder.environment();
-            for (NameValuePairType entry : env) {
-                builderEnv.put(entry.getName(), entry.getValue());
+        List<SetEnvPaths> setEnvironment = app.getSetEnvironment();
+        if (setEnvironment != null) {
+            for (SetEnvPaths envPath : setEnvironment) {
+                Map<String,String> builderEnv = builder.environment();
+                builderEnv.put(envPath.getName(), envPath.getValue());
             }
         }
     }

@@ -21,6 +21,9 @@ package org.apache.airavata.client.samples;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.ExperimentNotFoundException;
@@ -41,7 +44,7 @@ import java.util.Set;
 public class CreateLaunchExperimentUS3 {
 	
 	 //FIXME: Read from a config file
-    public static final String THRIFT_SERVER_HOST = "gridfarm005.ucs.indiana.edu";
+    public static final String THRIFT_SERVER_HOST = "localhost";
     public static final int THRIFT_SERVER_PORT = 8930;
     private final static Logger logger = LoggerFactory.getLogger(CreateLaunchExperiment.class);
     private static final String DEFAULT_USER = "default.registry.user";
@@ -52,8 +55,8 @@ public class CreateLaunchExperimentUS3 {
             System.out.println("API version is " + airavata.getAPIVersion());
 //            addDescriptors();
 //            final String expId = createUS3ExperimentForTrestles(airavata);
-//            final String expId = createUS3ExperimentForStampede(airavata);
-            final String expId = createUS3ExperimentForLonestar(airavata);
+            final String expId = createUS3ExperimentForStampede(airavata);
+//            final String expId = createUS3ExperimentForLonestar(airavata);
 //            final String expId =  createUS3ExperimentForAlamo(airavata);
             System.out.println("Experiment ID : " + expId);
             launchExperiment(airavata, expId);
@@ -63,39 +66,39 @@ public class CreateLaunchExperimentUS3 {
 //            } catch (InterruptedException e) {
 //                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
 //            }
-            Thread monitor = (new Thread(){
-                 public void run() {
-                     Map<String, JobStatus> jobStatuses = null;
-                     while (true) {
-                         try {
-                             jobStatuses = airavata.getJobStatuses(expId);
-                             Set<String> strings = jobStatuses.keySet();
-                             for (String key : strings) {
-                                 JobStatus jobStatus = jobStatuses.get(key);
-                                 if(jobStatus == null){
-                                     return;
-                                 }else {
-                                     if (JobState.COMPLETE.equals(jobStatus.getJobState())) {
-                                         System.out.println("Job completed Job ID: " + jobStatus.getJobState().toString());
-                                         return;
-                                     }else{
-                                        System.out.println("Job ID:" + key + jobStatuses.get(key).getJobState().toString());
-                                     }
-                                 }
-                             }
-                             Thread.sleep(20000);
-                         } catch (Exception e) {
-                             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                         }
-                     }
-                 }
-            });
-            monitor.start();
-            try {
-                monitor.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
+//            Thread monitor = (new Thread(){
+//                 public void run() {
+//                     Map<String, JobStatus> jobStatuses = null;
+//                     while (true) {
+//                         try {
+//                             jobStatuses = airavata.getJobStatuses(expId);
+//                             Set<String> strings = jobStatuses.keySet();
+//                             for (String key : strings) {
+//                                 JobStatus jobStatus = jobStatuses.get(key);
+//                                 if(jobStatus == null){
+//                                     return;
+//                                 }else {
+//                                     if (JobState.COMPLETE.equals(jobStatus.getJobState())) {
+//                                         System.out.println("Job completed Job ID: " + jobStatus.getJobState().toString());
+//                                         return;
+//                                     }else{
+//                                        System.out.println("Job ID:" + key + jobStatuses.get(key).getJobState().toString());
+//                                     }
+//                                 }
+//                             }
+//                             Thread.sleep(20000);
+//                         } catch (Exception e) {
+//                             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//                         }
+//                     }
+//                 }
+//            });
+//            monitor.start();
+//            try {
+//                monitor.join();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//            }
             
 //            airavata.terminateExperiment(expId);
      
@@ -140,16 +143,16 @@ public class CreateLaunchExperimentUS3 {
 
     public static String createExperimentForTrestles(Airavata.Client client) throws TException  {
         try{
-            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-            DataObjectType input = new DataObjectType();
-            input.setKey("echo_input");
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("echo_input");
             input.setType(DataType.STRING);
             input.setValue("echo_output=Hello World");
             exInputs.add(input);
 
-            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-            DataObjectType output = new DataObjectType();
-            output.setKey("echo_output");
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("echo_output");
             output.setType(DataType.STRING);
             output.setValue("");
             exOut.add(output);
@@ -186,17 +189,17 @@ public class CreateLaunchExperimentUS3 {
     
     public static String createUS3ExperimentForTrestles (Airavata.Client client) throws AiravataSystemException, InvalidRequestException, AiravataClientException, TException  {
         try{
-            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-            DataObjectType input = new DataObjectType();
-            input.setKey("input");
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("input");
             input.setType(DataType.URI);
-            input.setValue("file:///home/airavata/input/hpcinput.tar");
-            DataObjectType input1 = new DataObjectType();
-            input1.setKey("walltime");
+            input.setValue("file:///home/sgg/chathuri/laptop_backup/airavata/ultrascan_input/hpcinput.tar");
+            InputDataObjectType input1 = new InputDataObjectType();
+            input1.setName("walltime");
             input1.setType(DataType.STRING);
             input1.setValue("-walltime=60");
-            DataObjectType input2 = new DataObjectType();
-            input2.setKey("mgroupcount");
+            InputDataObjectType input2 = new InputDataObjectType();
+            input2.setName("mgroupcount");
             input2.setType(DataType.STRING);
             input2.setValue("-mgroupcount=1");
             
@@ -204,38 +207,38 @@ public class CreateLaunchExperimentUS3 {
             exInputs.add(input1);
             exInputs.add(input2);
 
-            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-            DataObjectType output = new DataObjectType();
-            output.setKey("output");
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("output");
             output.setType(DataType.URI);
             output.setValue("");
-//            DataObjectType output1 = new DataObjectType();
-//            output1.setKey("stdout");
+//            OutputDataObjectType output1 = new OutputDataObjectType();
+//            output1.setName("stdout");
 //            output1.setType(DataType.STDOUT);
 //            output1.setValue("");
-//            DataObjectType output2 = new DataObjectType();
-//            output2.setKey("stderr");
+//            OutputDataObjectType output2 = new OutputDataObjectType();
+//            output2.setName("stderr");
 //            output2.setType(DataType.STDERR);
 //            output2.setValue("");
             exOut.add(output);
 //            exOut.add(output1);
 //            exOut.add(output2);
 
-           // Project project = ProjectModelUtil.createProject("ultrascan", "ultrascan", "test project");
-            //String projectId = client.createProject(project);
+            Project project = ProjectModelUtil.createProject("ultrascan", "ultrascan", "test project");
+            String projectId = client.createProject(project);
 
-            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("ultrascan_41574ef5-b054-4d03-ab20-2cfe768d5096", "ultrascan", "US3ExperimentTrestles", "US3AppTrestles", "ultrascan_e76ab5cf-79f6-44df-a244-10a734183fec", exInputs);
+            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment(projectId, "ultrascan", "US3ExperimentTrestles", "US3AppTrestles", "ultrascan_7ce6cd43-622c-44e0-87c5-fb7a6528c799", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.xsede.org_1ccc526f-ab74-4a5a-970a-c464cb9def5a", 32, 2, 0, "shared", 30, 0, 0, "uot111");
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.xsede.org_72b9181b-7156-4975-a386-ed98b4949496", 32, 1, 0, "shared", 30, 0, 0, "sds128");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
             
-            scheduling.setResourceHostId("trestles.sdsc.xsede.org_1ccc526f-ab74-4a5a-970a-c464cb9def5a");
+            scheduling.setResourceHostId("trestles.sdsc.xsede.org_72b9181b-7156-4975-a386-ed98b4949496");
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
         
             AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();
-            dataHandling.setOutputDataDir("/home/airavata/output/");
+            dataHandling.setOutputDataDir("/home/sgg/chathuri/laptop_backup/airavata");
             userConfigurationData.setAdvanceOutputDataHandling(dataHandling);
         
             userConfigurationData.setComputationalResourceScheduling(scheduling);
@@ -257,17 +260,17 @@ public class CreateLaunchExperimentUS3 {
     }
     public static String createUS3ExperimentForStampede (Airavata.Client client) throws AiravataSystemException, InvalidRequestException, AiravataClientException, TException  {
         try{
-            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-            DataObjectType input = new DataObjectType();
-            input.setKey("input");
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("input");
             input.setType(DataType.URI);
-            input.setValue("file:///home/airavata/input/hpcinput.tar");
-            DataObjectType input1 = new DataObjectType();
-            input1.setKey("walltime");
+            input.setValue("file:///home/sgg/chathuri/laptop_backup/airavata/ultrascan_input/hpcinput.tar");
+            InputDataObjectType input1 = new InputDataObjectType();
+            input1.setName("walltime");
             input1.setType(DataType.STRING);
             input1.setValue("-walltime=60");
-            DataObjectType input2 = new DataObjectType();
-            input2.setKey("mgroupcount");
+            InputDataObjectType input2 = new InputDataObjectType();
+            input2.setName("mgroupcount");
             input2.setType(DataType.STRING);
             input2.setValue("-mgroupcount=1");
             
@@ -276,32 +279,32 @@ public class CreateLaunchExperimentUS3 {
             exInputs.add(input2);
 
 
-            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-            DataObjectType output = new DataObjectType();
-            output.setKey("output");
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("output");
             output.setType(DataType.URI);
             output.setValue("");
-//            DataObjectType output1 = new DataObjectType();
-//            output1.setKey("stdout");
+//            OutputDataObjectType output1 = new OutputDataObjectType();
+//            output1.setName("stdout");
 //            output1.setType(DataType.STDOUT);
 //            output1.setValue("");
-//            DataObjectType output2 = new DataObjectType();
-//            output2.setKey("stderr");
+//            OutputDataObjectType output2 = new OutputDataObjectType();
+//            output2.setName("stderr");
 //            output2.setType(DataType.STDERR);
 //            output2.setValue("");
             exOut.add(output);
 //            exOut.add(output1);
 //            exOut.add(output2);
 
-//            Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
-//            String projectId = client.createProject(project);
+            Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
+            String projectId = client.createProject(project);
 
-            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("ultrascan_41574ef5-b054-4d03-ab20-2cfe768d5096", "ultrascan", "US3ExperimentStampede", "US3AppStampede", "ultrascan_e76ab5cf-79f6-44df-a244-10a734183fec", exInputs);
+            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment(projectId, "ultrascan", "US3ExperimentStampede", "US3AppStampede", "ultrascan_7ce6cd43-622c-44e0-87c5-fb7a6528c799", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org_af57850b-103b-49a1-aab2-27cb070d3bd9", 16, 2, 0, "normal", 30, 0, 0, "TG-MCB070039N");
+            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org_e59e046f-e0e1-49c4-8475-2fab2e35d044", 32, 2, 0, "normal", 30, 0, 0, "TG-STA110014S");
 
-            scheduling.setResourceHostId("stampede.tacc.xsede.org_af57850b-103b-49a1-aab2-27cb070d3bd9");
+            scheduling.setResourceHostId("stampede.tacc.xsede.org_e59e046f-e0e1-49c4-8475-2fab2e35d044");
             UserConfigurationData userConfigurationData = new UserConfigurationData();
            
             userConfigurationData.setAiravataAutoSchedule(false);
@@ -309,7 +312,7 @@ public class CreateLaunchExperimentUS3 {
             userConfigurationData.setComputationalResourceScheduling(scheduling);
         
             AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();
-            dataHandling.setOutputDataDir("/home/airavata/output/");
+            dataHandling.setOutputDataDir("/home/sgg/chathuri/laptop_backup/airavata");
             userConfigurationData.setAdvanceOutputDataHandling(dataHandling);
         
             simpleExperiment.setUserConfigurationData(userConfigurationData);
@@ -330,17 +333,17 @@ public class CreateLaunchExperimentUS3 {
     }
     public static String createUS3ExperimentForLonestar (Airavata.Client client) throws AiravataSystemException, InvalidRequestException, AiravataClientException, TException  {
         try{
-            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-            DataObjectType input = new DataObjectType();
-            input.setKey("input");
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("input");
             input.setType(DataType.URI);
             input.setValue("file:///home/airavata/input/hpcinput.tar");
-            DataObjectType input1 = new DataObjectType();
-            input1.setKey("walltime");
+            InputDataObjectType input1 = new InputDataObjectType();
+            input1.setName("walltime");
             input1.setType(DataType.STRING);
             input1.setValue("-walltime=60");
-            DataObjectType input2 = new DataObjectType();
-            input2.setKey("mgroupcount");
+            InputDataObjectType input2 = new InputDataObjectType();
+            input2.setName("mgroupcount");
             input2.setType(DataType.STRING);
             input2.setValue("-mgroupcount=1");
             
@@ -348,17 +351,17 @@ public class CreateLaunchExperimentUS3 {
             exInputs.add(input1);
             exInputs.add(input2);
 
-            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-            DataObjectType output = new DataObjectType();
-            output.setKey("output");
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("output");
             output.setType(DataType.URI);
             output.setValue("");
-//            DataObjectType output1 = new DataObjectType();
-//            output1.setKey("stdout");
+//            OutputDataObjectType output1 = new OutputDataObjectType();
+//            output1.setName("stdout");
 //            output1.setType(DataType.STDOUT);
 //            output1.setValue("");
-//            DataObjectType output2 = new DataObjectType();
-//            output2.setKey("stderr");
+//            OutputDataObjectType output2 = new OutputDataObjectType();
+//            output2.setName("stderr");
 //            output2.setType(DataType.STDERR);
 //            output2.setValue("");
             exOut.add(output);
@@ -402,17 +405,17 @@ public class CreateLaunchExperimentUS3 {
     }
     public static String createUS3ExperimentForAlamo (Airavata.Client client) throws AiravataSystemException, InvalidRequestException, AiravataClientException, TException  {
         try{
-            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-            DataObjectType input = new DataObjectType();
-            input.setKey("input");
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("input");
             input.setType(DataType.URI);
             input.setValue("file:///home/airavata/input/hpcinput.tar");
-            DataObjectType input1 = new DataObjectType();
-            input1.setKey("walltime");
+            InputDataObjectType input1 = new InputDataObjectType();
+            input1.setName("walltime");
             input1.setType(DataType.STRING);
             input1.setValue("-walltime=60");
-            DataObjectType input2 = new DataObjectType();
-            input2.setKey("mgroupcount");
+            InputDataObjectType input2 = new InputDataObjectType();
+            input2.setName("mgroupcount");
             input2.setType(DataType.STRING);
             input2.setValue("-mgroupcount=1");
             
@@ -421,17 +424,17 @@ public class CreateLaunchExperimentUS3 {
             exInputs.add(input2);
 
 
-            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-            DataObjectType output = new DataObjectType();
-            output.setKey("output");
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("output");
             output.setType(DataType.URI);
             output.setValue("");
-//            DataObjectType output1 = new DataObjectType();
-//            output1.setKey("stdout");
+//            OutputDataObjectType output1 = new OutputDataObjectType();
+//            output1.setName("stdout");
 //            output1.setType(DataType.STDOUT);
 //            output1.setValue("");
-//            DataObjectType output2 = new DataObjectType();
-//            output2.setKey("stderr");
+//            OutputDataObjectType output2 = new OutputDataObjectType();
+//            output2.setName("stderr");
 //            output2.setType(DataType.STDERR);
 //            output2.setValue("");
             exOut.add(output);
@@ -475,16 +478,16 @@ public class CreateLaunchExperimentUS3 {
     }
     public static String createExperimentForStampede(Airavata.Client client) throws TException  {
         try{
-            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-            DataObjectType input = new DataObjectType();
-            input.setKey("echo_input");
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("echo_input");
             input.setType(DataType.STRING);
             input.setValue("echo_output=Hello World");
             exInputs.add(input);
 
-            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-            DataObjectType output = new DataObjectType();
-            output.setKey("echo_output");
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("echo_output");
             output.setType(DataType.STRING);
             output.setValue("");
             exOut.add(output);

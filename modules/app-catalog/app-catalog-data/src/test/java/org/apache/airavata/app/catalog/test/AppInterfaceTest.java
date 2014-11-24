@@ -88,7 +88,7 @@ public class AppInterfaceTest {
             outputs.add(output1);
             outputs.add(output2);
             description.setApplicationName("testApplication");
-            description.setApplicationDesription("my testApplication");
+            description.setApplicationDescription("my testApplication");
             description.setApplicationModules(modules);
             description.setApplicationInputs(inputs);
             description.setApplicationOutputs(outputs);
@@ -97,8 +97,17 @@ public class AppInterfaceTest {
             ApplicationInterfaceDescription ainterface = null;
             if (appInterface.isApplicationInterfaceExists(appID)){
                 ainterface = appInterface.getApplicationInterface(appID);
-                System.out.println("********** application name ************* : " + ainterface.getApplicationName());
-                System.out.println("********** application description ************* : " + ainterface.getApplicationDesription());
+                OutputDataObjectType output3 = createAppOutput("output3", "", DataType.STRING);
+                OutputDataObjectType output4 = createAppOutput("output4", "", DataType.STRING);
+                outputs.add(output3);
+                outputs.add(output4);
+                ainterface.setApplicationOutputs(outputs);
+                appInterface.updateApplicationInterface(appID, ainterface);
+                ApplicationInterfaceDescription updateApp = appInterface.getApplicationInterface(appID);
+                List<OutputDataObjectType> appOutputs = updateApp.getApplicationOutputs();
+                System.out.println("********** application name ************* : " + updateApp.getApplicationName());
+                System.out.println("********** application description ************* : " + updateApp.getApplicationDescription());
+                System.out.println("********** output size ************* : " + appOutputs.size());
             }
             ApplicationModule wrfModule = appInterface.getApplicationModule(wrfModuleId);
             System.out.println("********** WRF module name ************* : " + wrfModule.getAppModuleName());

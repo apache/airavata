@@ -95,6 +95,15 @@ struct JobSubmissionProtocol {
 
 extern const std::map<int, const char*> _JobSubmissionProtocol_VALUES_TO_NAMES;
 
+struct MonitorMode {
+  enum type {
+    POLL_JOB_MANAGER = 0,
+    XSEDE_AMQP_SUBSCRIBE = 1
+  };
+};
+
+extern const std::map<int, const char*> _MonitorMode_VALUES_TO_NAMES;
+
 struct DataMovementProtocol {
   enum type {
     LOCAL = 0,
@@ -551,18 +560,19 @@ class LOCALDataMovement {
 void swap(LOCALDataMovement &a, LOCALDataMovement &b);
 
 typedef struct _SSHJobSubmission__isset {
-  _SSHJobSubmission__isset() : alternativeSSHHostName(false), sshPort(true) {}
+  _SSHJobSubmission__isset() : alternativeSSHHostName(false), sshPort(true), monitorMode(false) {}
   bool alternativeSSHHostName;
   bool sshPort;
+  bool monitorMode;
 } _SSHJobSubmission__isset;
 
 class SSHJobSubmission {
  public:
 
-  static const char* ascii_fingerprint; // = "8BC403A3B093DDB0CB8F04ED699DBA3D";
-  static const uint8_t binary_fingerprint[16]; // = {0x8B,0xC4,0x03,0xA3,0xB0,0x93,0xDD,0xB0,0xCB,0x8F,0x04,0xED,0x69,0x9D,0xBA,0x3D};
+  static const char* ascii_fingerprint; // = "A62183DAA7AFF027173705420A9D99D0";
+  static const uint8_t binary_fingerprint[16]; // = {0xA6,0x21,0x83,0xDA,0xA7,0xAF,0xF0,0x27,0x17,0x37,0x05,0x42,0x0A,0x9D,0x99,0xD0};
 
-  SSHJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), alternativeSSHHostName(), sshPort(22) {
+  SSHJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), alternativeSSHHostName(), sshPort(22), monitorMode((MonitorMode::type)0) {
   }
 
   virtual ~SSHJobSubmission() throw() {}
@@ -572,6 +582,7 @@ class SSHJobSubmission {
   ResourceJobManager resourceJobManager;
   std::string alternativeSSHHostName;
   int32_t sshPort;
+  MonitorMode::type monitorMode;
 
   _SSHJobSubmission__isset __isset;
 
@@ -597,6 +608,11 @@ class SSHJobSubmission {
     __isset.sshPort = true;
   }
 
+  void __set_monitorMode(const MonitorMode::type val) {
+    monitorMode = val;
+    __isset.monitorMode = true;
+  }
+
   bool operator == (const SSHJobSubmission & rhs) const
   {
     if (!(jobSubmissionInterfaceId == rhs.jobSubmissionInterfaceId))
@@ -612,6 +628,10 @@ class SSHJobSubmission {
     if (__isset.sshPort != rhs.__isset.sshPort)
       return false;
     else if (__isset.sshPort && !(sshPort == rhs.sshPort))
+      return false;
+    if (__isset.monitorMode != rhs.__isset.monitorMode)
+      return false;
+    else if (__isset.monitorMode && !(monitorMode == rhs.monitorMode))
       return false;
     return true;
   }

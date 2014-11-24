@@ -54,7 +54,7 @@ class AiravataIf {
   virtual bool validateExperiment(const std::string& airavataExperimentId) = 0;
   virtual void launchExperiment(const std::string& airavataExperimentId, const std::string& airavataCredStoreToken) = 0;
   virtual void getExperimentStatus( ::apache::airavata::model::workspace::experiment::ExperimentStatus& _return, const std::string& airavataExperimentId) = 0;
-  virtual void getExperimentOutputs(std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & _return, const std::string& airavataExperimentId) = 0;
+  virtual void getExperimentOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& airavataExperimentId) = 0;
   virtual void getJobStatuses(std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & _return, const std::string& airavataExperimentId) = 0;
   virtual void getJobDetails(std::vector< ::apache::airavata::model::workspace::experiment::JobDetails> & _return, const std::string& airavataExperimentId) = 0;
   virtual void getDataTransferDetails(std::vector< ::apache::airavata::model::workspace::experiment::DataTransferDetails> & _return, const std::string& airavataExperimentId) = 0;
@@ -63,12 +63,13 @@ class AiravataIf {
   virtual void registerApplicationModule(std::string& _return, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) = 0;
   virtual void getApplicationModule( ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& _return, const std::string& appModuleId) = 0;
   virtual bool updateApplicationModule(const std::string& appModuleId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) = 0;
-  virtual void getAllModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return) = 0;
+  virtual void getAllAppModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return) = 0;
   virtual bool deleteApplicationModule(const std::string& appModuleId) = 0;
   virtual void registerApplicationDeployment(std::string& _return, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment) = 0;
   virtual void getApplicationDeployment( ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& _return, const std::string& appDeploymentId) = 0;
   virtual bool updateApplicationDeployment(const std::string& appDeploymentId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment) = 0;
   virtual bool deleteApplicationDeployment(const std::string& appDeploymentId) = 0;
+  virtual void getAllApplicationDeployments(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> & _return) = 0;
   virtual void getAppModuleDeployedResources(std::vector<std::string> & _return, const std::string& appModuleId) = 0;
   virtual void registerApplicationInterface(std::string& _return, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface) = 0;
   virtual void getApplicationInterface( ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& _return, const std::string& appInterfaceId) = 0;
@@ -227,7 +228,7 @@ class AiravataNull : virtual public AiravataIf {
   void getExperimentStatus( ::apache::airavata::model::workspace::experiment::ExperimentStatus& /* _return */, const std::string& /* airavataExperimentId */) {
     return;
   }
-  void getExperimentOutputs(std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & /* _return */, const std::string& /* airavataExperimentId */) {
+  void getExperimentOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & /* _return */, const std::string& /* airavataExperimentId */) {
     return;
   }
   void getJobStatuses(std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & /* _return */, const std::string& /* airavataExperimentId */) {
@@ -255,7 +256,7 @@ class AiravataNull : virtual public AiravataIf {
     bool _return = false;
     return _return;
   }
-  void getAllModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & /* _return */) {
+  void getAllAppModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & /* _return */) {
     return;
   }
   bool deleteApplicationModule(const std::string& /* appModuleId */) {
@@ -275,6 +276,9 @@ class AiravataNull : virtual public AiravataIf {
   bool deleteApplicationDeployment(const std::string& /* appDeploymentId */) {
     bool _return = false;
     return _return;
+  }
+  void getAllApplicationDeployments(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> & /* _return */) {
+    return;
   }
   void getAppModuleDeployedResources(std::vector<std::string> & /* _return */, const std::string& /* appModuleId */) {
     return;
@@ -3511,7 +3515,7 @@ class Airavata_getExperimentOutputs_result {
 
   virtual ~Airavata_getExperimentOutputs_result() throw() {}
 
-  std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType>  success;
+  std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::ExperimentNotFoundException enf;
    ::apache::airavata::api::error::AiravataClientException ace;
@@ -3519,7 +3523,7 @@ class Airavata_getExperimentOutputs_result {
 
   _Airavata_getExperimentOutputs_result__isset __isset;
 
-  void __set_success(const std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & val) {
+  void __set_success(const std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & val) {
     success = val;
   }
 
@@ -3579,7 +3583,7 @@ class Airavata_getExperimentOutputs_presult {
 
   virtual ~Airavata_getExperimentOutputs_presult() throw() {}
 
-  std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> * success;
+  std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::ExperimentNotFoundException enf;
    ::apache::airavata::api::error::AiravataClientException ace;
@@ -4717,24 +4721,24 @@ class Airavata_updateApplicationModule_presult {
 };
 
 
-class Airavata_getAllModules_args {
+class Airavata_getAllAppModules_args {
  public:
 
-  Airavata_getAllModules_args() {
+  Airavata_getAllAppModules_args() {
   }
 
-  virtual ~Airavata_getAllModules_args() throw() {}
+  virtual ~Airavata_getAllAppModules_args() throw() {}
 
 
-  bool operator == (const Airavata_getAllModules_args & /* rhs */) const
+  bool operator == (const Airavata_getAllAppModules_args & /* rhs */) const
   {
     return true;
   }
-  bool operator != (const Airavata_getAllModules_args &rhs) const {
+  bool operator != (const Airavata_getAllAppModules_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const Airavata_getAllModules_args & ) const;
+  bool operator < (const Airavata_getAllAppModules_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -4742,39 +4746,39 @@ class Airavata_getAllModules_args {
 };
 
 
-class Airavata_getAllModules_pargs {
+class Airavata_getAllAppModules_pargs {
  public:
 
 
-  virtual ~Airavata_getAllModules_pargs() throw() {}
+  virtual ~Airavata_getAllAppModules_pargs() throw() {}
 
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _Airavata_getAllModules_result__isset {
-  _Airavata_getAllModules_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+typedef struct _Airavata_getAllAppModules_result__isset {
+  _Airavata_getAllAppModules_result__isset() : success(false), ire(false), ace(false), ase(false) {}
   bool success;
   bool ire;
   bool ace;
   bool ase;
-} _Airavata_getAllModules_result__isset;
+} _Airavata_getAllAppModules_result__isset;
 
-class Airavata_getAllModules_result {
+class Airavata_getAllAppModules_result {
  public:
 
-  Airavata_getAllModules_result() {
+  Airavata_getAllAppModules_result() {
   }
 
-  virtual ~Airavata_getAllModules_result() throw() {}
+  virtual ~Airavata_getAllAppModules_result() throw() {}
 
   std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
 
-  _Airavata_getAllModules_result__isset __isset;
+  _Airavata_getAllAppModules_result__isset __isset;
 
   void __set_success(const std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & val) {
     success = val;
@@ -4792,7 +4796,7 @@ class Airavata_getAllModules_result {
     ase = val;
   }
 
-  bool operator == (const Airavata_getAllModules_result & rhs) const
+  bool operator == (const Airavata_getAllAppModules_result & rhs) const
   {
     if (!(success == rhs.success))
       return false;
@@ -4804,37 +4808,37 @@ class Airavata_getAllModules_result {
       return false;
     return true;
   }
-  bool operator != (const Airavata_getAllModules_result &rhs) const {
+  bool operator != (const Airavata_getAllAppModules_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const Airavata_getAllModules_result & ) const;
+  bool operator < (const Airavata_getAllAppModules_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
-typedef struct _Airavata_getAllModules_presult__isset {
-  _Airavata_getAllModules_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+typedef struct _Airavata_getAllAppModules_presult__isset {
+  _Airavata_getAllAppModules_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
   bool success;
   bool ire;
   bool ace;
   bool ase;
-} _Airavata_getAllModules_presult__isset;
+} _Airavata_getAllAppModules_presult__isset;
 
-class Airavata_getAllModules_presult {
+class Airavata_getAllAppModules_presult {
  public:
 
 
-  virtual ~Airavata_getAllModules_presult() throw() {}
+  virtual ~Airavata_getAllAppModules_presult() throw() {}
 
   std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
 
-  _Airavata_getAllModules_presult__isset __isset;
+  _Airavata_getAllAppModules_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -5503,6 +5507,130 @@ class Airavata_deleteApplicationDeployment_presult {
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_deleteApplicationDeployment_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getAllApplicationDeployments_args {
+ public:
+
+  Airavata_getAllApplicationDeployments_args() {
+  }
+
+  virtual ~Airavata_getAllApplicationDeployments_args() throw() {}
+
+
+  bool operator == (const Airavata_getAllApplicationDeployments_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const Airavata_getAllApplicationDeployments_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAllApplicationDeployments_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getAllApplicationDeployments_pargs {
+ public:
+
+
+  virtual ~Airavata_getAllApplicationDeployments_pargs() throw() {}
+
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getAllApplicationDeployments_result__isset {
+  _Airavata_getAllApplicationDeployments_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getAllApplicationDeployments_result__isset;
+
+class Airavata_getAllApplicationDeployments_result {
+ public:
+
+  Airavata_getAllApplicationDeployments_result() {
+  }
+
+  virtual ~Airavata_getAllApplicationDeployments_result() throw() {}
+
+  std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getAllApplicationDeployments_result__isset __isset;
+
+  void __set_success(const std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> & val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_getAllApplicationDeployments_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getAllApplicationDeployments_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAllApplicationDeployments_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getAllApplicationDeployments_presult__isset {
+  _Airavata_getAllApplicationDeployments_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getAllApplicationDeployments_presult__isset;
+
+class Airavata_getAllApplicationDeployments_presult {
+ public:
+
+
+  virtual ~Airavata_getAllApplicationDeployments_presult() throw() {}
+
+  std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getAllApplicationDeployments_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -14014,9 +14142,9 @@ class AiravataClient : virtual public AiravataIf {
   void getExperimentStatus( ::apache::airavata::model::workspace::experiment::ExperimentStatus& _return, const std::string& airavataExperimentId);
   void send_getExperimentStatus(const std::string& airavataExperimentId);
   void recv_getExperimentStatus( ::apache::airavata::model::workspace::experiment::ExperimentStatus& _return);
-  void getExperimentOutputs(std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & _return, const std::string& airavataExperimentId);
+  void getExperimentOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& airavataExperimentId);
   void send_getExperimentOutputs(const std::string& airavataExperimentId);
-  void recv_getExperimentOutputs(std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & _return);
+  void recv_getExperimentOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return);
   void getJobStatuses(std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & _return, const std::string& airavataExperimentId);
   void send_getJobStatuses(const std::string& airavataExperimentId);
   void recv_getJobStatuses(std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & _return);
@@ -14041,9 +14169,9 @@ class AiravataClient : virtual public AiravataIf {
   bool updateApplicationModule(const std::string& appModuleId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule);
   void send_updateApplicationModule(const std::string& appModuleId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule);
   bool recv_updateApplicationModule();
-  void getAllModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return);
-  void send_getAllModules();
-  void recv_getAllModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return);
+  void getAllAppModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return);
+  void send_getAllAppModules();
+  void recv_getAllAppModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return);
   bool deleteApplicationModule(const std::string& appModuleId);
   void send_deleteApplicationModule(const std::string& appModuleId);
   bool recv_deleteApplicationModule();
@@ -14059,6 +14187,9 @@ class AiravataClient : virtual public AiravataIf {
   bool deleteApplicationDeployment(const std::string& appDeploymentId);
   void send_deleteApplicationDeployment(const std::string& appDeploymentId);
   bool recv_deleteApplicationDeployment();
+  void getAllApplicationDeployments(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> & _return);
+  void send_getAllApplicationDeployments();
+  void recv_getAllApplicationDeployments(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> & _return);
   void getAppModuleDeployedResources(std::vector<std::string> & _return, const std::string& appModuleId);
   void send_getAppModuleDeployedResources(const std::string& appModuleId);
   void recv_getAppModuleDeployedResources(std::vector<std::string> & _return);
@@ -14291,12 +14422,13 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_registerApplicationModule(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getApplicationModule(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateApplicationModule(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_getAllModules(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getAllAppModules(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_deleteApplicationModule(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_registerApplicationDeployment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getApplicationDeployment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateApplicationDeployment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_deleteApplicationDeployment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getAllApplicationDeployments(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getAppModuleDeployedResources(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_registerApplicationInterface(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getApplicationInterface(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -14393,12 +14525,13 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["registerApplicationModule"] = &AiravataProcessor::process_registerApplicationModule;
     processMap_["getApplicationModule"] = &AiravataProcessor::process_getApplicationModule;
     processMap_["updateApplicationModule"] = &AiravataProcessor::process_updateApplicationModule;
-    processMap_["getAllModules"] = &AiravataProcessor::process_getAllModules;
+    processMap_["getAllAppModules"] = &AiravataProcessor::process_getAllAppModules;
     processMap_["deleteApplicationModule"] = &AiravataProcessor::process_deleteApplicationModule;
     processMap_["registerApplicationDeployment"] = &AiravataProcessor::process_registerApplicationDeployment;
     processMap_["getApplicationDeployment"] = &AiravataProcessor::process_getApplicationDeployment;
     processMap_["updateApplicationDeployment"] = &AiravataProcessor::process_updateApplicationDeployment;
     processMap_["deleteApplicationDeployment"] = &AiravataProcessor::process_deleteApplicationDeployment;
+    processMap_["getAllApplicationDeployments"] = &AiravataProcessor::process_getAllApplicationDeployments;
     processMap_["getAppModuleDeployedResources"] = &AiravataProcessor::process_getAppModuleDeployedResources;
     processMap_["registerApplicationInterface"] = &AiravataProcessor::process_registerApplicationInterface;
     processMap_["getApplicationInterface"] = &AiravataProcessor::process_getApplicationInterface;
@@ -14703,7 +14836,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getExperimentOutputs(std::vector< ::apache::airavata::model::workspace::experiment::DataObjectType> & _return, const std::string& airavataExperimentId) {
+  void getExperimentOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& airavataExperimentId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -14791,13 +14924,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->updateApplicationModule(appModuleId, applicationModule);
   }
 
-  void getAllModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return) {
+  void getAllAppModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getAllModules(_return);
+      ifaces_[i]->getAllAppModules(_return);
     }
-    ifaces_[i]->getAllModules(_return);
+    ifaces_[i]->getAllAppModules(_return);
     return;
   }
 
@@ -14846,6 +14979,16 @@ class AiravataMultiface : virtual public AiravataIf {
       ifaces_[i]->deleteApplicationDeployment(appDeploymentId);
     }
     return ifaces_[i]->deleteApplicationDeployment(appDeploymentId);
+  }
+
+  void getAllApplicationDeployments(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> & _return) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getAllApplicationDeployments(_return);
+    }
+    ifaces_[i]->getAllApplicationDeployments(_return);
+    return;
   }
 
   void getAppModuleDeployedResources(std::vector<std::string> & _return, const std::string& appModuleId) {

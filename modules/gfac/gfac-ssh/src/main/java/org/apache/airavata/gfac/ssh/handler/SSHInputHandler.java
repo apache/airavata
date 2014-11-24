@@ -20,14 +20,7 @@
 */
 package org.apache.airavata.gfac.ssh.handler;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
-
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.StringUtil;
-import org.apache.airavata.commons.gfac.type.ActualParameter;
-import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
@@ -37,18 +30,19 @@ import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
 import org.apache.airavata.gfac.ssh.util.GFACSSHUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
-import org.apache.airavata.gsi.ssh.api.SSHApiException;
-import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
-import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
-import org.apache.airavata.model.workspace.experiment.ErrorCategory;
-import org.apache.airavata.model.workspace.experiment.TransferState;
-import org.apache.airavata.model.workspace.experiment.TransferStatus;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.registry.cpi.ChildDataType;
-import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
-import org.apache.airavata.schemas.gfac.URIArrayType;
-import org.apache.airavata.schemas.gfac.URIParameterType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 
 public class SSHInputHandler extends AbstractHandler {
 
@@ -66,7 +60,7 @@ public class SSHInputHandler extends AbstractHandler {
         Cluster cluster = null;
         
         try {
-            String hostAddress = jobExecutionContext.getApplicationContext().getHostDescription().getType().getHostAddress();
+            String hostAddress = jobExecutionContext.getHostName();
             if (jobExecutionContext.getSecurityContext(hostAddress) == null) {
                 try {
                     GFACSSHUtils.addSecurityContext(jobExecutionContext);
@@ -80,6 +74,13 @@ public class SSHInputHandler extends AbstractHandler {
                     throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
                 }
             }
+
+            cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getPbsCluster();
+            if (cluster == null) {
+                throw new GFacException("Security context is not set properly");
+            } else {
+                log.info("Successfully retrieved the Security Context");
+            }
             log.info("Invoking SCPInputHandler");
             super.invoke(jobExecutionContext);
 
@@ -87,47 +88,48 @@ public class SSHInputHandler extends AbstractHandler {
             MessageContext input = jobExecutionContext.getInMessageContext();
             Set<String> parameters = input.getParameters().keySet();
             for (String paramName : parameters) {
-                ActualParameter actualParameter = (ActualParameter) input.getParameters().get(paramName);
-                String paramValue = MappingFactory.toString(actualParameter);
+                InputDataObjectType inputParamType = (InputDataObjectType) input.getParameters().get(paramName);
+                String paramValue = inputParamType.getValue();
                 //TODO: Review this with type
-                if ("URI".equals(actualParameter.getType().getType().toString())) {
-                	if (index < oldIndex) {
+                if (inputParamType.getType() == DataType.URI) {
+                    if (index < oldIndex) {
                         log.info("Input File: " + paramValue + " is already transfered, so we skip this operation !!!");
-                        ((URIParameterType) actualParameter.getType()).setValue(oldFiles.get(index));
+                        inputParamType.setValue(oldFiles.get(index));
                         data.append(oldFiles.get(index++)).append(","); // we get already transfered file and increment the index
-                    }else{
-                	String stageInputFile = stageInputFiles(cluster,jobExecutionContext, paramValue);
-                    ((URIParameterType) actualParameter.getType()).setValue(stageInputFile);
-                    StringBuffer temp = new StringBuffer(data.append(stageInputFile).append(",").toString());
-                    
-                    status.setTransferState(TransferState.UPLOAD);
-                    detail.setTransferStatus(status);
-                    detail.setTransferDescription("Input Data Staged: " + stageInputFile);
-                    registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
-                    GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
-                    }
-                } else if ("URIArray".equals(actualParameter.getType().getType().toString())) {
-                	if (index < oldIndex) {
-                        log.info("Input File: " + paramValue + " is already transfered, so we skip this operation !!!");
-                        ((URIParameterType) actualParameter.getType()).setValue(oldFiles.get(index));
-                        data.append(oldFiles.get(index++)).append(","); // we get already transfered file and increment the index
-                    }else{
-                	List<String> split = Arrays.asList(StringUtil.getElementsFromString(paramValue));
-                    List<String> newFiles = new ArrayList<String>();
-                    for (String paramValueEach : split) {
-                        String stageInputFiles = stageInputFiles(cluster,jobExecutionContext, paramValueEach);
+                    } else {
+                        String stageInputFile = stageInputFiles(cluster, jobExecutionContext, paramValue);
+                        inputParamType.setValue(stageInputFile);
+                        StringBuffer temp = new StringBuffer(data.append(stageInputFile).append(",").toString());
                         status.setTransferState(TransferState.UPLOAD);
                         detail.setTransferStatus(status);
-                        detail.setTransferDescription("Input Data Staged: " + stageInputFiles);
+                        detail.setTransferDescription("Input Data Staged: " + stageInputFile);
                         registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
-                        newFiles.add(stageInputFiles);
-                        StringBuffer temp = new StringBuffer(data.append(stageInputFiles).append(",").toString());
+
                         GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
                     }
-                    ((URIArrayType) actualParameter.getType()).setValueArray(newFiles.toArray(new String[newFiles.size()]));
-                    }
-                }
-                inputNew.getParameters().put(paramName, actualParameter);
+                }// FIXME: what is the thrift model DataType equivalent for URIArray type?
+//                else if ("URIArray".equals(actualParameter.getType().getType().toString())) {
+//                	if (index < oldIndex) {
+//                        log.info("Input File: " + paramValue + " is already transfered, so we skip this operation !!!");
+//                        ((URIParameterType) actualParameter.getType()).setValue(oldFiles.get(index));
+//                        data.append(oldFiles.get(index++)).append(","); // we get already transfered file and increment the index
+//                    }else{
+//                	List<String> split = Arrays.asList(StringUtil.getElementsFromString(paramValue));
+//                    List<String> newFiles = new ArrayList<String>();
+//                    for (String paramValueEach : split) {
+//                        String stageInputFiles = stageInputFiles(cluster,jobExecutionContext, paramValueEach);
+//                        status.setTransferState(TransferState.UPLOAD);
+//                        detail.setTransferStatus(status);
+//                        detail.setTransferDescription("Input Data Staged: " + stageInputFiles);
+//                        registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+//                        newFiles.add(stageInputFiles);
+//                        StringBuffer temp = new StringBuffer(data.append(stageInputFiles).append(",").toString());
+//                        GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
+//                    }
+//                    ((URIArrayType) actualParameter.getType()).setValueArray(newFiles.toArray(new String[newFiles.size()]));
+//                    }
+//                }
+                inputNew.getParameters().put(paramName, inputParamType);
             }
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -145,11 +147,10 @@ public class SSHInputHandler extends AbstractHandler {
     }
 
     private static String stageInputFiles(Cluster cluster, JobExecutionContext jobExecutionContext, String paramValue) throws IOException, GFacException {
-        ApplicationDeploymentDescriptionType app = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getType();
         int i = paramValue.lastIndexOf(File.separator);
         String substring = paramValue.substring(i + 1);
         try {
-            String targetFile = app.getInputDataDirectory() + File.separator + substring;
+            String targetFile = jobExecutionContext.getInputDir() + File.separator + substring;
             if(paramValue.startsWith("scp:")){
             	paramValue = paramValue.substring(paramValue.indexOf(":") + 1, paramValue.length());
             	cluster.scpThirdParty(paramValue, targetFile);

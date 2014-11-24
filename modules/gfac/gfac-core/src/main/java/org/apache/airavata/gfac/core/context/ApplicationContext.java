@@ -21,37 +21,47 @@
 
 package org.apache.airavata.gfac.core.context;
 
-import org.apache.airavata.commons.gfac.type.ApplicationDescription;
-import org.apache.airavata.commons.gfac.type.HostDescription;
-import org.apache.airavata.commons.gfac.type.ServiceDescription;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
+import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 
 public class ApplicationContext extends AbstractContext {
+    private ApplicationDeploymentDescription applicationDeploymentDescription;
+    private ComputeResourceDescription computeResourceDescription;
+    private ApplicationInterfaceDescription applicationInterfaceDescription;
+    private ComputeResourcePreference computeResourcePreference;
 
-    private ApplicationDescription applicationDeploymentDescription;
-    private ServiceDescription serviceDescription;
-    private HostDescription hostDescription;
-
-    public ApplicationDescription getApplicationDeploymentDescription() {
+    public ApplicationDeploymentDescription getApplicationDeploymentDescription() {
         return applicationDeploymentDescription;
     }
 
-    public <T extends ApplicationDescription> void setApplicationDeploymentDescription(T applicationDeploymentDescription) {
+    public void setApplicationDeploymentDescription(ApplicationDeploymentDescription applicationDeploymentDescription) {
         this.applicationDeploymentDescription = applicationDeploymentDescription;
     }
 
-    public <T extends ServiceDescription> void setServiceDescription(T serviceDescription) {
-        this.serviceDescription = serviceDescription;
+    public ComputeResourceDescription getComputeResourceDescription() {
+        return computeResourceDescription;
     }
 
-    public <T extends HostDescription> void setHostDescription(T hostDescription) {
-        this.hostDescription = hostDescription;
+    public void setComputeResourceDescription(ComputeResourceDescription computeResourceDescription) {
+        this.computeResourceDescription = computeResourceDescription;
     }
 
-    public ServiceDescription getServiceDescription() {
-        return serviceDescription;
+    public ApplicationInterfaceDescription getApplicationInterfaceDescription() {
+        return applicationInterfaceDescription;
     }
 
-    public HostDescription getHostDescription() {
-        return hostDescription;
+    public void setApplicationInterfaceDescription(ApplicationInterfaceDescription applicationInterfaceDescription) {
+        this.applicationInterfaceDescription = applicationInterfaceDescription;
+    }
+
+    public ComputeResourcePreference getComputeResourcePreference() {
+        return computeResourcePreference;
+    }
+
+    public void setComputeResourcePreference(ComputeResourcePreference computeResourcePreference) {
+        this.computeResourcePreference = computeResourcePreference;
     }
 }

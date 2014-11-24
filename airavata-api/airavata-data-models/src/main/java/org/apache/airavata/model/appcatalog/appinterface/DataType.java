@@ -36,7 +36,9 @@ import org.apache.thrift.TEnum;
   STRING(0),
   INTEGER(1),
   FLOAT(2),
-  URI(3);
+  URI(3),
+  STDOUT(4),
+  STDERR(5);
 
   private final int value;
 
@@ -65,6 +67,10 @@ import org.apache.thrift.TEnum;
         return FLOAT;
       case 3:
         return URI;
+      case 4:
+        return STDOUT;
+      case 5:
+        return STDERR;
       default:
         return null;
     }

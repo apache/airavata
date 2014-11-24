@@ -25,7 +25,6 @@ import org.apache.airavata.common.logger.AiravataLogger;
 import org.apache.airavata.common.logger.AiravataLoggerFactory;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.GFacHandler;
@@ -34,13 +33,8 @@ import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.monitor.HostMonitorData;
 import org.apache.airavata.gfac.monitor.UserMonitorData;
 import org.apache.airavata.gfac.monitor.exception.AiravataMonitorException;
-import org.apache.airavata.schemas.gfac.GsisshHostType;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.ZooKeeper;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.zookeeper.*;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -53,37 +47,12 @@ import java.util.concurrent.CountDownLatch;
 public class CommonUtils {
     private final static AiravataLogger logger = AiravataLoggerFactory.getLogger(CommonUtils.class);
 
-    public static boolean isPBSHost(HostDescription host){
-        if("pbs".equals(((GsisshHostType)host.getType()).getJobManager()) ||
-                "".equals(((GsisshHostType)host.getType()).getJobManager())){
-         return true;
-        }else{
-            // default is pbs so we return true
-            return false;
-        }
-    }
-    public static boolean isSlurm(HostDescription host){
-        if("slurm".equals(((GsisshHostType)host.getType()).getJobManager())){
-         return true;
-        }else{
-            // default is pbs so we return true
-            return false;
-        }
-    }
-    public static boolean isSGE(HostDescription host){
-        if("sge".equals(((GsisshHostType)host.getType()).getJobManager())){
-         return true;
-        }else{
-            // default is pbs so we return true
-            return false;
-        }
-    }
     public static String getChannelID(MonitorID monitorID) {
-        return monitorID.getUserName() + "-" + monitorID.getHost().getType().getHostName();
+        return monitorID.getUserName() + "-" + monitorID.getComputeResourceDescription().getHostName();
     }
 
     public static String getRoutingKey(MonitorID monitorID) {
-        return "*." + monitorID.getUserName() + "." + monitorID.getHost().getType().getHostAddress();
+        return "*." + monitorID.getUserName() + "." + monitorID.getComputeResourceDescription().getIpAddresses().get(0);
     }
 
     public static String getChannelID(String userName,String hostAddress) {
@@ -94,7 +63,7 @@ public class CommonUtils {
         return "*." + userName + "." + hostAddress;
     }
 
-    public static void addMonitortoQueue(BlockingQueue<UserMonitorData> queue, MonitorID monitorID) throws AiravataMonitorException {
+    public static void addMonitortoQueue(BlockingQueue<UserMonitorData> queue, MonitorID monitorID, JobExecutionContext jobExecutionContext) throws AiravataMonitorException {
         synchronized (queue) {
             Iterator<UserMonitorData> iterator = queue.iterator();
             while (iterator.hasNext()) {
@@ -103,7 +72,7 @@ public class CommonUtils {
                     // then this is the right place to update
                     List<HostMonitorData> monitorIDs = next.getHostMonitorData();
                     for (HostMonitorData host : monitorIDs) {
-                        if (host.getHost().toXML().equals(monitorID.getHost().toXML())) {
+                        if (isEqual(host.getComputeResourceDescription(), monitorID.getComputeResourceDescription())) {
                             // ok we found right place to add this monitorID
                             host.addMonitorIDForHost(monitorID);
                             logger.debugId(monitorID.getJobID(), "Added new job to the monitoring queue, experiment {}," +
@@ -113,7 +82,7 @@ public class CommonUtils {
                     }
                     // there is a userMonitor object for this user name but no Hosts for this host
                     // so we have to create new Hosts
-                    HostMonitorData hostMonitorData = new HostMonitorData(monitorID.getHost());
+                    HostMonitorData hostMonitorData = new HostMonitorData(jobExecutionContext);
                     hostMonitorData.addMonitorIDForHost(monitorID);
                     next.addHostMonitorData(hostMonitorData);
                     logger.debugId(monitorID.getJobID(), "Added new job to the monitoring queue, experiment {}," +
@@ -121,7 +90,7 @@ public class CommonUtils {
                     return;
                 }
             }
-            HostMonitorData hostMonitorData = new HostMonitorData(monitorID.getHost());
+            HostMonitorData hostMonitorData = new HostMonitorData(jobExecutionContext);
             hostMonitorData.addMonitorIDForHost(monitorID);
 
             UserMonitorData userMonitorData = new UserMonitorData(monitorID.getUserName());
@@ -135,11 +104,18 @@ public class CommonUtils {
             }
         }
     }
+
+    private static boolean isEqual(ComputeResourceDescription comRes_1, ComputeResourceDescription comRes_2) {
+        return comRes_1.getComputeResourceId().equals(comRes_2.getComputeResourceId()) &&
+                comRes_1.getHostName().equals(comRes_2.getHostName());
+    }
+
     public static boolean isTheLastJobInQueue(BlockingQueue<MonitorID> queue,MonitorID monitorID){
         Iterator<MonitorID> iterator = queue.iterator();
         while(iterator.hasNext()){
             MonitorID next = iterator.next();
-            if(monitorID.getUserName().equals(next.getUserName()) && CommonUtils.isEqual(monitorID.getHost(), next.getHost())){
+            if (monitorID.getUserName().equals(next.getUserName()) &&
+                    CommonUtils.isEqual(monitorID.getComputeResourceDescription(), next.getComputeResourceDescription())) {
                 return false;
             }
         }
@@ -148,7 +124,6 @@ public class CommonUtils {
 
     /**
      * This method doesn't have to be synchronized because it will be invoked by HPCPullMonitor which already synchronized
-     * @param queue
      * @param monitorID
      * @throws AiravataMonitorException
      */
@@ -159,7 +134,7 @@ public class CommonUtils {
                     Iterator<HostMonitorData> iterator1 = hostMonitorData.iterator();
                     while (iterator1.hasNext()) {
                         HostMonitorData iHostMonitorID = iterator1.next();
-                        if (iHostMonitorID.getHost().toXML().equals(monitorID.getHost().toXML())) {
+                        if (isEqual(iHostMonitorID.getComputeResourceDescription(), monitorID.getComputeResourceDescription())) {
                             Iterator<MonitorID> iterator2 = iHostMonitorID.getMonitorIDs().iterator();
                             while (iterator2.hasNext()) {
                                 MonitorID iMonitorID = iterator2.next();
@@ -170,11 +145,7 @@ public class CommonUtils {
                                     iterator2.remove();
                                     logger.infoId(monitorID.getJobID(), "Removed the jobId: {} JobName: {} from monitoring last " +
                                             "status:{}", monitorID.getJobID(),monitorID.getJobName(), monitorID.getStatus().toString());
-                                    if (iHostMonitorID.getMonitorIDs().size() == 0) {
-                                        iterator1.remove();
-                                        logger.debug("Removed host {} from monitoring queue", iHostMonitorID.getHost()
-                                                .getType().getHostAddress());
-                                    }
+
                                     return;
                                 }
                             }
@@ -184,22 +155,6 @@ public class CommonUtils {
         logger.info("Cannot find the given MonitorID in the queue with userName " +
                 monitorID.getUserName() + "  and jobID " + monitorID.getJobID());
         logger.info("This might not be an error because someone else removed this job from the queue");
-    }
-
-    public static boolean isEqual(HostDescription host1,HostDescription host2) {
-        if ((host1.getType() instanceof GsisshHostType) && (host2.getType() instanceof GsisshHostType)) {
-            GsisshHostType hostType1 = (GsisshHostType)host1.getType();
-            GsisshHostType hostType2 = (GsisshHostType)host2.getType();
-            if(hostType1.getHostAddress().equals(hostType2.getHostAddress())
-                    && hostType1.getJobManager().equals(hostType2.getJobManager())
-                    && (hostType1.getPort() == hostType2.getPort())
-                    && hostType1.getMonitorMode().equals(hostType2.getMonitorMode())){
-                return true;
-            }
-        } else {
-            logger.error("This method is only impmlemented to handle Gsissh host types");
-        }
-        return false;
     }
 
     public static void invokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
@@ -321,7 +276,7 @@ public class CommonUtils {
      */
     public static String getJobCountUpdatePath(MonitorID monitorID){
         return new StringBuilder("/").append(Constants.STAT).append("/").append(monitorID.getUserName())
-                .append("/").append(monitorID.getHost().getType().getHostAddress()).append("/").append(Constants.JOB).toString();
+                .append("/").append(monitorID.getComputeResourceDescription().getHostName()).append("/").append(Constants.JOB).toString();
     }
 
     /**
