@@ -148,7 +148,7 @@ public class SSHOutputHandler extends AbstractHandler {
                         Thread.sleep(2000);
                     }
 
-                    if (outputList.size() == 0 || outputList.get(0).isEmpty() || outputList.size() > 0) {
+                    if (outputList.size() == 0 || outputList.get(0).isEmpty() || outputList.size() > 1) {
                         OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr, outputArray);
                         Set<String> strings = output.keySet();
                         outputArray.clear();
@@ -170,7 +170,7 @@ public class SSHOutputHandler extends AbstractHandler {
                         }
 
                         break;
-                    } else if (outputList.size() == 0) {//FIXME: Ultrascan case
+                    } else if (outputList.size() == 1) {//FIXME: Ultrascan case
                         String valueList = outputList.get(0);
                         cluster.scpFrom(jobExecutionContext.getOutputDir() + File.separator + valueList, outputDataDir);
                         String outputPath = outputDataDir + File.separator + valueList;
@@ -195,9 +195,9 @@ public class SSHOutputHandler extends AbstractHandler {
                 }
             }
             // FIXME: why we set standard error ouput and outputDirectory again ?
-//            app.setStandardError(localStdErrFile.getAbsolutePath());
-//            app.setStandardOutput(localStdOutFile.getAbsolutePath());
-//            app.setOutputDataDirectory(outputDataDir);
+            jobExecutionContext.setStandardError(localStdErrFile.getAbsolutePath());
+            jobExecutionContext.setStandardOutput(localStdOutFile.getAbsolutePath());
+            jobExecutionContext.setOutputDir(outputDataDir);
             status.setTransferState(TransferState.DOWNLOAD);
             detail.setTransferStatus(status);
             detail.setTransferDescription(outputDataDir);

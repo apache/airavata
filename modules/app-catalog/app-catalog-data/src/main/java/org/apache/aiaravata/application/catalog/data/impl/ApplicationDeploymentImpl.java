@@ -148,11 +148,15 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
 
             existingDep.save();
 
+            // remove existing module load commands
+            ModuleLoadCmdResource cmdResource = new ModuleLoadCmdResource();
+            Map<String, String> ids = new HashMap<String, String>();
+            ids.put(AbstractResource.ModuleLoadCmdConstants.APP_DEPLOYMENT_ID, deploymentId);
+            cmdResource.remove(ids);
             List<String> moduleLoadCmds = updatedDeployment.getModuleLoadCmds();
             if (moduleLoadCmds != null && !moduleLoadCmds.isEmpty()){
                 for (String cmd : moduleLoadCmds){
-                    ModuleLoadCmdResource cmdResource = new ModuleLoadCmdResource();
-                    Map<String, String> ids = new HashMap<String, String>();
+                    ids = new HashMap<String, String>();
                     ids.put(AbstractResource.ModuleLoadCmdConstants.APP_DEPLOYMENT_ID, deploymentId);
                     ids.put(AbstractResource.ModuleLoadCmdConstants.CMD, cmd);
                     if (cmdResource.isExists(ids)){
@@ -160,14 +164,20 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
                     }
                     cmdResource.setCmd(cmd);
                     cmdResource.setAppDeploymentResource(existingDep);
+                    cmdResource.setAppDeploymentId(deploymentId);
                     cmdResource.save();
                 }
             }
+
+            // remove existing lib prepand paths
+            LibraryPrepandPathResource prepandPathResource = new LibraryPrepandPathResource();
+            ids = new HashMap<String, String>();
+            ids.put(AbstractResource.LibraryPrepandPathConstants.DEPLOYMENT_ID, deploymentId);
+            prepandPathResource.remove(ids);
             List<SetEnvPaths> libPrependPaths = updatedDeployment.getLibPrependPaths();
             if (libPrependPaths != null && !libPrependPaths.isEmpty()){
                 for (SetEnvPaths path : libPrependPaths){
-                    LibraryPrepandPathResource prepandPathResource = new LibraryPrepandPathResource();
-                    Map<String, String> ids = new HashMap<String, String>();
+                    ids = new HashMap<String, String>();
                     ids.put(AbstractResource.LibraryPrepandPathConstants.DEPLOYMENT_ID, deploymentId);
                     ids.put(AbstractResource.LibraryPrepandPathConstants.NAME, path.getName());
                     if (prepandPathResource.isExists(ids)){
@@ -182,10 +192,14 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             }
 
             List<SetEnvPaths> libApendPaths = updatedDeployment.getLibAppendPaths();
+            // remove lib append paths
+            LibraryApendPathResource apendPathResource = new LibraryApendPathResource();
+            ids = new HashMap<String, String>();
+            ids.put(AbstractResource.LibraryApendPathConstants.DEPLOYMENT_ID, deploymentId);
+            apendPathResource.remove(ids);
             if (libApendPaths != null && !libApendPaths.isEmpty()){
                 for (SetEnvPaths path : libApendPaths){
-                    LibraryApendPathResource apendPathResource = new LibraryApendPathResource();
-                    Map<String, String> ids = new HashMap<String, String>();
+                    ids = new HashMap<String, String>();
                     ids.put(AbstractResource.LibraryApendPathConstants.DEPLOYMENT_ID, deploymentId);
                     ids.put(AbstractResource.LibraryApendPathConstants.NAME, path.getName());
                     if (apendPathResource.isExists(ids)){
@@ -200,10 +214,14 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             }
 
             List<SetEnvPaths> setEnvironment = updatedDeployment.getSetEnvironment();
+            // remove existing setEnvPaths
+            AppEnvironmentResource environmentResource = new AppEnvironmentResource();
+            ids = new HashMap<String, String>();
+            ids.put(AbstractResource.AppEnvironmentConstants.DEPLOYMENT_ID, deploymentId);
+            environmentResource.remove(ids);
             if (setEnvironment != null && !setEnvironment.isEmpty()){
                 for (SetEnvPaths path : setEnvironment){
-                    AppEnvironmentResource environmentResource = new AppEnvironmentResource();
-                    Map<String, String> ids = new HashMap<String, String>();
+                    ids = new HashMap<String, String>();
                     ids.put(AbstractResource.AppEnvironmentConstants.DEPLOYMENT_ID, deploymentId);
                     ids.put(AbstractResource.AppEnvironmentConstants.NAME, path.getName());
                     if (environmentResource.isExists(ids)){

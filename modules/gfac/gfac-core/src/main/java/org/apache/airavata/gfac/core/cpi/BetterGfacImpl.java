@@ -301,6 +301,9 @@ public class BetterGfacImpl implements GFac,Watcher {
         jobExecutionContext.setInMessageContext(new MessageContext(GFacUtils.getInputParamMap(experimentInputs)));
 
         List<OutputDataObjectType> outputData = experiment.getExperimentOutputs();
+        if (outputData == null || outputData.isEmpty() ){
+            outputData = applicationInterface.getApplicationOutputs();
+        }
         jobExecutionContext.setOutMessageContext(new MessageContext(GFacUtils.getOuputParamMap(outputData)));
 
         jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);

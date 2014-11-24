@@ -59,8 +59,10 @@ public class ModuleLoadCmdResource extends AbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(MODULE_LOAD_CMD);
-            generator.setParameter(ModuleLoadCmdConstants.CMD, ids.get(ModuleLoadCmdConstants.CMD));
             generator.setParameter(ModuleLoadCmdConstants.APP_DEPLOYMENT_ID, ids.get(ModuleLoadCmdConstants.APP_DEPLOYMENT_ID));
+            if (ids.get(ModuleLoadCmdConstants.CMD) != null){
+                generator.setParameter(ModuleLoadCmdConstants.CMD, ids.get(ModuleLoadCmdConstants.CMD));
+            }
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();

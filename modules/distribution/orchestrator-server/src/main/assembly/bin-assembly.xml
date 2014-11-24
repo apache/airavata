@@ -109,48 +109,14 @@
 			<outputDirectory>bin</outputDirectory>
 			<includes>
 				<include>airavata-server.properties</include>
-				<include>zoo.cfg</include>
-				<include>registry.properties</include>
 				<include>log4j.properties</include>
-				<include>host.xml</include>
-				<include>persistence.xml</include>
-				<include>provenance.sql</include>
-				<include>gfac-config.xml</include>
-				<include>PBSTemplate.xslt</include>
-				<include>SLURMTemplate.xslt</include>
-				<include>SGETemplate.xslt</include>
-				<include>gsissh.properties</include>
 			</includes>
 		</fileSet>
-
-		<!-- ********************** Copy Axis2 startup scripts to stand alone server 
-			********************** -->
-		<fileSet>
-			<directory>src/main/resources/axis2-standalone-bin</directory>
-			<outputDirectory>bin</outputDirectory>
-			<fileMode>777</fileMode>
-			<includes>
-				<include>*.sh</include>
-				<include>*.bat</include>
-			</includes>
-		</fileSet>
-
 		<fileSet>
 			<directory>src/main/resources/conf</directory>
 			<outputDirectory>bin</outputDirectory>
 			<includes>
 				<include>**/*</include>
-			</includes>
-		</fileSet>
-
-		<!-- ********************** Copy samples ********************** -->
-		<fileSet>
-			<directory>${project.build.directory}/samples/applications
-			</directory>
-			<outputDirectory>samples</outputDirectory>
-			<includes>
-				<include>*.sh</include>
-				<include>*.bat</include>
 			</includes>
 		</fileSet>
 
