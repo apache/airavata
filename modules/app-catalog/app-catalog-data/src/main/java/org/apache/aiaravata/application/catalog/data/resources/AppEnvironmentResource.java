@@ -93,7 +93,10 @@ public class AppEnvironmentResource extends AbstractResource {
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator= new AppCatalogQueryGenerator(APP_ENVIRONMENT);
             generator.setParameter(AppEnvironmentConstants.DEPLOYMENT_ID, ids.get(AppEnvironmentConstants.DEPLOYMENT_ID));
-            generator.setParameter(AppEnvironmentConstants.NAME, ids.get(AppEnvironmentConstants.NAME));
+            if (ids.get(AppEnvironmentConstants.NAME) != null){
+                generator.setParameter(AppEnvironmentConstants.NAME, ids.get(AppEnvironmentConstants.NAME));
+            }
+
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();

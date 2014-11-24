@@ -41,6 +41,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import org.apache.airavata.common.exception.UtilsException;
+import org.apache.airavata.common.utils.JSONUtil;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.component.Component;
@@ -174,7 +175,8 @@ public class Workflow implements Cloneable {
     public Workflow(String workflowString) throws GraphException, ComponentException {
         this();
         try {
-            XmlElement workflowElement = XMLUtil.stringToXmlElement(workflowString);
+//            XmlElement workflowElement = XMLUtil.stringToXmlElement(workflowString);
+            JsonObject workflowElement = JSONUtil.stringToJSONObject(workflowString);
             parse(workflowElement);
         } catch (RuntimeException e) {
             throw new GraphException(e);
