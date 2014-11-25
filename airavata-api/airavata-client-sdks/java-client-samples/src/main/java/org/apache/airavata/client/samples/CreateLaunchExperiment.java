@@ -57,11 +57,6 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client airavataClient;
 
-<<<<<<< HEAD
-    private static String echoAppId = "Echo_7405adc7-9519-4478-8529-21846b837cd3";
-    private static String wrfAppId = "WRF_d41bdc86-e280-4eb6-a045-708f69a8c116";
-    private static String amberAppId = "Amber_b23ee051-90d6-4892-827e-622a2f6c95ee";
-=======
     private static String echoAppId = "Echo_36fbb479-5b41-4f48-a9c5-382ee910ac6b";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
     private static String amberAppId = "Amber_49b16f6f-93ab-4885-9971-6ab2ab5eb3d3";
@@ -71,7 +66,6 @@ public class CreateLaunchExperiment {
     private static String nwchemAppId = "NWChem_2c8fee64-acf9-4a89-b6d3-91eb53c7640c";
     private static String trinityAppId = "Trinity_e894acf5-9bca-46e8-a1bd-7e2d5155191a";
     private static String autodockAppId = "AutoDock_43d9fdd0-c404-49f4-b913-3abf9080a8c9";
->>>>>>> f348ef4c59c7f6a8c0fa347bde5b203ae17f7dde
 
 
     private static String localHost = "localhost";
@@ -225,17 +219,6 @@ public class CreateLaunchExperiment {
     
     public static String createEchoExperimentForFSD(Airavata.Client client) throws TException {
         try {
-<<<<<<< HEAD
-        	// these are template variables and do not need to have values, as it is a data model.
-            List<DataObjectType> exInputs = new ArrayList<DataObjectType>();
-            DataObjectType i1 = new DataObjectType();
-            i1.setKey("i1");
-            i1.setType(DataType.STRING);
-            i1.setValue("Test echo output");
-            exInputs.add(i1);
-            DataObjectType i2 = new DataObjectType();
-            i2.setKey("i2");
-=======
             List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
             InputDataObjectType input = new InputDataObjectType();
             input.setName("Input_to_Echo");
@@ -244,22 +227,15 @@ public class CreateLaunchExperiment {
             exInputs.add(input);
             InputDataObjectType i2 = new InputDataObjectType();
             i2.setName("Input_to_Echo1");
->>>>>>> f348ef4c59c7f6a8c0fa347bde5b203ae17f7dde
             i2.setType(DataType.URI);
-            i2.setValue("http://textfiles.com/art/152614.txt");
+            i2.setValue("http://shrib.com/22QmrrX4");
             exInputs.add(i2);
 
-<<<<<<< HEAD
-            List<DataObjectType> exOut = new ArrayList<DataObjectType>();
-            DataObjectType output = new DataObjectType();
-            output.setKey("o1");
-=======
             List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
             OutputDataObjectType output = new OutputDataObjectType();
             output.setName("Echoed_Output");
->>>>>>> f348ef4c59c7f6a8c0fa347bde5b203ae17f7dde
             output.setType(DataType.STRING);
-            output.setValue("152614.txt");
+            output.setValue("22QmrrX4");
             exOut.add(output);
             
             
