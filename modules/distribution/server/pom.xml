@@ -314,21 +314,21 @@
             <artifactId>airavata-gfac-ssh</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-gram</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.apache.airavata</groupId>-->
+            <!--<artifactId>airavata-gfac-gram</artifactId>-->
+            <!--<version>${project.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-gfac-stubs</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-bes</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.apache.airavata</groupId>-->
+            <!--<artifactId>airavata-gfac-bes</artifactId>-->
+            <!--<version>${project.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-gfac-gsissh</artifactId>
@@ -344,11 +344,11 @@
             <artifactId>airavata-gfac-local</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-hadoop</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.apache.airavata</groupId>-->
+            <!--<artifactId>airavata-gfac-hadoop</artifactId>-->
+            <!--<version>${project.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-gfac-core</artifactId>
