@@ -105,7 +105,7 @@ public class LocalProvider extends AbstractProvider {
     public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException,GFacException {
     	super.initialize(jobExecutionContext);
 
-        buildCommand(jobExecutionContext.getExecutablePath(), ProviderUtils.getInputParameters(jobExecutionContext));
+        buildCommand(jobExecutionContext.getExecutablePath(), ProviderUtils.getInputParameterValues(jobExecutionContext));
         initProcessBuilder(jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription());
 
         // extra environment variables

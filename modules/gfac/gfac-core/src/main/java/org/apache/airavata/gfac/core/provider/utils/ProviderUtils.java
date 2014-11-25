@@ -24,6 +24,7 @@ package org.apache.airavata.gfac.core.provider.utils;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,19 @@ public class ProviderUtils {
             parameters.add(inputParam);
         }
         return parameters;
+    }
+
+    public static List<String> getInputParameterValues(JobExecutionContext jobExecutionContext) {
+        List<String> paramValues = new ArrayList<String>();
+        Map<String, Object> paramMap = jobExecutionContext.getInMessageContext().getParameters();
+        InputDataObjectType inputDataObjectType;
+        for (Map.Entry<String, Object> entry : paramMap.entrySet()) {
+            if (entry.getValue() instanceof InputDataObjectType) {
+                inputDataObjectType = (InputDataObjectType) entry.getValue();
+                paramValues.add(inputDataObjectType.getValue());
+            }
+        }
+        return paramValues;
     }
 
 }
