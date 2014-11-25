@@ -105,6 +105,15 @@
 			</includes>
 		</fileSet>
 		<fileSet>
+			<directory>src/main/resources/samples</directory>
+			<outputDirectory>samples</outputDirectory>
+			<fileMode>777</fileMode>
+			<includes>
+				<include>*.sh</include>
+				<include>**/*.sh</include>
+			</includes>
+		</fileSet>
+		<fileSet>
 			<directory>${project.build.directory}/conf</directory>
 			<outputDirectory>bin</outputDirectory>
 			<includes>
