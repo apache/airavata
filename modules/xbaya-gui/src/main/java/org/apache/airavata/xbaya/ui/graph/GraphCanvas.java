@@ -163,17 +163,22 @@ public class GraphCanvas implements XBayaExecutionModeListener{
      *            The XBayaEngine
      */
     public GraphCanvas(XBayaEngine engine) {
+        this(engine, null);
+    }
 
+    public GraphCanvas(XBayaEngine engine, String workflowName) {
         this.engine = engine;
-
         this.listeners = new LinkedList<GraphCanvasListener>();
-
         // To avoid null check. Do not call newWorkflow() here because something
         // are not initialized yet at this point.
         this.workflow = new Workflow();
         this.graph = this.workflow.getGraph();
         engine.getConfiguration().registerExecutionModeChangeListener(this);
-        graph.setName(generateNewWorkflowName());
+        if (workflowName == null) {
+            graph.setName(generateNewWorkflowName());
+        } else {
+            graph.setName(workflowName);
+        }
         initGUI();
         executionModeChanged(engine.getConfiguration());
     }
@@ -263,6 +268,9 @@ public class GraphCanvas implements XBayaExecutionModeListener{
         notifyListeners(new GraphCanvasEvent(GraphCanvasEvent.GraphCanvasEventType.NAME_CHANGED, this, this.workflow));
     }
 
+    public void setDescription(String description) {
+        this.workflow.setDescription(description);
+    }
     /**
      * Creates a new Node from a specified Component and adds it.
      * 
