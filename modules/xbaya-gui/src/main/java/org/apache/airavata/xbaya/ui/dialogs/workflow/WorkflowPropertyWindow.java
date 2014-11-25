@@ -23,6 +23,7 @@ package org.apache.airavata.xbaya.ui.dialogs.workflow;
 
 import java.awt.event.ActionEvent;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -80,38 +81,32 @@ public class WorkflowPropertyWindow {
      * Shows the dialog.
      */
     public void show() {
-        this.workflow = this.xbayaGUI.getWorkflow();
+//        this.workflow = this.xbayaGUI.getWorkflow();
 
-        String name = this.workflow.getName();
+//        String name = this.workflow.getName();
+        String name = generateNewWorkflowName();
         this.nameTextField.setText(name);
 
-        String description = this.workflow.getDescription();
+        String description = "Airavata workflow";
         this.descriptionTextArea.setText(description);
-
-        URI templateID = this.workflow.getUniqueWorkflowName();
-        if (templateID == null) {
-            this.templateIDField.setText("");
-        } else {
-            this.templateIDField.setText(templateID.toString());
-        }
-
-        URI instanceID = this.workflow.getGPELInstanceID();
-        if (instanceID == null) {
-            this.instanceIDField.setText("");
-        } else {
-            this.instanceIDField.setText(instanceID.toString());
-        }
-
-//        XmlElement metadata = this.workflow.getMetadata();
-//        String metadataText;
-//        if (metadata == null) {
-//            metadataText = WSConstants.EMPTY_APPINFO;
-//        } else {
-//            metadataText = XMLUtil.xmlElementToString(metadata);
-//        }
-//        this.metadataTextArea.setText(metadataText);
-
         this.dialog.show();
+    }
+    private String generateNewWorkflowName() {
+        String baseName="Workflow";
+        List<String> existingNames=new ArrayList<String>();
+        if (this.xbayaGUI != null) {
+            List<GraphCanvas> graphCanvases = this.xbayaGUI.getGraphCanvases();
+            for (GraphCanvas graphCanvas : graphCanvases) {
+                existingNames.add(graphCanvas.getWorkflow().getName());
+            }
+        }
+        int i=1;
+        String newName=baseName+i;
+        while(existingNames.contains(newName)){
+            i++;
+            newName=baseName+i;
+        }
+        return newName;
     }
 
     /**
@@ -138,29 +133,7 @@ public class WorkflowPropertyWindow {
         String name = this.nameTextField.getText();
         if (name != null && name.equals(StringUtil.convertToJavaIdentifier(name)) && (!isWorkflowNameAlreadyPresent(name))) {
             String description = this.descriptionTextArea.getText();
-//            String metadataText = this.metadataTextArea.getText();
-
-//            XmlElement metadata;
-//            if (metadataText.length() == 0) {
-//                metadata = null;
-//            } else {
-//                try {
-////                    metadata = XMLUtil.stringToXmlElement(metadataText);
-//                    JsonObject metadataObject = new JsonObject();
-//                    JsonObject appInfoObject = new JsonObject();
-//                    appInfoObject.add("data", JSONUtil.stringToJSONObject(metadataText));
-//
-//                    metadata = XMLUtil.stringToXmlElement(metadataText);
-//                } catch (RuntimeException e) {
-//                    String warning = "The metadata is ill-formed.";
-//                    this.xbayaGUI.getErrorWindow().error(warning, e);
-//                    return;
-//                }
-//            }
-
-            GraphCanvas graphCanvas = this.xbayaGUI.getGraphCanvas();
-            graphCanvas.setNameAndDescription(name, description);
-//            graphCanvas.getWorkflow().setMetadata(metadata);
+            this.xbayaGUI.getNewGraphCanvas(name, description);
             hide();
         } else {
             this.nameTextField.setText(StringUtil.convertToJavaIdentifier(name));
@@ -172,33 +145,15 @@ public class WorkflowPropertyWindow {
     private void initGui() {
         this.nameTextField = new XBayaTextField();
         XBayaLabel nameLabel = new XBayaLabel("Name", this.nameTextField);
-
-        this.templateIDField = new XBayaTextField();
-        this.templateIDField.setEditable(false);
-        XBayaLabel templateIDLabel = new XBayaLabel("Template ID", this.templateIDField);
-
-        this.instanceIDField = new XBayaTextField();
-        this.instanceIDField.setEditable(false);
-        XBayaLabel instanceIDLabel = new XBayaLabel("Instance ID", this.instanceIDField);
-
         this.descriptionTextArea = new XBayaTextArea();
         XBayaLabel descriptionLabel = new XBayaLabel("Description", this.descriptionTextArea);
-
-//        this.metadataTextArea = new XBayaTextArea();
-//        XBayaLabel metadataLabel = new XBayaLabel("Metadata", this.metadataTextArea);
 
         GridPanel mainPanel = new GridPanel();
         mainPanel.add(nameLabel);
         mainPanel.add(this.nameTextField);
-        mainPanel.add(templateIDLabel);
-        mainPanel.add(this.templateIDField);
-        mainPanel.add(instanceIDLabel);
-        mainPanel.add(this.instanceIDField);
         mainPanel.add(descriptionLabel);
         mainPanel.add(this.descriptionTextArea);
-//        mainPanel.add(metadataLabel);
-//        mainPanel.add(this.metadataTextArea);
-        mainPanel.layout(new double[] { 0, 0, 0, 0.5}, new double[] { 0, 1 });
+        mainPanel.layout(new double[] { 0, 0.5}, new double[] { 0, 1 });
 
         this.okButton = new JButton("OK");
         this.okButton.addActionListener(new AbstractAction() {

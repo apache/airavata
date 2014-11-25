@@ -52,6 +52,7 @@ import org.apache.airavata.common.utils.SwingUtil;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
+import org.apache.airavata.workflow.model.graph.Graph;
 import org.apache.airavata.workflow.model.graph.Node;
 import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.wf.Workflow;
@@ -256,55 +257,67 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
     public GraphCanvas newGraphCanvas(boolean focus) {
     	return newGraphCanvas(focus, false);
     }
-    
+
     /**
      * Creates a new graph tab.
-     * 
+     *
      * This method needs to be called by Swing event thread.
-     * 
+     *
      * @param focus
-     * 
+     *
      * @return The graph canvas created
      */
-    public GraphCanvas newGraphCanvas(boolean focus, boolean withID) {
-        GraphCanvas newGraphCanvas = new GraphCanvas(this.engine);
+    public GraphCanvas newGraphCanvas(boolean focus, boolean newFreshWorkflow) {
+        if (newFreshWorkflow) {
+            getWorkflowPropertyWindow().show();
+            return null;
+        } else {
+            GraphCanvas graphCanvas = getNewGraphCanvas(null, null);
+            if (focus) {
+                setFocus(graphCanvas);
+            }
+            return graphCanvas;
+        }
+    }
+
+    public GraphCanvas getNewGraphCanvas(String wfName, String wfDescription) {
+        GraphCanvas newGraphCanvas = new GraphCanvas(this.engine, wfName);
+        newGraphCanvas.setDescription(wfDescription);
         this.graphCanvases.add(newGraphCanvas);
         this.graphTabbedPane.addTab(newGraphCanvas.getWorkflow().getName(), newGraphCanvas.getSwingComponent());
-        final int index = graphTabbedPane.getTabCount()-1;
-		TabLabelButton tabLabelButton = new TabLabelButton(graphTabbedPane,"Close this workflow");
-		graphTabbedPane.setTabComponentAt(index, tabLabelButton); 
-		tabLabelButton.setCloseButtonListener(new ActionListener(){
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				removeGraphCanvasFromIndex(index);				
-			}
-		});
-        graphTabbedPane.addContainerListener(new ContainerListener(){
-
-			@Override
-			public void componentAdded(ContainerEvent event) {
-			}
-
-			@Override
-			public void componentRemoved(ContainerEvent event) {
-				List<GraphCanvas> graphCanvases = engine.getGUI().getGraphCanvases();
-				for (GraphCanvas graphCanvas : graphCanvases) {
-					if (graphCanvas.getSwingComponent()==event.getComponent()){
-						if (graphCanvas.isWorkflowChanged()){
-							setFocus(graphCanvas);
-							if (JOptionPane.showConfirmDialog(null, "The workflow '"+graphCanvas.getWorkflow().getName()+"' has been modified. Save changes?", "Save Workflow", JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION){
-								graphFiler.saveWorkflow(graphCanvas);
-							}
-						}
-						break;
-					}
-				}
-			}
-        	
+        final int index = graphTabbedPane.getTabCount() - 1;
+        TabLabelButton tabLabelButton = new TabLabelButton(graphTabbedPane, "Close this workflow");
+        graphTabbedPane.setTabComponentAt(index, tabLabelButton);
+        tabLabelButton.setCloseButtonListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                removeGraphCanvasFromIndex(index);
+            }
         });
-        if (focus) {
-            setFocus(newGraphCanvas);
-        }
+        graphTabbedPane.addContainerListener(new ContainerListener() {
+
+            @Override
+            public void componentAdded(ContainerEvent event) {
+            }
+
+            @Override
+            public void componentRemoved(ContainerEvent event) {
+                List<GraphCanvas> graphCanvases = engine.getGUI().getGraphCanvases();
+                for (GraphCanvas graphCanvas : graphCanvases) {
+                    if (graphCanvas.getSwingComponent() == event.getComponent()) {
+                        if (graphCanvas.isWorkflowChanged()) {
+                            setFocus(graphCanvas);
+                            if (JOptionPane.showConfirmDialog(null, "The workflow '" + graphCanvas.getWorkflow().getName() + "' has been modified. Save changes?", "Save Workflow", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                                graphFiler.saveWorkflow(graphCanvas);
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+
+        });
+
         newGraphCanvas.addGraphCanvasListener(this.componentViewer);
         newGraphCanvas.addGraphCanvasListener(this.portViewer);
         newGraphCanvas.addGraphCanvasListener(new GraphCanvasListener() {
@@ -314,54 +327,51 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
                 final GraphCanvas graphCanvas = event.getGraphCanvas();
                 final Workflow workflow = event.getWorkflow();
                 switch (type) {
-                case GRAPH_LOADED:
-                case NAME_CHANGED:
-                    SwingUtilities.invokeLater(new Runnable() {
-                        public void run() {
-                            String name = workflow.getName();
+                    case GRAPH_LOADED:
+                    case NAME_CHANGED:
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run() {
+                                String name = workflow.getName();
 
-                            // Change the name of the tab.
-                            updateTabTitle(graphCanvas, workflow);
+                                // Change the name of the tab.
+                                updateTabTitle(graphCanvas, workflow);
 
-                            // Change the name of the frame.
-                            setFrameName(name);
+                                // Change the name of the frame.
+                                setFrameName(name);
+                            }
+                        });
+                        break;
+                    case NODE_SELECTED:
+                    case INPUT_PORT_SELECTED:
+                    case OUTPUT_PORT_SELECTED:
+                        // Do nothing
+                    case WORKFLOW_CHANGED:
+                        updateTabTitle(graphCanvas, graphCanvas.getWorkflow());
+                        setFrameName(workflow.getName());
+                        for (ChangeListener listener : tabChangeListeners) {
+                            try {
+                                listener.stateChanged(null);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
-
-						
-                    });
-                    break;
-                case NODE_SELECTED:
-                case INPUT_PORT_SELECTED:
-                case OUTPUT_PORT_SELECTED:
-                    // Do nothing
-                case WORKFLOW_CHANGED:
-                	updateTabTitle(graphCanvas,graphCanvas.getWorkflow());
-                	setFrameName(workflow.getName());
-                	for (ChangeListener listener:tabChangeListeners){
-                		try{
-                			listener.stateChanged(null);
-                		}catch(Exception e){
-                			e.printStackTrace();
-                		}
-                	}
                 }
             }
+
             private void updateTabTitle(
-					final GraphCanvas graphCanvas,
-					final Workflow workflow) {
-				int index = XBayaGUI.this.graphTabbedPane.indexOfComponent(graphCanvas.getSwingComponent());
+                    final GraphCanvas graphCanvas,
+                    final Workflow workflow) {
+                int index = XBayaGUI.this.graphTabbedPane.indexOfComponent(graphCanvas.getSwingComponent());
                 String newTitle = workflow.getName();
-                if (graphCanvas.isWorkflowChanged()){
-                	newTitle="*"+newTitle;
+                if (graphCanvas.isWorkflowChanged()) {
+                    newTitle = "*" + newTitle;
                 }
-				XBayaGUI.this.graphTabbedPane.setTitleAt(index, newTitle);
-			}
+                XBayaGUI.this.graphTabbedPane.setTitleAt(index, newTitle);
+            }
         });
-        if (withID){
-        	getWorkflowPropertyWindow().show();
-        }
         return newGraphCanvas;
     }
+
 
     /**
      * @param graphCanvas
