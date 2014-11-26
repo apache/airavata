@@ -297,14 +297,18 @@ public class BetterGfacImpl implements GFac,Watcher {
         applicationContext.setComputeResourcePreference(gatewayResourcePreferences);
         jobExecutionContext.setApplicationContext(applicationContext);
 
-        List<InputDataObjectType> experimentInputs = experiment.getExperimentInputs();
-        jobExecutionContext.setInMessageContext(new MessageContext(GFacUtils.getInputParamMap(experimentInputs)));
 
-        List<OutputDataObjectType> outputData = experiment.getExperimentOutputs();
-        if (outputData == null || outputData.isEmpty() ){
-            outputData = applicationInterface.getApplicationOutputs();
+//        List<InputDataObjectType> experimentInputs = experiment.getExperimentInputs();
+//        jobExecutionContext.setInMessageContext(new MessageContext(GFacUtils.getInputParamMap(experimentInputs)));
+        List<InputDataObjectType> taskInputs = taskData.getApplicationInputs();
+        jobExecutionContext.setInMessageContext(new MessageContext(GFacUtils.getInputParamMap(taskInputs)));
+
+//        List<OutputDataObjectType> outputData = experiment.getExperimentOutputs();
+        List<OutputDataObjectType> taskOutputs = taskData.getApplicationOutputs();
+        if (taskOutputs == null || taskOutputs.isEmpty() ){
+            taskOutputs = applicationInterface.getApplicationOutputs();
         }
-        jobExecutionContext.setOutMessageContext(new MessageContext(GFacUtils.getOuputParamMap(outputData)));
+        jobExecutionContext.setOutMessageContext(new MessageContext(GFacUtils.getOuputParamMap(taskOutputs)));
 
         jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
         jobExecutionContext.setGfac(this);
