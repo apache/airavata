@@ -23,7 +23,7 @@ package org.apache.airavata.gfac.monitor.util;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openssl.PEMReader;
+
 
 import java.io.*;
 import java.security.*;
@@ -83,13 +83,13 @@ public class X509Helper {
         //System.out.println(privKeyPEM);
 
         // using BouncyCastle
-        PEMReader pemParser = new PEMReader(new StringReader(privKeyPEM));
-        Object object = pemParser.readObject();
-
-        PrivateKey privKey = null;
-        if(object instanceof KeyPair){
-            privKey = ((KeyPair)object).getPrivate();
-        }
+//        PEMReader pemParser = new PEMReader(new StringReader(privKeyPEM));
+//        Object object = pemParser.readObject();
+//
+//        PrivateKey privKey = null;
+//        if(object instanceof KeyPair){
+//            privKey = ((KeyPair)object).getPrivate();
+//        }
         // PEMParser from BouncyCastle is good for reading PEM files, but I didn't want to add that dependency
         /*
         // Base64 decode the data
@@ -103,16 +103,19 @@ public class X509Helper {
         */
         //System.out.println(privKey.toString());
 
-        KeyStore keyStore = KeyStore.getInstance("PKCS12");
-        keyStore.load(null,null);
+//        KeyStore keyStore = KeyStore.getInstance("PKCS12");
+//        keyStore.load(null,null);
+//
+//        KeyStore.PrivateKeyEntry entry =
+//            new KeyStore.PrivateKeyEntry(privKey,
+//                                         new java.security.cert.Certificate[] {(java.security.cert.Certificate)cert});
+//        KeyStore.PasswordProtection prot = new KeyStore.PasswordProtection(keyPassPhrase.toCharArray());
+//        keyStore.setEntry(cert.getSubjectX500Principal().getName(), entry, prot);
 
-        KeyStore.PrivateKeyEntry entry =
-            new KeyStore.PrivateKeyEntry(privKey,
-                                         new java.security.cert.Certificate[] {(java.security.cert.Certificate)cert});
-        KeyStore.PasswordProtection prot = new KeyStore.PasswordProtection(keyPassPhrase.toCharArray());
-        keyStore.setEntry(cert.getSubjectX500Principal().getName(), entry, prot);
+//        return keyStore;
+        //TODO: Problem with BouncyCastle version used in gsissh 
+        throw new CertificateException("Method not implemented");
 
-        return keyStore;
     }
 
 
