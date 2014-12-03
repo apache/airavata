@@ -39,6 +39,7 @@ import org.apache.airavata.gfac.local.utils.InputStreamToFileWriter;
 import org.apache.airavata.gfac.local.utils.InputUtils;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
@@ -105,7 +106,8 @@ public class LocalProvider extends AbstractProvider {
     public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException,GFacException {
     	super.initialize(jobExecutionContext);
 
-        buildCommand(jobExecutionContext.getExecutablePath(), ProviderUtils.getInputParameterValues(jobExecutionContext));
+        // build command with all inputs
+        buildCommand();
         initProcessBuilder(jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription());
 
         // extra environment variables
@@ -247,9 +249,23 @@ public class LocalProvider extends AbstractProvider {
     }
 
 
-    private void buildCommand(String executable, List<String> inputParameterList){
-        cmdList.add(executable);
-        cmdList.addAll(inputParameterList);
+    private void buildCommand() {
+        cmdList.add(jobExecutionContext.getExecutablePath());
+        Map<String, Object> inputParameters = jobExecutionContext.getInMessageContext().getParameters();
+        for (Object inputObject : inputParameters.values()) {
+            if (inputObject instanceof InputDataObjectType) {
+                InputDataObjectType inputDataObjectType = (InputDataObjectType) inputObject;
+                if (inputDataObjectType.getApplicationArgument() != null
+                        && !inputDataObjectType.getApplicationArgument().equals("")) {
+                    cmdList.add(inputDataObjectType.getApplicationArgument());
+                }
+
+                if (inputDataObjectType.getValue() != null
+                        && !inputDataObjectType.getValue().equals("")) {
+                    cmdList.add(inputDataObjectType.getValue());
+                }
+            }
+        }
     }
 
     private void initProcessBuilder(ApplicationDeploymentDescription app){

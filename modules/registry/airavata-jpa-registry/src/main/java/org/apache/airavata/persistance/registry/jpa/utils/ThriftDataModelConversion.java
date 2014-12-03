@@ -186,8 +186,8 @@ public class ThriftDataModelConversion {
                 ExperimentInputResource expInput = (ExperimentInputResource) object;
                 dataObjectType.setName(expInput.getExperimentKey());
                 dataObjectType.setValue(expInput.getValue());
-                if (expInput.getInputType() != null){
-                    dataObjectType.setType(DataType.valueOf(expInput.getInputType()));
+                if (expInput.getDataType() != null){
+                    dataObjectType.setType(DataType.valueOf(expInput.getDataType()));
                 }
                 dataObjectType.setMetaData(expInput.getMetadata());
                 return dataObjectType;
@@ -195,8 +195,8 @@ public class ThriftDataModelConversion {
                 NodeInputResource nodeInputResource = (NodeInputResource)object;
                 dataObjectType.setName(nodeInputResource.getInputKey());
                 dataObjectType.setValue(nodeInputResource.getValue());
-                if (nodeInputResource.getInputType() != null){
-                    dataObjectType.setType(DataType.valueOf(nodeInputResource.getInputType()));
+                if (nodeInputResource.getDataType() != null){
+                    dataObjectType.setType(DataType.valueOf(nodeInputResource.getDataType()));
                 }
                 dataObjectType.setMetaData(nodeInputResource.getMetadata());
                 return dataObjectType;
@@ -204,8 +204,8 @@ public class ThriftDataModelConversion {
                 ApplicationInputResource inputResource = (ApplicationInputResource)object;
                 dataObjectType.setName(inputResource.getInputKey());
                 dataObjectType.setValue(inputResource.getValue());
-                if (inputResource.getInputType() != null){
-                    dataObjectType.setType(DataType.valueOf(inputResource.getInputType()));
+                if (inputResource.getDataType() != null){
+                    dataObjectType.setType(DataType.valueOf(inputResource.getDataType()));
                 }
                 dataObjectType.setMetaData(inputResource.getMetadata());
                 return dataObjectType;
@@ -223,8 +223,8 @@ public class ThriftDataModelConversion {
                 ExperimentOutputResource expOutput = (ExperimentOutputResource)object;
                 dataObjectType.setName(expOutput.getExperimentKey());
                 dataObjectType.setValue(expOutput.getValue());
-                if (expOutput.getOutputType() != null){
-                    dataObjectType.setType(DataType.valueOf(expOutput.getOutputType()));
+                if (expOutput.getDataType() != null){
+                    dataObjectType.setType(DataType.valueOf(expOutput.getDataType()));
                 }
 //                dataObjectType.setMetaData(expOutput.getMetadata());
                 return dataObjectType;
@@ -232,8 +232,8 @@ public class ThriftDataModelConversion {
                 NodeOutputResource nodeOutputResource = (NodeOutputResource)object;
                 dataObjectType.setName(nodeOutputResource.getOutputKey());
                 dataObjectType.setValue(nodeOutputResource.getValue());
-                if (nodeOutputResource.getOutputType() != null){
-                    dataObjectType.setType(DataType.valueOf(nodeOutputResource.getOutputType()));
+                if (nodeOutputResource.getDataType() != null){
+                    dataObjectType.setType(DataType.valueOf(nodeOutputResource.getDataType()));
                 }
 //                dataObjectType.setMetaData(nodeOutputResource.getMetadata());
                 return dataObjectType;
@@ -241,8 +241,8 @@ public class ThriftDataModelConversion {
                 ApplicationOutputResource outputResource = (ApplicationOutputResource)object;
                 dataObjectType.setName(outputResource.getOutputKey());
                 dataObjectType.setValue(outputResource.getValue());
-                if (outputResource.getOutputType() != null){
-                    dataObjectType.setType(DataType.valueOf(outputResource.getOutputType()));
+                if (outputResource.getDataType() != null){
+                    dataObjectType.setType(DataType.valueOf(outputResource.getDataType()));
                 }
 //                dataObjectType.setMetaData(outputResource.getMetadata());
                 return dataObjectType;

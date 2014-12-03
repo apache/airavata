@@ -37,10 +37,8 @@ public class ApplicationOutput implements Serializable {
     @Id
     @Column(name = "OUTPUT_KEY")
     private String outputKey;
-    @Column(name = "OUTPUT_KEY_TYPE")
-    private String outputKeyType;
-    @Column(name = "METADATA")
-    private String metadata;
+    @Column(name = "DATA_TYPE")
+    private String dataType;
     @Lob
     @Column(name = "VALUE")
     private char[] value;
@@ -55,14 +53,6 @@ public class ApplicationOutput implements Serializable {
 
     public void setTaskId(String taskId) {
         this.taskId = taskId;
-    }
-
-    public String getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(String metadata) {
-        this.metadata = metadata;
     }
 
     public char[] getValue() {
@@ -89,11 +79,11 @@ public class ApplicationOutput implements Serializable {
         this.outputKey = outputKey;
     }
 
-    public String getOutputKeyType() {
-        return outputKeyType;
+    public String getDataType() {
+        return dataType;
     }
 
-    public void setOutputKeyType(String outputKeyType) {
-        this.outputKeyType = outputKeyType;
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
     }
 }

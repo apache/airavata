@@ -37,10 +37,8 @@ public class NodeOutput implements Serializable {
     @Id
     @Column(name = "OUTPUT_KEY")
     private String outputKey;
-    @Column(name = "OUTPUT_KEY_TYPE")
-    private String outputKeyType;
-    @Column(name = "METADATA")
-    private String metadata;
+    @Column(name = "DATA_TYPE")
+    private String dataType;
     @Column(name = "VALUE")
     private String value;
 
@@ -54,14 +52,6 @@ public class NodeOutput implements Serializable {
 
     public void setNodeId(String nodeId) {
         this.nodeId = nodeId;
-    }
-
-    public String getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(String metadata) {
-        this.metadata = metadata;
     }
 
     public String getValue() {
@@ -88,11 +78,11 @@ public class NodeOutput implements Serializable {
         this.outputKey = outputKey;
     }
 
-    public String getOutputKeyType() {
-        return outputKeyType;
+    public String getDataType() {
+        return dataType;
     }
 
-    public void setOutputKeyType(String outputKeyType) {
-        this.outputKeyType = outputKeyType;
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
     }
 }

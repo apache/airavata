@@ -92,6 +92,7 @@ public class WSComponent extends Component {
             WSComponentPort port = new WSComponentPort(inputDataObjectType.getName(),inputDataObjectType.getType() , this);
             port.setDescription(inputDataObjectType.getDescription());
             port.setDefaultValue(inputDataObjectType.getDefaultValue());
+            port.setApplicationArgument(inputDataObjectType.getApplicationArgument());
 			inputs.add(port);
 		}
 

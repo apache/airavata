@@ -53,7 +53,7 @@ public class ExperimentInputResourceTest extends AbstractResourceTest  {
         experimentInputResource.setExperimentResource(experimentResource);
         experimentInputResource.setExperimentKey("testKey");
         experimentInputResource.setValue("testValue");
-        experimentInputResource.setInputType("string");
+        experimentInputResource.setDataType("string");
         experimentInputResource.save();
     }
 
