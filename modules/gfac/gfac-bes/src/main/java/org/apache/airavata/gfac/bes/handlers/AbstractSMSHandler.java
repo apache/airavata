@@ -17,8 +17,6 @@ import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
-import org.apache.airavata.schemas.gfac.JobDirectoryModeDocument.JobDirectoryMode;
-import org.apache.airavata.schemas.gfac.UnicoreHostType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3.x2005.x08.addressing.EndpointReferenceType;

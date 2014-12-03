@@ -21,8 +21,8 @@
 package org.apache.airavata.gfac.bes.utils;
 
 
+import org.apache.airavata.gfac.core.context.ApplicationContext;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
-import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionDocument;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionType;
 import org.slf4j.Logger;
@@ -41,19 +41,15 @@ public class JSDLGenerator implements BESConstants {
 
 	protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
-	public synchronized static JobDefinitionDocument buildJSDLInstance(
-			JobExecutionContext context) throws Exception {
+	public synchronized static JobDefinitionDocument buildJSDLInstance(JobExecutionContext context) throws Exception {
 
 		JobDefinitionDocument jobDefDoc = JobDefinitionDocument.Factory
 				.newInstance();
 		JobDefinitionType value = jobDefDoc.addNewJobDefinition();
 
-		HpcApplicationDeploymentType appDepType = (HpcApplicationDeploymentType) context
-				.getApplicationContext().getApplicationDeploymentDescription()
-				.getType();
-
+		
 		// build Identification
-		createJobIdentification(value, appDepType);
+		createJobIdentification(value, context);
 
 		ResourceProcessor.generateResourceElements(value, context);
 
@@ -70,12 +66,9 @@ public class JSDLGenerator implements BESConstants {
 				.newInstance();
 		JobDefinitionType value = jobDefDoc.addNewJobDefinition();
 
-		HpcApplicationDeploymentType appDepType = (HpcApplicationDeploymentType) context
-				.getApplicationContext().getApplicationDeploymentDescription()
-				.getType();
-
+		
 		// build Identification
-		createJobIdentification(value, appDepType);
+		createJobIdentification(value, context);
 
 		ResourceProcessor.generateResourceElements(value, context);
 
@@ -87,41 +80,6 @@ public class JSDLGenerator implements BESConstants {
 	}
 
 	public synchronized static JobDefinitionDocument buildJSDLInstance(
-			JobExecutionContext context, DataServiceInfo dataInfo)
-			throws Exception {
-
-		JobDefinitionDocument jobDefDoc = JobDefinitionDocument.Factory
-				.newInstance();
-		JobDefinitionType value = jobDefDoc.addNewJobDefinition();
-
-		HpcApplicationDeploymentType appDepType = (HpcApplicationDeploymentType) context
-				.getApplicationContext().getApplicationDeploymentDescription()
-				.getType();
-
-		createJobIdentification(value, appDepType);
-
-		ResourceProcessor.generateResourceElements(value, context);
-
-		ApplicationProcessor.generateJobSpecificAppElements(value, context);
-
-		switch (dataInfo.getDirectoryAccesMode()) {
-		case SMSBYTEIO:
-			if(null == dataInfo.getDataServiceUrl() || "".equals(dataInfo.getDataServiceUrl()))
-				throw new Exception("No SMS address found");
-			UASDataStagingProcessor.generateDataStagingElements(value, context,
-					dataInfo.getDataServiceUrl());
-			break;
-		case RNSBYTEIO:
-		case GridFTP:
-		default:
-			DataStagingProcessor.generateDataStagingElements(value, context);
-			break;
-
-		}
-		return jobDefDoc;
-	}
-
-	public synchronized static JobDefinitionDocument buildJSDLInstance(
 			JobExecutionContext context, String smsUrl, Object jobDirectoryMode)
 			throws Exception {
 
@@ -129,12 +87,8 @@ public class JSDLGenerator implements BESConstants {
 				.newInstance();
 		JobDefinitionType value = jobDefDoc.addNewJobDefinition();
 
-		HpcApplicationDeploymentType appDepType = (HpcApplicationDeploymentType) context
-				.getApplicationContext().getApplicationDeploymentDescription()
-				.getType();
-
 		// build Identification
-		createJobIdentification(value, appDepType);
+		createJobIdentification(value, context);
 
 		ResourceProcessor.generateResourceElements(value, context);
 
@@ -146,18 +100,18 @@ public class JSDLGenerator implements BESConstants {
 		return jobDefDoc;
 	}
 
-	private static void createJobIdentification(JobDefinitionType value,
-			HpcApplicationDeploymentType appDepType) {
-		if (appDepType.getProjectAccount() != null) {
-
-			if (appDepType.getProjectAccount().getProjectAccountNumber() != null)
-				JSDLUtils.addProjectName(value, appDepType.getProjectAccount()
-						.getProjectAccountNumber());
-
-			if (appDepType.getProjectAccount().getProjectAccountDescription() != null)
-				JSDLUtils.getOrCreateJobIdentification(value).setDescription(
-						appDepType.getProjectAccount()
-								.getProjectAccountDescription());
+	private static void createJobIdentification(JobDefinitionType value, JobExecutionContext context) {
+		ApplicationContext appCtxt = context.getApplicationContext();
+		
+		if (appCtxt != null) {
+			if (appCtxt.getComputeResourcePreference().getAllocationProjectNumber() != null)
+				JSDLUtils.addProjectName(value, appCtxt.getComputeResourcePreference().getAllocationProjectNumber());
+			
+			if (appCtxt.getApplicationInterfaceDescription().getApplicationDescription() != null)
+				JSDLUtils.getOrCreateJobIdentification(value).setDescription(appCtxt.getApplicationInterfaceDescription().getApplicationDescription());				
+			
+			if (appCtxt.getApplicationInterfaceDescription().getApplicationName() != null)
+				JSDLUtils.getOrCreateJobIdentification(value).setJobName(appCtxt.getApplicationInterfaceDescription().getApplicationName());
 		}
 	}
 
