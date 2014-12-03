@@ -43,8 +43,17 @@ public class Experiment_Input implements Serializable {
     @Column(name = "VALUE")
     private char[] value;
 
-    @Column(name = "INPUT_TYPE")
-    private String inputType;
+    @Column(name = "DATA_TYPE")
+    private String dataType;
+
+    @Column(name = "APP_ARGUMENT")
+    private String appArgument;
+
+    @Column(name = "STANDARD_INPUT")
+    private boolean standardInput;
+
+    @Column(name = "USER_FRIENDLY_DESC")
+    private String userFriendlyDesc;
 
     @Column(name = "METADATA")
     private String metadata;
@@ -77,12 +86,12 @@ public class Experiment_Input implements Serializable {
         this.value = value;
     }
 
-    public String getInputType() {
-        return inputType;
+    public String getDataType() {
+        return dataType;
     }
 
-    public void setInputType(String inputType) {
-        this.inputType = inputType;
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
     }
 
     public String getMetadata() {
@@ -99,5 +108,29 @@ public class Experiment_Input implements Serializable {
 
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
+    }
+
+    public String getAppArgument() {
+        return appArgument;
+    }
+
+    public void setAppArgument(String appArgument) {
+        this.appArgument = appArgument;
+    }
+
+    public boolean isStandardInput() {
+        return standardInput;
+    }
+
+    public void setStandardInput(boolean standardInput) {
+        this.standardInput = standardInput;
+    }
+
+    public String getUserFriendlyDesc() {
+        return userFriendlyDesc;
+    }
+
+    public void setUserFriendlyDesc(String userFriendlyDesc) {
+        this.userFriendlyDesc = userFriendlyDesc;
     }
 }

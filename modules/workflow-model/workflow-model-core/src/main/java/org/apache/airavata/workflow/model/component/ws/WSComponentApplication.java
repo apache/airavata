@@ -211,8 +211,8 @@ public class WSComponentApplication {
             namespace = XmlConstants.BUILDER.newNamespace("xsd", WSConstants.XSD_NS_URI);
             String prefix = "xsd";
             QName type = new QName(namespace.getName(), typeName, prefix);
-            
-			addInputParameter(new WSComponentApplicationParameter(inputDataObjectType.getName(),type ,inputDataObjectType.getUserFriendlyDescription(), inputDataObjectType.getValue()));
+
+			addInputParameter(new WSComponentApplicationParameter(inputDataObjectType.getName(), type, inputDataObjectType.getUserFriendlyDescription(), inputDataObjectType.getValue(), inputDataObjectType.getApplicationArgument()));
 		}
 
         List<OutputDataObjectType> applicationOutputs = application.getApplicationOutputs();

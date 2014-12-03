@@ -39,6 +39,7 @@ public class WSComponentPort extends ComponentDataPort {
      * default
      */
     public static final String DEFAULT = "default";
+    private String applicationArgument;
 
     private WSComponent component;
 
@@ -150,6 +151,14 @@ public class WSComponentPort extends ComponentDataPort {
      */
     public void setValue(Object value) {
         this.value = value;
+    }
+
+    public String getApplicationArgument() {
+        return applicationArgument;
+    }
+
+    public void setApplicationArgument(String applicationArgument) {
+        this.applicationArgument = applicationArgument;
     }
 
     /**

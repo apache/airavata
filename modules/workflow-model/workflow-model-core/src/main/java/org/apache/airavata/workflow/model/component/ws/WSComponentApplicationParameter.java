@@ -28,22 +28,28 @@ import javax.xml.bind.annotation.XmlValue;
 import javax.xml.namespace.QName;
 
 @XmlRootElement(name="Parameter")
-@XmlType(propOrder = {"name", "type", "description", "defaultValue"})
+@XmlType(propOrder = {"name", "type", "description", "defaultValue", "applicationArgument"})
 public class WSComponentApplicationParameter {
 	private String name;
 	private QName type;
 	private String description;
 	private String defaultValue;
+	private String applicationArgument;
 	
 	public WSComponentApplicationParameter() {
 	}
-	
+
+	public WSComponentApplicationParameter(String name, QName type, String description, String defaultValue) {
+		this(name, type, description, defaultValue, "");
+	}
+
 	public WSComponentApplicationParameter(String name, QName type,
-			String description, String defaultValue) {
+			String description, String defaultValue, String applicationArgument) {
 		this.name = name;
 		this.type = type;
 		this.description = description;
 		this.defaultValue = defaultValue;
+		this.applicationArgument = applicationArgument;
 	}
 
 	@XmlAttribute (required = true)
@@ -77,5 +83,13 @@ public class WSComponentApplicationParameter {
 	public void setDefaultValue(String defaultValue) {
 		this.defaultValue = defaultValue;
 	}
-	
+
+	@XmlAttribute
+	public String getApplicationArgument() {
+		return applicationArgument;
+	}
+
+	public void setApplicationArgument(String applicationArgument) {
+		this.applicationArgument = applicationArgument;
+	}
 }

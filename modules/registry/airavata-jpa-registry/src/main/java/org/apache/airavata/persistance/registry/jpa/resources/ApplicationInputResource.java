@@ -39,9 +39,36 @@ public class ApplicationInputResource extends AbstractResource {
 	private static final Logger logger = LoggerFactory.getLogger(ApplicationInputResource.class);
     private TaskDetailResource taskDetailResource;
     private String inputKey;
-    private String inputType;
+    private String dataType;
     private String metadata;
     private String value;
+    private String appArgument;
+    private boolean standardInput;
+    private String userFriendlyDesc;
+
+    public String getAppArgument() {
+        return appArgument;
+    }
+
+    public void setAppArgument(String appArgument) {
+        this.appArgument = appArgument;
+    }
+
+    public boolean isStandardInput() {
+        return standardInput;
+    }
+
+    public void setStandardInput(boolean standardInput) {
+        this.standardInput = standardInput;
+    }
+
+    public String getUserFriendlyDesc() {
+        return userFriendlyDesc;
+    }
+
+    public void setUserFriendlyDesc(String userFriendlyDesc) {
+        this.userFriendlyDesc = userFriendlyDesc;
+    }
 
     public String getInputKey() {
         return inputKey;
@@ -51,12 +78,12 @@ public class ApplicationInputResource extends AbstractResource {
         this.inputKey = inputKey;
     }
 
-    public String getInputType() {
-        return inputType;
+    public String getDataType() {
+        return dataType;
     }
 
-    public void setInputType(String inputType) {
-        this.inputType = inputType;
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
     }
 
     public String getMetadata() {
@@ -122,7 +149,10 @@ public class ApplicationInputResource extends AbstractResource {
             applicationInput.setTask(taskDetail);
             applicationInput.setTaskId(taskDetail.getTaskId());
             applicationInput.setInputKey(inputKey);
-            applicationInput.setInputKeyType(inputType);
+            applicationInput.setDataType(dataType);
+            applicationInput.setAppArgument(appArgument);
+            applicationInput.setStandardInput(standardInput);
+            applicationInput.setUserFriendlyDesc(userFriendlyDesc);
             if (value != null){
                 applicationInput.setValue(value.toCharArray());
             }
@@ -133,7 +163,10 @@ public class ApplicationInputResource extends AbstractResource {
                 existingInput.setTask(taskDetail);
                 existingInput.setTaskId(taskDetail.getTaskId());
                 existingInput.setInputKey(inputKey);
-                existingInput.setInputKeyType(inputType);
+                existingInput.setDataType(dataType);
+                existingInput.setAppArgument(appArgument);
+                existingInput.setStandardInput(standardInput);
+                existingInput.setUserFriendlyDesc(userFriendlyDesc);
                 if (value != null){
                     existingInput.setValue(value.toCharArray());
                 }
