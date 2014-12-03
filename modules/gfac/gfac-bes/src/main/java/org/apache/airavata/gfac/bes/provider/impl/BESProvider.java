@@ -115,8 +115,7 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
                 UnicoreJobSubmission unicoreJobSubmission = GFacUtils.getUnicoreJobSubmission(interfaceId);
                 factoryUrl = unicoreJobSubmission.getUnicoreEndPointURL();
             }
-            EndpointReferenceType eprt = EndpointReferenceType.Factory
-                    .newInstance();
+            EndpointReferenceType eprt = EndpointReferenceType.Factory.newInstance();
             eprt.addNewAddress().setStringValue(factoryUrl);
             String userDN = getUserName(jobExecutionContext);
 
@@ -124,20 +123,15 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
             if (userDN == null || userDN.equalsIgnoreCase("admin")) {
                 userDN = "CN=zdv575, O=Ultrascan Gateway, C=DE";
             }
-            CreateActivityDocument cad = CreateActivityDocument.Factory
-                    .newInstance();
-            JobDefinitionDocument jobDefDoc = JobDefinitionDocument.Factory
-                    .newInstance();
+            CreateActivityDocument cad = CreateActivityDocument.Factory.newInstance();
+            JobDefinitionDocument jobDefDoc = JobDefinitionDocument.Factory.newInstance();
 
             // create storage
-            StorageCreator storageCreator = new StorageCreator(secProperties,
-                    factoryUrl, 5, null);
+            StorageCreator storageCreator = new StorageCreator(secProperties, factoryUrl, 5, null);
             sc = storageCreator.createStorage();
 
-            JobDefinitionType jobDefinition = JSDLGenerator.buildJSDLInstance(
-                    jobExecutionContext, sc.getUrl()).getJobDefinition();
-            cad.addNewCreateActivity().addNewActivityDocument()
-                    .setJobDefinition(jobDefinition);
+            JobDefinitionType jobDefinition = JSDLGenerator.buildJSDLInstance(jobExecutionContext, sc.getUrl()).getJobDefinition();
+            cad.addNewCreateActivity().addNewActivityDocument().setJobDefinition(jobDefinition);
             log.info("JSDL" + jobDefDoc.toString());
 
             // upload files if any
@@ -180,28 +174,7 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
                     .getStringValue(), factory.getActivityStatus(activityEpr)
                     .toString()));
 
-            // TODO publish the status messages to the message bus
-            while ((factory.getActivityStatus(activityEpr) != ActivityStateEnumeration.FINISHED)
-                    && (factory.getActivityStatus(activityEpr) != ActivityStateEnumeration.FAILED)
-                    && (factory.getActivityStatus(activityEpr) != ActivityStateEnumeration.CANCELLED)) {
-
-                ActivityStatusType activityStatus = getStatus(factory, activityEpr);
-                JobState applicationJobStatus = getApplicationJobStatus(activityStatus);
-                String jobStatusMessage = "Status of job " + jobId + "is "
-                        + applicationJobStatus;
-                GFacUtils.updateJobStatus(jobExecutionContext, jobDetails, applicationJobStatus);
-
-                jobExecutionContext.getNotifier().publish(
-                        new StatusChangeEvent(jobStatusMessage));
-
-                // GFacUtils.updateApplicationJobStatus(jobExecutionContext,jobId,
-                // applicationJobStatus);
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                }
-                continue;
-            }
+            waitUntilDone(factory, activityEpr, jobDetails);
 
             ActivityStatusType activityStatus = null;
             activityStatus = getStatus(factory, activityEpr);
@@ -217,11 +190,12 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
                         + activityStatus.getFault().getFaultstring()
                         + "\n EXITCODE: " + activityStatus.getExitCode();
                 log.info(error);
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                }
+                
+                try {Thread.sleep(5000);} catch (InterruptedException e) {}
+                
+                //What if job is failed before execution and there are not stdouts generated yet?
                 dt.downloadStdOuts();
+                
             } else if (activityStatus.getState() == ActivityStateEnumeration.CANCELLED) {
                 JobState applicationJobStatus = JobState.CANCELED;
                 String jobStatusMessage = "Status of job " + jobId + "is "
@@ -357,8 +331,7 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
 		// }
 	}
 
-	protected ActivityStatusType getStatus(FactoryClient fc,
-			EndpointReferenceType activityEpr)
+	protected ActivityStatusType getStatus(FactoryClient fc, EndpointReferenceType activityEpr)
 			throws UnknownActivityIdentifierFault {
 
 		GetActivityStatusesDocument stats = GetActivityStatusesDocument.Factory
@@ -427,6 +400,32 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
 	public void cancelJob(JobExecutionContext jobExecutionContext)
 			throws GFacProviderException, GFacException {
 		// TODO Auto-generated method stub
-
+	}
+	
+	protected void waitUntilDone(FactoryClient factory, EndpointReferenceType activityEpr, JobDetails jobDetails) throws Exception {
+		
+		try {
+			while ((factory.getActivityStatus(activityEpr) != ActivityStateEnumeration.FINISHED)
+	                && (factory.getActivityStatus(activityEpr) != ActivityStateEnumeration.FAILED)
+	                && (factory.getActivityStatus(activityEpr) != ActivityStateEnumeration.CANCELLED)) {
+	
+	            ActivityStatusType activityStatus = getStatus(factory, activityEpr);
+	            JobState applicationJobStatus = getApplicationJobStatus(activityStatus);
+	            String jobStatusMessage = "Status of job " + jobId + "is " + applicationJobStatus;
+	            GFacUtils.updateJobStatus(jobExecutionContext, jobDetails, applicationJobStatus);
+	
+	            jobExecutionContext.getNotifier().publish(new StatusChangeEvent(jobStatusMessage));
+	
+	            // GFacUtils.updateApplicationJobStatus(jobExecutionContext,jobId,
+	            // applicationJobStatus);
+	            try {
+	                Thread.sleep(5000);
+	            } catch (InterruptedException e) {}
+	            continue;
+	        }
+		} catch(Exception e) {
+			log.error("Error monitoring job status..");
+			throw e;
+		}
 	}
 }

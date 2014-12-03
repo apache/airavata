@@ -24,8 +24,6 @@ package org.apache.airavata.gfac.bes.utils;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
-import org.apache.airavata.schemas.gfac.ExtendedKeyValueType;
-import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.ApplicationType;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionType;
 import org.ggf.schemas.jsdl.x2005.x11.jsdlPosix.FileNameType;
@@ -47,10 +45,9 @@ public class ApplicationProcessor {
 		ApplicationDeploymentDescription appDep= context.getApplicationContext().getApplicationDeploymentDescription();
         String appname = context.getApplicationContext().getApplicationInterfaceDescription().getApplicationName();
         ApplicationParallelismType parallelism = appDep.getParallelism();
-
         ApplicationType appType = JSDLUtils.getOrCreateApplication(value);
         appType.setApplicationName(appname);
-        JSDLUtils.getOrCreateJobIdentification(value).setJobName(appname);
+        
 
 //		if (appDep.getSetEnvironment().size() > 0) {
 //            createApplicationEnvironment(value, appDep.getSetEnvironment(), parallelism);
@@ -58,10 +55,11 @@ public class ApplicationProcessor {
 //
         String stdout = context.getStandardOutput();
         String stderr = context.getStandardError();
+        
         if (appDep.getExecutablePath() != null) {
 			FileNameType fNameType = FileNameType.Factory.newInstance();
 			fNameType.setStringValue(appDep.getExecutablePath());
-			if(parallelism.equals(ApplicationParallelismType.MPI) || parallelism.equals(ApplicationParallelismType.OPENMP_MPI)) {
+			if(isParallelJob(context)) {
 				JSDLUtils.getOrCreateSPMDApplication(value).setExecutable(fNameType);
                 if (parallelism.equals(ApplicationParallelismType.OPENMP_MPI)){
                     JSDLUtils.getSPMDApplication(value).setSPMDVariation(SPMDVariations.OpenMPI.value());
@@ -85,11 +83,11 @@ public class ApplicationProcessor {
                 }
 
                 int totalThreadCount = context.getTaskData().getTaskScheduling().getNumberOfThreads();
+
                 if(totalThreadCount > 0){
 					ThreadsPerProcessType tpp = ThreadsPerProcessType.Factory.newInstance();
 					tpp.setStringValue(String.valueOf(totalThreadCount));
 					JSDLUtils.getSPMDApplication(value).setThreadsPerProcess(tpp);
-					
 				}
 				
 				if(userName != null) {
@@ -134,45 +132,49 @@ public class ApplicationProcessor {
 	public static String getUserNameFromContext(JobExecutionContext jobContext) {
 		if(jobContext.getTaskData() == null)
 			return null;
-		//FIXME: Discuss to get user and change this
+		//TODO: Extend unicore model to specify optional unix user id (allocation account) 
 		return "admin";
 	}
 
-	public static void addApplicationArgument(JobDefinitionType value, HpcApplicationDeploymentType appDepType, String stringPrm) {
-		if(isParallelJob(appDepType)) 		
-			JSDLUtils.getOrCreateSPMDApplication(value)
-			.addNewArgument().setStringValue(stringPrm);
-		else 
-		    JSDLUtils.getOrCreatePOSIXApplication(value)
-				.addNewArgument().setStringValue(stringPrm);
-
+	public static void addApplicationArgument(JobDefinitionType value, JobExecutionContext context, String stringPrm) {
+		if(isParallelJob(context)){ 		
+			JSDLUtils.getOrCreateSPMDApplication(value).addNewArgument().setStringValue(stringPrm);
+		}
+		else { 
+		    JSDLUtils.getOrCreatePOSIXApplication(value).addNewArgument().setStringValue(stringPrm);
+		}
 	}
 	
-	public static String getApplicationStdOut(JobDefinitionType value, HpcApplicationDeploymentType appDepType) throws RuntimeException {
-		if (isParallelJob(appDepType)) return JSDLUtils.getOrCreateSPMDApplication(value).getOutput().getStringValue();
+	public static String getApplicationStdOut(JobDefinitionType value, JobExecutionContext context) throws RuntimeException {
+		if (isParallelJob(context)) return JSDLUtils.getOrCreateSPMDApplication(value).getOutput().getStringValue();
 		else return JSDLUtils.getOrCreatePOSIXApplication(value).getOutput().getStringValue();
 	}
 	
-	public static String getApplicationStdErr(JobDefinitionType value, HpcApplicationDeploymentType appDepType) throws RuntimeException {
-		if (isParallelJob(appDepType)) return JSDLUtils.getOrCreateSPMDApplication(value).getError().getStringValue();
+	public static String getApplicationStdErr(JobDefinitionType value, JobExecutionContext context) throws RuntimeException {
+		if (isParallelJob(context)) return JSDLUtils.getOrCreateSPMDApplication(value).getError().getStringValue();
 		else return JSDLUtils.getOrCreatePOSIXApplication(value).getError().getStringValue();
 	}
 	
 	public static void createGenericApplication(JobDefinitionType value, String appName) {
         ApplicationType appType = JSDLUtils.getOrCreateApplication(value);
         appType.setApplicationName(appName);
-        JSDLUtils.getOrCreateJobIdentification(value).setJobName(appName);
     }
-
-
-    public static String getValueFromMap(HpcApplicationDeploymentType appDepType, String name) {
-		ExtendedKeyValueType[] extended = appDepType.getKeyValuePairsArray();
-		for(ExtendedKeyValueType e: extended) {
-			if(e.getName().equalsIgnoreCase(name)) {
-				return e.getStringValue();
-			}
+	
+	public static boolean isParallelJob(JobExecutionContext context) {
+		
+		ApplicationDeploymentDescription appDep = context.getApplicationContext().getApplicationDeploymentDescription();
+		ApplicationParallelismType parallelism = appDep.getParallelism();
+		
+		boolean isParallel = false;
+		
+		if(parallelism.equals(ApplicationParallelismType.MPI) || 
+		   parallelism.equals(ApplicationParallelismType.OPENMP_MPI) || 
+		   parallelism.equals(ApplicationParallelismType.OPENMP	)) {
+			isParallel = true;
 		}
-		return null;
+		
+		return isParallel;
 	}
 	
+
 }
