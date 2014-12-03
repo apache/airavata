@@ -47,6 +47,16 @@
 			<artifactId>gss</artifactId>
 			<version>${jglobus.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>org.jglobus</groupId>
+            <artifactId>gram</artifactId>
+            <version>${jglobus.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jglobus</groupId>
+            <artifactId>gridftp</artifactId>
+            <version>${jglobus.version}</version>
+        </dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -138,7 +148,7 @@
 	</build>
 
 	<properties>
-		<jglobus.version>2.0.6</jglobus.version>
+		<jglobus.version>2.1.0</jglobus.version>
 		<surefire.version>2.12</surefire.version>
 		<junit.version>4.7</junit.version>
 		<log4j.version>1.2.17</log4j.version>
