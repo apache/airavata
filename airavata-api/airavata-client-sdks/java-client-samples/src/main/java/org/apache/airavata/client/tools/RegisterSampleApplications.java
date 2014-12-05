@@ -210,7 +210,6 @@ public class RegisterSampleApplications {
 			throw new AiravataClientException();
 		
 		System.out.println("FSD Compute ResourceID: "+fsdResourceId);
-		
 		JobSubmissionInterface jobSubmission = RegisterSampleApplicationsUtils.createJobSubmissionInterface(fsdResourceId, protocol, 2);
 		UnicoreJobSubmission ucrJobSubmission = new UnicoreJobSubmission();
 		ucrJobSubmission.setSecurityProtocol(securityProtocol);
@@ -221,11 +220,6 @@ public class RegisterSampleApplications {
 		
 		return jobSubmission.getJobSubmissionInterfaceId();
 	}
-    
-    public void registerfsd(){
-    	System.out.println("\n #### Registering XSEDE Computational Resources #### \n");
-    	
-    }
     
     public void registerAppModules() {
         try {
@@ -529,17 +523,25 @@ public class RegisterSampleApplications {
             List<String> appModules = new ArrayList<String>();
             appModules.add(echoModuleId);
 
-            InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Input_to_Echo", "Hello World",
+            InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Input_to_Echo", "",
                     DataType.STRING, null, false, "A test string to Echo", null);
+            
+            InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("Input_to_Echo2", "",
+                    DataType.URI, null, false, "A sample input remote file", null);
+
+            InputDataObjectType input3 = RegisterSampleApplicationsUtils.createAppInput("Input_to_Echo3", "file:///tmp/test.txt",
+                    DataType.URI, null, false, "A sample input local file", null);
+
             
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Output",
-                    "22QmrrX4", DataType.STRING);
-
+                    "", DataType.STRING);
+            
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
+            
 
             echoInterfaceId = airavataClient.registerApplicationInterface(
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(echoName, echoDescription,
@@ -1104,7 +1106,7 @@ public class RegisterSampleApplications {
                             "/N/dc2/scratch/cgateway/gta-work-dirs");
             
             ComputeResourcePreference fsdResourcePreferences = RegisterSampleApplicationsUtils.
-                    createComputeResourcePreference(fsdResourceId, null, false, null, null, null,null);
+                    createComputeResourcePreference(fsdResourceId, null, false, null, JobSubmissionProtocol.UNICORE, DataMovementProtocol.UNICORE_STORAGE_SERVICE,null);
             
             GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
             gatewayResourceProfile.setGatewayID(DEFAULT_GATEWAY);

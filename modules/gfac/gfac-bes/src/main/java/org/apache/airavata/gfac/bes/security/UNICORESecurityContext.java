@@ -52,7 +52,7 @@ public class UNICORESecurityContext extends X509SecurityContext {
 		secProperties.getETDSettings().setExtendTrustDelegation(true);
 //		secProperties.setMessageLogging(true);
 //		secProperties.setDoSignMessage(true);
-//		secProperties.getETDSettings().setIssuerCertificateChain(secProperties.getCredential().getCertificateChain());
+		secProperties.getETDSettings().setIssuerCertificateChain(secProperties.getCredential().getCertificateChain());
 		
 		
 		

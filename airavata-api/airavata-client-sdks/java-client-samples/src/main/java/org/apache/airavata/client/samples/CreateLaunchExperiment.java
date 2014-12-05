@@ -57,7 +57,7 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_36fbb479-5b41-4f48-a9c5-382ee910ac6b";
+    private static String echoAppId = "Echo_753d7cf6-f79a-4f7f-8ada-5d707e90c383";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
     private static String amberAppId = "Amber_49b16f6f-93ab-4885-9971-6ab2ab5eb3d3";
     private static String gromacsAppId = "GROMACS_05622038-9edd-4cb1-824e-0b7cb993364b";
@@ -93,9 +93,9 @@ public class CreateLaunchExperiment {
         try {
             for (int i = 0; i < 1; i++) {
 //                final String expId = createExperimentForSSHHost(airavata);
-//                final String expId = createEchoExperimentForFSD(airavataClient);
+                final String expId = createEchoExperimentForFSD(airavataClient);
 //                final String expId = createEchoExperimentForStampede(airavataClient);
-                final String expId = createEchoExperimentForTrestles(airavataClient);
+//                final String expId = createEchoExperimentForTrestles(airavataClient);
 //                final String expId = createExperimentEchoForLocalHost(airavataClient);
 //                final String expId = createExperimentWRFTrestles(airavataClient);
 //                final String expId = createExperimentForBR2(airavataClient);
@@ -161,7 +161,6 @@ public class CreateLaunchExperiment {
 		ucrJobSubmission.setSecurityProtocol(securityProtocol);
 		ucrJobSubmission.setUnicoreEndPointURL(unicoreEndPointURL);
 		
-		
 		return jobSubmission.getJobSubmissionInterfaceId();
 	}
     
@@ -180,7 +179,13 @@ public class CreateLaunchExperiment {
             output.setType(DataType.STRING);
             output.setValue("");
             exOut.add(output);
-
+            
+            OutputDataObjectType output2 = new OutputDataObjectType();
+            output2.setName("Echoed_Output2");
+            output2.setType(DataType.URI);
+            output2.setValue("file:///tmp/test.txt");
+            exOut.add(output2);
+            
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment("default", "admin", "echoExperiment", "SimpleEcho2", echoAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
@@ -223,21 +228,30 @@ public class CreateLaunchExperiment {
             InputDataObjectType input = new InputDataObjectType();
             input.setName("Input_to_Echo");
             input.setType(DataType.STRING);
-            input.setValue("Echoed_Output=Hello World");
-            exInputs.add(input);
+            input.setValue("Hello World");
+            
+            
             InputDataObjectType i2 = new InputDataObjectType();
-            i2.setName("Input_to_Echo1");
+            i2.setName("Input_to_Echo2");
             i2.setType(DataType.URI);
-            i2.setValue("http://shrib.com/22QmrrX4");
+            i2.setValue("http://www.textfiles.com/100/ad.txt");
+            
+            InputDataObjectType i3 = new InputDataObjectType();
+            i3.setName("Input_to_Echo3");
+            i3.setType(DataType.URI);
+            i3.setValue("file:///tmp/test.txt");
+            
+            exInputs.add(input);
             exInputs.add(i2);
+            exInputs.add(i3);
 
             List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            
             OutputDataObjectType output = new OutputDataObjectType();
             output.setName("Echoed_Output");
             output.setType(DataType.STRING);
-            output.setValue("22QmrrX4");
+            output.setValue("test.txt");
             exOut.add(output);
-            
             
             
             Experiment simpleExperiment = 
@@ -251,7 +265,7 @@ public class CreateLaunchExperiment {
                 for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
                     if (resourceName.equals(unicoreHostName)) {
-                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 1, 1, 1, "normal", 30, 0, 1, "sds128");
+                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 1, 1, 1, "normal", 30, 0, 1048576, "sds128");
                         UserConfigurationData userConfigurationData = new UserConfigurationData();
                         userConfigurationData.setAiravataAutoSchedule(false);
                         userConfigurationData.setOverrideManualScheduledParams(false);

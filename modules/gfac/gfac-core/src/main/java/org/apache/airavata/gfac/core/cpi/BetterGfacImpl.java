@@ -370,12 +370,16 @@ public class BetterGfacImpl implements GFac,Watcher {
                 jobExecutionContext.setPreferredDataMovementInterface(jobExecutionContext.getHostPrioritizedDataMovementInterfaces().get(0));
                 jobExecutionContext.setPreferredDataMovementProtocol(jobExecutionContext.getPreferredDataMovementInterface().getDataMovementProtocol());
             } else {
-                for (DataMovementInterface dataMovementInterface : dataMovementInterfaces) {
-                    if (gatewayResourcePreferences.getPreferredDataMovementProtocol() == dataMovementInterface.getDataMovementProtocol()) {
-                        jobExecutionContext.setPreferredDataMovementInterface(dataMovementInterface);
-                        break;
-                    }
-                }
+            	// this check is to avoid NPE when job submission endpoints do 
+            	// not contain any data movement interfaces. 
+            	if((dataMovementInterfaces != null) && (!dataMovementInterfaces.isEmpty())) {
+            		for (DataMovementInterface dataMovementInterface : dataMovementInterfaces) {
+            			if (gatewayResourcePreferences.getPreferredDataMovementProtocol() == dataMovementInterface.getDataMovementProtocol()) {
+            				jobExecutionContext.setPreferredDataMovementInterface(dataMovementInterface);
+            				break;
+                    	}
+            		}
+            	}
             }
         }  else {
             setUpWorkingLocation(jobExecutionContext, applicationInterface, "/tmp");

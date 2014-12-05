@@ -63,7 +63,7 @@ public class DataTransferrer {
 				if (uri.startsWith("file")) {
 					try {
 						String uriWithoutProtocol = uri.substring(uri.lastIndexOf("://") + 1, uri.length());
-						FileUploader fileUploader = new FileUploader(uriWithoutProtocol,"input/" + fileName,Mode.overwrite);
+						FileUploader fileUploader = new FileUploader(uriWithoutProtocol,fileName,Mode.overwrite);
 						fileUploader.perform(storageClient);
 					} catch (FileNotFoundException e3) {
 						throw new GFacProviderException(
@@ -139,7 +139,7 @@ public class DataTransferrer {
 				String scriptExitCodeFName = "UNICORE_SCRIPT_EXIT_CODE";
 				String scriptCodeLocation = downloadLocation+File.separator+scriptExitCodeFName;
 				f1.setFrom(scriptExitCodeFName);
-				f1.setTo(downloadLocation+File.separator+scriptCodeLocation);
+				f1.setTo(scriptCodeLocation);
 				f1.perform(storageClient);
 				log.info("UNICORE_SCRIPT_EXIT_CODE downloaded to "+scriptCodeLocation);
 			}

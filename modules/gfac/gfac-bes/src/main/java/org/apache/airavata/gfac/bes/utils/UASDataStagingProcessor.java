@@ -46,7 +46,7 @@ public class UASDataStagingProcessor {
 	
 	private static void createInURISMSElement(JobDefinitionType value, String smsUrl, String uri)
 			throws Exception {
-		String fileName = "input/" + new File(uri).getName();
+		String fileName = new File(uri).getName();
 		if (uri.startsWith("file")) {
 			uri = smsUrl+"#/"+fileName;
 			
@@ -113,12 +113,8 @@ public class UASDataStagingProcessor {
 		List<OutputDataObjectType> applicationOutputs = context.getTaskData().getApplicationOutputs();
 		 if (applicationOutputs != null && !applicationOutputs.isEmpty()){
              for (OutputDataObjectType output : applicationOutputs){
-            	 if(output.getType().equals(DataType.URI)) {
+            	 if(output.getType().equals(DataType.URI) && !output.getValue().startsWith("file:")) {
             		 createOutURIElement(value, output.getValue());
-            	 }
-            	 else if(output.getType().equals(DataType.STRING)) {
-            		 // TODO: remove this check, as out string 
-            		 createOutStringElements(value, smsUrl, output.getValue());
             	 }
              }
 		 }
@@ -128,7 +124,7 @@ public class UASDataStagingProcessor {
 	
 	private static void buildDataStagingFromInputContext(JobExecutionContext context, JobDefinitionType value, String smsUrl) 
 			throws Exception {
-		List<InputDataObjectType> applicationInputs = context.getApplicationContext().getApplicationInterfaceDescription().getApplicationInputs();
+		List<InputDataObjectType> applicationInputs = context.getTaskData().getApplicationInputs();
 		
 		if (applicationInputs != null && !applicationInputs.isEmpty()){
 			for (InputDataObjectType input : applicationInputs){
