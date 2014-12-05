@@ -55,8 +55,7 @@ public class JSDLGenerator implements BESConstants {
 
 		ApplicationProcessor.generateJobSpecificAppElements(value, context);
 
-		DataStagingProcessor.generateDataStagingElements(value, context);
-
+		
 		return jobDefDoc;
 	}
 

@@ -38,9 +38,9 @@ public class ApplicationProcessor {
 	public static void generateJobSpecificAppElements(JobDefinitionType value, JobExecutionContext context){
 		
 		String userName = getUserNameFromContext(context);
-		if (userName.equalsIgnoreCase("admin")){
-			userName = "CN=zdv575, O=Ultrascan Gateway, C=DE";
-		}
+//		if (userName.equalsIgnoreCase("admin")){
+//			userName = "CN=zdv575, O=Ultrascan Gateway, C=DE";
+//		}
 		
 		ApplicationDeploymentDescription appDep= context.getApplicationContext().getApplicationDeploymentDescription();
         String appname = context.getApplicationContext().getApplicationInterfaceDescription().getApplicationName();
@@ -53,9 +53,20 @@ public class ApplicationProcessor {
 //            createApplicationEnvironment(value, appDep.getSetEnvironment(), parallelism);
 //		}
 //
-        String stdout = context.getStandardOutput();
-        String stderr = context.getStandardError();
         
+		String stdout = context.getStandardOutput();
+		String stderr = context.getStandardError();
+		if(stdout != null) {
+			stdout = stdout.substring(stdout.lastIndexOf('/')+1);
+		}
+		
+		if(stderr != null) {
+			stderr = stderr.substring(stderr.lastIndexOf('/')+1);
+		}
+		
+		stdout = (stdout == null || stdout.equals("")) ? "stdout":stdout;
+		stderr = (stdout == null || stderr.equals("")) ? "stderr":stderr;
+
         if (appDep.getExecutablePath() != null) {
 			FileNameType fNameType = FileNameType.Factory.newInstance();
 			fNameType.setStringValue(appDep.getExecutablePath());

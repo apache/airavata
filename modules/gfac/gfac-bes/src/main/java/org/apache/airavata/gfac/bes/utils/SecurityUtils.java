@@ -16,7 +16,6 @@ import javax.security.auth.x500.X500Principal;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.commons.gfac.type.HostDescription;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.RequestData;
@@ -24,14 +23,13 @@ import org.apache.airavata.gfac.bes.security.UNICORESecurityContext;
 import org.apache.airavata.gfac.bes.security.X509SecurityContext;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
-import org.apache.airavata.schemas.gfac.UnicoreHostType;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.AlgorithmIdentifier;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import eu.emi.security.authn.x509.helpers.CertificateHelpers;
 import eu.emi.security.authn.x509.helpers.proxy.X509v3CertificateBuilder;
 import eu.emi.security.authn.x509.impl.CertificateUtils;
@@ -45,8 +43,7 @@ public class SecurityUtils {
 	
 	public static void addSecurityContext(JobExecutionContext jobExecutionContext) throws GFacException {
 		
-		 HostDescription registeredHost = jobExecutionContext.getApplicationContext().getHostDescription();
-	        if (! (registeredHost.getType() instanceof UnicoreHostType)) {
+	        if (!jobExecutionContext.getPreferredJobSubmissionProtocol().equals(JobSubmissionProtocol.UNICORE)) {
 	            logger.error("This is a wrong method to invoke for UNICORE host types,please check your gfac-config.xml");
 	        }
 	        else

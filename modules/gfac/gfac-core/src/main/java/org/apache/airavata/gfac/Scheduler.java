@@ -32,6 +32,7 @@ import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterfa
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -42,6 +43,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -118,6 +120,7 @@ public class Scheduler {
                 JobSubmissionProtocol jobSubmissionProtocol = jobExecutionContext.getPreferredJobSubmissionProtocol();
                 SSHJobSubmission sshJobSubmission;
                 LOCALSubmission localSubmission;
+                UnicoreJobSubmission unicoreSubmission;
                 String securityProtocol = null;
                 try {
                     AppCatalog appCatalog = jobExecutionContext.getAppCatalog();
@@ -129,6 +132,10 @@ public class Scheduler {
                         }
                     }else if (jobSubmissionProtocol == JobSubmissionProtocol.LOCAL) {
                         localSubmission = appCatalog.getComputeResource().getLocalJobSubmission(jobExecutionContext.getPreferredJobSubmissionInterface().getJobSubmissionInterfaceId());
+                    }
+                    else if (jobSubmissionProtocol == JobSubmissionProtocol.UNICORE) {
+                    	unicoreSubmission = appCatalog.getComputeResource().getUNICOREJobSubmission(jobExecutionContext.getPreferredJobSubmissionInterface().getJobSubmissionInterfaceId());
+                    	securityProtocol = unicoreSubmission.getSecurityProtocol().toString(); 
                     }
                     List<Element> elements = GFacUtils.getElementList(GFacConfiguration.getHandlerDoc(), Constants.XPATH_EXPR_PROVIDER_ON_SUBMISSION + jobSubmissionProtocol + "']");
                     for (Element element : elements) {
