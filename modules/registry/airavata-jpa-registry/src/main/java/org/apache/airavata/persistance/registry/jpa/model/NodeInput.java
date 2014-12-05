@@ -45,6 +45,8 @@ public class NodeInput implements Serializable {
     private String value;
     @Column(name = "APP_ARGUMENT")
     private String appArgument;
+    @Column(name = "INPUT_ORDER")
+    private int inputOrder;
 
     @Column(name = "STANDARD_INPUT")
     private boolean standardInput;
@@ -126,5 +128,13 @@ public class NodeInput implements Serializable {
 
     public void setUserFriendlyDesc(String userFriendlyDesc) {
         this.userFriendlyDesc = userFriendlyDesc;
+    }
+
+    public int getInputOrder() {
+        return inputOrder;
+    }
+
+    public void setInputOrder(int inputOrder) {
+        this.inputOrder = inputOrder;
     }
 }

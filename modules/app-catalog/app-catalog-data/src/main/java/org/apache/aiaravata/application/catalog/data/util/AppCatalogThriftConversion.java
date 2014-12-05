@@ -556,9 +556,10 @@ public class AppCatalogThriftConversion {
         inputDataObjectType.setName(input.getInputKey());
         inputDataObjectType.setValue(input.getInputVal());
         inputDataObjectType.setApplicationArgument(input.getAppArgument());
+        inputDataObjectType.setInputOrder(input.getInputOrder());
         inputDataObjectType.setMetaData(input.getMetadata());
         inputDataObjectType.setType(DataType.valueOf(input.getDataType()));
-        inputDataObjectType.setStandardInput(input.isStandareInput());
+        inputDataObjectType.setStandardInput(input.isStandardInput());
         inputDataObjectType.setUserFriendlyDescription(input.getUserFriendlyDesc());
         return inputDataObjectType;
     }
@@ -696,6 +697,7 @@ public class AppCatalogThriftConversion {
         InputDataObjectType input = new InputDataObjectType();
         input.setName(resource.getInputKey());
         input.setApplicationArgument(resource.getAppArgument());
+        input.setInputOrder(resource.getInputOrder());
         input.setType(DataType.valueOf(resource.getDataType()));
         input.setMetaData(resource.getMetadata());
         input.setUserFriendlyDescription(resource.getUserFriendlyDesc());

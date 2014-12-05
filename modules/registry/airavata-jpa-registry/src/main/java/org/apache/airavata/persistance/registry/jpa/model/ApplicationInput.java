@@ -47,6 +47,9 @@ public class ApplicationInput implements Serializable {
     @Column(name = "APP_ARGUMENT")
     private String appArgument;
 
+    @Column(name = "INPUT_ORDER")
+    private int inputOrder;
+
     @Column(name = "STANDARD_INPUT")
     private boolean standardInput;
 
@@ -56,6 +59,14 @@ public class ApplicationInput implements Serializable {
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "TASK_ID")
     private TaskDetail task;
+
+    public int getInputOrder() {
+        return inputOrder;
+    }
+
+    public void setInputOrder(int inputOrder) {
+        this.inputOrder = inputOrder;
+    }
 
     public String getTaskId() {
         return taskId;

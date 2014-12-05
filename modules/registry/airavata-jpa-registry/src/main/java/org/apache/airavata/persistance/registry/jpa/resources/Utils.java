@@ -517,6 +517,7 @@ public class Utils {
             eInputResource.setMetadata(o.getMetadata());
             eInputResource.setExperimentKey(o.getEx_key());
             eInputResource.setAppArgument(o.getAppArgument());
+            eInputResource.setInputOrder(o.getInputOrder());
             eInputResource.setStandardInput(o.isStandardInput());
             eInputResource.setUserFriendlyDesc(o.getUserFriendlyDesc());
             if (o.getValue() != null){
@@ -605,6 +606,7 @@ public class Utils {
             inputResource.setInputKey(o.getInputKey());
             inputResource.setDataType(o.getDataType());
             inputResource.setAppArgument(o.getAppArgument());
+            inputResource.setInputOrder(o.getInputOrder());
             inputResource.setStandardInput(o.isStandardInput());
             inputResource.setUserFriendlyDesc(o.getUserFriendlyDesc());
             if (o.getValue() != null){
@@ -639,6 +641,7 @@ public class Utils {
             inputResource.setValue(o.getValue());
             inputResource.setMetadata(o.getMetadata());
             inputResource.setAppArgument(o.getAppArgument());
+            inputResource.setInputOrder(o.getInputOrder());
             inputResource.setStandardInput(o.isStandardInput());
             inputResource.setUserFriendlyDesc(o.getUserFriendlyDesc());
         }

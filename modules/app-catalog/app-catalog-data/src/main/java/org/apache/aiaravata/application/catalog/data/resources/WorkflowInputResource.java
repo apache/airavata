@@ -48,7 +48,8 @@ public class WorkflowInputResource extends AbstractResource {
     private String metadata;
     private String appArgument;
     private String userFriendlyDesc;
-    private boolean standareInput;
+    private boolean standardInput;
+    private int inputOrder;
 
     private WorkflowResource workflowResource;
 
@@ -286,7 +287,7 @@ public class WorkflowInputResource extends AbstractResource {
             workflowInput.setMetadata(metadata);
             workflowInput.setAppArgument(appArgument);
             workflowInput.setUserFriendlyDesc(userFriendlyDesc);
-            workflowInput.setStandardInput(standareInput);
+            workflowInput.setStandardInput(standardInput);
             if (existingWFInput == null) {
                 em.persist(workflowInput);
             } else {
@@ -402,11 +403,19 @@ public class WorkflowInputResource extends AbstractResource {
         this.workflowResource = workflowResource;
     }
 
-    public boolean isStandareInput() {
-        return standareInput;
+    public boolean isStandardInput() {
+        return standardInput;
     }
 
-    public void setStandareInput(boolean standareInput) {
-        this.standareInput = standareInput;
+    public void setStandardInput(boolean standardInput) {
+        this.standardInput = standardInput;
+    }
+
+    public int getInputOrder() {
+        return inputOrder;
+    }
+
+    public void setInputOrder(int inputOrder) {
+        this.inputOrder = inputOrder;
     }
 }

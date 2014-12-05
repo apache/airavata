@@ -58,9 +58,20 @@ public class Experiment_Input implements Serializable {
     @Column(name = "METADATA")
     private String metadata;
 
+    @Column(name = "INPUT_ORDER")
+    private int inputOrder;
+
     @ManyToOne
     @JoinColumn(name = "EXPERIMENT_ID")
     private Experiment experiment;
+
+    public int getInputOrder() {
+        return inputOrder;
+    }
+
+    public void setInputOrder(int inputOrder) {
+        this.inputOrder = inputOrder;
+    }
 
     public String getExperiment_id() {
         return experiment_id;

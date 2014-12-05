@@ -45,6 +45,15 @@ public class ApplicationInputResource extends AbstractResource {
     private String appArgument;
     private boolean standardInput;
     private String userFriendlyDesc;
+    private int inputOrder;
+
+    public int getInputOrder() {
+        return inputOrder;
+    }
+
+    public void setInputOrder(int inputOrder) {
+        this.inputOrder = inputOrder;
+    }
 
     public String getAppArgument() {
         return appArgument;
@@ -153,6 +162,7 @@ public class ApplicationInputResource extends AbstractResource {
             applicationInput.setAppArgument(appArgument);
             applicationInput.setStandardInput(standardInput);
             applicationInput.setUserFriendlyDesc(userFriendlyDesc);
+            applicationInput.setInputOrder(inputOrder);
             if (value != null){
                 applicationInput.setValue(value.toCharArray());
             }
@@ -167,6 +177,7 @@ public class ApplicationInputResource extends AbstractResource {
                 existingInput.setAppArgument(appArgument);
                 existingInput.setStandardInput(standardInput);
                 existingInput.setUserFriendlyDesc(userFriendlyDesc);
+                existingInput.setInputOrder(inputOrder);
                 if (value != null){
                     existingInput.setValue(value.toCharArray());
                 }

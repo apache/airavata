@@ -386,4 +386,5 @@ public class GraphSchema {
 
 	public static final String NODE_TYPE_DIFFERED_INPUT = "Differed Input";
 
+    public static final String PORT_INPUT_ORDER = "inputOrder";
 }
