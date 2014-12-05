@@ -58,6 +58,8 @@ public class InputNode extends ParameterNode {
 
     private String applicationArgument;
 
+    private int inputOrder;
+
     /**
      * Creates an InputNode.
      * 
@@ -97,6 +99,14 @@ public class InputNode extends ParameterNode {
 
     public void setApplicationArgument(String applicationArgument) {
         this.applicationArgument = applicationArgument;
+    }
+
+    public int getInputOrder() {
+        return inputOrder;
+    }
+
+    public void setInputOrder(int inputOrder) {
+        this.inputOrder = inputOrder;
     }
 
     /**
@@ -375,6 +385,7 @@ public class InputNode extends ParameterNode {
         setDefaultValue(componentPort.getDefaultValue());
         setMetadata(componentPort.getAppinfo());
         setApplicationArgument(componentPort.getApplicationArgument());
+        setInputOrder(componentPort.getInputOrder());
     }
 
 }

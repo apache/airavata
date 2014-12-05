@@ -190,6 +190,10 @@ public class ThriftDataModelConversion {
                     dataObjectType.setType(DataType.valueOf(expInput.getDataType()));
                 }
                 dataObjectType.setMetaData(expInput.getMetadata());
+                dataObjectType.setApplicationArgument(expInput.getAppArgument());
+                dataObjectType.setStandardInput(expInput.isStandardInput());
+                dataObjectType.setUserFriendlyDescription(expInput.getUserFriendlyDesc());
+                dataObjectType.setInputOrder(expInput.getInputOrder());
                 return dataObjectType;
             }else if (object instanceof NodeInputResource){
                 NodeInputResource nodeInputResource = (NodeInputResource)object;
@@ -199,6 +203,10 @@ public class ThriftDataModelConversion {
                     dataObjectType.setType(DataType.valueOf(nodeInputResource.getDataType()));
                 }
                 dataObjectType.setMetaData(nodeInputResource.getMetadata());
+                dataObjectType.setApplicationArgument(nodeInputResource.getAppArgument());
+                dataObjectType.setStandardInput(nodeInputResource.isStandardInput());
+                dataObjectType.setUserFriendlyDescription(nodeInputResource.getUserFriendlyDesc());
+                dataObjectType.setInputOrder(nodeInputResource.getInputOrder());
                 return dataObjectType;
             }else if (object instanceof ApplicationInputResource){
                 ApplicationInputResource inputResource = (ApplicationInputResource)object;
@@ -208,6 +216,10 @@ public class ThriftDataModelConversion {
                     dataObjectType.setType(DataType.valueOf(inputResource.getDataType()));
                 }
                 dataObjectType.setMetaData(inputResource.getMetadata());
+                dataObjectType.setApplicationArgument(inputResource.getAppArgument());
+                dataObjectType.setStandardInput(inputResource.isStandardInput());
+                dataObjectType.setUserFriendlyDescription(inputResource.getUserFriendlyDesc());
+                dataObjectType.setInputOrder(inputResource.getInputOrder());
                 return dataObjectType;
             }else {
                 return null;
@@ -226,7 +238,6 @@ public class ThriftDataModelConversion {
                 if (expOutput.getDataType() != null){
                     dataObjectType.setType(DataType.valueOf(expOutput.getDataType()));
                 }
-//                dataObjectType.setMetaData(expOutput.getMetadata());
                 return dataObjectType;
             }else if (object instanceof NodeOutputResource){
                 NodeOutputResource nodeOutputResource = (NodeOutputResource)object;
@@ -235,7 +246,6 @@ public class ThriftDataModelConversion {
                 if (nodeOutputResource.getDataType() != null){
                     dataObjectType.setType(DataType.valueOf(nodeOutputResource.getDataType()));
                 }
-//                dataObjectType.setMetaData(nodeOutputResource.getMetadata());
                 return dataObjectType;
             }else if (object instanceof ApplicationOutputResource){
                 ApplicationOutputResource outputResource = (ApplicationOutputResource)object;
@@ -244,7 +254,6 @@ public class ThriftDataModelConversion {
                 if (outputResource.getDataType() != null){
                     dataObjectType.setType(DataType.valueOf(outputResource.getDataType()));
                 }
-//                dataObjectType.setMetaData(outputResource.getMetadata());
                 return dataObjectType;
             }else {
                 return null;

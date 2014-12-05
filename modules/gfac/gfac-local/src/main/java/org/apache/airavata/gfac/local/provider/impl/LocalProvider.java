@@ -23,8 +23,12 @@ package org.apache.airavata.gfac.local.provider.impl;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
@@ -252,20 +256,35 @@ public class LocalProvider extends AbstractProvider {
     private void buildCommand() {
         cmdList.add(jobExecutionContext.getExecutablePath());
         Map<String, Object> inputParameters = jobExecutionContext.getInMessageContext().getParameters();
-        for (Object inputObject : inputParameters.values()) {
-            if (inputObject instanceof InputDataObjectType) {
-                InputDataObjectType inputDataObjectType = (InputDataObjectType) inputObject;
-                if (inputDataObjectType.getApplicationArgument() != null
-                        && !inputDataObjectType.getApplicationArgument().equals("")) {
-                    cmdList.add(inputDataObjectType.getApplicationArgument());
-                }
 
-                if (inputDataObjectType.getValue() != null
-                        && !inputDataObjectType.getValue().equals("")) {
-                    cmdList.add(inputDataObjectType.getValue());
-                }
+        // sort the inputs first and then build the command List
+        Comparator<InputDataObjectType> inputOrderComparator = new Comparator<InputDataObjectType>() {
+            @Override
+            public int compare(InputDataObjectType inputDataObjectType, InputDataObjectType t1) {
+                log.info(" $$$$$$$$$$$$ inpput object order " + inputDataObjectType.getInputOrder() + " , t1 order " + t1.getInputOrder() + "$$$$$$$$$$$$$$$$" );
+                return inputDataObjectType.getInputOrder() - t1.getInputOrder();
+            }
+        };
+        Set<InputDataObjectType> sortedInputSet = new TreeSet<InputDataObjectType>(inputOrderComparator);
+        for (Object object : inputParameters.values()) {
+            if (object instanceof InputDataObjectType) {
+                InputDataObjectType inputDOT = (InputDataObjectType) object;
+                sortedInputSet.add(inputDOT);
             }
         }
+        log.info("$$$$$$$$$$$ size of sorted set = " + sortedInputSet.size() + "$$$$$$$$$$$$$$$$$$$");
+        for (InputDataObjectType inputDataObjectType : sortedInputSet) {
+            if (inputDataObjectType.getApplicationArgument() != null
+                    && !inputDataObjectType.getApplicationArgument().equals("")) {
+                cmdList.add(inputDataObjectType.getApplicationArgument());
+            }
+
+            if (inputDataObjectType.getValue() != null
+                    && !inputDataObjectType.getValue().equals("")) {
+                cmdList.add(inputDataObjectType.getValue());
+            }
+        }
+
     }
 
     private void initProcessBuilder(ApplicationDeploymentDescription app){

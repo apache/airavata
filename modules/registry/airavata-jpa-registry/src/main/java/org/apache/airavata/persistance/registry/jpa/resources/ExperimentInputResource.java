@@ -45,6 +45,15 @@ public class ExperimentInputResource extends AbstractResource {
     private String appArgument;
     private boolean standardInput;
     private String userFriendlyDesc;
+    private int inputOrder;
+
+    public int getInputOrder() {
+        return inputOrder;
+    }
+
+    public void setInputOrder(int inputOrder) {
+        this.inputOrder = inputOrder;
+    }
 
     public String getAppArgument() {
         return appArgument;
@@ -152,6 +161,7 @@ public class ExperimentInputResource extends AbstractResource {
             exInput.setAppArgument(appArgument);
             exInput.setStandardInput(standardInput);
             exInput.setUserFriendlyDesc(userFriendlyDesc);
+            exInput.setInputOrder(inputOrder);
             if (existingInput != null) {
                 existingInput.setEx_key(experimentKey);
                 existingInput.setExperiment(experiment);
@@ -164,6 +174,7 @@ public class ExperimentInputResource extends AbstractResource {
                 existingInput.setAppArgument(appArgument);
                 existingInput.setStandardInput(standardInput);
                 existingInput.setUserFriendlyDesc(userFriendlyDesc);
+                existingInput.setInputOrder(inputOrder);
                 exInput = em.merge(existingInput);
             } else {
                 em.persist(exInput);

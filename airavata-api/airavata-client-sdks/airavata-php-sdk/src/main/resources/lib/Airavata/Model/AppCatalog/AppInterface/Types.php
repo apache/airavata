@@ -44,6 +44,7 @@ class InputDataObjectType {
   public $standardInput = false;
   public $userFriendlyDescription = null;
   public $metaData = null;
+  public $inputOrder = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -76,6 +77,10 @@ class InputDataObjectType {
           'var' => 'metaData',
           'type' => TType::STRING,
           ),
+        8 => array(
+          'var' => 'inputOrder',
+          'type' => TType::I32,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -99,6 +104,9 @@ class InputDataObjectType {
       }
       if (isset($vals['metaData'])) {
         $this->metaData = $vals['metaData'];
+      }
+      if (isset($vals['inputOrder'])) {
+        $this->inputOrder = $vals['inputOrder'];
       }
     }
   }
@@ -171,6 +179,13 @@ class InputDataObjectType {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 8:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->inputOrder);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -217,6 +232,11 @@ class InputDataObjectType {
     if ($this->metaData !== null) {
       $xfer += $output->writeFieldBegin('metaData', TType::STRING, 7);
       $xfer += $output->writeString($this->metaData);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->inputOrder !== null) {
+      $xfer += $output->writeFieldBegin('inputOrder', TType::I32, 8);
+      $xfer += $output->writeI32($this->inputOrder);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

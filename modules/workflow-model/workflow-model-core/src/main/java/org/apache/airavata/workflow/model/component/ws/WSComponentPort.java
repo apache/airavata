@@ -29,9 +29,6 @@ import org.apache.airavata.workflow.model.component.ComponentDataPort;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.graph.ws.WSPort;
 import org.xmlpull.infoset.XmlElement;
-import org.xmlpull.infoset.XmlNamespace;
-
-import xsul5.XmlConstants;
 
 public class WSComponentPort extends ComponentDataPort {
 
@@ -39,7 +36,6 @@ public class WSComponentPort extends ComponentDataPort {
      * default
      */
     public static final String DEFAULT = "default";
-    private String applicationArgument;
 
     private WSComponent component;
 
@@ -58,6 +54,10 @@ public class WSComponentPort extends ComponentDataPort {
     private XmlElement appinfo;
 
     private boolean optional;
+
+    private String applicationArgument;
+
+    private int inputOrder;
 
     /**
      * Creates WSComponentPort
@@ -159,6 +159,14 @@ public class WSComponentPort extends ComponentDataPort {
 
     public void setApplicationArgument(String applicationArgument) {
         this.applicationArgument = applicationArgument;
+    }
+
+    public int getInputOrder() {
+        return inputOrder;
+    }
+
+    public void setInputOrder(int inputOrder) {
+        this.inputOrder = inputOrder;
     }
 
     /**

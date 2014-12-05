@@ -120,13 +120,14 @@ public class RegisterSampleApplicationsUtils {
 
     public static InputDataObjectType createAppInput
             (String inputName, String value, DataType type,
-             String applicationArgument, boolean stdIn, String description, String metadata) {
+             String applicationArgument, int order, boolean stdIn, String description, String metadata) {
         InputDataObjectType input = new InputDataObjectType();
 //        input.setIsEmpty(false);
         if (inputName != null) input.setName(inputName);
         if (value != null) input.setValue(value);
         if (type != null) input.setType(type);
         if (applicationArgument != null) input.setApplicationArgument(applicationArgument);
+        input.setInputOrder(order);
         if (description != null) input.setUserFriendlyDescription(description);
         input.setStandardInput(stdIn);
         if (metadata != null) input.setMetaData(metadata);

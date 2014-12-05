@@ -274,6 +274,8 @@ public class ExperimentRegistry {
                     resource.setDataType(input.getType().toString());
                 }
                 resource.setMetadata(input.getMetaData());
+                resource.setAppArgument(input.getApplicationArgument());
+                resource.setInputOrder(input.getInputOrder());
                 resource.save();
             }
         } catch (Exception e) {
@@ -293,6 +295,8 @@ public class ExperimentRegistry {
                             exinput.setDataType(input.getType().toString());
                         }
                         exinput.setMetadata(input.getMetaData());
+                        exinput.setAppArgument(input.getApplicationArgument());
+                        exinput.setInputOrder(input.getInputOrder());
                         exinput.save();
                     }
                 }
@@ -816,6 +820,8 @@ public class ExperimentRegistry {
                     resource.setDataType(input.getType().toString());
                 }
                 resource.setMetadata(input.getMetaData());
+                resource.setAppArgument(input.getApplicationArgument());
+                resource.setInputOrder(input.getInputOrder());
                 resource.save();
             }
         } catch (Exception e) {
@@ -837,6 +843,8 @@ public class ExperimentRegistry {
                         resource.setDataType(input.getType().toString());
                     }
                     resource.setMetadata(input.getMetaData());
+                    resource.setAppArgument(input.getApplicationArgument());
+                    resource.setInputOrder(input.getInputOrder());
                     resource.save();
                 }
             }
@@ -994,6 +1002,8 @@ public class ExperimentRegistry {
                     resource.setDataType(input.getType().toString());
                 }
                 resource.setMetadata(input.getMetaData());
+                resource.setAppArgument(input.getApplicationArgument());
+                resource.setInputOrder(input.getInputOrder());
                 resource.save();
             }
         } catch (Exception e) {
@@ -1059,6 +1069,8 @@ public class ExperimentRegistry {
                         resource.setDataType(input.getType().toString());
                     }
                     resource.setMetadata(input.getMetaData());
+                    resource.setAppArgument(input.getApplicationArgument());
+                    resource.setInputOrder(input.getInputOrder());
                     resource.save();
                 }
 

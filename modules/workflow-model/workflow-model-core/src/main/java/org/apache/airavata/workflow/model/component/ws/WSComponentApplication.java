@@ -36,8 +36,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.namespace.QName;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -46,10 +44,9 @@ import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
-import org.apache.airavata.workflow.model.graph.GraphSchema;
+import org.apache.airavata.workflow.model.utils.WorkflowConstants;
 import org.xmlpull.infoset.XmlNamespace;
 
-import xsul.dsig.apache.axis.uti.XMLUtils;
 import xsul5.XmlConstants;
 
 @XmlRootElement(name="Application")
@@ -70,7 +67,7 @@ public class WSComponentApplication {
 		app.setApplicationId("dsfds");
 		app.setName("dfd");
 		app.setDescription("sdfdsfds");
-		app.addInputParameter(new WSComponentApplicationParameter("asas", new QName("sdf"), null, "sdfds"));
+		app.addInputParameter(new WSComponentApplicationParameter("asas", new QName("sdf"), null, "sdfds", 1));
 		app.addOutputParameter(new WSComponentApplicationParameter("9842", new QName("sdv99304"), null, null));
 		app.addOutputParameter(new WSComponentApplicationParameter("AAAAA", new QName("sdfd"), "sdfsdf", "243bs sd fsd fs f dfd"));
 	      ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -112,38 +109,42 @@ public class WSComponentApplication {
 
     public static WSComponentApplication parse(JsonObject applicationObject) {
         WSComponentApplication wsComponentApplication = new WSComponentApplication();
-        wsComponentApplication.description = applicationObject.getAsJsonPrimitive("description").getAsString();
-        wsComponentApplication.name = applicationObject.getAsJsonPrimitive("name").getAsString();
-        wsComponentApplication.applicationId = applicationObject.getAsJsonPrimitive("application").getAsString();
+        wsComponentApplication.description = applicationObject.getAsJsonPrimitive(WorkflowConstants.APPLICATION_COMPONENT_DESCRIPTION).getAsString();
+        wsComponentApplication.name = applicationObject.getAsJsonPrimitive(WorkflowConstants.APPLICATION_COMPONENT_NAME).getAsString();
+        wsComponentApplication.applicationId = applicationObject.getAsJsonPrimitive(WorkflowConstants.APPLICATION_COMPONENT_APPLICATION).getAsString();
 
-        if (applicationObject.get("Input") != null) {
-            JsonArray inputArray = applicationObject.getAsJsonArray("Input");
-            WSComponentApplicationParameter inputParameter;
-            JsonObject inputObject;
-            for (JsonElement jsonElement : inputArray) {
-                if (jsonElement instanceof JsonObject) {
-                    inputObject = (JsonObject) jsonElement;
-                    inputParameter = new WSComponentApplicationParameter();
-                    inputParameter.setDefaultValue(inputObject.getAsJsonPrimitive("text").getAsString());
-                    inputParameter.setDescription(inputObject.getAsJsonPrimitive("description").getAsString());
-                    inputParameter.setName(inputObject.getAsJsonPrimitive("name").getAsString());
-                    inputParameter.setType(QName.valueOf(inputObject.getAsJsonPrimitive("dataType").getAsString()));
-                    wsComponentApplication.addInputParameter(inputParameter);
-                }
-            }
-        }
+        if (applicationObject.get(WorkflowConstants.APPLICATION_INPUT) != null) {
+			JsonArray inputArray = applicationObject.getAsJsonArray(WorkflowConstants.APPLICATION_INPUT);
+			WSComponentApplicationParameter inputParameter;
+			JsonObject inputObject;
+			for (JsonElement jsonElement : inputArray) {
+				if (jsonElement instanceof JsonObject) {
+					inputObject = (JsonObject) jsonElement;
+					inputParameter = new WSComponentApplicationParameter();
+					inputParameter.setDefaultValue(inputObject.getAsJsonPrimitive(WorkflowConstants.APPLICATION_DATA_DEFAULT_VALUE).getAsString());
+					inputParameter.setDescription(inputObject.getAsJsonPrimitive(WorkflowConstants.APPLICATION_DATA_DESCRIPTION).getAsString());
+					inputParameter.setName(inputObject.getAsJsonPrimitive(WorkflowConstants.APPLICATION_DATA_NAME).getAsString());
+					inputParameter.setType(QName.valueOf(inputObject.getAsJsonPrimitive(WorkflowConstants.APPLICATION_DATA_DATA_TYPE).getAsString()));
+					inputParameter.setInputOrder(inputObject.getAsJsonPrimitive(WorkflowConstants.APPLICATION_DATA_INPUT_ORDER).getAsInt());
+					if (inputObject.getAsJsonPrimitive(WorkflowConstants.APPLICATION_DATA_APP_ARGUMENT) != null) {
+						inputParameter.setApplicationArgument(inputObject.getAsJsonPrimitive(WorkflowConstants.APPLICATION_DATA_APP_ARGUMENT).getAsString());
+					}
+					wsComponentApplication.addInputParameter(inputParameter);
+				}
+			}
+		}
 
-        if (applicationObject.get("Output") != null) {
-            JsonArray outputArray = applicationObject.getAsJsonArray("Output");
+        if (applicationObject.get(WorkflowConstants.APPLICATION_OUTPUT) != null) {
+            JsonArray outputArray = applicationObject.getAsJsonArray(WorkflowConstants.APPLICATION_OUTPUT);
             WSComponentApplicationParameter outputParameter;
             JsonObject outputObject;
             for (JsonElement jsonElement : outputArray) {
                 if (jsonElement instanceof JsonObject) {
                     outputObject = (JsonObject) jsonElement;
                     outputParameter = new WSComponentApplicationParameter();
-                    outputParameter.setDescription(outputObject.getAsJsonPrimitive("description").getAsString());
-                    outputParameter.setName(outputObject.getAsJsonPrimitive("name").getAsString());
-                    outputParameter.setType(QName.valueOf(outputObject.getAsJsonPrimitive("dataType").getAsString()));
+                    outputParameter.setDescription(outputObject.getAsJsonPrimitive(WorkflowConstants.APPLICATION_DATA_DESCRIPTION).getAsString());
+                    outputParameter.setName(outputObject.getAsJsonPrimitive(WorkflowConstants.APPLICATION_DATA_NAME).getAsString());
+                    outputParameter.setType(QName.valueOf(outputObject.getAsJsonPrimitive(WorkflowConstants.APPLICATION_DATA_DATA_TYPE).getAsString()));
                     wsComponentApplication.addOutputParameter(outputParameter);
                 }
             }
@@ -170,31 +171,35 @@ public class WSComponentApplication {
 
     public JsonObject toJSON() {
         JsonObject componentObject = new JsonObject();
-        componentObject.addProperty("description", this.description);
-        componentObject.addProperty("name", this.name);
-        componentObject.addProperty("application", this.applicationId);
+        componentObject.addProperty(WorkflowConstants.APPLICATION_COMPONENT_DESCRIPTION, this.description);
+		componentObject.addProperty(WorkflowConstants.APPLICATION_COMPONENT_NAME, this.name);
+		componentObject.addProperty(WorkflowConstants.APPLICATION_COMPONENT_APPLICATION, this.applicationId);
         JsonArray inputArray = new JsonArray();
         JsonObject inputObject;
         for (WSComponentApplicationParameter inputParameter : this.inputParameters) {
             inputObject = new JsonObject();
-            inputObject.addProperty("description", inputParameter.getDescription());
-            inputObject.addProperty("name", inputParameter.getName());
-            inputObject.addProperty("text", inputParameter.getDefaultValue());
-            inputObject.addProperty("dataType",  inputParameter.getType().toString());
-            inputArray.add(inputObject);
+            inputObject.addProperty(WorkflowConstants.APPLICATION_DATA_DESCRIPTION, inputParameter.getDescription());
+            inputObject.addProperty(WorkflowConstants.APPLICATION_DATA_NAME, inputParameter.getName());
+            inputObject.addProperty(WorkflowConstants.APPLICATION_DATA_DEFAULT_VALUE, inputParameter.getDefaultValue());
+            inputObject.addProperty(WorkflowConstants.APPLICATION_DATA_DATA_TYPE,  inputParameter.getType().toString());
+			inputObject.addProperty(WorkflowConstants.APPLICATION_DATA_INPUT_ORDER, inputParameter.getInputOrder());
+			if (inputParameter.getApplicationArgument() != null) {
+				inputObject.addProperty(WorkflowConstants.APPLICATION_DATA_APP_ARGUMENT, inputParameter.getApplicationArgument());
+			}
+			inputArray.add(inputObject);
         }
-        componentObject.add("Input", inputArray);
+        componentObject.add(WorkflowConstants.APPLICATION_INPUT, inputArray);
 
         JsonArray outputArray = new JsonArray();
         JsonObject outputObject;
         for (WSComponentApplicationParameter outputParameter : this.outputParameters) {
             outputObject = new JsonObject();
-            outputObject.addProperty("description", outputParameter.getDescription());
-            outputObject.addProperty("name", outputParameter.getName());
-            outputObject.addProperty("dataType" , outputParameter.getType().toString());
-            outputArray.add(outputObject);
+			outputObject.addProperty(WorkflowConstants.APPLICATION_DATA_DESCRIPTION, outputParameter.getDescription());
+			outputObject.addProperty(WorkflowConstants.APPLICATION_DATA_NAME, outputParameter.getName());
+			outputObject.addProperty(WorkflowConstants.APPLICATION_DATA_DATA_TYPE, outputParameter.getType().toString());
+			outputArray.add(outputObject);
         }
-        componentObject.add("Output", outputArray);
+		componentObject.add(WorkflowConstants.APPLICATION_OUTPUT, outputArray);
 
         return componentObject;
     }
@@ -212,7 +217,9 @@ public class WSComponentApplication {
             String prefix = "xsd";
             QName type = new QName(namespace.getName(), typeName, prefix);
 
-			addInputParameter(new WSComponentApplicationParameter(inputDataObjectType.getName(), type, inputDataObjectType.getUserFriendlyDescription(), inputDataObjectType.getValue(), inputDataObjectType.getApplicationArgument()));
+			addInputParameter(new WSComponentApplicationParameter(inputDataObjectType.getName(), type,
+					inputDataObjectType.getUserFriendlyDescription(), inputDataObjectType.getValue(),
+					inputDataObjectType.getApplicationArgument(), inputDataObjectType.getInputOrder()));
 		}
 
         List<OutputDataObjectType> applicationOutputs = application.getApplicationOutputs();
