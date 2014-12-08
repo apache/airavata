@@ -45,8 +45,8 @@ const char* _kDataTypeNames[] = {
 };
 const std::map<int, const char*> _DataType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(6, _kDataTypeValues, _kDataTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
-const char* InputDataObjectType::ascii_fingerprint = "24F962C1CE4BE9FBD0F5D5EE9D1D5C00";
-const uint8_t InputDataObjectType::binary_fingerprint[16] = {0x24,0xF9,0x62,0xC1,0xCE,0x4B,0xE9,0xFB,0xD0,0xF5,0xD5,0xEE,0x9D,0x1D,0x5C,0x00};
+const char* InputDataObjectType::ascii_fingerprint = "91FB63C319A494A8E1E6563006402BC7";
+const uint8_t InputDataObjectType::binary_fingerprint[16] = {0x91,0xFB,0x63,0xC3,0x19,0xA4,0x94,0xA8,0xE1,0xE6,0x56,0x30,0x06,0x40,0x2B,0xC7};
 
 uint32_t InputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -127,6 +127,14 @@ uint32_t InputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot)
           xfer += iprot->skip(ftype);
         }
         break;
+      case 8:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->inputOrder);
+          this->__isset.inputOrder = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -179,6 +187,11 @@ uint32_t InputDataObjectType::write(::apache::thrift::protocol::TProtocol* oprot
     xfer += oprot->writeString(this->metaData);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.inputOrder) {
+    xfer += oprot->writeFieldBegin("inputOrder", ::apache::thrift::protocol::T_I32, 8);
+    xfer += oprot->writeI32(this->inputOrder);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -193,6 +206,7 @@ void swap(InputDataObjectType &a, InputDataObjectType &b) {
   swap(a.standardInput, b.standardInput);
   swap(a.userFriendlyDescription, b.userFriendlyDescription);
   swap(a.metaData, b.metaData);
+  swap(a.inputOrder, b.inputOrder);
   swap(a.__isset, b.__isset);
 }
 
@@ -291,8 +305,8 @@ void swap(OutputDataObjectType &a, OutputDataObjectType &b) {
   swap(a.__isset, b.__isset);
 }
 
-const char* ApplicationInterfaceDescription::ascii_fingerprint = "355A0972969341C2A113049339427849";
-const uint8_t ApplicationInterfaceDescription::binary_fingerprint[16] = {0x35,0x5A,0x09,0x72,0x96,0x93,0x41,0xC2,0xA1,0x13,0x04,0x93,0x39,0x42,0x78,0x49};
+const char* ApplicationInterfaceDescription::ascii_fingerprint = "F2FFD013708A2D0DA86FD5438F17268E";
+const uint8_t ApplicationInterfaceDescription::binary_fingerprint[16] = {0xF2,0xFF,0xD0,0x13,0x70,0x8A,0x2D,0x0D,0xA8,0x6F,0xD5,0x43,0x8F,0x17,0x26,0x8E};
 
 uint32_t ApplicationInterfaceDescription::read(::apache::thrift::protocol::TProtocol* iprot) {
 

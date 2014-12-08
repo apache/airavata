@@ -54,7 +54,7 @@ public class ExperimentOutputResourceTest extends AbstractResourceTest  {
         outputResource.setExperimentResource(experimentResource);
         outputResource.setExperimentKey("testKey");
         outputResource.setValue("testValue");
-        outputResource.setOutputType("string");
+        outputResource.setDataType("string");
         outputResource.save();
     }
 

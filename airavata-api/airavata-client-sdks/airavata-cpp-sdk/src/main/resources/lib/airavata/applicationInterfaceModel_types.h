@@ -48,22 +48,23 @@ struct DataType {
 extern const std::map<int, const char*> _DataType_VALUES_TO_NAMES;
 
 typedef struct _InputDataObjectType__isset {
-  _InputDataObjectType__isset() : value(false), type(false), applicationArgument(false), standardInput(true), userFriendlyDescription(false), metaData(false) {}
+  _InputDataObjectType__isset() : value(false), type(false), applicationArgument(false), standardInput(true), userFriendlyDescription(false), metaData(false), inputOrder(false) {}
   bool value;
   bool type;
   bool applicationArgument;
   bool standardInput;
   bool userFriendlyDescription;
   bool metaData;
+  bool inputOrder;
 } _InputDataObjectType__isset;
 
 class InputDataObjectType {
  public:
 
-  static const char* ascii_fingerprint; // = "24F962C1CE4BE9FBD0F5D5EE9D1D5C00";
-  static const uint8_t binary_fingerprint[16]; // = {0x24,0xF9,0x62,0xC1,0xCE,0x4B,0xE9,0xFB,0xD0,0xF5,0xD5,0xEE,0x9D,0x1D,0x5C,0x00};
+  static const char* ascii_fingerprint; // = "91FB63C319A494A8E1E6563006402BC7";
+  static const uint8_t binary_fingerprint[16]; // = {0x91,0xFB,0x63,0xC3,0x19,0xA4,0x94,0xA8,0xE1,0xE6,0x56,0x30,0x06,0x40,0x2B,0xC7};
 
-  InputDataObjectType() : name(), value(), type((DataType::type)0), applicationArgument(), standardInput(false), userFriendlyDescription(), metaData() {
+  InputDataObjectType() : name(), value(), type((DataType::type)0), applicationArgument(), standardInput(false), userFriendlyDescription(), metaData(), inputOrder(0) {
   }
 
   virtual ~InputDataObjectType() throw() {}
@@ -75,6 +76,7 @@ class InputDataObjectType {
   bool standardInput;
   std::string userFriendlyDescription;
   std::string metaData;
+  int32_t inputOrder;
 
   _InputDataObjectType__isset __isset;
 
@@ -112,6 +114,11 @@ class InputDataObjectType {
     __isset.metaData = true;
   }
 
+  void __set_inputOrder(const int32_t val) {
+    inputOrder = val;
+    __isset.inputOrder = true;
+  }
+
   bool operator == (const InputDataObjectType & rhs) const
   {
     if (!(name == rhs.name))
@@ -139,6 +146,10 @@ class InputDataObjectType {
     if (__isset.metaData != rhs.__isset.metaData)
       return false;
     else if (__isset.metaData && !(metaData == rhs.metaData))
+      return false;
+    if (__isset.inputOrder != rhs.__isset.inputOrder)
+      return false;
+    else if (__isset.inputOrder && !(inputOrder == rhs.inputOrder))
       return false;
     return true;
   }
@@ -230,8 +241,8 @@ typedef struct _ApplicationInterfaceDescription__isset {
 class ApplicationInterfaceDescription {
  public:
 
-  static const char* ascii_fingerprint; // = "355A0972969341C2A113049339427849";
-  static const uint8_t binary_fingerprint[16]; // = {0x35,0x5A,0x09,0x72,0x96,0x93,0x41,0xC2,0xA1,0x13,0x04,0x93,0x39,0x42,0x78,0x49};
+  static const char* ascii_fingerprint; // = "F2FFD013708A2D0DA86FD5438F17268E";
+  static const uint8_t binary_fingerprint[16]; // = {0xF2,0xFF,0xD0,0x13,0x70,0x8A,0x2D,0x0D,0xA8,0x6F,0xD5,0x43,0x8F,0x17,0x26,0x8E};
 
   ApplicationInterfaceDescription() : applicationInterfaceId("DO_NOT_SET_AT_CLIENTS"), applicationName(), applicationDescription() {
   }

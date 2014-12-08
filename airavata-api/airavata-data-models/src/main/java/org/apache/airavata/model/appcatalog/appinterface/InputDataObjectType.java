@@ -85,6 +85,7 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField STANDARD_INPUT_FIELD_DESC = new org.apache.thrift.protocol.TField("standardInput", org.apache.thrift.protocol.TType.BOOL, (short)5);
   private static final org.apache.thrift.protocol.TField USER_FRIENDLY_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("userFriendlyDescription", org.apache.thrift.protocol.TType.STRING, (short)6);
   private static final org.apache.thrift.protocol.TField META_DATA_FIELD_DESC = new org.apache.thrift.protocol.TField("metaData", org.apache.thrift.protocol.TType.STRING, (short)7);
+  private static final org.apache.thrift.protocol.TField INPUT_ORDER_FIELD_DESC = new org.apache.thrift.protocol.TField("inputOrder", org.apache.thrift.protocol.TType.I32, (short)8);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -99,6 +100,7 @@ import org.slf4j.LoggerFactory;
   private boolean standardInput; // optional
   private String userFriendlyDescription; // optional
   private String metaData; // optional
+  private int inputOrder; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -112,7 +114,8 @@ import org.slf4j.LoggerFactory;
     APPLICATION_ARGUMENT((short)4, "applicationArgument"),
     STANDARD_INPUT((short)5, "standardInput"),
     USER_FRIENDLY_DESCRIPTION((short)6, "userFriendlyDescription"),
-    META_DATA((short)7, "metaData");
+    META_DATA((short)7, "metaData"),
+    INPUT_ORDER((short)8, "inputOrder");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -141,6 +144,8 @@ import org.slf4j.LoggerFactory;
           return USER_FRIENDLY_DESCRIPTION;
         case 7: // META_DATA
           return META_DATA;
+        case 8: // INPUT_ORDER
+          return INPUT_ORDER;
         default:
           return null;
       }
@@ -182,8 +187,9 @@ import org.slf4j.LoggerFactory;
 
   // isset id assignments
   private static final int __STANDARDINPUT_ISSET_ID = 0;
+  private static final int __INPUTORDER_ISSET_ID = 1;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.VALUE,_Fields.TYPE,_Fields.APPLICATION_ARGUMENT,_Fields.STANDARD_INPUT,_Fields.USER_FRIENDLY_DESCRIPTION,_Fields.META_DATA};
+  private _Fields optionals[] = {_Fields.VALUE,_Fields.TYPE,_Fields.APPLICATION_ARGUMENT,_Fields.STANDARD_INPUT,_Fields.USER_FRIENDLY_DESCRIPTION,_Fields.META_DATA,_Fields.INPUT_ORDER};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -201,6 +207,8 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.META_DATA, new org.apache.thrift.meta_data.FieldMetaData("metaData", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.INPUT_ORDER, new org.apache.thrift.meta_data.FieldMetaData("inputOrder", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(InputDataObjectType.class, metaDataMap);
   }
@@ -241,6 +249,7 @@ import org.slf4j.LoggerFactory;
     if (other.isSetMetaData()) {
       this.metaData = other.metaData;
     }
+    this.inputOrder = other.inputOrder;
   }
 
   public InputDataObjectType deepCopy() {
@@ -257,6 +266,8 @@ import org.slf4j.LoggerFactory;
 
     this.userFriendlyDescription = null;
     this.metaData = null;
+    setInputOrderIsSet(false);
+    this.inputOrder = 0;
   }
 
   public String getName() {
@@ -427,6 +438,28 @@ import org.slf4j.LoggerFactory;
     }
   }
 
+  public int getInputOrder() {
+    return this.inputOrder;
+  }
+
+  public void setInputOrder(int inputOrder) {
+    this.inputOrder = inputOrder;
+    setInputOrderIsSet(true);
+  }
+
+  public void unsetInputOrder() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __INPUTORDER_ISSET_ID);
+  }
+
+  /** Returns true if field inputOrder is set (has been assigned a value) and false otherwise */
+  public boolean isSetInputOrder() {
+    return EncodingUtils.testBit(__isset_bitfield, __INPUTORDER_ISSET_ID);
+  }
+
+  public void setInputOrderIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __INPUTORDER_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case NAME:
@@ -485,6 +518,14 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case INPUT_ORDER:
+      if (value == null) {
+        unsetInputOrder();
+      } else {
+        setInputOrder((Integer)value);
+      }
+      break;
+
     }
   }
 
@@ -511,6 +552,9 @@ import org.slf4j.LoggerFactory;
     case META_DATA:
       return getMetaData();
 
+    case INPUT_ORDER:
+      return Integer.valueOf(getInputOrder());
+
     }
     throw new IllegalStateException();
   }
@@ -536,6 +580,8 @@ import org.slf4j.LoggerFactory;
       return isSetUserFriendlyDescription();
     case META_DATA:
       return isSetMetaData();
+    case INPUT_ORDER:
+      return isSetInputOrder();
     }
     throw new IllegalStateException();
   }
@@ -613,6 +659,15 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_metaData && that_present_metaData))
         return false;
       if (!this.metaData.equals(that.metaData))
+        return false;
+    }
+
+    boolean this_present_inputOrder = true && this.isSetInputOrder();
+    boolean that_present_inputOrder = true && that.isSetInputOrder();
+    if (this_present_inputOrder || that_present_inputOrder) {
+      if (!(this_present_inputOrder && that_present_inputOrder))
+        return false;
+      if (this.inputOrder != that.inputOrder)
         return false;
     }
 
@@ -702,6 +757,16 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetInputOrder()).compareTo(other.isSetInputOrder());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetInputOrder()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.inputOrder, other.inputOrder);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -783,6 +848,12 @@ import org.slf4j.LoggerFactory;
       } else {
         sb.append(this.metaData);
       }
+      first = false;
+    }
+    if (isSetInputOrder()) {
+      if (!first) sb.append(", ");
+      sb.append("inputOrder:");
+      sb.append(this.inputOrder);
       first = false;
     }
     sb.append(")");
@@ -890,6 +961,14 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 8: // INPUT_ORDER
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.inputOrder = iprot.readI32();
+              struct.setInputOrderIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -948,6 +1027,11 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldEnd();
         }
       }
+      if (struct.isSetInputOrder()) {
+        oprot.writeFieldBegin(INPUT_ORDER_FIELD_DESC);
+        oprot.writeI32(struct.inputOrder);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -985,7 +1069,10 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetMetaData()) {
         optionals.set(5);
       }
-      oprot.writeBitSet(optionals, 6);
+      if (struct.isSetInputOrder()) {
+        optionals.set(6);
+      }
+      oprot.writeBitSet(optionals, 7);
       if (struct.isSetValue()) {
         oprot.writeString(struct.value);
       }
@@ -1004,6 +1091,9 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetMetaData()) {
         oprot.writeString(struct.metaData);
       }
+      if (struct.isSetInputOrder()) {
+        oprot.writeI32(struct.inputOrder);
+      }
     }
 
     @Override
@@ -1011,7 +1101,7 @@ import org.slf4j.LoggerFactory;
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.name = iprot.readString();
       struct.setNameIsSet(true);
-      BitSet incoming = iprot.readBitSet(6);
+      BitSet incoming = iprot.readBitSet(7);
       if (incoming.get(0)) {
         struct.value = iprot.readString();
         struct.setValueIsSet(true);
@@ -1035,6 +1125,10 @@ import org.slf4j.LoggerFactory;
       if (incoming.get(5)) {
         struct.metaData = iprot.readString();
         struct.setMetaDataIsSet(true);
+      }
+      if (incoming.get(6)) {
+        struct.inputOrder = iprot.readI32();
+        struct.setInputOrderIsSet(true);
       }
     }
   }

@@ -48,8 +48,10 @@ public class WorkflowInput implements Serializable {
     private String userFriendlyDesc;
     @Column(name = "STANDARD_INPUT")
     private boolean standardInput;
+    @Column(name = "INPUT_ORDER")
+    private int inputOrder;
 
-    @ManyToOne(cascade= CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "WF_TEMPLATE_ID")
     private Workflow workflow;
 
@@ -123,5 +125,13 @@ public class WorkflowInput implements Serializable {
 
     public void setStandardInput(boolean standardInput) {
         this.standardInput = standardInput;
+    }
+
+    public int getInputOrder() {
+        return inputOrder;
+    }
+
+    public void setInputOrder(int inputOrder) {
+        this.inputOrder = inputOrder;
     }
 }
