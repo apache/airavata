@@ -61,6 +61,13 @@ public class Experiment_Input implements Serializable {
     @Column(name = "INPUT_ORDER")
     private int inputOrder;
 
+    @Column(name="VALIDITY_TYPE")
+    private String validityType;
+    @Column(name="COMMANDLINE_TYPE")
+    private String commandLineType;
+    @Column(name = "DATA_STAGED")
+    private boolean dataStaged;
+
     @ManyToOne
     @JoinColumn(name = "EXPERIMENT_ID")
     private Experiment experiment;
@@ -143,5 +150,29 @@ public class Experiment_Input implements Serializable {
 
     public void setUserFriendlyDesc(String userFriendlyDesc) {
         this.userFriendlyDesc = userFriendlyDesc;
+    }
+
+    public String getValidityType() {
+        return validityType;
+    }
+
+    public void setValidityType(String validityType) {
+        this.validityType = validityType;
+    }
+
+    public String getCommandLineType() {
+        return commandLineType;
+    }
+
+    public void setCommandLineType(String commandLineType) {
+        this.commandLineType = commandLineType;
+    }
+
+    public boolean isDataStaged() {
+        return dataStaged;
+    }
+
+    public void setDataStaged(boolean dataStaged) {
+        this.dataStaged = dataStaged;
     }
 }

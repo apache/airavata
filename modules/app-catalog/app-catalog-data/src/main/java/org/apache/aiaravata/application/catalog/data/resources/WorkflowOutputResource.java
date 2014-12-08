@@ -44,6 +44,9 @@ public class WorkflowOutputResource extends AbstractResource {
     private String outputKey;
     private String outputVal;
     private String dataType;
+    private String validityType;
+    private boolean dataMovement;
+    private String dataNameLocation;
 
     private WorkflowResource workflowResource;
 
@@ -276,6 +279,9 @@ public class WorkflowOutputResource extends AbstractResource {
                 if (outputKey != null){
                     existingWorkflowOutput.setOutputVal(outputVal.toCharArray());
                 }
+                existingWorkflowOutput.setValidityType(validityType);
+                existingWorkflowOutput.setDataMovement(dataMovement);
+                existingWorkflowOutput.setDataNameLocation(dataNameLocation);
                 em.merge(existingWorkflowOutput);
             } else {
                 WorkflowOutput workflowOutput = new WorkflowOutput();
@@ -287,6 +293,9 @@ public class WorkflowOutputResource extends AbstractResource {
                 if (outputKey != null){
                     workflowOutput.setOutputVal(outputVal.toCharArray());
                 }
+                workflowOutput.setValidityType(validityType);
+                workflowOutput.setDataMovement(dataMovement);
+                workflowOutput.setDataNameLocation(dataNameLocation);
                 em.persist(workflowOutput);
             }
             em.getTransaction().commit();
@@ -373,5 +382,29 @@ public class WorkflowOutputResource extends AbstractResource {
 
     public void setWorkflowResource(WorkflowResource workflowResource) {
         this.workflowResource = workflowResource;
+    }
+
+    public String getValidityType() {
+        return validityType;
+    }
+
+    public void setValidityType(String validityType) {
+        this.validityType = validityType;
+    }
+
+    public boolean isDataMovement() {
+        return dataMovement;
+    }
+
+    public void setDataMovement(boolean dataMovement) {
+        this.dataMovement = dataMovement;
+    }
+
+    public String getDataNameLocation() {
+        return dataNameLocation;
+    }
+
+    public void setDataNameLocation(String dataNameLocation) {
+        this.dataNameLocation = dataNameLocation;
     }
 }

@@ -46,6 +46,33 @@ public class ExperimentInputResource extends AbstractResource {
     private boolean standardInput;
     private String userFriendlyDesc;
     private int inputOrder;
+    private String validityType;
+    private String commandLineType;
+    private boolean dataStaged;
+
+    public String getValidityType() {
+        return validityType;
+    }
+
+    public void setValidityType(String validityType) {
+        this.validityType = validityType;
+    }
+
+    public String getCommandLineType() {
+        return commandLineType;
+    }
+
+    public void setCommandLineType(String commandLineType) {
+        this.commandLineType = commandLineType;
+    }
+
+    public boolean isDataStaged() {
+        return dataStaged;
+    }
+
+    public void setDataStaged(boolean dataStaged) {
+        this.dataStaged = dataStaged;
+    }
 
     public int getInputOrder() {
         return inputOrder;
@@ -162,6 +189,9 @@ public class ExperimentInputResource extends AbstractResource {
             exInput.setStandardInput(standardInput);
             exInput.setUserFriendlyDesc(userFriendlyDesc);
             exInput.setInputOrder(inputOrder);
+            exInput.setCommandLineType(commandLineType);
+            exInput.setValidityType(validityType);
+            exInput.setDataStaged(dataStaged);
             if (existingInput != null) {
                 existingInput.setEx_key(experimentKey);
                 existingInput.setExperiment(experiment);
@@ -175,6 +205,9 @@ public class ExperimentInputResource extends AbstractResource {
                 existingInput.setStandardInput(standardInput);
                 existingInput.setUserFriendlyDesc(userFriendlyDesc);
                 existingInput.setInputOrder(inputOrder);
+                existingInput.setCommandLineType(commandLineType);
+                existingInput.setValidityType(validityType);
+                existingInput.setDataStaged(dataStaged);
                 exInput = em.merge(existingInput);
             } else {
                 em.persist(exInput);

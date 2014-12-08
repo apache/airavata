@@ -47,6 +47,33 @@ public class NodeInputResource extends AbstractResource {
     private boolean standardInput;
     private String userFriendlyDesc;
     private int inputOrder;
+    private String validityType;
+    private String commandLineType;
+    private boolean dataStaged;
+
+    public String getValidityType() {
+        return validityType;
+    }
+
+    public void setValidityType(String validityType) {
+        this.validityType = validityType;
+    }
+
+    public String getCommandLineType() {
+        return commandLineType;
+    }
+
+    public void setCommandLineType(String commandLineType) {
+        this.commandLineType = commandLineType;
+    }
+
+    public boolean isDataStaged() {
+        return dataStaged;
+    }
+
+    public void setDataStaged(boolean dataStaged) {
+        this.dataStaged = dataStaged;
+    }
 
     public String getAppArgument() {
         return appArgument;
@@ -165,6 +192,9 @@ public class NodeInputResource extends AbstractResource {
             nodeInput.setStandardInput(standardInput);
             nodeInput.setUserFriendlyDesc(userFriendlyDesc);
             nodeInput.setInputOrder(inputOrder);
+            nodeInput.setCommandLineType(commandLineType);
+            nodeInput.setValidityType(validityType);
+            nodeInput.setDataStaged(dataStaged);
 
             if (existingInput != null){
                 existingInput.setNodeDetails(nodeDetail);
@@ -177,6 +207,9 @@ public class NodeInputResource extends AbstractResource {
                 existingInput.setStandardInput(standardInput);
                 existingInput.setUserFriendlyDesc(userFriendlyDesc);
                 existingInput.setInputOrder(inputOrder);
+                existingInput.setCommandLineType(commandLineType);
+                existingInput.setValidityType(validityType);
+                existingInput.setDataStaged(dataStaged);
                 nodeInput = em.merge(existingInput);
             }else {
                 em.persist(nodeInput);

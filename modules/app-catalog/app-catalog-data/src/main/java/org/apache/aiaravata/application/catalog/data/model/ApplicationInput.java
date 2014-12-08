@@ -49,6 +49,12 @@ public class ApplicationInput implements Serializable {
     private boolean standardInput;
     @Column(name="INPUT_ORDER")
     private int inputOrder;
+    @Column(name="VALIDITY_TYPE")
+    private String validityType;
+    @Column(name="COMMANDLINE_TYPE")
+    private String commandLineType;
+    @Column(name = "DATA_STAGED")
+    private boolean dataStaged;
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "INTERFACE_ID")
@@ -132,5 +138,29 @@ public class ApplicationInput implements Serializable {
 
     public void setInputOrder(int inputOrder) {
         this.inputOrder = inputOrder;
+    }
+
+    public String getValidityType() {
+        return validityType;
+    }
+
+    public void setValidityType(String validityType) {
+        this.validityType = validityType;
+    }
+
+    public String getCommandLineType() {
+        return commandLineType;
+    }
+
+    public void setCommandLineType(String commandLineType) {
+        this.commandLineType = commandLineType;
+    }
+
+    public boolean isDataStaged() {
+        return dataStaged;
+    }
+
+    public void setDataStaged(boolean dataStaged) {
+        this.dataStaged = dataStaged;
     }
 }

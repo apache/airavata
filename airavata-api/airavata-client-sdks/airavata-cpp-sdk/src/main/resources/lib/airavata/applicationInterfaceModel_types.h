@@ -47,8 +47,35 @@ struct DataType {
 
 extern const std::map<int, const char*> _DataType_VALUES_TO_NAMES;
 
+struct ValidityType {
+  enum type {
+    REQUIRED = 0,
+    OPTIONAL = 1
+  };
+};
+
+extern const std::map<int, const char*> _ValidityType_VALUES_TO_NAMES;
+
+struct CommandLineType {
+  enum type {
+    INCLUSIVE = 0,
+    EXCLUSIVE = 1
+  };
+};
+
+extern const std::map<int, const char*> _CommandLineType_VALUES_TO_NAMES;
+
+struct InputMetadataType {
+  enum type {
+    MEMORY = 0,
+    CPU = 1
+  };
+};
+
+extern const std::map<int, const char*> _InputMetadataType_VALUES_TO_NAMES;
+
 typedef struct _InputDataObjectType__isset {
-  _InputDataObjectType__isset() : value(false), type(false), applicationArgument(false), standardInput(true), userFriendlyDescription(false), metaData(false), inputOrder(false) {}
+  _InputDataObjectType__isset() : value(false), type(false), applicationArgument(false), standardInput(true), userFriendlyDescription(false), metaData(false), inputOrder(false), inputValid(false), addedToCommandLine(false), dataStaged(true) {}
   bool value;
   bool type;
   bool applicationArgument;
@@ -56,15 +83,18 @@ typedef struct _InputDataObjectType__isset {
   bool userFriendlyDescription;
   bool metaData;
   bool inputOrder;
+  bool inputValid;
+  bool addedToCommandLine;
+  bool dataStaged;
 } _InputDataObjectType__isset;
 
 class InputDataObjectType {
  public:
 
-  static const char* ascii_fingerprint; // = "91FB63C319A494A8E1E6563006402BC7";
-  static const uint8_t binary_fingerprint[16]; // = {0x91,0xFB,0x63,0xC3,0x19,0xA4,0x94,0xA8,0xE1,0xE6,0x56,0x30,0x06,0x40,0x2B,0xC7};
+  static const char* ascii_fingerprint; // = "95DCCA621F7BE3FA34349CC6A45329DA";
+  static const uint8_t binary_fingerprint[16]; // = {0x95,0xDC,0xCA,0x62,0x1F,0x7B,0xE3,0xFA,0x34,0x34,0x9C,0xC6,0xA4,0x53,0x29,0xDA};
 
-  InputDataObjectType() : name(), value(), type((DataType::type)0), applicationArgument(), standardInput(false), userFriendlyDescription(), metaData(), inputOrder(0) {
+  InputDataObjectType() : name(), value(), type((DataType::type)0), applicationArgument(), standardInput(false), userFriendlyDescription(), metaData(), inputOrder(0), inputValid((ValidityType::type)0), addedToCommandLine((CommandLineType::type)0), dataStaged(false) {
   }
 
   virtual ~InputDataObjectType() throw() {}
@@ -77,6 +107,9 @@ class InputDataObjectType {
   std::string userFriendlyDescription;
   std::string metaData;
   int32_t inputOrder;
+  ValidityType::type inputValid;
+  CommandLineType::type addedToCommandLine;
+  bool dataStaged;
 
   _InputDataObjectType__isset __isset;
 
@@ -119,6 +152,21 @@ class InputDataObjectType {
     __isset.inputOrder = true;
   }
 
+  void __set_inputValid(const ValidityType::type val) {
+    inputValid = val;
+    __isset.inputValid = true;
+  }
+
+  void __set_addedToCommandLine(const CommandLineType::type val) {
+    addedToCommandLine = val;
+    __isset.addedToCommandLine = true;
+  }
+
+  void __set_dataStaged(const bool val) {
+    dataStaged = val;
+    __isset.dataStaged = true;
+  }
+
   bool operator == (const InputDataObjectType & rhs) const
   {
     if (!(name == rhs.name))
@@ -151,6 +199,18 @@ class InputDataObjectType {
       return false;
     else if (__isset.inputOrder && !(inputOrder == rhs.inputOrder))
       return false;
+    if (__isset.inputValid != rhs.__isset.inputValid)
+      return false;
+    else if (__isset.inputValid && !(inputValid == rhs.inputValid))
+      return false;
+    if (__isset.addedToCommandLine != rhs.__isset.addedToCommandLine)
+      return false;
+    else if (__isset.addedToCommandLine && !(addedToCommandLine == rhs.addedToCommandLine))
+      return false;
+    if (__isset.dataStaged != rhs.__isset.dataStaged)
+      return false;
+    else if (__isset.dataStaged && !(dataStaged == rhs.dataStaged))
+      return false;
     return true;
   }
   bool operator != (const InputDataObjectType &rhs) const {
@@ -167,18 +227,21 @@ class InputDataObjectType {
 void swap(InputDataObjectType &a, InputDataObjectType &b);
 
 typedef struct _OutputDataObjectType__isset {
-  _OutputDataObjectType__isset() : value(false), type(false) {}
+  _OutputDataObjectType__isset() : value(false), type(false), validityType(false), dataMovement(false), dataNameLocation(false) {}
   bool value;
   bool type;
+  bool validityType;
+  bool dataMovement;
+  bool dataNameLocation;
 } _OutputDataObjectType__isset;
 
 class OutputDataObjectType {
  public:
 
-  static const char* ascii_fingerprint; // = "B33AE596EF78C48424CF96BCA5D1DF99";
-  static const uint8_t binary_fingerprint[16]; // = {0xB3,0x3A,0xE5,0x96,0xEF,0x78,0xC4,0x84,0x24,0xCF,0x96,0xBC,0xA5,0xD1,0xDF,0x99};
+  static const char* ascii_fingerprint; // = "9B8C3AEA43A2028DF0CEF51E90706E3A";
+  static const uint8_t binary_fingerprint[16]; // = {0x9B,0x8C,0x3A,0xEA,0x43,0xA2,0x02,0x8D,0xF0,0xCE,0xF5,0x1E,0x90,0x70,0x6E,0x3A};
 
-  OutputDataObjectType() : name(), value(), type((DataType::type)0) {
+  OutputDataObjectType() : name(), value(), type((DataType::type)0), validityType((ValidityType::type)0), dataMovement(0), dataNameLocation() {
   }
 
   virtual ~OutputDataObjectType() throw() {}
@@ -186,6 +249,9 @@ class OutputDataObjectType {
   std::string name;
   std::string value;
   DataType::type type;
+  ValidityType::type validityType;
+  bool dataMovement;
+  std::string dataNameLocation;
 
   _OutputDataObjectType__isset __isset;
 
@@ -203,6 +269,21 @@ class OutputDataObjectType {
     __isset.type = true;
   }
 
+  void __set_validityType(const ValidityType::type val) {
+    validityType = val;
+    __isset.validityType = true;
+  }
+
+  void __set_dataMovement(const bool val) {
+    dataMovement = val;
+    __isset.dataMovement = true;
+  }
+
+  void __set_dataNameLocation(const std::string& val) {
+    dataNameLocation = val;
+    __isset.dataNameLocation = true;
+  }
+
   bool operator == (const OutputDataObjectType & rhs) const
   {
     if (!(name == rhs.name))
@@ -214,6 +295,18 @@ class OutputDataObjectType {
     if (__isset.type != rhs.__isset.type)
       return false;
     else if (__isset.type && !(type == rhs.type))
+      return false;
+    if (__isset.validityType != rhs.__isset.validityType)
+      return false;
+    else if (__isset.validityType && !(validityType == rhs.validityType))
+      return false;
+    if (__isset.dataMovement != rhs.__isset.dataMovement)
+      return false;
+    else if (__isset.dataMovement && !(dataMovement == rhs.dataMovement))
+      return false;
+    if (__isset.dataNameLocation != rhs.__isset.dataNameLocation)
+      return false;
+    else if (__isset.dataNameLocation && !(dataNameLocation == rhs.dataNameLocation))
       return false;
     return true;
   }
@@ -241,8 +334,8 @@ typedef struct _ApplicationInterfaceDescription__isset {
 class ApplicationInterfaceDescription {
  public:
 
-  static const char* ascii_fingerprint; // = "F2FFD013708A2D0DA86FD5438F17268E";
-  static const uint8_t binary_fingerprint[16]; // = {0xF2,0xFF,0xD0,0x13,0x70,0x8A,0x2D,0x0D,0xA8,0x6F,0xD5,0x43,0x8F,0x17,0x26,0x8E};
+  static const char* ascii_fingerprint; // = "CE1749A2DE50827990C3136E0CE4B60D";
+  static const uint8_t binary_fingerprint[16]; // = {0xCE,0x17,0x49,0xA2,0xDE,0x50,0x82,0x79,0x90,0xC3,0x13,0x6E,0x0C,0xE4,0xB6,0x0D};
 
   ApplicationInterfaceDescription() : applicationInterfaceId("DO_NOT_SET_AT_CLIENTS"), applicationName(), applicationDescription() {
   }
