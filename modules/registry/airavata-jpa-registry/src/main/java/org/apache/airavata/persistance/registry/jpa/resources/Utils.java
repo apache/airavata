@@ -520,6 +520,10 @@ public class Utils {
             eInputResource.setInputOrder(o.getInputOrder());
             eInputResource.setStandardInput(o.isStandardInput());
             eInputResource.setUserFriendlyDesc(o.getUserFriendlyDesc());
+            eInputResource.setValidityType(o.getValidityType());
+            eInputResource.setCommandLineType(o.getCommandLineType());
+            eInputResource.setDataStaged(o.isDataStaged());
+
             if (o.getValue() != null){
                 eInputResource.setValue(new String(o.getValue()));
             }
@@ -538,6 +542,9 @@ public class Utils {
                 eOutputResource.setValue(new String(o.getValue()));
             }
             eOutputResource.setDataType(o.getDataType());
+            eOutputResource.setValidityType(o.getValidityType());
+            eOutputResource.setDataMovement(o.isDataMovement());
+            eOutputResource.setDataNameLocation(o.getDataNameLocation());
         }
         return eOutputResource;
     }
@@ -609,6 +616,9 @@ public class Utils {
             inputResource.setInputOrder(o.getInputOrder());
             inputResource.setStandardInput(o.isStandardInput());
             inputResource.setUserFriendlyDesc(o.getUserFriendlyDesc());
+            inputResource.setValidityType(o.getValidityType());
+            inputResource.setCommandLineType(o.getCommandLineType());
+            inputResource.setDataStaged(o.isDataStaged());
             if (o.getValue() != null){
                 inputResource.setValue(new String(o.getValue()));
             }
@@ -627,6 +637,9 @@ public class Utils {
             if (o.getValue() != null){
                 outputResource.setValue(new String(o.getValue()));
             }
+            outputResource.setValidityType(o.getValidityType());
+            outputResource.setDataMovement(o.isDataMovement());
+            outputResource.setDataNameLocation(o.getDataNameLocation());
         }
         return outputResource;
     }
@@ -644,6 +657,9 @@ public class Utils {
             inputResource.setInputOrder(o.getInputOrder());
             inputResource.setStandardInput(o.isStandardInput());
             inputResource.setUserFriendlyDesc(o.getUserFriendlyDesc());
+            inputResource.setValidityType(o.getValidityType());
+            inputResource.setCommandLineType(o.getCommandLineType());
+            inputResource.setDataStaged(o.isDataStaged());
         }
         return inputResource;
     }
@@ -656,6 +672,9 @@ public class Utils {
             outputResource.setDataType(o.getDataType());
             outputResource.setOutputKey(o.getOutputKey());
             outputResource.setValue(o.getValue());
+            outputResource.setValidityType(o.getValidityType());
+            outputResource.setDataMovement(o.isDataMovement());
+            outputResource.setDataNameLocation(o.getDataNameLocation());
         }
 
         return outputResource;

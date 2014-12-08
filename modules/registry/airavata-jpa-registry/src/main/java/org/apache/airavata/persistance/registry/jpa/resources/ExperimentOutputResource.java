@@ -41,6 +41,33 @@ public class ExperimentOutputResource extends AbstractResource {
     private String experimentKey;
     private String value;
     private String dataType;
+    private String validityType;
+    private boolean dataMovement;
+    private String dataNameLocation;
+
+    public String getValidityType() {
+        return validityType;
+    }
+
+    public void setValidityType(String validityType) {
+        this.validityType = validityType;
+    }
+
+    public boolean isDataMovement() {
+        return dataMovement;
+    }
+
+    public void setDataMovement(boolean dataMovement) {
+        this.dataMovement = dataMovement;
+    }
+
+    public String getDataNameLocation() {
+        return dataNameLocation;
+    }
+
+    public void setDataNameLocation(String dataNameLocation) {
+        this.dataNameLocation = dataNameLocation;
+    }
 
     public String getExperimentKey() {
         return experimentKey;
@@ -112,6 +139,9 @@ public class ExperimentOutputResource extends AbstractResource {
                 exOutput.setValue(value.toCharArray());
             }
             exOutput.setDataType(dataType);
+            exOutput.setValidityType(validityType);
+            exOutput.setDataMovement(dataMovement);
+            exOutput.setDataNameLocation(dataNameLocation);
 
             if (existingOutput != null) {
                 existingOutput.setEx_key(experimentKey);
@@ -121,6 +151,9 @@ public class ExperimentOutputResource extends AbstractResource {
                 }
                 existingOutput.setExperiment_id(experiment.getExpId());
                 existingOutput.setDataType(dataType);
+                existingOutput.setValidityType(validityType);
+                existingOutput.setDataMovement(dataMovement);
+                existingOutput.setDataNameLocation(dataNameLocation);
                 exOutput = em.merge(existingOutput);
             } else {
                 em.persist(exOutput);

@@ -43,6 +43,13 @@ public class ApplicationOutput implements Serializable {
     @Column(name = "VALUE")
     private char[] value;
 
+    @Column(name = "VALIDITY_TYPE")
+    private String validityType;
+    @Column(name = "DATA_MOVEMENT")
+    private boolean dataMovement;
+    @Column(name = "DATA_NAME_LOCATION")
+    private String dataNameLocation;
+
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "TASK_ID")
     private TaskDetail task;
@@ -85,5 +92,29 @@ public class ApplicationOutput implements Serializable {
 
     public void setDataType(String dataType) {
         this.dataType = dataType;
+    }
+
+    public String getValidityType() {
+        return validityType;
+    }
+
+    public void setValidityType(String validityType) {
+        this.validityType = validityType;
+    }
+
+    public boolean isDataMovement() {
+        return dataMovement;
+    }
+
+    public void setDataMovement(boolean dataMovement) {
+        this.dataMovement = dataMovement;
+    }
+
+    public String getDataNameLocation() {
+        return dataNameLocation;
+    }
+
+    public void setDataNameLocation(String dataNameLocation) {
+        this.dataNameLocation = dataNameLocation;
     }
 }

@@ -50,6 +50,9 @@ public class ApplicationInputResource extends AbstractResource {
     private String userFriendlyDesc;
     private int inputOrder;
     private boolean standardInput;
+    private String validityType;
+    private String commandLineType;
+    private boolean dataStaged;
 
     private AppInterfaceResource appInterfaceResource;
 
@@ -291,6 +294,9 @@ public class ApplicationInputResource extends AbstractResource {
             applicationInput.setUserFriendlyDesc(userFriendlyDesc);
             applicationInput.setStandardInput(standardInput);
             applicationInput.setInputOrder(inputOrder);
+            applicationInput.setCommandLineType(commandLineType);
+            applicationInput.setValidityType(validityType);
+            applicationInput.setDataStaged(dataStaged);
             if (existingApplicationInput == null) {
                 em.persist(applicationInput);
             } else {
@@ -420,5 +426,29 @@ public class ApplicationInputResource extends AbstractResource {
 
     public void setInputOrder(int inputOrder) {
         this.inputOrder = inputOrder;
+    }
+
+    public String getValidityType() {
+        return validityType;
+    }
+
+    public void setValidityType(String validityType) {
+        this.validityType = validityType;
+    }
+
+    public String getCommandLineType() {
+        return commandLineType;
+    }
+
+    public void setCommandLineType(String commandLineType) {
+        this.commandLineType = commandLineType;
+    }
+
+    public boolean isDataStaged() {
+        return dataStaged;
+    }
+
+    public void setDataStaged(boolean dataStaged) {
+        this.dataStaged = dataStaged;
     }
 }

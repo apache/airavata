@@ -86,6 +86,9 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField USER_FRIENDLY_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("userFriendlyDescription", org.apache.thrift.protocol.TType.STRING, (short)6);
   private static final org.apache.thrift.protocol.TField META_DATA_FIELD_DESC = new org.apache.thrift.protocol.TField("metaData", org.apache.thrift.protocol.TType.STRING, (short)7);
   private static final org.apache.thrift.protocol.TField INPUT_ORDER_FIELD_DESC = new org.apache.thrift.protocol.TField("inputOrder", org.apache.thrift.protocol.TType.I32, (short)8);
+  private static final org.apache.thrift.protocol.TField INPUT_VALID_FIELD_DESC = new org.apache.thrift.protocol.TField("inputValid", org.apache.thrift.protocol.TType.I32, (short)9);
+  private static final org.apache.thrift.protocol.TField ADDED_TO_COMMAND_LINE_FIELD_DESC = new org.apache.thrift.protocol.TField("addedToCommandLine", org.apache.thrift.protocol.TType.I32, (short)10);
+  private static final org.apache.thrift.protocol.TField DATA_STAGED_FIELD_DESC = new org.apache.thrift.protocol.TField("dataStaged", org.apache.thrift.protocol.TType.BOOL, (short)11);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -101,6 +104,9 @@ import org.slf4j.LoggerFactory;
   private String userFriendlyDescription; // optional
   private String metaData; // optional
   private int inputOrder; // optional
+  private ValidityType inputValid; // optional
+  private CommandLineType addedToCommandLine; // optional
+  private boolean dataStaged; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -115,7 +121,18 @@ import org.slf4j.LoggerFactory;
     STANDARD_INPUT((short)5, "standardInput"),
     USER_FRIENDLY_DESCRIPTION((short)6, "userFriendlyDescription"),
     META_DATA((short)7, "metaData"),
-    INPUT_ORDER((short)8, "inputOrder");
+    INPUT_ORDER((short)8, "inputOrder"),
+    /**
+     * 
+     * @see ValidityType
+     */
+    INPUT_VALID((short)9, "inputValid"),
+    /**
+     * 
+     * @see CommandLineType
+     */
+    ADDED_TO_COMMAND_LINE((short)10, "addedToCommandLine"),
+    DATA_STAGED((short)11, "dataStaged");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -146,6 +163,12 @@ import org.slf4j.LoggerFactory;
           return META_DATA;
         case 8: // INPUT_ORDER
           return INPUT_ORDER;
+        case 9: // INPUT_VALID
+          return INPUT_VALID;
+        case 10: // ADDED_TO_COMMAND_LINE
+          return ADDED_TO_COMMAND_LINE;
+        case 11: // DATA_STAGED
+          return DATA_STAGED;
         default:
           return null;
       }
@@ -188,8 +211,9 @@ import org.slf4j.LoggerFactory;
   // isset id assignments
   private static final int __STANDARDINPUT_ISSET_ID = 0;
   private static final int __INPUTORDER_ISSET_ID = 1;
+  private static final int __DATASTAGED_ISSET_ID = 2;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.VALUE,_Fields.TYPE,_Fields.APPLICATION_ARGUMENT,_Fields.STANDARD_INPUT,_Fields.USER_FRIENDLY_DESCRIPTION,_Fields.META_DATA,_Fields.INPUT_ORDER};
+  private _Fields optionals[] = {_Fields.VALUE,_Fields.TYPE,_Fields.APPLICATION_ARGUMENT,_Fields.STANDARD_INPUT,_Fields.USER_FRIENDLY_DESCRIPTION,_Fields.META_DATA,_Fields.INPUT_ORDER,_Fields.INPUT_VALID,_Fields.ADDED_TO_COMMAND_LINE,_Fields.DATA_STAGED};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -209,12 +233,20 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.INPUT_ORDER, new org.apache.thrift.meta_data.FieldMetaData("inputOrder", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.INPUT_VALID, new org.apache.thrift.meta_data.FieldMetaData("inputValid", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ValidityType.class)));
+    tmpMap.put(_Fields.ADDED_TO_COMMAND_LINE, new org.apache.thrift.meta_data.FieldMetaData("addedToCommandLine", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, CommandLineType.class)));
+    tmpMap.put(_Fields.DATA_STAGED, new org.apache.thrift.meta_data.FieldMetaData("dataStaged", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(InputDataObjectType.class, metaDataMap);
   }
 
   public InputDataObjectType() {
     this.standardInput = false;
+
+    this.dataStaged = false;
 
   }
 
@@ -250,6 +282,13 @@ import org.slf4j.LoggerFactory;
       this.metaData = other.metaData;
     }
     this.inputOrder = other.inputOrder;
+    if (other.isSetInputValid()) {
+      this.inputValid = other.inputValid;
+    }
+    if (other.isSetAddedToCommandLine()) {
+      this.addedToCommandLine = other.addedToCommandLine;
+    }
+    this.dataStaged = other.dataStaged;
   }
 
   public InputDataObjectType deepCopy() {
@@ -268,6 +307,10 @@ import org.slf4j.LoggerFactory;
     this.metaData = null;
     setInputOrderIsSet(false);
     this.inputOrder = 0;
+    this.inputValid = null;
+    this.addedToCommandLine = null;
+    this.dataStaged = false;
+
   }
 
   public String getName() {
@@ -460,6 +503,90 @@ import org.slf4j.LoggerFactory;
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __INPUTORDER_ISSET_ID, value);
   }
 
+  /**
+   * 
+   * @see ValidityType
+   */
+  public ValidityType getInputValid() {
+    return this.inputValid;
+  }
+
+  /**
+   * 
+   * @see ValidityType
+   */
+  public void setInputValid(ValidityType inputValid) {
+    this.inputValid = inputValid;
+  }
+
+  public void unsetInputValid() {
+    this.inputValid = null;
+  }
+
+  /** Returns true if field inputValid is set (has been assigned a value) and false otherwise */
+  public boolean isSetInputValid() {
+    return this.inputValid != null;
+  }
+
+  public void setInputValidIsSet(boolean value) {
+    if (!value) {
+      this.inputValid = null;
+    }
+  }
+
+  /**
+   * 
+   * @see CommandLineType
+   */
+  public CommandLineType getAddedToCommandLine() {
+    return this.addedToCommandLine;
+  }
+
+  /**
+   * 
+   * @see CommandLineType
+   */
+  public void setAddedToCommandLine(CommandLineType addedToCommandLine) {
+    this.addedToCommandLine = addedToCommandLine;
+  }
+
+  public void unsetAddedToCommandLine() {
+    this.addedToCommandLine = null;
+  }
+
+  /** Returns true if field addedToCommandLine is set (has been assigned a value) and false otherwise */
+  public boolean isSetAddedToCommandLine() {
+    return this.addedToCommandLine != null;
+  }
+
+  public void setAddedToCommandLineIsSet(boolean value) {
+    if (!value) {
+      this.addedToCommandLine = null;
+    }
+  }
+
+  public boolean isDataStaged() {
+    return this.dataStaged;
+  }
+
+  public void setDataStaged(boolean dataStaged) {
+    this.dataStaged = dataStaged;
+    setDataStagedIsSet(true);
+  }
+
+  public void unsetDataStaged() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __DATASTAGED_ISSET_ID);
+  }
+
+  /** Returns true if field dataStaged is set (has been assigned a value) and false otherwise */
+  public boolean isSetDataStaged() {
+    return EncodingUtils.testBit(__isset_bitfield, __DATASTAGED_ISSET_ID);
+  }
+
+  public void setDataStagedIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __DATASTAGED_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case NAME:
@@ -526,6 +653,30 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case INPUT_VALID:
+      if (value == null) {
+        unsetInputValid();
+      } else {
+        setInputValid((ValidityType)value);
+      }
+      break;
+
+    case ADDED_TO_COMMAND_LINE:
+      if (value == null) {
+        unsetAddedToCommandLine();
+      } else {
+        setAddedToCommandLine((CommandLineType)value);
+      }
+      break;
+
+    case DATA_STAGED:
+      if (value == null) {
+        unsetDataStaged();
+      } else {
+        setDataStaged((Boolean)value);
+      }
+      break;
+
     }
   }
 
@@ -555,6 +706,15 @@ import org.slf4j.LoggerFactory;
     case INPUT_ORDER:
       return Integer.valueOf(getInputOrder());
 
+    case INPUT_VALID:
+      return getInputValid();
+
+    case ADDED_TO_COMMAND_LINE:
+      return getAddedToCommandLine();
+
+    case DATA_STAGED:
+      return Boolean.valueOf(isDataStaged());
+
     }
     throw new IllegalStateException();
   }
@@ -582,6 +742,12 @@ import org.slf4j.LoggerFactory;
       return isSetMetaData();
     case INPUT_ORDER:
       return isSetInputOrder();
+    case INPUT_VALID:
+      return isSetInputValid();
+    case ADDED_TO_COMMAND_LINE:
+      return isSetAddedToCommandLine();
+    case DATA_STAGED:
+      return isSetDataStaged();
     }
     throw new IllegalStateException();
   }
@@ -668,6 +834,33 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_inputOrder && that_present_inputOrder))
         return false;
       if (this.inputOrder != that.inputOrder)
+        return false;
+    }
+
+    boolean this_present_inputValid = true && this.isSetInputValid();
+    boolean that_present_inputValid = true && that.isSetInputValid();
+    if (this_present_inputValid || that_present_inputValid) {
+      if (!(this_present_inputValid && that_present_inputValid))
+        return false;
+      if (!this.inputValid.equals(that.inputValid))
+        return false;
+    }
+
+    boolean this_present_addedToCommandLine = true && this.isSetAddedToCommandLine();
+    boolean that_present_addedToCommandLine = true && that.isSetAddedToCommandLine();
+    if (this_present_addedToCommandLine || that_present_addedToCommandLine) {
+      if (!(this_present_addedToCommandLine && that_present_addedToCommandLine))
+        return false;
+      if (!this.addedToCommandLine.equals(that.addedToCommandLine))
+        return false;
+    }
+
+    boolean this_present_dataStaged = true && this.isSetDataStaged();
+    boolean that_present_dataStaged = true && that.isSetDataStaged();
+    if (this_present_dataStaged || that_present_dataStaged) {
+      if (!(this_present_dataStaged && that_present_dataStaged))
+        return false;
+      if (this.dataStaged != that.dataStaged)
         return false;
     }
 
@@ -767,6 +960,36 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetInputValid()).compareTo(other.isSetInputValid());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetInputValid()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.inputValid, other.inputValid);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetAddedToCommandLine()).compareTo(other.isSetAddedToCommandLine());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetAddedToCommandLine()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.addedToCommandLine, other.addedToCommandLine);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetDataStaged()).compareTo(other.isSetDataStaged());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetDataStaged()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dataStaged, other.dataStaged);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -854,6 +1077,32 @@ import org.slf4j.LoggerFactory;
       if (!first) sb.append(", ");
       sb.append("inputOrder:");
       sb.append(this.inputOrder);
+      first = false;
+    }
+    if (isSetInputValid()) {
+      if (!first) sb.append(", ");
+      sb.append("inputValid:");
+      if (this.inputValid == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.inputValid);
+      }
+      first = false;
+    }
+    if (isSetAddedToCommandLine()) {
+      if (!first) sb.append(", ");
+      sb.append("addedToCommandLine:");
+      if (this.addedToCommandLine == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.addedToCommandLine);
+      }
+      first = false;
+    }
+    if (isSetDataStaged()) {
+      if (!first) sb.append(", ");
+      sb.append("dataStaged:");
+      sb.append(this.dataStaged);
       first = false;
     }
     sb.append(")");
@@ -969,6 +1218,30 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 9: // INPUT_VALID
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.inputValid = ValidityType.findByValue(iprot.readI32());
+              struct.setInputValidIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 10: // ADDED_TO_COMMAND_LINE
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.addedToCommandLine = CommandLineType.findByValue(iprot.readI32());
+              struct.setAddedToCommandLineIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 11: // DATA_STAGED
+            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+              struct.dataStaged = iprot.readBool();
+              struct.setDataStagedIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1032,6 +1305,25 @@ import org.slf4j.LoggerFactory;
         oprot.writeI32(struct.inputOrder);
         oprot.writeFieldEnd();
       }
+      if (struct.inputValid != null) {
+        if (struct.isSetInputValid()) {
+          oprot.writeFieldBegin(INPUT_VALID_FIELD_DESC);
+          oprot.writeI32(struct.inputValid.getValue());
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.addedToCommandLine != null) {
+        if (struct.isSetAddedToCommandLine()) {
+          oprot.writeFieldBegin(ADDED_TO_COMMAND_LINE_FIELD_DESC);
+          oprot.writeI32(struct.addedToCommandLine.getValue());
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.isSetDataStaged()) {
+        oprot.writeFieldBegin(DATA_STAGED_FIELD_DESC);
+        oprot.writeBool(struct.dataStaged);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1072,7 +1364,16 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetInputOrder()) {
         optionals.set(6);
       }
-      oprot.writeBitSet(optionals, 7);
+      if (struct.isSetInputValid()) {
+        optionals.set(7);
+      }
+      if (struct.isSetAddedToCommandLine()) {
+        optionals.set(8);
+      }
+      if (struct.isSetDataStaged()) {
+        optionals.set(9);
+      }
+      oprot.writeBitSet(optionals, 10);
       if (struct.isSetValue()) {
         oprot.writeString(struct.value);
       }
@@ -1094,6 +1395,15 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetInputOrder()) {
         oprot.writeI32(struct.inputOrder);
       }
+      if (struct.isSetInputValid()) {
+        oprot.writeI32(struct.inputValid.getValue());
+      }
+      if (struct.isSetAddedToCommandLine()) {
+        oprot.writeI32(struct.addedToCommandLine.getValue());
+      }
+      if (struct.isSetDataStaged()) {
+        oprot.writeBool(struct.dataStaged);
+      }
     }
 
     @Override
@@ -1101,7 +1411,7 @@ import org.slf4j.LoggerFactory;
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.name = iprot.readString();
       struct.setNameIsSet(true);
-      BitSet incoming = iprot.readBitSet(7);
+      BitSet incoming = iprot.readBitSet(10);
       if (incoming.get(0)) {
         struct.value = iprot.readString();
         struct.setValueIsSet(true);
@@ -1129,6 +1439,18 @@ import org.slf4j.LoggerFactory;
       if (incoming.get(6)) {
         struct.inputOrder = iprot.readI32();
         struct.setInputOrderIsSet(true);
+      }
+      if (incoming.get(7)) {
+        struct.inputValid = ValidityType.findByValue(iprot.readI32());
+        struct.setInputValidIsSet(true);
+      }
+      if (incoming.get(8)) {
+        struct.addedToCommandLine = CommandLineType.findByValue(iprot.readI32());
+        struct.setAddedToCommandLineIsSet(true);
+      }
+      if (incoming.get(9)) {
+        struct.dataStaged = iprot.readBool();
+        struct.setDataStagedIsSet(true);
       }
     }
   }

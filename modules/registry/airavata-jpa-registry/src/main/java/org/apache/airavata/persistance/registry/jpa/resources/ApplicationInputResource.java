@@ -46,6 +46,33 @@ public class ApplicationInputResource extends AbstractResource {
     private boolean standardInput;
     private String userFriendlyDesc;
     private int inputOrder;
+    private String validityType;
+    private String commandLineType;
+    private boolean dataStaged;
+
+    public String getValidityType() {
+        return validityType;
+    }
+
+    public void setValidityType(String validityType) {
+        this.validityType = validityType;
+    }
+
+    public String getCommandLineType() {
+        return commandLineType;
+    }
+
+    public void setCommandLineType(String commandLineType) {
+        this.commandLineType = commandLineType;
+    }
+
+    public boolean isDataStaged() {
+        return dataStaged;
+    }
+
+    public void setDataStaged(boolean dataStaged) {
+        this.dataStaged = dataStaged;
+    }
 
     public int getInputOrder() {
         return inputOrder;
@@ -163,6 +190,9 @@ public class ApplicationInputResource extends AbstractResource {
             applicationInput.setStandardInput(standardInput);
             applicationInput.setUserFriendlyDesc(userFriendlyDesc);
             applicationInput.setInputOrder(inputOrder);
+            applicationInput.setCommandLineType(commandLineType);
+            applicationInput.setValidityType(validityType);
+            applicationInput.setDataStaged(dataStaged);
             if (value != null){
                 applicationInput.setValue(value.toCharArray());
             }
@@ -178,6 +208,9 @@ public class ApplicationInputResource extends AbstractResource {
                 existingInput.setStandardInput(standardInput);
                 existingInput.setUserFriendlyDesc(userFriendlyDesc);
                 existingInput.setInputOrder(inputOrder);
+                existingInput.setCommandLineType(commandLineType);
+                existingInput.setValidityType(validityType);
+                existingInput.setDataStaged(dataStaged);
                 if (value != null){
                     existingInput.setValue(value.toCharArray());
                 }
