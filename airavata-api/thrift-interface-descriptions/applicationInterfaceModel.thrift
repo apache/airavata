@@ -77,7 +77,8 @@ struct InputDataObjectType {
     4: optional string applicationArgument,
     5: optional bool standardInput = 0,
     6: optional string userFriendlyDescription,
-    7: optional string metaData
+    7: optional string metaData,
+    8: optional i32 inputOrder
 }
 
 /**

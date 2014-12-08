@@ -186,28 +186,40 @@ public class ThriftDataModelConversion {
                 ExperimentInputResource expInput = (ExperimentInputResource) object;
                 dataObjectType.setName(expInput.getExperimentKey());
                 dataObjectType.setValue(expInput.getValue());
-                if (expInput.getInputType() != null){
-                    dataObjectType.setType(DataType.valueOf(expInput.getInputType()));
+                if (expInput.getDataType() != null){
+                    dataObjectType.setType(DataType.valueOf(expInput.getDataType()));
                 }
                 dataObjectType.setMetaData(expInput.getMetadata());
+                dataObjectType.setApplicationArgument(expInput.getAppArgument());
+                dataObjectType.setStandardInput(expInput.isStandardInput());
+                dataObjectType.setUserFriendlyDescription(expInput.getUserFriendlyDesc());
+                dataObjectType.setInputOrder(expInput.getInputOrder());
                 return dataObjectType;
             }else if (object instanceof NodeInputResource){
                 NodeInputResource nodeInputResource = (NodeInputResource)object;
                 dataObjectType.setName(nodeInputResource.getInputKey());
                 dataObjectType.setValue(nodeInputResource.getValue());
-                if (nodeInputResource.getInputType() != null){
-                    dataObjectType.setType(DataType.valueOf(nodeInputResource.getInputType()));
+                if (nodeInputResource.getDataType() != null){
+                    dataObjectType.setType(DataType.valueOf(nodeInputResource.getDataType()));
                 }
                 dataObjectType.setMetaData(nodeInputResource.getMetadata());
+                dataObjectType.setApplicationArgument(nodeInputResource.getAppArgument());
+                dataObjectType.setStandardInput(nodeInputResource.isStandardInput());
+                dataObjectType.setUserFriendlyDescription(nodeInputResource.getUserFriendlyDesc());
+                dataObjectType.setInputOrder(nodeInputResource.getInputOrder());
                 return dataObjectType;
             }else if (object instanceof ApplicationInputResource){
                 ApplicationInputResource inputResource = (ApplicationInputResource)object;
                 dataObjectType.setName(inputResource.getInputKey());
                 dataObjectType.setValue(inputResource.getValue());
-                if (inputResource.getInputType() != null){
-                    dataObjectType.setType(DataType.valueOf(inputResource.getInputType()));
+                if (inputResource.getDataType() != null){
+                    dataObjectType.setType(DataType.valueOf(inputResource.getDataType()));
                 }
                 dataObjectType.setMetaData(inputResource.getMetadata());
+                dataObjectType.setApplicationArgument(inputResource.getAppArgument());
+                dataObjectType.setStandardInput(inputResource.isStandardInput());
+                dataObjectType.setUserFriendlyDescription(inputResource.getUserFriendlyDesc());
+                dataObjectType.setInputOrder(inputResource.getInputOrder());
                 return dataObjectType;
             }else {
                 return null;
@@ -223,28 +235,25 @@ public class ThriftDataModelConversion {
                 ExperimentOutputResource expOutput = (ExperimentOutputResource)object;
                 dataObjectType.setName(expOutput.getExperimentKey());
                 dataObjectType.setValue(expOutput.getValue());
-                if (expOutput.getOutputType() != null){
-                    dataObjectType.setType(DataType.valueOf(expOutput.getOutputType()));
+                if (expOutput.getDataType() != null){
+                    dataObjectType.setType(DataType.valueOf(expOutput.getDataType()));
                 }
-//                dataObjectType.setMetaData(expOutput.getMetadata());
                 return dataObjectType;
             }else if (object instanceof NodeOutputResource){
                 NodeOutputResource nodeOutputResource = (NodeOutputResource)object;
                 dataObjectType.setName(nodeOutputResource.getOutputKey());
                 dataObjectType.setValue(nodeOutputResource.getValue());
-                if (nodeOutputResource.getOutputType() != null){
-                    dataObjectType.setType(DataType.valueOf(nodeOutputResource.getOutputType()));
+                if (nodeOutputResource.getDataType() != null){
+                    dataObjectType.setType(DataType.valueOf(nodeOutputResource.getDataType()));
                 }
-//                dataObjectType.setMetaData(nodeOutputResource.getMetadata());
                 return dataObjectType;
             }else if (object instanceof ApplicationOutputResource){
                 ApplicationOutputResource outputResource = (ApplicationOutputResource)object;
                 dataObjectType.setName(outputResource.getOutputKey());
                 dataObjectType.setValue(outputResource.getValue());
-                if (outputResource.getOutputType() != null){
-                    dataObjectType.setType(DataType.valueOf(outputResource.getOutputType()));
+                if (outputResource.getDataType() != null){
+                    dataObjectType.setType(DataType.valueOf(outputResource.getDataType()));
                 }
-//                dataObjectType.setMetaData(outputResource.getMetadata());
                 return dataObjectType;
             }else {
                 return null;

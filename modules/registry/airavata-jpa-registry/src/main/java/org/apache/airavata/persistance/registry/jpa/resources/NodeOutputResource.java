@@ -40,8 +40,7 @@ public class NodeOutputResource extends AbstractResource {
 	
     private WorkflowNodeDetailResource nodeDetailResource;
     private String outputKey;
-    private String outputType;
-    private String metadata;
+    private String dataType;
     private String value;
 
     public WorkflowNodeDetailResource getNodeDetailResource() {
@@ -60,20 +59,12 @@ public class NodeOutputResource extends AbstractResource {
         this.outputKey = outputKey;
     }
 
-    public String getOutputType() {
-        return outputType;
+    public String getDataType() {
+        return dataType;
     }
 
-    public void setOutputType(String outputType) {
-        this.outputType = outputType;
-    }
-
-    public String getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(String metadata) {
-        this.metadata = metadata;
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
     }
 
     public String getValue() {
@@ -123,17 +114,15 @@ public class NodeOutputResource extends AbstractResource {
             nodeOutput.setNode(nodeDetail);
             nodeOutput.setNodeId(nodeDetail.getNodeId());
             nodeOutput.setOutputKey(outputKey);
-            nodeOutput.setOutputKeyType(outputType);
+            nodeOutput.setDataType(dataType);
             nodeOutput.setValue(value);
-            nodeOutput.setMetadata(metadata);
 
             if (existingOutput != null) {
                 existingOutput.setNode(nodeDetail);
                 existingOutput.setNodeId(nodeDetail.getNodeId());
                 existingOutput.setOutputKey(outputKey);
-                existingOutput.setOutputKeyType(outputType);
+                existingOutput.setDataType(dataType);
                 existingOutput.setValue(value);
-                existingOutput.setMetadata(metadata);
                 nodeOutput = em.merge(existingOutput);
             } else {
                 em.persist(nodeOutput);

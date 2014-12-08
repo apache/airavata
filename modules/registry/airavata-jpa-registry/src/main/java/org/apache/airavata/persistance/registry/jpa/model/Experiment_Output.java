@@ -41,10 +41,8 @@ public class Experiment_Output  implements Serializable {
     @Lob
     @Column(name = "VALUE")
     private char[] value;
-    @Column(name = "METADATA")
-    private String metadata;
-    @Column(name = "OUTPUT_KEY_TYPE")
-    private String outputKeyType;
+    @Column(name = "DATA_TYPE")
+    private String dataType;
 
     @ManyToOne
     @JoinColumn(name = "EXPERIMENT_ID")
@@ -74,20 +72,12 @@ public class Experiment_Output  implements Serializable {
         this.value = value;
     }
 
-    public String getMetadata() {
-        return metadata;
+    public String getDataType() {
+        return dataType;
     }
 
-    public void setMetadata(String metadata) {
-        this.metadata = metadata;
-    }
-
-    public String getOutputKeyType() {
-        return outputKeyType;
-    }
-
-    public void setOutputKeyType(String outputKeyType) {
-        this.outputKeyType = outputKeyType;
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
     }
 
     public Experiment getExperiment() {

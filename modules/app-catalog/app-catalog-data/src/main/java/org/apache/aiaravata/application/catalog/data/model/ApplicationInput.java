@@ -47,6 +47,8 @@ public class ApplicationInput implements Serializable {
     private String userFriendlyDesc;
     @Column(name = "STANDARD_INPUT")
     private boolean standardInput;
+    @Column(name="INPUT_ORDER")
+    private int inputOrder;
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "INTERFACE_ID")
@@ -122,5 +124,13 @@ public class ApplicationInput implements Serializable {
 
     public void setStandardInput(boolean standardInput) {
         this.standardInput = standardInput;
+    }
+
+    public int getInputOrder() {
+        return inputOrder;
+    }
+
+    public void setInputOrder(int inputOrder) {
+        this.inputOrder = inputOrder;
     }
 }

@@ -760,7 +760,8 @@ public class AppCatalogJPAUtils {
             resource.setMetadata(o.getMetadata());
             resource.setAppArgument(o.getAppArgument());
             resource.setUserFriendlyDesc(o.getUserFriendlyDesc());
-            resource.setStandareInput(o.isStandardInput());
+            resource.setStandardInput(o.isStandardInput());
+            resource.setInputOrder(o.getInputOrder());
             resource.setAppInterfaceResource((AppInterfaceResource)createAppInterfaceResource(o.getApplicationInterface()));
         }
         return resource;
@@ -777,8 +778,9 @@ public class AppCatalogJPAUtils {
             resource.setDataType(o.getDataType());
             resource.setMetadata(o.getMetadata());
             resource.setAppArgument(o.getAppArgument());
+            resource.setInputOrder(o.getInputOrder());
             resource.setUserFriendlyDesc(o.getUserFriendlyDesc());
-            resource.setStandareInput(o.isStandardInput());
+            resource.setStandardInput(o.isStandardInput());
             resource.setWorkflowResource((WorkflowResource)createWorkflow(o.getWorkflow()));
         }
         return resource;

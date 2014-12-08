@@ -40,8 +40,44 @@ public class ExperimentInputResource extends AbstractResource {
     private ExperimentResource experimentResource;
     private String experimentKey;
     private String value;
-    private String inputType;
     private String metadata;
+    private String dataType;
+    private String appArgument;
+    private boolean standardInput;
+    private String userFriendlyDesc;
+    private int inputOrder;
+
+    public int getInputOrder() {
+        return inputOrder;
+    }
+
+    public void setInputOrder(int inputOrder) {
+        this.inputOrder = inputOrder;
+    }
+
+    public String getAppArgument() {
+        return appArgument;
+    }
+
+    public void setAppArgument(String appArgument) {
+        this.appArgument = appArgument;
+    }
+
+    public boolean isStandardInput() {
+        return standardInput;
+    }
+
+    public void setStandardInput(boolean standardInput) {
+        this.standardInput = standardInput;
+    }
+
+    public String getUserFriendlyDesc() {
+        return userFriendlyDesc;
+    }
+
+    public void setUserFriendlyDesc(String userFriendlyDesc) {
+        this.userFriendlyDesc = userFriendlyDesc;
+    }
 
     public String getExperimentKey() {
         return experimentKey;
@@ -67,12 +103,12 @@ public class ExperimentInputResource extends AbstractResource {
         this.experimentResource = experimentResource;
     }
 
-    public String getInputType() {
-        return inputType;
+    public String getDataType() {
+        return dataType;
     }
 
-    public void setInputType(String inputType) {
-        this.inputType = inputType;
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
     }
 
     public String getMetadata() {
@@ -120,9 +156,12 @@ public class ExperimentInputResource extends AbstractResource {
             if (value != null){
                 exInput.setValue(value.toCharArray());
             }
-            exInput.setInputType(inputType);
+            exInput.setDataType(dataType);
             exInput.setMetadata(metadata);
-
+            exInput.setAppArgument(appArgument);
+            exInput.setStandardInput(standardInput);
+            exInput.setUserFriendlyDesc(userFriendlyDesc);
+            exInput.setInputOrder(inputOrder);
             if (existingInput != null) {
                 existingInput.setEx_key(experimentKey);
                 existingInput.setExperiment(experiment);
@@ -130,8 +169,12 @@ public class ExperimentInputResource extends AbstractResource {
                 if (value != null){
                     existingInput.setValue(value.toCharArray());
                 }
-                existingInput.setInputType(inputType);
+                existingInput.setDataType(dataType);
                 existingInput.setMetadata(metadata);
+                existingInput.setAppArgument(appArgument);
+                existingInput.setStandardInput(standardInput);
+                existingInput.setUserFriendlyDesc(userFriendlyDesc);
+                existingInput.setInputOrder(inputOrder);
                 exInput = em.merge(existingInput);
             } else {
                 em.persist(exInput);

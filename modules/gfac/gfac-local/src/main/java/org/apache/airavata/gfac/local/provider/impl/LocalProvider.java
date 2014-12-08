@@ -23,8 +23,12 @@ package org.apache.airavata.gfac.local.provider.impl;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
@@ -39,6 +43,7 @@ import org.apache.airavata.gfac.local.utils.InputStreamToFileWriter;
 import org.apache.airavata.gfac.local.utils.InputUtils;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
@@ -105,7 +110,8 @@ public class LocalProvider extends AbstractProvider {
     public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException,GFacException {
     	super.initialize(jobExecutionContext);
 
-        buildCommand(jobExecutionContext.getExecutablePath(), ProviderUtils.getInputParameterValues(jobExecutionContext));
+        // build command with all inputs
+        buildCommand();
         initProcessBuilder(jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription());
 
         // extra environment variables
@@ -247,9 +253,36 @@ public class LocalProvider extends AbstractProvider {
     }
 
 
-    private void buildCommand(String executable, List<String> inputParameterList){
-        cmdList.add(executable);
-        cmdList.addAll(inputParameterList);
+    private void buildCommand() {
+        cmdList.add(jobExecutionContext.getExecutablePath());
+        Map<String, Object> inputParameters = jobExecutionContext.getInMessageContext().getParameters();
+
+        // sort the inputs first and then build the command List
+        Comparator<InputDataObjectType> inputOrderComparator = new Comparator<InputDataObjectType>() {
+            @Override
+            public int compare(InputDataObjectType inputDataObjectType, InputDataObjectType t1) {
+                return inputDataObjectType.getInputOrder() - t1.getInputOrder();
+            }
+        };
+        Set<InputDataObjectType> sortedInputSet = new TreeSet<InputDataObjectType>(inputOrderComparator);
+        for (Object object : inputParameters.values()) {
+            if (object instanceof InputDataObjectType) {
+                InputDataObjectType inputDOT = (InputDataObjectType) object;
+                sortedInputSet.add(inputDOT);
+            }
+        }
+        for (InputDataObjectType inputDataObjectType : sortedInputSet) {
+            if (inputDataObjectType.getApplicationArgument() != null
+                    && !inputDataObjectType.getApplicationArgument().equals("")) {
+                cmdList.add(inputDataObjectType.getApplicationArgument());
+            }
+
+            if (inputDataObjectType.getValue() != null
+                    && !inputDataObjectType.getValue().equals("")) {
+                cmdList.add(inputDataObjectType.getValue());
+            }
+        }
+
     }
 
     private void initProcessBuilder(ApplicationDeploymentDescription app){

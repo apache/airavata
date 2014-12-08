@@ -40,8 +40,7 @@ public class ExperimentOutputResource extends AbstractResource {
     private ExperimentResource experimentResource;
     private String experimentKey;
     private String value;
-    private String outputType;
-    private String metadata;
+    private String dataType;
 
     public String getExperimentKey() {
         return experimentKey;
@@ -67,20 +66,12 @@ public class ExperimentOutputResource extends AbstractResource {
         this.experimentResource = experimentResource;
     }
 
-    public String getOutputType() {
-        return outputType;
+    public String getDataType() {
+        return dataType;
     }
 
-    public void setOutputType(String outputType) {
-        this.outputType = outputType;
-    }
-
-    public String getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(String metadata) {
-        this.metadata = metadata;
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
     }
 
     public Resource create(ResourceType type)  throws RegistryException {
@@ -120,8 +111,7 @@ public class ExperimentOutputResource extends AbstractResource {
             if (value != null){
                 exOutput.setValue(value.toCharArray());
             }
-            exOutput.setOutputKeyType(outputType);
-            exOutput.setMetadata(metadata);
+            exOutput.setDataType(dataType);
 
             if (existingOutput != null) {
                 existingOutput.setEx_key(experimentKey);
@@ -130,8 +120,7 @@ public class ExperimentOutputResource extends AbstractResource {
                     existingOutput.setValue(value.toCharArray());
                 }
                 existingOutput.setExperiment_id(experiment.getExpId());
-                existingOutput.setOutputKeyType(outputType);
-                existingOutput.setMetadata(metadata);
+                existingOutput.setDataType(dataType);
                 exOutput = em.merge(existingOutput);
             } else {
                 em.persist(exOutput);
