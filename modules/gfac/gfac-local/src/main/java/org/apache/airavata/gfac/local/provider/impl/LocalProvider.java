@@ -261,7 +261,6 @@ public class LocalProvider extends AbstractProvider {
         Comparator<InputDataObjectType> inputOrderComparator = new Comparator<InputDataObjectType>() {
             @Override
             public int compare(InputDataObjectType inputDataObjectType, InputDataObjectType t1) {
-                log.info(" $$$$$$$$$$$$ inpput object order " + inputDataObjectType.getInputOrder() + " , t1 order " + t1.getInputOrder() + "$$$$$$$$$$$$$$$$" );
                 return inputDataObjectType.getInputOrder() - t1.getInputOrder();
             }
         };
@@ -272,7 +271,6 @@ public class LocalProvider extends AbstractProvider {
                 sortedInputSet.add(inputDOT);
             }
         }
-        log.info("$$$$$$$$$$$ size of sorted set = " + sortedInputSet.size() + "$$$$$$$$$$$$$$$$$$$");
         for (InputDataObjectType inputDataObjectType : sortedInputSet) {
             if (inputDataObjectType.getApplicationArgument() != null
                     && !inputDataObjectType.getApplicationArgument().equals("")) {
