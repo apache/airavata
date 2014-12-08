@@ -176,7 +176,7 @@ public class RegisterSampleData {
             appModules.add(echoModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Input_to_Echo", "Hello World",
-                    DataType.STRING, null, false, "A test string to Echo", null);
+                    DataType.STRING, null, 1, false, "A test string to Echo", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
@@ -205,9 +205,9 @@ public class RegisterSampleData {
             appModules.add(addModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("x", "2",
-                    DataType.STRING, null, false, "Add operation input_1", null);
+                    DataType.STRING, null, 1, false, "Add operation input_1", null);
             InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("y", "3",
-                    DataType.STRING, null, false, "Add operation input_2", null);
+                    DataType.STRING, null, 2, false, "Add operation input_2", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
@@ -237,9 +237,9 @@ public class RegisterSampleData {
             appModules.add(multiplyModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("x", "4",
-                    DataType.STRING, null, false, "Multiply operation input_1", null);
+                    DataType.STRING, null, 1, false, "Multiply operation input_1", null);
             InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("y", "5",
-                    DataType.STRING, null, false, "Multiply operation input_2", null);
+                    DataType.STRING, null, 2, false, "Multiply operation input_2", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
@@ -269,9 +269,9 @@ public class RegisterSampleData {
             appModules.add(subtractModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("x", "6",
-                    DataType.STRING, null, false, "Subtract operation input_1", null);
+                    DataType.STRING, null, 1, false, "Subtract operation input_1", null);
             InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("y", "7",
-                    DataType.STRING, null, false, "Subtract operation input_2", null);
+                    DataType.STRING, null, 2, false, "Subtract operation input_2", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
