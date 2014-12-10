@@ -26,7 +26,6 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.ComponentControlPort;
@@ -92,6 +91,8 @@ public class WSComponent extends Component {
             WSComponentPort port = new WSComponentPort(inputDataObjectType.getName(),inputDataObjectType.getType() , this);
             port.setDescription(inputDataObjectType.getDescription());
             port.setDefaultValue(inputDataObjectType.getDefaultValue());
+            port.setApplicationArgument(inputDataObjectType.getApplicationArgument());
+            port.setInputOrder(inputDataObjectType.getInputOrder());
 			inputs.add(port);
 		}
 

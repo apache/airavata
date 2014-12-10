@@ -81,6 +81,9 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("name", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField VALUE_FIELD_DESC = new org.apache.thrift.protocol.TField("value", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("type", org.apache.thrift.protocol.TType.I32, (short)3);
+  private static final org.apache.thrift.protocol.TField VALIDITY_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("validityType", org.apache.thrift.protocol.TType.I32, (short)4);
+  private static final org.apache.thrift.protocol.TField DATA_MOVEMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("dataMovement", org.apache.thrift.protocol.TType.BOOL, (short)5);
+  private static final org.apache.thrift.protocol.TField DATA_NAME_LOCATION_FIELD_DESC = new org.apache.thrift.protocol.TField("dataNameLocation", org.apache.thrift.protocol.TType.STRING, (short)6);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -91,6 +94,9 @@ import org.slf4j.LoggerFactory;
   private String name; // required
   private String value; // optional
   private DataType type; // optional
+  private ValidityType validityType; // optional
+  private boolean dataMovement; // optional
+  private String dataNameLocation; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -100,7 +106,14 @@ import org.slf4j.LoggerFactory;
      * 
      * @see DataType
      */
-    TYPE((short)3, "type");
+    TYPE((short)3, "type"),
+    /**
+     * 
+     * @see ValidityType
+     */
+    VALIDITY_TYPE((short)4, "validityType"),
+    DATA_MOVEMENT((short)5, "dataMovement"),
+    DATA_NAME_LOCATION((short)6, "dataNameLocation");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -121,6 +134,12 @@ import org.slf4j.LoggerFactory;
           return VALUE;
         case 3: // TYPE
           return TYPE;
+        case 4: // VALIDITY_TYPE
+          return VALIDITY_TYPE;
+        case 5: // DATA_MOVEMENT
+          return DATA_MOVEMENT;
+        case 6: // DATA_NAME_LOCATION
+          return DATA_NAME_LOCATION;
         default:
           return null;
       }
@@ -161,7 +180,9 @@ import org.slf4j.LoggerFactory;
   }
 
   // isset id assignments
-  private _Fields optionals[] = {_Fields.VALUE,_Fields.TYPE};
+  private static final int __DATAMOVEMENT_ISSET_ID = 0;
+  private byte __isset_bitfield = 0;
+  private _Fields optionals[] = {_Fields.VALUE,_Fields.TYPE,_Fields.VALIDITY_TYPE,_Fields.DATA_MOVEMENT,_Fields.DATA_NAME_LOCATION};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -171,6 +192,12 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.TYPE, new org.apache.thrift.meta_data.FieldMetaData("type", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, DataType.class)));
+    tmpMap.put(_Fields.VALIDITY_TYPE, new org.apache.thrift.meta_data.FieldMetaData("validityType", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ValidityType.class)));
+    tmpMap.put(_Fields.DATA_MOVEMENT, new org.apache.thrift.meta_data.FieldMetaData("dataMovement", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+    tmpMap.put(_Fields.DATA_NAME_LOCATION, new org.apache.thrift.meta_data.FieldMetaData("dataNameLocation", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(OutputDataObjectType.class, metaDataMap);
   }
@@ -189,6 +216,7 @@ import org.slf4j.LoggerFactory;
    * Performs a deep copy on <i>other</i>.
    */
   public OutputDataObjectType(OutputDataObjectType other) {
+    __isset_bitfield = other.__isset_bitfield;
     if (other.isSetName()) {
       this.name = other.name;
     }
@@ -197,6 +225,13 @@ import org.slf4j.LoggerFactory;
     }
     if (other.isSetType()) {
       this.type = other.type;
+    }
+    if (other.isSetValidityType()) {
+      this.validityType = other.validityType;
+    }
+    this.dataMovement = other.dataMovement;
+    if (other.isSetDataNameLocation()) {
+      this.dataNameLocation = other.dataNameLocation;
     }
   }
 
@@ -209,6 +244,10 @@ import org.slf4j.LoggerFactory;
     this.name = null;
     this.value = null;
     this.type = null;
+    this.validityType = null;
+    setDataMovementIsSet(false);
+    this.dataMovement = false;
+    this.dataNameLocation = null;
   }
 
   public String getName() {
@@ -288,6 +327,82 @@ import org.slf4j.LoggerFactory;
     }
   }
 
+  /**
+   * 
+   * @see ValidityType
+   */
+  public ValidityType getValidityType() {
+    return this.validityType;
+  }
+
+  /**
+   * 
+   * @see ValidityType
+   */
+  public void setValidityType(ValidityType validityType) {
+    this.validityType = validityType;
+  }
+
+  public void unsetValidityType() {
+    this.validityType = null;
+  }
+
+  /** Returns true if field validityType is set (has been assigned a value) and false otherwise */
+  public boolean isSetValidityType() {
+    return this.validityType != null;
+  }
+
+  public void setValidityTypeIsSet(boolean value) {
+    if (!value) {
+      this.validityType = null;
+    }
+  }
+
+  public boolean isDataMovement() {
+    return this.dataMovement;
+  }
+
+  public void setDataMovement(boolean dataMovement) {
+    this.dataMovement = dataMovement;
+    setDataMovementIsSet(true);
+  }
+
+  public void unsetDataMovement() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __DATAMOVEMENT_ISSET_ID);
+  }
+
+  /** Returns true if field dataMovement is set (has been assigned a value) and false otherwise */
+  public boolean isSetDataMovement() {
+    return EncodingUtils.testBit(__isset_bitfield, __DATAMOVEMENT_ISSET_ID);
+  }
+
+  public void setDataMovementIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __DATAMOVEMENT_ISSET_ID, value);
+  }
+
+  public String getDataNameLocation() {
+    return this.dataNameLocation;
+  }
+
+  public void setDataNameLocation(String dataNameLocation) {
+    this.dataNameLocation = dataNameLocation;
+  }
+
+  public void unsetDataNameLocation() {
+    this.dataNameLocation = null;
+  }
+
+  /** Returns true if field dataNameLocation is set (has been assigned a value) and false otherwise */
+  public boolean isSetDataNameLocation() {
+    return this.dataNameLocation != null;
+  }
+
+  public void setDataNameLocationIsSet(boolean value) {
+    if (!value) {
+      this.dataNameLocation = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case NAME:
@@ -314,6 +429,30 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case VALIDITY_TYPE:
+      if (value == null) {
+        unsetValidityType();
+      } else {
+        setValidityType((ValidityType)value);
+      }
+      break;
+
+    case DATA_MOVEMENT:
+      if (value == null) {
+        unsetDataMovement();
+      } else {
+        setDataMovement((Boolean)value);
+      }
+      break;
+
+    case DATA_NAME_LOCATION:
+      if (value == null) {
+        unsetDataNameLocation();
+      } else {
+        setDataNameLocation((String)value);
+      }
+      break;
+
     }
   }
 
@@ -327,6 +466,15 @@ import org.slf4j.LoggerFactory;
 
     case TYPE:
       return getType();
+
+    case VALIDITY_TYPE:
+      return getValidityType();
+
+    case DATA_MOVEMENT:
+      return Boolean.valueOf(isDataMovement());
+
+    case DATA_NAME_LOCATION:
+      return getDataNameLocation();
 
     }
     throw new IllegalStateException();
@@ -345,6 +493,12 @@ import org.slf4j.LoggerFactory;
       return isSetValue();
     case TYPE:
       return isSetType();
+    case VALIDITY_TYPE:
+      return isSetValidityType();
+    case DATA_MOVEMENT:
+      return isSetDataMovement();
+    case DATA_NAME_LOCATION:
+      return isSetDataNameLocation();
     }
     throw new IllegalStateException();
   }
@@ -386,6 +540,33 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_type && that_present_type))
         return false;
       if (!this.type.equals(that.type))
+        return false;
+    }
+
+    boolean this_present_validityType = true && this.isSetValidityType();
+    boolean that_present_validityType = true && that.isSetValidityType();
+    if (this_present_validityType || that_present_validityType) {
+      if (!(this_present_validityType && that_present_validityType))
+        return false;
+      if (!this.validityType.equals(that.validityType))
+        return false;
+    }
+
+    boolean this_present_dataMovement = true && this.isSetDataMovement();
+    boolean that_present_dataMovement = true && that.isSetDataMovement();
+    if (this_present_dataMovement || that_present_dataMovement) {
+      if (!(this_present_dataMovement && that_present_dataMovement))
+        return false;
+      if (this.dataMovement != that.dataMovement)
+        return false;
+    }
+
+    boolean this_present_dataNameLocation = true && this.isSetDataNameLocation();
+    boolean that_present_dataNameLocation = true && that.isSetDataNameLocation();
+    if (this_present_dataNameLocation || that_present_dataNameLocation) {
+      if (!(this_present_dataNameLocation && that_present_dataNameLocation))
+        return false;
+      if (!this.dataNameLocation.equals(that.dataNameLocation))
         return false;
     }
 
@@ -431,6 +612,36 @@ import org.slf4j.LoggerFactory;
     }
     if (isSetType()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.type, other.type);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetValidityType()).compareTo(other.isSetValidityType());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetValidityType()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.validityType, other.validityType);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetDataMovement()).compareTo(other.isSetDataMovement());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetDataMovement()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dataMovement, other.dataMovement);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetDataNameLocation()).compareTo(other.isSetDataNameLocation());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetDataNameLocation()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dataNameLocation, other.dataNameLocation);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -482,6 +693,32 @@ import org.slf4j.LoggerFactory;
       }
       first = false;
     }
+    if (isSetValidityType()) {
+      if (!first) sb.append(", ");
+      sb.append("validityType:");
+      if (this.validityType == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.validityType);
+      }
+      first = false;
+    }
+    if (isSetDataMovement()) {
+      if (!first) sb.append(", ");
+      sb.append("dataMovement:");
+      sb.append(this.dataMovement);
+      first = false;
+    }
+    if (isSetDataNameLocation()) {
+      if (!first) sb.append(", ");
+      sb.append("dataNameLocation:");
+      if (this.dataNameLocation == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.dataNameLocation);
+      }
+      first = false;
+    }
     sb.append(")");
     return sb.toString();
   }
@@ -505,6 +742,8 @@ import org.slf4j.LoggerFactory;
 
   private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
     try {
+      // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+      __isset_bitfield = 0;
       read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
     } catch (org.apache.thrift.TException te) {
       throw new java.io.IOException(te);
@@ -553,6 +792,30 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 4: // VALIDITY_TYPE
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.validityType = ValidityType.findByValue(iprot.readI32());
+              struct.setValidityTypeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 5: // DATA_MOVEMENT
+            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+              struct.dataMovement = iprot.readBool();
+              struct.setDataMovementIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 6: // DATA_NAME_LOCATION
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.dataNameLocation = iprot.readString();
+              struct.setDataNameLocationIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -585,6 +848,25 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldEnd();
         }
       }
+      if (struct.validityType != null) {
+        if (struct.isSetValidityType()) {
+          oprot.writeFieldBegin(VALIDITY_TYPE_FIELD_DESC);
+          oprot.writeI32(struct.validityType.getValue());
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.isSetDataMovement()) {
+        oprot.writeFieldBegin(DATA_MOVEMENT_FIELD_DESC);
+        oprot.writeBool(struct.dataMovement);
+        oprot.writeFieldEnd();
+      }
+      if (struct.dataNameLocation != null) {
+        if (struct.isSetDataNameLocation()) {
+          oprot.writeFieldBegin(DATA_NAME_LOCATION_FIELD_DESC);
+          oprot.writeString(struct.dataNameLocation);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -610,12 +892,30 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetType()) {
         optionals.set(1);
       }
-      oprot.writeBitSet(optionals, 2);
+      if (struct.isSetValidityType()) {
+        optionals.set(2);
+      }
+      if (struct.isSetDataMovement()) {
+        optionals.set(3);
+      }
+      if (struct.isSetDataNameLocation()) {
+        optionals.set(4);
+      }
+      oprot.writeBitSet(optionals, 5);
       if (struct.isSetValue()) {
         oprot.writeString(struct.value);
       }
       if (struct.isSetType()) {
         oprot.writeI32(struct.type.getValue());
+      }
+      if (struct.isSetValidityType()) {
+        oprot.writeI32(struct.validityType.getValue());
+      }
+      if (struct.isSetDataMovement()) {
+        oprot.writeBool(struct.dataMovement);
+      }
+      if (struct.isSetDataNameLocation()) {
+        oprot.writeString(struct.dataNameLocation);
       }
     }
 
@@ -624,7 +924,7 @@ import org.slf4j.LoggerFactory;
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.name = iprot.readString();
       struct.setNameIsSet(true);
-      BitSet incoming = iprot.readBitSet(2);
+      BitSet incoming = iprot.readBitSet(5);
       if (incoming.get(0)) {
         struct.value = iprot.readString();
         struct.setValueIsSet(true);
@@ -632,6 +932,18 @@ import org.slf4j.LoggerFactory;
       if (incoming.get(1)) {
         struct.type = DataType.findByValue(iprot.readI32());
         struct.setTypeIsSet(true);
+      }
+      if (incoming.get(2)) {
+        struct.validityType = ValidityType.findByValue(iprot.readI32());
+        struct.setValidityTypeIsSet(true);
+      }
+      if (incoming.get(3)) {
+        struct.dataMovement = iprot.readBool();
+        struct.setDataMovementIsSet(true);
+      }
+      if (incoming.get(4)) {
+        struct.dataNameLocation = iprot.readString();
+        struct.setDataNameLocationIsSet(true);
       }
     }
   }

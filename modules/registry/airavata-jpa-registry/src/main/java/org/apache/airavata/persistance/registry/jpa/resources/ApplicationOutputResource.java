@@ -39,9 +39,35 @@ public class ApplicationOutputResource extends AbstractResource {
 	private static final Logger logger = LoggerFactory.getLogger(ApplicationOutputResource.class);
     private TaskDetailResource taskDetailResource;
     private String outputKey;
-    private String outputType;
-    private String metadata;
+    private String dataType;
     private String value;
+    private String validityType;
+    private boolean dataMovement;
+    private String dataNameLocation;
+
+    public String getValidityType() {
+        return validityType;
+    }
+
+    public void setValidityType(String validityType) {
+        this.validityType = validityType;
+    }
+
+    public boolean isDataMovement() {
+        return dataMovement;
+    }
+
+    public void setDataMovement(boolean dataMovement) {
+        this.dataMovement = dataMovement;
+    }
+
+    public String getDataNameLocation() {
+        return dataNameLocation;
+    }
+
+    public void setDataNameLocation(String dataNameLocation) {
+        this.dataNameLocation = dataNameLocation;
+    }
 
     public String getOutputKey() {
         return outputKey;
@@ -51,20 +77,12 @@ public class ApplicationOutputResource extends AbstractResource {
         this.outputKey = outputKey;
     }
 
-    public String getOutputType() {
-        return outputType;
+    public String getDataType() {
+        return dataType;
     }
 
-    public void setOutputType(String outputType) {
-        this.outputType = outputType;
-    }
-
-    public String getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(String metadata) {
-        this.metadata = metadata;
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
     }
 
     public String getValue() {
@@ -122,21 +140,25 @@ public class ApplicationOutputResource extends AbstractResource {
             applicationOutput.setTask(taskDetail);
             applicationOutput.setTaskId(taskDetail.getTaskId());
             applicationOutput.setOutputKey(outputKey);
-            applicationOutput.setOutputKeyType(outputType);
+            applicationOutput.setDataType(dataType);
+            applicationOutput.setValidityType(validityType);
+            applicationOutput.setDataMovement(dataMovement);
+            applicationOutput.setDataNameLocation(dataNameLocation);
             if (value != null){
                 applicationOutput.setValue(value.toCharArray());
             }
-            applicationOutput.setMetadata(metadata);
 
             if (existingOutput != null) {
                 existingOutput.setTask(taskDetail);
                 existingOutput.setTaskId(taskDetail.getTaskId());
                 existingOutput.setOutputKey(outputKey);
-                existingOutput.setOutputKeyType(outputType);
+                existingOutput.setDataType(dataType);
+                existingOutput.setValidityType(validityType);
+                existingOutput.setDataMovement(dataMovement);
+                existingOutput.setDataNameLocation(dataNameLocation);
                 if (value != null){
                     existingOutput.setValue(value.toCharArray());
                 }
-                existingOutput.setMetadata(metadata);
                 applicationOutput = em.merge(existingOutput);
             } else {
                 em.persist(applicationOutput);

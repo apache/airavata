@@ -41,10 +41,15 @@ public class Experiment_Output  implements Serializable {
     @Lob
     @Column(name = "VALUE")
     private char[] value;
-    @Column(name = "METADATA")
-    private String metadata;
-    @Column(name = "OUTPUT_KEY_TYPE")
-    private String outputKeyType;
+    @Column(name = "DATA_TYPE")
+    private String dataType;
+
+    @Column(name = "VALIDITY_TYPE")
+    private String validityType;
+    @Column(name = "DATA_MOVEMENT")
+    private boolean dataMovement;
+    @Column(name = "DATA_NAME_LOCATION")
+    private String dataNameLocation;
 
     @ManyToOne
     @JoinColumn(name = "EXPERIMENT_ID")
@@ -74,20 +79,12 @@ public class Experiment_Output  implements Serializable {
         this.value = value;
     }
 
-    public String getMetadata() {
-        return metadata;
+    public String getDataType() {
+        return dataType;
     }
 
-    public void setMetadata(String metadata) {
-        this.metadata = metadata;
-    }
-
-    public String getOutputKeyType() {
-        return outputKeyType;
-    }
-
-    public void setOutputKeyType(String outputKeyType) {
-        this.outputKeyType = outputKeyType;
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
     }
 
     public Experiment getExperiment() {
@@ -96,5 +93,29 @@ public class Experiment_Output  implements Serializable {
 
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
+    }
+
+    public String getValidityType() {
+        return validityType;
+    }
+
+    public void setValidityType(String validityType) {
+        this.validityType = validityType;
+    }
+
+    public boolean isDataMovement() {
+        return dataMovement;
+    }
+
+    public void setDataMovement(boolean dataMovement) {
+        this.dataMovement = dataMovement;
+    }
+
+    public String getDataNameLocation() {
+        return dataNameLocation;
+    }
+
+    public void setDataNameLocation(String dataNameLocation) {
+        this.dataNameLocation = dataNameLocation;
     }
 }
