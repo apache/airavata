@@ -98,7 +98,7 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
                     wfInputResource.setWfTemplateId(resource.getWfTemplateId());
                     wfInputResource.setDataType(input.getType().toString());
                     wfInputResource.setAppArgument(input.getApplicationArgument());
-                    wfInputResource.setStandareInput(input.isStandardInput());
+                    wfInputResource.setStandardInput(input.isStandardInput());
                     wfInputResource.setUserFriendlyDesc(input.getUserFriendlyDescription());
                     wfInputResource.setMetadata(input.getMetaData());
                     wfInputResource.save();
@@ -148,7 +148,7 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
                     existingInput.setWfTemplateId(existingWF.getWfTemplateId());
                     existingInput.setDataType(input.getType().toString());
                     existingInput.setAppArgument(input.getApplicationArgument());
-                    existingInput.setStandareInput(input.isStandardInput());
+                    existingInput.setStandardInput(input.isStandardInput());
                     existingInput.setUserFriendlyDesc(input.getUserFriendlyDescription());
                     existingInput.setMetadata(input.getMetaData());
                     existingInput.save();
