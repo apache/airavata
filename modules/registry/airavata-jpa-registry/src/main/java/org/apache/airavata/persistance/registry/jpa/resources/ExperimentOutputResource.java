@@ -40,34 +40,8 @@ public class ExperimentOutputResource extends AbstractResource {
     private ExperimentResource experimentResource;
     private String experimentKey;
     private String value;
-    private String dataType;
-    private String validityType;
-    private boolean dataMovement;
-    private String dataNameLocation;
-
-    public String getValidityType() {
-        return validityType;
-    }
-
-    public void setValidityType(String validityType) {
-        this.validityType = validityType;
-    }
-
-    public boolean isDataMovement() {
-        return dataMovement;
-    }
-
-    public void setDataMovement(boolean dataMovement) {
-        this.dataMovement = dataMovement;
-    }
-
-    public String getDataNameLocation() {
-        return dataNameLocation;
-    }
-
-    public void setDataNameLocation(String dataNameLocation) {
-        this.dataNameLocation = dataNameLocation;
-    }
+    private String outputType;
+    private String metadata;
 
     public String getExperimentKey() {
         return experimentKey;
@@ -93,12 +67,20 @@ public class ExperimentOutputResource extends AbstractResource {
         this.experimentResource = experimentResource;
     }
 
-    public String getDataType() {
-        return dataType;
+    public String getOutputType() {
+        return outputType;
     }
 
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
+    public void setOutputType(String outputType) {
+        this.outputType = outputType;
+    }
+
+    public String getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(String metadata) {
+        this.metadata = metadata;
     }
 
     public Resource create(ResourceType type)  throws RegistryException {
@@ -138,10 +120,8 @@ public class ExperimentOutputResource extends AbstractResource {
             if (value != null){
                 exOutput.setValue(value.toCharArray());
             }
-            exOutput.setDataType(dataType);
-            exOutput.setValidityType(validityType);
-            exOutput.setDataMovement(dataMovement);
-            exOutput.setDataNameLocation(dataNameLocation);
+            exOutput.setOutputKeyType(outputType);
+            exOutput.setMetadata(metadata);
 
             if (existingOutput != null) {
                 existingOutput.setEx_key(experimentKey);
@@ -150,10 +130,8 @@ public class ExperimentOutputResource extends AbstractResource {
                     existingOutput.setValue(value.toCharArray());
                 }
                 existingOutput.setExperiment_id(experiment.getExpId());
-                existingOutput.setDataType(dataType);
-                existingOutput.setValidityType(validityType);
-                existingOutput.setDataMovement(dataMovement);
-                existingOutput.setDataNameLocation(dataNameLocation);
+                existingOutput.setOutputKeyType(outputType);
+                existingOutput.setMetadata(metadata);
                 exOutput = em.merge(existingOutput);
             } else {
                 em.persist(exOutput);

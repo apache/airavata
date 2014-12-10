@@ -607,8 +607,8 @@ void swap(TaskStatusChangeRequestEvent &a, TaskStatusChangeRequestEvent &b) {
   swap(a.taskIdentity, b.taskIdentity);
 }
 
-const char* TaskOutputChangeEvent::ascii_fingerprint = "CD10AFEB7332120253CE0C3FFCF54C48";
-const uint8_t TaskOutputChangeEvent::binary_fingerprint[16] = {0xCD,0x10,0xAF,0xEB,0x73,0x32,0x12,0x02,0x53,0xCE,0x0C,0x3F,0xFC,0xF5,0x4C,0x48};
+const char* TaskOutputChangeEvent::ascii_fingerprint = "850570A8E8883AE24DE92AFC9AA86C7E";
+const uint8_t TaskOutputChangeEvent::binary_fingerprint[16] = {0x85,0x05,0x70,0xA8,0xE8,0x88,0x3A,0xE2,0x4D,0xE9,0x2A,0xFC,0x9A,0xA8,0x6C,0x7E};
 
 uint32_t TaskOutputChangeEvent::read(::apache::thrift::protocol::TProtocol* iprot) {
 

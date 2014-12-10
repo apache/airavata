@@ -37,17 +37,12 @@ public class NodeOutput implements Serializable {
     @Id
     @Column(name = "OUTPUT_KEY")
     private String outputKey;
-    @Column(name = "DATA_TYPE")
-    private String dataType;
+    @Column(name = "OUTPUT_KEY_TYPE")
+    private String outputKeyType;
+    @Column(name = "METADATA")
+    private String metadata;
     @Column(name = "VALUE")
     private String value;
-    @Column(name = "VALIDITY_TYPE")
-    private String validityType;
-    @Column(name = "DATA_MOVEMENT")
-    private boolean dataMovement;
-    @Column(name = "DATA_NAME_LOCATION")
-    private String dataNameLocation;
-
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "NODE_INSTANCE_ID")
@@ -59,6 +54,14 @@ public class NodeOutput implements Serializable {
 
     public void setNodeId(String nodeId) {
         this.nodeId = nodeId;
+    }
+
+    public String getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(String metadata) {
+        this.metadata = metadata;
     }
 
     public String getValue() {
@@ -85,35 +88,11 @@ public class NodeOutput implements Serializable {
         this.outputKey = outputKey;
     }
 
-    public String getDataType() {
-        return dataType;
+    public String getOutputKeyType() {
+        return outputKeyType;
     }
 
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
-    }
-
-    public String getValidityType() {
-        return validityType;
-    }
-
-    public void setValidityType(String validityType) {
-        this.validityType = validityType;
-    }
-
-    public boolean isDataMovement() {
-        return dataMovement;
-    }
-
-    public void setDataMovement(boolean dataMovement) {
-        this.dataMovement = dataMovement;
-    }
-
-    public String getDataNameLocation() {
-        return dataNameLocation;
-    }
-
-    public void setDataNameLocation(String dataNameLocation) {
-        this.dataNameLocation = dataNameLocation;
+    public void setOutputKeyType(String outputKeyType) {
+        this.outputKeyType = outputKeyType;
     }
 }

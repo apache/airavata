@@ -48,11 +48,7 @@ public class WorkflowInputResource extends AbstractResource {
     private String metadata;
     private String appArgument;
     private String userFriendlyDesc;
-    private boolean standardInput;
-    private int inputOrder;
-    private String validityType;
-    private String commandLineType;
-    private boolean dataStaged;
+    private boolean standareInput;
 
     private WorkflowResource workflowResource;
 
@@ -290,10 +286,7 @@ public class WorkflowInputResource extends AbstractResource {
             workflowInput.setMetadata(metadata);
             workflowInput.setAppArgument(appArgument);
             workflowInput.setUserFriendlyDesc(userFriendlyDesc);
-            workflowInput.setStandardInput(standardInput);
-            workflowInput.setCommandLineType(commandLineType);
-            workflowInput.setValidityType(validityType);
-            workflowInput.setDataStaged(dataStaged);
+            workflowInput.setStandardInput(standareInput);
             if (existingWFInput == null) {
                 em.persist(workflowInput);
             } else {
@@ -409,43 +402,11 @@ public class WorkflowInputResource extends AbstractResource {
         this.workflowResource = workflowResource;
     }
 
-    public boolean isStandardInput() {
-        return standardInput;
+    public boolean isStandareInput() {
+        return standareInput;
     }
 
-    public void setStandardInput(boolean standardInput) {
-        this.standardInput = standardInput;
-    }
-
-    public int getInputOrder() {
-        return inputOrder;
-    }
-
-    public void setInputOrder(int inputOrder) {
-        this.inputOrder = inputOrder;
-    }
-
-    public String getValidityType() {
-        return validityType;
-    }
-
-    public void setValidityType(String validityType) {
-        this.validityType = validityType;
-    }
-
-    public String getCommandLineType() {
-        return commandLineType;
-    }
-
-    public void setCommandLineType(String commandLineType) {
-        this.commandLineType = commandLineType;
-    }
-
-    public boolean isDataStaged() {
-        return dataStaged;
-    }
-
-    public void setDataStaged(boolean dataStaged) {
-        this.dataStaged = dataStaged;
+    public void setStandareInput(boolean standareInput) {
+        this.standareInput = standareInput;
     }
 }

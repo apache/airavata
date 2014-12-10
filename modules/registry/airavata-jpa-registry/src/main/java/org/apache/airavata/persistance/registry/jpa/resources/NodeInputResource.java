@@ -40,64 +40,9 @@ public class NodeInputResource extends AbstractResource {
 
     private WorkflowNodeDetailResource nodeDetailResource;
     private String inputKey;
-    private String dataType;
+    private String inputType;
     private String metadata;
     private String value;
-    private String appArgument;
-    private boolean standardInput;
-    private String userFriendlyDesc;
-    private int inputOrder;
-    private String validityType;
-    private String commandLineType;
-    private boolean dataStaged;
-
-    public String getValidityType() {
-        return validityType;
-    }
-
-    public void setValidityType(String validityType) {
-        this.validityType = validityType;
-    }
-
-    public String getCommandLineType() {
-        return commandLineType;
-    }
-
-    public void setCommandLineType(String commandLineType) {
-        this.commandLineType = commandLineType;
-    }
-
-    public boolean isDataStaged() {
-        return dataStaged;
-    }
-
-    public void setDataStaged(boolean dataStaged) {
-        this.dataStaged = dataStaged;
-    }
-
-    public String getAppArgument() {
-        return appArgument;
-    }
-
-    public void setAppArgument(String appArgument) {
-        this.appArgument = appArgument;
-    }
-
-    public boolean isStandardInput() {
-        return standardInput;
-    }
-
-    public void setStandardInput(boolean standardInput) {
-        this.standardInput = standardInput;
-    }
-
-    public String getUserFriendlyDesc() {
-        return userFriendlyDesc;
-    }
-
-    public void setUserFriendlyDesc(String userFriendlyDesc) {
-        this.userFriendlyDesc = userFriendlyDesc;
-    }
 
     public WorkflowNodeDetailResource getNodeDetailResource() {
         return nodeDetailResource;
@@ -115,12 +60,12 @@ public class NodeInputResource extends AbstractResource {
         this.inputKey = inputKey;
     }
 
-    public String getDataType() {
-        return dataType;
+    public String getInputType() {
+        return inputType;
     }
 
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
+    public void setInputType(String inputType) {
+        this.inputType = inputType;
     }
 
     public String getMetadata() {
@@ -139,14 +84,7 @@ public class NodeInputResource extends AbstractResource {
         this.value = value;
     }
 
-    public int getInputOrder() {
-        return inputOrder;
-    }
-
-    public void setInputOrder(int inputOrder) {
-        this.inputOrder = inputOrder;
-    }
-
+    
     public Resource create(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for node input data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
@@ -185,31 +123,17 @@ public class NodeInputResource extends AbstractResource {
             nodeInput.setNodeDetails(nodeDetail);
             nodeInput.setNodeId(nodeDetail.getNodeId());
             nodeInput.setInputKey(inputKey);
-            nodeInput.setDataType(dataType);
+            nodeInput.setInputKeyType(inputType);
             nodeInput.setValue(value);
             nodeInput.setMetadata(metadata);
-            nodeInput.setAppArgument(appArgument);
-            nodeInput.setStandardInput(standardInput);
-            nodeInput.setUserFriendlyDesc(userFriendlyDesc);
-            nodeInput.setInputOrder(inputOrder);
-            nodeInput.setCommandLineType(commandLineType);
-            nodeInput.setValidityType(validityType);
-            nodeInput.setDataStaged(dataStaged);
 
             if (existingInput != null){
                 existingInput.setNodeDetails(nodeDetail);
                 existingInput.setNodeId(nodeDetail.getNodeId());
                 existingInput.setInputKey(inputKey);
-                existingInput.setDataType(dataType);
+                existingInput.setInputKeyType(inputType);
                 existingInput.setValue(value);
                 existingInput.setMetadata(metadata);
-                existingInput.setAppArgument(appArgument);
-                existingInput.setStandardInput(standardInput);
-                existingInput.setUserFriendlyDesc(userFriendlyDesc);
-                existingInput.setInputOrder(inputOrder);
-                existingInput.setCommandLineType(commandLineType);
-                existingInput.setValidityType(validityType);
-                existingInput.setDataStaged(dataStaged);
                 nodeInput = em.merge(existingInput);
             }else {
                 em.persist(nodeInput);

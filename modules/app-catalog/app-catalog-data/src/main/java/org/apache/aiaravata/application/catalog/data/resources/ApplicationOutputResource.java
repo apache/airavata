@@ -44,9 +44,6 @@ public class ApplicationOutputResource extends AbstractResource {
     private String outputKey;
     private String outputVal;
     private String dataType;
-    private String validityType;
-    private boolean dataMovement;
-    private String dataNameLocation;
 
     private AppInterfaceResource appInterfaceResource;
 
@@ -286,9 +283,6 @@ public class ApplicationOutputResource extends AbstractResource {
             applicationOutput.setDataType(dataType);
             applicationOutput.setOutputKey(outputKey);
             applicationOutput.setOutputVal(outputVal);
-            applicationOutput.setValidityType(validityType);
-            applicationOutput.setDataMovement(dataMovement);
-            applicationOutput.setDataNameLocation(dataNameLocation);
             em.merge(applicationOutput);
             em.getTransaction().commit();
             em.close();
@@ -374,29 +368,5 @@ public class ApplicationOutputResource extends AbstractResource {
 
     public void setAppInterfaceResource(AppInterfaceResource appInterfaceResource) {
         this.appInterfaceResource = appInterfaceResource;
-    }
-
-    public String getValidityType() {
-        return validityType;
-    }
-
-    public void setValidityType(String validityType) {
-        this.validityType = validityType;
-    }
-
-    public boolean isDataMovement() {
-        return dataMovement;
-    }
-
-    public void setDataMovement(boolean dataMovement) {
-        this.dataMovement = dataMovement;
-    }
-
-    public String getDataNameLocation() {
-        return dataNameLocation;
-    }
-
-    public void setDataNameLocation(String dataNameLocation) {
-        this.dataNameLocation = dataNameLocation;
     }
 }

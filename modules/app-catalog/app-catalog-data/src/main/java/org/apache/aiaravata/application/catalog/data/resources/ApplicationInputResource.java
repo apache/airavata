@@ -48,11 +48,7 @@ public class ApplicationInputResource extends AbstractResource {
     private String metadata;
     private String appArgument;
     private String userFriendlyDesc;
-    private int inputOrder;
-    private boolean standardInput;
-    private String validityType;
-    private String commandLineType;
-    private boolean dataStaged;
+    private boolean standareInput;
 
     private AppInterfaceResource appInterfaceResource;
 
@@ -292,11 +288,7 @@ public class ApplicationInputResource extends AbstractResource {
             applicationInput.setMetadata(metadata);
             applicationInput.setAppArgument(appArgument);
             applicationInput.setUserFriendlyDesc(userFriendlyDesc);
-            applicationInput.setStandardInput(standardInput);
-            applicationInput.setInputOrder(inputOrder);
-            applicationInput.setCommandLineType(commandLineType);
-            applicationInput.setValidityType(validityType);
-            applicationInput.setDataStaged(dataStaged);
+            applicationInput.setStandardInput(standareInput);
             if (existingApplicationInput == null) {
                 em.persist(applicationInput);
             } else {
@@ -412,43 +404,11 @@ public class ApplicationInputResource extends AbstractResource {
         this.appInterfaceResource = appInterfaceResource;
     }
 
-    public boolean isStandardInput() {
-        return standardInput;
+    public boolean isStandareInput() {
+        return standareInput;
     }
 
-    public void setStandardInput(boolean standardInput) {
-        this.standardInput = standardInput;
-    }
-
-    public int getInputOrder() {
-        return inputOrder;
-    }
-
-    public void setInputOrder(int inputOrder) {
-        this.inputOrder = inputOrder;
-    }
-
-    public String getValidityType() {
-        return validityType;
-    }
-
-    public void setValidityType(String validityType) {
-        this.validityType = validityType;
-    }
-
-    public String getCommandLineType() {
-        return commandLineType;
-    }
-
-    public void setCommandLineType(String commandLineType) {
-        this.commandLineType = commandLineType;
-    }
-
-    public boolean isDataStaged() {
-        return dataStaged;
-    }
-
-    public void setDataStaged(boolean dataStaged) {
-        this.dataStaged = dataStaged;
+    public void setStandareInput(boolean standareInput) {
+        this.standareInput = standareInput;
     }
 }

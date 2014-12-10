@@ -28,6 +28,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.graph.system.InputNode;
 import org.apache.airavata.xbaya.lead.LEADTypes;
@@ -68,7 +69,7 @@ public class InputConfigurationDialog {
      * Constructs an InputConfigurationWindow.
      * 
      * @param node
-     * @param xbayaGUI
+     * @param engine
      */
     public InputConfigurationDialog(InputNode node, XBayaGUI xbayaGUI) {
         this.xbayaGUI=xbayaGUI;
@@ -85,26 +86,26 @@ public class InputConfigurationDialog {
         boolean knownType = LEADTypes.isKnownType(type);
         if (knownType) {
             textComponent = this.valueTextField;
-            this.valueLabel.setText("Value");
+            this.valueLabel.setText("Default value");
         } else {
             textComponent = this.valueTextArea;
-            this.valueLabel.setText("Value (in XML)");
+            this.valueLabel.setText("Default value (in XML)");
         }
         this.valueLabel.setLabelFor(textComponent);
-        final int index = 3;
+        final int index = 7;
         this.gridPanel.remove(index);
         this.gridPanel.add(textComponent, index);
         if (knownType) {
-            this.gridPanel.layout(new double[] { 0,0, 1.0 / 2}, new double[] { 0, 1 });
+            this.gridPanel.layout(new double[] { 0, 1.0 / 2,0, 0, 1.0 / 2 }, new double[] { 0, 1 });
         } else {
-            this.gridPanel.layout(new double[] { 0, 1.0 / 3,0, 1.0 / 3}, new double[] { 0, 1 });
+            this.gridPanel.layout(new double[] { 0, 1.0 / 3,0, 1.0 / 3, 1.0 / 3 }, new double[] { 0, 1 });
         }
 
         String name = this.node.getID(); // Show ID.
         this.nameTextField.setText(name);
 
-//        String visibility = Boolean.toString(this.node.isVisibility());
-//        this.visibilityTextField.setText(visibility);
+        String visibility = Boolean.toString(this.node.isVisibility());
+        this.visibilityTextField.setText(visibility);
 
         this.descriptionTextArea.setText(this.node.getDescription());
         Object value = this.node.getDefaultValue();
@@ -122,14 +123,14 @@ public class InputConfigurationDialog {
             this.valueTextArea.setText(valueString);
         }
         textComponent.setText(valueString);
-//        XmlElement metadata = this.node.getMetadata();
-//        String metadataText;
-//        if (metadata == null) {
-//            metadataText = WSConstants.EMPTY_APPINFO;
-//        } else {
-//            metadataText = XMLUtil.xmlElementToString(metadata);
-//        }
-//        this.metadataTextArea.setText(metadataText);
+        XmlElement metadata = this.node.getMetadata();
+        String metadataText;
+        if (metadata == null) {
+            metadataText = WSConstants.EMPTY_APPINFO;
+        } else {
+            metadataText = XMLUtil.xmlElementToString(metadata);
+        }
+        this.metadataTextArea.setText(metadataText);
 
         this.dialog.show();
     }
@@ -153,8 +154,8 @@ public class InputConfigurationDialog {
         String name = this.nameTextField.getText();
         String description = this.descriptionTextArea.getText();
         String valueString = textComponent.getText();
-//        String metadataText = this.metadataTextArea.getText();
-//        String visibilityText = this.visibilityTextField.getText();
+        String metadataText = this.metadataTextArea.getText();
+        String visibilityText = this.visibilityTextField.getText();
 
         if (name.length() == 0) {
             String warning = "The name cannot be empty.";
@@ -178,25 +179,25 @@ public class InputConfigurationDialog {
                 }
             }
         }
-//        XmlElement metadata;
-//        if (metadataText.length() == 0) {
-//            metadata = null;
-//        } else {
-//            try {
-//                metadata = XMLUtil.stringToXmlElement(metadataText);
-//            } catch (RuntimeException e) {
-//                String warning = "The metadata is ill-formed.";
-//                this.xbayaGUI.getErrorWindow().error(warning, e);
-//                return;
-//            }
-//        }
+        XmlElement metadata;
+        if (metadataText.length() == 0) {
+            metadata = null;
+        } else {
+            try {
+                metadata = XMLUtil.stringToXmlElement(metadataText);
+            } catch (RuntimeException e) {
+                String warning = "The metadata is ill-formed.";
+                this.xbayaGUI.getErrorWindow().error(warning, e);
+                return;
+            }
+        }
 
         this.node.setConfigured(true);
         this.node.setConfiguredName(name);
         this.node.setDescription(description);
         this.node.setDefaultValue(value);
-//        this.node.setMetadata(metadata);
-//        this.node.setVisibility(Boolean.parseBoolean(visibilityText));
+        this.node.setMetadata(metadata);
+        this.node.setVisibility(Boolean.parseBoolean(visibilityText));
         hide();
         this.xbayaGUI.getGraphCanvas().repaint();
     }
@@ -215,25 +216,25 @@ public class InputConfigurationDialog {
         this.valueTextArea = new XBayaTextArea(); // for XML
         // temporaly set text field.
         this.valueLabel = new XBayaLabel("", this.valueTextField);
-//
-//        this.metadataTextArea = new XBayaTextArea();
-//        XBayaLabel metadataLabel = new XBayaLabel("Metadata", this.metadataTextArea);
-//
-//        this.visibilityTextField = new XBayaTextField();
-//        XBayaLabel visibilityLabel = new XBayaLabel("Visibility", this.visibilityTextField);
+
+        this.metadataTextArea = new XBayaTextArea();
+        XBayaLabel metadataLabel = new XBayaLabel("Metadata", this.metadataTextArea);
+
+        this.visibilityTextField = new XBayaTextField();
+        XBayaLabel visibilityLabel = new XBayaLabel("Visibility", this.visibilityTextField);
 
         this.gridPanel = new GridPanel();
         this.gridPanel.add(nameLabel);
         this.gridPanel.add(this.nameTextField);
-//        this.gridPanel.add(visibilityLabel);
-//        this.gridPanel.add(this.visibilityTextField);
-        this.gridPanel.add(this.valueLabel);
-        this.gridPanel.add(this.valueTextField);
+        this.gridPanel.add(visibilityLabel);
+        this.gridPanel.add(this.visibilityTextField);
         this.gridPanel.add(descriptionLabel);
         this.gridPanel.add(this.descriptionTextArea);
-//        this.gridPanel.add(metadataLabel);
-//        this.gridPanel.add(this.metadataTextArea);
-        this.gridPanel.layout(3, 2, 3, 1);
+        this.gridPanel.add(this.valueLabel);
+        this.gridPanel.add(this.valueTextField);
+        this.gridPanel.add(metadataLabel);
+        this.gridPanel.add(this.metadataTextArea);
+        this.gridPanel.layout(5, 2, 3, 1);
 
         JButton okButton = new JButton("OK");
         okButton.addActionListener(new AbstractAction() {

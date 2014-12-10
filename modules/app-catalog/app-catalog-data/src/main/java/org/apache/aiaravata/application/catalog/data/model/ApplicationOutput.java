@@ -39,12 +39,6 @@ public class ApplicationOutput implements Serializable {
     private String outputVal;
     @Column(name = "DATA_TYPE")
     private String dataType;
-    @Column(name = "VALIDITY_TYPE")
-    private String validityType;
-    @Column(name = "DATA_MOVEMENT")
-    private boolean dataMovement;
-    @Column(name = "DATA_NAME_LOCATION")
-    private String dataNameLocation;
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "INTERFACE_ID")
@@ -88,29 +82,5 @@ public class ApplicationOutput implements Serializable {
 
     public void setOutputVal(String outputVal) {
         this.outputVal = outputVal;
-    }
-
-    public String getValidityType() {
-        return validityType;
-    }
-
-    public void setValidityType(String validityType) {
-        this.validityType = validityType;
-    }
-
-    public boolean isDataMovement() {
-        return dataMovement;
-    }
-
-    public void setDataMovement(boolean dataMovement) {
-        this.dataMovement = dataMovement;
-    }
-
-    public String getDataNameLocation() {
-        return dataNameLocation;
-    }
-
-    public void setDataNameLocation(String dataNameLocation) {
-        this.dataNameLocation = dataNameLocation;
     }
 }

@@ -43,42 +43,15 @@ public class Experiment_Input implements Serializable {
     @Column(name = "VALUE")
     private char[] value;
 
-    @Column(name = "DATA_TYPE")
-    private String dataType;
-
-    @Column(name = "APP_ARGUMENT")
-    private String appArgument;
-
-    @Column(name = "STANDARD_INPUT")
-    private boolean standardInput;
-
-    @Column(name = "USER_FRIENDLY_DESC")
-    private String userFriendlyDesc;
+    @Column(name = "INPUT_TYPE")
+    private String inputType;
 
     @Column(name = "METADATA")
     private String metadata;
 
-    @Column(name = "INPUT_ORDER")
-    private int inputOrder;
-
-    @Column(name="VALIDITY_TYPE")
-    private String validityType;
-    @Column(name="COMMANDLINE_TYPE")
-    private String commandLineType;
-    @Column(name = "DATA_STAGED")
-    private boolean dataStaged;
-
     @ManyToOne
     @JoinColumn(name = "EXPERIMENT_ID")
     private Experiment experiment;
-
-    public int getInputOrder() {
-        return inputOrder;
-    }
-
-    public void setInputOrder(int inputOrder) {
-        this.inputOrder = inputOrder;
-    }
 
     public String getExperiment_id() {
         return experiment_id;
@@ -104,12 +77,12 @@ public class Experiment_Input implements Serializable {
         this.value = value;
     }
 
-    public String getDataType() {
-        return dataType;
+    public String getInputType() {
+        return inputType;
     }
 
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
+    public void setInputType(String inputType) {
+        this.inputType = inputType;
     }
 
     public String getMetadata() {
@@ -126,53 +99,5 @@ public class Experiment_Input implements Serializable {
 
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
-    }
-
-    public String getAppArgument() {
-        return appArgument;
-    }
-
-    public void setAppArgument(String appArgument) {
-        this.appArgument = appArgument;
-    }
-
-    public boolean isStandardInput() {
-        return standardInput;
-    }
-
-    public void setStandardInput(boolean standardInput) {
-        this.standardInput = standardInput;
-    }
-
-    public String getUserFriendlyDesc() {
-        return userFriendlyDesc;
-    }
-
-    public void setUserFriendlyDesc(String userFriendlyDesc) {
-        this.userFriendlyDesc = userFriendlyDesc;
-    }
-
-    public String getValidityType() {
-        return validityType;
-    }
-
-    public void setValidityType(String validityType) {
-        this.validityType = validityType;
-    }
-
-    public String getCommandLineType() {
-        return commandLineType;
-    }
-
-    public void setCommandLineType(String commandLineType) {
-        this.commandLineType = commandLineType;
-    }
-
-    public boolean isDataStaged() {
-        return dataStaged;
-    }
-
-    public void setDataStaged(boolean dataStaged) {
-        this.dataStaged = dataStaged;
     }
 }
