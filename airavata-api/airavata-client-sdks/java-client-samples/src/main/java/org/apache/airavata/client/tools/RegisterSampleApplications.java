@@ -71,6 +71,7 @@ public class RegisterSampleApplications {
     private static final String trinityName = "Trinity";
     private static final String wrfName = "WRF";
     private static final String phastaName = "PHASTA";
+    private static final String mpiName = "HelloMPI";
 
     //Appplication Descriptions
     private static final String echoDescription = "A Simple Echo Application";
@@ -83,6 +84,7 @@ public class RegisterSampleApplications {
     private static final String trinityDescription = "de novo reconstruction of transcriptomes from RNA-seq data";
     private static final String wrfDescription = "Weather Research and Forecasting";
     private static final String phastaDescription = "Computational fluid dynamics solver";
+    private static final String mpiDescription = "A Hello MPI Application";
 
     //App Module Id's
     private static String echoModuleId;
@@ -95,9 +97,11 @@ public class RegisterSampleApplications {
     private static String trinityModuleId = "Trinity_8af45ca0-b628-4614-9087-c7b73f5f2fb6";
     private static String wrfModuleId;
     private static String phastaModuleId;
+    private static String mpiModuleId;
 
     //App Interface Id's
     private static String echoInterfaceId = "";
+    private static String mpiInterfaceId = "";
     private static String echoLocalInterfaceId = "";
     private static String amberInterfaceId = "";
     private static String autoDockInterfaceId = "";
@@ -230,6 +234,12 @@ public class RegisterSampleApplications {
                     RegisterSampleApplicationsUtils.createApplicationModule(
                             echoName, "1.0", echoDescription));
             System.out.println("Echo Module Id " + echoModuleId);
+            
+            mpiModuleId = airavataClient.registerApplicationModule(
+                    RegisterSampleApplicationsUtils.createApplicationModule(
+                            mpiName, "1.0", mpiDescription));
+            System.out.println("MPI Module Id " + mpiModuleId);
+            
 
             //Register Amber
             amberModuleId = airavataClient.registerApplicationModule(
@@ -320,6 +330,9 @@ public class RegisterSampleApplications {
 
         //Registering Echo
         registerEchoInterface();
+        
+        //Registering MPI
+        registerMPIInterface();
 
         //Registering Amber
         registerAmberInterface();
@@ -552,7 +565,39 @@ public class RegisterSampleApplications {
             e.printStackTrace();
         }
     }
+    
+    
+    public void registerMPIInterface() {
+        try {
+            System.out.println("#### Registering MPI Interface #### \n");
+            
+            List<String> appModules = new ArrayList<String>();
+            appModules.add(mpiModuleId);
 
+            InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Sample_Input", "",
+                    DataType.STRING, null, false, "An optional MPI source file", null);
+            
+            List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
+            applicationInputs.add(input1);
+            
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Sample_Output",
+                    "", DataType.STRING);
+            
+            List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
+            applicationOutputs.add(output1);
+ 
+            
+            mpiInterfaceId = airavataClient.registerApplicationInterface(
+                    RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(mpiName, mpiDescription,
+                            appModules, applicationInputs, applicationOutputs));
+            System.out.println("MPI Application Interface Id " + mpiInterfaceId);
+
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+    }
+
+    
     public void registerAmberInterface() {
         try {
             System.out.println("#### Registering Amber Interface #### \n");
@@ -1039,7 +1084,13 @@ public class RegisterSampleApplications {
             String echoAppDeployId = airavataClient.registerApplicationDeployment(
                     RegisterSampleApplicationsUtils.createApplicationDeployment(echoModuleId, fsdResourceId,
                             "/bin/echo", ApplicationParallelismType.SERIAL, echoDescription));
-            System.out.println("Echo on FSD deployment Id " + echoAppDeployId);
+            System.out.println("Echo on FSD deployment Id: " + echoAppDeployId);
+
+            //Register MPI
+            String mpiAppDeployId = airavataClient.registerApplicationDeployment(
+                    RegisterSampleApplicationsUtils.createApplicationDeployment(mpiModuleId, fsdResourceId,
+                            "/home/bes/hellompi", ApplicationParallelismType.OPENMP_MPI, mpiDescription));
+            System.out.println("MPI on FSD deployment Id: " + mpiAppDeployId);
 
         } catch (TException e) {
             e.printStackTrace();
