@@ -271,11 +271,9 @@ public class ExperimentRegistry {
                 resource.setExperimentKey(input.getName());
                 resource.setValue(input.getValue());
                 if (input.getType() != null){
-                    resource.setDataType(input.getType().toString());
+                    resource.setInputType(input.getType().toString());
                 }
                 resource.setMetadata(input.getMetaData());
-                resource.setAppArgument(input.getApplicationArgument());
-                resource.setInputOrder(input.getInputOrder());
                 resource.save();
             }
         } catch (Exception e) {
@@ -292,11 +290,9 @@ public class ExperimentRegistry {
                     if (exinput.getExperimentKey().equals(input.getName())) {
                         exinput.setValue(input.getValue());
                         if (input.getType() != null){
-                            exinput.setDataType(input.getType().toString());
+                            exinput.setInputType(input.getType().toString());
                         }
                         exinput.setMetadata(input.getMetaData());
-                        exinput.setAppArgument(input.getApplicationArgument());
-                        exinput.setInputOrder(input.getInputOrder());
                         exinput.save();
                     }
                 }
@@ -317,7 +313,7 @@ public class ExperimentRegistry {
                 resource.setExperimentKey(output.getName());
                 resource.setValue(output.getValue());
                 if (output.getType() != null){
-                    resource.setDataType(output.getType().toString());
+                    resource.setOutputType(output.getType().toString());
                 }
 //                resource.setMetadata(output.get());
                 resource.save();
@@ -340,7 +336,7 @@ public class ExperimentRegistry {
                         resource.setExperimentKey(output.getName());
                         resource.setValue(output.getValue());
                         if (output.getType() != null){
-                            resource.setDataType(output.getType().toString());
+                            resource.setOutputType(output.getType().toString());
                         }
 //                        resource.setMetadata(output.getMetaData());
                         resource.save();
@@ -363,7 +359,7 @@ public class ExperimentRegistry {
                 resource.setOutputKey(output.getName());
                 resource.setValue(output.getValue());
                 if (output.getType() != null){
-                    resource.setDataType(output.getType().toString());
+                    resource.setOutputType(output.getType().toString());
                 }
 //                resource.setMetadata(output.getMetaData());
                 resource.save();
@@ -386,7 +382,7 @@ public class ExperimentRegistry {
                     resource.setOutputKey(output.getName());
                     resource.setValue(output.getValue());
                     if (output.getType() != null){
-                        resource.setDataType(output.getType().toString());
+                        resource.setOutputType(output.getType().toString());
                     }
 //                    resource.setMetadata(output.getMetaData());
                     resource.save();
@@ -409,7 +405,7 @@ public class ExperimentRegistry {
                 resource.setOutputKey(output.getName());
                 resource.setValue(output.getValue());
                 if (output.getType() != null){
-                    resource.setDataType(output.getType().toString());
+                    resource.setOutputType(output.getType().toString());
                 }
 //                resource.setMetadata(output.getMetaData());
                 resource.save();
@@ -817,11 +813,9 @@ public class ExperimentRegistry {
                 resource.setInputKey(input.getName());
                 resource.setValue(input.getValue());
                 if (input.getType() != null){
-                    resource.setDataType(input.getType().toString());
+                    resource.setInputType(input.getType().toString());
                 }
                 resource.setMetadata(input.getMetaData());
-                resource.setAppArgument(input.getApplicationArgument());
-                resource.setInputOrder(input.getInputOrder());
                 resource.save();
             }
         } catch (Exception e) {
@@ -840,11 +834,9 @@ public class ExperimentRegistry {
                     resource.setInputKey(input.getName());
                     resource.setValue(input.getValue());
                     if (input.getType() != null){
-                        resource.setDataType(input.getType().toString());
+                        resource.setInputType(input.getType().toString());
                     }
                     resource.setMetadata(input.getMetaData());
-                    resource.setAppArgument(input.getApplicationArgument());
-                    resource.setInputOrder(input.getInputOrder());
                     resource.save();
                 }
             }
@@ -999,11 +991,9 @@ public class ExperimentRegistry {
                 resource.setInputKey(input.getName());
                 resource.setValue(input.getValue());
                 if (input.getType() != null){
-                    resource.setDataType(input.getType().toString());
+                    resource.setInputType(input.getType().toString());
                 }
                 resource.setMetadata(input.getMetaData());
-                resource.setAppArgument(input.getApplicationArgument());
-                resource.setInputOrder(input.getInputOrder());
                 resource.save();
             }
         } catch (Exception e) {
@@ -1021,7 +1011,7 @@ public class ExperimentRegistry {
                 resource.setOutputKey(output.getName());
                 resource.setValue(output.getValue());
                 if (output.getType() != null){
-                    resource.setDataType(output.getType().toString());
+                    resource.setOutputType(output.getType().toString());
                 }
 //                resource.setMetadata(output.getMetaData());
                 resource.save();
@@ -1045,7 +1035,7 @@ public class ExperimentRegistry {
                     resource.setOutputKey(output.getName());
                     resource.setValue(output.getValue());
                     if (output.getType() != null){
-                        resource.setDataType(output.getType().toString());
+                        resource.setOutputType(output.getType().toString());
                     }
 //                    resource.setMetadata(output.getMetaData());
                     resource.save();
@@ -1066,11 +1056,9 @@ public class ExperimentRegistry {
                     resource.setInputKey(input.getName());
                     resource.setValue(input.getValue());
                     if (input.getType() != null){
-                        resource.setDataType(input.getType().toString());
+                        resource.setInputType(input.getType().toString());
                     }
                     resource.setMetadata(input.getMetaData());
-                    resource.setAppArgument(input.getApplicationArgument());
-                    resource.setInputOrder(input.getInputOrder());
                     resource.save();
                 }
 

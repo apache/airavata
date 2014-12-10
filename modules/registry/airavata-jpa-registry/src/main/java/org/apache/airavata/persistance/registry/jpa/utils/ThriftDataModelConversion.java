@@ -24,7 +24,9 @@ package org.apache.airavata.persistance.registry.jpa.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.airavata.model.appcatalog.appinterface.*;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.ActionableGroup;
 import org.apache.airavata.model.workspace.experiment.AdvancedInputDataHandling;
@@ -184,61 +186,28 @@ public class ThriftDataModelConversion {
                 ExperimentInputResource expInput = (ExperimentInputResource) object;
                 dataObjectType.setName(expInput.getExperimentKey());
                 dataObjectType.setValue(expInput.getValue());
-                if (expInput.getDataType() != null){
-                    dataObjectType.setType(DataType.valueOf(expInput.getDataType()));
+                if (expInput.getInputType() != null){
+                    dataObjectType.setType(DataType.valueOf(expInput.getInputType()));
                 }
                 dataObjectType.setMetaData(expInput.getMetadata());
-                dataObjectType.setApplicationArgument(expInput.getAppArgument());
-                dataObjectType.setStandardInput(expInput.isStandardInput());
-                dataObjectType.setUserFriendlyDescription(expInput.getUserFriendlyDesc());
-                dataObjectType.setInputOrder(expInput.getInputOrder());
-                if (expInput.getValidityType() != null){
-                    dataObjectType.setInputValid(ValidityType.valueOf(expInput.getValidityType()));
-                }
-                if (expInput.getCommandLineType() != null){
-                    dataObjectType.setAddedToCommandLine(CommandLineType.valueOf(expInput.getCommandLineType()));
-                }
-                dataObjectType.setDataStaged(expInput.isDataStaged());
                 return dataObjectType;
             }else if (object instanceof NodeInputResource){
                 NodeInputResource nodeInputResource = (NodeInputResource)object;
                 dataObjectType.setName(nodeInputResource.getInputKey());
                 dataObjectType.setValue(nodeInputResource.getValue());
-                if (nodeInputResource.getDataType() != null){
-                    dataObjectType.setType(DataType.valueOf(nodeInputResource.getDataType()));
+                if (nodeInputResource.getInputType() != null){
+                    dataObjectType.setType(DataType.valueOf(nodeInputResource.getInputType()));
                 }
                 dataObjectType.setMetaData(nodeInputResource.getMetadata());
-                dataObjectType.setApplicationArgument(nodeInputResource.getAppArgument());
-                dataObjectType.setStandardInput(nodeInputResource.isStandardInput());
-                dataObjectType.setUserFriendlyDescription(nodeInputResource.getUserFriendlyDesc());
-                dataObjectType.setInputOrder(nodeInputResource.getInputOrder());
-                if (nodeInputResource.getValidityType() != null){
-                    dataObjectType.setInputValid(ValidityType.valueOf(nodeInputResource.getValidityType()));
-                }
-                if (nodeInputResource.getCommandLineType() != null){
-                    dataObjectType.setAddedToCommandLine(CommandLineType.valueOf(nodeInputResource.getCommandLineType()));
-                }
-                dataObjectType.setDataStaged(nodeInputResource.isDataStaged());
                 return dataObjectType;
             }else if (object instanceof ApplicationInputResource){
                 ApplicationInputResource inputResource = (ApplicationInputResource)object;
                 dataObjectType.setName(inputResource.getInputKey());
                 dataObjectType.setValue(inputResource.getValue());
-                if (inputResource.getDataType() != null){
-                    dataObjectType.setType(DataType.valueOf(inputResource.getDataType()));
+                if (inputResource.getInputType() != null){
+                    dataObjectType.setType(DataType.valueOf(inputResource.getInputType()));
                 }
                 dataObjectType.setMetaData(inputResource.getMetadata());
-                dataObjectType.setApplicationArgument(inputResource.getAppArgument());
-                dataObjectType.setStandardInput(inputResource.isStandardInput());
-                dataObjectType.setUserFriendlyDescription(inputResource.getUserFriendlyDesc());
-                dataObjectType.setInputOrder(inputResource.getInputOrder());
-                if (inputResource.getValidityType() != null){
-                    dataObjectType.setInputValid(ValidityType.valueOf(inputResource.getValidityType()));
-                }
-                if (inputResource.getCommandLineType() != null){
-                    dataObjectType.setAddedToCommandLine(CommandLineType.valueOf(inputResource.getCommandLineType()));
-                }
-                dataObjectType.setDataStaged(inputResource.isDataStaged());
                 return dataObjectType;
             }else {
                 return null;
@@ -254,40 +223,28 @@ public class ThriftDataModelConversion {
                 ExperimentOutputResource expOutput = (ExperimentOutputResource)object;
                 dataObjectType.setName(expOutput.getExperimentKey());
                 dataObjectType.setValue(expOutput.getValue());
-                if (expOutput.getDataType() != null){
-                    dataObjectType.setType(DataType.valueOf(expOutput.getDataType()));
+                if (expOutput.getOutputType() != null){
+                    dataObjectType.setType(DataType.valueOf(expOutput.getOutputType()));
                 }
-                if (expOutput.getValidityType() != null){
-                    dataObjectType.setValidityType(ValidityType.valueOf(expOutput.getValidityType()));
-                }
-                dataObjectType.setDataMovement(expOutput.isDataMovement());
-                dataObjectType.setDataNameLocation(expOutput.getDataNameLocation());
+//                dataObjectType.setMetaData(expOutput.getMetadata());
                 return dataObjectType;
             }else if (object instanceof NodeOutputResource){
                 NodeOutputResource nodeOutputResource = (NodeOutputResource)object;
                 dataObjectType.setName(nodeOutputResource.getOutputKey());
                 dataObjectType.setValue(nodeOutputResource.getValue());
-                if (nodeOutputResource.getDataType() != null){
-                    dataObjectType.setType(DataType.valueOf(nodeOutputResource.getDataType()));
+                if (nodeOutputResource.getOutputType() != null){
+                    dataObjectType.setType(DataType.valueOf(nodeOutputResource.getOutputType()));
                 }
-                if (nodeOutputResource.getValidityType() != null){
-                    dataObjectType.setValidityType(ValidityType.valueOf(nodeOutputResource.getValidityType()));
-                }
-                dataObjectType.setDataMovement(nodeOutputResource.isDataMovement());
-                dataObjectType.setDataNameLocation(nodeOutputResource.getDataNameLocation());
+//                dataObjectType.setMetaData(nodeOutputResource.getMetadata());
                 return dataObjectType;
             }else if (object instanceof ApplicationOutputResource){
                 ApplicationOutputResource outputResource = (ApplicationOutputResource)object;
                 dataObjectType.setName(outputResource.getOutputKey());
                 dataObjectType.setValue(outputResource.getValue());
-                if (outputResource.getDataType() != null){
-                    dataObjectType.setType(DataType.valueOf(outputResource.getDataType()));
+                if (outputResource.getOutputType() != null){
+                    dataObjectType.setType(DataType.valueOf(outputResource.getOutputType()));
                 }
-                if (outputResource.getValidityType() != null){
-                    dataObjectType.setValidityType(ValidityType.valueOf(outputResource.getValidityType()));
-                }
-                dataObjectType.setDataMovement(outputResource.isDataMovement());
-                dataObjectType.setDataNameLocation(outputResource.getDataNameLocation());
+//                dataObjectType.setMetaData(outputResource.getMetadata());
                 return dataObjectType;
             }else {
                 return null;

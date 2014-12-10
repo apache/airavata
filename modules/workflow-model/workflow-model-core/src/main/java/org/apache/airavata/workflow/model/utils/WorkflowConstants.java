@@ -27,7 +27,7 @@ public class WorkflowConstants {
     /**
      * The name of the application
      */
-    public static final String APPLICATION_NAME_ = "XBaya Dashboard";
+    public static final String APPLICATION_NAME = "XBaya Dashboard";
 
     /**
      * Namespace URI
@@ -48,19 +48,5 @@ public class WorkflowConstants {
      * WORKFLOW Namespace
      */
     public static final String LEAD_NS = "http://extreme.indiana.edu/lead/workflow";
-
-
-    public static final String APPLICATION_COMPONENT_DESCRIPTION = "description";
-    public static final String APPLICATION_COMPONENT_NAME = "name";
-    public static final String APPLICATION_COMPONENT_APPLICATION = "application";
-
-    public static final String APPLICATION_DATA_DESCRIPTION = "description";
-    public static final String APPLICATION_DATA_NAME = "name";
-    public static final String APPLICATION_DATA_DEFAULT_VALUE = "defaultValue";
-    public static final String APPLICATION_DATA_DATA_TYPE = "dataType";
-    public static final String APPLICATION_DATA_INPUT_ORDER = "inputOrder";
-    public static final String APPLICATION_DATA_APP_ARGUMENT = "appArgument";
-    public static final String APPLICATION_INPUT = "Input";
-    public static final String APPLICATION_OUTPUT = "Output";
 
 }

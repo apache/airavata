@@ -40,35 +40,9 @@ public class NodeOutputResource extends AbstractResource {
 	
     private WorkflowNodeDetailResource nodeDetailResource;
     private String outputKey;
-    private String dataType;
+    private String outputType;
+    private String metadata;
     private String value;
-    private String validityType;
-    private boolean dataMovement;
-    private String dataNameLocation;
-
-    public String getValidityType() {
-        return validityType;
-    }
-
-    public void setValidityType(String validityType) {
-        this.validityType = validityType;
-    }
-
-    public boolean isDataMovement() {
-        return dataMovement;
-    }
-
-    public void setDataMovement(boolean dataMovement) {
-        this.dataMovement = dataMovement;
-    }
-
-    public String getDataNameLocation() {
-        return dataNameLocation;
-    }
-
-    public void setDataNameLocation(String dataNameLocation) {
-        this.dataNameLocation = dataNameLocation;
-    }
 
     public WorkflowNodeDetailResource getNodeDetailResource() {
         return nodeDetailResource;
@@ -86,12 +60,20 @@ public class NodeOutputResource extends AbstractResource {
         this.outputKey = outputKey;
     }
 
-    public String getDataType() {
-        return dataType;
+    public String getOutputType() {
+        return outputType;
     }
 
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
+    public void setOutputType(String outputType) {
+        this.outputType = outputType;
+    }
+
+    public String getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(String metadata) {
+        this.metadata = metadata;
     }
 
     public String getValue() {
@@ -141,21 +123,17 @@ public class NodeOutputResource extends AbstractResource {
             nodeOutput.setNode(nodeDetail);
             nodeOutput.setNodeId(nodeDetail.getNodeId());
             nodeOutput.setOutputKey(outputKey);
-            nodeOutput.setDataType(dataType);
+            nodeOutput.setOutputKeyType(outputType);
             nodeOutput.setValue(value);
-            nodeOutput.setValidityType(validityType);
-            nodeOutput.setDataMovement(dataMovement);
-            nodeOutput.setDataNameLocation(dataNameLocation);
+            nodeOutput.setMetadata(metadata);
 
             if (existingOutput != null) {
                 existingOutput.setNode(nodeDetail);
                 existingOutput.setNodeId(nodeDetail.getNodeId());
                 existingOutput.setOutputKey(outputKey);
-                existingOutput.setDataType(dataType);
+                existingOutput.setOutputKeyType(outputType);
                 existingOutput.setValue(value);
-                existingOutput.setValidityType(validityType);
-                existingOutput.setDataMovement(dataMovement);
-                existingOutput.setDataNameLocation(dataNameLocation);
+                existingOutput.setMetadata(metadata);
                 nodeOutput = em.merge(existingOutput);
             } else {
                 em.persist(nodeOutput);

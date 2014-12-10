@@ -28,34 +28,22 @@ import javax.xml.bind.annotation.XmlValue;
 import javax.xml.namespace.QName;
 
 @XmlRootElement(name="Parameter")
-@XmlType(propOrder = {"name", "type", "description", "defaultValue", "applicationArgument", "inputOrder"})
+@XmlType(propOrder = {"name", "type", "description", "defaultValue"})
 public class WSComponentApplicationParameter {
 	private String name;
 	private QName type;
 	private String description;
 	private String defaultValue;
-	private String applicationArgument;
-	private int inputOrder;
-
+	
 	public WSComponentApplicationParameter() {
 	}
-
-	public WSComponentApplicationParameter(String name, QName type, String description, String defaultValue) {
-		this(name, type, description, defaultValue, "", -1);
-	}
-
-	public WSComponentApplicationParameter(String name, QName type, String description, String defaultValue, int inputOrder) {
-		this(name, type, description, defaultValue, "", inputOrder);
-	}
-
+	
 	public WSComponentApplicationParameter(String name, QName type,
-			String description, String defaultValue, String applicationArgument, int inputOrder) {
+			String description, String defaultValue) {
 		this.name = name;
 		this.type = type;
 		this.description = description;
 		this.defaultValue = defaultValue;
-		this.applicationArgument = applicationArgument;
-		this.inputOrder = inputOrder;
 	}
 
 	@XmlAttribute (required = true)
@@ -89,22 +77,5 @@ public class WSComponentApplicationParameter {
 	public void setDefaultValue(String defaultValue) {
 		this.defaultValue = defaultValue;
 	}
-
-	@XmlAttribute
-	public String getApplicationArgument() {
-		return applicationArgument;
-	}
-
-	public void setApplicationArgument(String applicationArgument) {
-		this.applicationArgument = applicationArgument;
-	}
-
-	@XmlAttribute
-	public int getInputOrder() {
-		return inputOrder;
-	}
-
-	public void setInputOrder(int inputOrder) {
-		this.inputOrder = inputOrder;
-	}
+	
 }

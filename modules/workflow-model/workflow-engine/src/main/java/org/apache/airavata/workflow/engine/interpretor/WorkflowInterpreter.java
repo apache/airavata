@@ -1050,7 +1050,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 			Node fromNode = dataPort.getFromNode();
 			String portInputValue = null;
 			if (fromNode instanceof InputNode){
-				portInputValue = (String) ((InputNode) fromNode).getDefaultValue();
+				portInputValue = (String) ((InputNode) fromNode).getDefaultValue();			
 			} else if (fromNode instanceof WSNode){
 				Map<String, String> outputData = nodeOutputData.get(fromNode);
                 portInputValue = outputData.get(dataPort.getName());
@@ -1058,17 +1058,9 @@ public class WorkflowInterpreter implements AbstractActivityListener{
                     portInputValue = outputData.get(dataPort.getEdge(0).getFromPort().getName());
                 }
 			}
-			// 123456789
-			InputDataObjectType elem = new InputDataObjectType();
-			elem.setName(dataPort.getName());
+            InputDataObjectType elem = new InputDataObjectType();
+            elem.setName(dataPort.getName());
 			elem.setValue(portInputValue);
-			if (dataPort instanceof WSPort) {
-				WSPort port = (WSPort) dataPort;
-				elem.setInputOrder(port.getComponentPort().getInputOrder());
-				elem.setApplicationArgument(
-						(port.getComponentPort().getApplicationArgument() != null ? port.getComponentPort().getApplicationArgument() : ""));
-			}
-
 			nodeDetails.addToNodeInputs(elem);
 		}
 		try {

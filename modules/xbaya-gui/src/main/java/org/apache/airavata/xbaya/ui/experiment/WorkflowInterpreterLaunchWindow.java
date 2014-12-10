@@ -308,9 +308,6 @@ public class WorkflowInterpreterLaunchWindow {
             elem.setName(inputNode.getID());
             elem.setType(DataType.STRING);
             elem.setValue(value);
-            elem.setApplicationArgument(inputNode.getApplicationArgument());
-            elem.setInputOrder(inputNode.getInputOrder());
-
 			experiment.addToExperimentInputs(elem );
         }
 
