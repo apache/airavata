@@ -58,6 +58,7 @@ public class CreateLaunchExperiment {
     private static Airavata.Client airavataClient;
 
     private static String echoAppId = "Echo_753d7cf6-f79a-4f7f-8ada-5d707e90c383";
+    private static String mpiAppId = "HelloMPI_da45305f-5d90-4a18-8716-8dd54c3b2376";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
     private static String amberAppId = "Amber_49b16f6f-93ab-4885-9971-6ab2ab5eb3d3";
     private static String gromacsAppId = "GROMACS_05622038-9edd-4cb1-824e-0b7cb993364b";
@@ -81,7 +82,7 @@ public class CreateLaunchExperiment {
     public static void main(String[] args) throws Exception {
                 airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
                 System.out.println("API version is " + airavataClient.getAPIVersion());
-//                registerApplications(); // run this only the first time
+//              registerApplications(); // run this only the first time
                 createAndLaunchExp();
     }
     
@@ -93,7 +94,8 @@ public class CreateLaunchExperiment {
         try {
             for (int i = 0; i < 1; i++) {
 //                final String expId = createExperimentForSSHHost(airavata);
-                final String expId = createEchoExperimentForFSD(airavataClient);
+//                final String expId = createEchoExperimentForFSD(airavataClient);
+                final String expId = createMPIExperimentForFSD(airavataClient);
 //                final String expId = createEchoExperimentForStampede(airavataClient);
 //                final String expId = createEchoExperimentForTrestles(airavataClient);
 //                final String expId = createExperimentEchoForLocalHost(airavataClient);
@@ -296,7 +298,69 @@ public class CreateLaunchExperiment {
         }
         return null;
     }
+    
+    
+    public static String createMPIExperimentForFSD(Airavata.Client client) throws TException {
+        try {
+           
+        	List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("Sample_Input");
+            input.setType(DataType.STRING);
+            input.setValue("");
+        	exInputs.add(input);
+            
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("Sample_Output");
+            output.setType(DataType.STRING);
+            output.setValue("");
+            exOut.add(output);
+            
+            Experiment simpleExperiment = 
+                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "mpiExperiment", "HelloMPI", mpiAppId, null);
+//          simpleExperiment.setExperimentOutputs(exOut);
+            
+            
+            
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(mpiAppId);
+            if (computeResources != null && computeResources.size() != 0) {
+                for (String id : computeResources.keySet()) {
+                    String resourceName = computeResources.get(id);
+                    if (resourceName.equals(unicoreHostName)) {
+                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 2, 1, 2, "normal", 30, 0, 1048576, "sds128");
+                        UserConfigurationData userConfigurationData = new UserConfigurationData();
+                        userConfigurationData.setAiravataAutoSchedule(false);
+                        userConfigurationData.setOverrideManualScheduledParams(false);
+                        userConfigurationData.setComputationalResourceScheduling(scheduling);
+                        
+                        // set output directory 
+                        AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();
+                        dataHandling.setOutputDataDir("/tmp/airavata/output/"+UUID.randomUUID().toString()+"/");
+                        userConfigurationData.setAdvanceOutputDataHandling(dataHandling);
+                        simpleExperiment.setUserConfigurationData(userConfigurationData);
+                        
+                        return client.createExperiment(simpleExperiment);
+                    }
+                }
+            }
+        } catch (AiravataSystemException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataSystemException(e);
+        } catch (InvalidRequestException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new InvalidRequestException(e);
+        } catch (AiravataClientException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataClientException(e);
+        } catch (TException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new TException(e);
+        }
+        return null;
+    }
 
+    
     
     
     public static String createExperimentWRFStampede(Airavata.Client client) throws TException {
