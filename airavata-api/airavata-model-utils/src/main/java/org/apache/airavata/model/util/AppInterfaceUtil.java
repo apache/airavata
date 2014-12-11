@@ -45,6 +45,7 @@ public class AppInterfaceUtil {
                                                               String value,
                                                               DataType type,
                                                               String applicationArgument,
+                                                              int order,
                                                               boolean standardInput,
                                                               String userFriendlyDesc,
                                                               String metadata){
@@ -54,6 +55,7 @@ public class AppInterfaceUtil {
         appInput.setType(type);
         appInput.setMetaData(metadata);
         appInput.setApplicationArgument(applicationArgument);
+        appInput.setInputOrder(order);
         appInput.setUserFriendlyDescription(userFriendlyDesc);
         appInput.setStandardInput(standardInput);
         return appInput;

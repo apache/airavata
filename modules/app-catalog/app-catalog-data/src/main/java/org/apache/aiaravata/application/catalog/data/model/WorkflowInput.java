@@ -48,8 +48,16 @@ public class WorkflowInput implements Serializable {
     private String userFriendlyDesc;
     @Column(name = "STANDARD_INPUT")
     private boolean standardInput;
+    @Column(name = "INPUT_ORDER")
+    private int inputOrder;
+    @Column(name="VALIDITY_TYPE")
+    private String validityType;
+    @Column(name="COMMANDLINE_TYPE")
+    private String commandLineType;
+    @Column(name = "DATA_STAGED")
+    private boolean dataStaged;
 
-    @ManyToOne(cascade= CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "WF_TEMPLATE_ID")
     private Workflow workflow;
 
@@ -123,5 +131,37 @@ public class WorkflowInput implements Serializable {
 
     public void setStandardInput(boolean standardInput) {
         this.standardInput = standardInput;
+    }
+
+    public int getInputOrder() {
+        return inputOrder;
+    }
+
+    public void setInputOrder(int inputOrder) {
+        this.inputOrder = inputOrder;
+    }
+
+    public String getValidityType() {
+        return validityType;
+    }
+
+    public void setValidityType(String validityType) {
+        this.validityType = validityType;
+    }
+
+    public String getCommandLineType() {
+        return commandLineType;
+    }
+
+    public void setCommandLineType(String commandLineType) {
+        this.commandLineType = commandLineType;
+    }
+
+    public boolean isDataStaged() {
+        return dataStaged;
+    }
+
+    public void setDataStaged(boolean dataStaged) {
+        this.dataStaged = dataStaged;
     }
 }

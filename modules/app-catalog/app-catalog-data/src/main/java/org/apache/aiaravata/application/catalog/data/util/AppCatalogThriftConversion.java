@@ -28,10 +28,7 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentD
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
-import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.appinterface.DataType;
-import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
-import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.*;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
@@ -556,10 +553,18 @@ public class AppCatalogThriftConversion {
         inputDataObjectType.setName(input.getInputKey());
         inputDataObjectType.setValue(input.getInputVal());
         inputDataObjectType.setApplicationArgument(input.getAppArgument());
+        inputDataObjectType.setInputOrder(input.getInputOrder());
         inputDataObjectType.setMetaData(input.getMetadata());
         inputDataObjectType.setType(DataType.valueOf(input.getDataType()));
-        inputDataObjectType.setStandardInput(input.isStandareInput());
+        inputDataObjectType.setStandardInput(input.isStandardInput());
         inputDataObjectType.setUserFriendlyDescription(input.getUserFriendlyDesc());
+        if (input.getValidityType() != null){
+            inputDataObjectType.setInputValid(ValidityType.valueOf(input.getValidityType()));
+        }
+        if (input.getCommandLineType() != null){
+            inputDataObjectType.setAddedToCommandLine(CommandLineType.valueOf(input.getCommandLineType()));
+        }
+        inputDataObjectType.setDataStaged(input.isDataStaged());
         return inputDataObjectType;
     }
 
@@ -575,6 +580,11 @@ public class AppCatalogThriftConversion {
         outputDataObjectType.setName(output.getOutputKey());
         outputDataObjectType.setValue(output.getOutputVal());
         outputDataObjectType.setType(DataType.valueOf(output.getDataType()));
+        if (output.getValidityType() != null){
+            outputDataObjectType.setValidityType(ValidityType.valueOf(output.getValidityType()));
+        }
+        outputDataObjectType.setDataMovement(output.isDataMovement());
+        outputDataObjectType.setDataNameLocation(output.getDataNameLocation());
         return outputDataObjectType;
     }
 
@@ -696,9 +706,17 @@ public class AppCatalogThriftConversion {
         InputDataObjectType input = new InputDataObjectType();
         input.setName(resource.getInputKey());
         input.setApplicationArgument(resource.getAppArgument());
+        input.setInputOrder(resource.getInputOrder());
         input.setType(DataType.valueOf(resource.getDataType()));
         input.setMetaData(resource.getMetadata());
         input.setUserFriendlyDescription(resource.getUserFriendlyDesc());
+        if (resource.getValidityType() != null){
+            input.setInputValid(ValidityType.valueOf(resource.getValidityType()));
+        }
+        if (resource.getCommandLineType() != null){
+            input.setAddedToCommandLine(CommandLineType.valueOf(resource.getCommandLineType()));
+        }
+        input.setDataStaged(resource.isDataStaged());
         return input;
     }
 

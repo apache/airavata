@@ -154,7 +154,7 @@ public class RegisterUS3Application {
             appModules.add(ultrascanModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("input", null,
-                    DataType.URI, null, false, "input tar file", null);
+                    DataType.URI, null, 1, false, "input tar file", null);
            
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);

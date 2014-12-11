@@ -513,9 +513,17 @@ public class Utils {
         if (o != null){
             ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
             eInputResource.setExperimentResource(experimentResource);
-            eInputResource.setInputType(o.getInputType());
+            eInputResource.setDataType(o.getDataType());
             eInputResource.setMetadata(o.getMetadata());
             eInputResource.setExperimentKey(o.getEx_key());
+            eInputResource.setAppArgument(o.getAppArgument());
+            eInputResource.setInputOrder(o.getInputOrder());
+            eInputResource.setStandardInput(o.isStandardInput());
+            eInputResource.setUserFriendlyDesc(o.getUserFriendlyDesc());
+            eInputResource.setValidityType(o.getValidityType());
+            eInputResource.setCommandLineType(o.getCommandLineType());
+            eInputResource.setDataStaged(o.isDataStaged());
+
             if (o.getValue() != null){
                 eInputResource.setValue(new String(o.getValue()));
             }
@@ -533,8 +541,10 @@ public class Utils {
             if (o.getValue() != null){
                 eOutputResource.setValue(new String(o.getValue()));
             }
-            eOutputResource.setOutputType(o.getOutputKeyType());
-            eOutputResource.setMetadata(o.getMetadata());
+            eOutputResource.setDataType(o.getDataType());
+            eOutputResource.setValidityType(o.getValidityType());
+            eOutputResource.setDataMovement(o.isDataMovement());
+            eOutputResource.setDataNameLocation(o.getDataNameLocation());
         }
         return eOutputResource;
     }
@@ -601,7 +611,14 @@ public class Utils {
             TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
             inputResource.setTaskDetailResource(taskDetailResource);
             inputResource.setInputKey(o.getInputKey());
-            inputResource.setInputType(o.getInputKeyType());
+            inputResource.setDataType(o.getDataType());
+            inputResource.setAppArgument(o.getAppArgument());
+            inputResource.setInputOrder(o.getInputOrder());
+            inputResource.setStandardInput(o.isStandardInput());
+            inputResource.setUserFriendlyDesc(o.getUserFriendlyDesc());
+            inputResource.setValidityType(o.getValidityType());
+            inputResource.setCommandLineType(o.getCommandLineType());
+            inputResource.setDataStaged(o.isDataStaged());
             if (o.getValue() != null){
                 inputResource.setValue(new String(o.getValue()));
             }
@@ -615,12 +632,14 @@ public class Utils {
         if (o != null){
             TaskDetailResource taskDetailResource = (TaskDetailResource)createTaskDetail(o.getTask());
             outputResource.setTaskDetailResource(taskDetailResource);
-            outputResource.setOutputType(o.getOutputKeyType());
+            outputResource.setDataType(o.getDataType());
             outputResource.setOutputKey(o.getOutputKey());
             if (o.getValue() != null){
                 outputResource.setValue(new String(o.getValue()));
             }
-            outputResource.setMetadata(o.getMetadata());
+            outputResource.setValidityType(o.getValidityType());
+            outputResource.setDataMovement(o.isDataMovement());
+            outputResource.setDataNameLocation(o.getDataNameLocation());
         }
         return outputResource;
     }
@@ -631,9 +650,16 @@ public class Utils {
             WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)createWorkflowNodeDetail(o.getNodeDetails());
             inputResource.setNodeDetailResource(nodeDetailResource);
             inputResource.setInputKey(o.getInputKey());
-            inputResource.setInputType(o.getInputKeyType());
+            inputResource.setDataType(o.getDataType());
             inputResource.setValue(o.getValue());
             inputResource.setMetadata(o.getMetadata());
+            inputResource.setAppArgument(o.getAppArgument());
+            inputResource.setInputOrder(o.getInputOrder());
+            inputResource.setStandardInput(o.isStandardInput());
+            inputResource.setUserFriendlyDesc(o.getUserFriendlyDesc());
+            inputResource.setValidityType(o.getValidityType());
+            inputResource.setCommandLineType(o.getCommandLineType());
+            inputResource.setDataStaged(o.isDataStaged());
         }
         return inputResource;
     }
@@ -643,10 +669,12 @@ public class Utils {
         if (o != null){
             WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)createWorkflowNodeDetail(o.getNode());
             outputResource.setNodeDetailResource(nodeDetailResource);
-            outputResource.setOutputType(o.getOutputKeyType());
+            outputResource.setDataType(o.getDataType());
             outputResource.setOutputKey(o.getOutputKey());
             outputResource.setValue(o.getValue());
-            outputResource.setMetadata(o.getMetadata());
+            outputResource.setValidityType(o.getValidityType());
+            outputResource.setDataMovement(o.isDataMovement());
+            outputResource.setDataNameLocation(o.getDataNameLocation());
         }
 
         return outputResource;
