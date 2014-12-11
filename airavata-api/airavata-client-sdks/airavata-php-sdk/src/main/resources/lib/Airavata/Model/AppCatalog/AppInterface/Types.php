@@ -34,6 +34,33 @@ final class DataType {
   );
 }
 
+final class ValidityType {
+  const REQUIRED = 0;
+  const OPTIONAL = 1;
+  static public $__names = array(
+    0 => 'REQUIRED',
+    1 => 'OPTIONAL',
+  );
+}
+
+final class CommandLineType {
+  const INCLUSIVE = 0;
+  const EXCLUSIVE = 1;
+  static public $__names = array(
+    0 => 'INCLUSIVE',
+    1 => 'EXCLUSIVE',
+  );
+}
+
+final class InputMetadataType {
+  const MEMORY = 0;
+  const CPU = 1;
+  static public $__names = array(
+    0 => 'MEMORY',
+    1 => 'CPU',
+  );
+}
+
 class InputDataObjectType {
   static $_TSPEC;
 
@@ -44,6 +71,10 @@ class InputDataObjectType {
   public $standardInput = false;
   public $userFriendlyDescription = null;
   public $metaData = null;
+  public $inputOrder = null;
+  public $inputValid = null;
+  public $addedToCommandLine = null;
+  public $dataStaged = false;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -76,6 +107,22 @@ class InputDataObjectType {
           'var' => 'metaData',
           'type' => TType::STRING,
           ),
+        8 => array(
+          'var' => 'inputOrder',
+          'type' => TType::I32,
+          ),
+        9 => array(
+          'var' => 'inputValid',
+          'type' => TType::I32,
+          ),
+        10 => array(
+          'var' => 'addedToCommandLine',
+          'type' => TType::I32,
+          ),
+        11 => array(
+          'var' => 'dataStaged',
+          'type' => TType::BOOL,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -99,6 +146,18 @@ class InputDataObjectType {
       }
       if (isset($vals['metaData'])) {
         $this->metaData = $vals['metaData'];
+      }
+      if (isset($vals['inputOrder'])) {
+        $this->inputOrder = $vals['inputOrder'];
+      }
+      if (isset($vals['inputValid'])) {
+        $this->inputValid = $vals['inputValid'];
+      }
+      if (isset($vals['addedToCommandLine'])) {
+        $this->addedToCommandLine = $vals['addedToCommandLine'];
+      }
+      if (isset($vals['dataStaged'])) {
+        $this->dataStaged = $vals['dataStaged'];
       }
     }
   }
@@ -171,6 +230,34 @@ class InputDataObjectType {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 8:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->inputOrder);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 9:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->inputValid);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 10:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->addedToCommandLine);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 11:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->dataStaged);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -219,6 +306,26 @@ class InputDataObjectType {
       $xfer += $output->writeString($this->metaData);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->inputOrder !== null) {
+      $xfer += $output->writeFieldBegin('inputOrder', TType::I32, 8);
+      $xfer += $output->writeI32($this->inputOrder);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->inputValid !== null) {
+      $xfer += $output->writeFieldBegin('inputValid', TType::I32, 9);
+      $xfer += $output->writeI32($this->inputValid);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->addedToCommandLine !== null) {
+      $xfer += $output->writeFieldBegin('addedToCommandLine', TType::I32, 10);
+      $xfer += $output->writeI32($this->addedToCommandLine);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->dataStaged !== null) {
+      $xfer += $output->writeFieldBegin('dataStaged', TType::BOOL, 11);
+      $xfer += $output->writeBool($this->dataStaged);
+      $xfer += $output->writeFieldEnd();
+    }
     $xfer += $output->writeFieldStop();
     $xfer += $output->writeStructEnd();
     return $xfer;
@@ -232,6 +339,9 @@ class OutputDataObjectType {
   public $name = null;
   public $value = null;
   public $type = null;
+  public $validityType = null;
+  public $dataMovement = null;
+  public $dataNameLocation = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -248,6 +358,18 @@ class OutputDataObjectType {
           'var' => 'type',
           'type' => TType::I32,
           ),
+        4 => array(
+          'var' => 'validityType',
+          'type' => TType::I32,
+          ),
+        5 => array(
+          'var' => 'dataMovement',
+          'type' => TType::BOOL,
+          ),
+        6 => array(
+          'var' => 'dataNameLocation',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -259,6 +381,15 @@ class OutputDataObjectType {
       }
       if (isset($vals['type'])) {
         $this->type = $vals['type'];
+      }
+      if (isset($vals['validityType'])) {
+        $this->validityType = $vals['validityType'];
+      }
+      if (isset($vals['dataMovement'])) {
+        $this->dataMovement = $vals['dataMovement'];
+      }
+      if (isset($vals['dataNameLocation'])) {
+        $this->dataNameLocation = $vals['dataNameLocation'];
       }
     }
   }
@@ -303,6 +434,27 @@ class OutputDataObjectType {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 4:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->validityType);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->dataMovement);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 6:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->dataNameLocation);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -329,6 +481,21 @@ class OutputDataObjectType {
     if ($this->type !== null) {
       $xfer += $output->writeFieldBegin('type', TType::I32, 3);
       $xfer += $output->writeI32($this->type);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->validityType !== null) {
+      $xfer += $output->writeFieldBegin('validityType', TType::I32, 4);
+      $xfer += $output->writeI32($this->validityType);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->dataMovement !== null) {
+      $xfer += $output->writeFieldBegin('dataMovement', TType::BOOL, 5);
+      $xfer += $output->writeBool($this->dataMovement);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->dataNameLocation !== null) {
+      $xfer += $output->writeFieldBegin('dataNameLocation', TType::STRING, 6);
+      $xfer += $output->writeString($this->dataNameLocation);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

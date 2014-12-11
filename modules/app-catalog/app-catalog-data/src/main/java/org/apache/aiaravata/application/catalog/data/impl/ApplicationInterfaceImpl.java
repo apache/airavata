@@ -101,8 +101,9 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
                     inputResource.setInputVal(input.getValue());
                     inputResource.setDataType(input.getType().toString());
                     inputResource.setMetadata(input.getMetaData());
-                    inputResource.setStandareInput(input.isStandardInput());
+                    inputResource.setStandardInput(input.isStandardInput());
                     inputResource.setAppArgument(input.getApplicationArgument());
+                    inputResource.setInputOrder(input.getInputOrder());
                     inputResource.save();
                 }
             }
@@ -216,8 +217,9 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
                     inputResource.setInputVal(input.getValue());
                     inputResource.setDataType(input.getType().toString());
                     inputResource.setMetadata(input.getMetaData());
-                    inputResource.setStandareInput(input.isStandardInput());
+                    inputResource.setStandardInput(input.isStandardInput());
                     inputResource.setAppArgument(input.getApplicationArgument());
+                    inputResource.setInputOrder(input.getInputOrder());
                     inputResource.save();
                 }
             }

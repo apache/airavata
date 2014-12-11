@@ -47,6 +47,7 @@ import static org.junit.Assert.assertTrue;
 public class AppInterfaceTest {
     private static Initialize initialize;
     private static AppCatalog appcatalog;
+    private static int order = 1;
 
     @Before
     public void setUp() {
@@ -169,6 +170,7 @@ public class AppInterfaceTest {
         input.setValue(value);
         input.setType(type);
         input.setApplicationArgument("test arg");
+        input.setInputOrder(order++);
         return input;
     }
 
