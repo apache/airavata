@@ -21,48 +21,7 @@ Airavata Client Distribution
 ============================
 
 This distribution is a set of libraries and configurations files that allow a 3rd party
-application to programatically access Airavata functionality through Airavata API. 
-
-    AIRAVATA_CLIENT
-		├── conf
-		│   ├── airavata-client.properties
-		│   └── log4j.properties
-		├── lib
-		├── samples
-			├── create-application
-			└── workflow-run
-		├── INSTALL
-		├── LICENSE
-		├── NOTICE
-		└── README
-
-
-How to test and run samples
-===========================
-* If you built Airavata from source, and if you see "BUILD SUCCESS", then the test cases should have passes.
-* The samples directory contains samples on 2 base use cases on Airavata Client API. See the README files contained
-  within the samples for more details.
-* For more examples on how to use the Airavata API go to https://cwiki.apache.org/confluence/display/AIRAVATA/Gateway+Developer+Guide
-* For advanced use cases, please contact mailing lists - http://airavata.apache.org/community/mailing-lists.html
-
-Description of Directory Structure
-==================================
-    - samples
-      This contains 2 basecase usecases on how to use Airavata client. Both the samples are having its README file
-      So users have to refer each README file before running each sample.
-
-    - lib
-      This contains all the libraries required to run the client side code. Add these libraries to the classpath of java applications which uses Airavata 
-      Client API.
-
-    - conf
-      Contains all the configuration files for airavata client API to work. Refer the comments in the configuration file for more details.
-
-    - README
-      This document.
-
-    - INSTALL
-      This document will contain information on how to use Airavata Client API libraries.
+application to programmatically access Airavata functionality through Airavata API.
 
 
 Other Available Distributions
@@ -71,13 +30,17 @@ Other Available Distributions
 Server Distributions
 --------------------
 * Airavata Server
-  The Airavata Server binary distribution allows you to run a standalone Airavata Server which includes all the airavata services 
-  shipped with a default derby database as the backend registry. For stable purposes, a mysql configuration is recommended. 
+  The Airavata Server binary distribution allows you to run a standalone Airavata Server which includes all the airavata services
+  shipped with a default derby database as the backend registry. For stable purposes, a mysql configuration is recommended.
 
-* Airavata Server Web Application
-  This is similar package as the Airavata Server but is distributed as the server Web Application archive.
-  This war is compatible with Apache Tomcat application server. The war bundles all airavata services 
-  enabled by defualt to startup a derby database as the backend registry. For stable purposes, a mysql configuration is recommended. 
+* Airavata API Server
+  This is the server that contains Airavata API Server.
+
+* Airavata Orchestrator Server
+  This is the stand-alone orchestrator server
+
+* Airavata GFac Server
+  This is the standalone GFac Server
 
 Client Distributions
 --------------------
@@ -85,7 +48,6 @@ Client Distributions
   The Airavata XBaya distribution is a client GUI application with features to register applications as web services, construct workflows,
   execute and monitor workflows and browse the generated results from the airavata registry.
 
-* Airavata XBaya JNLP
-  The Airavata XBaya JNLP distribution is the simular GUI distribution but prepackeged to be ready to be deployed to 
-   a web server as a web start application. The GUI provides features to register applications as web services, construct workflows,
-  execute and monitor workflows and browse the generated results from the airavata registry. 
+* Airavata Client
+  The Airavata Client distribution is a set of libraries and configurations files that allow a 3rd party application to programatically
+  access Airavata functionality through Airavata API.
