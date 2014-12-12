@@ -467,7 +467,7 @@ public class Workflow implements Cloneable {
 		List<InputNode> inputNodes = GraphUtil.getInputNodes(getGraph());
 		List<WorkflowInput> results=new ArrayList<WorkflowInput>();
 		for (InputNode port : inputNodes) {
-			results.add(new WorkflowInput(port.getID(), port.getParameterType().getLocalPart(), port.getDefaultValue(), port.getDefaultValue(), !port.isVisibility()));
+			results.add(new WorkflowInput(port.getID(), port.getParameterType(), port.getDefaultValue(), port.getDefaultValue(), !port.isVisibility()));
 		}
 		return results;
 	}

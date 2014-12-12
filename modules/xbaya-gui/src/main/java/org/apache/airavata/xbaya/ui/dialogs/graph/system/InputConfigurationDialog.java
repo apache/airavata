@@ -29,6 +29,7 @@ import javax.swing.JPanel;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.workflow.model.graph.system.InputNode;
 import org.apache.airavata.xbaya.lead.LEADTypes;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
@@ -80,26 +81,16 @@ public class InputConfigurationDialog {
      * Shows the dialog.
      */
     public void show() {
-        QName type = this.node.getParameterType();
+        DataType type = this.node.getParameterType();
         XBayaTextComponent textComponent;
-        boolean knownType = LEADTypes.isKnownType(type);
-        if (knownType) {
-            textComponent = this.valueTextField;
-            this.valueLabel.setText("Value");
-        } else {
-            textComponent = this.valueTextArea;
-            this.valueLabel.setText("Value (in XML)");
-        }
+        textComponent = this.valueTextField;
+        this.valueLabel.setText("Value");
+
         this.valueLabel.setLabelFor(textComponent);
         final int index = 3;
         this.gridPanel.remove(index);
         this.gridPanel.add(textComponent, index);
-        if (knownType) {
-            this.gridPanel.layout(new double[] { 0,0, 1.0 / 2}, new double[] { 0, 1 });
-        } else {
-            this.gridPanel.layout(new double[] { 0, 1.0 / 3,0, 1.0 / 3}, new double[] { 0, 1 });
-        }
-
+        this.gridPanel.layout(new double[] { 0,0, 1.0 / 2}, new double[] { 0, 1 });
         String name = this.node.getID(); // Show ID.
         this.nameTextField.setText(name);
 
@@ -116,11 +107,7 @@ public class InputConfigurationDialog {
         } else {
             valueString = value.toString();
         }
-        if (knownType) {
-            this.valueTextField.setText(valueString);
-        } else {
-            this.valueTextArea.setText(valueString);
-        }
+        this.valueTextField.setText(valueString);
         textComponent.setText(valueString);
 //        XmlElement metadata = this.node.getMetadata();
 //        String metadataText;
@@ -142,13 +129,9 @@ public class InputConfigurationDialog {
     }
 
     private void setInput() {
-        QName type = this.node.getParameterType();
+        DataType type = this.node.getParameterType();
         XBayaTextComponent textComponent;
-        if (LEADTypes.isKnownType(type)) {
-            textComponent = this.valueTextField;
-        } else {
-            textComponent = this.valueTextArea;
-        }
+        textComponent = this.valueTextField;
 
         String name = this.nameTextField.getText();
         String description = this.descriptionTextArea.getText();
@@ -163,20 +146,11 @@ public class InputConfigurationDialog {
         }
         Object value = null;
         if (valueString.length() > 0) {
-            if (LEADTypes.isKnownType(type)) {
-                if (!this.node.isInputValid(valueString)) {
-                    String warning = "The defalut value is not valid for " + this.node.getParameterType() + ".";
-                    this.xbayaGUI.getErrorWindow().error(warning);
-                }
-                value = valueString;
-            } else {
-                try {
-                    value = XMLUtil.stringToXmlElement(valueString);
-                } catch (RuntimeException e) {
-                    String warning = "The XML for the default value is not valid.";
-                    this.xbayaGUI.getErrorWindow().error(warning, e);
-                }
+            if (!this.node.isInputValid(valueString)) {
+                String warning = "The defalut value is not valid for " + this.node.getParameterType() + ".";
+                this.xbayaGUI.getErrorWindow().error(warning);
             }
+            value = valueString;
         }
 //        XmlElement metadata;
 //        if (metadataText.length() == 0) {

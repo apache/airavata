@@ -26,6 +26,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.WSConstants;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.system.ConstantComponent;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
@@ -48,7 +49,7 @@ public class ConstantNode extends SystemNode {
 
     private static final Logger logger = LoggerFactory.getLogger(ConstantNode.class);
 
-    private QName type;
+    private DataType type;
 
     private Object value;
 
@@ -114,7 +115,7 @@ public class ConstantNode extends SystemNode {
      * 
      * @return The type of the parameter (e.g. string, int)
      */
-    public QName getType() {
+    public DataType getType() {
         return this.type;
     }
 
@@ -185,7 +186,7 @@ public class ConstantNode extends SystemNode {
 
         if (edge instanceof DataEdge) {
             DataPort toDataPort = (DataPort) toPort;
-            QName toType = toDataPort.getType();
+            DataType toType = toDataPort.getType();
 
             List edges = getEdges();
             if (edges.size() == 1) {
@@ -243,7 +244,8 @@ public class ConstantNode extends SystemNode {
         if (typeElement != null) {
             String qnameText = typeElement.requiredText();
             if (qnameText != null && !qnameText.equals("")) {
-                this.type = QName.valueOf(qnameText);
+                this.type = DataType.valueOf(qnameText);
+//                this.type = QName.valueOf(qnameText);
             }
         }
 

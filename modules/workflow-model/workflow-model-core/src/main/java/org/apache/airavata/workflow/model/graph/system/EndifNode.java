@@ -26,6 +26,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.WSConstants;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.workflow.model.component.ComponentDataPort;
 import org.apache.airavata.workflow.model.component.system.EndifComponent;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
@@ -141,11 +142,11 @@ public class EndifNode extends SystemNode {
         DataPort inputPort2 = inputPorts.get(size + index);
         DataPort outputPort = outputPorts.get(index);
 
-        QName inputType1 = inputPort1.getType();
-        QName inputType2 = inputPort2.getType();
-        QName outputType = outputPort.getType();
+        DataType inputType1 = inputPort1.getType();
+        DataType inputType2 = inputPort2.getType();
+        DataType outputType = outputPort.getType();
 
-        QName portType = port.getType();
+        DataType portType = port.getType();
         if (portType == null || portType.equals(WSConstants.XSD_ANY_TYPE)) {
             // Do nothing
             return;

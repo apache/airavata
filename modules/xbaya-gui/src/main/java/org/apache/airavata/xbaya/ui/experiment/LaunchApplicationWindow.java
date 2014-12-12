@@ -149,9 +149,9 @@ public class LaunchApplicationWindow {
     	List<DataPort> inputPorts = node.getInputPorts();
     	for(DataPort port : inputPorts){
     		String id = port.getName();
-    		QName parameterType = port.getType();
+    		DataType parameterType = port.getType();
     		JLabel nameLabel = new JLabel(id);
-            JLabel typeField = new JLabel(parameterType.getLocalPart());
+            JLabel typeField = new JLabel(parameterType.toString());
             XBayaTextField paramField = new XBayaTextField();            
             paramField.setText("");
             this.parameterPanel.add(nameLabel);
@@ -358,24 +358,8 @@ public class LaunchApplicationWindow {
             String value = parameterTextField.getText();
             InputDataObjectType elem = new InputDataObjectType();
             elem.setName(inputPort.getName());
-            String type = inputPort.getType().getLocalPart().trim();
-            DataType inpType = DataType.STRING;
-            if(type.equalsIgnoreCase("string")){
-            	inpType=DataType.STRING;
-            }
-            else if(type.equalsIgnoreCase("integer")){
-            	inpType=DataType.INTEGER;
-            }
-            else if(type.equalsIgnoreCase("uri")){
-            	inpType=DataType.URI;
-            }
-            else if(type.equalsIgnoreCase("stdour")){
-            	inpType=DataType.STDOUT;
-            }
-            else if(type.equalsIgnoreCase("stderr")){
-            	inpType=DataType.STDERR;
-            }
-            elem.setType(inpType);
+
+            elem.setType(elem.getType());
             elem.setValue(value);
 			experiment.addToExperimentInputs(elem );
         }
@@ -385,24 +369,8 @@ public class LaunchApplicationWindow {
             DataPort outputPort = outputPorts.get(i);
             OutputDataObjectType elem = new OutputDataObjectType();
             elem.setName(outputPort.getName());
-            String type = outputPort.getType().getLocalPart().trim();
-            DataType outType = DataType.STRING;
-            if(type.equalsIgnoreCase("string")){
-            	outType=DataType.STRING;
-            }
-            else if(type.equalsIgnoreCase("integer")){
-            	outType=DataType.INTEGER;
-            }
-            else if(type.equalsIgnoreCase("uri")){
-            	outType=DataType.URI;
-            }
-            else if(type.equalsIgnoreCase("stdour")){
-            	outType=DataType.STDOUT;
-            }
-            else if(type.equalsIgnoreCase("stderr")){
-            	outType=DataType.STDERR;
-            }
-            elem.setType(outType);
+
+            elem.setType(elem.getType());
             elem.setValue("");
 			experiment.addToExperimentOutputs(elem );
         }

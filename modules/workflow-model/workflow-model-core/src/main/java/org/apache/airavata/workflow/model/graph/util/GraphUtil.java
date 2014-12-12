@@ -33,6 +33,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.WSConstants;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.graph.ControlEdge;
 import org.apache.airavata.workflow.model.graph.ControlPort;
@@ -271,8 +272,8 @@ public class GraphUtil {
 			DataPort fromDataPort = (DataPort) fromPort;
 			DataPort toDataPort = (DataPort) toPort;
 
-			QName fromType = fromDataPort.getType();
-			QName toType = toDataPort.getType();
+			DataType fromType = fromDataPort.getType();
+			DataType toType = toDataPort.getType();
 
 			if (toDataPort.getEdges().size() > 1) {
 				throw new GraphException(

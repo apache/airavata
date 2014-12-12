@@ -30,6 +30,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.airavata.common.exception.UtilsException;
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.workflow.model.graph.DataEdge;
 import org.apache.airavata.workflow.model.graph.DataPort;
 import org.apache.airavata.workflow.model.graph.Graph;
@@ -54,7 +55,7 @@ abstract public class ParameterNode extends SystemNode {
     /**
      * Type of the parameter (e.g. xsd:string, xsd:int)
      */
-    private QName parameterType;
+    private DataType parameterType;
 
     private String configuredName;
 
@@ -100,7 +101,7 @@ abstract public class ParameterNode extends SystemNode {
     /**
      * @param parameterType
      */
-    public void setParameterType(QName parameterType) {
+    public void setParameterType(DataType parameterType) {
         this.parameterType = parameterType;
     }
 
@@ -109,7 +110,7 @@ abstract public class ParameterNode extends SystemNode {
      * 
      * @return The type of the parameter (e.g. string, int)
      */
-    public QName getParameterType() {
+    public DataType getParameterType() {
         return this.parameterType;
     }
 
@@ -264,7 +265,7 @@ abstract public class ParameterNode extends SystemNode {
         if (typeElement != null) {
             String qnameText = typeElement.requiredText();
             if (qnameText != null && !qnameText.equals("")) {
-                this.parameterType = QName.valueOf(qnameText);
+                this.parameterType = DataType.valueOf(qnameText);
             }
         }
         XmlElement metadataElement = configElement.element(null, METADATA_TAG);
@@ -290,7 +291,7 @@ abstract public class ParameterNode extends SystemNode {
         }
         JsonElement typeElement = configObject.get(DATA_TYPE_QNAME_TAG);
         if (typeElement != null) {
-            this.parameterType = QName.valueOf(typeElement.getAsString());
+            this.parameterType = DataType.valueOf(typeElement.getAsString());
         }
         JsonElement metadataElement = configObject.get(METADATA_TAG);
         if (metadataElement != null) {

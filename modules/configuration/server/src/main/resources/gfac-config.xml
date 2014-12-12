@@ -25,6 +25,7 @@
     <Provider class="org.apache.airavata.gfac.local.provider.impl.LocalProvider" submission="LOCAL">
         <InHandlers>
             <Handler class="org.apache.airavata.gfac.local.handler.LocalDirectorySetupHandler"/>
+            <Handler class="org.apache.airavata.gfac.local.handler.LocalInputHandler"/>
         </InHandlers>
     </Provider>
    <Provider class="org.apache.airavata.gfac.gram.provider.impl.GramProvider" submission="GLOBUS" security="GSI">
@@ -63,6 +64,11 @@
         <OutHandlers>
             <Handler class="org.apache.airavata.gfac.gram.handler.GridFTPOutputHandler"/>
         </OutHandlers>
+    </Application>
+    <Application name="Gaussian">
+        <InHandlers>
+            <Handler class="org.apache.airavata.application.gaussian.handler.GaussianHandler"/>
+        </InHandlers>
     </Application>
 
      <Provider class="org.apache.airavata.gfac.ssh.provider.impl.SSHProvider" submission="SSH" executionMode="async">

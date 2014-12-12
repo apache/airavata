@@ -42,6 +42,7 @@ import com.google.gson.JsonObject;
 import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.workflow.model.utils.WorkflowConstants;
@@ -67,9 +68,9 @@ public class WSComponentApplication {
 		app.setApplicationId("dsfds");
 		app.setName("dfd");
 		app.setDescription("sdfdsfds");
-		app.addInputParameter(new WSComponentApplicationParameter("asas", new QName("sdf"), null, "sdfds", 1));
-		app.addOutputParameter(new WSComponentApplicationParameter("9842", new QName("sdv99304"), null, null));
-		app.addOutputParameter(new WSComponentApplicationParameter("AAAAA", new QName("sdfd"), "sdfsdf", "243bs sd fsd fs f dfd"));
+		app.addInputParameter(new WSComponentApplicationParameter("asas", DataType.STRING, null, "sdfds", 1));
+		app.addOutputParameter(new WSComponentApplicationParameter("9842", DataType.STRING, null, null));
+		app.addOutputParameter(new WSComponentApplicationParameter("AAAAA", DataType.STRING, "sdfsdf", "243bs sd fsd fs f dfd"));
 	      ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		try {
 		      JAXBContext context = JAXBContext.newInstance(WSComponentApplication.class);
@@ -124,7 +125,7 @@ public class WSComponentApplication {
 					inputParameter.setDefaultValue(inputObject.getAsJsonPrimitive(WorkflowConstants.APPLICATION_DATA_DEFAULT_VALUE).getAsString());
 					inputParameter.setDescription(inputObject.getAsJsonPrimitive(WorkflowConstants.APPLICATION_DATA_DESCRIPTION).getAsString());
 					inputParameter.setName(inputObject.getAsJsonPrimitive(WorkflowConstants.APPLICATION_DATA_NAME).getAsString());
-					inputParameter.setType(QName.valueOf(inputObject.getAsJsonPrimitive(WorkflowConstants.APPLICATION_DATA_DATA_TYPE).getAsString()));
+					inputParameter.setType(DataType.valueOf(inputObject.getAsJsonPrimitive(WorkflowConstants.APPLICATION_DATA_DATA_TYPE).getAsString()));
 					inputParameter.setInputOrder(inputObject.getAsJsonPrimitive(WorkflowConstants.APPLICATION_DATA_INPUT_ORDER).getAsInt());
 					if (inputObject.getAsJsonPrimitive(WorkflowConstants.APPLICATION_DATA_APP_ARGUMENT) != null) {
 						inputParameter.setApplicationArgument(inputObject.getAsJsonPrimitive(WorkflowConstants.APPLICATION_DATA_APP_ARGUMENT).getAsString());
@@ -144,7 +145,7 @@ public class WSComponentApplication {
                     outputParameter = new WSComponentApplicationParameter();
                     outputParameter.setDescription(outputObject.getAsJsonPrimitive(WorkflowConstants.APPLICATION_DATA_DESCRIPTION).getAsString());
                     outputParameter.setName(outputObject.getAsJsonPrimitive(WorkflowConstants.APPLICATION_DATA_NAME).getAsString());
-                    outputParameter.setType(QName.valueOf(outputObject.getAsJsonPrimitive(WorkflowConstants.APPLICATION_DATA_DATA_TYPE).getAsString()));
+                    outputParameter.setType(DataType.valueOf(outputObject.getAsJsonPrimitive(WorkflowConstants.APPLICATION_DATA_DATA_TYPE).getAsString()));
                     wsComponentApplication.addOutputParameter(outputParameter);
                 }
             }
@@ -211,26 +212,15 @@ public class WSComponentApplication {
                 
         List<InputDataObjectType> applicationInputs = application.getApplicationInputs();
         for (InputDataObjectType inputDataObjectType : applicationInputs) {
-        	String typeName = inputDataObjectType.getType().toString().toLowerCase();
-            XmlNamespace namespace = null;
-            namespace = XmlConstants.BUILDER.newNamespace("xsd", WSConstants.XSD_NS_URI);
-            String prefix = "xsd";
-            QName type = new QName(namespace.getName(), typeName, prefix);
-
-			addInputParameter(new WSComponentApplicationParameter(inputDataObjectType.getName(), type,
+			addInputParameter(new WSComponentApplicationParameter(inputDataObjectType.getName(), inputDataObjectType.getType(),
 					inputDataObjectType.getUserFriendlyDescription(), inputDataObjectType.getValue(),
 					inputDataObjectType.getApplicationArgument(), inputDataObjectType.getInputOrder()));
 		}
 
         List<OutputDataObjectType> applicationOutputs = application.getApplicationOutputs();
         for (OutputDataObjectType outputDataObjectType : applicationOutputs) {
-        	String typeName = outputDataObjectType.getType().toString().toLowerCase();
-            XmlNamespace namespace = null;
-            namespace = XmlConstants.BUILDER.newNamespace("xsd", WSConstants.XSD_NS_URI);
-            String prefix = "xsd";
-            QName type = new QName(namespace.getName(), typeName, prefix);
-            
-			addOutputParameter(new WSComponentApplicationParameter(outputDataObjectType.getName(),type ,outputDataObjectType.getName(), outputDataObjectType.getValue()));
+			addOutputParameter(new WSComponentApplicationParameter(outputDataObjectType.getName(),
+					outputDataObjectType.getType() ,outputDataObjectType.getName(), outputDataObjectType.getValue()));
 		}
 	}
 	

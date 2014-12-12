@@ -23,6 +23,7 @@ package org.apache.airavata.workflow.model.component.dynamic;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.workflow.model.component.ComponentDataPort;
 import org.apache.airavata.workflow.model.graph.DataPort;
 import org.apache.airavata.workflow.model.graph.dynamic.DynamicPort;
@@ -35,7 +36,7 @@ public class DynamicComponentPort extends ComponentDataPort {
     public DynamicComponentPort(DynamicComponent component) {
         super();
         this.component = component;
-        this.type = WSConstants.XSD_ANY_TYPE;
+        this.type = DataType.STRING;
     }
 
     /**
@@ -49,7 +50,7 @@ public class DynamicComponentPort extends ComponentDataPort {
         return port;
     }
 
-    public void setType(QName type) {
+    public void setType(DataType type) {
         this.type = type;
     }
 

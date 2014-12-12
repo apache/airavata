@@ -21,12 +21,13 @@
 package org.apache.airavata.workflow.engine.invoker;
 
 import org.apache.airavata.common.utils.StringUtil;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
 
 public class WorkflowInputUtil {
 
     public static String createInputForGFacService(WSComponentPort port,String input){
-        String paramType = port.getType().getLocalPart();
+        DataType paramType = port.getType();
         StringBuffer inputString = new StringBuffer("<");
         if("StringParameterType".equals(paramType) || "URIParameterType".equals(paramType) ||
                 "DoubleParameterType".equals(paramType) || "IntegerParameterType".equals(paramType)
@@ -34,7 +35,7 @@ public class WorkflowInputUtil {
                 || "FileParameterType".equals(paramType)){
             inputString.append(port.getName()).append(">").
                     append(getValueElement(input)).append("</").append(port.getName()).append(">");
-        }else if(paramType.endsWith("ArrayType")){
+        }else if(paramType.toString().equals("ArrayType")){
             inputString.append(port.getName()).append(">");
             String[] valueList = StringUtil.getElementsFromString(input);
             for(String inputValue:valueList){

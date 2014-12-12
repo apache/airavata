@@ -28,6 +28,7 @@ import javax.xml.namespace.QName;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.airavata.common.utils.WSConstants;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.system.InputComponent;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
@@ -59,6 +60,8 @@ public class InputNode extends ParameterNode {
     private String applicationArgument;
 
     private int inputOrder;
+
+    private DataType dataType;
 
     /**
      * Creates an InputNode.
@@ -109,6 +112,14 @@ public class InputNode extends ParameterNode {
         this.inputOrder = inputOrder;
     }
 
+    public DataType getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(DataType dataType) {
+        this.dataType = dataType;
+    }
+
     /**
      * @see org.apache.airavata.workflow.model.graph.impl.NodeImpl#getComponent()
      */
@@ -129,14 +140,14 @@ public class InputNode extends ParameterNode {
      * @return The type of the parameter (e.g. string, int)
      */
     @Override
-    public QName getParameterType() {
+    public DataType getParameterType() {
         List<DataEdge> edges = getEdges();
-        QName parameterType = super.getParameterType();
+        DataType parameterType = super.getParameterType();
         if (parameterType == null && getEdges().size() > 0) {
             // This happens when the graph XML doesn't have parameterType.
             DataEdge edge = edges.get(0);
             DataPort toPort = edge.getToPort();
-            parameterType = toPort.getType();
+//            parameterType = toPort.getType();
         }
         return parameterType;
     }
@@ -210,7 +221,7 @@ public class InputNode extends ParameterNode {
         if (edge instanceof DataEdge) {
             DataEdge dataEdge = (DataEdge) edge;
             DataPort toPort = dataEdge.getToPort();
-            QName toType = toPort.getType();
+            DataType toType = toPort.getType();
 
             List<DataEdge> edges = getEdges();
             if (edges.size() == 1) {
@@ -223,7 +234,7 @@ public class InputNode extends ParameterNode {
                 }
             } else if (edges.size() > 1) {
                 // Not the first edge.
-                QName parameterType = getParameterType();
+                DataType parameterType = getParameterType();
                 if (!toType.equals(WSConstants.XSD_ANY_TYPE) && !parameterType.equals(toType)) {
                     throw new GraphException("Cannot connect ports with different types.");
                 }
@@ -260,7 +271,7 @@ public class InputNode extends ParameterNode {
             Edge edge = edges.get(0);
             Port toPort = edge.getToPort();
             WSPort toWsPort = (WSPort) toPort;
-            QName toType = toWsPort.getType();
+            DataType toType = toWsPort.getType();
             setParameterType(toType);
 
             if (!isConfigured()) {
@@ -386,6 +397,7 @@ public class InputNode extends ParameterNode {
         setMetadata(componentPort.getAppinfo());
         setApplicationArgument(componentPort.getApplicationArgument());
         setInputOrder(componentPort.getInputOrder());
+        setDataType(componentPort.getType());
     }
 
 }

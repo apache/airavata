@@ -173,6 +173,11 @@
             <artifactId>airavata-gfac-service</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-gfac-application-specific-handlers</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 

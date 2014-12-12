@@ -26,6 +26,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.WSConstants;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.workflow.model.component.ComponentDataPort;
 import org.apache.airavata.workflow.model.component.system.ForEachComponent;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
@@ -155,8 +156,8 @@ public class ForEachNode extends SystemNode implements PortAddable{
             DataPort fromDataPort = (DataPort) fromPort;
             DataPort toDataPort = (DataPort) toPort;
 
-            QName fromType = fromDataPort.getType();
-            QName toType = toDataPort.getType();
+            DataType fromType = fromDataPort.getType();
+            DataType toType = toDataPort.getType();
 
             if (fromDataPort.getNode() == this) {
                 if (!(toType == null || toType.equals(WSConstants.XSD_ANY_TYPE))) {
@@ -199,10 +200,10 @@ public class ForEachNode extends SystemNode implements PortAddable{
         SystemDataPort inputPort = (SystemDataPort) inputPorts.get(index);
         SystemDataPort outputPort = (SystemDataPort) outputPorts.get(index);
 
-        QName inputType = inputPort.getType();
-        QName outputType = outputPort.getType();
+        DataType inputType = inputPort.getType();
+        DataType outputType = outputPort.getType();
 
-        QName portType = port.getType();
+        DataType portType = port.getType();
         if (portType == null || portType.equals(WSConstants.XSD_ANY_TYPE)) {
             // Do nothing
             return;

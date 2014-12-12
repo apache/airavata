@@ -29,6 +29,7 @@ import javax.swing.JPanel;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.workflow.model.graph.system.ConstantNode;
 import org.apache.airavata.xbaya.lead.LEADTypes;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
@@ -78,15 +79,10 @@ public class ConstantConfigurationDialog {
      * Shows the dialog.
      */
     public void show() {
-        QName type = this.node.getType();
+        DataType type = this.node.getType();
         XBayaTextComponent textComponent;
-        if (LEADTypes.isKnownType(type)) {
-            textComponent = this.valueTextField;
-            this.valueLabel.setText("Default value");
-        } else {
-            textComponent = this.valueTextArea;
-            this.valueLabel.setText("Default value (in XML)");
-        }
+        textComponent = this.valueTextField;
+        this.valueLabel.setText("Default value");
         this.valueLabel.setLabelFor(textComponent);
         final int index = 7;
         this.gridPanel.remove(index);
@@ -120,13 +116,9 @@ public class ConstantConfigurationDialog {
 
     private void setInput() {
         String name = this.nameTextField.getText();
-        QName type = this.node.getType();
+        DataType type = this.node.getType();
         String valueString;
-        if (LEADTypes.isKnownType(type)) {
-            valueString = this.valueTextField.getText();
-        } else {
-            valueString = this.valueTextArea.getText();
-        }
+        valueString = this.valueTextField.getText();
 
         if (name.length() == 0) {
             String warning = "The name cannot be empty.";
@@ -135,20 +127,11 @@ public class ConstantConfigurationDialog {
         }
         Object value = null;
         if (valueString.length() > 0) {
-            if (LEADTypes.isKnownType(type)) {
-                if (!this.node.isInputValid(valueString)) {
-                    String warning = "The defalut value is not valid for " + this.node.getType() + ".";
-                    this.xbayaGUI.getErrorWindow().error(warning);
-                }
-                value = valueString;
-            } else {
-                try {
-                    value = XMLUtil.stringToXmlElement(valueString);
-                } catch (RuntimeException e) {
-                    String warning = "The XML for the default value is not valid.";
-                    this.xbayaGUI.getErrorWindow().error(warning, e);
-                }
+            if (!this.node.isInputValid(valueString)) {
+                String warning = "The defalut value is not valid for " + this.node.getType() + ".";
+                this.xbayaGUI.getErrorWindow().error(warning);
             }
+            value = valueString;
         }
 
         this.node.setName(name);

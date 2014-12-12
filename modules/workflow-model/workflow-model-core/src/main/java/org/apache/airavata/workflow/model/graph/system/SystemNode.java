@@ -26,6 +26,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import com.google.gson.JsonObject;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.graph.DataEdge;
 import org.apache.airavata.workflow.model.graph.DataPort;
@@ -84,8 +85,8 @@ public abstract class SystemNode extends NodeImpl {
             DataPort fromDataPort = (DataPort) fromPort;
             DataPort toDataPort = (DataPort) toPort;
 
-            QName fromType = fromDataPort.getType();
-            QName toType = toDataPort.getType();
+            DataType fromType = fromDataPort.getType();
+            DataType toType = toDataPort.getType();
 
             if (fromDataPort.getNode() == this) {
                 // setType() propagates the change to the whole workflow.

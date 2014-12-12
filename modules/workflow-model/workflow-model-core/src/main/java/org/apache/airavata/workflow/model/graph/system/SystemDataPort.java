@@ -25,6 +25,7 @@ import javax.xml.namespace.QName;
 
 import com.google.gson.JsonObject;
 import org.apache.airavata.common.utils.WSConstants;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.graph.DataEdge;
@@ -38,7 +39,7 @@ public class SystemDataPort extends DataPort {
 
     private int arrayDimension;
 
-    private QName type;
+    private DataType type;
 
     private WSComponentPort wsComponentPort;
 
@@ -77,7 +78,7 @@ public class SystemDataPort extends DataPort {
      * @return The type QName.
      */
     @Override
-    public QName getType() {
+    public DataType getType() {
         return this.type;
     }
 
@@ -123,7 +124,7 @@ public class SystemDataPort extends DataPort {
      * @throws GraphException
      */
     public void copyType(DataPort port, int arrayIncrement) throws GraphException {
-        QName newType = port.getType();
+        DataType newType = port.getType();
         if (this.type != newType) {
             this.type = newType;
             if (port instanceof WSPort) {
@@ -160,7 +161,7 @@ public class SystemDataPort extends DataPort {
      */
     public void resetType() {
         this.arrayDimension = 0;
-        this.type = WSConstants.XSD_ANY_TYPE;
+        this.type = DataType.STRING;
         this.wsComponentPort = null;
     }
 

@@ -25,6 +25,7 @@ import javax.xml.namespace.QName;
 
 import com.google.gson.JsonObject;
 import org.apache.airavata.common.utils.WSConstants;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.workflow.model.component.ComponentPort;
 import org.apache.airavata.workflow.model.component.system.SystemComponentDataPort;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
@@ -65,7 +66,7 @@ public class WSPort extends DataPort {
      * @return The typeQName
      */
     @Override
-    public QName getType() {
+    public DataType getType() {
         return getComponentPort().getType();
     }
 
@@ -74,8 +75,8 @@ public class WSPort extends DataPort {
      */
     @Override
     public void copyType(DataPort port) throws GraphException {
-        QName newType = port.getType();
-        QName type = getType();
+        DataType newType = port.getType();
+        DataType type = getType();
 
         NodeImpl node = port.getNode();
         if (node instanceof ForEachNode || node instanceof EndForEachNode) {

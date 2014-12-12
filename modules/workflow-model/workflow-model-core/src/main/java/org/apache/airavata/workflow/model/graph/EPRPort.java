@@ -21,9 +21,8 @@
 
 package org.apache.airavata.workflow.model.graph;
 
-import javax.xml.namespace.QName;
-
 import org.apache.airavata.common.utils.WSConstants;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.xmlpull.infoset.XmlElement;
 
 public class EPRPort extends DataPort {
@@ -59,8 +58,8 @@ public class EPRPort extends DataPort {
      * @see org.apache.airavata.workflow.model.graph.DataPort#getType()
      */
     @Override
-    public QName getType() {
-        return WSConstants.XSD_ANY_TYPE;
+    public DataType getType() {
+        return DataType.STRING;
     }
 
     /**

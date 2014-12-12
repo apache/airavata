@@ -21,41 +21,43 @@
 
 package org.apache.airavata.workflow.model.component.ws;
 
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
-import javax.xml.namespace.QName;
 
 @XmlRootElement(name="Parameter")
 @XmlType(propOrder = {"name", "type", "description", "defaultValue", "applicationArgument", "inputOrder"})
 public class WSComponentApplicationParameter {
 	private String name;
-	private QName type;
+//	private QName type;
 	private String description;
 	private String defaultValue;
 	private String applicationArgument;
 	private int inputOrder;
+	private DataType type;
 
 	public WSComponentApplicationParameter() {
 	}
 
-	public WSComponentApplicationParameter(String name, QName type, String description, String defaultValue) {
+	public WSComponentApplicationParameter(String name, DataType type, String description, String defaultValue) {
 		this(name, type, description, defaultValue, "", -1);
 	}
 
-	public WSComponentApplicationParameter(String name, QName type, String description, String defaultValue, int inputOrder) {
+	public WSComponentApplicationParameter(String name, DataType type, String description, String defaultValue, int inputOrder) {
 		this(name, type, description, defaultValue, "", inputOrder);
 	}
 
-	public WSComponentApplicationParameter(String name, QName type,
+	public WSComponentApplicationParameter(String name, DataType type,
 			String description, String defaultValue, String applicationArgument, int inputOrder) {
 		this.name = name;
-		this.type = type;
 		this.description = description;
 		this.defaultValue = defaultValue;
 		this.applicationArgument = applicationArgument;
 		this.inputOrder = inputOrder;
+		this.type = type;
 	}
 
 	@XmlAttribute (required = true)
@@ -64,14 +66,6 @@ public class WSComponentApplicationParameter {
 	}
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	@XmlAttribute (required = true)
-	public QName getType() {
-		return type;
-	}
-	public void setType(QName type) {
-		this.type = type;
 	}
 
 	@XmlAttribute (required = false)
@@ -106,5 +100,14 @@ public class WSComponentApplicationParameter {
 
 	public void setInputOrder(int inputOrder) {
 		this.inputOrder = inputOrder;
+	}
+
+	@XmlAttribute
+	public DataType getType() {
+		return type;
+	}
+
+	public void setType(DataType type) {
+		this.type = type;
 	}
 }

@@ -122,9 +122,9 @@ public class WorkflowInterpreterLaunchWindow {
         Collection<InputNode> inputNodes = GraphUtil.getInputNodes(this.workflow.getGraph());
         for (InputNode node : inputNodes) {
             String id = node.getID();
-            QName parameterType = node.getParameterType();
+            DataType parameterType = node.getParameterType();
             JLabel nameLabel = new JLabel(id);
-            JLabel typeField = new JLabel(parameterType.getLocalPart());
+            JLabel typeField = new JLabel(parameterType.toString());
             XBayaTextField paramField = new XBayaTextField();
             Object value = node.getDefaultValue();
 
@@ -306,7 +306,7 @@ public class WorkflowInterpreterLaunchWindow {
 //            inputNode.setDefaultValue(value);
             InputDataObjectType elem = new InputDataObjectType();
             elem.setName(inputNode.getID());
-            elem.setType(DataType.STRING);
+            elem.setType(inputNode.getDataType());
             elem.setValue(value);
             elem.setApplicationArgument(inputNode.getApplicationArgument());
             elem.setInputOrder(inputNode.getInputOrder());

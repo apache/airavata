@@ -25,6 +25,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.WSConstants;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.system.DifferedInputComponent;
 import org.apache.airavata.workflow.model.component.system.InputComponent;
@@ -89,9 +90,9 @@ public class DifferedInputNode extends ParameterNode {
      * @return The type of the parameter (e.g. string, int)
      */
     @Override
-    public QName getParameterType() {
+    public DataType getParameterType() {
         List<DataEdge> edges = getEdges();
-        QName parameterType = super.getParameterType();
+        DataType parameterType = super.getParameterType();
         if (parameterType == null && getEdges().size() > 0) {
             // This happens when the graph XML doesn't have parameterType.
             DataEdge edge = edges.get(0);
@@ -172,7 +173,7 @@ public class DifferedInputNode extends ParameterNode {
         if (edge instanceof DataEdge) {
             DataEdge dataEdge = (DataEdge) edge;
             DataPort toPort = dataEdge.getToPort();
-            QName toType = toPort.getType();
+            DataType toType = toPort.getType();
 
             List<DataEdge> edges = getEdges();
             if (edges.size() == 1) {
@@ -185,7 +186,7 @@ public class DifferedInputNode extends ParameterNode {
                 }
             } else if (edges.size() > 1) {
                 // Not the first edge.
-                QName parameterType = getParameterType();
+                DataType parameterType = getParameterType();
                 if (!toType.equals(WSConstants.XSD_ANY_TYPE)
                         && !parameterType.equals(toType)) {
                     throw new GraphException(
@@ -225,7 +226,7 @@ public class DifferedInputNode extends ParameterNode {
             Edge edge = edges.get(0);
             Port toPort = edge.getToPort();
             WSPort toWsPort = (WSPort) toPort;
-            QName toType = toWsPort.getType();
+            DataType toType = toWsPort.getType();
             setParameterType(toType);
 
             if (!isConfigured()) {
