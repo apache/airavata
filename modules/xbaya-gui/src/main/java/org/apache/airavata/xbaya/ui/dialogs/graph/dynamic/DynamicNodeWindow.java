@@ -36,6 +36,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.workflow.model.component.url.URLComponentRegistry;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.graph.DataPort;
@@ -248,7 +249,7 @@ public class DynamicNodeWindow {
         String function = "";
         List<Port> toNodes = this.node.getOutputPort(0).getToPorts();
         XmlElement returnElement = null;
-        QName returnType = null;
+        DataType returnType = null;
         if (toNodes.size() == 0) {
             function += SPACE + "void";
         } else {

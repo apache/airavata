@@ -407,7 +407,7 @@ public class WorkflowWSDL {
 
     private XmlElement addParameter(Node node, SystemDataPort port, XmlElement sequence, XmlElement schema) {
         XmlElement element = sequence.addElement(WSConstants.ELEMENT_TAG);
-        element.setAttributeValue(WSConstants.NAME_ATTRIBUTE, node.getID());
+        /*element.setAttributeValue(WSConstants.NAME_ATTRIBUTE, node.getID());
 
         //
         // type
@@ -458,7 +458,7 @@ public class WorkflowWSDL {
         } else {
             // The normal case.
             setTypeAttribute(element, type);
-        }
+        }*/
         return element;
     }
 

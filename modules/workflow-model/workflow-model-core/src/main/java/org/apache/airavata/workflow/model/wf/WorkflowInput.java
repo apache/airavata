@@ -21,9 +21,11 @@
 
 package org.apache.airavata.workflow.model.wf;
 
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
+
 public class WorkflowInput {
 	private String name;
-	private String type;
+	private DataType type;
 	private Object defaultValue;
 	private Object value;
 	private boolean optional;
@@ -32,7 +34,7 @@ public class WorkflowInput {
 		this(name, null, null, value, false);
 	}
 	
-	public WorkflowInput(String name,String type,Object defaultValue,Object value, boolean optional) throws InvalidDataFormatException {
+	public WorkflowInput(String name,DataType type,Object defaultValue,Object value, boolean optional) throws InvalidDataFormatException {
 		setName(name);
 		setType(type);
 		setDefaultValue(defaultValue);
@@ -48,11 +50,11 @@ public class WorkflowInput {
 		this.name = name;
 	}
 	
-	public String getType() {
+	public DataType getType() {
 		return type;
 	}
 	
-	private void setType(String type) {
+	private void setType(DataType type) {
 		this.type = type;
 	}
 	

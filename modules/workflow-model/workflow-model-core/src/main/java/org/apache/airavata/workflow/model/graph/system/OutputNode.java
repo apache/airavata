@@ -26,6 +26,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import com.google.gson.JsonObject;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.system.OutputComponent;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
@@ -70,9 +71,9 @@ public class OutputNode extends ParameterNode {
      * @return The type of the parameter (e.g. string, int)
      */
     @Override
-    public QName getParameterType() {
+    public DataType getParameterType() {
         List<DataEdge> edges = getEdges();
-        QName parameterType = super.getParameterType();
+        DataType parameterType = super.getParameterType();
         if (parameterType == null && getEdges().size() > 0) {
             Edge edge = edges.get(0);
             WSPort fromPort = (WSPort) edge.getFromPort();
@@ -131,7 +132,7 @@ public class OutputNode extends ParameterNode {
 
         if (edge instanceof DataEdge) {
             DataPort fromDataPort = (DataPort) fromPort;
-            QName fromType = fromDataPort.getType();
+            DataType fromType = fromDataPort.getType();
 
             List<DataEdge> edges = getEdges();
             if (edges.size() == 1) {

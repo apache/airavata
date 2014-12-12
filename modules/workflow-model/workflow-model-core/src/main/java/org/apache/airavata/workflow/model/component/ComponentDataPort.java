@@ -23,12 +23,12 @@ package org.apache.airavata.workflow.model.component;
 
 import javax.xml.namespace.QName;
 
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.workflow.model.graph.DataPort;
 
 public abstract class ComponentDataPort extends ComponentPort {
 
-    protected QName type;
-
+    protected DataType type;
     /**
      * Constructs a ComponentDataPort.
      * 
@@ -46,12 +46,16 @@ public abstract class ComponentDataPort extends ComponentPort {
         super(name);
     }
 
+    public void setType(DataType type) {
+        this.type = type;
+    }
+
     /**
      * Returns the type.
      * 
      * @return The type
      */
-    public QName getType() {
+    public DataType getType() {
         return this.type;
     }
 

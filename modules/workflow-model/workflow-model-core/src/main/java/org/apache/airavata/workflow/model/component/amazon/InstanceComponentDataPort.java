@@ -24,6 +24,7 @@ package org.apache.airavata.workflow.model.component.amazon;
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.WSConstants;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.workflow.model.component.ComponentDataPort;
 import org.apache.airavata.workflow.model.graph.DataPort;
 import org.apache.airavata.workflow.model.graph.amazon.InstanceDataPort;
@@ -42,7 +43,7 @@ public class InstanceComponentDataPort extends ComponentDataPort {
      */
     public InstanceComponentDataPort(String name) {
         super(name);
-        this.type = new QName(WSConstants.XSD_NS_URI, "string", WSConstants.XSD_NS_PREFIX);
+        this.type = DataType.STRING;
         setName(PORT_NAME);
         setDescription(PORT_DESCRIPTION);
     }

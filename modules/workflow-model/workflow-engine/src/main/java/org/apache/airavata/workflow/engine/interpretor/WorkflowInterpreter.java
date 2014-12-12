@@ -31,6 +31,7 @@ import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
@@ -256,11 +257,13 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 				notifyViaInteractor(WorkflowExecutionMessage.NODE_STATE_CHANGED, null);
 				String portId= ((InputNode) node).getID();
 				Object portValue = ((InputNode) node).getDefaultValue();
-                //Saving workflow input Node data before running the workflow
+				DataType dataType = ((InputNode) node).getDataType();
+				//Saving workflow input Node data before running the workflow
 				WorkflowNodeDetails workflowNode = createWorkflowNodeDetails(node);
                 InputDataObjectType elem = new InputDataObjectType();
 				elem.setName(portId);
-				elem.setValue(portValue==null?null:portValue.toString());
+				elem.setValue(portValue == null ? null : portValue.toString());
+				elem.setType(dataType);
 				workflowNode.addToNodeInputs(elem);
 				getRegistry().update(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNode, workflowNode.getNodeInstanceId());
 				updateWorkflowNodeStatus(workflowNode, WorkflowNodeState.COMPLETED);
@@ -734,16 +737,16 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 			 * type is array
 			 */
 			Node fromNode = dataPort.getFromNode();
-			QName type = null;
+			DataType type = null;
 			if (fromNode instanceof InputNode) {
-				type = BasicTypeMapping.STRING_QNAME;
+				type = DataType.STRING;
 			} else if (fromNode instanceof ConstantNode) {
 				type = ((ConstantNode) fromNode).getType();
 			} else if ((dataPort.getFromPort() instanceof WSPort)
 					&& BasicTypeMapping.isArrayType(((WSPort) dataPort.getFromPort()).getComponentPort().getElement())) {
 				Invoker fromInvoker = this.invokerMap.get(fromNode);
-				inputVal = BasicTypeMapping.getOutputArray(XmlConstants.BUILDER.parseFragmentFromString(fromInvoker.getOutputs().toString()), dataPort
-						.getFromPort().getName(), BasicTypeMapping.getSimpleTypeIndex(((DataPort) dataPort.getFromPort()).getType()));
+//				inputVal = BasicTypeMapping.getOutputArray(XmlConstants.BUILDER.parseFragmentFromString(fromInvoker.getOutputs().toString()), dataPort
+//						.getFromPort().getName(), BasicTypeMapping.getSimpleTypeIndex(((DataPort) dataPort.getFromPort()).getType()));
 				type = ((DataPort) dataPort.getFromPort()).getType();
 			} else {
 				type = ((DataPort) dataPort.getFromPort()).getType();
@@ -752,7 +755,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 			if (null == inputVal) {
 				throw new WorkFlowInterpreterException("Unable to find inputs for the node:" + node.getID());
 			}
-			inputs.add(BasicTypeMapping.getObjectOfType(type, inputVal));
+//			inputs.add(BasicTypeMapping.getObjectOfType(type, inputVal));
 
 		}
 
@@ -1067,6 +1070,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 				elem.setInputOrder(port.getComponentPort().getInputOrder());
 				elem.setApplicationArgument(
 						(port.getComponentPort().getApplicationArgument() != null ? port.getComponentPort().getApplicationArgument() : ""));
+				elem.setType(port.getType());
 			}
 
 			nodeDetails.addToNodeInputs(elem);

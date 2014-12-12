@@ -93,6 +93,7 @@ public class WSComponent extends Component {
             port.setDefaultValue(inputDataObjectType.getDefaultValue());
             port.setApplicationArgument(inputDataObjectType.getApplicationArgument());
             port.setInputOrder(inputDataObjectType.getInputOrder());
+            port.setType(inputDataObjectType.getType());
 			inputs.add(port);
 		}
 
@@ -101,6 +102,7 @@ public class WSComponent extends Component {
             WSComponentPort port = new WSComponentPort(outputDataObjectType.getName(),outputDataObjectType.getType() , this);
             port.setDescription(outputDataObjectType.getDescription());
             port.setDefaultValue(outputDataObjectType.getDefaultValue());
+            port.setType(outputDataObjectType.getType());
 			outputs.add(port);
 		}
 
@@ -225,7 +227,7 @@ public class WSComponent extends Component {
         buf.append("<dl>\n");
         for (WSComponentPort port : ports) {
             buf.append("<dt><strong>" + port.getName() + "</strong></dt>\n");
-            buf.append("<dd>Type: " + port.getType().getLocalPart() + "</dd>\n");
+            buf.append("<dd>Type: " + port.getType().toString()+ "</dd>\n");
             if (port.getDescription() != null && !port.getDescription().equals("")) {
                 buf.append("<dd>Description: " + port.getDescription() + "</dd>\n");
             }

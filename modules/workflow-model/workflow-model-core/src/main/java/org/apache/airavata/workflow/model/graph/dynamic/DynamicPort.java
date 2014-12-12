@@ -21,8 +21,7 @@
 
 package org.apache.airavata.workflow.model.graph.dynamic;
 
-import javax.xml.namespace.QName;
-
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.workflow.model.component.ComponentPort;
 import org.apache.airavata.workflow.model.component.dynamic.DynamicComponentPort;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
@@ -56,7 +55,7 @@ public class DynamicPort extends DataPort {
      * @return The typeQName
      */
     @Override
-    public QName getType() {
+    public DataType getType() {
         return getComponentPort().getType();
     }
 

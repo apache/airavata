@@ -22,6 +22,7 @@ package org.apache.airavata.xbaya.invoker;
 
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.xbaya.XBayaConstants;
@@ -32,7 +33,7 @@ import javax.xml.namespace.QName;
 public class WorkflowInputUtil {
 
     public static String createInputForGFacService(WSComponentPort port,String input){
-        String paramType = port.getType().getLocalPart();
+        DataType paramType = port.getType();
         StringBuffer inputString = new StringBuffer("<");
         if("StringParameterType".equals(paramType) || "URIParameterType".equals(paramType) ||
                 "DoubleParameterType".equals(paramType) || "IntegerParameterType".equals(paramType)
@@ -40,7 +41,7 @@ public class WorkflowInputUtil {
                 || "FileParameterType".equals(paramType)){
             inputString.append(port.getName()).append(">").
                     append(getValueElement(input)).append("</").append(port.getName()).append(">");
-        }else if(paramType.endsWith("ArrayType")){
+        }else if(paramType.toString().endsWith("ArrayType")){
             inputString.append(port.getName()).append(">");
             String[] valueList = StringUtil.getElementsFromString(input);
             for(String inputValue:valueList){
@@ -63,22 +64,9 @@ public class WorkflowInputUtil {
                 throw new WorkflowRuntimeException("Input parameter, " + name + ", cannot be empty");
             }
         }
-        QName type = input.getType();
+        DataType type = input.getType();
         Object value;
-        if (LEADTypes.isKnownType(type)) {
-            // TODO check the type.
-            value = valueString;
-        } else {
-            try {
-                if(XBayaConstants.HTTP_SCHEMAS_AIRAVATA_APACHE_ORG_GFAC_TYPE.equals(input.getType().getNamespaceURI())){
-                    value = XMLUtil.stringToXmlElement3(WorkflowInputUtil.createInputForGFacService(input, valueString));
-                }else {
-                    throw new WorkflowRuntimeException("Input parameter, " + name + ", Unkown Type");
-                }
-            } catch (RuntimeException e) {
-                throw new WorkflowRuntimeException("Input parameter, " + name + ", is not valid XML", e);
-            }
-        }
+        value = valueString;
         return value;
     }
 }

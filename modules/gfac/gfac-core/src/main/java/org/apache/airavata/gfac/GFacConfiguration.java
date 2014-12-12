@@ -214,16 +214,18 @@ public class GFacConfiguration {
         String className = "";
         for (int i = 0; i < nl.getLength(); i++) {
             className = ((Element) nl.item(i)).getAttribute(attribute);
-            NodeList childNodes = (nl.item(i)).getChildNodes();
-            for (int j = 0; j < childNodes.getLength(); j++) {
-                if (Constants.PROPERTY.equals(childNodes.item(j).getNodeName())) {
-                    String name = ((Element) childNodes.item(j)).getAttribute(Constants.NAME);
-                    String value = ((Element) childNodes.item(j)).getAttribute(Constants.VALUE);
-                    properties.put(name, value);
+            if (className != null && !className.equals("")) {
+                NodeList childNodes = (nl.item(i)).getChildNodes();
+                for (int j = 0; j < childNodes.getLength(); j++) {
+                    if (Constants.PROPERTY.equals(childNodes.item(j).getNodeName())) {
+                        String name = ((Element) childNodes.item(j)).getAttribute(Constants.NAME);
+                        String value = ((Element) childNodes.item(j)).getAttribute(Constants.VALUE);
+                        properties.put(name, value);
+                    }
                 }
+                GFacProviderConfig gFacProviderConfig = new GFacProviderConfig(properties,className);
+                gFacProviderConfigs.add(gFacProviderConfig);
             }
-            GFacProviderConfig gFacProviderConfig = new GFacProviderConfig(properties,className);
-            gFacProviderConfigs.add(gFacProviderConfig);
         }
         return gFacProviderConfigs;
     }

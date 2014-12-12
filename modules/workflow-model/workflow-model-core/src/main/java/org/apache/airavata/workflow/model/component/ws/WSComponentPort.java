@@ -25,6 +25,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.common.utils.XMLUtil;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.workflow.model.component.ComponentDataPort;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.graph.ws.WSPort;
@@ -68,7 +69,7 @@ public class WSComponentPort extends ComponentDataPort {
      *            The type
      * @param component
      */
-    public WSComponentPort(String name, QName type, WSComponent component) {
+    public WSComponentPort(String name, DataType type, WSComponent component) {
         super(name);
         this.component = component;
         this.type = type;
@@ -195,7 +196,7 @@ public class WSComponentPort extends ComponentDataPort {
         if (typeQNameString == null) {
             // Type might be defined inline.
             // TODO fix this.
-            this.type = WSConstants.XSD_ANY_TYPE;
+//            this.type = WSConstants.XSD_ANY_TYPE;
         } else {
             
         }

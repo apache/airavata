@@ -25,6 +25,7 @@ import javax.xml.namespace.QName;
 
 import com.google.gson.JsonObject;
 import org.apache.airavata.common.utils.WSConstants;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.workflow.model.graph.DataPort;
 import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.GraphSchema;
@@ -60,8 +61,8 @@ public class InstanceDataPort extends DataPort {
      * @see org.apache.airavata.workflow.model.graph.DataPort#getType()
      */
     @Override
-    public QName getType() {
-        return STRING_TYPE;
+    public DataType getType() {
+        return DataType.STRING;
     }
 
     /**
