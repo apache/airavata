@@ -18,48 +18,61 @@ airavata services shipped with a default derby database as the backend registry.
 
 Release Notes
 =============
-0.11 is the tenth release of Airavata (skipped 0.1-INCUBATNG). This release focuses bug fixes and GSISSH library for beta testing. For detailed tasks list, please see RELEASE_NOTES.
+0.14 is the thirteenth release of Airavata (skipped 0.1-INCUBATNG). For detailed tasks list, please see RELEASE_NOTES.
 
 Building from source
 ====================
 For brief installation instructions, see INSTALL
 For detailed installation and further instructions refer http://airavata.apache.org/ - Documentation section in left hand panel. Step by step with proper documentation are provided.
 
-Known Issues in This Release
-============================
-This is the base release and is focused on a good foundation and less on features. This 
-version is not recommended for production usage.
 
 Airavata Binary Distribution Directory Structure
 ================================================
 
     AIRAVATA_HOME
-		├── bin
-		│   ├── database_scripts <dir>
-		│   ├── airavata-server.bat
-		│   ├── airavata-server.properties
-		│   ├── airavata-server.sh
-		│   ├── authenticators.xml
-		│   ├── axis2.xml
-		│   ├── derby.sh
-		│   ├── host.xml
-		│   ├── log4j.properties
-		│   ├── logo.txt
-		│   ├── setenv.bat
-		│   ├── setenv.sh
-		│   └── startNetworkServer
-		├── lib <dir>
-		├── repository
-		│   ├── modules 
-		│   └── services
-		├── samples
-		│   ├── workflows <dir>
-		│   ├── echo_out.sh
-		│   └── echo.sh
 		├── INSTALL
-		├── LICENSE
-		├── NOTICE
-		└── README
+        ├── LICENSE
+        ├── NOTICE
+        ├── README
+        ├── RELEASE_NOTES
+        ├── bin
+        │   ├── PBSTemplate.xslt
+        │   ├── SGETemplate.xslt
+        │   ├── SLURMTemplate.xslt
+        │   ├── airavata-server.bat
+        │   ├── airavata-server.properties
+        │   ├── airavata-server.sh
+        │   ├── api-server.sh
+        │   ├── database_scripts
+        │   │   ├── appcatalog-derby.sql
+        │   │   ├── appcatalog-mysql.sql
+        │   │   ├── cleanDBScript.sql
+        │   │   ├── msgBox-derby.sql
+        │   │   ├── msgBox-mysql.sql
+        │   │   ├── msgBroker-derby.sql
+        │   │   ├── msgBroker-mysql.sql
+        │   │   ├── registry-derby.sql
+        │   │   └── registry-mysql.sql
+        │   ├── derby.sh
+        │   ├── gfac-config.xml
+        │   ├── gfac-server.sh
+        │   ├── gsissh.properties
+        │   ├── log4j.properties
+        │   ├── logo.txt
+        │   ├── orchestrator-server.sh
+        │   ├── setenv.bat
+        │   ├── setenv.sh
+        │   ├── startNetworkServer
+        │   ├── workflow-server.sh
+        │   └── zoo.cfg
+        ├── lib
+        └── samples
+            ├── registerSample.sh
+            └── scripts
+                ├── add.sh
+                ├── echo.sh
+                ├── multiply.sh
+                └── subtract.sh
 
 
 How to test and run samples
