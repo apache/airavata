@@ -50,7 +50,9 @@ public class OutputConfigurationDialog {
 
     private XBayaTextArea descriptionTextArea;
 
-    private XBayaTextArea metadataTextArea;
+    private XBayaTextField dataTypeField;
+
+    private XBayaLabel dataTypeLabel;
 
     /**
      * Constructs an InputConfigurationWindow.
@@ -68,22 +70,12 @@ public class OutputConfigurationDialog {
      * Shows the dialog.
      */
     public void show() {
-
         String name = this.node.getConfiguredName();
         if (name == null) {
             name = this.node.getName();
         }
         this.nameTextField.setText(name);
         this.descriptionTextArea.setText(this.node.getDescription());
-        XmlElement metadata = this.node.getMetadata();
-        String metadataText;
-        if (metadata == null) {
-            metadataText = WSConstants.EMPTY_APPINFO;
-        } else {
-            metadataText = XMLUtil.xmlElementToString(metadata);
-        }
-        this.metadataTextArea.setText(metadataText);
-
         this.dialog.show();
     }
 
@@ -97,31 +89,14 @@ public class OutputConfigurationDialog {
     private void setInput() {
         String name = this.nameTextField.getText();
         String description = this.descriptionTextArea.getText();
-        String metadataText = this.metadataTextArea.getText();
-
         if (name.length() == 0) {
             String warning = "The name cannot be empty.";
             this.xbayaGUI.getErrorWindow().error(warning);
             return;
         }
-
-        XmlElement metadata;
-        if (metadataText.length() == 0) {
-            metadata = null;
-        } else {
-            try {
-                metadata = XMLUtil.stringToXmlElement(metadataText);
-            } catch (RuntimeException e) {
-                String warning = "The metadata is ill-formed.";
-                this.xbayaGUI.getErrorWindow().error(warning, e);
-                return;
-            }
-        }
-
         this.node.setConfigured(true);
         this.node.setConfiguredName(name);
         this.node.setDescription(description);
-        this.node.setMetadata(metadata);
         hide();
         this.xbayaGUI.getGraphCanvas().repaint();
     }
@@ -133,19 +108,19 @@ public class OutputConfigurationDialog {
         this.nameTextField = new XBayaTextField();
         XBayaLabel nameLabel = new XBayaLabel("Name", this.nameTextField);
 
+        this.dataTypeField = new XBayaTextField(this.node.getParameterType().toString());
+        this.dataTypeField.setEditable(false);
+        this.dataTypeLabel = new XBayaLabel("Type", this.dataTypeField);
         this.descriptionTextArea = new XBayaTextArea();
         XBayaLabel descriptionLabel = new XBayaLabel("Description", this.descriptionTextArea);
-
-        this.metadataTextArea = new XBayaTextArea();
-        XBayaLabel metadataLabel = new XBayaLabel("Metadata", this.metadataTextArea);
 
         GridPanel mainPanel = new GridPanel();
         mainPanel.add(nameLabel);
         mainPanel.add(this.nameTextField);
+        mainPanel.add(this.dataTypeLabel);
+        mainPanel.add(this.dataTypeField);
         mainPanel.add(descriptionLabel);
         mainPanel.add(this.descriptionTextArea);
-        mainPanel.add(metadataLabel);
-        mainPanel.add(this.metadataTextArea);
         mainPanel.layout(3, 2, 2, 1);
 
         JButton okButton = new JButton("OK");
