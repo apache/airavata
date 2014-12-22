@@ -66,8 +66,19 @@ public class BatchQueue implements Serializable {
 	
 	@Column(name = "MAX_NODES")
 	private int maxNodes;
-	
-	public String getComputeResourceId() {
+
+    @Column(name = "MAX_MEMORY")
+    private int maxMemory;
+
+    public int getMaxMemory() {
+        return maxMemory;
+    }
+
+    public void setMaxMemory(int maxMemory) {
+        this.maxMemory = maxMemory;
+    }
+
+    public String getComputeResourceId() {
 		return computeResourceId;
 	}
 	

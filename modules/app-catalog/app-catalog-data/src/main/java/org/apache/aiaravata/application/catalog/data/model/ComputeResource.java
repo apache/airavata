@@ -46,6 +46,9 @@ public class ComputeResource implements Serializable {
 	@Column(name = "HOST_NAME")
 	private String hostName;
 
+    @Column(name = "MAX_MEMORY_NODE")
+    private int maxMemoryPerNode;
+
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
 
@@ -91,4 +94,12 @@ public class ComputeResource implements Serializable {
 	public void setHostName(String hostName) {
 		this.hostName=hostName;
 	}
+
+    public int getMaxMemoryPerNode() {
+        return maxMemoryPerNode;
+    }
+
+    public void setMaxMemoryPerNode(int maxMemoryPerNode) {
+        this.maxMemoryPerNode = maxMemoryPerNode;
+    }
 }

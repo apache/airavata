@@ -50,7 +50,8 @@ public class BatchQueueResource extends AbstractResource {
 	private String queueName;
 	private int maxProcessors;
 	private int maxNodes;
-	
+	private int maxMemory;
+
 	@Override
 	public void remove(Object identifier) throws AppCatalogException {
         HashMap<String, String> ids;
@@ -233,6 +234,7 @@ public class BatchQueueResource extends AbstractResource {
 			batchQueue.setQueueName(getQueueName());
 			batchQueue.setMaxProcessors(getMaxProcessors());
 			batchQueue.setMaxNodes(getMaxNodes());
+			batchQueue.setMaxMemory(getMaxMemory());
 			if (existingBatchQueue == null) {
 				em.persist(batchQueue);
 			} else {
@@ -344,4 +346,12 @@ public class BatchQueueResource extends AbstractResource {
 	public void setMaxNodes(int maxNodes) {
 		this.maxNodes=maxNodes;
 	}
+
+    public int getMaxMemory() {
+        return maxMemory;
+    }
+
+    public void setMaxMemory(int maxMemory) {
+        this.maxMemory = maxMemory;
+    }
 }

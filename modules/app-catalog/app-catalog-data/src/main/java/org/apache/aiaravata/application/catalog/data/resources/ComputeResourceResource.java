@@ -44,6 +44,15 @@ public class ComputeResourceResource extends AbstractResource {
 	private String hostName;
     private Timestamp createdTime;
     private Timestamp updatedTime;
+    private int maxMemoryPerNode;
+
+    public int getMaxMemoryPerNode() {
+        return maxMemoryPerNode;
+    }
+
+    public void setMaxMemoryPerNode(int maxMemoryPerNode) {
+        this.maxMemoryPerNode = maxMemoryPerNode;
+    }
 
     public Timestamp getCreatedTime() {
         return createdTime;
@@ -274,6 +283,7 @@ public class ComputeResourceResource extends AbstractResource {
 			computeResource.setResourceDescription(getResourceDescription());
 			computeResource.setResourceId(getResourceId());
 			computeResource.setHostName(getHostName());
+			computeResource.setMaxMemoryPerNode(getMaxMemoryPerNode());
 			if (existingComputeResource == null) {
 				em.persist(computeResource);
 			} else {

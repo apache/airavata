@@ -469,6 +469,7 @@ public class AppCatalogJPAUtils {
             batchQueueResource.setQueueName(o.getQueueName());
             batchQueueResource.setMaxProcessors(o.getMaxProcessors());
             batchQueueResource.setMaxNodes(o.getMaxNodes());
+            batchQueueResource.setMaxMemory(o.getMaxMemory());
         }
 		return batchQueueResource;
 	}
@@ -479,6 +480,7 @@ public class AppCatalogJPAUtils {
             computeResourceResource.setResourceId(o.getResourceId());
             computeResourceResource.setHostName(o.getHostName());
             computeResourceResource.setCreatedTime(o.getCreationTime());
+            computeResourceResource.setMaxMemoryPerNode(o.getMaxMemoryPerNode());
             if (o.getUpdateTime() != null){
                 computeResourceResource.setUpdatedTime(o.getUpdateTime());
             }
