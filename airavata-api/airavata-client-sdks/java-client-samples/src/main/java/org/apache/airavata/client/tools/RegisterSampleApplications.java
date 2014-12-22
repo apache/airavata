@@ -997,6 +997,11 @@ public class RegisterSampleApplications {
                             wrfDescription, null));
             System.out.println("WRF on stampede deployment Id " + wrfAppDeployId);
 
+
+            String monteXAppDeployId = airavataClient.registerApplicationDeployment(
+                    RegisterSampleApplicationsUtils.createApplicationDeployment(monteXModuleId, stampedeResourceId,
+                            "/home1/00421/ccguser/apps/tinker/tinker/bin/monte.x", ApplicationParallelismType.OPENMP, monteXDescription, null));
+            System.out.println("Tinker Monte on trestles deployment Id " + monteXAppDeployId);
         } catch (TException e) {
             e.printStackTrace();
         }
@@ -1042,14 +1047,12 @@ public class RegisterSampleApplications {
                             gamessDescription, moduleLoadCmd));
             System.out.println("Gamess on trestles deployment Id " + gamessAppDeployId);
 
-            String monteXAppDeployId = airavataClient.registerApplicationDeployment(
-                    RegisterSampleApplicationsUtils.createApplicationDeployment(monteXModuleId, trestlesResourceId,
-                            "path/to/the/monte.x", ApplicationParallelismType.OPENMP, monteXDescription, null));
-            System.out.println("Tinker Monte on trestles deployment Id " + monteXAppDeployId);
 
+            List<String> gaussianMouldes = new ArrayList<String>();
+            gaussianMouldes.add("module load gaussian");
             String gaussianAppDeployId = airavataClient.registerApplicationDeployment(
                     RegisterSampleApplicationsUtils.createApplicationDeployment(gaussianModuleId, trestlesResourceId,
-                            "path/to/the/gaussian.sh", ApplicationParallelismType.OPENMP, gaussianDescription, null));
+                            "g09", ApplicationParallelismType.OPENMP, gaussianDescription, null));
             System.out.println("Gaussian on trestles deployment Id " + gaussianAppDeployId);
 
         } catch (TException e) {
