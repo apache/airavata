@@ -72,6 +72,8 @@ public class RegisterSampleApplications {
     private static final String wrfName = "WRF";
     private static final String phastaName = "PHASTA";
     private static final String mpiName = "HelloMPI";
+    private static final String monteXName = "TinkerMonte";
+    private static final String gaussianName = "Gaussian";
 
     //Appplication Descriptions
     private static final String echoDescription = "A Simple Echo Application";
@@ -85,6 +87,8 @@ public class RegisterSampleApplications {
     private static final String wrfDescription = "Weather Research and Forecasting";
     private static final String phastaDescription = "Computational fluid dynamics solver";
     private static final String mpiDescription = "A Hello MPI Application";
+    private static final String monteXDescription = "Grid Chem Tinker Monte Application";
+    private static final String gaussianDescription = "Grid Chem Gaussian Application";
 
     //App Module Id's
     private static String echoModuleId;
@@ -98,6 +102,8 @@ public class RegisterSampleApplications {
     private static String wrfModuleId;
     private static String phastaModuleId;
     private static String mpiModuleId;
+    private static String monteXModuleId;
+    private static String gaussianModuleId;
 
     //App Interface Id's
     private static String echoInterfaceId = "";
@@ -295,6 +301,14 @@ public class RegisterSampleApplications {
                             phastaName, "1.0", phastaDescription));
             System.out.println("phasta Module Id " + phastaModuleId);
 
+            monteXModuleId = airavataClient.registerApplicationModule(
+                    RegisterSampleApplicationsUtils.createApplicationModule(
+                            monteXName, "1.0", monteXDescription));
+            System.out.println("Tinker Monte Module Id " + monteXModuleId);
+
+            gaussianModuleId = airavataClient.registerApplicationModule(
+                    RegisterSampleApplicationsUtils.createApplicationModule(
+                            gaussianName, "1.0", gaussianDescription));
         } catch (TException e) {
             e.printStackTrace();
         }
@@ -318,7 +332,7 @@ public class RegisterSampleApplications {
         //Registering FSD Apps
         registerFSDApps();
 
-        
+
     }
 
     public void registerAppInterfaces() {
@@ -357,6 +371,10 @@ public class RegisterSampleApplications {
 
         //Registering WRF
         registerWRFInterface();
+
+        registerTinkerMonteInterface();
+
+        registerGaussianInterface();
 
     }
 
@@ -934,6 +952,84 @@ public class RegisterSampleApplications {
         }
     }
 
+    private void registerGaussianInterface() {
+        try {
+            System.out.println("#### Registering Gaussian Application Interface ####");
+
+            List<String> appModules = new ArrayList<String>();
+            appModules.add(gaussianModuleId);
+
+            InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("MainInputFile", null,
+                    DataType.URI, null, 1, false, "Gaussian main input file", null);
+
+            List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
+            applicationInputs.add(input1);
+
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("gaussian.out",
+                    "", DataType.URI);
+
+            List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
+            applicationOutputs.add(output1);
+
+            String addApplicationInterfaceId = airavataClient.registerApplicationInterface(
+                    RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("Gaussian", "Gaussian application",
+                            appModules, applicationInputs, applicationOutputs));
+            System.out.println("Gaussian Application Interface Id " + addApplicationInterfaceId);
+
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void registerTinkerMonteInterface() {
+        try {
+            System.out.println("#### Registering Tinker Monte Application Interface ####");
+
+            List<String> appModules = new ArrayList<String>();
+            appModules.add(monteXModuleId);
+
+            InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("xyzf", "O16.xyz",
+                    DataType.STRING, null, 1, false, "Tinker monte input_1", null);
+            InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("keyf", "O16.key",
+                    DataType.STRING, "-k", 2, false, "Tinker monte input_2", null);
+            InputDataObjectType input3 = RegisterSampleApplicationsUtils.createAppInput("stps", "20000",
+                    DataType.STRING, null, 3, false, "Tinker monte input_3", null);
+            InputDataObjectType input4 = RegisterSampleApplicationsUtils.createAppInput("Ctc", "C",
+                    DataType.STRING, null, 4, false, "Tinker monte input_4", null);
+            InputDataObjectType input5 = RegisterSampleApplicationsUtils.createAppInput("stpsZ", "3.0",
+                    DataType.STRING, null, 5, false, "Tinker monte input_5", null);
+            InputDataObjectType input6 = RegisterSampleApplicationsUtils.createAppInput("temp", "298",
+                    DataType.STRING, null, 6, false, "Tinker monte input_6", null);
+            InputDataObjectType input7 = RegisterSampleApplicationsUtils.createAppInput("Rconv", "0.01",
+                    DataType.STRING, null, 7, false, "Tinker monte input_7", null);
+
+
+            List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
+            applicationInputs.add(input1);
+            applicationInputs.add(input2);
+            applicationInputs.add(input3);
+            applicationInputs.add(input4);
+            applicationInputs.add(input5);
+            applicationInputs.add(input6);
+            applicationInputs.add(input7);
+
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Diskoutputfile_with_dir",
+                    "", DataType.URI);
+
+            List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
+            applicationOutputs.add(output1);
+
+            String addApplicationInterfaceId = airavataClient.registerApplicationInterface(
+                    RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("Tinker_Monte", "Monte application",
+                            appModules, applicationInputs, applicationOutputs));
+            System.out.println("Monte Application Interface Id " + addApplicationInterfaceId);
+
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     public void registerStampedeApps() {
         try {
             System.out.println("#### Registering Application Deployments on Stampede #### \n");
@@ -1028,6 +1124,16 @@ public class RegisterSampleApplications {
                             "/home/ogce/production/app_wrappers/lammps_wrapper.sh", ApplicationParallelismType.MPI,
                             lammpsDescription));
             System.out.println("LAMMPS on trestles deployment Id " + lammpsAppDeployId);
+
+            String monteXAppDeployId = airavataClient.registerApplicationDeployment(
+                    RegisterSampleApplicationsUtils.createApplicationDeployment(monteXModuleId, trestlesResourceId,
+                            "path/to/the/monte.x", ApplicationParallelismType.OPENMP, monteXDescription));
+            System.out.println("Tinker Monte on trestles deployment Id " + monteXAppDeployId);
+
+            String gaussianAppDeployId = airavataClient.registerApplicationDeployment(
+                    RegisterSampleApplicationsUtils.createApplicationDeployment(gaussianModuleId, trestlesResourceId,
+                            "path/to/the/gaussian.sh", ApplicationParallelismType.OPENMP, gaussianDescription));
+            System.out.println("Gaussian on trestles deployment Id " + gaussianAppDeployId);
 
         } catch (TException e) {
             e.printStackTrace();
