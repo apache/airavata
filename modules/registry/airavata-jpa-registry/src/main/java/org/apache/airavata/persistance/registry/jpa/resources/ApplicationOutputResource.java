@@ -44,6 +44,15 @@ public class ApplicationOutputResource extends AbstractResource {
     private String validityType;
     private boolean dataMovement;
     private String dataNameLocation;
+    private String commandLineType;
+
+    public String getCommandLineType() {
+        return commandLineType;
+    }
+
+    public void setCommandLineType(String commandLineType) {
+        this.commandLineType = commandLineType;
+    }
 
     public String getValidityType() {
         return validityType;
@@ -142,6 +151,7 @@ public class ApplicationOutputResource extends AbstractResource {
             applicationOutput.setOutputKey(outputKey);
             applicationOutput.setDataType(dataType);
             applicationOutput.setValidityType(validityType);
+            applicationOutput.setCommandLineType(commandLineType);
             applicationOutput.setDataMovement(dataMovement);
             applicationOutput.setDataNameLocation(dataNameLocation);
             if (value != null){
@@ -154,6 +164,7 @@ public class ApplicationOutputResource extends AbstractResource {
                 existingOutput.setOutputKey(outputKey);
                 existingOutput.setDataType(dataType);
                 existingOutput.setValidityType(validityType);
+                existingOutput.setCommandLineType(commandLineType);
                 existingOutput.setDataMovement(dataMovement);
                 existingOutput.setDataNameLocation(dataNameLocation);
                 if (value != null){

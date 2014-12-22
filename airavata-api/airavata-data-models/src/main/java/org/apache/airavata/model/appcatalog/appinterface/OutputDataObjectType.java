@@ -82,8 +82,9 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField VALUE_FIELD_DESC = new org.apache.thrift.protocol.TField("value", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("type", org.apache.thrift.protocol.TType.I32, (short)3);
   private static final org.apache.thrift.protocol.TField VALIDITY_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("validityType", org.apache.thrift.protocol.TType.I32, (short)4);
-  private static final org.apache.thrift.protocol.TField DATA_MOVEMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("dataMovement", org.apache.thrift.protocol.TType.BOOL, (short)5);
-  private static final org.apache.thrift.protocol.TField DATA_NAME_LOCATION_FIELD_DESC = new org.apache.thrift.protocol.TField("dataNameLocation", org.apache.thrift.protocol.TType.STRING, (short)6);
+  private static final org.apache.thrift.protocol.TField ADDED_TO_COMMAND_LINE_FIELD_DESC = new org.apache.thrift.protocol.TField("addedToCommandLine", org.apache.thrift.protocol.TType.I32, (short)5);
+  private static final org.apache.thrift.protocol.TField DATA_MOVEMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("dataMovement", org.apache.thrift.protocol.TType.BOOL, (short)6);
+  private static final org.apache.thrift.protocol.TField DATA_NAME_LOCATION_FIELD_DESC = new org.apache.thrift.protocol.TField("dataNameLocation", org.apache.thrift.protocol.TType.STRING, (short)7);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -95,6 +96,7 @@ import org.slf4j.LoggerFactory;
   private String value; // optional
   private DataType type; // optional
   private ValidityType validityType; // optional
+  private CommandLineType addedToCommandLine; // optional
   private boolean dataMovement; // optional
   private String dataNameLocation; // optional
 
@@ -112,8 +114,13 @@ import org.slf4j.LoggerFactory;
      * @see ValidityType
      */
     VALIDITY_TYPE((short)4, "validityType"),
-    DATA_MOVEMENT((short)5, "dataMovement"),
-    DATA_NAME_LOCATION((short)6, "dataNameLocation");
+    /**
+     * 
+     * @see CommandLineType
+     */
+    ADDED_TO_COMMAND_LINE((short)5, "addedToCommandLine"),
+    DATA_MOVEMENT((short)6, "dataMovement"),
+    DATA_NAME_LOCATION((short)7, "dataNameLocation");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -136,9 +143,11 @@ import org.slf4j.LoggerFactory;
           return TYPE;
         case 4: // VALIDITY_TYPE
           return VALIDITY_TYPE;
-        case 5: // DATA_MOVEMENT
+        case 5: // ADDED_TO_COMMAND_LINE
+          return ADDED_TO_COMMAND_LINE;
+        case 6: // DATA_MOVEMENT
           return DATA_MOVEMENT;
-        case 6: // DATA_NAME_LOCATION
+        case 7: // DATA_NAME_LOCATION
           return DATA_NAME_LOCATION;
         default:
           return null;
@@ -182,7 +191,7 @@ import org.slf4j.LoggerFactory;
   // isset id assignments
   private static final int __DATAMOVEMENT_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.VALUE,_Fields.TYPE,_Fields.VALIDITY_TYPE,_Fields.DATA_MOVEMENT,_Fields.DATA_NAME_LOCATION};
+  private _Fields optionals[] = {_Fields.VALUE,_Fields.TYPE,_Fields.VALIDITY_TYPE,_Fields.ADDED_TO_COMMAND_LINE,_Fields.DATA_MOVEMENT,_Fields.DATA_NAME_LOCATION};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -194,6 +203,8 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, DataType.class)));
     tmpMap.put(_Fields.VALIDITY_TYPE, new org.apache.thrift.meta_data.FieldMetaData("validityType", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ValidityType.class)));
+    tmpMap.put(_Fields.ADDED_TO_COMMAND_LINE, new org.apache.thrift.meta_data.FieldMetaData("addedToCommandLine", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, CommandLineType.class)));
     tmpMap.put(_Fields.DATA_MOVEMENT, new org.apache.thrift.meta_data.FieldMetaData("dataMovement", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.DATA_NAME_LOCATION, new org.apache.thrift.meta_data.FieldMetaData("dataNameLocation", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -229,6 +240,9 @@ import org.slf4j.LoggerFactory;
     if (other.isSetValidityType()) {
       this.validityType = other.validityType;
     }
+    if (other.isSetAddedToCommandLine()) {
+      this.addedToCommandLine = other.addedToCommandLine;
+    }
     this.dataMovement = other.dataMovement;
     if (other.isSetDataNameLocation()) {
       this.dataNameLocation = other.dataNameLocation;
@@ -245,6 +259,7 @@ import org.slf4j.LoggerFactory;
     this.value = null;
     this.type = null;
     this.validityType = null;
+    this.addedToCommandLine = null;
     setDataMovementIsSet(false);
     this.dataMovement = false;
     this.dataNameLocation = null;
@@ -358,6 +373,37 @@ import org.slf4j.LoggerFactory;
     }
   }
 
+  /**
+   * 
+   * @see CommandLineType
+   */
+  public CommandLineType getAddedToCommandLine() {
+    return this.addedToCommandLine;
+  }
+
+  /**
+   * 
+   * @see CommandLineType
+   */
+  public void setAddedToCommandLine(CommandLineType addedToCommandLine) {
+    this.addedToCommandLine = addedToCommandLine;
+  }
+
+  public void unsetAddedToCommandLine() {
+    this.addedToCommandLine = null;
+  }
+
+  /** Returns true if field addedToCommandLine is set (has been assigned a value) and false otherwise */
+  public boolean isSetAddedToCommandLine() {
+    return this.addedToCommandLine != null;
+  }
+
+  public void setAddedToCommandLineIsSet(boolean value) {
+    if (!value) {
+      this.addedToCommandLine = null;
+    }
+  }
+
   public boolean isDataMovement() {
     return this.dataMovement;
   }
@@ -437,6 +483,14 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case ADDED_TO_COMMAND_LINE:
+      if (value == null) {
+        unsetAddedToCommandLine();
+      } else {
+        setAddedToCommandLine((CommandLineType)value);
+      }
+      break;
+
     case DATA_MOVEMENT:
       if (value == null) {
         unsetDataMovement();
@@ -470,6 +524,9 @@ import org.slf4j.LoggerFactory;
     case VALIDITY_TYPE:
       return getValidityType();
 
+    case ADDED_TO_COMMAND_LINE:
+      return getAddedToCommandLine();
+
     case DATA_MOVEMENT:
       return Boolean.valueOf(isDataMovement());
 
@@ -495,6 +552,8 @@ import org.slf4j.LoggerFactory;
       return isSetType();
     case VALIDITY_TYPE:
       return isSetValidityType();
+    case ADDED_TO_COMMAND_LINE:
+      return isSetAddedToCommandLine();
     case DATA_MOVEMENT:
       return isSetDataMovement();
     case DATA_NAME_LOCATION:
@@ -549,6 +608,15 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_validityType && that_present_validityType))
         return false;
       if (!this.validityType.equals(that.validityType))
+        return false;
+    }
+
+    boolean this_present_addedToCommandLine = true && this.isSetAddedToCommandLine();
+    boolean that_present_addedToCommandLine = true && that.isSetAddedToCommandLine();
+    if (this_present_addedToCommandLine || that_present_addedToCommandLine) {
+      if (!(this_present_addedToCommandLine && that_present_addedToCommandLine))
+        return false;
+      if (!this.addedToCommandLine.equals(that.addedToCommandLine))
         return false;
     }
 
@@ -622,6 +690,16 @@ import org.slf4j.LoggerFactory;
     }
     if (isSetValidityType()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.validityType, other.validityType);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetAddedToCommandLine()).compareTo(other.isSetAddedToCommandLine());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetAddedToCommandLine()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.addedToCommandLine, other.addedToCommandLine);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -700,6 +778,16 @@ import org.slf4j.LoggerFactory;
         sb.append("null");
       } else {
         sb.append(this.validityType);
+      }
+      first = false;
+    }
+    if (isSetAddedToCommandLine()) {
+      if (!first) sb.append(", ");
+      sb.append("addedToCommandLine:");
+      if (this.addedToCommandLine == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.addedToCommandLine);
       }
       first = false;
     }
@@ -800,7 +888,15 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // DATA_MOVEMENT
+          case 5: // ADDED_TO_COMMAND_LINE
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.addedToCommandLine = CommandLineType.findByValue(iprot.readI32());
+              struct.setAddedToCommandLineIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 6: // DATA_MOVEMENT
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
               struct.dataMovement = iprot.readBool();
               struct.setDataMovementIsSet(true);
@@ -808,7 +904,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // DATA_NAME_LOCATION
+          case 7: // DATA_NAME_LOCATION
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.dataNameLocation = iprot.readString();
               struct.setDataNameLocationIsSet(true);
@@ -855,6 +951,13 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldEnd();
         }
       }
+      if (struct.addedToCommandLine != null) {
+        if (struct.isSetAddedToCommandLine()) {
+          oprot.writeFieldBegin(ADDED_TO_COMMAND_LINE_FIELD_DESC);
+          oprot.writeI32(struct.addedToCommandLine.getValue());
+          oprot.writeFieldEnd();
+        }
+      }
       if (struct.isSetDataMovement()) {
         oprot.writeFieldBegin(DATA_MOVEMENT_FIELD_DESC);
         oprot.writeBool(struct.dataMovement);
@@ -895,13 +998,16 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetValidityType()) {
         optionals.set(2);
       }
-      if (struct.isSetDataMovement()) {
+      if (struct.isSetAddedToCommandLine()) {
         optionals.set(3);
       }
-      if (struct.isSetDataNameLocation()) {
+      if (struct.isSetDataMovement()) {
         optionals.set(4);
       }
-      oprot.writeBitSet(optionals, 5);
+      if (struct.isSetDataNameLocation()) {
+        optionals.set(5);
+      }
+      oprot.writeBitSet(optionals, 6);
       if (struct.isSetValue()) {
         oprot.writeString(struct.value);
       }
@@ -910,6 +1016,9 @@ import org.slf4j.LoggerFactory;
       }
       if (struct.isSetValidityType()) {
         oprot.writeI32(struct.validityType.getValue());
+      }
+      if (struct.isSetAddedToCommandLine()) {
+        oprot.writeI32(struct.addedToCommandLine.getValue());
       }
       if (struct.isSetDataMovement()) {
         oprot.writeBool(struct.dataMovement);
@@ -924,7 +1033,7 @@ import org.slf4j.LoggerFactory;
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.name = iprot.readString();
       struct.setNameIsSet(true);
-      BitSet incoming = iprot.readBitSet(5);
+      BitSet incoming = iprot.readBitSet(6);
       if (incoming.get(0)) {
         struct.value = iprot.readString();
         struct.setValueIsSet(true);
@@ -938,10 +1047,14 @@ import org.slf4j.LoggerFactory;
         struct.setValidityTypeIsSet(true);
       }
       if (incoming.get(3)) {
+        struct.addedToCommandLine = CommandLineType.findByValue(iprot.readI32());
+        struct.setAddedToCommandLineIsSet(true);
+      }
+      if (incoming.get(4)) {
         struct.dataMovement = iprot.readBool();
         struct.setDataMovementIsSet(true);
       }
-      if (incoming.get(4)) {
+      if (incoming.get(5)) {
         struct.dataNameLocation = iprot.readString();
         struct.setDataNameLocationIsSet(true);
       }

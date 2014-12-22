@@ -24,10 +24,7 @@ package org.apache.airavata.client.tools;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
-import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.appinterface.DataType;
-import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
-import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.*;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 
@@ -55,9 +52,12 @@ public class RegisterSampleApplicationsUtils {
         return computeResourcePreference;
     }
 
-    public static ApplicationDeploymentDescription createApplicationDeployment(
-           String appModuleId, String computeResourceId, String executablePath,
-           ApplicationParallelismType parallelism, String appDeploymentDescription) {
+    public static ApplicationDeploymentDescription createApplicationDeployment(String appModuleId,
+                                                                               String computeResourceId,
+                                                                               String executablePath,
+                                                                               ApplicationParallelismType parallelism,
+                                                                               String appDeploymentDescription,
+                                                                               List<String> moduleLoadCmds) {
         ApplicationDeploymentDescription deployment = new ApplicationDeploymentDescription();
 //		deployment.setIsEmpty(false);
         deployment.setAppDeploymentDescription(appDeploymentDescription);
@@ -65,6 +65,7 @@ public class RegisterSampleApplicationsUtils {
         deployment.setComputeHostId(computeResourceId);
         deployment.setExecutablePath(executablePath);
         deployment.setParallelism(parallelism);
+        deployment.setModuleLoadCmds(moduleLoadCmds);
         return deployment;
     }
 
@@ -118,9 +119,16 @@ public class RegisterSampleApplicationsUtils {
         return resourceJobManager;
     }
 
-    public static InputDataObjectType createAppInput
-            (String inputName, String value, DataType type,
-             String applicationArgument, int order, boolean stdIn, String description, String metadata) {
+    public static InputDataObjectType createAppInput (String inputName,
+                                                      String value,
+                                                      DataType type,
+                                                      String applicationArgument,
+                                                      int order,
+                                                      ValidityType validityType,
+                                                      CommandLineType commandLineType,
+                                                      boolean stdIn,
+                                                      String description,
+                                                      String metadata) {
         InputDataObjectType input = new InputDataObjectType();
 //        input.setIsEmpty(false);
         if (inputName != null) input.setName(inputName);
@@ -128,18 +136,34 @@ public class RegisterSampleApplicationsUtils {
         if (type != null) input.setType(type);
         if (applicationArgument != null) input.setApplicationArgument(applicationArgument);
         input.setInputOrder(order);
+        if (validityType != null){
+            input.setInputValid(validityType);
+        }
+        if (commandLineType != null){
+            input.setAddedToCommandLine(commandLineType);
+        }
         if (description != null) input.setUserFriendlyDescription(description);
         input.setStandardInput(stdIn);
         if (metadata != null) input.setMetaData(metadata);
         return input;
     }
 
-    public static OutputDataObjectType createAppOutput(String inputName, String value, DataType type) {
+    public static OutputDataObjectType createAppOutput(String inputName,
+                                                       String value,
+                                                       DataType type,
+                                                       ValidityType validityType,
+                                                       CommandLineType commandLineType) {
         OutputDataObjectType outputDataObjectType = new OutputDataObjectType();
 //        outputDataObjectType.setIsEmpty(false);
         if (inputName != null) outputDataObjectType.setName(inputName);
         if (value != null) outputDataObjectType.setValue(value);
         if (type != null) outputDataObjectType.setType(type);
+        if (validityType != null){
+            outputDataObjectType.setValidityType(validityType);
+        }
+        if (commandLineType != null){
+            outputDataObjectType.setAddedToCommandLine(commandLineType);
+        }
         return outputDataObjectType;
     }
 

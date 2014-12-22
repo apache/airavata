@@ -44,6 +44,15 @@ public class ExperimentOutputResource extends AbstractResource {
     private String validityType;
     private boolean dataMovement;
     private String dataNameLocation;
+    private String commandLineType;
+
+    public String getCommandLineType() {
+        return commandLineType;
+    }
+
+    public void setCommandLineType(String commandLineType) {
+        this.commandLineType = commandLineType;
+    }
 
     public String getValidityType() {
         return validityType;
@@ -140,6 +149,7 @@ public class ExperimentOutputResource extends AbstractResource {
             }
             exOutput.setDataType(dataType);
             exOutput.setValidityType(validityType);
+            exOutput.setCommandLineType(commandLineType);
             exOutput.setDataMovement(dataMovement);
             exOutput.setDataNameLocation(dataNameLocation);
 
@@ -152,6 +162,7 @@ public class ExperimentOutputResource extends AbstractResource {
                 existingOutput.setExperiment_id(experiment.getExpId());
                 existingOutput.setDataType(dataType);
                 existingOutput.setValidityType(validityType);
+                existingOutput.setCommandLineType(commandLineType);
                 existingOutput.setDataMovement(dataMovement);
                 existingOutput.setDataNameLocation(dataNameLocation);
                 exOutput = em.merge(existingOutput);

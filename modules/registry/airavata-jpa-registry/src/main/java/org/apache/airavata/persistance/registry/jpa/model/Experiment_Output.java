@@ -46,6 +46,8 @@ public class Experiment_Output  implements Serializable {
 
     @Column(name = "VALIDITY_TYPE")
     private String validityType;
+    @Column(name="COMMANDLINE_TYPE")
+    private String commandLineType;
     @Column(name = "DATA_MOVEMENT")
     private boolean dataMovement;
     @Column(name = "DATA_NAME_LOCATION")
@@ -55,6 +57,13 @@ public class Experiment_Output  implements Serializable {
     @JoinColumn(name = "EXPERIMENT_ID")
     private Experiment experiment;
 
+    public String getCommandLineType() {
+        return commandLineType;
+    }
+
+    public void setCommandLineType(String commandLineType) {
+        this.commandLineType = commandLineType;
+    }
     public String getExperiment_id() {
         return experiment_id;
     }

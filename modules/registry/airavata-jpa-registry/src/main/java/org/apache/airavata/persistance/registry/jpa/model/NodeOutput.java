@@ -43,6 +43,8 @@ public class NodeOutput implements Serializable {
     private String value;
     @Column(name = "VALIDITY_TYPE")
     private String validityType;
+    @Column(name="COMMANDLINE_TYPE")
+    private String commandLineType;
     @Column(name = "DATA_MOVEMENT")
     private boolean dataMovement;
     @Column(name = "DATA_NAME_LOCATION")
@@ -52,6 +54,14 @@ public class NodeOutput implements Serializable {
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "NODE_INSTANCE_ID")
     private WorkflowNodeDetail node;
+
+    public String getCommandLineType() {
+        return commandLineType;
+    }
+
+    public void setCommandLineType(String commandLineType) {
+        this.commandLineType = commandLineType;
+    }
 
     public String getNodeId() {
         return nodeId;

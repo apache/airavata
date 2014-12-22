@@ -90,6 +90,7 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField FILE_SYSTEMS_FIELD_DESC = new org.apache.thrift.protocol.TField("fileSystems", org.apache.thrift.protocol.TType.MAP, (short)7);
   private static final org.apache.thrift.protocol.TField JOB_SUBMISSION_INTERFACES_FIELD_DESC = new org.apache.thrift.protocol.TField("jobSubmissionInterfaces", org.apache.thrift.protocol.TType.LIST, (short)8);
   private static final org.apache.thrift.protocol.TField DATA_MOVEMENT_INTERFACES_FIELD_DESC = new org.apache.thrift.protocol.TField("dataMovementInterfaces", org.apache.thrift.protocol.TType.LIST, (short)9);
+  private static final org.apache.thrift.protocol.TField MAX_MEMORY_PER_NODE_FIELD_DESC = new org.apache.thrift.protocol.TField("maxMemoryPerNode", org.apache.thrift.protocol.TType.I32, (short)10);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -106,6 +107,7 @@ import org.slf4j.LoggerFactory;
   private Map<FileSystems,String> fileSystems; // optional
   private List<JobSubmissionInterface> jobSubmissionInterfaces; // optional
   private List<DataMovementInterface> dataMovementInterfaces; // optional
+  private int maxMemoryPerNode; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -117,7 +119,8 @@ import org.slf4j.LoggerFactory;
     BATCH_QUEUES((short)6, "batchQueues"),
     FILE_SYSTEMS((short)7, "fileSystems"),
     JOB_SUBMISSION_INTERFACES((short)8, "jobSubmissionInterfaces"),
-    DATA_MOVEMENT_INTERFACES((short)9, "dataMovementInterfaces");
+    DATA_MOVEMENT_INTERFACES((short)9, "dataMovementInterfaces"),
+    MAX_MEMORY_PER_NODE((short)10, "maxMemoryPerNode");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -150,6 +153,8 @@ import org.slf4j.LoggerFactory;
           return JOB_SUBMISSION_INTERFACES;
         case 9: // DATA_MOVEMENT_INTERFACES
           return DATA_MOVEMENT_INTERFACES;
+        case 10: // MAX_MEMORY_PER_NODE
+          return MAX_MEMORY_PER_NODE;
         default:
           return null;
       }
@@ -190,7 +195,9 @@ import org.slf4j.LoggerFactory;
   }
 
   // isset id assignments
-  private _Fields optionals[] = {_Fields.HOST_ALIASES,_Fields.IP_ADDRESSES,_Fields.RESOURCE_DESCRIPTION,_Fields.BATCH_QUEUES,_Fields.FILE_SYSTEMS,_Fields.JOB_SUBMISSION_INTERFACES,_Fields.DATA_MOVEMENT_INTERFACES};
+  private static final int __MAXMEMORYPERNODE_ISSET_ID = 0;
+  private byte __isset_bitfield = 0;
+  private _Fields optionals[] = {_Fields.HOST_ALIASES,_Fields.IP_ADDRESSES,_Fields.RESOURCE_DESCRIPTION,_Fields.BATCH_QUEUES,_Fields.FILE_SYSTEMS,_Fields.JOB_SUBMISSION_INTERFACES,_Fields.DATA_MOVEMENT_INTERFACES,_Fields.MAX_MEMORY_PER_NODE};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -219,6 +226,8 @@ import org.slf4j.LoggerFactory;
     tmpMap.put(_Fields.DATA_MOVEMENT_INTERFACES, new org.apache.thrift.meta_data.FieldMetaData("dataMovementInterfaces", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, DataMovementInterface.class))));
+    tmpMap.put(_Fields.MAX_MEMORY_PER_NODE, new org.apache.thrift.meta_data.FieldMetaData("maxMemoryPerNode", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ComputeResourceDescription.class, metaDataMap);
   }
@@ -241,6 +250,7 @@ import org.slf4j.LoggerFactory;
    * Performs a deep copy on <i>other</i>.
    */
   public ComputeResourceDescription(ComputeResourceDescription other) {
+    __isset_bitfield = other.__isset_bitfield;
     if (other.isSetComputeResourceId()) {
       this.computeResourceId = other.computeResourceId;
     }
@@ -294,6 +304,7 @@ import org.slf4j.LoggerFactory;
       }
       this.dataMovementInterfaces = __this__dataMovementInterfaces;
     }
+    this.maxMemoryPerNode = other.maxMemoryPerNode;
   }
 
   public ComputeResourceDescription deepCopy() {
@@ -312,6 +323,8 @@ import org.slf4j.LoggerFactory;
     this.fileSystems = null;
     this.jobSubmissionInterfaces = null;
     this.dataMovementInterfaces = null;
+    setMaxMemoryPerNodeIsSet(false);
+    this.maxMemoryPerNode = 0;
   }
 
   public String getComputeResourceId() {
@@ -607,6 +620,28 @@ import org.slf4j.LoggerFactory;
     }
   }
 
+  public int getMaxMemoryPerNode() {
+    return this.maxMemoryPerNode;
+  }
+
+  public void setMaxMemoryPerNode(int maxMemoryPerNode) {
+    this.maxMemoryPerNode = maxMemoryPerNode;
+    setMaxMemoryPerNodeIsSet(true);
+  }
+
+  public void unsetMaxMemoryPerNode() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __MAXMEMORYPERNODE_ISSET_ID);
+  }
+
+  /** Returns true if field maxMemoryPerNode is set (has been assigned a value) and false otherwise */
+  public boolean isSetMaxMemoryPerNode() {
+    return EncodingUtils.testBit(__isset_bitfield, __MAXMEMORYPERNODE_ISSET_ID);
+  }
+
+  public void setMaxMemoryPerNodeIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __MAXMEMORYPERNODE_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case COMPUTE_RESOURCE_ID:
@@ -681,6 +716,14 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case MAX_MEMORY_PER_NODE:
+      if (value == null) {
+        unsetMaxMemoryPerNode();
+      } else {
+        setMaxMemoryPerNode((Integer)value);
+      }
+      break;
+
     }
   }
 
@@ -713,6 +756,9 @@ import org.slf4j.LoggerFactory;
     case DATA_MOVEMENT_INTERFACES:
       return getDataMovementInterfaces();
 
+    case MAX_MEMORY_PER_NODE:
+      return Integer.valueOf(getMaxMemoryPerNode());
+
     }
     throw new IllegalStateException();
   }
@@ -742,6 +788,8 @@ import org.slf4j.LoggerFactory;
       return isSetJobSubmissionInterfaces();
     case DATA_MOVEMENT_INTERFACES:
       return isSetDataMovementInterfaces();
+    case MAX_MEMORY_PER_NODE:
+      return isSetMaxMemoryPerNode();
     }
     throw new IllegalStateException();
   }
@@ -837,6 +885,15 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_dataMovementInterfaces && that_present_dataMovementInterfaces))
         return false;
       if (!this.dataMovementInterfaces.equals(that.dataMovementInterfaces))
+        return false;
+    }
+
+    boolean this_present_maxMemoryPerNode = true && this.isSetMaxMemoryPerNode();
+    boolean that_present_maxMemoryPerNode = true && that.isSetMaxMemoryPerNode();
+    if (this_present_maxMemoryPerNode || that_present_maxMemoryPerNode) {
+      if (!(this_present_maxMemoryPerNode && that_present_maxMemoryPerNode))
+        return false;
+      if (this.maxMemoryPerNode != that.maxMemoryPerNode)
         return false;
     }
 
@@ -946,6 +1003,16 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetMaxMemoryPerNode()).compareTo(other.isSetMaxMemoryPerNode());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetMaxMemoryPerNode()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.maxMemoryPerNode, other.maxMemoryPerNode);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -1051,6 +1118,12 @@ import org.slf4j.LoggerFactory;
       }
       first = false;
     }
+    if (isSetMaxMemoryPerNode()) {
+      if (!first) sb.append(", ");
+      sb.append("maxMemoryPerNode:");
+      sb.append(this.maxMemoryPerNode);
+      first = false;
+    }
     sb.append(")");
     return sb.toString();
   }
@@ -1078,6 +1151,8 @@ import org.slf4j.LoggerFactory;
 
   private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
     try {
+      // it doesn't seem like you should have to do this, but java serialization is wacky, and doesn't call the default constructor.
+      __isset_bitfield = 0;
       read(new org.apache.thrift.protocol.TCompactProtocol(new org.apache.thrift.transport.TIOStreamTransport(in)));
     } catch (org.apache.thrift.TException te) {
       throw new java.io.IOException(te);
@@ -1239,6 +1314,14 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 10: // MAX_MEMORY_PER_NODE
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.maxMemoryPerNode = iprot.readI32();
+              struct.setMaxMemoryPerNodeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1354,6 +1437,11 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldEnd();
         }
       }
+      if (struct.isSetMaxMemoryPerNode()) {
+        oprot.writeFieldBegin(MAX_MEMORY_PER_NODE_FIELD_DESC);
+        oprot.writeI32(struct.maxMemoryPerNode);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1395,7 +1483,10 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetDataMovementInterfaces()) {
         optionals.set(6);
       }
-      oprot.writeBitSet(optionals, 7);
+      if (struct.isSetMaxMemoryPerNode()) {
+        optionals.set(7);
+      }
+      oprot.writeBitSet(optionals, 8);
       if (struct.isSetHostAliases()) {
         {
           oprot.writeI32(struct.hostAliases.size());
@@ -1454,6 +1545,9 @@ import org.slf4j.LoggerFactory;
           }
         }
       }
+      if (struct.isSetMaxMemoryPerNode()) {
+        oprot.writeI32(struct.maxMemoryPerNode);
+      }
     }
 
     @Override
@@ -1463,7 +1557,7 @@ import org.slf4j.LoggerFactory;
       struct.setComputeResourceIdIsSet(true);
       struct.hostName = iprot.readString();
       struct.setHostNameIsSet(true);
-      BitSet incoming = iprot.readBitSet(7);
+      BitSet incoming = iprot.readBitSet(8);
       if (incoming.get(0)) {
         {
           org.apache.thrift.protocol.TList _list57 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
@@ -1550,6 +1644,10 @@ import org.slf4j.LoggerFactory;
           }
         }
         struct.setDataMovementInterfacesIsSet(true);
+      }
+      if (incoming.get(7)) {
+        struct.maxMemoryPerNode = iprot.readI32();
+        struct.setMaxMemoryPerNodeIsSet(true);
       }
     }
   }

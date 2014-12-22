@@ -47,6 +47,7 @@ public class ApplicationOutputResource extends AbstractResource {
     private String validityType;
     private boolean dataMovement;
     private String dataNameLocation;
+    private String commandLineType;
 
     private AppInterfaceResource appInterfaceResource;
 
@@ -287,6 +288,7 @@ public class ApplicationOutputResource extends AbstractResource {
             applicationOutput.setOutputKey(outputKey);
             applicationOutput.setOutputVal(outputVal);
             applicationOutput.setValidityType(validityType);
+            applicationOutput.setCommandLineType(commandLineType);
             applicationOutput.setDataMovement(dataMovement);
             applicationOutput.setDataNameLocation(dataNameLocation);
             em.merge(applicationOutput);
@@ -398,5 +400,13 @@ public class ApplicationOutputResource extends AbstractResource {
 
     public void setDataNameLocation(String dataNameLocation) {
         this.dataNameLocation = dataNameLocation;
+    }
+
+    public String getCommandLineType() {
+        return commandLineType;
+    }
+
+    public void setCommandLineType(String commandLineType) {
+        this.commandLineType = commandLineType;
     }
 }

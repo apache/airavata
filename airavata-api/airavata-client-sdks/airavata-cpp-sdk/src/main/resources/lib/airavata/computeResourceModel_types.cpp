@@ -298,8 +298,8 @@ void swap(ResourceJobManager &a, ResourceJobManager &b) {
   swap(a.__isset, b.__isset);
 }
 
-const char* BatchQueue::ascii_fingerprint = "DA59FF8EE453E1822971C1CE1471EEA1";
-const uint8_t BatchQueue::binary_fingerprint[16] = {0xDA,0x59,0xFF,0x8E,0xE4,0x53,0xE1,0x82,0x29,0x71,0xC1,0xCE,0x14,0x71,0xEE,0xA1};
+const char* BatchQueue::ascii_fingerprint = "ED0A78585E8BA402743AC1D5D510EF9E";
+const uint8_t BatchQueue::binary_fingerprint[16] = {0xED,0x0A,0x78,0x58,0x5E,0x8B,0xA4,0x02,0x74,0x3A,0xC1,0xD5,0xD5,0x10,0xEF,0x9E};
 
 uint32_t BatchQueue::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -370,6 +370,14 @@ uint32_t BatchQueue::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 7:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->maxMemory);
+          this->__isset.maxMemory = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -417,6 +425,11 @@ uint32_t BatchQueue::write(::apache::thrift::protocol::TProtocol* oprot) const {
     xfer += oprot->writeI32(this->maxJobsInQueue);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.maxMemory) {
+    xfer += oprot->writeFieldBegin("maxMemory", ::apache::thrift::protocol::T_I32, 7);
+    xfer += oprot->writeI32(this->maxMemory);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -430,6 +443,7 @@ void swap(BatchQueue &a, BatchQueue &b) {
   swap(a.maxNodes, b.maxNodes);
   swap(a.maxProcessors, b.maxProcessors);
   swap(a.maxJobsInQueue, b.maxJobsInQueue);
+  swap(a.maxMemory, b.maxMemory);
   swap(a.__isset, b.__isset);
 }
 
@@ -1606,8 +1620,8 @@ void swap(DataMovementInterface &a, DataMovementInterface &b) {
   swap(a.priorityOrder, b.priorityOrder);
 }
 
-const char* ComputeResourceDescription::ascii_fingerprint = "CA924FC1A07D7956848B049D2CACF3EC";
-const uint8_t ComputeResourceDescription::binary_fingerprint[16] = {0xCA,0x92,0x4F,0xC1,0xA0,0x7D,0x79,0x56,0x84,0x8B,0x04,0x9D,0x2C,0xAC,0xF3,0xEC};
+const char* ComputeResourceDescription::ascii_fingerprint = "3CD4212965217787DCD6081F1744069F";
+const uint8_t ComputeResourceDescription::binary_fingerprint[16] = {0x3C,0xD4,0x21,0x29,0x65,0x21,0x77,0x87,0xDC,0xD6,0x08,0x1F,0x17,0x44,0x06,0x9F};
 
 uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -1780,6 +1794,14 @@ uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol*
           xfer += iprot->skip(ftype);
         }
         break;
+      case 10:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->maxMemoryPerNode);
+          this->__isset.maxMemoryPerNode = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -1892,6 +1914,11 @@ uint32_t ComputeResourceDescription::write(::apache::thrift::protocol::TProtocol
     }
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.maxMemoryPerNode) {
+    xfer += oprot->writeFieldBegin("maxMemoryPerNode", ::apache::thrift::protocol::T_I32, 10);
+    xfer += oprot->writeI32(this->maxMemoryPerNode);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -1908,6 +1935,7 @@ void swap(ComputeResourceDescription &a, ComputeResourceDescription &b) {
   swap(a.fileSystems, b.fileSystems);
   swap(a.jobSubmissionInterfaces, b.jobSubmissionInterfaces);
   swap(a.dataMovementInterfaces, b.dataMovementInterfaces);
+  swap(a.maxMemoryPerNode, b.maxMemoryPerNode);
   swap(a.__isset, b.__isset);
 }
 

@@ -45,6 +45,8 @@ public class ApplicationOutput implements Serializable {
 
     @Column(name = "VALIDITY_TYPE")
     private String validityType;
+    @Column(name="COMMANDLINE_TYPE")
+    private String commandLineType;
     @Column(name = "DATA_MOVEMENT")
     private boolean dataMovement;
     @Column(name = "DATA_NAME_LOCATION")
@@ -53,6 +55,14 @@ public class ApplicationOutput implements Serializable {
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "TASK_ID")
     private TaskDetail task;
+
+    public String getCommandLineType() {
+        return commandLineType;
+    }
+
+    public void setCommandLineType(String commandLineType) {
+        this.commandLineType = commandLineType;
+    }
 
     public String getTaskId() {
         return taskId;

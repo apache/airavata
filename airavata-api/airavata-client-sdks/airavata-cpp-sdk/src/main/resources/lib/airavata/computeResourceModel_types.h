@@ -209,21 +209,22 @@ class ResourceJobManager {
 void swap(ResourceJobManager &a, ResourceJobManager &b);
 
 typedef struct _BatchQueue__isset {
-  _BatchQueue__isset() : queueDescription(false), maxRunTime(false), maxNodes(false), maxProcessors(false), maxJobsInQueue(false) {}
+  _BatchQueue__isset() : queueDescription(false), maxRunTime(false), maxNodes(false), maxProcessors(false), maxJobsInQueue(false), maxMemory(false) {}
   bool queueDescription;
   bool maxRunTime;
   bool maxNodes;
   bool maxProcessors;
   bool maxJobsInQueue;
+  bool maxMemory;
 } _BatchQueue__isset;
 
 class BatchQueue {
  public:
 
-  static const char* ascii_fingerprint; // = "DA59FF8EE453E1822971C1CE1471EEA1";
-  static const uint8_t binary_fingerprint[16]; // = {0xDA,0x59,0xFF,0x8E,0xE4,0x53,0xE1,0x82,0x29,0x71,0xC1,0xCE,0x14,0x71,0xEE,0xA1};
+  static const char* ascii_fingerprint; // = "ED0A78585E8BA402743AC1D5D510EF9E";
+  static const uint8_t binary_fingerprint[16]; // = {0xED,0x0A,0x78,0x58,0x5E,0x8B,0xA4,0x02,0x74,0x3A,0xC1,0xD5,0xD5,0x10,0xEF,0x9E};
 
-  BatchQueue() : queueName(), queueDescription(), maxRunTime(0), maxNodes(0), maxProcessors(0), maxJobsInQueue(0) {
+  BatchQueue() : queueName(), queueDescription(), maxRunTime(0), maxNodes(0), maxProcessors(0), maxJobsInQueue(0), maxMemory(0) {
   }
 
   virtual ~BatchQueue() throw() {}
@@ -234,6 +235,7 @@ class BatchQueue {
   int32_t maxNodes;
   int32_t maxProcessors;
   int32_t maxJobsInQueue;
+  int32_t maxMemory;
 
   _BatchQueue__isset __isset;
 
@@ -266,6 +268,11 @@ class BatchQueue {
     __isset.maxJobsInQueue = true;
   }
 
+  void __set_maxMemory(const int32_t val) {
+    maxMemory = val;
+    __isset.maxMemory = true;
+  }
+
   bool operator == (const BatchQueue & rhs) const
   {
     if (!(queueName == rhs.queueName))
@@ -289,6 +296,10 @@ class BatchQueue {
     if (__isset.maxJobsInQueue != rhs.__isset.maxJobsInQueue)
       return false;
     else if (__isset.maxJobsInQueue && !(maxJobsInQueue == rhs.maxJobsInQueue))
+      return false;
+    if (__isset.maxMemory != rhs.__isset.maxMemory)
+      return false;
+    else if (__isset.maxMemory && !(maxMemory == rhs.maxMemory))
       return false;
     return true;
   }
@@ -934,7 +945,7 @@ class DataMovementInterface {
 void swap(DataMovementInterface &a, DataMovementInterface &b);
 
 typedef struct _ComputeResourceDescription__isset {
-  _ComputeResourceDescription__isset() : hostAliases(false), ipAddresses(false), resourceDescription(false), batchQueues(false), fileSystems(false), jobSubmissionInterfaces(false), dataMovementInterfaces(false) {}
+  _ComputeResourceDescription__isset() : hostAliases(false), ipAddresses(false), resourceDescription(false), batchQueues(false), fileSystems(false), jobSubmissionInterfaces(false), dataMovementInterfaces(false), maxMemoryPerNode(false) {}
   bool hostAliases;
   bool ipAddresses;
   bool resourceDescription;
@@ -942,15 +953,16 @@ typedef struct _ComputeResourceDescription__isset {
   bool fileSystems;
   bool jobSubmissionInterfaces;
   bool dataMovementInterfaces;
+  bool maxMemoryPerNode;
 } _ComputeResourceDescription__isset;
 
 class ComputeResourceDescription {
  public:
 
-  static const char* ascii_fingerprint; // = "CA924FC1A07D7956848B049D2CACF3EC";
-  static const uint8_t binary_fingerprint[16]; // = {0xCA,0x92,0x4F,0xC1,0xA0,0x7D,0x79,0x56,0x84,0x8B,0x04,0x9D,0x2C,0xAC,0xF3,0xEC};
+  static const char* ascii_fingerprint; // = "3CD4212965217787DCD6081F1744069F";
+  static const uint8_t binary_fingerprint[16]; // = {0x3C,0xD4,0x21,0x29,0x65,0x21,0x77,0x87,0xDC,0xD6,0x08,0x1F,0x17,0x44,0x06,0x9F};
 
-  ComputeResourceDescription() : computeResourceId("DO_NOT_SET_AT_CLIENTS"), hostName(), resourceDescription() {
+  ComputeResourceDescription() : computeResourceId("DO_NOT_SET_AT_CLIENTS"), hostName(), resourceDescription(), maxMemoryPerNode(0) {
   }
 
   virtual ~ComputeResourceDescription() throw() {}
@@ -964,6 +976,7 @@ class ComputeResourceDescription {
   std::map<FileSystems::type, std::string>  fileSystems;
   std::vector<JobSubmissionInterface>  jobSubmissionInterfaces;
   std::vector<DataMovementInterface>  dataMovementInterfaces;
+  int32_t maxMemoryPerNode;
 
   _ComputeResourceDescription__isset __isset;
 
@@ -1010,6 +1023,11 @@ class ComputeResourceDescription {
     __isset.dataMovementInterfaces = true;
   }
 
+  void __set_maxMemoryPerNode(const int32_t val) {
+    maxMemoryPerNode = val;
+    __isset.maxMemoryPerNode = true;
+  }
+
   bool operator == (const ComputeResourceDescription & rhs) const
   {
     if (!(computeResourceId == rhs.computeResourceId))
@@ -1043,6 +1061,10 @@ class ComputeResourceDescription {
     if (__isset.dataMovementInterfaces != rhs.__isset.dataMovementInterfaces)
       return false;
     else if (__isset.dataMovementInterfaces && !(dataMovementInterfaces == rhs.dataMovementInterfaces))
+      return false;
+    if (__isset.maxMemoryPerNode != rhs.__isset.maxMemoryPerNode)
+      return false;
+    else if (__isset.maxMemoryPerNode && !(maxMemoryPerNode == rhs.maxMemoryPerNode))
       return false;
     return true;
   }

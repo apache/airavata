@@ -130,8 +130,9 @@ struct OutputDataObjectType {
     2: optional string value,
     3: optional DataType type,
     4: optional ValidityType validityType,
-    5: optional bool dataMovement,
-    6: optional string dataNameLocation
+    5: optional CommandLineType addedToCommandLine,
+    6: optional bool dataMovement,
+    7: optional string dataNameLocation
 }
 
 /**
