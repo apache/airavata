@@ -57,7 +57,7 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_753d7cf6-f79a-4f7f-8ada-5d707e90c383";
+    private static String echoAppId = "Echo_0018dc21-9359-4063-9672-6ad15a24294d";
     private static String mpiAppId = "HelloMPI_da45305f-5d90-4a18-8716-8dd54c3b2376";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
     private static String amberAppId = "Amber_49b16f6f-93ab-4885-9971-6ab2ab5eb3d3";
@@ -82,7 +82,7 @@ public class CreateLaunchExperiment {
     public static void main(String[] args) throws Exception {
                 airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
                 System.out.println("API version is " + airavataClient.getAPIVersion());
-//              registerApplications(); // run this only the first time
+//                registerApplications(); // run this only the first time
                 createAndLaunchExp();
     }
     
@@ -94,8 +94,8 @@ public class CreateLaunchExperiment {
         try {
             for (int i = 0; i < 1; i++) {
 //                final String expId = createExperimentForSSHHost(airavata);
-//                final String expId = createEchoExperimentForFSD(airavataClient);
-                final String expId = createMPIExperimentForFSD(airavataClient);
+                final String expId = createEchoExperimentForFSD(airavataClient);
+//                final String expId = createMPIExperimentForFSD(airavataClient);
 //                final String expId = createEchoExperimentForStampede(airavataClient);
 //                final String expId = createEchoExperimentForTrestles(airavataClient);
 //                final String expId = createExperimentEchoForLocalHost(airavataClient);
