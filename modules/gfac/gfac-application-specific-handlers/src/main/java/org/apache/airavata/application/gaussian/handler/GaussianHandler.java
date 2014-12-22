@@ -26,6 +26,8 @@ import org.apache.airavata.gfac.core.handler.AbstractRecoverableHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
+import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +77,10 @@ public class GaussianHandler extends AbstractRecoverableHandler {
                         if (inputConfig.getKey().equals(PROC_SHARED)) {
                             taskScheduling.setTotalCPUCount(Integer.parseInt(inputConfig.getValue()));
                         } else if (inputConfig.getKey().equals(MEM)) {
-                            taskScheduling.setTotalPhysicalMemory(Integer.parseInt(inputConfig.getValue()));
+                            int userRequestedMem = Integer.parseInt(inputConfig.getValue());
+                            int additionalMem = (int) (userRequestedMem * 0.2);
+                            // TODO check (userRequestedMem + additionalMem)  > maxNode or Queue allowed Mem
+                            taskScheduling.setTotalPhysicalMemory(userRequestedMem + additionalMem);
                         } else if (inputConfig.getKey().equals(PROC)) {
                             taskScheduling.setTotalCPUCount(Integer.parseInt(inputConfig.getValue()));
                         } else {
@@ -83,18 +88,18 @@ public class GaussianHandler extends AbstractRecoverableHandler {
                         }
                         logger.info("$$$$$$$$ " + inputConfig.getKey() + " --> " + inputConfig.getValue() + " $$$$$$$$$$$");
                     }
+                    registry.update(RegistryModelType.TASK_DETAIL, jobExecutionContext.getTaskData(), jobExecutionContext.getTaskData().getTaskID());
                 } catch (IOException e) {
-                    System.out.println("IO exception occurs $$$$$$$$$$$$$$$$$$$$$$$$$");
-                    e.printStackTrace();
-                    // TODO handle this
+                    throw new GFacHandlerException("Error while reading main input file ", e);
+                } catch (RegistryException e) {
+                    throw new GFacHandlerException("Error while updating task details", e);
                 }
             } else {
-//                System.out.println("main input file is not exists $$$$$$$$$$$$$$$$$$$$$$$$$$$");
-                // TODO - handle this scenario
+                throw new GFacHandlerException("Main input file doesn't exists " + mainInputFilePath);
             }
+
         } else {
-//            System.out.println("Main input file path is null $$$$$$$$$$$$$$$$$$$$");
-            // TODO - handle this scenario
+            throw new GFacHandlerException("Main input file path shouldn't be null");
         }
 
     }

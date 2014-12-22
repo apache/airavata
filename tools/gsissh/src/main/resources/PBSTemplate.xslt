@@ -49,6 +49,11 @@
     </xsl:when>
     </xsl:choose>
     <xsl:choose>
+    <xsl:when test="ns:usedMem">
+#PBS -l mem=<xsl:value-of select="ns:usedMem"/>
+    </xsl:when>
+    </xsl:choose>
+    <xsl:choose>
     <xsl:when test="(ns:nodes) and (ns:processesPerNode)">
 #PBS -l nodes=<xsl:value-of select="ns:nodes"/>:ppn=<xsl:value-of select="ns:processesPerNode"/>
 <xsl:text>&#xa;</xsl:text>

@@ -261,6 +261,10 @@ public class GFACGSISSHUtils {
             if (taskScheduling.getWallTimeLimit() > 0) {
                 jobDescriptor.setMaxWallTime(String.valueOf(taskScheduling.getWallTimeLimit()));
             }
+
+            if (taskScheduling.getTotalPhysicalMemory() > 0) {
+                jobDescriptor.setUsedMemory(taskScheduling.getTotalPhysicalMemory() + "");
+            }
         } else {
             logger.error("Task scheduling cannot be null at this point..");
         }

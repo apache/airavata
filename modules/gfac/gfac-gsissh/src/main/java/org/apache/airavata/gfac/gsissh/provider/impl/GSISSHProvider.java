@@ -106,7 +106,7 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
             log.info(jobDescriptor.toXML());
             data.append("jobDesc=").append(jobDescriptor.toXML());
             jobDetails.setJobDescription(jobDescriptor.toXML());
-
+            cluster
             String jobID = cluster.submitBatchJob(jobDescriptor);
             jobExecutionContext.setJobDetails(jobDetails);
             if (jobID == null) {
