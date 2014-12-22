@@ -41,6 +41,7 @@ public class AppCatalogThriftConversion {
         resource.setHostName(description.getHostName());
         resource.setResourceDescription(description.getResourceDescription());
         resource.setResourceId(description.getComputeResourceId());
+        resource.setMaxMemoryPerNode(description.getMaxMemoryPerNode());
         return resource;
     }
 
@@ -49,6 +50,7 @@ public class AppCatalogThriftConversion {
         description.setComputeResourceId(resource.getResourceId());
         description.setHostName(resource.getHostName());
         description.setResourceDescription(resource.getResourceDescription());
+        description.setMaxMemoryPerNode(resource.getMaxMemoryPerNode());
         HostAliasResource aliasResource = new HostAliasResource();
         List<Resource> resources = aliasResource.get(AbstractResource.HostAliasConstants.RESOURCE_ID, resource.getResourceId());
         if (resources != null && !resources.isEmpty()){
@@ -176,6 +178,7 @@ public class AppCatalogThriftConversion {
     	batchQueue.setMaxNodes(resource.getMaxNodes());
     	batchQueue.setMaxProcessors(resource.getMaxProcessors());
     	batchQueue.setMaxRunTime(resource.getMaxRuntime());
+    	batchQueue.setMaxMemory(resource.getMaxMemory());
     	batchQueue.setQueueDescription(resource.getQueueDescription());
     	batchQueue.setQueueName(resource.getQueueName());
         return batchQueue;
@@ -189,6 +192,7 @@ public class AppCatalogThriftConversion {
     	batchQueue.setMaxRuntime(resource.getMaxRunTime());
     	batchQueue.setQueueDescription(resource.getQueueDescription());
     	batchQueue.setQueueName(resource.getQueueName());
+    	batchQueue.setMaxMemory(resource.getMaxMemory());
         return batchQueue;
     }
     

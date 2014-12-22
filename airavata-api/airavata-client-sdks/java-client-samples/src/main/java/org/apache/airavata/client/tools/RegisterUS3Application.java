@@ -154,13 +154,13 @@ public class RegisterUS3Application {
             appModules.add(ultrascanModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("input", null,
-                    DataType.URI, null, 1, false, "input tar file", null);
+                    DataType.URI, null, 1,null, null, false, "input tar file", null);
            
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("output",
-                    "", DataType.URI);
+                    "", DataType.URI, null, null);
 
 //            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("stdout",
 //                    "", DataType.URI);
@@ -186,17 +186,17 @@ public class RegisterUS3Application {
 
 			// Register Stampede
 			String ultascanStamplede = airavataClient.registerApplicationDeployment(RegisterSampleApplicationsUtils.createApplicationDeployment(ultrascanModuleId,
-					stampedeResourceId, "/home1/01623/us3/bin/us_mpi_analysis", ApplicationParallelismType.MPI, "ultrascan application"));
+					stampedeResourceId, "/home1/01623/us3/bin/us_mpi_analysis", ApplicationParallelismType.MPI, "ultrascan application", null));
 			System.out.println("Ultrascan on stampede deployment Id " + ultascanStamplede);
 			
 			String ultascanTrestles = airavataClient.registerApplicationDeployment(RegisterSampleApplicationsUtils.createApplicationDeployment(ultrascanModuleId,
-					trestlesResourceId, "/home/us3/trestles/bin/us_mpi_analysis", ApplicationParallelismType.MPI, "ultrascan application"));
+					trestlesResourceId, "/home/us3/trestles/bin/us_mpi_analysis", ApplicationParallelismType.MPI, "ultrascan application", null));
 			System.out.println("Ultrascan on trestles deployment Id " + ultascanTrestles);
 			String ultascanLonestar = airavataClient.registerApplicationDeployment(RegisterSampleApplicationsUtils.createApplicationDeployment(ultrascanModuleId,
-					lonestarResourceId, "/home1/01623/us3/bin/us_mpi_analysis", ApplicationParallelismType.MPI, "ultrascan application"));
+					lonestarResourceId, "/home1/01623/us3/bin/us_mpi_analysis", ApplicationParallelismType.MPI, "ultrascan application", null));
 			System.out.println("Ultrascan on lonestar deployment Id " + ultascanLonestar);
 			String ultascanAlamo = airavataClient.registerApplicationDeployment(RegisterSampleApplicationsUtils.createApplicationDeployment(ultrascanModuleId,
-					alamoResourceId, "/home/us3/bin/us_mpi_analysis.sh", ApplicationParallelismType.MPI, "ultrascan application"));
+					alamoResourceId, "/home/us3/bin/us_mpi_analysis.sh", ApplicationParallelismType.MPI, "ultrascan application", null));
 			System.out.println("Ultrascan on alamo deployment Id " + ultascanAlamo);
 		} catch (Exception e) {
 			e.printStackTrace();

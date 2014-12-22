@@ -125,25 +125,25 @@ public class RegisterSampleData {
         //Register Echo
         String echoAppDeployId = airavataClient.registerApplicationDeployment(
                 RegisterSampleApplicationsUtils.createApplicationDeployment(echoModuleId, localhostId,
-                        sampleScriptDir + "/echo.sh", ApplicationParallelismType.SERIAL, "Echo application description"));
+                        sampleScriptDir + "/echo.sh", ApplicationParallelismType.SERIAL, "Echo application description", null));
         System.out.println("Successfully registered Echo application on localhost, application Id = " + echoAppDeployId);
 
         //Register Add application
         String addAppDeployId = airavataClient.registerApplicationDeployment(
                 RegisterSampleApplicationsUtils.createApplicationDeployment(addModuleId, localhostId,
-                        sampleScriptDir + "/add.sh", ApplicationParallelismType.SERIAL, "Add application description"));
+                        sampleScriptDir + "/add.sh", ApplicationParallelismType.SERIAL, "Add application description", null));
         System.out.println("Successfully registered Add application on localhost, application Id = " + addAppDeployId);
 
         //Register Multiply application
         String multiplyAppDeployId = airavataClient.registerApplicationDeployment(
                 RegisterSampleApplicationsUtils.createApplicationDeployment(multiplyModuleId, localhostId,
-                        sampleScriptDir + "/multiply.sh", ApplicationParallelismType.SERIAL, "Multiply application description"));
+                        sampleScriptDir + "/multiply.sh", ApplicationParallelismType.SERIAL, "Multiply application description", null));
         System.out.println("Successfully registered Multiply application on localhost, application Id = " + multiplyAppDeployId);
 
         //Register Subtract application
         String subtractAppDeployId = airavataClient.registerApplicationDeployment(
                 RegisterSampleApplicationsUtils.createApplicationDeployment(subtractModuleId, localhostId,
-                        sampleScriptDir + "/subtract.sh", ApplicationParallelismType.SERIAL, "Subtract application description "));
+                        sampleScriptDir + "/subtract.sh", ApplicationParallelismType.SERIAL, "Subtract application description ", null));
         System.out.println("Successfully registered Subtract application on localhost, application Id = " + subtractAppDeployId);
     }
 
@@ -176,13 +176,13 @@ public class RegisterSampleData {
             appModules.add(echoModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Input_to_Echo", "Hello World",
-                    DataType.STRING, null, 1, false, "A test string to Echo", null);
+                    DataType.STRING, null, 1, null, null, false, "A test string to Echo", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Output",
-                    "", DataType.STRING);
+                    "", DataType.STRING, null, null);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -205,16 +205,16 @@ public class RegisterSampleData {
             appModules.add(addModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("x", "2",
-                    DataType.STRING, null, 1, false, "Add operation input_1", null);
+                    DataType.STRING, null, 1, null, null, false, "Add operation input_1", null);
             InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("y", "3",
-                    DataType.STRING, null, 2, false, "Add operation input_2", null);
+                    DataType.STRING, null, 2, null, null, false, "Add operation input_2", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
             applicationInputs.add(input2);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Result",
-                    "0", DataType.STRING);
+                    "0", DataType.STRING, null, null);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -237,16 +237,16 @@ public class RegisterSampleData {
             appModules.add(multiplyModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("x", "4",
-                    DataType.STRING, null, 1, false, "Multiply operation input_1", null);
+                    DataType.STRING, null, 1,null, null, false, "Multiply operation input_1", null);
             InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("y", "5",
-                    DataType.STRING, null, 2, false, "Multiply operation input_2", null);
+                    DataType.STRING, null, 2, null, null, false, "Multiply operation input_2", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
             applicationInputs.add(input2);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Result",
-                    "0", DataType.STRING);
+                    "0", DataType.STRING,null, null);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -269,16 +269,16 @@ public class RegisterSampleData {
             appModules.add(subtractModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("x", "6",
-                    DataType.STRING, null, 1, false, "Subtract operation input_1", null);
+                    DataType.STRING, null, 1,null, null, false, "Subtract operation input_1", null);
             InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("y", "7",
-                    DataType.STRING, null, 2, false, "Subtract operation input_2", null);
+                    DataType.STRING, null, 2,null, null, false, "Subtract operation input_2", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
             applicationInputs.add(input2);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Result",
-                    "0", DataType.STRING);
+                    "0", DataType.STRING, null, null);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
