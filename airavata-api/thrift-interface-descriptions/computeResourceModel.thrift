@@ -144,7 +144,8 @@ struct BatchQueue {
     3: optional i32 maxRunTime,
     4: optional i32 maxNodes,
     5: optional i32 maxProcessors,
-    6: optional i32 maxJobsInQueue
+    6: optional i32 maxJobsInQueue,
+    7: optional i32 maxMemory
 }
 
 /**
@@ -434,5 +435,6 @@ struct ComputeResourceDescription {
     6: optional list<BatchQueue> batchQueues,
     7: optional map<FileSystems, string> fileSystems,
     8: optional list<JobSubmissionInterface> jobSubmissionInterfaces,
-    9: optional list<DataMovementInterface> dataMovementInterfaces
+    9: optional list<DataMovementInterface> dataMovementInterfaces,
+    10: optional i32 maxMemoryPerNode
 }

@@ -340,6 +340,7 @@ class OutputDataObjectType {
   public $value = null;
   public $type = null;
   public $validityType = null;
+  public $addedToCommandLine = null;
   public $dataMovement = null;
   public $dataNameLocation = null;
 
@@ -363,10 +364,14 @@ class OutputDataObjectType {
           'type' => TType::I32,
           ),
         5 => array(
+          'var' => 'addedToCommandLine',
+          'type' => TType::I32,
+          ),
+        6 => array(
           'var' => 'dataMovement',
           'type' => TType::BOOL,
           ),
-        6 => array(
+        7 => array(
           'var' => 'dataNameLocation',
           'type' => TType::STRING,
           ),
@@ -384,6 +389,9 @@ class OutputDataObjectType {
       }
       if (isset($vals['validityType'])) {
         $this->validityType = $vals['validityType'];
+      }
+      if (isset($vals['addedToCommandLine'])) {
+        $this->addedToCommandLine = $vals['addedToCommandLine'];
       }
       if (isset($vals['dataMovement'])) {
         $this->dataMovement = $vals['dataMovement'];
@@ -442,13 +450,20 @@ class OutputDataObjectType {
           }
           break;
         case 5:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->addedToCommandLine);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 6:
           if ($ftype == TType::BOOL) {
             $xfer += $input->readBool($this->dataMovement);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 6:
+        case 7:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->dataNameLocation);
           } else {
@@ -488,13 +503,18 @@ class OutputDataObjectType {
       $xfer += $output->writeI32($this->validityType);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->addedToCommandLine !== null) {
+      $xfer += $output->writeFieldBegin('addedToCommandLine', TType::I32, 5);
+      $xfer += $output->writeI32($this->addedToCommandLine);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->dataMovement !== null) {
-      $xfer += $output->writeFieldBegin('dataMovement', TType::BOOL, 5);
+      $xfer += $output->writeFieldBegin('dataMovement', TType::BOOL, 6);
       $xfer += $output->writeBool($this->dataMovement);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->dataNameLocation !== null) {
-      $xfer += $output->writeFieldBegin('dataNameLocation', TType::STRING, 6);
+      $xfer += $output->writeFieldBegin('dataNameLocation', TType::STRING, 7);
       $xfer += $output->writeString($this->dataNameLocation);
       $xfer += $output->writeFieldEnd();
     }

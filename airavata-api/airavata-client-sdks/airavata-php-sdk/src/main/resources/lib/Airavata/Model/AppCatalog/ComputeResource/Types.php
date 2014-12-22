@@ -324,6 +324,7 @@ class BatchQueue {
   public $maxNodes = null;
   public $maxProcessors = null;
   public $maxJobsInQueue = null;
+  public $maxMemory = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -352,6 +353,10 @@ class BatchQueue {
           'var' => 'maxJobsInQueue',
           'type' => TType::I32,
           ),
+        7 => array(
+          'var' => 'maxMemory',
+          'type' => TType::I32,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -372,6 +377,9 @@ class BatchQueue {
       }
       if (isset($vals['maxJobsInQueue'])) {
         $this->maxJobsInQueue = $vals['maxJobsInQueue'];
+      }
+      if (isset($vals['maxMemory'])) {
+        $this->maxMemory = $vals['maxMemory'];
       }
     }
   }
@@ -437,6 +445,13 @@ class BatchQueue {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 7:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->maxMemory);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -478,6 +493,11 @@ class BatchQueue {
     if ($this->maxJobsInQueue !== null) {
       $xfer += $output->writeFieldBegin('maxJobsInQueue', TType::I32, 6);
       $xfer += $output->writeI32($this->maxJobsInQueue);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->maxMemory !== null) {
+      $xfer += $output->writeFieldBegin('maxMemory', TType::I32, 7);
+      $xfer += $output->writeI32($this->maxMemory);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -1873,6 +1893,7 @@ class ComputeResourceDescription {
   public $fileSystems = null;
   public $jobSubmissionInterfaces = null;
   public $dataMovementInterfaces = null;
+  public $maxMemoryPerNode = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -1944,6 +1965,10 @@ class ComputeResourceDescription {
             'class' => '\Airavata\Model\AppCatalog\ComputeResource\DataMovementInterface',
             ),
           ),
+        10 => array(
+          'var' => 'maxMemoryPerNode',
+          'type' => TType::I32,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -1973,6 +1998,9 @@ class ComputeResourceDescription {
       }
       if (isset($vals['dataMovementInterfaces'])) {
         $this->dataMovementInterfaces = $vals['dataMovementInterfaces'];
+      }
+      if (isset($vals['maxMemoryPerNode'])) {
+        $this->maxMemoryPerNode = $vals['maxMemoryPerNode'];
       }
     }
   }
@@ -2125,6 +2153,13 @@ class ComputeResourceDescription {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 10:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->maxMemoryPerNode);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -2254,6 +2289,11 @@ class ComputeResourceDescription {
         }
         $output->writeListEnd();
       }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->maxMemoryPerNode !== null) {
+      $xfer += $output->writeFieldBegin('maxMemoryPerNode', TType::I32, 10);
+      $xfer += $output->writeI32($this->maxMemoryPerNode);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

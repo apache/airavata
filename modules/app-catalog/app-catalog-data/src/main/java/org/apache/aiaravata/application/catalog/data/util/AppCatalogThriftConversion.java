@@ -583,6 +583,9 @@ public class AppCatalogThriftConversion {
         if (output.getValidityType() != null){
             outputDataObjectType.setValidityType(ValidityType.valueOf(output.getValidityType()));
         }
+        if (output.getCommandLineType() != null){
+            outputDataObjectType.setAddedToCommandLine(CommandLineType.valueOf(output.getCommandLineType()));
+        }
         outputDataObjectType.setDataMovement(output.isDataMovement());
         outputDataObjectType.setDataNameLocation(output.getDataNameLocation());
         return outputDataObjectType;

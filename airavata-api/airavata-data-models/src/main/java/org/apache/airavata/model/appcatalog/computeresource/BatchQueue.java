@@ -64,6 +64,7 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField MAX_NODES_FIELD_DESC = new org.apache.thrift.protocol.TField("maxNodes", org.apache.thrift.protocol.TType.I32, (short)4);
   private static final org.apache.thrift.protocol.TField MAX_PROCESSORS_FIELD_DESC = new org.apache.thrift.protocol.TField("maxProcessors", org.apache.thrift.protocol.TType.I32, (short)5);
   private static final org.apache.thrift.protocol.TField MAX_JOBS_IN_QUEUE_FIELD_DESC = new org.apache.thrift.protocol.TField("maxJobsInQueue", org.apache.thrift.protocol.TType.I32, (short)6);
+  private static final org.apache.thrift.protocol.TField MAX_MEMORY_FIELD_DESC = new org.apache.thrift.protocol.TField("maxMemory", org.apache.thrift.protocol.TType.I32, (short)7);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -77,6 +78,7 @@ import org.slf4j.LoggerFactory;
   private int maxNodes; // optional
   private int maxProcessors; // optional
   private int maxJobsInQueue; // optional
+  private int maxMemory; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -85,7 +87,8 @@ import org.slf4j.LoggerFactory;
     MAX_RUN_TIME((short)3, "maxRunTime"),
     MAX_NODES((short)4, "maxNodes"),
     MAX_PROCESSORS((short)5, "maxProcessors"),
-    MAX_JOBS_IN_QUEUE((short)6, "maxJobsInQueue");
+    MAX_JOBS_IN_QUEUE((short)6, "maxJobsInQueue"),
+    MAX_MEMORY((short)7, "maxMemory");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -112,6 +115,8 @@ import org.slf4j.LoggerFactory;
           return MAX_PROCESSORS;
         case 6: // MAX_JOBS_IN_QUEUE
           return MAX_JOBS_IN_QUEUE;
+        case 7: // MAX_MEMORY
+          return MAX_MEMORY;
         default:
           return null;
       }
@@ -156,8 +161,9 @@ import org.slf4j.LoggerFactory;
   private static final int __MAXNODES_ISSET_ID = 1;
   private static final int __MAXPROCESSORS_ISSET_ID = 2;
   private static final int __MAXJOBSINQUEUE_ISSET_ID = 3;
+  private static final int __MAXMEMORY_ISSET_ID = 4;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.QUEUE_DESCRIPTION,_Fields.MAX_RUN_TIME,_Fields.MAX_NODES,_Fields.MAX_PROCESSORS,_Fields.MAX_JOBS_IN_QUEUE};
+  private _Fields optionals[] = {_Fields.QUEUE_DESCRIPTION,_Fields.MAX_RUN_TIME,_Fields.MAX_NODES,_Fields.MAX_PROCESSORS,_Fields.MAX_JOBS_IN_QUEUE,_Fields.MAX_MEMORY};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -172,6 +178,8 @@ import org.slf4j.LoggerFactory;
     tmpMap.put(_Fields.MAX_PROCESSORS, new org.apache.thrift.meta_data.FieldMetaData("maxProcessors", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.MAX_JOBS_IN_QUEUE, new org.apache.thrift.meta_data.FieldMetaData("maxJobsInQueue", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.MAX_MEMORY, new org.apache.thrift.meta_data.FieldMetaData("maxMemory", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(BatchQueue.class, metaDataMap);
@@ -202,6 +210,7 @@ import org.slf4j.LoggerFactory;
     this.maxNodes = other.maxNodes;
     this.maxProcessors = other.maxProcessors;
     this.maxJobsInQueue = other.maxJobsInQueue;
+    this.maxMemory = other.maxMemory;
   }
 
   public BatchQueue deepCopy() {
@@ -220,6 +229,8 @@ import org.slf4j.LoggerFactory;
     this.maxProcessors = 0;
     setMaxJobsInQueueIsSet(false);
     this.maxJobsInQueue = 0;
+    setMaxMemoryIsSet(false);
+    this.maxMemory = 0;
   }
 
   public String getQueueName() {
@@ -356,6 +367,28 @@ import org.slf4j.LoggerFactory;
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __MAXJOBSINQUEUE_ISSET_ID, value);
   }
 
+  public int getMaxMemory() {
+    return this.maxMemory;
+  }
+
+  public void setMaxMemory(int maxMemory) {
+    this.maxMemory = maxMemory;
+    setMaxMemoryIsSet(true);
+  }
+
+  public void unsetMaxMemory() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __MAXMEMORY_ISSET_ID);
+  }
+
+  /** Returns true if field maxMemory is set (has been assigned a value) and false otherwise */
+  public boolean isSetMaxMemory() {
+    return EncodingUtils.testBit(__isset_bitfield, __MAXMEMORY_ISSET_ID);
+  }
+
+  public void setMaxMemoryIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __MAXMEMORY_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case QUEUE_NAME:
@@ -406,6 +439,14 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case MAX_MEMORY:
+      if (value == null) {
+        unsetMaxMemory();
+      } else {
+        setMaxMemory((Integer)value);
+      }
+      break;
+
     }
   }
 
@@ -428,6 +469,9 @@ import org.slf4j.LoggerFactory;
 
     case MAX_JOBS_IN_QUEUE:
       return Integer.valueOf(getMaxJobsInQueue());
+
+    case MAX_MEMORY:
+      return Integer.valueOf(getMaxMemory());
 
     }
     throw new IllegalStateException();
@@ -452,6 +496,8 @@ import org.slf4j.LoggerFactory;
       return isSetMaxProcessors();
     case MAX_JOBS_IN_QUEUE:
       return isSetMaxJobsInQueue();
+    case MAX_MEMORY:
+      return isSetMaxMemory();
     }
     throw new IllegalStateException();
   }
@@ -520,6 +566,15 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_maxJobsInQueue && that_present_maxJobsInQueue))
         return false;
       if (this.maxJobsInQueue != that.maxJobsInQueue)
+        return false;
+    }
+
+    boolean this_present_maxMemory = true && this.isSetMaxMemory();
+    boolean that_present_maxMemory = true && that.isSetMaxMemory();
+    if (this_present_maxMemory || that_present_maxMemory) {
+      if (!(this_present_maxMemory && that_present_maxMemory))
+        return false;
+      if (this.maxMemory != that.maxMemory)
         return false;
     }
 
@@ -599,6 +654,16 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetMaxMemory()).compareTo(other.isSetMaxMemory());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetMaxMemory()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.maxMemory, other.maxMemory);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -658,6 +723,12 @@ import org.slf4j.LoggerFactory;
       if (!first) sb.append(", ");
       sb.append("maxJobsInQueue:");
       sb.append(this.maxJobsInQueue);
+      first = false;
+    }
+    if (isSetMaxMemory()) {
+      if (!first) sb.append(", ");
+      sb.append("maxMemory:");
+      sb.append(this.maxMemory);
       first = false;
     }
     sb.append(")");
@@ -757,6 +828,14 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 7: // MAX_MEMORY
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.maxMemory = iprot.readI32();
+              struct.setMaxMemoryIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -802,6 +881,11 @@ import org.slf4j.LoggerFactory;
         oprot.writeI32(struct.maxJobsInQueue);
         oprot.writeFieldEnd();
       }
+      if (struct.isSetMaxMemory()) {
+        oprot.writeFieldBegin(MAX_MEMORY_FIELD_DESC);
+        oprot.writeI32(struct.maxMemory);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -836,7 +920,10 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetMaxJobsInQueue()) {
         optionals.set(4);
       }
-      oprot.writeBitSet(optionals, 5);
+      if (struct.isSetMaxMemory()) {
+        optionals.set(5);
+      }
+      oprot.writeBitSet(optionals, 6);
       if (struct.isSetQueueDescription()) {
         oprot.writeString(struct.queueDescription);
       }
@@ -852,6 +939,9 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetMaxJobsInQueue()) {
         oprot.writeI32(struct.maxJobsInQueue);
       }
+      if (struct.isSetMaxMemory()) {
+        oprot.writeI32(struct.maxMemory);
+      }
     }
 
     @Override
@@ -859,7 +949,7 @@ import org.slf4j.LoggerFactory;
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.queueName = iprot.readString();
       struct.setQueueNameIsSet(true);
-      BitSet incoming = iprot.readBitSet(5);
+      BitSet incoming = iprot.readBitSet(6);
       if (incoming.get(0)) {
         struct.queueDescription = iprot.readString();
         struct.setQueueDescriptionIsSet(true);
@@ -879,6 +969,10 @@ import org.slf4j.LoggerFactory;
       if (incoming.get(4)) {
         struct.maxJobsInQueue = iprot.readI32();
         struct.setMaxJobsInQueueIsSet(true);
+      }
+      if (incoming.get(5)) {
+        struct.maxMemory = iprot.readI32();
+        struct.setMaxMemoryIsSet(true);
       }
     }
   }

@@ -260,6 +260,9 @@ public class ThriftDataModelConversion {
                 if (expOutput.getValidityType() != null){
                     dataObjectType.setValidityType(ValidityType.valueOf(expOutput.getValidityType()));
                 }
+                if (expOutput.getCommandLineType() != null){
+                    dataObjectType.setAddedToCommandLine(CommandLineType.valueOf(expOutput.getCommandLineType()));
+                }
                 dataObjectType.setDataMovement(expOutput.isDataMovement());
                 dataObjectType.setDataNameLocation(expOutput.getDataNameLocation());
                 return dataObjectType;
@@ -273,6 +276,9 @@ public class ThriftDataModelConversion {
                 if (nodeOutputResource.getValidityType() != null){
                     dataObjectType.setValidityType(ValidityType.valueOf(nodeOutputResource.getValidityType()));
                 }
+                if (nodeOutputResource.getCommandLineType() != null){
+                    dataObjectType.setAddedToCommandLine(CommandLineType.valueOf(nodeOutputResource.getCommandLineType()));
+                }
                 dataObjectType.setDataMovement(nodeOutputResource.isDataMovement());
                 dataObjectType.setDataNameLocation(nodeOutputResource.getDataNameLocation());
                 return dataObjectType;
@@ -285,6 +291,9 @@ public class ThriftDataModelConversion {
                 }
                 if (outputResource.getValidityType() != null){
                     dataObjectType.setValidityType(ValidityType.valueOf(outputResource.getValidityType()));
+                }
+                if (outputResource.getCommandLineType() != null){
+                    dataObjectType.setAddedToCommandLine(CommandLineType.valueOf(outputResource.getCommandLineType()));
                 }
                 dataObjectType.setDataMovement(outputResource.isDataMovement());
                 dataObjectType.setDataNameLocation(outputResource.getDataNameLocation());

@@ -45,6 +45,15 @@ public class NodeOutputResource extends AbstractResource {
     private String validityType;
     private boolean dataMovement;
     private String dataNameLocation;
+    private String commandLineType;
+
+    public String getCommandLineType() {
+        return commandLineType;
+    }
+
+    public void setCommandLineType(String commandLineType) {
+        this.commandLineType = commandLineType;
+    }
 
     public String getValidityType() {
         return validityType;
@@ -144,6 +153,7 @@ public class NodeOutputResource extends AbstractResource {
             nodeOutput.setDataType(dataType);
             nodeOutput.setValue(value);
             nodeOutput.setValidityType(validityType);
+            nodeOutput.setCommandLineType(commandLineType);
             nodeOutput.setDataMovement(dataMovement);
             nodeOutput.setDataNameLocation(dataNameLocation);
 
@@ -154,6 +164,7 @@ public class NodeOutputResource extends AbstractResource {
                 existingOutput.setDataType(dataType);
                 existingOutput.setValue(value);
                 existingOutput.setValidityType(validityType);
+                existingOutput.setCommandLineType(commandLineType);
                 existingOutput.setDataMovement(dataMovement);
                 existingOutput.setDataNameLocation(dataNameLocation);
                 nodeOutput = em.merge(existingOutput);

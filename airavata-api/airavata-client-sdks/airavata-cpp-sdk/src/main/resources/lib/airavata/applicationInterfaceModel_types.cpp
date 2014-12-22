@@ -286,8 +286,8 @@ void swap(InputDataObjectType &a, InputDataObjectType &b) {
   swap(a.__isset, b.__isset);
 }
 
-const char* OutputDataObjectType::ascii_fingerprint = "9B8C3AEA43A2028DF0CEF51E90706E3A";
-const uint8_t OutputDataObjectType::binary_fingerprint[16] = {0x9B,0x8C,0x3A,0xEA,0x43,0xA2,0x02,0x8D,0xF0,0xCE,0xF5,0x1E,0x90,0x70,0x6E,0x3A};
+const char* OutputDataObjectType::ascii_fingerprint = "C7730F2BFEF5236FD42B9C23095938DB";
+const uint8_t OutputDataObjectType::binary_fingerprint[16] = {0xC7,0x73,0x0F,0x2B,0xFE,0xF5,0x23,0x6F,0xD4,0x2B,0x9C,0x23,0x09,0x59,0x38,0xDB};
 
 uint32_t OutputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -347,6 +347,16 @@ uint32_t OutputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot
         }
         break;
       case 5:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast5;
+          xfer += iprot->readI32(ecast5);
+          this->addedToCommandLine = (CommandLineType::type)ecast5;
+          this->__isset.addedToCommandLine = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 6:
         if (ftype == ::apache::thrift::protocol::T_BOOL) {
           xfer += iprot->readBool(this->dataMovement);
           this->__isset.dataMovement = true;
@@ -354,7 +364,7 @@ uint32_t OutputDataObjectType::read(::apache::thrift::protocol::TProtocol* iprot
           xfer += iprot->skip(ftype);
         }
         break;
-      case 6:
+      case 7:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->dataNameLocation);
           this->__isset.dataNameLocation = true;
@@ -399,13 +409,18 @@ uint32_t OutputDataObjectType::write(::apache::thrift::protocol::TProtocol* opro
     xfer += oprot->writeI32((int32_t)this->validityType);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.addedToCommandLine) {
+    xfer += oprot->writeFieldBegin("addedToCommandLine", ::apache::thrift::protocol::T_I32, 5);
+    xfer += oprot->writeI32((int32_t)this->addedToCommandLine);
+    xfer += oprot->writeFieldEnd();
+  }
   if (this->__isset.dataMovement) {
-    xfer += oprot->writeFieldBegin("dataMovement", ::apache::thrift::protocol::T_BOOL, 5);
+    xfer += oprot->writeFieldBegin("dataMovement", ::apache::thrift::protocol::T_BOOL, 6);
     xfer += oprot->writeBool(this->dataMovement);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.dataNameLocation) {
-    xfer += oprot->writeFieldBegin("dataNameLocation", ::apache::thrift::protocol::T_STRING, 6);
+    xfer += oprot->writeFieldBegin("dataNameLocation", ::apache::thrift::protocol::T_STRING, 7);
     xfer += oprot->writeString(this->dataNameLocation);
     xfer += oprot->writeFieldEnd();
   }
@@ -420,13 +435,14 @@ void swap(OutputDataObjectType &a, OutputDataObjectType &b) {
   swap(a.value, b.value);
   swap(a.type, b.type);
   swap(a.validityType, b.validityType);
+  swap(a.addedToCommandLine, b.addedToCommandLine);
   swap(a.dataMovement, b.dataMovement);
   swap(a.dataNameLocation, b.dataNameLocation);
   swap(a.__isset, b.__isset);
 }
 
-const char* ApplicationInterfaceDescription::ascii_fingerprint = "CE1749A2DE50827990C3136E0CE4B60D";
-const uint8_t ApplicationInterfaceDescription::binary_fingerprint[16] = {0xCE,0x17,0x49,0xA2,0xDE,0x50,0x82,0x79,0x90,0xC3,0x13,0x6E,0x0C,0xE4,0xB6,0x0D};
+const char* ApplicationInterfaceDescription::ascii_fingerprint = "3BB1C87ED8E5FD354E5AE0409D72BE54";
+const uint8_t ApplicationInterfaceDescription::binary_fingerprint[16] = {0x3B,0xB1,0xC8,0x7E,0xD8,0xE5,0xFD,0x35,0x4E,0x5A,0xE0,0x40,0x9D,0x72,0xBE,0x54};
 
 uint32_t ApplicationInterfaceDescription::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -478,14 +494,14 @@ uint32_t ApplicationInterfaceDescription::read(::apache::thrift::protocol::TProt
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->applicationModules.clear();
-            uint32_t _size5;
-            ::apache::thrift::protocol::TType _etype8;
-            xfer += iprot->readListBegin(_etype8, _size5);
-            this->applicationModules.resize(_size5);
-            uint32_t _i9;
-            for (_i9 = 0; _i9 < _size5; ++_i9)
+            uint32_t _size6;
+            ::apache::thrift::protocol::TType _etype9;
+            xfer += iprot->readListBegin(_etype9, _size6);
+            this->applicationModules.resize(_size6);
+            uint32_t _i10;
+            for (_i10 = 0; _i10 < _size6; ++_i10)
             {
-              xfer += iprot->readString(this->applicationModules[_i9]);
+              xfer += iprot->readString(this->applicationModules[_i10]);
             }
             xfer += iprot->readListEnd();
           }
@@ -498,14 +514,14 @@ uint32_t ApplicationInterfaceDescription::read(::apache::thrift::protocol::TProt
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->applicationInputs.clear();
-            uint32_t _size10;
-            ::apache::thrift::protocol::TType _etype13;
-            xfer += iprot->readListBegin(_etype13, _size10);
-            this->applicationInputs.resize(_size10);
-            uint32_t _i14;
-            for (_i14 = 0; _i14 < _size10; ++_i14)
+            uint32_t _size11;
+            ::apache::thrift::protocol::TType _etype14;
+            xfer += iprot->readListBegin(_etype14, _size11);
+            this->applicationInputs.resize(_size11);
+            uint32_t _i15;
+            for (_i15 = 0; _i15 < _size11; ++_i15)
             {
-              xfer += this->applicationInputs[_i14].read(iprot);
+              xfer += this->applicationInputs[_i15].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -518,14 +534,14 @@ uint32_t ApplicationInterfaceDescription::read(::apache::thrift::protocol::TProt
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->applicationOutputs.clear();
-            uint32_t _size15;
-            ::apache::thrift::protocol::TType _etype18;
-            xfer += iprot->readListBegin(_etype18, _size15);
-            this->applicationOutputs.resize(_size15);
-            uint32_t _i19;
-            for (_i19 = 0; _i19 < _size15; ++_i19)
+            uint32_t _size16;
+            ::apache::thrift::protocol::TType _etype19;
+            xfer += iprot->readListBegin(_etype19, _size16);
+            this->applicationOutputs.resize(_size16);
+            uint32_t _i20;
+            for (_i20 = 0; _i20 < _size16; ++_i20)
             {
-              xfer += this->applicationOutputs[_i19].read(iprot);
+              xfer += this->applicationOutputs[_i20].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -571,10 +587,10 @@ uint32_t ApplicationInterfaceDescription::write(::apache::thrift::protocol::TPro
     xfer += oprot->writeFieldBegin("applicationModules", ::apache::thrift::protocol::T_LIST, 4);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->applicationModules.size()));
-      std::vector<std::string> ::const_iterator _iter20;
-      for (_iter20 = this->applicationModules.begin(); _iter20 != this->applicationModules.end(); ++_iter20)
+      std::vector<std::string> ::const_iterator _iter21;
+      for (_iter21 = this->applicationModules.begin(); _iter21 != this->applicationModules.end(); ++_iter21)
       {
-        xfer += oprot->writeString((*_iter20));
+        xfer += oprot->writeString((*_iter21));
       }
       xfer += oprot->writeListEnd();
     }
@@ -584,10 +600,10 @@ uint32_t ApplicationInterfaceDescription::write(::apache::thrift::protocol::TPro
     xfer += oprot->writeFieldBegin("applicationInputs", ::apache::thrift::protocol::T_LIST, 5);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->applicationInputs.size()));
-      std::vector<InputDataObjectType> ::const_iterator _iter21;
-      for (_iter21 = this->applicationInputs.begin(); _iter21 != this->applicationInputs.end(); ++_iter21)
+      std::vector<InputDataObjectType> ::const_iterator _iter22;
+      for (_iter22 = this->applicationInputs.begin(); _iter22 != this->applicationInputs.end(); ++_iter22)
       {
-        xfer += (*_iter21).write(oprot);
+        xfer += (*_iter22).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -597,10 +613,10 @@ uint32_t ApplicationInterfaceDescription::write(::apache::thrift::protocol::TPro
     xfer += oprot->writeFieldBegin("applicationOutputs", ::apache::thrift::protocol::T_LIST, 6);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->applicationOutputs.size()));
-      std::vector<OutputDataObjectType> ::const_iterator _iter22;
-      for (_iter22 = this->applicationOutputs.begin(); _iter22 != this->applicationOutputs.end(); ++_iter22)
+      std::vector<OutputDataObjectType> ::const_iterator _iter23;
+      for (_iter23 = this->applicationOutputs.begin(); _iter23 != this->applicationOutputs.end(); ++_iter23)
       {
-        xfer += (*_iter22).write(oprot);
+        xfer += (*_iter23).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }

@@ -800,6 +800,7 @@ public class AppCatalogJPAUtils {
             resource.setOutputVal(o.getOutputVal());
             resource.setDataType(o.getDataType());
             resource.setValidityType(o.getValidityType());
+            resource.setCommandLineType(o.getCommandLineType());
             resource.setDataMovement(o.isDataMovement());
             resource.setDataNameLocation(o.getDataNameLocation());
             resource.setAppInterfaceResource((AppInterfaceResource)createAppInterfaceResource(o.getApplicationInterface()));

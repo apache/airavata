@@ -543,6 +543,7 @@ public class Utils {
             }
             eOutputResource.setDataType(o.getDataType());
             eOutputResource.setValidityType(o.getValidityType());
+            eOutputResource.setCommandLineType(o.getCommandLineType());
             eOutputResource.setDataMovement(o.isDataMovement());
             eOutputResource.setDataNameLocation(o.getDataNameLocation());
         }
@@ -638,6 +639,7 @@ public class Utils {
                 outputResource.setValue(new String(o.getValue()));
             }
             outputResource.setValidityType(o.getValidityType());
+            outputResource.setCommandLineType(o.getCommandLineType());
             outputResource.setDataMovement(o.isDataMovement());
             outputResource.setDataNameLocation(o.getDataNameLocation());
         }
@@ -673,6 +675,7 @@ public class Utils {
             outputResource.setOutputKey(o.getOutputKey());
             outputResource.setValue(o.getValue());
             outputResource.setValidityType(o.getValidityType());
+            outputResource.setCommandLineType(o.getCommandLineType());
             outputResource.setDataMovement(o.isDataMovement());
             outputResource.setDataNameLocation(o.getDataNameLocation());
         }
