@@ -276,6 +276,12 @@ public class ExperimentRegistry {
                 resource.setMetadata(input.getMetaData());
                 resource.setAppArgument(input.getApplicationArgument());
                 resource.setInputOrder(input.getInputOrder());
+                if (input.getInputValid() != null){
+                    resource.setValidityType(input.getInputValid().toString());
+                }
+                if (input.getAddedToCommandLine() != null){
+                    resource.setCommandLineType(input.getAddedToCommandLine().toString());
+                }
                 resource.save();
             }
         } catch (Exception e) {
@@ -297,6 +303,12 @@ public class ExperimentRegistry {
                         exinput.setMetadata(input.getMetaData());
                         exinput.setAppArgument(input.getApplicationArgument());
                         exinput.setInputOrder(input.getInputOrder());
+                        if (input.getInputValid() != null){
+                            exinput.setValidityType(input.getInputValid().toString());
+                        }
+                        if (input.getAddedToCommandLine() != null){
+                            exinput.setCommandLineType(input.getAddedToCommandLine().toString());
+                        }
                         exinput.save();
                     }
                 }
@@ -319,6 +331,14 @@ public class ExperimentRegistry {
                 if (output.getType() != null){
                     resource.setDataType(output.getType().toString());
                 }
+                if (output.getValidityType() != null){
+                    resource.setValidityType(output.getValidityType().toString());
+                }
+                if (output.getAddedToCommandLine() != null){
+                    resource.setCommandLineType(output.getAddedToCommandLine().toString());
+                }
+                resource.setDataMovement(output.isDataMovement());
+                resource.setDataNameLocation(output.getDataNameLocation());
 //                resource.setMetadata(output.get());
                 resource.save();
             }
@@ -342,6 +362,14 @@ public class ExperimentRegistry {
                         if (output.getType() != null){
                             resource.setDataType(output.getType().toString());
                         }
+                        if (output.getValidityType() != null){
+                            resource.setValidityType(output.getValidityType().toString());
+                        }
+                        if (output.getAddedToCommandLine() != null){
+                            resource.setCommandLineType(output.getAddedToCommandLine().toString());
+                        }
+                        resource.setDataMovement(output.isDataMovement());
+                        resource.setDataNameLocation(output.getDataNameLocation());
 //                        resource.setMetadata(output.getMetaData());
                         resource.save();
                     }
@@ -365,6 +393,14 @@ public class ExperimentRegistry {
                 if (output.getType() != null){
                     resource.setDataType(output.getType().toString());
                 }
+                if (output.getValidityType() != null){
+                    resource.setValidityType(output.getValidityType().toString());
+                }
+                if (output.getAddedToCommandLine() != null){
+                    resource.setCommandLineType(output.getAddedToCommandLine().toString());
+                }
+                resource.setDataMovement(output.isDataMovement());
+                resource.setDataNameLocation(output.getDataNameLocation());
 //                resource.setMetadata(output.getMetaData());
                 resource.save();
             }
@@ -388,6 +424,14 @@ public class ExperimentRegistry {
                     if (output.getType() != null){
                         resource.setDataType(output.getType().toString());
                     }
+                    if (output.getValidityType() != null){
+                        resource.setValidityType(output.getValidityType().toString());
+                    }
+                    if (output.getAddedToCommandLine() != null){
+                        resource.setCommandLineType(output.getAddedToCommandLine().toString());
+                    }
+                    resource.setDataMovement(output.isDataMovement());
+                    resource.setDataNameLocation(output.getDataNameLocation());
 //                    resource.setMetadata(output.getMetaData());
                     resource.save();
                 }
@@ -411,6 +455,14 @@ public class ExperimentRegistry {
                 if (output.getType() != null){
                     resource.setDataType(output.getType().toString());
                 }
+                if (output.getValidityType() != null){
+                    resource.setValidityType(output.getValidityType().toString());
+                }
+                if (output.getAddedToCommandLine() != null){
+                    resource.setCommandLineType(output.getAddedToCommandLine().toString());
+                }
+                resource.setDataMovement(output.isDataMovement());
+                resource.setDataNameLocation(output.getDataNameLocation());
 //                resource.setMetadata(output.getMetaData());
                 resource.save();
             }
@@ -822,6 +874,12 @@ public class ExperimentRegistry {
                 resource.setMetadata(input.getMetaData());
                 resource.setAppArgument(input.getApplicationArgument());
                 resource.setInputOrder(input.getInputOrder());
+                if (input.getInputValid() != null){
+                    resource.setValidityType(input.getInputValid().toString());
+                }
+                if (input.getAddedToCommandLine() != null){
+                    resource.setCommandLineType(input.getAddedToCommandLine().toString());
+                }
                 resource.save();
             }
         } catch (Exception e) {
@@ -845,6 +903,12 @@ public class ExperimentRegistry {
                     resource.setMetadata(input.getMetaData());
                     resource.setAppArgument(input.getApplicationArgument());
                     resource.setInputOrder(input.getInputOrder());
+                    if (input.getInputValid() != null){
+                        resource.setValidityType(input.getInputValid().toString());
+                    }
+                    if (input.getAddedToCommandLine() != null){
+                        resource.setCommandLineType(input.getAddedToCommandLine().toString());
+                    }
                     resource.save();
                 }
             }
@@ -1004,6 +1068,12 @@ public class ExperimentRegistry {
                 resource.setMetadata(input.getMetaData());
                 resource.setAppArgument(input.getApplicationArgument());
                 resource.setInputOrder(input.getInputOrder());
+                if (input.getInputValid() != null){
+                    resource.setValidityType(input.getInputValid().toString());
+                }
+                if (input.getAddedToCommandLine() != null){
+                    resource.setCommandLineType(input.getAddedToCommandLine().toString());
+                }
                 resource.save();
             }
         } catch (Exception e) {
@@ -1023,6 +1093,14 @@ public class ExperimentRegistry {
                 if (output.getType() != null){
                     resource.setDataType(output.getType().toString());
                 }
+                if (output.getValidityType() != null){
+                    resource.setValidityType(output.getValidityType().toString());
+                }
+                if (output.getAddedToCommandLine() != null){
+                    resource.setCommandLineType(output.getAddedToCommandLine().toString());
+                }
+                resource.setDataMovement(output.isDataMovement());
+                resource.setDataNameLocation(output.getDataNameLocation());
 //                resource.setMetadata(output.getMetaData());
                 resource.save();
             }
@@ -1047,6 +1125,14 @@ public class ExperimentRegistry {
                     if (output.getType() != null){
                         resource.setDataType(output.getType().toString());
                     }
+                    if (output.getValidityType() != null){
+                        resource.setValidityType(output.getValidityType().toString());
+                    }
+                    if (output.getAddedToCommandLine() != null){
+                        resource.setCommandLineType(output.getAddedToCommandLine().toString());
+                    }
+                    resource.setDataMovement(output.isDataMovement());
+                    resource.setDataNameLocation(output.getDataNameLocation());
 //                    resource.setMetadata(output.getMetaData());
                     resource.save();
                 }
@@ -1071,6 +1157,12 @@ public class ExperimentRegistry {
                     resource.setMetadata(input.getMetaData());
                     resource.setAppArgument(input.getApplicationArgument());
                     resource.setInputOrder(input.getInputOrder());
+                    if (input.getInputValid() != null){
+                        resource.setValidityType(input.getInputValid().toString());
+                    }
+                    if (input.getAddedToCommandLine() != null){
+                        resource.setCommandLineType(input.getAddedToCommandLine().toString());
+                    }
                     resource.save();
                 }
 
