@@ -41,6 +41,7 @@ import org.apache.airavata.gsi.ssh.impl.GSISSHAbstractCluster;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
+import org.apache.airavata.model.appcatalog.appinterface.CommandLineType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
@@ -213,9 +214,13 @@ public class GFACGSISSHUtils {
             }
         }
         for (InputDataObjectType inputDataObjectType : sortedInputSet) {
+            if (inputDataObjectType.getAddedToCommandLine() != null
+                    && inputDataObjectType.getAddedToCommandLine() == CommandLineType.EXCLUSIVE) {
+                continue;
+            }
             if (inputDataObjectType.getApplicationArgument() != null
                     && !inputDataObjectType.getApplicationArgument().equals("")) {
-               inputValues.add(inputDataObjectType.getApplicationArgument());
+                inputValues.add(inputDataObjectType.getApplicationArgument());
             }
 
             if (inputDataObjectType.getValue() != null
@@ -269,7 +274,14 @@ public class GFACGSISSHUtils {
             logger.error("Task scheduling cannot be null at this point..");
         }
 
+        ApplicationDeploymentDescription appDepDescription = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription();
+        List<String> moduleCmds = appDepDescription.getModuleLoadCmds();
+        if (moduleCmds != null) {
+            for (String moduleCmd : moduleCmds) {
+                jobDescriptor.addPreJobCommand(moduleCmd);
+            }
 
+        }
         return jobDescriptor;
     }
 }

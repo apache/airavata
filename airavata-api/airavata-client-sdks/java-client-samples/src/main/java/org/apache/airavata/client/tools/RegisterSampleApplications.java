@@ -371,7 +371,7 @@ public class RegisterSampleApplications {
         //Registering Lammps
         registerLammpsInterface();
         //Registrting Gamess
-        registerGamessInterface();
+//        registerGamessInterface();
 
         //Registering NWChem
         registerNWChemInterface();
@@ -868,7 +868,7 @@ public class RegisterSampleApplications {
             appModules.add(gaussianModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("MainInputFile", null,
-                    DataType.URI, null, 1,null, null, false, "Gaussian main input file", null);
+                    DataType.URI, null, 1, ValidityType.REQUIRED, CommandLineType.INCLUSIVE,  false, "Gaussian main input file", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
@@ -897,20 +897,19 @@ public class RegisterSampleApplications {
             appModules.add(monteXModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("xyzf", "O16.xyz",
-                    DataType.STRING, null, 1, null, null, false, "Tinker monte input_1", null);
+                    DataType.URI, null, 1, ValidityType.REQUIRED, CommandLineType.INCLUSIVE, false, "Tinker monte input_1", null);
             InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("keyf", "O16.key",
-                    DataType.STRING, "-k", 2, null, null, false, "Tinker monte input_2", null);
+                    DataType.URI, "-k", 2, ValidityType.REQUIRED, CommandLineType.INCLUSIVE, false, "Tinker monte input_2", null);
             InputDataObjectType input3 = RegisterSampleApplicationsUtils.createAppInput("stps", "20000",
-                    DataType.STRING, null, 3, null, null,false, "Tinker monte input_3", null);
+                    DataType.STRING, null, 3, ValidityType.REQUIRED, CommandLineType.INCLUSIVE, false, "Tinker monte input_3", null);
             InputDataObjectType input4 = RegisterSampleApplicationsUtils.createAppInput("Ctc", "C",
-                    DataType.STRING, null, 4,null, null, false, "Tinker monte input_4", null);
+                    DataType.STRING, null, 4, ValidityType.REQUIRED, CommandLineType.INCLUSIVE, false, "Tinker monte input_4", null);
             InputDataObjectType input5 = RegisterSampleApplicationsUtils.createAppInput("stpsZ", "3.0",
-                    DataType.STRING, null, 5,null, null, false, "Tinker monte input_5", null);
+                    DataType.STRING, null, 5, ValidityType.REQUIRED, CommandLineType.INCLUSIVE, false, "Tinker monte input_5", null);
             InputDataObjectType input6 = RegisterSampleApplicationsUtils.createAppInput("temp", "298",
-                    DataType.STRING, null, 6,null, null, false, "Tinker monte input_6", null);
+                    DataType.STRING, null, 6, ValidityType.REQUIRED, CommandLineType.INCLUSIVE, false, "Tinker monte input_6", null);
             InputDataObjectType input7 = RegisterSampleApplicationsUtils.createAppInput("Rconv", "0.01",
-                    DataType.STRING, null, 7,null, null, false, "Tinker monte input_7", null);
-
+                    DataType.STRING, null, 7, ValidityType.REQUIRED, CommandLineType.INCLUSIVE,  false, "Tinker monte input_7", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
@@ -998,9 +997,14 @@ public class RegisterSampleApplications {
             System.out.println("WRF on stampede deployment Id " + wrfAppDeployId);
 
 
+            List<String> monteXModuleCmds = new ArrayList<String>();
+//            monteXModuleCmds.add("module load globus");
+//            monteXModuleCmds.add("module load uberftp");
+            monteXModuleCmds.add("module load fftw3");
+
             String monteXAppDeployId = airavataClient.registerApplicationDeployment(
                     RegisterSampleApplicationsUtils.createApplicationDeployment(monteXModuleId, stampedeResourceId,
-                            "/home1/00421/ccguser/apps/tinker/tinker/bin/monte.x", ApplicationParallelismType.OPENMP, monteXDescription, null));
+                            "/home1/00421/ccguser/apps/tinker/tinker/bin/monte.x", ApplicationParallelismType.OPENMP, monteXDescription, monteXModuleCmds));
             System.out.println("Tinker Monte on trestles deployment Id " + monteXAppDeployId);
         } catch (TException e) {
             e.printStackTrace();
@@ -1052,7 +1056,7 @@ public class RegisterSampleApplications {
             gaussianMouldes.add("module load gaussian");
             String gaussianAppDeployId = airavataClient.registerApplicationDeployment(
                     RegisterSampleApplicationsUtils.createApplicationDeployment(gaussianModuleId, trestlesResourceId,
-                            "g09", ApplicationParallelismType.OPENMP, gaussianDescription, null));
+                            "g09", ApplicationParallelismType.OPENMP, gaussianDescription, gaussianMouldes));
             System.out.println("Gaussian on trestles deployment Id " + gaussianAppDeployId);
 
         } catch (TException e) {
