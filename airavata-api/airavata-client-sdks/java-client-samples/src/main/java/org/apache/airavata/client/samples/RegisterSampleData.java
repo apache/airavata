@@ -25,9 +25,11 @@ import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.client.tools.RegisterSampleApplicationsUtils;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
+import org.apache.airavata.model.appcatalog.appinterface.CommandLineType;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.ValidityType;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
@@ -55,6 +57,8 @@ public class RegisterSampleData {
     private String multiplyModuleId;
     private String subtractModuleId;
     private String sampleScriptDir;
+    private String monteXModuleId;
+    private String gaussianModuleId;
 
     public static void main(String[] args) throws AiravataClientConnectException, TException {
         RegisterSampleData registerSampleData = new RegisterSampleData();
@@ -118,6 +122,85 @@ public class RegisterSampleData {
         registerSubtractApplicationInterface();
         registerMultiplyApplicationInterface();
         registerEchoInterface();
+        registerTinkerMonteInterface();
+        registerGaussianInterface();
+    }
+
+    private void registerGaussianInterface() {
+        try {
+            System.out.println("#### Registering Gaussian Application Interface ####");
+
+            List<String> appModules = new ArrayList<String>();
+            appModules.add(gaussianModuleId);
+
+            InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("MainInputFile", null,
+                    DataType.URI, null, 1,null, null, false, "Gaussian main input file", null);
+
+            List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
+            applicationInputs.add(input1);
+
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("gaussian.out",
+                    "", DataType.URI, null, null);
+
+            List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
+            applicationOutputs.add(output1);
+
+            String addApplicationInterfaceId = airavataClient.registerApplicationInterface(
+                    RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("Gaussian", "Gaussian application",
+                            appModules, applicationInputs, applicationOutputs));
+            System.out.println("Gaussian Application Interface Id " + addApplicationInterfaceId);
+
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void registerTinkerMonteInterface() {
+        try {
+            System.out.println("#### Registering Tinker Monte Application Interface ####");
+
+            List<String> appModules = new ArrayList<String>();
+            appModules.add(monteXModuleId);
+
+            InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("xyzf", "O16.xyz",
+                    DataType.STRING, null, 1, null, null, false, "Tinker monte input_1", null);
+            InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("keyf", "O16.key",
+                    DataType.STRING, "-k", 2, null, null, false, "Tinker monte input_2", null);
+            InputDataObjectType input3 = RegisterSampleApplicationsUtils.createAppInput("stps", "20000",
+                    DataType.STRING, null, 3, null, null, false, "Tinker monte input_3", null);
+            InputDataObjectType input4 = RegisterSampleApplicationsUtils.createAppInput("Ctc", "C",
+                    DataType.STRING, null, 4, null, null, false, "Tinker monte input_4", null);
+            InputDataObjectType input5 = RegisterSampleApplicationsUtils.createAppInput("stpsZ", "3.0",
+                    DataType.STRING, null, 5, null, null, false, "Tinker monte input_5", null);
+            InputDataObjectType input6 = RegisterSampleApplicationsUtils.createAppInput("temp", "298",
+                    DataType.STRING, null, 6, null, null, false, "Tinker monte input_6", null);
+            InputDataObjectType input7 = RegisterSampleApplicationsUtils.createAppInput("Rconv", "0.01",
+                    DataType.STRING, null, 7, null, null, false, "Tinker monte input_7", null);
+
+
+            List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
+            applicationInputs.add(input1);
+            applicationInputs.add(input2);
+            applicationInputs.add(input3);
+            applicationInputs.add(input4);
+            applicationInputs.add(input5);
+            applicationInputs.add(input6);
+            applicationInputs.add(input7);
+
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Diskoutputfile_with_dir",
+                    "", DataType.URI, null, null);
+
+            List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
+            applicationOutputs.add(output1);
+
+            String addApplicationInterfaceId = airavataClient.registerApplicationInterface(
+                    RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("Tinker_Monte", "Monte application",
+                            appModules, applicationInputs, applicationOutputs));
+            System.out.println("Monte Application Interface Id " + addApplicationInterfaceId);
+
+        } catch (TException e) {
+            e.printStackTrace();
+        }
     }
 
     private void registerApplicationDeployments() throws TException {
@@ -145,6 +228,18 @@ public class RegisterSampleData {
                 RegisterSampleApplicationsUtils.createApplicationDeployment(subtractModuleId, localhostId,
                         sampleScriptDir + "/subtract.sh", ApplicationParallelismType.SERIAL, "Subtract application description ", null));
         System.out.println("Successfully registered Subtract application on localhost, application Id = " + subtractAppDeployId);
+
+        //Register Tinker monte application
+        String tinkerMonteAppDeployId = airavataClient.registerApplicationDeployment(
+                RegisterSampleApplicationsUtils.createApplicationDeployment(monteXModuleId, localhostId,
+                        sampleScriptDir + "/monte.x", ApplicationParallelismType.SERIAL, "Grid chem tinker monte application description ", null));
+        System.out.println("Successfully registered tinker monte application on localhost, application Id = " + tinkerMonteAppDeployId);
+
+        //Register Tinker monte application
+        String gaussianAppDeployId = airavataClient.registerApplicationDeployment(
+                RegisterSampleApplicationsUtils.createApplicationDeployment(gaussianModuleId, localhostId,
+                        sampleScriptDir + "/gaussian.sh", ApplicationParallelismType.SERIAL, "Grid chem Gaussian application description ", null));
+        System.out.println("Successfully registered Gaussian application on localhost, application Id = " + gaussianAppDeployId);
     }
 
     private void registerApplicationModules() throws TException {
@@ -164,6 +259,15 @@ public class RegisterSampleData {
         subtractModuleId = airavataClient.registerApplicationModule(
                 RegisterSampleApplicationsUtils.createApplicationModule(
                         "Subtract", "1.0", "Subtract application description"));
+        //Register Monte
+        monteXModuleId = airavataClient.registerApplicationModule(
+                RegisterSampleApplicationsUtils.createApplicationModule(
+                        "Tinker Monte", "1.0", "Grid chem tinker monte application description"));
+
+        // Register gaussian application
+        gaussianModuleId = airavataClient.registerApplicationModule(
+                RegisterSampleApplicationsUtils.createApplicationModule(
+                        "Gaussian", "1.0", "Grid Chem Gaussian application description"));
 
     }
 
