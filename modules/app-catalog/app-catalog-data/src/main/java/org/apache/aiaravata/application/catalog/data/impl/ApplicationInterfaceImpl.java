@@ -104,6 +104,12 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
                     inputResource.setStandardInput(input.isStandardInput());
                     inputResource.setAppArgument(input.getApplicationArgument());
                     inputResource.setInputOrder(input.getInputOrder());
+                    if (input.getInputValid() != null){
+                        inputResource.setValidityType(input.getInputValid().toString());
+                    }
+                    if (input.getAddedToCommandLine() != null){
+                        inputResource.setCommandLineType(input.getAddedToCommandLine().toString());
+                    }
                     inputResource.save();
                 }
             }
@@ -117,6 +123,14 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
                     outputResource.setOutputKey(output.getName());
                     outputResource.setOutputVal(output.getValue());
                     outputResource.setDataType(output.getType().toString());
+                    if (output.getValidityType() != null){
+                        outputResource.setValidityType(output.getValidityType().toString());
+                    }
+                    if (output.getAddedToCommandLine() != null){
+                        outputResource.setCommandLineType(output.getAddedToCommandLine().toString());
+                    }
+                    outputResource.setDataMovement(output.isDataMovement());
+                    outputResource.setDataNameLocation(output.getDataNameLocation());
                     outputResource.save();
                 }
             }
@@ -220,6 +234,12 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
                     inputResource.setStandardInput(input.isStandardInput());
                     inputResource.setAppArgument(input.getApplicationArgument());
                     inputResource.setInputOrder(input.getInputOrder());
+                    if (input.getInputValid() != null){
+                        inputResource.setValidityType(input.getInputValid().toString());
+                    }
+                    if (input.getAddedToCommandLine() != null){
+                        inputResource.setCommandLineType(input.getAddedToCommandLine().toString());
+                    }
                     inputResource.save();
                 }
             }
@@ -244,6 +264,14 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
                     outputResource.setOutputKey(output.getName());
                     outputResource.setOutputVal(output.getValue());
                     outputResource.setDataType(output.getType().toString());
+                    if (output.getValidityType() != null){
+                        outputResource.setValidityType(output.getValidityType().toString());
+                    }
+                    if (output.getAddedToCommandLine() != null){
+                        outputResource.setCommandLineType(output.getAddedToCommandLine().toString());
+                    }
+                    outputResource.setDataMovement(output.isDataMovement());
+                    outputResource.setDataNameLocation(output.getDataNameLocation());
                     outputResource.save();
                 }
             }
