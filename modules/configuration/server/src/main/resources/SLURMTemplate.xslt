@@ -64,16 +64,34 @@
 #SBATCH -e <xsl:value-of select="ns:standardErrorFile"/>
     </xsl:when>
     </xsl:choose>
-    <xsl:for-each select="ns:preJobCommands/ns:command">
-        <xsl:text>&#xa;</xsl:text>
-        <xsl:value-of select="."/><xsl:text>   </xsl:text>
-    </xsl:for-each>
+    <xsl:text>&#xa;</xsl:text>
+<xsl:for-each select="ns:exports/ns:name">
+   <xsl:value-of select="."/>=<xsl:value-of select="./@value"/><xsl:text>&#xa;</xsl:text>
+export<xsl:text>   </xsl:text><xsl:value-of select="."/>
+   <xsl:text>&#xa;</xsl:text>
+</xsl:for-each>
+    <xsl:text>&#xa;</xsl:text>
+<xsl:for-each select="ns:moduleLoadCommands/ns:command">
+    <xsl:value-of select="."/><xsl:text>   </xsl:text>
+    <xsl:text>&#xa;</xsl:text>
+</xsl:for-each>
+    <xsl:text>&#xa;</xsl:text>
 cd <xsl:text>   </xsl:text><xsl:value-of select="ns:workingDirectory"/><xsl:text>&#xa;</xsl:text>
+<xsl:for-each select="ns:preJobCommands/ns:command">
+    <xsl:value-of select="."/><xsl:text>   </xsl:text>
+    <xsl:text>&#xa;</xsl:text>
+</xsl:for-each>
+    <xsl:text>&#xa;</xsl:text>
     <xsl:choose><xsl:when test="ns:jobSubmitterCommand">
 <xsl:value-of select="ns:jobSubmitterCommand"/><xsl:text>   </xsl:text></xsl:when></xsl:choose><xsl:value-of select="ns:executablePath"/><xsl:text>   </xsl:text>
 <xsl:for-each select="ns:inputs/ns:input">
       <xsl:value-of select="."/><xsl:text>   </xsl:text>
     </xsl:for-each>
+    <xsl:text>&#xa;</xsl:text>
+<xsl:for-each select="ns:postJobCommands/ns:command">
+    <xsl:text>&#xa;</xsl:text>
+    <xsl:value-of select="."/><xsl:text>   </xsl:text>
+</xsl:for-each>
     ~/rabbitmq-java-client-bin-3.3.5/runjava.sh com.rabbitmq.examples.SimpleProducer amqp://<xsl:value-of select="ns:callBackIp"/><xsl:text> </xsl:text><xsl:value-of select="ns:userName"/>,<xsl:value-of select="ns:jobName"/><xsl:text> </xsl:text><xsl:value-of select="$quote"/><xsl:value-of select="$quote"/><xsl:text> </xsl:text><xsl:value-of select="ns:callBackPort"/>
 </xsl:template>
 

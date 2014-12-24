@@ -27,7 +27,6 @@ import org.apache.airavata.credential.store.credential.impl.certificate.Certific
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.RequestData;
-import org.apache.airavata.gfac.core.context.ApplicationContext;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
@@ -289,10 +288,29 @@ public class GFACGSISSHUtils {
         List<String> moduleCmds = appDepDescription.getModuleLoadCmds();
         if (moduleCmds != null) {
             for (String moduleCmd : moduleCmds) {
-                jobDescriptor.addPreJobCommand(moduleCmd);
+                jobDescriptor.addModuleLoadCommands(moduleCmd);
             }
+        }
+        List<String> preJobCommands = appDepDescription.getPreJobCommands();
+        if (preJobCommands != null) {
+            for (String preJobCommand : preJobCommands) {
+                jobDescriptor.addPreJobCommand(parseCommand(preJobCommand, jobExecutionContext));
+            }
+        }
 
+        List<String> postJobCommands = appDepDescription.getPostJobCommands();
+        if (postJobCommands != null) {
+            for (String postJobCommand : postJobCommands) {
+                jobDescriptor.addPostJobCommand(parseCommand(postJobCommand, jobExecutionContext));
+            }
         }
         return jobDescriptor;
+    }
+
+    private static String parseCommand(String value, JobExecutionContext jobExecutionContext) {
+        String parsedValue = value.replaceAll("\\$workingDir", jobExecutionContext.getWorkingDir());
+        parsedValue = parsedValue.replaceAll("\\$inputDir", jobExecutionContext.getInputDir());
+        parsedValue = parsedValue.replaceAll("\\$outputDir", jobExecutionContext.getOutputDir());
+        return parsedValue;
     }
 }

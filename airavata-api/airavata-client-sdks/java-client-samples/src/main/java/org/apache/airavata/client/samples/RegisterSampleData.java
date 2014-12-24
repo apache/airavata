@@ -208,37 +208,43 @@ public class RegisterSampleData {
         //Register Echo
         String echoAppDeployId = airavataClient.registerApplicationDeployment(
                 RegisterSampleApplicationsUtils.createApplicationDeployment(echoModuleId, localhostId,
-                        sampleScriptDir + "/echo.sh", ApplicationParallelismType.SERIAL, "Echo application description", null));
+                        sampleScriptDir + "/echo.sh", ApplicationParallelismType.SERIAL, "Echo application description",
+                        null, null, null));
         System.out.println("Successfully registered Echo application on localhost, application Id = " + echoAppDeployId);
 
         //Register Add application
         String addAppDeployId = airavataClient.registerApplicationDeployment(
                 RegisterSampleApplicationsUtils.createApplicationDeployment(addModuleId, localhostId,
-                        sampleScriptDir + "/add.sh", ApplicationParallelismType.SERIAL, "Add application description", null));
+                        sampleScriptDir + "/add.sh", ApplicationParallelismType.SERIAL, "Add application description",
+                        null, null, null));
         System.out.println("Successfully registered Add application on localhost, application Id = " + addAppDeployId);
 
         //Register Multiply application
         String multiplyAppDeployId = airavataClient.registerApplicationDeployment(
                 RegisterSampleApplicationsUtils.createApplicationDeployment(multiplyModuleId, localhostId,
-                        sampleScriptDir + "/multiply.sh", ApplicationParallelismType.SERIAL, "Multiply application description", null));
+                        sampleScriptDir + "/multiply.sh", ApplicationParallelismType.SERIAL, "Multiply application description",
+                        null, null, null));
         System.out.println("Successfully registered Multiply application on localhost, application Id = " + multiplyAppDeployId);
 
         //Register Subtract application
         String subtractAppDeployId = airavataClient.registerApplicationDeployment(
                 RegisterSampleApplicationsUtils.createApplicationDeployment(subtractModuleId, localhostId,
-                        sampleScriptDir + "/subtract.sh", ApplicationParallelismType.SERIAL, "Subtract application description ", null));
+                        sampleScriptDir + "/subtract.sh", ApplicationParallelismType.SERIAL, "Subtract application description ",
+                        null, null, null));
         System.out.println("Successfully registered Subtract application on localhost, application Id = " + subtractAppDeployId);
 
         //Register Tinker monte application
         String tinkerMonteAppDeployId = airavataClient.registerApplicationDeployment(
                 RegisterSampleApplicationsUtils.createApplicationDeployment(monteXModuleId, localhostId,
-                        sampleScriptDir + "/monte.x", ApplicationParallelismType.SERIAL, "Grid chem tinker monte application description ", null));
+                        sampleScriptDir + "/monte.x", ApplicationParallelismType.SERIAL, "Grid chem tinker monte application description ",
+                        null, null, null));
         System.out.println("Successfully registered tinker monte application on localhost, application Id = " + tinkerMonteAppDeployId);
 
         //Register Tinker monte application
         String gaussianAppDeployId = airavataClient.registerApplicationDeployment(
                 RegisterSampleApplicationsUtils.createApplicationDeployment(gaussianModuleId, localhostId,
-                        sampleScriptDir + "/gaussian.sh", ApplicationParallelismType.SERIAL, "Grid chem Gaussian application description ", null));
+                        sampleScriptDir + "/gaussian.sh", ApplicationParallelismType.SERIAL, "Grid chem Gaussian application description ",
+                        null, null, null));
         System.out.println("Successfully registered Gaussian application on localhost, application Id = " + gaussianAppDeployId);
     }
 
