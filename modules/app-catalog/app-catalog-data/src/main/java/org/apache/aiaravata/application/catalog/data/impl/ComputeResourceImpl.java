@@ -241,21 +241,21 @@ public class ComputeResourceImpl implements ComputeResource {
 //        try {
 //            GSISSHSubmissionResource resource = new GSISSHSubmissionResource();
 //            String hostName = "GSISSH";
-//            resource.setSubmissionID(AppCatalogUtils.getID(hostName));
+//            resource.setDeploymentId(AppCatalogUtils.getID(hostName));
 //            resource.setSshPort(resource.getSshPort());
 //            resource.setResourceJobManager(gsisshJobSubmission.getResourceJobManager().toString());
 //            resource.setInstalledPath(gsisshJobSubmission.getInstalledPath());
 //            resource.setMonitorMode(gsisshJobSubmission.getMonitorMode());
 //            resource.save();
-//            gsisshJobSubmission.setJobSubmissionDataID(resource.getSubmissionID());
+//            gsisshJobSubmission.setJobSubmissionDataID(resource.getDeploymentId());
 //
 //            Set<String> exports = gsisshJobSubmission.getExports();
 //            if (exports != null && !exports.isEmpty()){
 //                for (String export : exports){
 //                    GSISSHExportResource exportResource = new GSISSHExportResource();
-//                    exportResource.setSubmissionID(resource.getSubmissionID());
+//                    exportResource.setDeploymentId(resource.getDeploymentId());
 //                    exportResource.setExport(export);
-//                    exportResource.setGsisshSubmissionResource(resource);
+//                    exportResource.setAppDeploymentResource(resource);
 //                    exportResource.save();
 //                }
 //            }
@@ -264,9 +264,9 @@ public class ComputeResourceImpl implements ComputeResource {
 //            if (preJobCommands != null && !preJobCommands.isEmpty()){
 //                for (String command : preJobCommands){
 //                    GSISSHPreJobCommandResource commandResource = new GSISSHPreJobCommandResource();
-//                    commandResource.setSubmissionID(resource.getSubmissionID());
+//                    commandResource.setDeploymentId(resource.getDeploymentId());
 //                    commandResource.setCommand(command);
-//                    commandResource.setGsisshSubmissionResource(resource);
+//                    commandResource.setAppDeploymentResource(resource);
 //                    commandResource.save();
 //                }
 //            }
@@ -275,13 +275,13 @@ public class ComputeResourceImpl implements ComputeResource {
 //            if (postJobCommands != null && !postJobCommands.isEmpty()){
 //                for (String command : postJobCommands){
 //                    GSISSHPostJobCommandResource commandResource = new GSISSHPostJobCommandResource();
-//                    commandResource.setSubmissionID(resource.getSubmissionID());
+//                    commandResource.setDeploymentId(resource.getDeploymentId());
 //                    commandResource.setCommand(command);
-//                    commandResource.setGsisshSubmissionResource(resource);
+//                    commandResource.setAppDeploymentResource(resource);
 //                    commandResource.save();
 //                }
 //            }
-//            return resource.getSubmissionID();
+//            return resource.getDeploymentId();
 //        }catch (Exception e) {
 //            logger.error("Error while saving GSISSH Job Submission...", e);
 //            throw new AppCatalogException(e);
@@ -293,7 +293,7 @@ public class ComputeResourceImpl implements ComputeResource {
 //        try {
 //            JobSubmissionProtocolResource resource = new JobSubmissionProtocolResource();
 //            resource.setResourceID(computeResourceId);
-//            resource.setSubmissionID(jobSubmissionId);
+//            resource.setDeploymentId(jobSubmissionId);
 //            ComputeResourceDescription computeResource = getComputeResource(computeResourceId);
 //            resource.setComputeHostResource(AppCatalogThriftConversion.getComputeHostResource(computeResource));
 //            resource.setJobType(JobSubmissionProtocol.GSISSH.toString());
@@ -309,22 +309,22 @@ public class ComputeResourceImpl implements ComputeResource {
 //        try {
 //            GlobusJobSubmissionResource resource = new GlobusJobSubmissionResource();
 //            String hostName = "GLOBUS";
-//            resource.setSubmissionID(AppCatalogUtils.getID(hostName));
+//            resource.setDeploymentId(AppCatalogUtils.getID(hostName));
 //            resource.setSecurityProtocol(globusJobSubmission.getSecurityProtocol().toString());
 //            resource.setResourceJobManager(globusJobSubmission.getResourceJobManager().toString());
 //            resource.save();
-//            globusJobSubmission.setJobSubmissionDataID(resource.getSubmissionID());
+//            globusJobSubmission.setJobSubmissionDataID(resource.getDeploymentId());
 //            List<String> globusGateKeeperEndPoint = globusJobSubmission.getGlobusGateKeeperEndPoint();
 //            if (globusGateKeeperEndPoint != null && !globusGateKeeperEndPoint.isEmpty()) {
 //                for (String endpoint : globusGateKeeperEndPoint) {
 //                    GlobusGKEndpointResource endpointResource = new GlobusGKEndpointResource();
-//                    endpointResource.setSubmissionID(resource.getSubmissionID());
+//                    endpointResource.setDeploymentId(resource.getDeploymentId());
 //                    endpointResource.setEndpoint(endpoint);
 //                    endpointResource.setGlobusJobSubmissionResource(resource);
 //                    endpointResource.save();
 //                }
 //            }
-//            return resource.getSubmissionID();
+//            return resource.getDeploymentId();
 //        } catch (Exception e) {
 //            logger.error("Error while saving Globus Job Submission...", e);
 //            throw new AppCatalogException(e);

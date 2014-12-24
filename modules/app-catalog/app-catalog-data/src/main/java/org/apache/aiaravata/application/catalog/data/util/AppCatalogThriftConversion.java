@@ -22,6 +22,8 @@
 package org.apache.aiaravata.application.catalog.data.util;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.aiaravata.application.catalog.data.model.PostJobCommand;
+import org.apache.aiaravata.application.catalog.data.model.PreJobCommand;
 import org.apache.aiaravata.application.catalog.data.resources.*;
 import org.apache.airavata.model.Workflow;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
@@ -628,6 +630,20 @@ public class AppCatalogThriftConversion {
         List<Resource> appEnvList = appEnvironmentResource.get(AbstractResource.LibraryPrepandPathConstants.DEPLOYMENT_ID, resource.getDeploymentId());
         if (appEnvList != null && !appEnvList.isEmpty()){
             description.setSetEnvironment(getAppEnvPaths(appEnvList));
+        }
+        PreJobCommandResource preJobCommandResource = new PreJobCommandResource();
+        List<Resource> preJobCommands = preJobCommandResource.get(AbstractResource.PreJobCommandConstants.DEPLOYMENT_ID, resource.getDeploymentId());
+        if (preJobCommands != null && !preJobCommands.isEmpty()){
+            for (Resource prejobCommand : preJobCommands){
+                description.addToPreJobCommands(((PreJobCommandResource) prejobCommand).getCommand());
+            }
+        }
+        PostJobCommandResource postJobCommandResource = new PostJobCommandResource();
+        List<Resource> postJobCommands = postJobCommandResource.get(AbstractResource.PostJobCommandConstants.DEPLOYMENT_ID, resource.getDeploymentId());
+        if (postJobCommands != null && !postJobCommands.isEmpty()){
+            for (Resource postjobCommand : postJobCommands){
+                description.addToPostJobCommands(((PreJobCommandResource) postjobCommand).getCommand());
+            }
         }
         return description;
     }

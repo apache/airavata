@@ -28,8 +28,8 @@
         <class>org.apache.aiaravata.application.catalog.data.model.GlobusGKEndpoint</class>
         <class>org.apache.aiaravata.application.catalog.data.model.GSISSHSubmission</class>
         <class>org.apache.aiaravata.application.catalog.data.model.GSISSHExport</class>
-        <class>org.apache.aiaravata.application.catalog.data.model.GSISSHPreJobCommand</class>
-        <class>org.apache.aiaravata.application.catalog.data.model.GSISSHPostJobCommand</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.PreJobCommand</class>
+        <class>org.apache.aiaravata.application.catalog.data.model.PostJobCommand</class>
         <class>org.apache.aiaravata.application.catalog.data.model.UnicoreJobSubmission</class>
         <class>org.apache.aiaravata.application.catalog.data.model.HostAlias</class>
         <class>org.apache.aiaravata.application.catalog.data.model.HostIPAddress</class>

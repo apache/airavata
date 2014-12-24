@@ -23,35 +23,36 @@ package org.apache.aiaravata.application.catalog.data.model;
 
 import java.io.Serializable;
 
-public class GSISSHPostJobCommandPK implements Serializable {
-    private String submissionID;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "POST_JOBCOMMAND")
+@IdClass(PostJobCommandPK.class)
+public class PostJobCommand implements Serializable {
+    @Id
+    @Column(name = "APPDEPLOYMENT_ID")
+    private String deploymentId;
+    @Id
+    @Column(name = "COMMAND")
     private String command;
 
-    public GSISSHPostJobCommandPK(String submissionID, String command) {
-        this.submissionID = submissionID;
-        this.command = command;
+    @ManyToOne(cascade= CascadeType.MERGE)
+    @JoinColumn(name = "APPDEPLOYMENT_ID")
+    private ApplicationDeployment deployment;
+
+    public String getDeploymentId() {
+        return deploymentId;
     }
 
-    public GSISSHPostJobCommandPK() {
-        ;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return 1;
-    }
-
-    public String getSubmissionID() {
-        return submissionID;
-    }
-
-    public void setSubmissionID(String submissionID) {
-        this.submissionID = submissionID;
+    public void setDeploymentId(String deploymentId) {
+        this.deploymentId = deploymentId;
     }
 
     public String getCommand() {
@@ -60,5 +61,13 @@ public class GSISSHPostJobCommandPK implements Serializable {
 
     public void setCommand(String command) {
         this.command = command;
+    }
+
+    public ApplicationDeployment getDeployment() {
+        return deployment;
+    }
+
+    public void setDeployment(ApplicationDeployment deployment) {
+        this.deployment = deployment;
     }
 }

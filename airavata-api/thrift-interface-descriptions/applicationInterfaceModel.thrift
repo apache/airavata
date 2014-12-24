@@ -49,15 +49,9 @@ enum ValidityType{
 }
 
 enum CommandLineType{
-	INCLUSIVE,
-	EXCLUSIVE
+	IMPLICIT,
+	EXPLICIT
 }
-
-enum InputMetadataType {
-    MEMORY,
-    CPU
-}
-
 
 /**
  * Application Inputs. The paramters describe how inputs are passed to the application.

@@ -109,7 +109,7 @@
 //        String submissionId = r.document.getString(FileTransferConstants.VALUE);
 //        JSONObject transfer = new JSONObject();
 //        transfer.put(FileTransferConstants.DATA_TYPE, FileTransferConstants.TRANSFER);
-//        transfer.put(FileTransferConstants.SUBMISSION_ID, submissionId);
+//        transfer.put(FileTransferConstants.DEPLOYMENT_ID, submissionId);
 //        JSONObject item = new JSONObject();
 //        item.put(FileTransferConstants.DATA_TYPE, FileTransferConstants.TRANSFER_ITEM);
 //        item.put(FileTransferConstants.SOURCE_ENDPOINT, sourceEndpoint);

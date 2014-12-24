@@ -33,26 +33,26 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "GSISSH_PREJOBCOMMAND")
-@IdClass(GSISSHPreJobCommandPK.class)
-public class GSISSHPreJobCommand implements Serializable {
+@Table(name = "PREJOB_COMMAND")
+@IdClass(PreJobCommandPK.class)
+public class PreJobCommand implements Serializable {
     @Id
-    @Column(name = "SUBMISSION_ID")
-    private String submissionID;
+    @Column(name = "APPDEPLOYMENT_ID")
+    private String deploymentId;
     @Id
     @Column(name = "COMMAND")
     private String command;
 
     @ManyToOne(cascade= CascadeType.MERGE)
-    @JoinColumn(name = "SUBMISSION_ID")
-    private GSISSHSubmission gsisshSubmission;
+    @JoinColumn(name = "APPDEPLOYMENT_ID")
+    private ApplicationDeployment applicationDeployment;
 
-    public String getSubmissionID() {
-        return submissionID;
+    public String getDeploymentId() {
+        return deploymentId;
     }
 
-    public void setSubmissionID(String submissionID) {
-        this.submissionID = submissionID;
+    public void setDeploymentId(String deploymentId) {
+        this.deploymentId = deploymentId;
     }
 
     public String getCommand() {
@@ -63,11 +63,11 @@ public class GSISSHPreJobCommand implements Serializable {
         this.command = command;
     }
 
-    public GSISSHSubmission getGsisshSubmission() {
-        return gsisshSubmission;
+    public ApplicationDeployment getApplicationDeployment() {
+        return applicationDeployment;
     }
 
-    public void setGsisshSubmission(GSISSHSubmission gsisshSubmission) {
-        this.gsisshSubmission = gsisshSubmission;
+    public void setApplicationDeployment(ApplicationDeployment applicationDeployment) {
+        this.applicationDeployment = applicationDeployment;
     }
 }

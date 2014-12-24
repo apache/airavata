@@ -267,6 +267,8 @@ class ApplicationDeploymentDescription {
   public $libPrependPaths = null;
   public $libAppendPaths = null;
   public $setEnvironment = null;
+  public $preJobCommands = null;
+  public $postJobCommands = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -330,6 +332,22 @@ class ApplicationDeploymentDescription {
             'class' => '\Airavata\Model\AppCatalog\AppDeployment\SetEnvPaths',
             ),
           ),
+        11 => array(
+          'var' => 'preJobCommands',
+          'type' => TType::LST,
+          'etype' => TType::STRING,
+          'elem' => array(
+            'type' => TType::STRING,
+            ),
+          ),
+        12 => array(
+          'var' => 'postJobCommands',
+          'type' => TType::LST,
+          'etype' => TType::STRING,
+          'elem' => array(
+            'type' => TType::STRING,
+            ),
+          ),
         );
     }
     if (is_array($vals)) {
@@ -362,6 +380,12 @@ class ApplicationDeploymentDescription {
       }
       if (isset($vals['setEnvironment'])) {
         $this->setEnvironment = $vals['setEnvironment'];
+      }
+      if (isset($vals['preJobCommands'])) {
+        $this->preJobCommands = $vals['preJobCommands'];
+      }
+      if (isset($vals['postJobCommands'])) {
+        $this->postJobCommands = $vals['postJobCommands'];
       }
     }
   }
@@ -498,6 +522,40 @@ class ApplicationDeploymentDescription {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 11:
+          if ($ftype == TType::LST) {
+            $this->preJobCommands = array();
+            $_size24 = 0;
+            $_etype27 = 0;
+            $xfer += $input->readListBegin($_etype27, $_size24);
+            for ($_i28 = 0; $_i28 < $_size24; ++$_i28)
+            {
+              $elem29 = null;
+              $xfer += $input->readString($elem29);
+              $this->preJobCommands []= $elem29;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 12:
+          if ($ftype == TType::LST) {
+            $this->postJobCommands = array();
+            $_size30 = 0;
+            $_etype33 = 0;
+            $xfer += $input->readListBegin($_etype33, $_size30);
+            for ($_i34 = 0; $_i34 < $_size30; ++$_i34)
+            {
+              $elem35 = null;
+              $xfer += $input->readString($elem35);
+              $this->postJobCommands []= $elem35;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -549,9 +607,9 @@ class ApplicationDeploymentDescription {
       {
         $output->writeListBegin(TType::STRING, count($this->moduleLoadCmds));
         {
-          foreach ($this->moduleLoadCmds as $iter24)
+          foreach ($this->moduleLoadCmds as $iter36)
           {
-            $xfer += $output->writeString($iter24);
+            $xfer += $output->writeString($iter36);
           }
         }
         $output->writeListEnd();
@@ -566,9 +624,9 @@ class ApplicationDeploymentDescription {
       {
         $output->writeListBegin(TType::STRUCT, count($this->libPrependPaths));
         {
-          foreach ($this->libPrependPaths as $iter25)
+          foreach ($this->libPrependPaths as $iter37)
           {
-            $xfer += $iter25->write($output);
+            $xfer += $iter37->write($output);
           }
         }
         $output->writeListEnd();
@@ -583,9 +641,9 @@ class ApplicationDeploymentDescription {
       {
         $output->writeListBegin(TType::STRUCT, count($this->libAppendPaths));
         {
-          foreach ($this->libAppendPaths as $iter26)
+          foreach ($this->libAppendPaths as $iter38)
           {
-            $xfer += $iter26->write($output);
+            $xfer += $iter38->write($output);
           }
         }
         $output->writeListEnd();
@@ -600,9 +658,43 @@ class ApplicationDeploymentDescription {
       {
         $output->writeListBegin(TType::STRUCT, count($this->setEnvironment));
         {
-          foreach ($this->setEnvironment as $iter27)
+          foreach ($this->setEnvironment as $iter39)
           {
-            $xfer += $iter27->write($output);
+            $xfer += $iter39->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->preJobCommands !== null) {
+      if (!is_array($this->preJobCommands)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('preJobCommands', TType::LST, 11);
+      {
+        $output->writeListBegin(TType::STRING, count($this->preJobCommands));
+        {
+          foreach ($this->preJobCommands as $iter40)
+          {
+            $xfer += $output->writeString($iter40);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->postJobCommands !== null) {
+      if (!is_array($this->postJobCommands)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('postJobCommands', TType::LST, 12);
+      {
+        $output->writeListBegin(TType::STRING, count($this->postJobCommands));
+        {
+          foreach ($this->postJobCommands as $iter41)
+          {
+            $xfer += $output->writeString($iter41);
           }
         }
         $output->writeListEnd();

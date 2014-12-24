@@ -79,6 +79,26 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
                 }
             }
 
+            List<String> preJobCommands = deploymentDescription.getPreJobCommands();
+            if (preJobCommands != null && !preJobCommands.isEmpty()){
+                for (String cmd : preJobCommands){
+                    PreJobCommandResource cmdResource = new PreJobCommandResource();
+                    cmdResource.setAppDeploymentId(deploymentDescription.getAppDeploymentId());
+                    cmdResource.setCommand(cmd);
+                    cmdResource.save();
+                }
+            }
+
+            List<String> postJobCommands = deploymentDescription.getPostJobCommands();
+            if (postJobCommands != null && !postJobCommands.isEmpty()){
+                for (String cmd : postJobCommands){
+                    PreJobCommandResource cmdResource = new PreJobCommandResource();
+                    cmdResource.setAppDeploymentId(deploymentDescription.getAppDeploymentId());
+                    cmdResource.setCommand(cmd);
+                    cmdResource.save();
+                }
+            }
+
             List<SetEnvPaths> libPrependPaths = deploymentDescription.getLibPrependPaths();
             if (libPrependPaths != null && !libPrependPaths.isEmpty()){
                 for (SetEnvPaths path : libPrependPaths){
@@ -166,6 +186,46 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
                     cmdResource.setAppDeploymentResource(existingDep);
                     cmdResource.setAppDeploymentId(deploymentId);
                     cmdResource.save();
+                }
+            }
+
+            PreJobCommandResource preJobCommandResource = new PreJobCommandResource();
+            ids = new HashMap<String, String>();
+            ids.put(AbstractResource.PreJobCommandConstants.DEPLOYMENT_ID, deploymentId);
+            preJobCommandResource.remove(ids);
+            List<String> preJobCommands = updatedDeployment.getPreJobCommands();
+            if (preJobCommands != null && !preJobCommands.isEmpty()){
+                for (String cmd : preJobCommands){
+                    ids = new HashMap<String, String>();
+                    ids.put(AbstractResource.PreJobCommandConstants.DEPLOYMENT_ID, deploymentId);
+                    ids.put(AbstractResource.PreJobCommandConstants.COMMAND, cmd);
+                    if (preJobCommandResource.isExists(ids)){
+                        preJobCommandResource = (PreJobCommandResource)preJobCommandResource.get(ids);
+                    }
+                    preJobCommandResource.setCommand(cmd);
+                    preJobCommandResource.setAppDeploymentResource(existingDep);
+                    preJobCommandResource.setAppDeploymentId(deploymentId);
+                    preJobCommandResource.save();
+                }
+            }
+
+            PostJobCommandResource postJobCommandResource = new PostJobCommandResource();
+            ids = new HashMap<String, String>();
+            ids.put(AbstractResource.PreJobCommandConstants.DEPLOYMENT_ID, deploymentId);
+            postJobCommandResource.remove(ids);
+            List<String> postJobCommands = updatedDeployment.getPreJobCommands();
+            if (postJobCommands != null && !postJobCommands.isEmpty()){
+                for (String cmd : postJobCommands){
+                    ids = new HashMap<String, String>();
+                    ids.put(AbstractResource.PostJobCommandConstants.DEPLOYMENT_ID, deploymentId);
+                    ids.put(AbstractResource.PostJobCommandConstants.COMMAND, cmd);
+                    if (postJobCommandResource.isExists(ids)){
+                        postJobCommandResource = (PostJobCommandResource)postJobCommandResource.get(ids);
+                    }
+                    postJobCommandResource.setCommand(cmd);
+                    postJobCommandResource.setAppDeploymentResource(existingDep);
+                    postJobCommandResource.setAppDeploymentId(deploymentId);
+                    postJobCommandResource.save();
                 }
             }
 

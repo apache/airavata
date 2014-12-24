@@ -29,8 +29,8 @@ import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
 @SuppressWarnings("all") public enum CommandLineType implements org.apache.thrift.TEnum {
-  INCLUSIVE(0),
-  EXCLUSIVE(1);
+  IMPLICIT(0),
+  EXPLICIT(1);
 
   private final int value;
 
@@ -52,9 +52,9 @@ import org.apache.thrift.TEnum;
   public static CommandLineType findByValue(int value) { 
     switch (value) {
       case 0:
-        return INCLUSIVE;
+        return IMPLICIT;
       case 1:
-        return EXCLUSIVE;
+        return EXPLICIT;
       default:
         return null;
     }

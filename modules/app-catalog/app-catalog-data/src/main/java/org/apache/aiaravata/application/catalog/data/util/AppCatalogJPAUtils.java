@@ -130,16 +130,16 @@ public class AppCatalogJPAUtils {
                     logger.error("Object should be a GSISSH Export.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a GSISSH Export.");
                 }
-            case GSISSH_PREJOBCOMMAND:
-                if (o instanceof GSISSHPreJobCommand){
-                    return createGSISSHPreJObCommand((GSISSHPreJobCommand) o);
+            case PRE_JOBCOMMAND:
+                if (o instanceof PreJobCommand){
+                    return createPreJobCommand((PreJobCommand) o);
                 }else {
                     logger.error("Object should be a GSISSHPreJobCommand.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a GSISSHPreJobCommand.");
                 }
-            case GSISSH_POSTJOBCOMMAND:
-                if (o instanceof GSISSHPostJobCommand){
-                    return createGSISSHPostJObCommand((GSISSHPostJobCommand) o);
+            case POST_JOBCOMMAND:
+                if (o instanceof PostJobCommand){
+                    return createPostJObCommand((PostJobCommand) o);
                 }else {
                     logger.error("Object should be a GSISSHPostJobCommand.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a GSISSHPostJobCommand.");
@@ -540,22 +540,22 @@ public class AppCatalogJPAUtils {
         return resource;
     }
 
-    private static Resource createGSISSHPreJObCommand(GSISSHPreJobCommand o){
-        GSISSHPreJobCommandResource resource = new GSISSHPreJobCommandResource();
+    private static Resource createPreJobCommand(PreJobCommand o){
+        PreJobCommandResource resource = new PreJobCommandResource();
         if (o != null) {
-            resource.setSubmissionID(o.getSubmissionID());
+            resource.setAppDeploymentId(o.getDeploymentId());
             resource.setCommand(o.getCommand());
-            resource.setGsisshSubmissionResource((GSISSHSubmissionResource)createGSSISSHSubmission(o.getGsisshSubmission()));
+            resource.setAppDeploymentResource((AppDeploymentResource) createApplicationDeployment(o.getApplicationDeployment()));
         }
         return resource;
     }
 
-    private static Resource createGSISSHPostJObCommand(GSISSHPostJobCommand o){
-        GSISSHPostJobCommandResource resource = new GSISSHPostJobCommandResource();
+    private static Resource createPostJObCommand(PostJobCommand o){
+        PostJobCommandResource resource = new PostJobCommandResource();
         if (o != null){
-            resource.setSubmissionID(o.getSubmissionID());
+            resource.setAppDeploymentId(o.getDeploymentId());
             resource.setCommand(o.getCommand());
-            resource.setGsisshSubmissionResource((GSISSHSubmissionResource)createGSSISSHSubmission(o.getGsisshSubmission()));
+            resource.setAppDeploymentResource((AppDeploymentResource) createApplicationDeployment(o.getDeployment()));
         }
         return resource;
     }

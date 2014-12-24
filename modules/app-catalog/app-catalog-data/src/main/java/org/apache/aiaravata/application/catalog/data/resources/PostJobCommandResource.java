@@ -20,10 +20,9 @@
 package org.apache.aiaravata.application.catalog.data.resources;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
-import org.apache.aiaravata.application.catalog.data.model.ComputeResource;
-import org.apache.aiaravata.application.catalog.data.model.GSISSHPostJobCommand;
-import org.apache.aiaravata.application.catalog.data.model.GSISSHPostJobCommandPK;
-import org.apache.aiaravata.application.catalog.data.model.GSISSHSubmission;
+import org.apache.aiaravata.application.catalog.data.model.ApplicationDeployment;
+import org.apache.aiaravata.application.catalog.data.model.PostJobCommand;
+import org.apache.aiaravata.application.catalog.data.model.PostJobCommandPK;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogJPAUtils;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogQueryGenerator;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogResourceType;
@@ -38,13 +37,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GSISSHPostJobCommandResource extends AbstractResource {
-    private final static Logger logger = LoggerFactory.getLogger(GSISSHPostJobCommandResource.class);
+public class PostJobCommandResource extends AbstractResource {
+    private final static Logger logger = LoggerFactory.getLogger(PostJobCommandResource.class);
 
-    private String submissionID;
+    private String appDeploymentId;
     private String command;
 
-    private GSISSHSubmissionResource gsisshSubmissionResource;
+    private AppDeploymentResource appDeploymentResource;
 
 
     public void remove(Object identifier) throws AppCatalogException {
@@ -60,10 +59,10 @@ public class GSISSHPostJobCommandResource extends AbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator= new AppCatalogQueryGenerator(GSISSH_POSTJOBCOMMAND);
-            generator.setParameter(GSISSHPostJobCommandConstants.SUBMISSION_ID,
-                    ids.get(GSISSHPostJobCommandConstants.SUBMISSION_ID));
-            generator.setParameter(GSISSHPostJobCommandConstants.COMMAND, ids.get(GSISSHPostJobCommandConstants.COMMAND));
+            AppCatalogQueryGenerator generator= new AppCatalogQueryGenerator(POST_JOBCOMMAND);
+            generator.setParameter(PostJobCommandConstants.DEPLOYMENT_ID,
+                    ids.get(PostJobCommandConstants.DEPLOYMENT_ID));
+            generator.setParameter(PostJobCommandConstants.COMMAND, ids.get(PostJobCommandConstants.COMMAND));
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
@@ -94,18 +93,18 @@ public class GSISSHPostJobCommandResource extends AbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(GSISSH_POSTJOBCOMMAND);
-            generator.setParameter(GSISSHPostJobCommandConstants.SUBMISSION_ID,
-                    ids.get(GSISSHPostJobCommandConstants.SUBMISSION_ID));
-            generator.setParameter(GSISSHPostJobCommandConstants.COMMAND, ids.get(GSISSHPostJobCommandConstants.COMMAND));
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(POST_JOBCOMMAND);
+            generator.setParameter(PostJobCommandConstants.DEPLOYMENT_ID,
+                    ids.get(PostJobCommandConstants.DEPLOYMENT_ID));
+            generator.setParameter(PostJobCommandConstants.COMMAND, ids.get(PostJobCommandConstants.COMMAND));
             Query q = generator.selectQuery(em);
-            GSISSHPostJobCommand gsisshPostJobCommand = (GSISSHPostJobCommand) q.getSingleResult();
-            GSISSHPostJobCommandResource gsisshPostJobCommandResource =
-                    (GSISSHPostJobCommandResource) AppCatalogJPAUtils.getResource(
-                            AppCatalogResourceType.GSISSH_POSTJOBCOMMAND, gsisshPostJobCommand);
+            PostJobCommand postJobCommand = (PostJobCommand) q.getSingleResult();
+            PostJobCommandResource postJobCommandResource =
+                    (PostJobCommandResource) AppCatalogJPAUtils.getResource(
+                            AppCatalogResourceType.POST_JOBCOMMAND, postJobCommand);
             em.getTransaction().commit();
             em.close();
-            return gsisshPostJobCommandResource;
+            return postJobCommandResource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -126,32 +125,32 @@ public class GSISSHPostJobCommandResource extends AbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             Query q;
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(GSISSH_POSTJOBCOMMAND);
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(POST_JOBCOMMAND);
             List results;
-            if (fieldName.equals(GSISSHPostJobCommandConstants.SUBMISSION_ID)) {
-                generator.setParameter(GSISSHPostJobCommandConstants.SUBMISSION_ID, value);
+            if (fieldName.equals(PostJobCommandConstants.DEPLOYMENT_ID)) {
+                generator.setParameter(PostJobCommandConstants.DEPLOYMENT_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        GSISSHPostJobCommand gsisshPostJobCommand = (GSISSHPostJobCommand) result;
-                        GSISSHPostJobCommandResource gsisshPostJobCommandResource =
-                                (GSISSHPostJobCommandResource) AppCatalogJPAUtils.getResource(
-                                        AppCatalogResourceType.GSISSH_POSTJOBCOMMAND, gsisshPostJobCommand);
-                        gsiSSHPostJobCommandResources.add(gsisshPostJobCommandResource);
+                        PostJobCommand postJobCommand = (PostJobCommand) result;
+                        PostJobCommandResource postJobCommandResource =
+                                (PostJobCommandResource) AppCatalogJPAUtils.getResource(
+                                        AppCatalogResourceType.POST_JOBCOMMAND, postJobCommand);
+                        gsiSSHPostJobCommandResources.add(postJobCommandResource);
                     }
                 }
-            } else if (fieldName.equals(GSISSHPostJobCommandConstants.COMMAND)) {
-                generator.setParameter(GSISSHPostJobCommandConstants.COMMAND, value);
+            } else if (fieldName.equals(PostJobCommandConstants.COMMAND)) {
+                generator.setParameter(PostJobCommandConstants.COMMAND, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        GSISSHPostJobCommand gsisshPostJobCommand = (GSISSHPostJobCommand) result;
-                        GSISSHPostJobCommandResource gsisshPostJobCommandResource =
-                                (GSISSHPostJobCommandResource) AppCatalogJPAUtils.getResource(
-                                        AppCatalogResourceType.GSISSH_POSTJOBCOMMAND, gsisshPostJobCommand);
-                        gsiSSHPostJobCommandResources.add(gsisshPostJobCommandResource);
+                        PostJobCommand postJobCommand = (PostJobCommand) result;
+                        PostJobCommandResource postJobCommandResource =
+                                (PostJobCommandResource) AppCatalogJPAUtils.getResource(
+                                        AppCatalogResourceType.POST_JOBCOMMAND, postJobCommand);
+                        gsiSSHPostJobCommandResources.add(postJobCommandResource);
                     }
                 }
             } else {
@@ -193,26 +192,26 @@ public class GSISSHPostJobCommandResource extends AbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             Query q;
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(GSISSH_POSTJOBCOMMAND);
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(POST_JOBCOMMAND);
             List results;
-            if (fieldName.equals(GSISSHPostJobCommandConstants.SUBMISSION_ID)) {
-                generator.setParameter(GSISSHPostJobCommandConstants.SUBMISSION_ID, value);
+            if (fieldName.equals(PostJobCommandConstants.DEPLOYMENT_ID)) {
+                generator.setParameter(PostJobCommandConstants.DEPLOYMENT_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        GSISSHPostJobCommand gsisshPostJobCommand = (GSISSHPostJobCommand) result;
-                        gsiSSHPostJobResourceIDs.add(gsisshPostJobCommand.getSubmissionID());
+                        PostJobCommand postJobCommand = (PostJobCommand) result;
+                        gsiSSHPostJobResourceIDs.add(postJobCommand.getDeploymentId());
                     }
                 }
-            } else if (fieldName.equals(GSISSHPostJobCommandConstants.COMMAND)) {
-                generator.setParameter(GSISSHPostJobCommandConstants.COMMAND, value);
+            } else if (fieldName.equals(PostJobCommandConstants.COMMAND)) {
+                generator.setParameter(PostJobCommandConstants.COMMAND, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        GSISSHPostJobCommand gsisshPostJobCommand = (GSISSHPostJobCommand) result;
-                        gsiSSHPostJobResourceIDs.add(gsisshPostJobCommand.getSubmissionID());
+                        PostJobCommand postJobCommand = (PostJobCommand) result;
+                        gsiSSHPostJobResourceIDs.add(postJobCommand.getDeploymentId());
                     }
                 }
             } else {
@@ -241,24 +240,24 @@ public class GSISSHPostJobCommandResource extends AbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            GSISSHPostJobCommand existingPostJobCommand = em.find(GSISSHPostJobCommand.class,
-                    new GSISSHPostJobCommandPK(submissionID, command));
+            PostJobCommand existingPostJobCommand = em.find(PostJobCommand.class,
+                    new PostJobCommandPK(appDeploymentId, command));
             em.close();
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            GSISSHSubmission gsisshSubmission = em.find(GSISSHSubmission.class, submissionID);
+            ApplicationDeployment deployment = em.find(ApplicationDeployment.class, appDeploymentId);
             if (existingPostJobCommand !=  null){
-                existingPostJobCommand.setSubmissionID(submissionID);
+                existingPostJobCommand.setDeploymentId(appDeploymentId);
                 existingPostJobCommand.setCommand(command);
-                existingPostJobCommand.setGsisshSubmission(gsisshSubmission);
+                existingPostJobCommand.setDeployment(deployment);
                 em.merge(existingPostJobCommand);
             }else {
-                GSISSHPostJobCommand gsisshPostJobCommand = new GSISSHPostJobCommand();
-                gsisshPostJobCommand.setSubmissionID(submissionID);
-                gsisshPostJobCommand.setCommand(command);
-                gsisshPostJobCommand.setGsisshSubmission(gsisshSubmission);
-                em.persist(gsisshPostJobCommand);
+                PostJobCommand postJobCommand = new PostJobCommand();
+                postJobCommand.setDeploymentId(appDeploymentId);
+                postJobCommand.setCommand(command);
+                postJobCommand.setDeployment(deployment);
+                em.persist(postJobCommand);
             }
             em.getTransaction().commit();
             em.close();
@@ -287,12 +286,12 @@ public class GSISSHPostJobCommandResource extends AbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            GSISSHPostJobCommand gsisshPostJobCommand = em.find(GSISSHPostJobCommand.class, new GSISSHPostJobCommandPK(
-                    ids.get(GSISSHPostJobCommandConstants.SUBMISSION_ID),
-                    ids.get(GSISSHPostJobCommandConstants.COMMAND)));
+            PostJobCommand postJobCommand = em.find(PostJobCommand.class, new PostJobCommandPK(
+                    ids.get(PostJobCommandConstants.DEPLOYMENT_ID),
+                    ids.get(PostJobCommandConstants.COMMAND)));
 
             em.close();
-            return gsisshPostJobCommand != null;
+            return postJobCommand != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -306,12 +305,12 @@ public class GSISSHPostJobCommandResource extends AbstractResource {
         }
     }
 
-    public String getSubmissionID() {
-        return submissionID;
+    public String getAppDeploymentId() {
+        return appDeploymentId;
     }
 
-    public void setSubmissionID(String submissionID) {
-        this.submissionID = submissionID;
+    public void setAppDeploymentId(String appDeploymentId) {
+        this.appDeploymentId = appDeploymentId;
     }
 
     public String getCommand() {
@@ -322,11 +321,11 @@ public class GSISSHPostJobCommandResource extends AbstractResource {
         this.command = command;
     }
 
-    public GSISSHSubmissionResource getGsisshSubmissionResource() {
-        return gsisshSubmissionResource;
+    public AppDeploymentResource getAppDeploymentResource() {
+        return appDeploymentResource;
     }
 
-    public void setGsisshSubmissionResource(GSISSHSubmissionResource gsisshSubmissionResource) {
-        this.gsisshSubmissionResource = gsisshSubmissionResource;
+    public void setAppDeploymentResource(AppDeploymentResource appDeploymentResource) {
+        this.appDeploymentResource = appDeploymentResource;
     }
 }

@@ -215,7 +215,7 @@ public class GFACGSISSHUtils {
         }
         for (InputDataObjectType inputDataObjectType : sortedInputSet) {
             if (inputDataObjectType.getAddedToCommandLine() != null
-                    && inputDataObjectType.getAddedToCommandLine() == CommandLineType.EXCLUSIVE) {
+                    && inputDataObjectType.getAddedToCommandLine() == CommandLineType.EXPLICIT) {
                 continue;
             }
             if (inputDataObjectType.getApplicationArgument() != null
@@ -234,7 +234,7 @@ public class GFACGSISSHUtils {
             if (outputParam instanceof OutputDataObjectType) {
                 OutputDataObjectType output = (OutputDataObjectType) outputParam;
                 if (output.getValue() != null && !output.getValue().equals("") && output.getAddedToCommandLine() != null
-                        && output.getAddedToCommandLine() == CommandLineType.INCLUSIVE) {
+                        && output.getAddedToCommandLine() == CommandLineType.IMPLICIT) {
                     inputValues.add(output.getValue());
                 }
             }

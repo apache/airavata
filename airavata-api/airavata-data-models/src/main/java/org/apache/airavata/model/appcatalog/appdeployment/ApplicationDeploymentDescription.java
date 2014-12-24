@@ -88,6 +88,8 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField LIB_PREPEND_PATHS_FIELD_DESC = new org.apache.thrift.protocol.TField("libPrependPaths", org.apache.thrift.protocol.TType.LIST, (short)8);
   private static final org.apache.thrift.protocol.TField LIB_APPEND_PATHS_FIELD_DESC = new org.apache.thrift.protocol.TField("libAppendPaths", org.apache.thrift.protocol.TType.LIST, (short)9);
   private static final org.apache.thrift.protocol.TField SET_ENVIRONMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("setEnvironment", org.apache.thrift.protocol.TType.LIST, (short)10);
+  private static final org.apache.thrift.protocol.TField PRE_JOB_COMMANDS_FIELD_DESC = new org.apache.thrift.protocol.TField("preJobCommands", org.apache.thrift.protocol.TType.LIST, (short)11);
+  private static final org.apache.thrift.protocol.TField POST_JOB_COMMANDS_FIELD_DESC = new org.apache.thrift.protocol.TField("postJobCommands", org.apache.thrift.protocol.TType.LIST, (short)12);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -105,6 +107,8 @@ import org.slf4j.LoggerFactory;
   private List<SetEnvPaths> libPrependPaths; // optional
   private List<SetEnvPaths> libAppendPaths; // optional
   private List<SetEnvPaths> setEnvironment; // optional
+  private List<String> preJobCommands; // optional
+  private List<String> postJobCommands; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -121,7 +125,9 @@ import org.slf4j.LoggerFactory;
     MODULE_LOAD_CMDS((short)7, "moduleLoadCmds"),
     LIB_PREPEND_PATHS((short)8, "libPrependPaths"),
     LIB_APPEND_PATHS((short)9, "libAppendPaths"),
-    SET_ENVIRONMENT((short)10, "setEnvironment");
+    SET_ENVIRONMENT((short)10, "setEnvironment"),
+    PRE_JOB_COMMANDS((short)11, "preJobCommands"),
+    POST_JOB_COMMANDS((short)12, "postJobCommands");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -156,6 +162,10 @@ import org.slf4j.LoggerFactory;
           return LIB_APPEND_PATHS;
         case 10: // SET_ENVIRONMENT
           return SET_ENVIRONMENT;
+        case 11: // PRE_JOB_COMMANDS
+          return PRE_JOB_COMMANDS;
+        case 12: // POST_JOB_COMMANDS
+          return POST_JOB_COMMANDS;
         default:
           return null;
       }
@@ -196,7 +206,7 @@ import org.slf4j.LoggerFactory;
   }
 
   // isset id assignments
-  private _Fields optionals[] = {_Fields.APP_DEPLOYMENT_DESCRIPTION,_Fields.MODULE_LOAD_CMDS,_Fields.LIB_PREPEND_PATHS,_Fields.LIB_APPEND_PATHS,_Fields.SET_ENVIRONMENT};
+  private _Fields optionals[] = {_Fields.APP_DEPLOYMENT_DESCRIPTION,_Fields.MODULE_LOAD_CMDS,_Fields.LIB_PREPEND_PATHS,_Fields.LIB_APPEND_PATHS,_Fields.SET_ENVIRONMENT,_Fields.PRE_JOB_COMMANDS,_Fields.POST_JOB_COMMANDS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -224,6 +234,12 @@ import org.slf4j.LoggerFactory;
     tmpMap.put(_Fields.SET_ENVIRONMENT, new org.apache.thrift.meta_data.FieldMetaData("setEnvironment", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, SetEnvPaths.class))));
+    tmpMap.put(_Fields.PRE_JOB_COMMANDS, new org.apache.thrift.meta_data.FieldMetaData("preJobCommands", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
+    tmpMap.put(_Fields.POST_JOB_COMMANDS, new org.apache.thrift.meta_data.FieldMetaData("postJobCommands", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ApplicationDeploymentDescription.class, metaDataMap);
   }
@@ -297,6 +313,14 @@ import org.slf4j.LoggerFactory;
       }
       this.setEnvironment = __this__setEnvironment;
     }
+    if (other.isSetPreJobCommands()) {
+      List<String> __this__preJobCommands = new ArrayList<String>(other.preJobCommands);
+      this.preJobCommands = __this__preJobCommands;
+    }
+    if (other.isSetPostJobCommands()) {
+      List<String> __this__postJobCommands = new ArrayList<String>(other.postJobCommands);
+      this.postJobCommands = __this__postJobCommands;
+    }
   }
 
   public ApplicationDeploymentDescription deepCopy() {
@@ -317,6 +341,8 @@ import org.slf4j.LoggerFactory;
     this.libPrependPaths = null;
     this.libAppendPaths = null;
     this.setEnvironment = null;
+    this.preJobCommands = null;
+    this.postJobCommands = null;
   }
 
   public String getAppDeploymentId() {
@@ -617,6 +643,82 @@ import org.slf4j.LoggerFactory;
     }
   }
 
+  public int getPreJobCommandsSize() {
+    return (this.preJobCommands == null) ? 0 : this.preJobCommands.size();
+  }
+
+  public java.util.Iterator<String> getPreJobCommandsIterator() {
+    return (this.preJobCommands == null) ? null : this.preJobCommands.iterator();
+  }
+
+  public void addToPreJobCommands(String elem) {
+    if (this.preJobCommands == null) {
+      this.preJobCommands = new ArrayList<String>();
+    }
+    this.preJobCommands.add(elem);
+  }
+
+  public List<String> getPreJobCommands() {
+    return this.preJobCommands;
+  }
+
+  public void setPreJobCommands(List<String> preJobCommands) {
+    this.preJobCommands = preJobCommands;
+  }
+
+  public void unsetPreJobCommands() {
+    this.preJobCommands = null;
+  }
+
+  /** Returns true if field preJobCommands is set (has been assigned a value) and false otherwise */
+  public boolean isSetPreJobCommands() {
+    return this.preJobCommands != null;
+  }
+
+  public void setPreJobCommandsIsSet(boolean value) {
+    if (!value) {
+      this.preJobCommands = null;
+    }
+  }
+
+  public int getPostJobCommandsSize() {
+    return (this.postJobCommands == null) ? 0 : this.postJobCommands.size();
+  }
+
+  public java.util.Iterator<String> getPostJobCommandsIterator() {
+    return (this.postJobCommands == null) ? null : this.postJobCommands.iterator();
+  }
+
+  public void addToPostJobCommands(String elem) {
+    if (this.postJobCommands == null) {
+      this.postJobCommands = new ArrayList<String>();
+    }
+    this.postJobCommands.add(elem);
+  }
+
+  public List<String> getPostJobCommands() {
+    return this.postJobCommands;
+  }
+
+  public void setPostJobCommands(List<String> postJobCommands) {
+    this.postJobCommands = postJobCommands;
+  }
+
+  public void unsetPostJobCommands() {
+    this.postJobCommands = null;
+  }
+
+  /** Returns true if field postJobCommands is set (has been assigned a value) and false otherwise */
+  public boolean isSetPostJobCommands() {
+    return this.postJobCommands != null;
+  }
+
+  public void setPostJobCommandsIsSet(boolean value) {
+    if (!value) {
+      this.postJobCommands = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case APP_DEPLOYMENT_ID:
@@ -699,6 +801,22 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case PRE_JOB_COMMANDS:
+      if (value == null) {
+        unsetPreJobCommands();
+      } else {
+        setPreJobCommands((List<String>)value);
+      }
+      break;
+
+    case POST_JOB_COMMANDS:
+      if (value == null) {
+        unsetPostJobCommands();
+      } else {
+        setPostJobCommands((List<String>)value);
+      }
+      break;
+
     }
   }
 
@@ -734,6 +852,12 @@ import org.slf4j.LoggerFactory;
     case SET_ENVIRONMENT:
       return getSetEnvironment();
 
+    case PRE_JOB_COMMANDS:
+      return getPreJobCommands();
+
+    case POST_JOB_COMMANDS:
+      return getPostJobCommands();
+
     }
     throw new IllegalStateException();
   }
@@ -765,6 +889,10 @@ import org.slf4j.LoggerFactory;
       return isSetLibAppendPaths();
     case SET_ENVIRONMENT:
       return isSetSetEnvironment();
+    case PRE_JOB_COMMANDS:
+      return isSetPreJobCommands();
+    case POST_JOB_COMMANDS:
+      return isSetPostJobCommands();
     }
     throw new IllegalStateException();
   }
@@ -869,6 +997,24 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_setEnvironment && that_present_setEnvironment))
         return false;
       if (!this.setEnvironment.equals(that.setEnvironment))
+        return false;
+    }
+
+    boolean this_present_preJobCommands = true && this.isSetPreJobCommands();
+    boolean that_present_preJobCommands = true && that.isSetPreJobCommands();
+    if (this_present_preJobCommands || that_present_preJobCommands) {
+      if (!(this_present_preJobCommands && that_present_preJobCommands))
+        return false;
+      if (!this.preJobCommands.equals(that.preJobCommands))
+        return false;
+    }
+
+    boolean this_present_postJobCommands = true && this.isSetPostJobCommands();
+    boolean that_present_postJobCommands = true && that.isSetPostJobCommands();
+    if (this_present_postJobCommands || that_present_postJobCommands) {
+      if (!(this_present_postJobCommands && that_present_postJobCommands))
+        return false;
+      if (!this.postJobCommands.equals(that.postJobCommands))
         return false;
     }
 
@@ -988,6 +1134,26 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetPreJobCommands()).compareTo(other.isSetPreJobCommands());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetPreJobCommands()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.preJobCommands, other.preJobCommands);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetPostJobCommands()).compareTo(other.isSetPostJobCommands());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetPostJobCommands()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.postJobCommands, other.postJobCommands);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -1094,6 +1260,26 @@ import org.slf4j.LoggerFactory;
         sb.append("null");
       } else {
         sb.append(this.setEnvironment);
+      }
+      first = false;
+    }
+    if (isSetPreJobCommands()) {
+      if (!first) sb.append(", ");
+      sb.append("preJobCommands:");
+      if (this.preJobCommands == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.preJobCommands);
+      }
+      first = false;
+    }
+    if (isSetPostJobCommands()) {
+      if (!first) sb.append(", ");
+      sb.append("postJobCommands:");
+      if (this.postJobCommands == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.postJobCommands);
       }
       first = false;
     }
@@ -1283,6 +1469,42 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 11: // PRE_JOB_COMMANDS
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list12 = iprot.readListBegin();
+                struct.preJobCommands = new ArrayList<String>(_list12.size);
+                for (int _i13 = 0; _i13 < _list12.size; ++_i13)
+                {
+                  String _elem14;
+                  _elem14 = iprot.readString();
+                  struct.preJobCommands.add(_elem14);
+                }
+                iprot.readListEnd();
+              }
+              struct.setPreJobCommandsIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 12: // POST_JOB_COMMANDS
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list15 = iprot.readListBegin();
+                struct.postJobCommands = new ArrayList<String>(_list15.size);
+                for (int _i16 = 0; _i16 < _list15.size; ++_i16)
+                {
+                  String _elem17;
+                  _elem17 = iprot.readString();
+                  struct.postJobCommands.add(_elem17);
+                }
+                iprot.readListEnd();
+              }
+              struct.setPostJobCommandsIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1333,9 +1555,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(MODULE_LOAD_CMDS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.moduleLoadCmds.size()));
-            for (String _iter12 : struct.moduleLoadCmds)
+            for (String _iter18 : struct.moduleLoadCmds)
             {
-              oprot.writeString(_iter12);
+              oprot.writeString(_iter18);
             }
             oprot.writeListEnd();
           }
@@ -1347,9 +1569,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(LIB_PREPEND_PATHS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.libPrependPaths.size()));
-            for (SetEnvPaths _iter13 : struct.libPrependPaths)
+            for (SetEnvPaths _iter19 : struct.libPrependPaths)
             {
-              _iter13.write(oprot);
+              _iter19.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1361,9 +1583,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(LIB_APPEND_PATHS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.libAppendPaths.size()));
-            for (SetEnvPaths _iter14 : struct.libAppendPaths)
+            for (SetEnvPaths _iter20 : struct.libAppendPaths)
             {
-              _iter14.write(oprot);
+              _iter20.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1375,9 +1597,37 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(SET_ENVIRONMENT_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.setEnvironment.size()));
-            for (SetEnvPaths _iter15 : struct.setEnvironment)
+            for (SetEnvPaths _iter21 : struct.setEnvironment)
             {
-              _iter15.write(oprot);
+              _iter21.write(oprot);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.preJobCommands != null) {
+        if (struct.isSetPreJobCommands()) {
+          oprot.writeFieldBegin(PRE_JOB_COMMANDS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.preJobCommands.size()));
+            for (String _iter22 : struct.preJobCommands)
+            {
+              oprot.writeString(_iter22);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.postJobCommands != null) {
+        if (struct.isSetPostJobCommands()) {
+          oprot.writeFieldBegin(POST_JOB_COMMANDS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.postJobCommands.size()));
+            for (String _iter23 : struct.postJobCommands)
+            {
+              oprot.writeString(_iter23);
             }
             oprot.writeListEnd();
           }
@@ -1422,43 +1672,67 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetSetEnvironment()) {
         optionals.set(4);
       }
-      oprot.writeBitSet(optionals, 5);
+      if (struct.isSetPreJobCommands()) {
+        optionals.set(5);
+      }
+      if (struct.isSetPostJobCommands()) {
+        optionals.set(6);
+      }
+      oprot.writeBitSet(optionals, 7);
       if (struct.isSetAppDeploymentDescription()) {
         oprot.writeString(struct.appDeploymentDescription);
       }
       if (struct.isSetModuleLoadCmds()) {
         {
           oprot.writeI32(struct.moduleLoadCmds.size());
-          for (String _iter16 : struct.moduleLoadCmds)
+          for (String _iter24 : struct.moduleLoadCmds)
           {
-            oprot.writeString(_iter16);
+            oprot.writeString(_iter24);
           }
         }
       }
       if (struct.isSetLibPrependPaths()) {
         {
           oprot.writeI32(struct.libPrependPaths.size());
-          for (SetEnvPaths _iter17 : struct.libPrependPaths)
+          for (SetEnvPaths _iter25 : struct.libPrependPaths)
           {
-            _iter17.write(oprot);
+            _iter25.write(oprot);
           }
         }
       }
       if (struct.isSetLibAppendPaths()) {
         {
           oprot.writeI32(struct.libAppendPaths.size());
-          for (SetEnvPaths _iter18 : struct.libAppendPaths)
+          for (SetEnvPaths _iter26 : struct.libAppendPaths)
           {
-            _iter18.write(oprot);
+            _iter26.write(oprot);
           }
         }
       }
       if (struct.isSetSetEnvironment()) {
         {
           oprot.writeI32(struct.setEnvironment.size());
-          for (SetEnvPaths _iter19 : struct.setEnvironment)
+          for (SetEnvPaths _iter27 : struct.setEnvironment)
           {
-            _iter19.write(oprot);
+            _iter27.write(oprot);
+          }
+        }
+      }
+      if (struct.isSetPreJobCommands()) {
+        {
+          oprot.writeI32(struct.preJobCommands.size());
+          for (String _iter28 : struct.preJobCommands)
+          {
+            oprot.writeString(_iter28);
+          }
+        }
+      }
+      if (struct.isSetPostJobCommands()) {
+        {
+          oprot.writeI32(struct.postJobCommands.size());
+          for (String _iter29 : struct.postJobCommands)
+          {
+            oprot.writeString(_iter29);
           }
         }
       }
@@ -1477,65 +1751,91 @@ import org.slf4j.LoggerFactory;
       struct.setExecutablePathIsSet(true);
       struct.parallelism = ApplicationParallelismType.findByValue(iprot.readI32());
       struct.setParallelismIsSet(true);
-      BitSet incoming = iprot.readBitSet(5);
+      BitSet incoming = iprot.readBitSet(7);
       if (incoming.get(0)) {
         struct.appDeploymentDescription = iprot.readString();
         struct.setAppDeploymentDescriptionIsSet(true);
       }
       if (incoming.get(1)) {
         {
-          org.apache.thrift.protocol.TList _list20 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
-          struct.moduleLoadCmds = new ArrayList<String>(_list20.size);
-          for (int _i21 = 0; _i21 < _list20.size; ++_i21)
+          org.apache.thrift.protocol.TList _list30 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.moduleLoadCmds = new ArrayList<String>(_list30.size);
+          for (int _i31 = 0; _i31 < _list30.size; ++_i31)
           {
-            String _elem22;
-            _elem22 = iprot.readString();
-            struct.moduleLoadCmds.add(_elem22);
+            String _elem32;
+            _elem32 = iprot.readString();
+            struct.moduleLoadCmds.add(_elem32);
           }
         }
         struct.setModuleLoadCmdsIsSet(true);
       }
       if (incoming.get(2)) {
         {
-          org.apache.thrift.protocol.TList _list23 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.libPrependPaths = new ArrayList<SetEnvPaths>(_list23.size);
-          for (int _i24 = 0; _i24 < _list23.size; ++_i24)
+          org.apache.thrift.protocol.TList _list33 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.libPrependPaths = new ArrayList<SetEnvPaths>(_list33.size);
+          for (int _i34 = 0; _i34 < _list33.size; ++_i34)
           {
-            SetEnvPaths _elem25;
-            _elem25 = new SetEnvPaths();
-            _elem25.read(iprot);
-            struct.libPrependPaths.add(_elem25);
+            SetEnvPaths _elem35;
+            _elem35 = new SetEnvPaths();
+            _elem35.read(iprot);
+            struct.libPrependPaths.add(_elem35);
           }
         }
         struct.setLibPrependPathsIsSet(true);
       }
       if (incoming.get(3)) {
         {
-          org.apache.thrift.protocol.TList _list26 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.libAppendPaths = new ArrayList<SetEnvPaths>(_list26.size);
-          for (int _i27 = 0; _i27 < _list26.size; ++_i27)
+          org.apache.thrift.protocol.TList _list36 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.libAppendPaths = new ArrayList<SetEnvPaths>(_list36.size);
+          for (int _i37 = 0; _i37 < _list36.size; ++_i37)
           {
-            SetEnvPaths _elem28;
-            _elem28 = new SetEnvPaths();
-            _elem28.read(iprot);
-            struct.libAppendPaths.add(_elem28);
+            SetEnvPaths _elem38;
+            _elem38 = new SetEnvPaths();
+            _elem38.read(iprot);
+            struct.libAppendPaths.add(_elem38);
           }
         }
         struct.setLibAppendPathsIsSet(true);
       }
       if (incoming.get(4)) {
         {
-          org.apache.thrift.protocol.TList _list29 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.setEnvironment = new ArrayList<SetEnvPaths>(_list29.size);
-          for (int _i30 = 0; _i30 < _list29.size; ++_i30)
+          org.apache.thrift.protocol.TList _list39 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.setEnvironment = new ArrayList<SetEnvPaths>(_list39.size);
+          for (int _i40 = 0; _i40 < _list39.size; ++_i40)
           {
-            SetEnvPaths _elem31;
-            _elem31 = new SetEnvPaths();
-            _elem31.read(iprot);
-            struct.setEnvironment.add(_elem31);
+            SetEnvPaths _elem41;
+            _elem41 = new SetEnvPaths();
+            _elem41.read(iprot);
+            struct.setEnvironment.add(_elem41);
           }
         }
         struct.setSetEnvironmentIsSet(true);
+      }
+      if (incoming.get(5)) {
+        {
+          org.apache.thrift.protocol.TList _list42 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.preJobCommands = new ArrayList<String>(_list42.size);
+          for (int _i43 = 0; _i43 < _list42.size; ++_i43)
+          {
+            String _elem44;
+            _elem44 = iprot.readString();
+            struct.preJobCommands.add(_elem44);
+          }
+        }
+        struct.setPreJobCommandsIsSet(true);
+      }
+      if (incoming.get(6)) {
+        {
+          org.apache.thrift.protocol.TList _list45 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.postJobCommands = new ArrayList<String>(_list45.size);
+          for (int _i46 = 0; _i46 < _list45.size; ++_i46)
+          {
+            String _elem47;
+            _elem47 = iprot.readString();
+            struct.postJobCommands.add(_elem47);
+          }
+        }
+        struct.setPostJobCommandsIsSet(true);
       }
     }
   }

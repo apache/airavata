@@ -58,21 +58,12 @@ extern const std::map<int, const char*> _ValidityType_VALUES_TO_NAMES;
 
 struct CommandLineType {
   enum type {
-    INCLUSIVE = 0,
-    EXCLUSIVE = 1
+    IMPLICIT = 0,
+    EXPLICIT = 1
   };
 };
 
 extern const std::map<int, const char*> _CommandLineType_VALUES_TO_NAMES;
-
-struct InputMetadataType {
-  enum type {
-    MEMORY = 0,
-    CPU = 1
-  };
-};
-
-extern const std::map<int, const char*> _InputMetadataType_VALUES_TO_NAMES;
 
 typedef struct _InputDataObjectType__isset {
   _InputDataObjectType__isset() : value(false), type(false), applicationArgument(false), standardInput(true), userFriendlyDescription(false), metaData(false), inputOrder(false), inputValid(false), addedToCommandLine(false), dataStaged(true) {}
