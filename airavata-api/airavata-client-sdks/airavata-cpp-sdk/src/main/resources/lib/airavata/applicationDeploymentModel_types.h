@@ -161,19 +161,21 @@ class ApplicationModule {
 void swap(ApplicationModule &a, ApplicationModule &b);
 
 typedef struct _ApplicationDeploymentDescription__isset {
-  _ApplicationDeploymentDescription__isset() : appDeploymentDescription(false), moduleLoadCmds(false), libPrependPaths(false), libAppendPaths(false), setEnvironment(false) {}
+  _ApplicationDeploymentDescription__isset() : appDeploymentDescription(false), moduleLoadCmds(false), libPrependPaths(false), libAppendPaths(false), setEnvironment(false), preJobCommands(false), postJobCommands(false) {}
   bool appDeploymentDescription;
   bool moduleLoadCmds;
   bool libPrependPaths;
   bool libAppendPaths;
   bool setEnvironment;
+  bool preJobCommands;
+  bool postJobCommands;
 } _ApplicationDeploymentDescription__isset;
 
 class ApplicationDeploymentDescription {
  public:
 
-  static const char* ascii_fingerprint; // = "179A145BD54BBE10649DEF31C71143C9";
-  static const uint8_t binary_fingerprint[16]; // = {0x17,0x9A,0x14,0x5B,0xD5,0x4B,0xBE,0x10,0x64,0x9D,0xEF,0x31,0xC7,0x11,0x43,0xC9};
+  static const char* ascii_fingerprint; // = "3B2F93AE9F0E6A621AF867419ADD9E5A";
+  static const uint8_t binary_fingerprint[16]; // = {0x3B,0x2F,0x93,0xAE,0x9F,0x0E,0x6A,0x62,0x1A,0xF8,0x67,0x41,0x9A,0xDD,0x9E,0x5A};
 
   ApplicationDeploymentDescription() : appDeploymentId("DO_NOT_SET_AT_CLIENTS"), appModuleId(), computeHostId(), executablePath(), parallelism((ApplicationParallelismType::type)0), appDeploymentDescription() {
     parallelism = (ApplicationParallelismType::type)0;
@@ -192,6 +194,8 @@ class ApplicationDeploymentDescription {
   std::vector<SetEnvPaths>  libPrependPaths;
   std::vector<SetEnvPaths>  libAppendPaths;
   std::vector<SetEnvPaths>  setEnvironment;
+  std::vector<std::string>  preJobCommands;
+  std::vector<std::string>  postJobCommands;
 
   _ApplicationDeploymentDescription__isset __isset;
 
@@ -240,6 +244,16 @@ class ApplicationDeploymentDescription {
     __isset.setEnvironment = true;
   }
 
+  void __set_preJobCommands(const std::vector<std::string> & val) {
+    preJobCommands = val;
+    __isset.preJobCommands = true;
+  }
+
+  void __set_postJobCommands(const std::vector<std::string> & val) {
+    postJobCommands = val;
+    __isset.postJobCommands = true;
+  }
+
   bool operator == (const ApplicationDeploymentDescription & rhs) const
   {
     if (!(appDeploymentId == rhs.appDeploymentId))
@@ -271,6 +285,14 @@ class ApplicationDeploymentDescription {
     if (__isset.setEnvironment != rhs.__isset.setEnvironment)
       return false;
     else if (__isset.setEnvironment && !(setEnvironment == rhs.setEnvironment))
+      return false;
+    if (__isset.preJobCommands != rhs.__isset.preJobCommands)
+      return false;
+    else if (__isset.preJobCommands && !(preJobCommands == rhs.preJobCommands))
+      return false;
+    if (__isset.postJobCommands != rhs.__isset.postJobCommands)
+      return false;
+    else if (__isset.postJobCommands && !(postJobCommands == rhs.postJobCommands))
       return false;
     return true;
   }

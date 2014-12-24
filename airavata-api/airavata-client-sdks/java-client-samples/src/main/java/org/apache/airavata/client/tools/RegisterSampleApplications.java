@@ -398,21 +398,21 @@ public class RegisterSampleApplications {
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(RegisterSampleApplicationsUtils.createAppInput("gams_input", "",
-                    DataType.URI, null, 1, ValidityType.REQUIRED, CommandLineType.INCLUSIVE, false, "Gamess Input file", null));
+                    DataType.URI, null, 1, ValidityType.REQUIRED, CommandLineType.IMPLICIT, false, "Gamess Input file", null));
 //            applicationInputs.add(RegisterSampleApplicationsUtils.createAppInput("EXT_FILE", "",
 //                    DataType.URI, null, 2, ValidityType.OPTIONAL, CommandLineType.EXCLUSIVE, false, "Gamess EXT file", null));
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("gams_output",
-                    "", DataType.URI, ValidityType.REQUIRED, CommandLineType.INCLUSIVE));
+                    "", DataType.URI, ValidityType.REQUIRED, CommandLineType.IMPLICIT));
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("dat_file",
-                    "", DataType.URI, ValidityType.REQUIRED, CommandLineType.EXCLUSIVE));
+                    "", DataType.URI, ValidityType.REQUIRED, CommandLineType.EXPLICIT));
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("trj_file",
-                    "", DataType.URI, ValidityType.OPTIONAL, CommandLineType.EXCLUSIVE));
+                    "", DataType.URI, ValidityType.OPTIONAL, CommandLineType.EXPLICIT));
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("rst_file",
-                    "", DataType.URI, ValidityType.OPTIONAL, CommandLineType.EXCLUSIVE));
+                    "", DataType.URI, ValidityType.OPTIONAL, CommandLineType.EXPLICIT));
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("f10_file",
-                    "", DataType.URI, ValidityType.OPTIONAL, CommandLineType.EXCLUSIVE));
+                    "", DataType.URI, ValidityType.OPTIONAL, CommandLineType.EXPLICIT));
 
 
             gamessInterfaceId = airavataClient.registerApplicationInterface(
@@ -710,13 +710,13 @@ public class RegisterSampleApplications {
             appModules.add(nwChemModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Water_Molecule_Input", null,
-                    DataType.URI, null, 1,ValidityType.REQUIRED , CommandLineType.INCLUSIVE, false, "Water Molecule Input File - water.nw", null);
+                    DataType.URI, null, 1,ValidityType.REQUIRED , CommandLineType.IMPLICIT, false, "Water Molecule Input File - water.nw", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("NWChem_Execution_Log",
-                    null, DataType.URI, ValidityType.REQUIRED, CommandLineType.INCLUSIVE);
+                    null, DataType.URI, ValidityType.REQUIRED, CommandLineType.IMPLICIT);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -869,7 +869,7 @@ public class RegisterSampleApplications {
             appModules.add(gaussianModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("MainInputFile", null,
-                    DataType.URI, null, 1, ValidityType.REQUIRED, CommandLineType.INCLUSIVE,  false, "Gaussian main input file", null);
+                    DataType.URI, null, 1, ValidityType.REQUIRED, CommandLineType.IMPLICIT,  false, "Gaussian main input file", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
@@ -898,19 +898,19 @@ public class RegisterSampleApplications {
             appModules.add(monteXModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("xyzf", "O16.xyz",
-                    DataType.URI, null, 1, ValidityType.REQUIRED, CommandLineType.INCLUSIVE, false, "Tinker monte input_1", null);
+                    DataType.URI, null, 1, ValidityType.REQUIRED, CommandLineType.IMPLICIT, false, "Tinker monte input_1", null);
             InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("keyf", "O16.key",
-                    DataType.URI, "-k", 2, ValidityType.REQUIRED, CommandLineType.INCLUSIVE, false, "Tinker monte input_2", null);
+                    DataType.URI, "-k", 2, ValidityType.REQUIRED, CommandLineType.IMPLICIT, false, "Tinker monte input_2", null);
             InputDataObjectType input3 = RegisterSampleApplicationsUtils.createAppInput("stps", "20000",
-                    DataType.STRING, null, 3, ValidityType.REQUIRED, CommandLineType.INCLUSIVE, false, "Tinker monte input_3", null);
+                    DataType.STRING, null, 3, ValidityType.REQUIRED, CommandLineType.IMPLICIT, false, "Tinker monte input_3", null);
             InputDataObjectType input4 = RegisterSampleApplicationsUtils.createAppInput("Ctc", "C",
-                    DataType.STRING, null, 4, ValidityType.REQUIRED, CommandLineType.INCLUSIVE, false, "Tinker monte input_4", null);
+                    DataType.STRING, null, 4, ValidityType.REQUIRED, CommandLineType.IMPLICIT, false, "Tinker monte input_4", null);
             InputDataObjectType input5 = RegisterSampleApplicationsUtils.createAppInput("stpsZ", "3.0",
-                    DataType.STRING, null, 5, ValidityType.REQUIRED, CommandLineType.INCLUSIVE, false, "Tinker monte input_5", null);
+                    DataType.STRING, null, 5, ValidityType.REQUIRED, CommandLineType.IMPLICIT, false, "Tinker monte input_5", null);
             InputDataObjectType input6 = RegisterSampleApplicationsUtils.createAppInput("temp", "298",
-                    DataType.STRING, null, 6, ValidityType.REQUIRED, CommandLineType.INCLUSIVE, false, "Tinker monte input_6", null);
+                    DataType.STRING, null, 6, ValidityType.REQUIRED, CommandLineType.IMPLICIT, false, "Tinker monte input_6", null);
             InputDataObjectType input7 = RegisterSampleApplicationsUtils.createAppInput("Rconv", "0.01",
-                    DataType.STRING, null, 7, ValidityType.REQUIRED, CommandLineType.INCLUSIVE,  false, "Tinker monte input_7", null);
+                    DataType.STRING, null, 7, ValidityType.REQUIRED, CommandLineType.IMPLICIT,  false, "Tinker monte input_7", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);

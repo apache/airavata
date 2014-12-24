@@ -126,4 +126,6 @@ struct ApplicationDeploymentDescription {
 	8: optional list<SetEnvPaths> libPrependPaths,
 	9: optional list<SetEnvPaths> libAppendPaths,
 	10: optional list<SetEnvPaths> setEnvironment,
+	11: optional list<string> preJobCommands,
+	12: optional list<string> postJobCommands,
 }

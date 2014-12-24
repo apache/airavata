@@ -44,20 +44,11 @@ final class ValidityType {
 }
 
 final class CommandLineType {
-  const INCLUSIVE = 0;
-  const EXCLUSIVE = 1;
+  const IMPLICIT = 0;
+  const EXPLICIT = 1;
   static public $__names = array(
-    0 => 'INCLUSIVE',
-    1 => 'EXCLUSIVE',
-  );
-}
-
-final class InputMetadataType {
-  const MEMORY = 0;
-  const CPU = 1;
-  static public $__names = array(
-    0 => 'MEMORY',
-    1 => 'CPU',
+    0 => 'IMPLICIT',
+    1 => 'EXPLICIT',
   );
 }
 

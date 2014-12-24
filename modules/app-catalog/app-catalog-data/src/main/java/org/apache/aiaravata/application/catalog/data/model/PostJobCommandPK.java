@@ -23,16 +23,16 @@ package org.apache.aiaravata.application.catalog.data.model;
 
 import java.io.Serializable;
 
-public class GSISSHPreJobCommandPK implements Serializable {
-    private String submissionID;
+public class PostJobCommandPK implements Serializable {
+    private String deploymentId;
     private String command;
 
-    public GSISSHPreJobCommandPK(String submissionID, String command) {
-        this.submissionID = submissionID;
+    public PostJobCommandPK(String submissionID, String command) {
+        this.deploymentId = submissionID;
         this.command = command;
     }
 
-    public GSISSHPreJobCommandPK() {
+    public PostJobCommandPK() {
         ;
     }
 
@@ -46,12 +46,12 @@ public class GSISSHPreJobCommandPK implements Serializable {
         return 1;
     }
 
-    public String getSubmissionID() {
-        return submissionID;
+    public String getDeploymentId() {
+        return deploymentId;
     }
 
-    public void setSubmissionID(String submissionID) {
-        this.submissionID = submissionID;
+    public void setDeploymentId(String deploymentId) {
+        this.deploymentId = deploymentId;
     }
 
     public String getCommand() {

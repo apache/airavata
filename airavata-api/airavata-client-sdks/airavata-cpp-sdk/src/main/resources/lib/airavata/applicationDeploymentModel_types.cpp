@@ -230,8 +230,8 @@ void swap(ApplicationModule &a, ApplicationModule &b) {
   swap(a.__isset, b.__isset);
 }
 
-const char* ApplicationDeploymentDescription::ascii_fingerprint = "179A145BD54BBE10649DEF31C71143C9";
-const uint8_t ApplicationDeploymentDescription::binary_fingerprint[16] = {0x17,0x9A,0x14,0x5B,0xD5,0x4B,0xBE,0x10,0x64,0x9D,0xEF,0x31,0xC7,0x11,0x43,0xC9};
+const char* ApplicationDeploymentDescription::ascii_fingerprint = "3B2F93AE9F0E6A621AF867419ADD9E5A";
+const uint8_t ApplicationDeploymentDescription::binary_fingerprint[16] = {0x3B,0x2F,0x93,0xAE,0x9F,0x0E,0x6A,0x62,0x1A,0xF8,0x67,0x41,0x9A,0xDD,0x9E,0x5A};
 
 uint32_t ApplicationDeploymentDescription::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -388,6 +388,46 @@ uint32_t ApplicationDeploymentDescription::read(::apache::thrift::protocol::TPro
           xfer += iprot->skip(ftype);
         }
         break;
+      case 11:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->preJobCommands.clear();
+            uint32_t _size21;
+            ::apache::thrift::protocol::TType _etype24;
+            xfer += iprot->readListBegin(_etype24, _size21);
+            this->preJobCommands.resize(_size21);
+            uint32_t _i25;
+            for (_i25 = 0; _i25 < _size21; ++_i25)
+            {
+              xfer += iprot->readString(this->preJobCommands[_i25]);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.preJobCommands = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 12:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->postJobCommands.clear();
+            uint32_t _size26;
+            ::apache::thrift::protocol::TType _etype29;
+            xfer += iprot->readListBegin(_etype29, _size26);
+            this->postJobCommands.resize(_size26);
+            uint32_t _i30;
+            for (_i30 = 0; _i30 < _size26; ++_i30)
+            {
+              xfer += iprot->readString(this->postJobCommands[_i30]);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.postJobCommands = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -443,10 +483,10 @@ uint32_t ApplicationDeploymentDescription::write(::apache::thrift::protocol::TPr
     xfer += oprot->writeFieldBegin("moduleLoadCmds", ::apache::thrift::protocol::T_LIST, 7);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->moduleLoadCmds.size()));
-      std::vector<std::string> ::const_iterator _iter21;
-      for (_iter21 = this->moduleLoadCmds.begin(); _iter21 != this->moduleLoadCmds.end(); ++_iter21)
+      std::vector<std::string> ::const_iterator _iter31;
+      for (_iter31 = this->moduleLoadCmds.begin(); _iter31 != this->moduleLoadCmds.end(); ++_iter31)
       {
-        xfer += oprot->writeString((*_iter21));
+        xfer += oprot->writeString((*_iter31));
       }
       xfer += oprot->writeListEnd();
     }
@@ -456,10 +496,10 @@ uint32_t ApplicationDeploymentDescription::write(::apache::thrift::protocol::TPr
     xfer += oprot->writeFieldBegin("libPrependPaths", ::apache::thrift::protocol::T_LIST, 8);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->libPrependPaths.size()));
-      std::vector<SetEnvPaths> ::const_iterator _iter22;
-      for (_iter22 = this->libPrependPaths.begin(); _iter22 != this->libPrependPaths.end(); ++_iter22)
+      std::vector<SetEnvPaths> ::const_iterator _iter32;
+      for (_iter32 = this->libPrependPaths.begin(); _iter32 != this->libPrependPaths.end(); ++_iter32)
       {
-        xfer += (*_iter22).write(oprot);
+        xfer += (*_iter32).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -469,10 +509,10 @@ uint32_t ApplicationDeploymentDescription::write(::apache::thrift::protocol::TPr
     xfer += oprot->writeFieldBegin("libAppendPaths", ::apache::thrift::protocol::T_LIST, 9);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->libAppendPaths.size()));
-      std::vector<SetEnvPaths> ::const_iterator _iter23;
-      for (_iter23 = this->libAppendPaths.begin(); _iter23 != this->libAppendPaths.end(); ++_iter23)
+      std::vector<SetEnvPaths> ::const_iterator _iter33;
+      for (_iter33 = this->libAppendPaths.begin(); _iter33 != this->libAppendPaths.end(); ++_iter33)
       {
-        xfer += (*_iter23).write(oprot);
+        xfer += (*_iter33).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -482,10 +522,36 @@ uint32_t ApplicationDeploymentDescription::write(::apache::thrift::protocol::TPr
     xfer += oprot->writeFieldBegin("setEnvironment", ::apache::thrift::protocol::T_LIST, 10);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->setEnvironment.size()));
-      std::vector<SetEnvPaths> ::const_iterator _iter24;
-      for (_iter24 = this->setEnvironment.begin(); _iter24 != this->setEnvironment.end(); ++_iter24)
+      std::vector<SetEnvPaths> ::const_iterator _iter34;
+      for (_iter34 = this->setEnvironment.begin(); _iter34 != this->setEnvironment.end(); ++_iter34)
       {
-        xfer += (*_iter24).write(oprot);
+        xfer += (*_iter34).write(oprot);
+      }
+      xfer += oprot->writeListEnd();
+    }
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.preJobCommands) {
+    xfer += oprot->writeFieldBegin("preJobCommands", ::apache::thrift::protocol::T_LIST, 11);
+    {
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->preJobCommands.size()));
+      std::vector<std::string> ::const_iterator _iter35;
+      for (_iter35 = this->preJobCommands.begin(); _iter35 != this->preJobCommands.end(); ++_iter35)
+      {
+        xfer += oprot->writeString((*_iter35));
+      }
+      xfer += oprot->writeListEnd();
+    }
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.postJobCommands) {
+    xfer += oprot->writeFieldBegin("postJobCommands", ::apache::thrift::protocol::T_LIST, 12);
+    {
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->postJobCommands.size()));
+      std::vector<std::string> ::const_iterator _iter36;
+      for (_iter36 = this->postJobCommands.begin(); _iter36 != this->postJobCommands.end(); ++_iter36)
+      {
+        xfer += oprot->writeString((*_iter36));
       }
       xfer += oprot->writeListEnd();
     }
@@ -508,6 +574,8 @@ void swap(ApplicationDeploymentDescription &a, ApplicationDeploymentDescription 
   swap(a.libPrependPaths, b.libPrependPaths);
   swap(a.libAppendPaths, b.libAppendPaths);
   swap(a.setEnvironment, b.setEnvironment);
+  swap(a.preJobCommands, b.preJobCommands);
+  swap(a.postJobCommands, b.postJobCommands);
   swap(a.__isset, b.__isset);
 }
 

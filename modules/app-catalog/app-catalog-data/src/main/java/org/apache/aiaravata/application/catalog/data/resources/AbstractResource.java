@@ -28,8 +28,8 @@ public abstract class AbstractResource implements Resource {
     public static final String HOST_IPADDRESS = "HostIPAddress";
     public static final String GSISSH_SUBMISSION = "GSISSHSubmission";
     public static final String GSISSH_EXPORT = "GSISSHExport";
-    public static final String GSISSH_PREJOBCOMMAND = "GSISSHPreJobCommand";
-    public static final String GSISSH_POSTJOBCOMMAND = "GSISSHPostJobCommand";
+    public static final String PRE_JOBCOMMAND = "PreJobCommand";
+    public static final String POST_JOBCOMMAND = "PostJobCommand";
     public static final String GLOBUS_SUBMISSION = "GlobusJobSubmission";
     public static final String UNICORE_JOB_SUBMISSION = "UnicoreJobSubmission";
     public static final String GLOBUS_GK_ENDPOINT = "GlobusGKEndpoint";
@@ -100,14 +100,14 @@ public abstract class AbstractResource implements Resource {
     }
 
     // GSSISSH Pre Job Command Table
-    public final class GSISSHPreJobCommandConstants {
-        public static final String SUBMISSION_ID = "submissionID";
+    public final class PreJobCommandConstants {
+        public static final String DEPLOYMENT_ID = "deploymentId";
         public static final String COMMAND = "command";
     }
 
     // GSSISSH Post Job Command Table
-    public final class GSISSHPostJobCommandConstants {
-        public static final String SUBMISSION_ID = "submissionID";
+    public final class PostJobCommandConstants {
+        public static final String DEPLOYMENT_ID = "deploymentId";
         public static final String COMMAND = "command";
     }
 

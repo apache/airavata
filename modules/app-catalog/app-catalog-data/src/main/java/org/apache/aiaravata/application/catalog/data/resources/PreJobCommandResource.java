@@ -20,9 +20,9 @@
 package org.apache.aiaravata.application.catalog.data.resources;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
-import org.apache.aiaravata.application.catalog.data.model.GSISSHPreJobCommand;
-import org.apache.aiaravata.application.catalog.data.model.GSISSHPreJobCommandPK;
-import org.apache.aiaravata.application.catalog.data.model.GSISSHSubmission;
+import org.apache.aiaravata.application.catalog.data.model.ApplicationDeployment;
+import org.apache.aiaravata.application.catalog.data.model.PreJobCommand;
+import org.apache.aiaravata.application.catalog.data.model.PreJobCommandPK;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogJPAUtils;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogQueryGenerator;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogResourceType;
@@ -37,13 +37,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GSISSHPreJobCommandResource extends AbstractResource {
-    private final static Logger logger = LoggerFactory.getLogger(GSISSHPreJobCommandResource.class);
+public class PreJobCommandResource extends AbstractResource {
+    private final static Logger logger = LoggerFactory.getLogger(PreJobCommandResource.class);
 
-    private String submissionID;
+    private String appDeploymentId;
     private String command;
 
-    private GSISSHSubmissionResource gsisshSubmissionResource;
+    private AppDeploymentResource appDeploymentResource;
 
 
     public void remove(Object identifier) throws AppCatalogException {
@@ -59,10 +59,10 @@ public class GSISSHPreJobCommandResource extends AbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator= new AppCatalogQueryGenerator(GSISSH_PREJOBCOMMAND);
-            generator.setParameter(GSISSHPreJobCommandConstants.SUBMISSION_ID,
-                    ids.get(GSISSHPreJobCommandConstants.SUBMISSION_ID));
-            generator.setParameter(GSISSHPreJobCommandConstants.COMMAND, ids.get(GSISSHPreJobCommandConstants.COMMAND));
+            AppCatalogQueryGenerator generator= new AppCatalogQueryGenerator(PRE_JOBCOMMAND);
+            generator.setParameter(PreJobCommandConstants.DEPLOYMENT_ID,
+                    ids.get(PreJobCommandConstants.DEPLOYMENT_ID));
+            generator.setParameter(PreJobCommandConstants.COMMAND, ids.get(PreJobCommandConstants.COMMAND));
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
@@ -93,18 +93,18 @@ public class GSISSHPreJobCommandResource extends AbstractResource {
         try {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(GSISSH_PREJOBCOMMAND);
-            generator.setParameter(GSISSHPreJobCommandConstants.SUBMISSION_ID,
-                    ids.get(GSISSHPreJobCommandConstants.SUBMISSION_ID));
-            generator.setParameter(GSISSHPreJobCommandConstants.COMMAND, ids.get(GSISSHPreJobCommandConstants.COMMAND));
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(PRE_JOBCOMMAND);
+            generator.setParameter(PreJobCommandConstants.DEPLOYMENT_ID,
+                    ids.get(PreJobCommandConstants.DEPLOYMENT_ID));
+            generator.setParameter(PreJobCommandConstants.COMMAND, ids.get(PreJobCommandConstants.COMMAND));
             Query q = generator.selectQuery(em);
-            GSISSHPreJobCommand gsisshPreJobCommand = (GSISSHPreJobCommand) q.getSingleResult();
-            GSISSHPreJobCommandResource gsisshPreJobCommandResource =
-                    (GSISSHPreJobCommandResource) AppCatalogJPAUtils.getResource(
-                            AppCatalogResourceType.GSISSH_PREJOBCOMMAND, gsisshPreJobCommand);
+            PreJobCommand preJobCommand = (PreJobCommand) q.getSingleResult();
+            PreJobCommandResource preJobCommandResource =
+                    (PreJobCommandResource) AppCatalogJPAUtils.getResource(
+                            AppCatalogResourceType.PRE_JOBCOMMAND, preJobCommand);
             em.getTransaction().commit();
             em.close();
-            return gsisshPreJobCommandResource;
+            return preJobCommandResource;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -125,32 +125,32 @@ public class GSISSHPreJobCommandResource extends AbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             Query q;
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(GSISSH_PREJOBCOMMAND);
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(PRE_JOBCOMMAND);
             List results;
-            if (fieldName.equals(GSISSHPreJobCommandConstants.SUBMISSION_ID)) {
-                generator.setParameter(GSISSHPreJobCommandConstants.SUBMISSION_ID, value);
+            if (fieldName.equals(PreJobCommandConstants.DEPLOYMENT_ID)) {
+                generator.setParameter(PreJobCommandConstants.DEPLOYMENT_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        GSISSHPreJobCommand gsisshPreJobCommand = (GSISSHPreJobCommand) result;
-                        GSISSHPreJobCommandResource gsisshPreJobCommandResource =
-                                (GSISSHPreJobCommandResource) AppCatalogJPAUtils.getResource(
-                                        AppCatalogResourceType.GSISSH_PREJOBCOMMAND, gsisshPreJobCommand);
-                        gsiSSHPreJobResources.add(gsisshPreJobCommandResource);
+                        PreJobCommand preJobCommand = (PreJobCommand) result;
+                        PreJobCommandResource preJobCommandResource =
+                                (PreJobCommandResource) AppCatalogJPAUtils.getResource(
+                                        AppCatalogResourceType.PRE_JOBCOMMAND, preJobCommand);
+                        gsiSSHPreJobResources.add(preJobCommandResource);
                     }
                 }
-            } else if (fieldName.equals(GSISSHPreJobCommandConstants.COMMAND)) {
-                generator.setParameter(GSISSHPreJobCommandConstants.COMMAND, value);
+            } else if (fieldName.equals(PreJobCommandConstants.COMMAND)) {
+                generator.setParameter(PreJobCommandConstants.COMMAND, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        GSISSHPreJobCommand gsisshPreJobCommand = (GSISSHPreJobCommand) result;
-                        GSISSHPreJobCommandResource gsisshPreJobCommandResource =
-                                (GSISSHPreJobCommandResource) AppCatalogJPAUtils.getResource(
-                                        AppCatalogResourceType.GSISSH_PREJOBCOMMAND, gsisshPreJobCommand);
-                        gsiSSHPreJobResources.add(gsisshPreJobCommandResource);
+                        PreJobCommand preJobCommand = (PreJobCommand) result;
+                        PreJobCommandResource preJobCommandResource =
+                                (PreJobCommandResource) AppCatalogJPAUtils.getResource(
+                                        AppCatalogResourceType.PRE_JOBCOMMAND, preJobCommand);
+                        gsiSSHPreJobResources.add(preJobCommandResource);
                     }
                 }
             } else {
@@ -192,26 +192,26 @@ public class GSISSHPreJobCommandResource extends AbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             Query q;
-            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(GSISSH_PREJOBCOMMAND);
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(PRE_JOBCOMMAND);
             List results;
-            if (fieldName.equals(GSISSHPreJobCommandConstants.SUBMISSION_ID)) {
-                generator.setParameter(GSISSHPreJobCommandConstants.SUBMISSION_ID, value);
+            if (fieldName.equals(PreJobCommandConstants.DEPLOYMENT_ID)) {
+                generator.setParameter(PreJobCommandConstants.DEPLOYMENT_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        GSISSHPreJobCommand gsisshPreJobCommand = (GSISSHPreJobCommand) result;
-                        gsiSSHPreJobResourceIDs.add(gsisshPreJobCommand.getSubmissionID());
+                        PreJobCommand preJobCommand = (PreJobCommand) result;
+                        gsiSSHPreJobResourceIDs.add(preJobCommand.getDeploymentId());
                     }
                 }
-            } else if (fieldName.equals(GSISSHPreJobCommandConstants.COMMAND)) {
-                generator.setParameter(GSISSHPreJobCommandConstants.COMMAND, value);
+            } else if (fieldName.equals(PreJobCommandConstants.COMMAND)) {
+                generator.setParameter(PreJobCommandConstants.COMMAND, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        GSISSHPreJobCommand gsisshPreJobCommand = (GSISSHPreJobCommand) result;
-                        gsiSSHPreJobResourceIDs.add(gsisshPreJobCommand.getSubmissionID());
+                        PreJobCommand preJobCommand = (PreJobCommand) result;
+                        gsiSSHPreJobResourceIDs.add(preJobCommand.getDeploymentId());
                     }
                 }
             } else {
@@ -240,24 +240,24 @@ public class GSISSHPreJobCommandResource extends AbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            GSISSHPreJobCommand existingGSIsshPreJobCommand = em.find(GSISSHPreJobCommand.class,
-                    new GSISSHPreJobCommandPK(submissionID, command));
+            PreJobCommand existingGSIsshPreJobCommand = em.find(PreJobCommand.class,
+                    new PreJobCommandPK(appDeploymentId, command));
             em.close();
 
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
-            GSISSHSubmission gsisshSubmission = em.find(GSISSHSubmission.class, submissionID);
+            ApplicationDeployment deployment = em.find(ApplicationDeployment.class, appDeploymentId);
             if (existingGSIsshPreJobCommand !=  null){
-                existingGSIsshPreJobCommand.setSubmissionID(submissionID);
+                existingGSIsshPreJobCommand.setDeploymentId(appDeploymentId);
                 existingGSIsshPreJobCommand.setCommand(command);
-                existingGSIsshPreJobCommand.setGsisshSubmission(gsisshSubmission);
+                existingGSIsshPreJobCommand.setApplicationDeployment(deployment);
                 em.merge(existingGSIsshPreJobCommand);
             }else {
-                GSISSHPreJobCommand gsisshPreJobCommand = new GSISSHPreJobCommand();
-                gsisshPreJobCommand.setSubmissionID(submissionID);
-                gsisshPreJobCommand.setCommand(command);
-                gsisshPreJobCommand.setGsisshSubmission(gsisshSubmission);
-                em.persist(gsisshPreJobCommand);
+                PreJobCommand preJobCommand = new PreJobCommand();
+                preJobCommand.setDeploymentId(appDeploymentId);
+                preJobCommand.setCommand(command);
+                preJobCommand.setApplicationDeployment(deployment);
+                em.persist(preJobCommand);
             }
             em.getTransaction().commit();
             em.close();
@@ -286,12 +286,12 @@ public class GSISSHPreJobCommandResource extends AbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            GSISSHPreJobCommand gsisshPreJobCommand = em.find(GSISSHPreJobCommand.class, new GSISSHPreJobCommandPK(
-                    ids.get(GSISSHPreJobCommandConstants.SUBMISSION_ID),
-                    ids.get(GSISSHPreJobCommandConstants.COMMAND)));
+            PreJobCommand preJobCommand = em.find(PreJobCommand.class, new PreJobCommandPK(
+                    ids.get(PreJobCommandConstants.DEPLOYMENT_ID),
+                    ids.get(PreJobCommandConstants.COMMAND)));
 
             em.close();
-            return gsisshPreJobCommand != null;
+            return preJobCommand != null;
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
             throw new AppCatalogException(e);
@@ -305,12 +305,12 @@ public class GSISSHPreJobCommandResource extends AbstractResource {
         }
     }
 
-    public String getSubmissionID() {
-        return submissionID;
+    public String getAppDeploymentId() {
+        return appDeploymentId;
     }
 
-    public void setSubmissionID(String submissionID) {
-        this.submissionID = submissionID;
+    public void setAppDeploymentId(String appDeploymentId) {
+        this.appDeploymentId = appDeploymentId;
     }
 
     public String getCommand() {
@@ -321,11 +321,11 @@ public class GSISSHPreJobCommandResource extends AbstractResource {
         this.command = command;
     }
 
-    public GSISSHSubmissionResource getGsisshSubmissionResource() {
-        return gsisshSubmissionResource;
+    public AppDeploymentResource getAppDeploymentResource() {
+        return appDeploymentResource;
     }
 
-    public void setGsisshSubmissionResource(GSISSHSubmissionResource gsisshSubmissionResource) {
-        this.gsisshSubmissionResource = gsisshSubmissionResource;
+    public void setAppDeploymentResource(AppDeploymentResource appDeploymentResource) {
+        this.appDeploymentResource = appDeploymentResource;
     }
 }

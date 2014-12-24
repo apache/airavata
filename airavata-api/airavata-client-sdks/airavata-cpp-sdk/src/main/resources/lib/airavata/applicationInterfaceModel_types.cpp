@@ -56,24 +56,14 @@ const char* _kValidityTypeNames[] = {
 const std::map<int, const char*> _ValidityType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kValidityTypeValues, _kValidityTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 int _kCommandLineTypeValues[] = {
-  CommandLineType::INCLUSIVE,
-  CommandLineType::EXCLUSIVE
+  CommandLineType::IMPLICIT,
+  CommandLineType::EXPLICIT
 };
 const char* _kCommandLineTypeNames[] = {
-  "INCLUSIVE",
-  "EXCLUSIVE"
+  "IMPLICIT",
+  "EXPLICIT"
 };
 const std::map<int, const char*> _CommandLineType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kCommandLineTypeValues, _kCommandLineTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
-
-int _kInputMetadataTypeValues[] = {
-  InputMetadataType::MEMORY,
-  InputMetadataType::CPU
-};
-const char* _kInputMetadataTypeNames[] = {
-  "MEMORY",
-  "CPU"
-};
-const std::map<int, const char*> _InputMetadataType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kInputMetadataTypeValues, _kInputMetadataTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 const char* InputDataObjectType::ascii_fingerprint = "95DCCA621F7BE3FA34349CC6A45329DA";
 const uint8_t InputDataObjectType::binary_fingerprint[16] = {0x95,0xDC,0xCA,0x62,0x1F,0x7B,0xE3,0xFA,0x34,0x34,0x9C,0xC6,0xA4,0x53,0x29,0xDA};
