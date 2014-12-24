@@ -371,7 +371,7 @@ public class RegisterSampleApplications {
         //Registering Lammps
         registerLammpsInterface();
         //Registrting Gamess
-//        registerGamessInterface();
+        registerGamessInterface();
 
         //Registering NWChem
         registerNWChemInterface();
@@ -393,26 +393,26 @@ public class RegisterSampleApplications {
             System.out.println("#### Registering Gamess Interface #### \n");
 
             List<String> appModules = new ArrayList<String>();
-            appModules.add(gamessDescription);
+            appModules.add(gamessModuleId);
 
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(RegisterSampleApplicationsUtils.createAppInput("gams_input", "",
-                    DataType.URI, null, 1, ValidityType.REQUIRED, CommandLineType.EXCLUSIVE, false, "Gamess Input file", null));
-            applicationInputs.add(RegisterSampleApplicationsUtils.createAppInput("EXT_FILE", "",
-                    DataType.URI, null, 1, ValidityType.OPTIONAL, CommandLineType.INCLUSIVE, false, "Gamess EXT file", null));
+                    DataType.URI, null, 1, ValidityType.REQUIRED, CommandLineType.INCLUSIVE, false, "Gamess Input file", null));
+//            applicationInputs.add(RegisterSampleApplicationsUtils.createAppInput("EXT_FILE", "",
+//                    DataType.URI, null, 2, ValidityType.OPTIONAL, CommandLineType.EXCLUSIVE, false, "Gamess EXT file", null));
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("gams_output",
-                    "", DataType.URI, ValidityType.REQUIRED, CommandLineType.EXCLUSIVE));
-            applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("dat_file",
                     "", DataType.URI, ValidityType.REQUIRED, CommandLineType.INCLUSIVE));
+            applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("dat_file",
+                    "", DataType.URI, ValidityType.REQUIRED, CommandLineType.EXCLUSIVE));
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("trj_file",
-                    "", DataType.URI, ValidityType.OPTIONAL, CommandLineType.INCLUSIVE));
+                    "", DataType.URI, ValidityType.OPTIONAL, CommandLineType.EXCLUSIVE));
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("rst_file",
-                    "", DataType.URI, ValidityType.OPTIONAL, CommandLineType.INCLUSIVE));
+                    "", DataType.URI, ValidityType.OPTIONAL, CommandLineType.EXCLUSIVE));
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("f10_file",
-                    "", DataType.URI, ValidityType.OPTIONAL, CommandLineType.INCLUSIVE));
+                    "", DataType.URI, ValidityType.OPTIONAL, CommandLineType.EXCLUSIVE));
 
 
             gamessInterfaceId = airavataClient.registerApplicationInterface(
@@ -710,12 +710,13 @@ public class RegisterSampleApplications {
             appModules.add(nwChemModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Water_Molecule_Input", null,
-                    DataType.URI, null, 1,null, null, false, "Water Molecule Input File - water.nw", null);
+                    DataType.URI, null, 1,ValidityType.REQUIRED , CommandLineType.INCLUSIVE, false, "Water Molecule Input File - water.nw", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
 
-            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("NWChem_Execution_Log",null,DataType.URI, null, null);
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("NWChem_Execution_Log",
+                    null, DataType.URI, ValidityType.REQUIRED, CommandLineType.INCLUSIVE);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -976,10 +977,12 @@ public class RegisterSampleApplications {
             System.out.println("LAMMPS on stampede deployment Id " + lammpsAppDeployId);
 
             //Register NWChem
+            List<String> nwChemModuleCmds = new ArrayList<String>();
+            nwChemModuleCmds.add("module load nwchem");
             String nwChemAppDeployId = airavataClient.registerApplicationDeployment(
                     RegisterSampleApplicationsUtils.createApplicationDeployment(nwChemModuleId, stampedeResourceId,
-                            "/home1/01437/ogce/production/app_wrappers/nwchem_wrapper.sh", ApplicationParallelismType.MPI,
-                            nwChemDescription, null));
+                            "nwchem", ApplicationParallelismType.MPI,
+                            nwChemDescription, nwChemModuleCmds));
             System.out.println("NWChem on stampede deployment Id " + nwChemAppDeployId);
 
             //Register Trinity

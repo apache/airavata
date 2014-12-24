@@ -43,6 +43,7 @@ import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.CommandLineType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
@@ -198,7 +199,6 @@ public class GFACGSISSHUtils {
 
         List<String> inputValues = new ArrayList<String>();
         MessageContext input = jobExecutionContext.getInMessageContext();
-        Map<String, Object> inputs = input.getParameters();
         // sort the inputs first and then build the command List
         Comparator<InputDataObjectType> inputOrderComparator = new Comparator<InputDataObjectType>() {
             @Override
@@ -226,6 +226,17 @@ public class GFACGSISSHUtils {
             if (inputDataObjectType.getValue() != null
                     && !inputDataObjectType.getValue().equals("")) {
                 inputValues.add(inputDataObjectType.getValue());
+            }
+        }
+
+        Map<String, Object> outputParams = jobExecutionContext.getOutMessageContext().getParameters();
+        for (Object outputParam : outputParams.values()) {
+            if (outputParam instanceof OutputDataObjectType) {
+                OutputDataObjectType output = (OutputDataObjectType) outputParam;
+                if (output.getValue() != null && !output.getValue().equals("") && output.getAddedToCommandLine() != null
+                        && output.getAddedToCommandLine() == CommandLineType.INCLUSIVE) {
+                    inputValues.add(output.getValue());
+                }
             }
         }
         jobDescriptor.setInputValues(inputValues);
