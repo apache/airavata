@@ -231,6 +231,20 @@ public class JobDescriptor {
         this.getJobDescriptorDocument().getJobDescriptor().getPostJobCommands().setCommandArray(commands);
     }
 
+    public void setModuleLoadCommands(String[] commands) {
+        if (this.getJobDescriptorDocument().getJobDescriptor().getModuleLoadCommands() == null) {
+            this.getJobDescriptorDocument().getJobDescriptor().addNewModuleLoadCommands();
+        }
+        this.getJobDescriptorDocument().getJobDescriptor().getModuleLoadCommands().setCommandArray(commands);
+    }
+
+    public void addModuleLoadCommands(String command) {
+        if (this.getJobDescriptorDocument().getJobDescriptor().getModuleLoadCommands() == null) {
+            this.getJobDescriptorDocument().getJobDescriptor().addNewModuleLoadCommands();
+        }
+        this.getJobDescriptorDocument().getJobDescriptor().getModuleLoadCommands().addCommand(command);
+    }
+
     public void addPreJobCommand(String command){
         if(this.getJobDescriptorDocument().getJobDescriptor().getPreJobCommands() == null){
             this.getJobDescriptorDocument().getJobDescriptor().addNewPreJobCommands();
@@ -379,6 +393,13 @@ public class JobDescriptor {
     public String[] getPostJobCommands(){
         if(this.getJobDescriptorDocument().getJobDescriptor().getPostJobCommands() != null) {
             return this.getJobDescriptorDocument().getJobDescriptor().getPostJobCommands().getCommandArray();
+        }
+        return null;
+    }
+
+    public String[] getModuleCommands() {
+        if (this.getJobDescriptorDocument().getJobDescriptor().getModuleLoadCommands() != null) {
+            return this.getJobDescriptorDocument().getJobDescriptor().getModuleLoadCommands().getCommandArray();
         }
         return null;
     }

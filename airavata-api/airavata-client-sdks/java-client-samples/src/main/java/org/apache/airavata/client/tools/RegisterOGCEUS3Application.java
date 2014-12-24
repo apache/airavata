@@ -186,11 +186,13 @@ public class RegisterOGCEUS3Application {
 
 			// Register Stampede
 			String ultascanStamplede = airavataClient.registerApplicationDeployment(RegisterSampleApplicationsUtils.createApplicationDeployment(ultrascanModuleId,
-					stampedeResourceId, "/home1/01437/ogce/xsede_apps/ultrascan/bin/us_mpi_analysis", ApplicationParallelismType.MPI, "ultrascan OGCE application", null));
+					stampedeResourceId, "/home1/01437/ogce/xsede_apps/ultrascan/bin/us_mpi_analysis",
+                    ApplicationParallelismType.MPI, "ultrascan OGCE application", null, null, null));
 			System.out.println("Ultrascan on stampede deployment Id " + ultascanStamplede);
 			
 			String ultascanTrestles = airavataClient.registerApplicationDeployment(RegisterSampleApplicationsUtils.createApplicationDeployment(ultrascanModuleId,
-					trestlesResourceId, "/home/ogce/xsede_app/ultrascan/bin/us_mpi_analysis", ApplicationParallelismType.MPI, "ultrascan OGCE application", null));
+					trestlesResourceId, "/home/ogce/xsede_app/ultrascan/bin/us_mpi_analysis",
+                    ApplicationParallelismType.MPI, "ultrascan OGCE application", null, null, null));
 			System.out.println("Ultrascan on trestles deployment Id " + ultascanTrestles);
 //			String ultascanLonestar = airavataClient.registerApplicationDeployment(RegisterSampleApplicationsUtils.createApplicationDeployment(ultrascanModuleId,
 //					lonestarResourceId, "/home1/01623/us3/bin/us_mpi_analysis", ApplicationParallelismType.MPI, "ultrascan application"));

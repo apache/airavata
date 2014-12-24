@@ -186,17 +186,17 @@ public class RegisterUS3Application {
 
 			// Register Stampede
 			String ultascanStamplede = airavataClient.registerApplicationDeployment(RegisterSampleApplicationsUtils.createApplicationDeployment(ultrascanModuleId,
-					stampedeResourceId, "/home1/01623/us3/bin/us_mpi_analysis", ApplicationParallelismType.MPI, "ultrascan application", null));
+					stampedeResourceId, "/home1/01623/us3/bin/us_mpi_analysis", ApplicationParallelismType.MPI, "ultrascan application", null, null, null));
 			System.out.println("Ultrascan on stampede deployment Id " + ultascanStamplede);
 			
 			String ultascanTrestles = airavataClient.registerApplicationDeployment(RegisterSampleApplicationsUtils.createApplicationDeployment(ultrascanModuleId,
-					trestlesResourceId, "/home/us3/trestles/bin/us_mpi_analysis", ApplicationParallelismType.MPI, "ultrascan application", null));
+					trestlesResourceId, "/home/us3/trestles/bin/us_mpi_analysis", ApplicationParallelismType.MPI, "ultrascan application", null, null, null));
 			System.out.println("Ultrascan on trestles deployment Id " + ultascanTrestles);
 			String ultascanLonestar = airavataClient.registerApplicationDeployment(RegisterSampleApplicationsUtils.createApplicationDeployment(ultrascanModuleId,
-					lonestarResourceId, "/home1/01623/us3/bin/us_mpi_analysis", ApplicationParallelismType.MPI, "ultrascan application", null));
+					lonestarResourceId, "/home1/01623/us3/bin/us_mpi_analysis", ApplicationParallelismType.MPI, "ultrascan application", null, null ,null));
 			System.out.println("Ultrascan on lonestar deployment Id " + ultascanLonestar);
 			String ultascanAlamo = airavataClient.registerApplicationDeployment(RegisterSampleApplicationsUtils.createApplicationDeployment(ultrascanModuleId,
-					alamoResourceId, "/home/us3/bin/us_mpi_analysis.sh", ApplicationParallelismType.MPI, "ultrascan application", null));
+					alamoResourceId, "/home/us3/bin/us_mpi_analysis.sh", ApplicationParallelismType.MPI, "ultrascan application", null, null ,null));
 			System.out.println("Ultrascan on alamo deployment Id " + ultascanAlamo);
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -57,7 +57,9 @@ public class RegisterSampleApplicationsUtils {
                                                                                String executablePath,
                                                                                ApplicationParallelismType parallelism,
                                                                                String appDeploymentDescription,
-                                                                               List<String> moduleLoadCmds) {
+                                                                               List<String> moduleLoadCmds,
+                                                                               List<String> preJobCmds,
+                                                                               List<String> postJobCmds) {
         ApplicationDeploymentDescription deployment = new ApplicationDeploymentDescription();
 //		deployment.setIsEmpty(false);
         deployment.setAppDeploymentDescription(appDeploymentDescription);
@@ -66,6 +68,8 @@ public class RegisterSampleApplicationsUtils {
         deployment.setExecutablePath(executablePath);
         deployment.setParallelism(parallelism);
         deployment.setModuleLoadCmds(moduleLoadCmds);
+        deployment.setPreJobCommands(preJobCmds);
+        deployment.setPostJobCommands(postJobCmds);
         return deployment;
     }
 

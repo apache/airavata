@@ -54,6 +54,7 @@
             <element name="submitArgs" type="xsd:string" minOccurs="0" maxOccurs="1"/>
             <element name="variableList" type="xsd:string" minOccurs="0" maxOccurs="1"/>
             <element name="preJobCommands" type="gsissh:preJobCommands" minOccurs="0" maxOccurs="1"/>
+            <element name="moduleLoadCommands" type="gsissh:moduleLoadCommands" minOccurs="0" maxOccurs="1"/>
             <element name="postJobCommands" type="gsissh:postJobCommands" minOccurs="0" maxOccurs="1"/>
             <element name="jobSubmitterCommand" type="xsd:string" minOccurs="0" maxOccurs="1"/>
             <element name="callBackIp" type="xsd:string" minOccurs="0" maxOccurs="1"/>
@@ -61,6 +62,11 @@
 		</sequence>
 	</complexType>
 
+    <complexType name="moduleLoadCommands">
+        <sequence>
+			<element name="command" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
+		</sequence>
+    </complexType>
     <complexType name="preJobCommands">
         <sequence>
 			<element name="command" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
