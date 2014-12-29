@@ -108,7 +108,6 @@ public class EventDataRepository implements TableModel, BoundedRangeModel {
     public void addEvent(EventData event) {
         // no need the check for not null because second clause is evaluated only if
         // not null
-        System.out.println("Add event triggered");
             boolean sliderMax = (this.sliderValue == this.events.size());
 
             this.events.add(event);
