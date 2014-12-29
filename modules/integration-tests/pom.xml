@@ -8,11 +8,12 @@
     ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under 
     the License. -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>airavata</artifactId>
-        <version>0.15-SNAPSHOT</version>
+        <version>0.14-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -80,7 +81,9 @@
                         <phase>pre-integration-test</phase>
                         <configuration>
                             <target>
-                                <exec executable="./${airavata.executable}" dir="${airavata.server.extractedLocation}" spawn="${airavata.server.start.spawn}">
+                                <exec executable="./${airavata.executable}"
+                                      dir="${airavata.server.extractedLocation}"
+                                      spawn="${airavata.server.start.spawn}">
 
                                 </exec>
 
@@ -95,7 +98,9 @@
                         <phase>post-integration-test</phase>
                         <configuration>
                             <target>
-                                <exec executable="./${airavata.executable}" dir="${airavata.server.extractedLocation}" spawn="${airavata.server.stop.spawn}">
+                                <exec executable="./${airavata.executable}"
+                                      dir="${airavata.server.extractedLocation}"
+                                      spawn="${airavata.server.stop.spawn}">
                                     <arg value="stop" />
                                     <arg value="--force" />
                                 </exec>
@@ -264,9 +269,9 @@
 
     <properties>
         <jersey.version>1.13</jersey.version>
-        <user />
-        <pwd />
-        <cert />
+        <user></user>
+        <pwd></pwd>
+        <cert></cert>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <archieve.name>apache-airavata</archieve.name>
         <used.axis2.release>${axis2.version}</used.axis2.release>
