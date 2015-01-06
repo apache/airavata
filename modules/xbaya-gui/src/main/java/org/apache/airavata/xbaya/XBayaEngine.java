@@ -146,10 +146,10 @@ public class XBayaEngine {
 
         } catch (RuntimeException e) {
             // This should not happen
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
             getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
         } catch (ComponentRegistryException e) {
-        	e.printStackTrace();
+            logger.error(e.getMessage(), e);
             getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
 		}
 

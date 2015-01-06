@@ -206,7 +206,8 @@ public class GFACSSHUtils {
             sshSecurityContext.setPbsCluster(pbsCluster);
             jobExecutionContext.addSecurityContext(key, sshSecurityContext);
         } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            logger.error(e.getMessage(), e);
+            throw new GFacException("Error adding security Context", e);
         }
     }
 

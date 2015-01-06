@@ -23,6 +23,8 @@ package org.apache.airavata.gfac.monitor.util;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DefaultSaslConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -32,6 +34,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class AMQPConnectionUtil {
+    private final static Logger logger = LoggerFactory.getLogger(AMQPConnectionUtil.class);
     public static Connection connect(List<String>hosts,String vhost, String proxyFile) {
         Collections.shuffle(hosts);
         for (String host : hosts) {
@@ -68,7 +71,7 @@ public class AMQPConnectionUtil {
 
             connection = factory.newConnection();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
             return null;
         }
         return connection;

@@ -1365,7 +1365,7 @@ public class GraphCanvas implements XBayaExecutionModeListener{
 //			return !XMLUtil.isEqual(originalWorkflowElement, getWorkflow().toXML());
 			return !JSONUtil.isEqual(originalWorkflowElementJson, getWorkflow().toJSON());
 		} catch (Exception e) {
-			e.printStackTrace();
+            logger.error(e.getMessage(), e);
 			return true;
 		}
 	}

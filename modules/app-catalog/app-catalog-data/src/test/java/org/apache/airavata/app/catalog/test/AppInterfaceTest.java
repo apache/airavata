@@ -36,6 +36,8 @@ import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,6 +50,7 @@ public class AppInterfaceTest {
     private static Initialize initialize;
     private static AppCatalog appcatalog;
     private static int order = 1;
+    private static final Logger logger = LoggerFactory.getLogger(AppInterfaceTest.class);
 
     @Before
     public void setUp() {
@@ -57,7 +60,7 @@ public class AppInterfaceTest {
             initialize.initializeDB();
             appcatalog = AppCatalogFactory.getAppCatalog();
         } catch (AppCatalogException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -159,7 +162,7 @@ public class AppInterfaceTest {
             module.setAppModuleDescription("WeatherForcast");
             return appcatalog.getApplicationInterface().addApplicationModule(module);
         } catch (AppCatalogException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return null;
     }

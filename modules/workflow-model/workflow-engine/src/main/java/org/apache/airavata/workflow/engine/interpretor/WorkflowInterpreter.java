@@ -282,7 +282,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 	                    try {
 	                        Thread.sleep(400);
 	                    } catch (InterruptedException e) {
-	                        e.printStackTrace();
+                            log.error(e.getMessage(), e);
 	                    }
 	                }
 	                if (this.getWorkflow().getExecutionState() == WorkflowExecutionState.STOPPED) {
@@ -311,13 +311,11 @@ public class WorkflowInterpreter implements AbstractActivityListener{
                                 log.error("Error execution workflow Node : " + node.getID());
                                 return;
                             } catch (TException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+                                log.error(e.getMessage(), e);
 							} catch (RegistryException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
+                                log.error(e.getMessage(), e);
 							} catch (AiravataException e) {
-                                e.printStackTrace();
+                                log.error(e.getMessage(), e);
                             }
                         }
                     };
@@ -395,7 +393,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+                log.error(e.getMessage(), e);
 			}
 			notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_TASK_END, new WorkflowInterpreterInteractor.TaskNotification("Stop Workflow",
 					"Cleaning up resources for Workflow", uuid.toString()));
@@ -579,7 +577,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 				try {
 					getRegistry().update(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeDetails, workflowNodeDetails.getNodeInstanceId());
 				} catch (RegistryException e) {
-					e.printStackTrace();
+					log.error(e.getMessage(), e);
 				}
 				updateWorkflowNodeStatus(workflowNodeDetails, WorkflowNodeState.COMPLETED);
 			}
@@ -850,11 +848,9 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 									} catch (WorkflowException e) {
 										log.error(e.getLocalizedMessage(), e);
 									} catch (RegistryException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
+                                        log.error(e.getMessage(), e);
 									} catch (TException e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
+                                        log.error(e.getMessage(), e);
 									}
 								}
 
@@ -1078,7 +1074,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 		try {
 			getRegistry().update(RegistryModelType.WORKFLOW_NODE_DETAIL, nodeDetails, nodeDetails.getNodeInstanceId());
 		} catch (RegistryException e) {
-			e.printStackTrace();
+            log.error(e.getMessage(), e);
 		}
 	}
 	
@@ -1096,7 +1092,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 		try {
 			getRegistry().update(RegistryModelType.WORKFLOW_NODE_DETAIL, nodeDetails, nodeDetails.getNodeInstanceId());
 		} catch (RegistryException e) {
-			e.printStackTrace();
+            log.error(e.getMessage(), e);
 		}
 	}
 	
@@ -1492,9 +1488,9 @@ public class WorkflowInterpreter implements AbstractActivityListener{
                 publishNodeStatusChange(WorkflowNodeState.COMPLETED, node.getID(), experiment.getExperimentID());
                 updateWorkflowNodeStatus(nodeInstanceList.get(node), state);
 			} catch (RegistryException e) {
-				e.printStackTrace();
+                log.error(e.getMessage(), e);
 			} catch (AiravataException e) {
-                e.printStackTrace();
+                log.error(e.getMessage(), e);
             }
         }
 	}
@@ -1535,7 +1531,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 					updateWorkflowNodeStatus(nodeInstanceList.get(node), state);
 				}
 			} catch (RegistryException e) {
-				e.printStackTrace();
+                log.error(e.getMessage(), e);
 			}
     	}
 

@@ -97,7 +97,7 @@ public class TokenizedMyProxyAuthInfo extends GSIAuthenticationInfo {
         try {
             properties.setProperty(X509_CERT_DIR, ServerSettings.getSetting(Constants.TRUSTED_CERT_LOCATION));
         } catch (ApplicationSettingsException e) {
-            e.printStackTrace();
+            log.error("Error while  reading server properties", e);
         };
     }
 
@@ -106,7 +106,7 @@ public class TokenizedMyProxyAuthInfo extends GSIAuthenticationInfo {
            try {
                properties.setProperty(X509_CERT_DIR, ServerSettings.getSetting(Constants.TRUSTED_CERT_LOCATION));
            } catch (ApplicationSettingsException e) {
-               e.printStackTrace();
+               log.error("Error while  reading server properties", e);
            };
        }
 

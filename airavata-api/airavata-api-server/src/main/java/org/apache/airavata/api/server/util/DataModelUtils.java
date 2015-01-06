@@ -21,6 +21,7 @@
 
 package org.apache.airavata.api.server.util;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
@@ -29,10 +30,12 @@ import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.model.util.ExecutionType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.workflow.catalog.WorkflowCatalogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DataModelUtils {
-
-	public static ExecutionType getExecutionType(Experiment experiment){
+    private static final Logger logger = LoggerFactory.getLogger(DataModelUtils.class);
+	public static ExecutionType getExecutionType(Experiment experiment) throws Exception{
 		try {
 			ApplicationInterface applicationInterface = AppCatalogFactory.getAppCatalog().getApplicationInterface();
 			List<String> allApplicationInterfaceIds = applicationInterface.getAllApplicationInterfaceIds();
@@ -46,7 +49,8 @@ public class DataModelUtils {
 				}
 			}
 		} catch (AppCatalogException e) {
-			e.printStackTrace();
+            logger.error("Error while retrieving execution type for experiment : " + experiment.getExperimentID(), e);
+            throw new Exception("Error while retrieving execution type for experiment : " + experiment.getExperimentID(), e);
 		}
 		return ExecutionType.UNKNOWN;
 	}

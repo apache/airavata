@@ -37,6 +37,8 @@ import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescr
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,6 +50,7 @@ import static org.junit.Assert.assertTrue;
 public class AppDeploymentTest {
     private static Initialize initialize;
     private static AppCatalog appcatalog;
+    private static final Logger logger = LoggerFactory.getLogger(AppDeploymentTest.class);
 
     @Before
     public void setUp() {
@@ -57,7 +60,7 @@ public class AppDeploymentTest {
             initialize.initializeDB();
             appcatalog = AppCatalogFactory.getAppCatalog();
         } catch (AppCatalogException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 

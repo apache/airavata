@@ -111,13 +111,13 @@ public class EventDataRepository implements TableModel, BoundedRangeModel {
         this.tableModelChangeEvent = new ChangeEvent(this); // We only need one.
         this.events = new ArrayList<EventData>();
     }
-    public void addEvent(XmlElement message) {
+    public void addEvent(XmlElement message) throws Exception {
     	addEvent(new EventData(message));
     }
     /**
-     * @param message
+     * @param event
      */
-    public void addEvent(EventData event) {
+    public void addEvent(EventData event) throws Exception {
         // no need the check for not null because second clause is evaluated only if
         // not null
         if (this.filter == null || this.filter.isAcceptable(event)) {
@@ -143,50 +143,50 @@ public class EventDataRepository implements TableModel, BoundedRangeModel {
         }
 
     }
-    public void triggerListenerForPreMonitorStart() {
+    public void triggerListenerForPreMonitorStart() throws Exception {
 		for (EventDataListener listener : getMonitorEventListerners()) {
 			try {
 				listener.monitoringPreStart();
 			} catch (Exception e) {
-				//just in case
-				e.printStackTrace();
+                logger.error(e.getMessage(), e);
+                throw new Exception(e.getMessage(), e);
 			}
 		}
 	}
     
-    public void triggerListenerForPostMonitorStart() {
+    public void triggerListenerForPostMonitorStart() throws Exception{
 		for (EventDataListener listener : getMonitorEventListerners()) {
 			try {
 				listener.monitoringPostStart();
 			} catch (Exception e) {
-				//just in case
-				e.printStackTrace();
+                logger.error(e.getMessage(), e);
+                throw new Exception(e.getMessage(), e);
 			}
 		}
 	}
     
-    public void triggerListenerForPreMonitorStop() {
+    public void triggerListenerForPreMonitorStop() throws Exception {
 		for (EventDataListener listener : getMonitorEventListerners()) {
 			try {
 				listener.monitoringPreStop();
 			} catch (Exception e) {
-				//just in case
-				e.printStackTrace();
+                logger.error(e.getMessage(), e);
+                throw new Exception(e.getMessage(), e);
 			}
 		}
 	}
     
-    public void triggerListenerForPostMonitorStop() {
+    public void triggerListenerForPostMonitorStop() throws Exception {
 		for (EventDataListener listener : getMonitorEventListerners()) {
 			try {
 				listener.monitoringPostStop();
 			} catch (Exception e) {
-				//just in case
-				e.printStackTrace();
+                logger.error(e.getMessage(), e);
+                throw new Exception(e.getMessage(), e);
 			}
 		}
 	}
-	private void triggerListenerForMonitorEvent(EventData event) {
+	private void triggerListenerForMonitorEvent(EventData event) throws Exception{
 		for (EventDataListener listener : getMonitorEventListerners()) {
 			try {
 				listener.notify(this, event);
@@ -196,8 +196,8 @@ public class EventDataRepository implements TableModel, BoundedRangeModel {
 					listener.onFail(event);
 				}
 			} catch (Exception e) {
-				//just in case
-				e.printStackTrace();
+				logger.error(e.getMessage(), e);
+                throw new Exception(e.getMessage(), e);
 			}
 		}
 	}

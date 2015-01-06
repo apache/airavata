@@ -44,7 +44,7 @@ public class GfacInternalStatusUpdator implements AbstractActivityListener, Watc
     private static Integer mutex = -1;
 
     @Subscribe
-    public void updateZK(GfacExperimentStateChangeRequest statusChangeRequest) throws KeeperException, InterruptedException, ApplicationSettingsException {
+    public void updateZK(GfacExperimentStateChangeRequest statusChangeRequest) throws Exception {
         logger.info("Gfac internal state changed to: " + statusChangeRequest.getState().toString());
         MonitorID monitorID = statusChangeRequest.getMonitorID();
         String experimentPath = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments") +
@@ -65,11 +65,14 @@ public class GfacInternalStatusUpdator implements AbstractActivityListener, Watc
                 return;
             }
         } catch (KeeperException e) {
-            e.printStackTrace();
+            logger.error("Error while updating zk", e);
+            throw new Exception(e.getMessage(), e);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.error("Error while updating zk", e);
+            throw new Exception(e.getMessage(), e);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error while updating zk", e);
+            throw new Exception(e.getMessage(), e);
         }
         Stat state = zk.exists(experimentPath + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false);
         if(state == null) {

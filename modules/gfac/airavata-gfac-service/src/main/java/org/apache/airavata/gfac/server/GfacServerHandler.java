@@ -22,6 +22,7 @@ package org.apache.airavata.gfac.server;
 
 import com.google.common.eventbus.EventBus;
 import org.airavata.appcatalog.cpi.AppCatalog;
+import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.logger.AiravataLogger;
@@ -39,6 +40,7 @@ import org.apache.airavata.gfac.cpi.GfacService;
 import org.apache.airavata.gfac.cpi.gfac_cpi_serviceConstants;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.thrift.TException;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
@@ -78,42 +80,46 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
 
     private List<Future> inHandlerFutures;
 
-    public GfacServerHandler() {
+    public GfacServerHandler() throws Exception{
         // registering with zk
         try {
             String zkhostPort = AiravataZKUtils.getZKhostPort();
             airavataServerHostPort = ServerSettings.getSetting(Constants.GFAC_SERVER_HOST)
                     + ":" + ServerSettings.getSetting(Constants.GFAC_SERVER_PORT);
-            try {
-                zk = new ZooKeeper(zkhostPort, 6000, this);   // no watcher is required, this will only use to store some data
-                gfacServer = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NODE,"/gfac-server");
-                gfacExperiments = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE,"/gfac-experiments");
-                synchronized(mutex){
-                    mutex.wait();  // waiting for the syncConnected event
-                }
-                storeServerConfig();
-                logger.info("Finished starting ZK: " + zk);
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (KeeperException e) {
-                e.printStackTrace();
+            zk = new ZooKeeper(zkhostPort, 6000, this);   // no watcher is required, this will only use to store some data
+            gfacServer = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NODE, "/gfac-server");
+            gfacExperiments = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
+            synchronized (mutex) {
+                mutex.wait();  // waiting for the syncConnected event
             }
-        } catch (ApplicationSettingsException e) {
-            e.printStackTrace();
-        }
-        try {
+            storeServerConfig();
+            logger.info("Finished starting ZK: " + zk);
             publisher = new MonitorPublisher(new EventBus());
             BetterGfacImpl.setMonitorPublisher(publisher);
             registry = RegistryFactory.getDefaultRegistry();
             appCatalog = AppCatalogFactory.getAppCatalog();
             setGatewayProperties();
             BetterGfacImpl.startDaemonHandlers();
-            BetterGfacImpl.startStatusUpdators(registry,zk,publisher);
+            BetterGfacImpl.startStatusUpdators(registry, zk, publisher);
             inHandlerFutures = new ArrayList<Future>();
-        }catch (Exception e){
-           logger.error("Error initialising GFAC",e);
+        } catch (ApplicationSettingsException e) {
+            logger.error("Error initialising GFAC", e);
+            throw new Exception("Error initialising GFAC", e);
+        } catch (InterruptedException e) {
+            logger.error("Error initialising GFAC", e);
+            throw new Exception("Error initialising GFAC", e);
+        } catch (AppCatalogException e) {
+            logger.error("Error initialising GFAC", e);
+            throw new Exception("Error initialising GFAC", e);
+        } catch (RegistryException e) {
+            logger.error("Error initialising GFAC", e);
+            throw new Exception("Error initialising GFAC", e);
+        } catch (KeeperException e) {
+            logger.error("Error initialising GFAC", e);
+            throw new Exception("Error initialising GFAC", e);
+        } catch (IOException e) {
+            logger.error("Error initialising GFAC", e);
+            throw new Exception("Error initialising GFAC", e);
         }
     }
 
@@ -164,13 +170,13 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
                     }
                     storeServerConfig();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage(), e);
                 } catch (ApplicationSettingsException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage(), e);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage(), e);
                 } catch (KeeperException e) {
-                    e.printStackTrace();
+                    logger.error(e.getMessage(), e);
                 }
             }
         }

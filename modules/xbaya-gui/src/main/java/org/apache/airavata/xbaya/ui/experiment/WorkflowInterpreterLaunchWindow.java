@@ -373,7 +373,7 @@ public class WorkflowInterpreterLaunchWindow {
         try {
 			return OrchestratorClientFactory.createOrchestratorClient(serverHost, serverPort);
 		} catch (AiravataClientConnectException e) {
-			e.printStackTrace();
+            logger.error(e.getMessage(), e);
 		}
         return null;
 	}

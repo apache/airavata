@@ -48,6 +48,8 @@ import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -71,6 +73,7 @@ public class AMQPMonitorTest {
     private Thread pushThread;
     private String proxyFilePath;
     private ComputeResourceDescription computeResourceDescription;
+    private final static Logger logger = LoggerFactory.getLogger(AMQPMonitorTest.class);
 
     @Before
     public void setUp() throws Exception {
@@ -108,7 +111,7 @@ public class AMQPMonitorTest {
                 }
             }).start();
         } catch (Exception e) {
-            e.printStackTrace();
+           logger.error(e.getMessage(), e);
         }
         computeResourceDescription = new ComputeResourceDescription("TestComputerResoruceId", "TestHostName");
         computeResourceDescription.setHostName("stampede-host");

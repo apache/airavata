@@ -93,7 +93,7 @@ public class GfacServer implements IServer{
     	try {
 			new GfacServer().start();
 		} catch (Exception e) {
-			e.printStackTrace();
+            logger.error(e.getMessage(), e);
 		}
     }
 

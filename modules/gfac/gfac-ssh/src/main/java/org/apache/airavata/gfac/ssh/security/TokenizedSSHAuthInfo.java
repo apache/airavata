@@ -176,7 +176,7 @@ public class TokenizedSSHAuthInfo implements SSHPublicKeyFileAuthentication {
             bw.write(data);
             bw.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
         return temp.getAbsolutePath();
     }

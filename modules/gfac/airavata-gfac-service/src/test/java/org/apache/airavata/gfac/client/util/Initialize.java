@@ -134,7 +134,6 @@ public class Initialize {
                 }
             } catch (SQLException e) {
                 logger.error(e.getMessage(), e);
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
             }
         }
 
@@ -317,9 +316,9 @@ public class Initialize {
             Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
             DriverManager.getConnection("jdbc:derby:memory:unit-testing-jpa;create=true").close();
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 
@@ -327,7 +326,7 @@ public class Initialize {
         try {
             server.shutdown();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 }

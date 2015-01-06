@@ -20,11 +20,14 @@
 */
 package org.apache.airavata.common.utils;
 
-import org.apache.airavata.common.utils.XMLUtil;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class XMLUtilTest {
+    private final static Logger logger = LoggerFactory.getLogger(XMLUtilTest.class);
+
     @Test
     public void isXMLTest(){
         String xml = "<test>testing</test>";
@@ -41,7 +44,7 @@ public class XMLUtilTest {
             org.junit.Assert.assertTrue(XMLUtil.isEqual(XMLUtil.stringToXmlElement(xml1), XMLUtil.stringToXmlElement(xml2)));
             org.junit.Assert.assertFalse(XMLUtil.isEqual(XMLUtil.stringToXmlElement(xml1), XMLUtil.stringToXmlElement(xml3)));
         } catch (Exception e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            logger.error(e.getMessage(), e);
         }
     }
     @Test

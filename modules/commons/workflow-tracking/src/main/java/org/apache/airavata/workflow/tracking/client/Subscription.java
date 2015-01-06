@@ -84,7 +84,6 @@ public class Subscription {
                 client.unSubscribe(this.subscriptionID);
             } catch (MsgBrokerClientException e) {
                 logger.error("axisFault occured on unsubscribing subscription ID :" + this.subscriptionID, e);
-                e.printStackTrace();
             }
         } else if (this.messageBoxNotificationHandler != null) {
             this.messageBoxNotificationHandler.destroy(messageBoxEPR);

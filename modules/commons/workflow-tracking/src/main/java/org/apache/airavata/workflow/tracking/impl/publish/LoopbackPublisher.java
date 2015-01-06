@@ -105,8 +105,7 @@ public class LoopbackPublisher extends AbstractPublisher implements Notification
             NotificationType type = MessageUtil.getType(xmlMessage);
             listener.deliverMessage(topic, type, xmlMessage);
         } catch (XmlException e) {
-            System.err.println("Error parsing workflow tracking message : [" + message + "]\n" + "as an XML Object");
-            e.printStackTrace();
+            logger.error("Error parsing workflow tracking message : [" + message + "]\n" + "as an XML Object", e);
         }
     }
 

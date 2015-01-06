@@ -54,6 +54,8 @@ import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XbayaEnhancedList;
 import org.apache.thrift.TException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 
 public class WorkflowImportWindow {
@@ -69,6 +71,8 @@ public class WorkflowImportWindow {
     private XbayaEnhancedList<RegistrySearchResult> list;
 
     private Client client;
+
+    private static final Logger log = LoggerFactory.getLogger(WorkflowImportWindow.class);
     /**
      * Constructs a RegistryLoaderWindow.
      *
@@ -122,13 +126,13 @@ public class WorkflowImportWindow {
 								    WorkflowImportWindow.this.list.setEnabled(true);
 								}
 							} catch (InvalidRequestException e) {
-								e.printStackTrace();
+                                log.error(e.getMessage(), e);
 							} catch (AiravataClientException e) {
-								e.printStackTrace();
+                                log.error(e.getMessage(), e);
 							} catch (AiravataSystemException e) {
-								e.printStackTrace();
+                                log.error(e.getMessage(), e);
 							} catch (TException e) {
-								e.printStackTrace();
+                                log.error(e.getMessage(), e);
 							}
                         }
                     });
@@ -167,7 +171,6 @@ public class WorkflowImportWindow {
 			}
 	    	hide();
         } catch (Exception e) {
-        	e.printStackTrace();
         	engine.getGUI().getErrorWindow().error(e);
         }
     }
@@ -177,7 +180,6 @@ public class WorkflowImportWindow {
             try {
                 getClient().deleteWorkflow(i.getResourceName());
             } catch (Exception e) {
-				e.printStackTrace();
 	        	engine.getGUI().getErrorWindow().error(e);
 			}
         }

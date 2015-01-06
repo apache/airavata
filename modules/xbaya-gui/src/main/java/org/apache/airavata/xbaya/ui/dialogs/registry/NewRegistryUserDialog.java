@@ -122,7 +122,6 @@ public class NewRegistryUserDialog {
                 setUserCreated(true);
 //                JCRComponentRegistry registry = new JCRComponentRegistry(getUsername(),getPassword());
             } catch (Exception e) {
-                e.printStackTrace();
                 engine.getGUI().getErrorWindow().error(e.getMessage());
             }
         } else {

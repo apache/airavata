@@ -352,7 +352,7 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
                             try {
                                 listener.stateChanged(null);
                             } catch (Exception e) {
-                                e.printStackTrace();
+                                logger.error(e.getMessage(), e);
                             }
                         }
                 }
@@ -455,7 +455,7 @@ public class XBayaGUI implements EventListener, XBayaExecutionModeListener {
 					}
 						
 				} catch (Exception e) {
-					e.printStackTrace();
+                    logger.error(e.getMessage(), e);
 				}
 			}
 			if (actionSuccess) {

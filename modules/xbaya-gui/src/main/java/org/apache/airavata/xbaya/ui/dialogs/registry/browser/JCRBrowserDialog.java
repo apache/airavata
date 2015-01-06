@@ -31,12 +31,15 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 
 import org.apache.airavata.xbaya.XBayaEngine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class JCRBrowserDialog extends JDialog {
 
     /**
 	 * 
 	 */
+    private static final Logger log = LoggerFactory.getLogger(JCRBrowserDialog.class);
     private static final long serialVersionUID = 2866874255829295553L;
     private JPanel contentPanel = new JPanel();
     private XBayaEngine engine;
@@ -50,7 +53,7 @@ public class JCRBrowserDialog extends JDialog {
             dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
             dialog.setVisible(true);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
     }
 

@@ -23,6 +23,8 @@ package org.apache.airavata.gsi.ssh.impl;
 
 import com.jcraft.jsch.Channel;
 import org.apache.airavata.gsi.ssh.api.CommandOutput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,6 +38,7 @@ import java.io.OutputStream;
 
 public class SystemCommandOutput implements CommandOutput {
 
+    private static final Logger logger = LoggerFactory.getLogger(SystemCommandOutput.class);
     public void onOutput(Channel channel) {
         try {
             InputStream inputStream = channel.getInputStream();
@@ -58,7 +61,7 @@ public class SystemCommandOutput implements CommandOutput {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
 
     }

@@ -63,6 +63,7 @@ public class RegistryImpl implements Registry {
             projectRegistry = new ProjectRegistry(gatewayResource, user);
         } catch (ApplicationSettingsException e) {
             logger.error("Unable to read airavata server properties..", e);
+            throw new RegistryException("Unable to read airavata server properties..", e);
         }
     }
 

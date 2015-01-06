@@ -58,6 +58,8 @@ import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextArea;
 import org.apache.airavata.xbaya.ui.widgets.component.ComponentTreeNode;
 import org.apache.airavata.xbaya.util.RegistryConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.infoset.XmlNamespace;
 import org.xmlpull.v1.builder.XmlBuilderException;
@@ -65,6 +67,8 @@ import org.xmlpull.v1.builder.XmlBuilderException;
 import xsul5.wsdl.WsdlDefinitions;
 
 public class DynamicNodeWindow {
+
+    private static final Logger log = LoggerFactory.getLogger(DynamicNodeWindow.class);
 
     /**
      * CLASSES_DIR
@@ -354,8 +358,7 @@ public class DynamicNodeWindow {
                                     .serializeToOutputStream(schema, new FileOutputStream(rootDir.getCanonicalPath()
                                             + File.separatorChar + "types.xsd"));
                         } catch (Exception e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
+                            log.error(e.getMessage(), e);
                         }
 
                         typesPath = rootDir.getCanonicalPath() + File.separatorChar + "mytype.jar";
@@ -369,8 +372,7 @@ public class DynamicNodeWindow {
                     } catch (CloneNotSupportedException e) {
                         this.engine.getGUI().getErrorWindow().error(e);
                     } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        log.error(e.getMessage(), e);
                     }
 
                 } else {

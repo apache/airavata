@@ -42,6 +42,8 @@ import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
 import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.gpel.model.GpelProcess;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 
 import xsul5.XmlConstants;
@@ -52,6 +54,7 @@ public class ODEScriptFiler {
     private XBayaEngine engine;
 
     private JFileChooser bpelFileChooser;
+    private static final Logger log = LoggerFactory.getLogger(XBayaEngine.class);
 
     private final FileFilter bpelFileFilter = new FileFilter() {
 
@@ -117,7 +120,7 @@ public class ODEScriptFiler {
                 try {
                     temp = new URI("temp");
                 } catch (URISyntaxException e) {
-                    e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
+                    log.error(e.getMessage(), e);
                 }
                 process = wf.getOdeProcess(WSDLUtil.appendWSDLQuary(temp), this.engine.getConfiguration().getODEURL());
                 String processString = process.xmlStringPretty();

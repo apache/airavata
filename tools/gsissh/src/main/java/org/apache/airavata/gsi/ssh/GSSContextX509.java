@@ -42,6 +42,8 @@ import org.gridforum.jgss.ExtendedGSSManager;
 import org.ietf.jgss.*;
 
 import com.jcraft.jsch.JSchException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is based on GSSContextKrb5; it substitutes the globus
@@ -53,6 +55,7 @@ public class GSSContextX509 implements com.jcraft.jsch.GSSContext {
 
     private GSSContext context = null;
     private GSSCredential credential;
+    private static final Logger logger = LoggerFactory.getLogger(GSSContextX509.class);
 
     public void create(String user, String host) throws JSchException {
         try {
@@ -181,7 +184,7 @@ public class GSSContextX509 implements com.jcraft.jsch.GSSContext {
             MessageProp prop = new MessageProp(0, false);
             return context.getMIC(message, s, l, prop);
         } catch (GSSException ex) {
-            ex.printStackTrace();
+            logger.error(ex.getMessage(), ex);
             return null;
         }
     }

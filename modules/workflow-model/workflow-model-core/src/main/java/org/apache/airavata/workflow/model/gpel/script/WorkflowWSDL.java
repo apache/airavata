@@ -45,6 +45,8 @@ import org.apache.airavata.workflow.model.graph.ws.WSGraph;
 import org.apache.airavata.workflow.model.utils.WorkflowConstants;
 import org.apache.airavata.workflow.model.utils.ApplicationVersion;
 import org.apache.airavata.workflow.model.wf.Workflow;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlComment;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.infoset.XmlNamespace;
@@ -120,6 +122,7 @@ public class WorkflowWSDL {
     private QName portTypeQName;
 
     private Map<QName, PartnerLinkRole> partnerLinkRoleMap;
+    private static final Logger log = LoggerFactory.getLogger(WorkflowWSDL.class);
 
     /**
      * Constructs a WorkflowWsdl.
@@ -332,7 +335,7 @@ public class WorkflowWSDL {
             try {
                 annotation.addElement(XMLUtil.deepClone(appinfo));
             } catch (UtilsException e) {
-                e.printStackTrace();
+                log.error(e.getMessage(), e);
             }
         }
 
@@ -375,7 +378,7 @@ public class WorkflowWSDL {
             try {
                 annotation.addElement(XMLUtil.deepClone(appinfo));
             } catch (UtilsException e) {
-                e.printStackTrace();
+                log.error(e.getMessage(), e);
             }
         }
 
@@ -394,7 +397,7 @@ public class WorkflowWSDL {
                 try {
                     valueElement = XMLUtil.deepClone((XmlElement) value);
                 } catch (UtilsException e) {
-                    e.printStackTrace();
+                    log.error(e.getMessage(), e);
                 }
                 XmlElement annotation = element.element(null, WSConstants.ANNOTATION_TAG, true);
                 XmlElement defaultElement = annotation.addElement(WSComponentPort.DEFAULT);
@@ -519,7 +522,7 @@ public class WorkflowWSDL {
                 return new QName(paramType.getNamespaceURI(), paramType.getLocalPart(), namespace.getPrefix());
             }
         } catch (UtilsException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
         return null;
     }

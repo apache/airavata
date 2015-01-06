@@ -74,7 +74,7 @@ public class BasicConsumer implements Consumer {
             monitorID.setStatus(parser.parseMessage(message));
             publisher.publish(monitorID);
         } catch (AiravataMonitorException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 

@@ -101,19 +101,14 @@ public class DBMigrator {
                 updateConfigTable(connection);
             }
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
            logger.error("Unable to find SQL scripts..." , e);
         } catch (InstantiationException e) {
-            e.printStackTrace();
             logger.error("Error while updating the database..." , e);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
             logger.error("Error while updating the database..." , e);
         } catch (SQLException e) {
-            e.printStackTrace();
             logger.error("Error while updating the database..." , e);
         } catch (Exception e) {
-            e.printStackTrace();
             logger.error("Error while updating the database..." , e);
         }
     }
@@ -170,7 +165,7 @@ public class DBMigrator {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage() , e);
         }
         return null;
     }
@@ -180,7 +175,7 @@ public class DBMigrator {
             Statement statement = conn.createStatement();
             statement.execute(query) ;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage() , e);
         }
     }
 

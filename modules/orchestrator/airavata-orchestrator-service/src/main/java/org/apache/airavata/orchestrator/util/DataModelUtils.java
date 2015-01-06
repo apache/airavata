@@ -29,9 +29,12 @@ import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.model.util.ExecutionType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.workflow.catalog.WorkflowCatalogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DataModelUtils {
 
+    private final static Logger logger = LoggerFactory.getLogger(DataModelUtils.class);
 	public static ExecutionType getExecutionType(Experiment experiment){
 		try {
 			ApplicationInterface applicationInterface = AppCatalogFactory.getAppCatalog().getApplicationInterface();
@@ -46,7 +49,7 @@ public class DataModelUtils {
 				}
 			}
 		} catch (AppCatalogException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 		return ExecutionType.UNKNOWN;
 	}

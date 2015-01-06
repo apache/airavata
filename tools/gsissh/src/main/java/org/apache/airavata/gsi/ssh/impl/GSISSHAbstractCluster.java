@@ -312,10 +312,9 @@ public class GSISSHAbstractCluster implements Cluster {
                         try {
                             Thread.sleep(5000);
                         } catch (InterruptedException e1) {
-                            e1.printStackTrace();
+                            log.error(e1.getMessage(), e1);
                         }
                         log.error("Error occured during job submission but doing a retry");
-                        e.printStackTrace();
                     }
                 }
             }
@@ -397,7 +396,7 @@ public class GSISSHAbstractCluster implements Cluster {
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e1) {
-                    e1.printStackTrace();
+                    log.error(e1.getMessage(), e1);
                 }
                 reconnect(serverInfo, authenticationInfo);
                 if (retry == 0) {
@@ -423,7 +422,7 @@ public class GSISSHAbstractCluster implements Cluster {
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e1) {
-                    e1.printStackTrace();
+                    log.error(e1.getMessage(), e1);
                 }
                 reconnect(serverInfo, authenticationInfo);
                 if (retry == 0) {
@@ -437,7 +436,7 @@ public class GSISSHAbstractCluster implements Cluster {
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e1) {
-                    e1.printStackTrace();
+                    log.error(e1.getMessage(), e1);
                 }
                 reconnect(serverInfo, authenticationInfo);
                 if(retry==0) {
@@ -484,7 +483,7 @@ public class GSISSHAbstractCluster implements Cluster {
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e1) {
-                    e1.printStackTrace();
+                    log.error(e1.getMessage(), e1);
                 }
                 reconnect(serverInfo, authenticationInfo);
                 if (retry == 0) {
@@ -496,7 +495,7 @@ public class GSISSHAbstractCluster implements Cluster {
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e1) {
-                    e1.printStackTrace();
+                    log.error(e1.getMessage(), e1);
                 }
                 reconnect(serverInfo, authenticationInfo);
                 if (retry == 0) {
@@ -519,12 +518,12 @@ public class GSISSHAbstractCluster implements Cluster {
                 files = SSHUtils.listDirectory(directoryPath, session);
                 retry=0;
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e.getMessage(), e);
                 retry--;
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e1) {
-                    e1.printStackTrace();
+                    log.error(e1.getMessage(), e1);
                 }
                 reconnect(serverInfo, authenticationInfo);
                 if (retry == 0) {
@@ -541,7 +540,7 @@ public class GSISSHAbstractCluster implements Cluster {
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e1) {
-                    e1.printStackTrace();
+                    log.error(e1.getMessage(), e1);
                 }
                 reconnect(serverInfo, authenticationInfo);
                 if (retry == 0) {
@@ -566,7 +565,7 @@ public class GSISSHAbstractCluster implements Cluster {
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e1) {
-                    e1.printStackTrace();
+                    log.error(e1.getMessage(), e1);
                 }
                 reconnect(serverInfo, authenticationInfo);
                 if (retry == 0) {

@@ -119,7 +119,7 @@ public abstract class AbstractOrchestrator implements Orchestrator {
             setAiravataUserName(ServerSettings.getDefaultUser());
             setGatewayName(ServerSettings.getDefaultUserGateway());
         }  catch (ApplicationSettingsException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
     }
 

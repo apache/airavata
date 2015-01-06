@@ -463,13 +463,13 @@ public class XMLUtil {
 
             return ret;
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         } catch (ParserConfigurationException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         } catch (SAXException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
 
         return null;
@@ -490,13 +490,13 @@ public class XMLUtil {
 
             return doc;
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            logger.error("Malformed URL", e);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         } catch (ParserConfigurationException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         } catch (SAXException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
 
         return null;

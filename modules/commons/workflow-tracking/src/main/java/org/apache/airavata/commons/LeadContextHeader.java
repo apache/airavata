@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 public class LeadContextHeader {
 
     OMElement target;
+    private static final Logger log = LoggerFactory.getLogger(LeadContextHeader.class);
 
     public LeadContextHeader(String experimentId, String userDn) {
         this.target = factory.createOMElement(new QName(NS.getNamespaceURI(), TYPE.getLocalPart()));
@@ -58,7 +59,7 @@ public class LeadContextHeader {
         try {
             return lookupEpr(NS, "event-sink-epr");
         } catch (AxisFault e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             return null;
         }
     }

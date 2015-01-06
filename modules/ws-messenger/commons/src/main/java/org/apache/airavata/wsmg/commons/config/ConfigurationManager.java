@@ -24,9 +24,11 @@ package org.apache.airavata.wsmg.commons.config;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ConfigurationManager {
-
+    protected static final Logger logger = LoggerFactory.getLogger(ConfigurationManager.class);
 //    protected Properties configurations = new Properties();
     
 //    public ConfigurationManager(String configFileName) {
@@ -37,12 +39,12 @@ public class ConfigurationManager {
 //        }
 //    }
 
-    public String getConfig(String configName) {
+    public String getConfig(String configName) throws Exception {
         try {
 			return ServerSettings.getSetting(configName);
 		} catch (ApplicationSettingsException e) {
-			e.printStackTrace();
-			return null;
+            logger.error(e.getMessage(), e);
+            throw new Exception(e.getMessage(), e);
 		}
     }
 

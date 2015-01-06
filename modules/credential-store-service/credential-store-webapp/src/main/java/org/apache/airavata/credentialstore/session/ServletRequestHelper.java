@@ -28,6 +28,8 @@ import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.security.AuthenticationException;
 import org.apache.commons.codec.binary.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -40,7 +42,7 @@ public class ServletRequestHelper {
      * Header names
      */
     public static final String AUTHORISATION_HEADER_NAME = "Authorization";
-
+    private final static Logger logger = LoggerFactory.getLogger(ServletRequestHelper.class);
     protected void addIdentityInformationToSession(HttpServletRequest servletRequest) throws AuthenticationException {
 
         addUserToSession(null, servletRequest);
@@ -59,8 +61,7 @@ public class ServletRequestHelper {
 				servletRequest.getSession().setAttribute(Constants.USER_IN_SESSION, userName);
 				servletRequest.getSession().setAttribute(ServerSettings.getDefaultUserGateway(), gatewayId);
 			} catch (ApplicationSettingsException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+                logger.error(e.getMessage(), e);
 			}
         }
 
@@ -102,8 +103,7 @@ public class ServletRequestHelper {
 		try {
 			gatewayId = request.getHeader(ServerSettings.getDefaultUserGateway());
 		} catch (ApplicationSettingsException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+            logger.error(e1.getMessage(), e1);
 		}
 
         if (gatewayId == null) {
