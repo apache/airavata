@@ -88,7 +88,7 @@ public class OrchestratorRecoveryHandler implements Watcher {
                 }
                 // we do not move the old experiment in to new gfac node, gfac will do it
             } catch (Exception e) {       // we attempt all the experiments
-                e.printStackTrace();
+                log.error(e.getMessage(), e);
             }
             log.info("------------------------------------------------------------------------------------");
         }

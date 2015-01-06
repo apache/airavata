@@ -574,13 +574,15 @@ public class BetterGfacImpl implements GFac,Watcher {
             }
             return true;
         } catch (ApplicationSettingsException e) {
-            e.printStackTrace();
+            log.error("Error occured while cancelling job for experiment : " + jobExecutionContext.getExperimentID(), e);
+            throw new GFacException(e.getMessage(), e);
         } catch (KeeperException e) {
-            e.printStackTrace();
+            log.error("Error occured while cancelling job for experiment : " + jobExecutionContext.getExperimentID(), e);
+            throw new GFacException(e.getMessage(), e);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            log.error("Error occured while cancelling job for experiment : " + jobExecutionContext.getExperimentID(), e);
+            throw new GFacException(e.getMessage(), e);
         }
-        return true;
     }
 
 	private void reLaunch(JobExecutionContext jobExecutionContext, int stateVal) throws GFacException {

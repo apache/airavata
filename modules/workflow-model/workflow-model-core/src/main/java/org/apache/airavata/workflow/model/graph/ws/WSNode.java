@@ -34,6 +34,8 @@ import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.GraphSchema;
 import org.apache.airavata.workflow.model.graph.impl.NodeImpl;
 import org.apache.airavata.workflow.model.graph.util.GraphUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 
 public class WSNode extends NodeImpl implements ForEachExecutableNode{
@@ -44,6 +46,7 @@ public class WSNode extends NodeImpl implements ForEachExecutableNode{
 
     protected String operationName;
 
+    private static final Logger log = LoggerFactory.getLogger(WSNode.class);
     /**
      * Constructs a WsdlNode.
      * 
@@ -159,7 +162,7 @@ public class WSNode extends NodeImpl implements ForEachExecutableNode{
         try {
 			setComponent(new WSComponent(application));
 		} catch (ComponentException e) {
-			e.printStackTrace();
+            log.error(e.getMessage(), e);
 		}
 //        XmlElement wsdlElement = nodeElement.element(null, GraphSchema.NODE_WSDL_QNAME_TAG);
 //        if (wsdlElement != null) {
@@ -187,7 +190,7 @@ public class WSNode extends NodeImpl implements ForEachExecutableNode{
         try {
             setComponent(new WSComponent(application));
         } catch (ComponentException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
     }
    

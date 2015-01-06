@@ -101,9 +101,9 @@ public class LaunchApplicationWindow {
         thriftClientData = engine.getConfiguration().getThriftClientData(ThriftServiceType.API_SERVICE);
 		try {
 			airavataClient = XBayaUtil.getAiravataClient(thriftClientData);
-		} catch (AiravataClientConnectException e) {			
-			e.printStackTrace();
-		} 
+		} catch (AiravataClientConnectException e) {
+            logger.error(e.getMessage(), e);
+		}
 		initGUI();
     }
 
@@ -164,18 +164,14 @@ public class LaunchApplicationWindow {
 		        
         try {
 			hosts = airavataClient.getAllComputeResourceNames();
-		} catch (InvalidRequestException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		} catch (AiravataClientException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		} catch (AiravataSystemException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		} catch (TException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
+		} catch (InvalidRequestException e) {
+            logger.error(e.getMessage(), e);
+		} catch (AiravataClientException e) {
+            logger.error(e.getMessage(), e);
+		} catch (AiravataSystemException e) {
+            logger.error(e.getMessage(), e);
+		} catch (TException e) {
+            logger.error(e.getMessage(), e);
 		}
     
 		        
@@ -234,23 +230,19 @@ public class LaunchApplicationWindow {
 
         JButton okButton = new JButton("Run");
         okButton.addActionListener(new AbstractAction() {
-            public void actionPerformed(ActionEvent e) {
+            public void actionPerformed(ActionEvent event) {
                 try {                	
 					execute();
-				} catch (AiravataClientConnectException e1) {
-					e1.printStackTrace();
-				} catch (InvalidRequestException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (AiravataClientException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (AiravataSystemException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (TException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+				} catch (AiravataClientConnectException e) {
+                    logger.error(e.getMessage(), e);
+				} catch (InvalidRequestException e) {
+                    logger.error(e.getMessage(), e);
+				} catch (AiravataClientException e) {
+                    logger.error(e.getMessage(), e);
+				} catch (AiravataSystemException e) {
+                    logger.error(e.getMessage(), e);
+				} catch (TException e) {
+                    logger.error(e.getMessage(), e);
 				}
             }
         });
@@ -386,15 +378,13 @@ public class LaunchApplicationWindow {
 				Thread.sleep(1000);
 				status = airavataClient.getExperimentStatus(experiment.getExperimentID()).getExperimentState().toString().trim();				
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+                logger.error(e.getMessage(), e);
 			}
         }
         try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+            logger.error(e.getMessage(), e);
 		}
         
         if(status.equals("COMPLETED")){

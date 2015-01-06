@@ -74,7 +74,7 @@ public class TestClient {
                             System.out.println(" Message Received with message id '" + message.getMessageId()
                                     + "' and with message type '" + message.getType() + "' and with state : '" + event.getState().toString());
                         } catch (TException e) {
-                            e.printStackTrace();
+                            logger.error(e.getMessage(), e);
                         }
                     }
                 }
@@ -82,7 +82,7 @@ public class TestClient {
         } catch (ApplicationSettingsException e) {
             logger.error("Error reading airavata server properties", e);
         }catch (Exception e) {
-            e.printStackTrace();
+           logger.error(e.getMessage(), e);
         }
 
     }

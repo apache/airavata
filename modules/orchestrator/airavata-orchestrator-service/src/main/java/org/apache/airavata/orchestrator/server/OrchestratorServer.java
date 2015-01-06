@@ -104,7 +104,7 @@ public class OrchestratorServer implements IServer{
     	try {
 			new OrchestratorServer().start();
 		} catch (Exception e) {
-			e.printStackTrace();
+            logger.error(e.getMessage(), e);
 		}
     }
 

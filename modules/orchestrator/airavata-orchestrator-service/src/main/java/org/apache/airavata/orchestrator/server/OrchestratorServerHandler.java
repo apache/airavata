@@ -97,7 +97,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 		return orchestrator_cpi_serviceConstants.ORCHESTRATOR_CPI_VERSION;
 	}
 
-	public OrchestratorServerHandler() {
+	public OrchestratorServerHandler() throws OrchestratorException{
 		// registering with zk
 		try {
 			if (ServerSettings.isRabbitMqPublishEnabled()) {
@@ -129,16 +129,21 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 						this);
 				log.info("Finished starting ZK: " + zk);
 			} catch (IOException e) {
-				e.printStackTrace();
+                log.error(e.getMessage(), e);
+                throw new OrchestratorException("Error while initializing orchestrator service", e);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+                log.error(e.getMessage(), e);
+                throw new OrchestratorException("Error while initializing orchestrator service", e);
 			} catch (KeeperException e) {
-				e.printStackTrace();
+                log.error(e.getMessage(), e);
+                throw new OrchestratorException("Error while initializing orchestrator service", e);
 			}
 		} catch (ApplicationSettingsException e) {
-			e.printStackTrace();
+            log.error(e.getMessage(), e);
+            throw new OrchestratorException("Error while initializing orchestrator service", e);
 		}catch (AiravataException e) {
-			e.printStackTrace();
+            log.error(e.getMessage(), e);
+            throw new OrchestratorException("Error while initializing orchestrator service", e);
 		}
 		// orchestrator init
 		try {
@@ -149,9 +154,11 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 			orchestrator.initialize();
 			orchestrator.getOrchestratorContext().setZk(this.zk);
 		} catch (OrchestratorException e) {
-			e.printStackTrace();
+            log.error(e.getMessage(), e);
+            throw new OrchestratorException("Error while initializing orchestrator service", e);
 		} catch (RegistryException e) {
-			e.printStackTrace();
+            log.error(e.getMessage(), e);
+            throw new OrchestratorException("Error while initializing orchestrator service", e);
 		}
 	}
 

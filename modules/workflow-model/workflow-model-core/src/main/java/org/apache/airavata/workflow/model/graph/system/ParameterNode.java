@@ -37,6 +37,8 @@ import org.apache.airavata.workflow.model.graph.Graph;
 import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.GraphSchema;
 import org.apache.airavata.workflow.model.graph.Port;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.infoset.XmlNamespace;
 
@@ -51,6 +53,8 @@ abstract public class ParameterNode extends SystemNode {
     private static final String METADATA_TAG = "metadata";
 
     private boolean configured;
+
+    private static final Logger log = LoggerFactory.getLogger(ParameterNode.class);
 
     /**
      * Type of the parameter (e.g. xsd:string, xsd:int)
@@ -166,7 +170,7 @@ abstract public class ParameterNode extends SystemNode {
         try {
             this.metadata = XMLUtil.deepClone(metadata);
         } catch (UtilsException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
 
         // Reformat
@@ -328,7 +332,7 @@ abstract public class ParameterNode extends SystemNode {
             try {
                 metadataElement.addChild(XMLUtil.deepClone(this.metadata));
             } catch (UtilsException e) {
-                e.printStackTrace();
+                log.error(e.getMessage(), e);
             }
         }
 

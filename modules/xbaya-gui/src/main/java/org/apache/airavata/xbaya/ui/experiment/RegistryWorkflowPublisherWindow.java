@@ -106,7 +106,6 @@ public class RegistryWorkflowPublisherWindow {
     			hide();
         	}
 		} catch (Exception e) {
-			e.printStackTrace();
             this.engine.getGUI().getErrorWindow().error(e.getMessage());
 		}
     }

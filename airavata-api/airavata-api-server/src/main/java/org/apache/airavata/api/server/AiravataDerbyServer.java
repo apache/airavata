@@ -108,7 +108,7 @@ public class AiravataDerbyServer implements IServer{
 			AiravataDerbyServer server = new AiravataDerbyServer();
 			server.start();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while initializing derby server", e);
 		}
     }
 

@@ -31,10 +31,14 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axis2.addressing.EndpointReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Listener {
 
     private static OMFactory factory = OMAbstractFactory.getOMFactory();
+    private static final Logger log = LoggerFactory.getLogger(Listener.class);
+
     public static final String finalNotification = "<end>This is the last Notification. end your subscription when you receive this</end>";
 
     /**
@@ -57,8 +61,7 @@ public class Listener {
             callback.setSubscription(subscription);
         } catch (Exception e) {
             // Falied to create subscription
-            System.out.println("Failed to create Subscription");
-            e.printStackTrace();
+            log.error("Failed to create Subscription", e);
             // do what you want to do instead of rethrowing. e.g. like retrying
             throw new RuntimeException(e);
         }
@@ -85,8 +88,7 @@ public class Listener {
             publisher.publish(null, testNotification);
             publisher.publish(null, finalNotificationEl);
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error("Failed to publish", e);
         }
 
     }

@@ -25,9 +25,12 @@ import java.rmi.RemoteException;
 
 import org.apache.airavata.workflow.tracking.client.LeadNotificationManager;
 import org.apache.airavata.workflow.tracking.client.Subscription;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SimpleListener {
 
+    private static final Logger log = LoggerFactory.getLogger(SimpleListener.class);
     /**
      * @param args
      * @throws RemoteException
@@ -46,8 +49,7 @@ public class SimpleListener {
                     new org.apache.airavata.workflow.tracking.samples.simple_listener.CallbackHandler(), 2222);
         } catch (Exception e) {
             // Falied to create subscription
-            System.out.println("Failed to create Subscription");
-            e.printStackTrace();
+            log.error("Failed to publish", e);
             // do what you want to do instead of rethrowing. e.g. like retrying
             throw new RuntimeException(e);
         }

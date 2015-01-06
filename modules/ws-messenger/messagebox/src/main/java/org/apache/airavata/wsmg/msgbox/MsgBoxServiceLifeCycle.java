@@ -72,7 +72,7 @@ public class MsgBoxServiceLifeCycle implements ServiceLifeCycle {
             try {
                 registry.getAiravataManager().unsetMessageBoxURI();
             } catch (AiravataAPIInvocationException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
             }
             thread.interrupt();
             try {

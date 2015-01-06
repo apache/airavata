@@ -76,7 +76,7 @@ public class XBayaUtil {
         } catch (SocketTimeoutException e) {
             return false;
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
             return false;
         }
     }

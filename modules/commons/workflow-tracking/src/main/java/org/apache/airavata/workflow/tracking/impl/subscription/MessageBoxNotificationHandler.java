@@ -86,7 +86,6 @@ public class MessageBoxNotificationHandler implements NotificationHandler {
             xc.dispose();
         } catch (XmlException e) {
             logger.error("error parsing message content: " + message, e);
-            e.printStackTrace();
         }
         NotificationType type = MessageUtil.getType(messageObj);
         this.callback.deliverMessage(this.topic, type, messageObj);
@@ -113,9 +112,7 @@ public class MessageBoxNotificationHandler implements NotificationHandler {
             msgboxHandler.deleteMsgBox(msgBoxEpr, 2000L);
 
         } catch (MsgBrokerClientException e) {
-
             logger.error("unable to unsubscribe", e);
-            e.printStackTrace();
         }
 
     }

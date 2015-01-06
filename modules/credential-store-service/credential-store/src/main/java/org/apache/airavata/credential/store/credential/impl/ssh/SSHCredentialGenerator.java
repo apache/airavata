@@ -89,9 +89,9 @@ public class SSHCredentialGenerator {
             MessageDigest md = MessageDigest.getInstance("MD5");
             return new String( md.digest(bytesOfMessage));
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
         return  null;
     }

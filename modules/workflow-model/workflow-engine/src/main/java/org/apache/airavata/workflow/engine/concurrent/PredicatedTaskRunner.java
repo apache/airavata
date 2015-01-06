@@ -20,6 +20,9 @@
 */
 package org.apache.airavata.workflow.engine.concurrent;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -36,6 +39,7 @@ public class PredicatedTaskRunner {
 	protected ExecutorService threadPool;
 
 	protected volatile boolean stop = false;
+    private static final Logger logger = LoggerFactory.getLogger(PredicatedTaskRunner.class);
 
 	public PredicatedTaskRunner(int numberOfThreads) {
 		this.threadPool = Executors.newFixedThreadPool(numberOfThreads);
@@ -117,7 +121,7 @@ public class PredicatedTaskRunner {
 
 					} catch (Throwable e) {
 						// we go on no matter what
-						e.printStackTrace();
+                        logger.error(e.getMessage(), e);
 					}
 				}
 

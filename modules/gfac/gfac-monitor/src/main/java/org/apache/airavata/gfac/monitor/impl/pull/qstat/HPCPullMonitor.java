@@ -132,7 +132,7 @@ public class HPCPullMonitor extends PullMonitor {
             try {
                 resourceConnection.getCluster().disconnect();
             } catch (SSHApiException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                logger.error("Erro while connecting to the cluster", e);
             }
         }
     }

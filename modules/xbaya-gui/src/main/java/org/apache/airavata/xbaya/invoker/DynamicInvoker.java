@@ -27,6 +27,8 @@ import java.net.URLClassLoader;
 
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xsul.wsif.WSIFMessage;
 import xsul.xwsif_runtime.WSIFClient;
 
@@ -42,6 +44,7 @@ public class DynamicInvoker implements Invoker {
 
     private Object result;
 
+    private static final Logger log = LoggerFactory.getLogger(DynamicInvoker.class);
     /**
      * Constructs a DynamicInvoker.
      * 
@@ -120,8 +123,7 @@ public class DynamicInvoker implements Invoker {
             method.setAccessible(true);
             method.invoke(sysloader, new Object[] { this.jarUrl });
         } catch (Throwable t) {
-            t.printStackTrace();
-            throw new WorkflowException("Error, could not add URL to system classloader");
+            throw new WorkflowException("Error, could not add URL to system classloader", t);
         }
     }
 
@@ -133,8 +135,7 @@ public class DynamicInvoker implements Invoker {
             try {
                 Thread.sleep(200);
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                log.error(e.getMessage(), e);
             }
         }
 

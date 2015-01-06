@@ -35,6 +35,8 @@ import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.gpel.DSCUtil;
 import org.apache.airavata.workflow.model.utils.WorkflowConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlBuilderException;
 import org.xmlpull.infoset.XmlInfosetBuilder;
 import org.xmlpull.infoset.XmlNamespace;
@@ -51,6 +53,7 @@ import xsul5.wsdl.WsdlService;
 
 public class ODEWSDLTransformer {
 
+    private static final Logger log = LoggerFactory.getLogger(ODEWSDLTransformer.class);
     /**
      * SCHEMA_LOCATION_URI
      */
@@ -332,8 +335,7 @@ public class ODEWSDLTransformer {
                 }
             }
         } catch (XmlBuilderException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
     }
 

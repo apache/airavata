@@ -244,7 +244,7 @@ public class AiravataAPIServer implements IServer, Watcher{
 			AiravataAPIServer server = new AiravataAPIServer();
 			server.start();
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("Error while initializing Airavata API server", e);
 		}
     }
 

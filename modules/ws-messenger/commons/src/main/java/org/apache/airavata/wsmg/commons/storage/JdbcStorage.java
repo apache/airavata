@@ -92,14 +92,14 @@ public class JdbcStorage {
         closeConnection(conn);
     }
 
-    public Connection connect() {
+    public Connection connect() throws SQLException{
 
         Connection conn = null;
         try {
             conn = connectionPool.getConnection();
         } catch (SQLException e) {
-            e.printStackTrace();
             log.error(e.getMessage(), e);
+            throw new SQLException(e);
         }
         return conn;
     }

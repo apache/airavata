@@ -93,7 +93,6 @@ public class JdbcStorage {
         try {
             conn = connectionPool.getConnection();
         } catch (SQLException e) {
-            e.printStackTrace();
             log.error(e.getMessage(), e);
         }
         return conn;
@@ -171,7 +170,7 @@ public class JdbcStorage {
             connectionPool.dispose();
     }
 
-    public void shutdown() {
+    public void shutdown() throws SQLException {
         connectionPool.shutdown();
     }
 }

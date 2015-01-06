@@ -40,6 +40,7 @@ public class InMemoryMessageBoxServer {
     private static SimpleHTTPServer receiver;
 
     public static int TESTING_PORT = 7630;
+    private static final Logger log = LoggerFactory.getLogger(InMemoryMessageBoxServer.class);
 
     public static final String FAILURE_MESSAGE = "Intentional Failure";
 
@@ -149,7 +150,7 @@ public class InMemoryMessageBoxServer {
              serverSocket = new ServerSocket(0);
              serverSocket.close();
         } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            log.error(e.getMessage(), e);
         }
         return serverSocket.getLocalPort();
     }

@@ -22,10 +22,13 @@ package org.apache.airavata.common.workflow.execution.context;
 
 import org.apache.airavata.common.utils.XMLUtil;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
 public class WorkflowContextHeaderBuilderTest {
+    private static final Logger log = LoggerFactory.getLogger(WorkflowContextHeaderBuilderTest.class);
     @Test
     public void testExecute() {
         WorkflowContextHeaderBuilder builder = new WorkflowContextHeaderBuilder("brokerurl", "gfacurl", "registryurl",
@@ -36,7 +39,7 @@ public class WorkflowContextHeaderBuilderTest {
             org.junit.Assert.assertTrue(XMLUtil.isEqual(XMLUtil.loadXML(testFile),
                     XMLUtil.xmlElement3ToXmlElement5(builder.getXml())));
         } catch (Exception e) {
-            e.printStackTrace(); // To change body of catch statement use File | Settings | File Templates.
+            log.error(e.getMessage(), e);
         }
     }
 

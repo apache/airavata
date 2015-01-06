@@ -73,7 +73,8 @@ public class GridPullMonitorHandler extends ThreadedHandler implements Watcher{
                 throw new GFacHandlerException("Error initializing Monitor Handler, because Monitor Publisher is null !!!");
             }
         } catch (ApplicationSettingsException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            logger.error("Error while  reading server properties", e);
+            throw new GFacHandlerException("Error while  reading server properties", e);
         }
     }
 
@@ -95,9 +96,9 @@ public class GridPullMonitorHandler extends ThreadedHandler implements Watcher{
                     zk.getData(path, this, exists); // watching the operations node
                 }
             } catch (KeeperException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
             }
             CommonUtils.addMonitortoQueue(hpcPullMonitor.getQueue(), monitorID, jobExecutionContext);
             CommonUtils.increaseZkJobCount(monitorID); // update change job count to zookeeper

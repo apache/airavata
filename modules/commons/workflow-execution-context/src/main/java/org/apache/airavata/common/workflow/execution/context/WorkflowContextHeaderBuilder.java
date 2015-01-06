@@ -64,7 +64,7 @@ public class WorkflowContextHeaderBuilder {
 			doc.setContextHeader(document);
 			parse = ContextHeaderDocument.Factory.parse(doc.xmlText());
 		} catch (XmlException e) {
-			e.printStackTrace();
+            log.error(e.getMessage(), e);
 		}
         this.contextHeader = parse.getContextHeader();
         if (contextHeader!=null) {

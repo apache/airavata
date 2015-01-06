@@ -189,7 +189,7 @@ public class ServerMain {
 				try {
 					Thread.sleep(5000);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					logger.error(e.getMessage(), e);
 				}
 			}
 			logger.info("Server"+(serverPID==-1? "(s)":" instance "+serverPID)+" stopped!!!");
@@ -265,9 +265,9 @@ public class ServerMain {
 			serverStartedFile.deleteOnExit();
 			new RandomAccessFile(serverStartedFile,"rw").getChannel().lock();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} catch (IOException e) {
-			e.printStackTrace();
+            logger.error(e.getMessage(), e);
 		}
 	}
 

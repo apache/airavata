@@ -71,9 +71,9 @@ public class DefaultSSHApiTestWithMyProxyAuth {
         try {
             CommandExecutor.executeCommand(commandInfo, serverInfo, authenticationInfo, commandOutput, new ConfigReader());
         } catch (SSHApiException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
     }
 

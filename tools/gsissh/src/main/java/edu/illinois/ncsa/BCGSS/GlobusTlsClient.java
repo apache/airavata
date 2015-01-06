@@ -35,6 +35,8 @@ import org.globus.gsi.stores.ResourceSigningPolicyStore;
 import org.globus.gsi.stores.ResourceSigningPolicyStoreParameters;
 import org.globus.gsi.trustmanager.X509ProxyCertPathValidator;
 import org.globus.gsi.util.CertificateUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.Cipher;
 import java.io.ByteArrayInputStream;
@@ -52,6 +54,7 @@ public class GlobusTlsClient extends DefaultTlsClient
     private Certificate clientCert = new Certificate(new X509CertificateStructure[0]);
     private PrivateKey clientPrivateKey = null;
     private X509Certificate[] peerCerts = null;
+    private static final Logger logger = LoggerFactory.getLogger(GlobusTlsClient.class);
 
     public X509Certificate[] getPeerCerts() {
         return peerCerts;
@@ -129,7 +132,7 @@ public class GlobusTlsClient extends DefaultTlsClient
                 throw new Exception("X509ProxyCertPathValidator did not return a result");
             }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
                 throw new TlsFatalAlert(AlertDescription.user_canceled);
             }
         }
@@ -161,7 +164,7 @@ public class GlobusTlsClient extends DefaultTlsClient
                 cipher.init(Cipher.ENCRYPT_MODE, clientPrivateKey);
                 return cipher.doFinal(md5andsha1);
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
                 throw new IOException(e);
             }
         }

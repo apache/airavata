@@ -40,6 +40,8 @@
 
 import com.jcraft.jsch.*;
 import org.apache.airavata.gsi.ssh.jsch.ExtendedJSch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -50,6 +52,7 @@ import java.io.InputStream;
  */
 public class SSHDemo {
 
+    private static final Logger logger = LoggerFactory.getLogger(SSHDemo.class);
     static {
         JSch.setConfig("gssapi-with-mic.x509", "org.apache.airavata.gsi.ssh.GSSContextX509");
         JSch.setConfig("userauth.gssapi-with-mic", "com.jcraft.jsch.UserAuthGSSAPIWithMICGSSCredentials");
@@ -123,13 +126,13 @@ public class SSHDemo {
                 try {
                     Thread.sleep(1000);
                 } catch (Exception ignored) {
+                    logger.debug(ignored.getMessage(), ignored);
                 }
             }
             channel.disconnect();
             session.disconnect();
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println(e);
+            logger.error(e.getMessage(), e);
         }
     }
 

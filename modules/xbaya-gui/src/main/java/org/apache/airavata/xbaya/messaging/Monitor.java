@@ -140,7 +140,7 @@ public class Monitor extends EventProducer {
     			try {
     				Monitor.this.start();
 				} catch (MonitorException e) {
-					e.printStackTrace();
+                    logger.error(e.getMessage(), e);
 				}
     		}
     	}.start();
@@ -256,7 +256,7 @@ public class Monitor extends EventProducer {
     		try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+                logger.error(e.getMessage(), e);
 			}
     	}
     }

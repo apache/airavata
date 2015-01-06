@@ -94,7 +94,7 @@ public class Monitor extends EventProducer {
     /**
      * @throws MonitorException
      */
-    public synchronized void start() throws MonitorException {
+    public synchronized void start() throws Exception {
     	
     	//Make sure currently we are not doing any monitoring
         stop();
@@ -139,7 +139,10 @@ public class Monitor extends EventProducer {
 			    this.wsmgClient = null;
 			    getEventDataRepository().triggerListenerForPostMonitorStop();
 			}
-		} finally{
+		} catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new MonitorException(e.getMessage(), e);
+        } finally{
 	        monitoringCompleted=true;
 		}
     }
@@ -153,8 +156,8 @@ public class Monitor extends EventProducer {
     		public void run() {
     			try {
     				Monitor.this.start();
-				} catch (MonitorException e) {
-					e.printStackTrace();
+				} catch (Exception e) {
+                    logger.error(e.getMessage(), e);
 				}
     		}
     	}.start();
@@ -212,7 +215,11 @@ public class Monitor extends EventProducer {
             System.out.println(XMLUtil.xmlElementToString(event));
         }
         for (String key : keys) {
-            this.eventDataMap.get(key).addEvent(eventData);
+            try {
+                this.eventDataMap.get(key).addEvent(eventData);
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+            }
         }
     }
 
@@ -246,12 +253,13 @@ public class Monitor extends EventProducer {
     /**
      * Wait until the monitoring is completed
      */
-    public void waitForCompletion(){
+    public void waitForCompletion() throws Exception {
     	while(!monitoringCompleted && !monitoringFailed){
     		try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+                logger.error(e.getMessage(), e);
+                throw new Exception(e.getMessage(), e);
 			}
     	}
     }

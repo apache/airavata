@@ -168,7 +168,7 @@ public class SimpleInvoker implements Invoker {
             try {
                 wait();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error(e.getMessage(), e);
             }
         }
         return this.outputMessage;

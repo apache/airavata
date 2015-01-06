@@ -361,12 +361,13 @@ public class ConnectionPool {
         }
     }
 
-    public void shutdown(){
+    public void shutdown() throws SQLException{
         for (Connection c : availableConnections) {
             try {
                 c.close();
             } catch (SQLException e) {
-
+                logger.error("Error while closing the connection", e);
+                throw new SQLException("Error while closing the connection", e);
             }
         }
 
@@ -374,7 +375,8 @@ public class ConnectionPool {
             try {
                 c.close();
             } catch (SQLException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                logger.error("Error while closing the connection", e);
+                throw new SQLException("Error while closing the connection", e);
             }
         }
     }

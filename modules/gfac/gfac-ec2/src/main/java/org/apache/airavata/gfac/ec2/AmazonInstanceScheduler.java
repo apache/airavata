@@ -83,7 +83,7 @@ public class AmazonInstanceScheduler {
                                 try {
                                     terminateTimedOutAmazonInstances();
                                 } catch (Throwable e) {
-                                    e.printStackTrace();
+                                    log.error(e.getMessage(), e);
                                 }
                             }
 

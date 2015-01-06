@@ -23,10 +23,14 @@ import java.rmi.RemoteException;
 import org.apache.airavata.workflow.tracking.client.NotificationType;
 import org.apache.airavata.workflow.tracking.client.Subscription;
 import org.apache.xmlbeans.XmlObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CallbackHandler implements org.apache.airavata.workflow.tracking.client.Callback {
 
     private Subscription subscription;
+    private static final Logger log = LoggerFactory.getLogger(CallbackHandler.class);
+
 
     /*
      * This methods will be callbacked when the particular subcription receives a notification (non-Javadoc)
@@ -42,7 +46,7 @@ public class CallbackHandler implements org.apache.airavata.workflow.tracking.cl
             try {
                 subscription.destroy();
             } catch (RemoteException e) {
-                e.printStackTrace();
+                log.error(e.getMessage(), e);
             }
             System.out.println("Ending the subscription and exiting");
             System.exit(0);

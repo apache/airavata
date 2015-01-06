@@ -773,7 +773,7 @@ public class XBayaConfiguration extends Observable implements Observer {
 				}
 				triggerObservers(getJcrComponentRegistry());
 			} catch (AiravataClientConnectException e) {
-				e.printStackTrace();
+                logger.error(e.getMessage(), e);
 			}
 		}
     }
@@ -831,7 +831,7 @@ public class XBayaConfiguration extends Observable implements Observer {
 				try {
 					listner.executionModeChanged(this);
 				} catch (Exception e) {
-					e.printStackTrace();
+                    logger.error(e.getMessage(), e);
 				}
 			}
 		}

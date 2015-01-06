@@ -1037,7 +1037,7 @@ public class GFacUtils {
 			return null; // if the node doesn't exist or any other error we
 							// return false
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("Error occured while getting zk node status", e);
 			return null;
 		}
 	}

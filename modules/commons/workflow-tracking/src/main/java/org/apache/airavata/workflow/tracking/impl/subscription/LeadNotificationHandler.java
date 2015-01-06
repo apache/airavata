@@ -113,8 +113,7 @@ public class LeadNotificationHandler implements ConsumerNotificationHandler {
                 try {
                     widgetTopicString = widgetTopicOMEl.toStringWithConsume();
                 } catch (XMLStreamException e) {
-                    // TODO add with throws                                                                                                                  Ms
-                    e.printStackTrace();
+                    logger.error(e.getMessage(), e);
                 }
                 String[] topicSubstrings = widgetTopicString.split(":");
                 if (topicSubstrings.length > 1) {
@@ -128,8 +127,7 @@ public class LeadNotificationHandler implements ConsumerNotificationHandler {
                 try {
                     messageObj = XmlObject.Factory.parse(messageContent.toStringWithConsume());
                 } catch (XMLStreamException e) {
-                    // TODO add with throws
-                    e.printStackTrace();
+                    logger.error("error parsing message content: " + messageContent, e);
                 }
                 XmlCursor xc = messageObj.newCursor();
                 xc.toNextToken();
@@ -137,7 +135,6 @@ public class LeadNotificationHandler implements ConsumerNotificationHandler {
                 xc.dispose();
             } catch (XmlException e) {
                 logger.error("error parsing message content: " + messageContent, e);
-                e.printStackTrace();
             }
             NotificationType type = MessageUtil.getType(messageObj);
             this.callback.deliverMessage(topic, type, messageObj);

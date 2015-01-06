@@ -40,8 +40,11 @@ import org.apache.airavata.schemas.gfac.StringParameterType;
 import org.apache.airavata.schemas.gfac.ServiceType.ServiceName;
 import org.apache.xmlbeans.XmlException;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TestWSDLGeneration {
+    protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
     public static String createAwsdl4ServiceMap(String serviceDescAsStr) throws GFacWSDLException {
         try {
@@ -122,7 +125,7 @@ public class TestWSDLGeneration {
             }
             System.out.println("DONE");
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
     }
 

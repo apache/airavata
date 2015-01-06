@@ -138,8 +138,7 @@ public class EventDataRepository implements TableModel, BoundedRangeModel {
 			try {
 				listener.monitoringPreStart();
 			} catch (Exception e) {
-				//just in case
-				e.printStackTrace();
+                logger.error(e.getMessage(), e);
 			}
 		}
 	}
@@ -149,9 +148,8 @@ public class EventDataRepository implements TableModel, BoundedRangeModel {
 			try {
 				listener.monitoringPostStart();
 			} catch (Exception e) {
-				//just in case
-				e.printStackTrace();
-			}
+                logger.error(e.getMessage(), e);
+            }
 		}
 	}
 
@@ -160,8 +158,7 @@ public class EventDataRepository implements TableModel, BoundedRangeModel {
 			try {
 				listener.monitoringPreStop();
 			} catch (Exception e) {
-				//just in case
-				e.printStackTrace();
+                logger.error(e.getMessage(), e);
 			}
 		}
 	}
@@ -171,8 +168,7 @@ public class EventDataRepository implements TableModel, BoundedRangeModel {
 			try {
 				listener.monitoringPostStop();
 			} catch (Exception e) {
-				//just in case
-				e.printStackTrace();
+                logger.error(e.getMessage(), e);
 			}
 		}
 	}

@@ -24,6 +24,8 @@ import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 
 import org.apache.airavata.gsi.ssh.api.CommandOutput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -32,6 +34,7 @@ import java.io.OutputStream;
 
 public class StandardOutReader implements CommandOutput {
 
+    private static final Logger logger = LoggerFactory.getLogger(StandardOutReader.class);
     String stdOutputString = null;
     ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
     public void onOutput(Channel channel) {
@@ -57,7 +60,7 @@ public class StandardOutReader implements CommandOutput {
             String output = pbsOutput.toString();
             this.setStdOutputString(output);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
 
     }

@@ -67,11 +67,11 @@ public class WorkflowEngineImpl implements WorkflowEngine {
 					try {
 						workflowInterpreter.scheduleDynamically();
 					} catch (WorkflowException e) {
-						e.printStackTrace();
+                        logger.error(e.getMessage(), e);
 					} catch (RegistryException e) {
-						e.printStackTrace();
+                        logger.error(e.getMessage(), e);
 					} catch (AiravataException e) {
-                        e.printStackTrace();
+                        logger.error(e.getMessage(), e);
                     }
                 };
 			}.start();

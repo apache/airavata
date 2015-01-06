@@ -150,11 +150,11 @@ public class AMQPMonitor extends PushMonitor {
                 MonitorID take = runningQueue.take();
                 this.registerListener(take);
             } catch (AiravataMonitorException e) { // catch any exceptino inside the loop
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
             } catch (InterruptedException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                logger.error(e.getMessage(), e);
             } catch (Exception e){
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
             }
         }
         Set<String> strings = availableChannels.keySet();
@@ -163,7 +163,7 @@ public class AMQPMonitor extends PushMonitor {
             try {
                 channel.close();
             } catch (IOException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                logger.error(e.getMessage(), e);
             }
         }
     }

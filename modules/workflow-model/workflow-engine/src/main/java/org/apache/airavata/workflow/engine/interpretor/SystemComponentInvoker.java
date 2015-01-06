@@ -27,11 +27,14 @@ import java.util.Map;
 import org.apache.airavata.workflow.engine.invoker.Invoker;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xsul.wsif.WSIFMessage;
 import xsul.xwsif_runtime.WSIFClient;
 
 public class SystemComponentInvoker implements Invoker {
 
+    private static final Logger logger = LoggerFactory.getLogger(SystemComponentInvoker.class);
     private Map<String, Object> outputs = new Hashtable<String, Object>();
 
     /**
@@ -54,7 +57,7 @@ public class SystemComponentInvoker implements Invoker {
                 out = this.outputs.get(name);
                 Thread.sleep(200);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
             }
         }
         return out;

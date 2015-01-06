@@ -36,6 +36,8 @@ import org.apache.airavata.workflow.model.component.ComponentRegistryException;
 import org.apache.airavata.workflow.model.component.system.SubWorkflowComponent;
 import org.apache.airavata.workflow.model.component.url.URLComponentReference;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xsul.wsdl.WsdlDefinitions;
 import xsul.wsdl.WsdlException;
 import xsul.wsdl.WsdlResolver;
@@ -47,6 +49,7 @@ public class WSComponentRegistry extends ComponentRegistry {
     private Map<String, Component> componentMap;
 
     private ComponentReference treeLeaf;
+    private static final Logger log = LoggerFactory.getLogger(WSComponentRegistry.class);
 
     /**
      * Create a WSComponentRegistry
@@ -73,9 +76,9 @@ public class WSComponentRegistry extends ComponentRegistry {
 //        } catch (ComponentException e) {
 //            e.printStackTrace();
         } catch (WsdlException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
 
     }
