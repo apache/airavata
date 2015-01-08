@@ -34,8 +34,10 @@ import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
+import org.apache.airavata.model.appcatalog.appinterface.CommandLineType;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.ValidityType;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.registry.cpi.ChildDataType;
@@ -146,9 +148,9 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                 OutputDataObjectType outputDataObjectType = (OutputDataObjectType) output.get(paramName);
                 if (outputDataObjectType.getType() == DataType.URI) {
                 	String downloadFile = outputDataObjectType.getValue();
-                	if(downloadFile == null || !(new File(downloadFile).isFile())){
+                    if(downloadFile == null || !(new File(downloadFile).isFile())){
                         GFacUtils.saveErrorDetails(jobExecutionContext, "Empty Output returned from the application", CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
-                		throw new GFacHandlerException("Empty Output returned from the application");
+                		throw new GFacHandlerException("Empty Output returned from the application.." );
                 	}
                 	pbsCluster.scpTo(outputPath, downloadFile);
                     String fileName = downloadFile.substring(downloadFile.lastIndexOf(File.separatorChar)+1, downloadFile.length());
@@ -156,6 +158,26 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                     dataObjectType.setValue(outputPath + File.separatorChar + fileName);
                     dataObjectType.setName(paramName);
                     dataObjectType.setType(DataType.URI);
+                    outputArray.add(dataObjectType);
+                }else if (outputDataObjectType.getType() == DataType.STDOUT) {
+                    pbsCluster.scpTo(outputPath, standardOutput);
+                    String fileName = standardOutput.substring(standardOutput.lastIndexOf(File.separatorChar)+1, standardOutput.length());
+                    OutputDataObjectType dataObjectType = new OutputDataObjectType();
+                    dataObjectType.setValue(outputPath + File.separatorChar + fileName);
+                    dataObjectType.setName(paramName);
+                    dataObjectType.setType(DataType.STDOUT);
+                    dataObjectType.setValidityType(ValidityType.REQUIRED);
+                    dataObjectType.setAddedToCommandLine(CommandLineType.IMPLICIT);
+                    outputArray.add(dataObjectType);
+                }else if (outputDataObjectType.getType() == DataType.STDERR) {
+                    pbsCluster.scpTo(outputPath, standardError);
+                    String fileName = standardError.substring(standardError.lastIndexOf(File.separatorChar)+1, standardError.length());
+                    OutputDataObjectType dataObjectType = new OutputDataObjectType();
+                    dataObjectType.setValue(outputPath + File.separatorChar + fileName);
+                    dataObjectType.setName(paramName);
+                    dataObjectType.setType(DataType.STDERR);
+                    dataObjectType.setValidityType(ValidityType.REQUIRED);
+                    dataObjectType.setAddedToCommandLine(CommandLineType.IMPLICIT);
                     outputArray.add(dataObjectType);
                 }
              }
