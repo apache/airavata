@@ -51,9 +51,7 @@ import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.PublisherFactory;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
-import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
-import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.*;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.messaging.event.*;
@@ -303,13 +301,6 @@ public class BetterGfacImpl implements GFac,Watcher {
         List<InputDataObjectType> taskInputs = taskData.getApplicationInputs();
         jobExecutionContext.setInMessageContext(new MessageContext(GFacUtils.getInputParamMap(taskInputs)));
 
-//        List<OutputDataObjectType> outputData = experiment.getExperimentOutputs();
-        List<OutputDataObjectType> taskOutputs = taskData.getApplicationOutputs();
-        if (taskOutputs == null || taskOutputs.isEmpty() ){
-            taskOutputs = applicationInterface.getApplicationOutputs();
-        }
-        jobExecutionContext.setOutMessageContext(new MessageContext(GFacUtils.getOuputParamMap(taskOutputs)));
-
         jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
         jobExecutionContext.setGfac(this);
         jobExecutionContext.setZk(zk);
@@ -384,6 +375,23 @@ public class BetterGfacImpl implements GFac,Watcher {
         }  else {
             setUpWorkingLocation(jobExecutionContext, applicationInterface, "/tmp");
         }
+        List<OutputDataObjectType> taskOutputs = taskData.getApplicationOutputs();
+        if (taskOutputs == null || taskOutputs.isEmpty() ){
+            taskOutputs = applicationInterface.getApplicationOutputs();
+        }
+
+        for (OutputDataObjectType objectType : taskOutputs){
+            if (objectType.getAddedToCommandLine() != null && objectType.getAddedToCommandLine()== CommandLineType.EXPLICIT){
+              objectType.setValue(jobExecutionContext.getOutputDir() + File.separator + objectType.getName());
+            }
+            if (objectType.getType() == DataType.STDOUT){
+                objectType.setValue(jobExecutionContext.getOutputDir() + File.separator + jobExecutionContext.getApplicationName() + ".stdout");
+            }
+            if (objectType.getType() == DataType.STDERR){
+                objectType.setValue(jobExecutionContext.getOutputDir() + File.separator + jobExecutionContext.getApplicationName() + ".stderr");
+            }
+        }
+        jobExecutionContext.setOutMessageContext(new MessageContext(GFacUtils.getOuputParamMap(taskOutputs)));
         return jobExecutionContext;
     }
 
@@ -402,8 +410,10 @@ public class BetterGfacImpl implements GFac,Watcher {
             /*
             * Input and Output Directory
             */
-        jobExecutionContext.setInputDir(workingDir + File.separator + Constants.INPUT_DATA_DIR_VAR_NAME);
-        jobExecutionContext.setOutputDir(workingDir + File.separator + Constants.OUTPUT_DATA_DIR_VAR_NAME);
+//        jobExecutionContext.setInputDir(workingDir + File.separator + Constants.INPUT_DATA_DIR_VAR_NAME);
+        jobExecutionContext.setInputDir(workingDir);
+//        jobExecutionContext.setOutputDir(workingDir + File.separator + Constants.OUTPUT_DATA_DIR_VAR_NAME);
+        jobExecutionContext.setOutputDir(workingDir);
 
             /*
             * Stdout and Stderr for Shell
