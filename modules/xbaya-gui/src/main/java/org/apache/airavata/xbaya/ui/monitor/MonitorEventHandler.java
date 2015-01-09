@@ -327,20 +327,23 @@ public class MonitorEventHandler implements ChangeListener {
 //        EventType type = event.getType();
         String nodeID = event.getWorkflowNodeId();
         Node node = graph.getNode(nodeID);
-        if (event.getStatus().equals(WorkflowNodeState.INVOKED.toString())) {
-            invokeNode(node);
+        if (node != null){
+            if (event.getStatus().equals(WorkflowNodeState.INVOKED.toString())) {
+                invokeNode(node);
 //            workflowStarted(graph, forward);
 //            workflowStatusUpdater.workflowStarted(event.getExperimentID());
-        } else if (event.getStatus().equals(WorkflowNodeState.COMPLETED.toString())) {
-            nodeFinished(node, true);
+            } else if (event.getStatus().equals(WorkflowNodeState.COMPLETED.toString())) {
+                nodeFinished(node, true);
 //            workflowFinished(graph, forward);
 //            workflowStatusUpdater.workflowFinished(event.getExperimentID());
-        } else if (event.getStatus().equals(WorkflowNodeState.EXECUTING.toString())) {
-            nodeStarted(node, forward);
+            } else if (event.getStatus().equals(WorkflowNodeState.EXECUTING.toString())) {
+                nodeStarted(node, forward);
 //                workflowNodeStatusUpdater.workflowStarted(event.getExperimentID(), event.getNodeID());
-        } else {
-            // Ignore the rest.
+            } else {
+                // Ignore the rest.
+            }
         }
+
     }
 
     /**

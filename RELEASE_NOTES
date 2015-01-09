@@ -2,6 +2,80 @@ Apache Airavata Release Notes
 
 See http://issues.apache.org/jira/browse/AIRAVATA-* (where * is the number of the issue below)
 
+Apache Airavata Version 0.14 Released on 2014-12-20
+===================================================
+Below you will find the detail list of JIRA tasks/issues resolutions incorporated in 0.14.
+
+Release Notes - Airavata - Version 0.14
+
+** Tasks
+    * [AIRAVATA-1063] - HostAddress in ComputationalResourceScheduling is required.
+    * [AIRAVATA-1463] - Remove airavata-client-api dependency from other module
+    * [AIRAVATA-1467] - Zookeeper Implementation to Advertise Available/up and running Airavata Services/Components
+    * [AIRAVATA-1471] - Modify Airavata Distribution to Enable Separate Distributions for Orchestrator, Gfac and Xbaya.
+    * [AIRAVATA-1511] - Replace legacy application descriptors used in gfac with app-catalog
+
+** Sub-tasks
+    * [AIRAVATA-468] - Support option with parameters for GramProvider
+    * [AIRAVATA-1009] - Craft the Workflow Interpreter CPI
+    * [AIRAVATA-1389] - Updated Xbaya to enable execution of a single application through thrift api
+    * [AIRAVATA-1427] - Submit real time job count details to zookeeper
+    * [AIRAVATA-1428] - Add a inmemory job count map to Orchestrator
+    * [AIRAVATA-1438] - Add throtle-resources flag to airavata API
+    * [AIRAVATA-1444] - Implement RabbitMQ publisher
+    * [AIRAVATA-1446] - Provide a way to enable and disable Job count validation
+    * [AIRAVATA-1472] - Cleanup Airavata property file for old service properties
+    * [AIRAVATA-1510] - Remove connection to Workflow service from Xbaya
+
+** Story
+    * [AIRAVATA-965] - Update Airavata JGLOBUS and Unicore jar
+
+** New Feature
+    * [AIRAVATA-1494] - Add ResourceJobManger add, update, get, delete methods to airavata-api
+
+** Improvement
+    * [AIRAVATA-473] - Support For-each for Local providers
+    * [AIRAVATA-495] - Implement logger in WorkflowInterpreter
+    * [AIRAVATA-899] - API need enhancement so user can set a user identifier into Context header
+    * [AIRAVATA-1030] - Multiple Security context to run a grid job
+    * [AIRAVATA-1036] - ActualParameter and DataObjectType have same objective
+    * [AIRAVATA-1333] - Can we have a way of searching for all the projects, experiments in the gateway?
+    * [AIRAVATA-1404] - Airavata API function to get Job details
+    * [AIRAVATA-1405] - API function to get data transfer details.
+    * [AIRAVATA-1410] - Input data transfer details are not updated
+    * [AIRAVATA-1419] - Allow multiple client to move the data using same server
+    * [AIRAVATA-1449] - Get partial results incase outputs are not produced.
+    * [AIRAVATA-1451] - RabbitMQ messaging is not supported for SGE resources
+    * [AIRAVATA-1462] - Update log messages to track life cycle of experiments , jobs and tasks.
+    * [AIRAVATA-1464] - XBaya doesn't support multi-app workflows with new Thrift API
+    * [AIRAVATA-1474] - Remove Registry.wsdl stub autogeneration
+    * [AIRAVATA-1479] - Change return type of jobSubmission API methods to string
+    * [AIRAVATA-1487] - Add API methods to get job submission information
+
+** Bug
+    * [AIRAVATA-723] - Error message not sent to Xbaya as fault
+    * [AIRAVATA-767] - Provide GridFTP URL incase of URL and URLArray type
+    * [AIRAVATA-911] - Unable to set a different gateway name other than "default"
+    * [AIRAVATA-986] - No free ports available to run GRAM provider and GridFTP transfers
+    * [AIRAVATA-1091] - PersistenceException while executing BES or Gram Provider
+    * [AIRAVATA-1370] - Update Client samples READMEs and INSTALL files
+    * [AIRAVATA-1402] - Command for SLURM job cancel need correction
+    * [AIRAVATA-1409] - Error details are saved twice which adding two records in the database
+    * [AIRAVATA-1413] - Output path is not getting set to output context incase we scan output directory
+    * [AIRAVATA-1418] - App catalog database connection timeout issue
+    * [AIRAVATA-1423] - Orchestrator context does't set initial GFac instant list correctly in one of it's constructor.
+    * [AIRAVATA-1430] - GSISSHAbstractCluster not throwing error if there is issue submitting job
+    * [AIRAVATA-1433] - NullPointerException to create a SSH connection
+    * [AIRAVATA-1434] - Rewrite CreateLaunchExperiment class in order to work with registerApplication method
+    * [AIRAVATA-1435] - Experiment Status is updated to completed on job complete
+    * [AIRAVATA-1477] - Host Aliases and IpAddresses not getting saved in Compute Resource Object
+    * [AIRAVATA-1488] - AdvancedSCPInputHandler is not working if we need to transfer data to BigRed
+    * [AIRAVATA-1495] - Experiment Status is not updated to Complete
+    * [AIRAVATA-1520] - SCP to a newer version of Centos VM does not work
+    * [AIRAVATA-1521] - SSHInputHandler cluster object is null
+    * [AIRAVATA-1542] - Error message when configuring XBaya input parameter configuration
+
+
 Apache Airavata Version 0.12 Released on 2014-06-27
 ===================================================
 This release is a first iteration of using Apache thrift as a framework to implement Airavata API.

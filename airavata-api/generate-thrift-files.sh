@@ -49,7 +49,7 @@ add_license_header() {
     find ${GENERATED_CODE_DIR} -name '*.java' -print0 | xargs -0 sed -i '' -e 's/public enum /@SuppressWarnings("all") public enum /'
 
     # For each source file within the generated directory, add the ASF V2 LICENSE header
-    FILE_SUFFIXES=(.java .h .cpp)
+    FILE_SUFFIXES=(.php .java .h .cpp)
     for file in "${FILE_SUFFIXES[@]}"; do
         for f in $(find ${GENERATED_CODE_DIR} -name "*$file"); do
             cat - ${f} >${f}-with-license <<EOF
