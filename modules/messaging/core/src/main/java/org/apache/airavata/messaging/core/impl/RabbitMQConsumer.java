@@ -212,8 +212,7 @@ public class RabbitMQConsumer implements Consumer {
                 channel.queueDelete(details.getQueueName(), true, true);
             } catch (IOException e) {
                 String msg = "could not un-bind queue: " + details.getQueueName() + " for exchange " + exchangeName;
-                log.error(msg);
-                throw new AiravataException(msg, e);
+                log.debug(msg);
             }
         }
     }

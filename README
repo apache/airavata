@@ -44,37 +44,49 @@ Description of Airavata Directory Structure
 Airavata Source Distribution Directory Structure
 ================================================
 
-    AIRAVATA_TRUNK
+    AIRAVATA_MASTER
+		├── airavata-api
 		├── modules
 		│   ├── airavata-client
+		│   ├── app-catalog
 		│   ├── commons
 		│   │   ├── gfac-schema
 		│   │   ├── utils
 		│   │   ├── workflow-execution-context
 		│   │   └── workflow-tracking
+		│   ├── credential-store-service
 		│   ├── distribution
-		│   │   ├── airavata-client
-		│   │   ├── airavata-server
-		│   │   ├── xbaya-gui
+		│   │   ├── api-server
+		│   │   ├── client
+		│   │   ├── gfac-server
+		│   │   ├── orchestrator-server
+		│   │   ├── server
 		│   │   └── release
-		│   ├── gfac-core
+		│   │   └── xbaya-gui
+		│   ├── gfac
+		│   │   ├── airavata-gfac-service
+		│   │   ├── gfac-bes
+		│   │   ├── gfac-core
+		│   │   ├── gfac-ec2
+		│   │   ├── gfac-gram
+		│   │   ├── gfac-gsissh
+		│   │   ├── gfac-hadoop
+		│   │   ├── gfac-local
+		│   │   ├── gfac-monitor
+		│   │   ├── gfac-ssh
+		│   │   ├── gfac-thrift-descriptions
 		│   ├── integration-tests
+		│   ├── messaging
+		│   ├── orchestrator
 		│   ├── registry
 		│   │   ├── airavata-jpa-registry
-		│   │   ├── airavata-registry-service
-		│   │   ├── airavata-registry-test
-		│   │   ├── registry-api
-		│   ├── rest
-		│   │   ├── client
-		│   │   ├── mappings
-		│   │   ├── service
-		│   │   └── webapp
+		│   │   ├── registry-cpi
 		│   ├── security
 		│   ├── credential-store
 		│   ├── server
 		│   ├── test-suite
-		│   ├── workflow-interpreter
 		│   ├── workflow-model
+		│   │   ├── workflow-engine
 		│   │   ├── workflow-model-component-node
 		│   │   └── workflow-model-core
 		│   ├── ws-messenger
@@ -87,6 +99,8 @@ Airavata Source Distribution Directory Structure
 		│   └── xbaya-gui
 		├── samples
 		├── tools
+		│   ├── gsissh
+		│   ├── gsissh-cli-tools
 		│   ├── phoebus-integration
 		│   └── registry-migrate
 		├── INSTALL
@@ -104,10 +118,14 @@ Server Distributions
   The Airavata Server binary distribution allows you to run a standalone Airavata Server which includes all the airavata services 
   shipped with a default derby database as the backend registry. For stable purposes, a mysql configuration is recommended. 
 
-* Airavata Server Web Application
-  This is similar package as the Airavata Server but is distributed as the server Web Application archive.
-  This war is compatible with Apache Tomcat application server. The war bundles all airavata services 
-  enabled by defualt to startup a derby database as the backend registry. For stable purposes, a mysql configuration is recommended. 
+* Airavata API Server
+  This is the server that contains Airavata API Server.
+
+* Airavata Orchestrator Server
+  This is the stand-alone orchestrator server
+
+* Airavata GFac Server
+  This is the standalone GFac Server
 
 Client Distributions
 --------------------
@@ -123,6 +141,5 @@ Client Distributions
 ===========================
 * If you built Airavata from source, and if you see "BUILD SUCCESS", then the test cases should have passes.
 * The test cases are beyond unit level, they startup embedded services and run through basic workflow use cases.
-* To walk through Airavata features, follow "Airavata in Five Minutes" tutorial at http://airavata.apache.org/documentation/tutorials/airavata-in-5-minutes.html. 
-* For intermediate level Airavata features, follow "Airavata in Ten Minutes" tutorial at http://airavata.apache.org/documentation/tutorials/airavata-in-5-minutes.html.
-* For advanced use cases, please contact mailing lists - http://airavata.apache.org/community/mailing-lists.html 
+* To walk through Airavata features, follow "XBAYA Quick-Start Tutorial" tutorial at https://cwiki.apache.org/confluence/display/AIRAVATA/XBAYA+Quick-Start+Tutorial.
+* For advanced use cases, please contact mailing lists - http://airavata.apache.org/community/mailing-lists.html
