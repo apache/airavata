@@ -642,7 +642,7 @@ public class AppCatalogThriftConversion {
         List<Resource> postJobCommands = postJobCommandResource.get(AbstractResource.PostJobCommandConstants.DEPLOYMENT_ID, resource.getDeploymentId());
         if (postJobCommands != null && !postJobCommands.isEmpty()){
             for (Resource postjobCommand : postJobCommands){
-                description.addToPostJobCommands(((PreJobCommandResource) postjobCommand).getCommand());
+                description.addToPostJobCommands(((PostJobCommandResource) postjobCommand).getCommand());
             }
         }
         return description;

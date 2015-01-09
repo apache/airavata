@@ -62,7 +62,9 @@ public class PostJobCommandResource extends AbstractResource {
             AppCatalogQueryGenerator generator= new AppCatalogQueryGenerator(POST_JOBCOMMAND);
             generator.setParameter(PostJobCommandConstants.DEPLOYMENT_ID,
                     ids.get(PostJobCommandConstants.DEPLOYMENT_ID));
-            generator.setParameter(PostJobCommandConstants.COMMAND, ids.get(PostJobCommandConstants.COMMAND));
+            if (ids.get(PostJobCommandConstants.COMMAND) != null){
+                generator.setParameter(PostJobCommandConstants.COMMAND, ids.get(PostJobCommandConstants.COMMAND));
+            }
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
