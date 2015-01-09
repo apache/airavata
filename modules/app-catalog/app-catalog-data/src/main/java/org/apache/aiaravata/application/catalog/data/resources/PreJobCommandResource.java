@@ -62,7 +62,9 @@ public class PreJobCommandResource extends AbstractResource {
             AppCatalogQueryGenerator generator= new AppCatalogQueryGenerator(PRE_JOBCOMMAND);
             generator.setParameter(PreJobCommandConstants.DEPLOYMENT_ID,
                     ids.get(PreJobCommandConstants.DEPLOYMENT_ID));
-            generator.setParameter(PreJobCommandConstants.COMMAND, ids.get(PreJobCommandConstants.COMMAND));
+            if (ids.get(PreJobCommandConstants.COMMAND) != null){
+                generator.setParameter(PreJobCommandConstants.COMMAND, ids.get(PreJobCommandConstants.COMMAND));
+            }
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
