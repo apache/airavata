@@ -158,12 +158,12 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
             String stdErrStr = GFacUtils.readFileToString(localStdErrFile.getAbsolutePath());
             status.setTransferState(TransferState.STDOUT_DOWNLOAD);
             detail.setTransferStatus(status);
-            detail.setTransferDescription("STDOUT:" + stdOutStr);
+            detail.setTransferDescription("STDOUT:" + localStdOutFile.getAbsolutePath());
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
 
             status.setTransferState(TransferState.STDERROR_DOWNLOAD);
             detail.setTransferStatus(status);
-            detail.setTransferDescription("STDERR:" + stdErrStr);
+            detail.setTransferDescription("STDERR:" + localStdErrFile.getAbsolutePath());
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
 
             //todo this is a mess we have to fix this

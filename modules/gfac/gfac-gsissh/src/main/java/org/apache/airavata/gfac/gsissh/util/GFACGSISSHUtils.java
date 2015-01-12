@@ -41,6 +41,7 @@ import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.CommandLineType;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.*;
@@ -50,6 +51,7 @@ import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.*;
 
 
@@ -224,7 +226,15 @@ public class GFACGSISSHUtils {
 
             if (inputDataObjectType.getValue() != null
                     && !inputDataObjectType.getValue().equals("")) {
-                inputValues.add(inputDataObjectType.getValue());
+                if (inputDataObjectType.getType() == DataType.URI) {
+                    // set only the relative path
+                    String filePath = inputDataObjectType.getValue();
+                    filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
+                    inputValues.add(filePath);
+                }else {
+                    inputValues.add(inputDataObjectType.getValue());
+                }
+
             }
         }
 
