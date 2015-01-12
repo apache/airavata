@@ -41,10 +41,10 @@ public class NodeOutput implements Serializable {
     private String dataType;
     @Column(name = "VALUE")
     private String value;
-    @Column(name = "VALIDITY_TYPE")
-    private String validityType;
-    @Column(name="COMMANDLINE_TYPE")
-    private String commandLineType;
+    @Column(name = "IS_REQUIRED")
+    private boolean isRequired;
+    @Column(name="REQUIRED_TO_COMMANDLINE")
+    private boolean requiredToCMD;
     @Column(name = "DATA_MOVEMENT")
     private boolean dataMovement;
     @Column(name = "DATA_NAME_LOCATION")
@@ -54,14 +54,6 @@ public class NodeOutput implements Serializable {
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "NODE_INSTANCE_ID")
     private WorkflowNodeDetail node;
-
-    public String getCommandLineType() {
-        return commandLineType;
-    }
-
-    public void setCommandLineType(String commandLineType) {
-        this.commandLineType = commandLineType;
-    }
 
     public String getNodeId() {
         return nodeId;
@@ -103,12 +95,20 @@ public class NodeOutput implements Serializable {
         this.dataType = dataType;
     }
 
-    public String getValidityType() {
-        return validityType;
+    public boolean isRequired() {
+        return isRequired;
     }
 
-    public void setValidityType(String validityType) {
-        this.validityType = validityType;
+    public void setRequired(boolean isRequired) {
+        this.isRequired = isRequired;
+    }
+
+    public boolean isRequiredToCMD() {
+        return requiredToCMD;
+    }
+
+    public void setRequiredToCMD(boolean requiredToCMD) {
+        this.requiredToCMD = requiredToCMD;
     }
 
     public boolean isDataMovement() {

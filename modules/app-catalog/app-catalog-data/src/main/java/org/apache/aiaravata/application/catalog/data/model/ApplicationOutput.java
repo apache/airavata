@@ -39,10 +39,10 @@ public class ApplicationOutput implements Serializable {
     private String outputVal;
     @Column(name = "DATA_TYPE")
     private String dataType;
-    @Column(name = "VALIDITY_TYPE")
-    private String validityType;
-    @Column(name="COMMANDLINE_TYPE")
-    private String commandLineType;
+    @Column(name = "IS_REQUIRED")
+    private boolean isRequired;
+    @Column(name="REQUIRED_TO_COMMANDLINE")
+    private boolean requiredToCMD;
     @Column(name = "DATA_MOVEMENT")
     private boolean dataMovement;
     @Column(name = "DATA_NAME_LOCATION")
@@ -52,13 +52,6 @@ public class ApplicationOutput implements Serializable {
     @JoinColumn(name = "INTERFACE_ID")
     private ApplicationInterface applicationInterface;
 
-    public String getCommandLineType() {
-        return commandLineType;
-    }
-
-    public void setCommandLineType(String commandLineType) {
-        this.commandLineType = commandLineType;
-    }
     public String getInterfaceID() {
         return interfaceID;
     }
@@ -99,12 +92,20 @@ public class ApplicationOutput implements Serializable {
         this.outputVal = outputVal;
     }
 
-    public String getValidityType() {
-        return validityType;
+    public boolean isRequired() {
+        return isRequired;
     }
 
-    public void setValidityType(String validityType) {
-        this.validityType = validityType;
+    public void setRequired(boolean isRequired) {
+        this.isRequired = isRequired;
+    }
+
+    public boolean isRequiredToCMD() {
+        return requiredToCMD;
+    }
+
+    public void setRequiredToCMD(boolean requiredToCMD) {
+        this.requiredToCMD = requiredToCMD;
     }
 
     public boolean isDataMovement() {

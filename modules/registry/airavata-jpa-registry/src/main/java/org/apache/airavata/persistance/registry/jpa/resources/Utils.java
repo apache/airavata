@@ -520,8 +520,8 @@ public class Utils {
             eInputResource.setInputOrder(o.getInputOrder());
             eInputResource.setStandardInput(o.isStandardInput());
             eInputResource.setUserFriendlyDesc(o.getUserFriendlyDesc());
-            eInputResource.setValidityType(o.getValidityType());
-            eInputResource.setCommandLineType(o.getCommandLineType());
+            eInputResource.setRequired(o.isRequired());
+            eInputResource.setRequiredToCMD(o.isRequiredToCMD());
             eInputResource.setDataStaged(o.isDataStaged());
 
             if (o.getValue() != null){
@@ -542,8 +542,8 @@ public class Utils {
                 eOutputResource.setValue(new String(o.getValue()));
             }
             eOutputResource.setDataType(o.getDataType());
-            eOutputResource.setValidityType(o.getValidityType());
-            eOutputResource.setCommandLineType(o.getCommandLineType());
+            eOutputResource.setRequired(o.isRequired());
+            eOutputResource.setRequiredToCMD(o.isRequiredToCMD());
             eOutputResource.setDataMovement(o.isDataMovement());
             eOutputResource.setDataNameLocation(o.getDataNameLocation());
         }
@@ -617,8 +617,8 @@ public class Utils {
             inputResource.setInputOrder(o.getInputOrder());
             inputResource.setStandardInput(o.isStandardInput());
             inputResource.setUserFriendlyDesc(o.getUserFriendlyDesc());
-            inputResource.setValidityType(o.getValidityType());
-            inputResource.setCommandLineType(o.getCommandLineType());
+            inputResource.setRequired(o.isRequired());
+            inputResource.setRequiredToCMD(o.isRequiredToCMD());
             inputResource.setDataStaged(o.isDataStaged());
             if (o.getValue() != null){
                 inputResource.setValue(new String(o.getValue()));
@@ -638,8 +638,8 @@ public class Utils {
             if (o.getValue() != null){
                 outputResource.setValue(new String(o.getValue()));
             }
-            outputResource.setValidityType(o.getValidityType());
-            outputResource.setCommandLineType(o.getCommandLineType());
+            outputResource.setRequired(o.isRequired());
+            outputResource.setRequiredToCMD(o.isAddedToCmd());
             outputResource.setDataMovement(o.isDataMovement());
             outputResource.setDataNameLocation(o.getDataNameLocation());
         }
@@ -659,8 +659,8 @@ public class Utils {
             inputResource.setInputOrder(o.getInputOrder());
             inputResource.setStandardInput(o.isStandardInput());
             inputResource.setUserFriendlyDesc(o.getUserFriendlyDesc());
-            inputResource.setValidityType(o.getValidityType());
-            inputResource.setCommandLineType(o.getCommandLineType());
+            inputResource.setRequired(o.getIsRequired());
+            inputResource.setRequiredToCMD(o.getRequiredToCMD());
             inputResource.setDataStaged(o.isDataStaged());
         }
         return inputResource;
@@ -674,8 +674,8 @@ public class Utils {
             outputResource.setDataType(o.getDataType());
             outputResource.setOutputKey(o.getOutputKey());
             outputResource.setValue(o.getValue());
-            outputResource.setValidityType(o.getValidityType());
-            outputResource.setCommandLineType(o.getCommandLineType());
+            outputResource.setRequired(o.isRequired());
+            outputResource.setRequiredToCMD(o.isRequiredToCMD());
             outputResource.setDataMovement(o.isDataMovement());
             outputResource.setDataNameLocation(o.getDataNameLocation());
         }

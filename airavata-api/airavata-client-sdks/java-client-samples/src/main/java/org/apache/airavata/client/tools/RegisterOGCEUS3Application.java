@@ -175,13 +175,13 @@ public class RegisterOGCEUS3Application {
             appModules.add(ultrascanModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("input", null,
-                    DataType.URI, null, 1,null, null, false, "input tar file", null);
+                    DataType.URI, null, 1,true,true, false, "input tar file", null);
            
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("output",
-                    "", DataType.URI, null, null);
+                    "", DataType.URI, true, false);
 
 //            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("stdout",
 //                    "", DataType.URI);

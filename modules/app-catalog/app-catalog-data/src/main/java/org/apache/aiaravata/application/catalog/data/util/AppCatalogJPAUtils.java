@@ -764,8 +764,8 @@ public class AppCatalogJPAUtils {
             resource.setUserFriendlyDesc(o.getUserFriendlyDesc());
             resource.setStandardInput(o.isStandardInput());
             resource.setInputOrder(o.getInputOrder());
-            resource.setValidityType(o.getValidityType());
-            resource.setCommandLineType(o.getCommandLineType());
+            resource.setRequired(o.isRequired());
+            resource.setRequiredToCMD(o.isRequiredToCMD());
             resource.setDataStaged(o.isDataStaged());
             resource.setAppInterfaceResource((AppInterfaceResource)createAppInterfaceResource(o.getApplicationInterface()));
         }
@@ -786,8 +786,8 @@ public class AppCatalogJPAUtils {
             resource.setInputOrder(o.getInputOrder());
             resource.setUserFriendlyDesc(o.getUserFriendlyDesc());
             resource.setStandardInput(o.isStandardInput());
-            resource.setValidityType(o.getValidityType());
-            resource.setCommandLineType(o.getCommandLineType());
+            resource.setRequired(o.isRequired());
+            resource.setRequiredToCMD(o.isRequiredToCMD());
             resource.setDataStaged(o.isDataStaged());
             resource.setWorkflowResource((WorkflowResource)createWorkflow(o.getWorkflow()));
         }
@@ -801,8 +801,8 @@ public class AppCatalogJPAUtils {
             resource.setOutputKey(o.getOutputKey());
             resource.setOutputVal(o.getOutputVal());
             resource.setDataType(o.getDataType());
-            resource.setValidityType(o.getValidityType());
-            resource.setCommandLineType(o.getCommandLineType());
+            resource.setRequired(o.isRequired());
+            resource.setRequiredToCMD(o.isRequiredToCMD());
             resource.setDataMovement(o.isDataMovement());
             resource.setDataNameLocation(o.getDataNameLocation());
             resource.setAppInterfaceResource((AppInterfaceResource)createAppInterfaceResource(o.getApplicationInterface()));

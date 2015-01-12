@@ -48,10 +48,10 @@ public class ExperimentRegistry {
 
     public ExperimentRegistry(GatewayResource gateway, UserResource user) throws RegistryException {
         gatewayResource = gateway;
-        if (!gatewayResource.isExists(ResourceType.GATEWAY_WORKER, user.getUserName())){
+        if (!gatewayResource.isExists(ResourceType.GATEWAY_WORKER, user.getUserName())) {
             workerResource = ResourceUtils.addGatewayWorker(gateway, user);
-        }else {
-            workerResource = (WorkerResource)ResourceUtils.getWorker(gateway.getGatewayName(), user.getUserName());
+        } else {
+            workerResource = (WorkerResource) ResourceUtils.getWorker(gateway.getGatewayName(), user.getUserName());
         }
 
     }
@@ -94,8 +94,8 @@ public class ExperimentRegistry {
             }
 
             List<OutputDataObjectType> experimentOutputs = experiment.getExperimentOutputs();
-            if (experimentOutputs != null && !experimentOutputs.isEmpty()){
-            	//TODO: short change.
+            if (experimentOutputs != null && !experimentOutputs.isEmpty()) {
+                //TODO: short change.
 //                for (DataObjectType output : experimentOutputs){
 //                    output.setValue("");
 //                }
@@ -112,14 +112,14 @@ public class ExperimentRegistry {
 //            }
 
             List<WorkflowNodeDetails> workflowNodeDetailsList = experiment.getWorkflowNodeDetailsList();
-            if (workflowNodeDetailsList != null && !workflowNodeDetailsList.isEmpty()){
-                for (WorkflowNodeDetails wf : workflowNodeDetailsList){
+            if (workflowNodeDetailsList != null && !workflowNodeDetailsList.isEmpty()) {
+                for (WorkflowNodeDetails wf : workflowNodeDetailsList) {
                     addWorkflowNodeDetails(wf, experimentID);
                 }
             }
             List<ErrorDetails> errors = experiment.getErrors();
-            if (errors != null && !errors.isEmpty()){
-                for (ErrorDetails errror : errors){
+            if (errors != null && !errors.isEmpty()) {
+                for (ErrorDetails errror : errors) {
                     addErrorDetails(errror, experimentID);
                 }
             }
@@ -270,18 +270,14 @@ public class ExperimentRegistry {
                 resource.setExperimentResource(experimentResource);
                 resource.setExperimentKey(input.getName());
                 resource.setValue(input.getValue());
-                if (input.getType() != null){
+                if (input.getType() != null) {
                     resource.setDataType(input.getType().toString());
                 }
                 resource.setMetadata(input.getMetaData());
                 resource.setAppArgument(input.getApplicationArgument());
                 resource.setInputOrder(input.getInputOrder());
-                if (input.getInputValid() != null){
-                    resource.setValidityType(input.getInputValid().toString());
-                }
-                if (input.getAddedToCommandLine() != null){
-                    resource.setCommandLineType(input.getAddedToCommandLine().toString());
-                }
+                resource.setRequired(input.isIsRequired());
+                resource.setRequiredToCMD(input.isRequiredToAddedToCommandLine());
                 resource.save();
             }
         } catch (Exception e) {
@@ -297,18 +293,14 @@ public class ExperimentRegistry {
                 for (ExperimentInputResource exinput : experimentInputs) {
                     if (exinput.getExperimentKey().equals(input.getName())) {
                         exinput.setValue(input.getValue());
-                        if (input.getType() != null){
+                        if (input.getType() != null) {
                             exinput.setDataType(input.getType().toString());
                         }
                         exinput.setMetadata(input.getMetaData());
                         exinput.setAppArgument(input.getApplicationArgument());
                         exinput.setInputOrder(input.getInputOrder());
-                        if (input.getInputValid() != null){
-                            exinput.setValidityType(input.getInputValid().toString());
-                        }
-                        if (input.getAddedToCommandLine() != null){
-                            exinput.setCommandLineType(input.getAddedToCommandLine().toString());
-                        }
+                        exinput.setRequired(input.isIsRequired());
+                        exinput.setRequiredToCMD(input.isRequiredToAddedToCommandLine());
                         exinput.save();
                     }
                 }
@@ -328,15 +320,11 @@ public class ExperimentRegistry {
                 resource.setExperimentResource(experiment);
                 resource.setExperimentKey(output.getName());
                 resource.setValue(output.getValue());
-                if (output.getType() != null){
+                if (output.getType() != null) {
                     resource.setDataType(output.getType().toString());
                 }
-                if (output.getValidityType() != null){
-                    resource.setValidityType(output.getValidityType().toString());
-                }
-                if (output.getAddedToCommandLine() != null){
-                    resource.setCommandLineType(output.getAddedToCommandLine().toString());
-                }
+                resource.setRequired(output.isIsRequired());
+                resource.setRequiredToCMD(output.isRequiredToAddedToCommandLine());
                 resource.setDataMovement(output.isDataMovement());
                 resource.setDataNameLocation(output.getDataNameLocation());
 //                resource.setMetadata(output.get());
@@ -359,15 +347,11 @@ public class ExperimentRegistry {
                         resource.setExperimentResource(experiment);
                         resource.setExperimentKey(output.getName());
                         resource.setValue(output.getValue());
-                        if (output.getType() != null){
+                        if (output.getType() != null) {
                             resource.setDataType(output.getType().toString());
                         }
-                        if (output.getValidityType() != null){
-                            resource.setValidityType(output.getValidityType().toString());
-                        }
-                        if (output.getAddedToCommandLine() != null){
-                            resource.setCommandLineType(output.getAddedToCommandLine().toString());
-                        }
+                        resource.setRequired(output.isIsRequired());
+                        resource.setRequiredToCMD(output.isRequiredToAddedToCommandLine());
                         resource.setDataMovement(output.isDataMovement());
                         resource.setDataNameLocation(output.getDataNameLocation());
 //                        resource.setMetadata(output.getMetaData());
@@ -390,15 +374,11 @@ public class ExperimentRegistry {
                 resource.setNodeDetailResource(workflowNode);
                 resource.setOutputKey(output.getName());
                 resource.setValue(output.getValue());
-                if (output.getType() != null){
+                if (output.getType() != null) {
                     resource.setDataType(output.getType().toString());
                 }
-                if (output.getValidityType() != null){
-                    resource.setValidityType(output.getValidityType().toString());
-                }
-                if (output.getAddedToCommandLine() != null){
-                    resource.setCommandLineType(output.getAddedToCommandLine().toString());
-                }
+                resource.setRequired(output.isIsRequired());
+                resource.setRequiredToCMD(output.isRequiredToAddedToCommandLine());
                 resource.setDataMovement(output.isDataMovement());
                 resource.setDataNameLocation(output.getDataNameLocation());
 //                resource.setMetadata(output.getMetaData());
@@ -421,15 +401,11 @@ public class ExperimentRegistry {
                     resource.setNodeDetailResource(workflowNode);
                     resource.setOutputKey(output.getName());
                     resource.setValue(output.getValue());
-                    if (output.getType() != null){
+                    if (output.getType() != null) {
                         resource.setDataType(output.getType().toString());
                     }
-                    if (output.getValidityType() != null){
-                        resource.setValidityType(output.getValidityType().toString());
-                    }
-                    if (output.getAddedToCommandLine() != null){
-                        resource.setCommandLineType(output.getAddedToCommandLine().toString());
-                    }
+                    resource.setRequired(output.isIsRequired());
+                    resource.setRequiredToCMD(output.isRequiredToAddedToCommandLine());
                     resource.setDataMovement(output.isDataMovement());
                     resource.setDataNameLocation(output.getDataNameLocation());
 //                    resource.setMetadata(output.getMetaData());
@@ -452,15 +428,11 @@ public class ExperimentRegistry {
                 resource.setTaskDetailResource(taskDetail);
                 resource.setOutputKey(output.getName());
                 resource.setValue(output.getValue());
-                if (output.getType() != null){
+                if (output.getType() != null) {
                     resource.setDataType(output.getType().toString());
                 }
-                if (output.getValidityType() != null){
-                    resource.setValidityType(output.getValidityType().toString());
-                }
-                if (output.getAddedToCommandLine() != null){
-                    resource.setCommandLineType(output.getAddedToCommandLine().toString());
-                }
+                resource.setRequired(output.isIsRequired());
+                resource.setRequiredToCMD(output.isRequiredToAddedToCommandLine());
                 resource.setDataMovement(output.isDataMovement());
                 resource.setDataNameLocation(output.getDataNameLocation());
 //                resource.setMetadata(output.getMetaData());
@@ -482,7 +454,7 @@ public class ExperimentRegistry {
             }
             status.setExperimentResource(experiment);
             status.setStatusUpdateTime(AiravataUtils.getTime(experimentStatus.getTimeOfStateChange()));
-            if (experimentStatus.getExperimentState() == null){
+            if (experimentStatus.getExperimentState() == null) {
                 status.setState(ExperimentState.UNKNOWN.toString());
             } else {
                 status.setState(experimentStatus.getExperimentState().toString());
@@ -506,7 +478,7 @@ public class ExperimentRegistry {
             statusResource.setWorkflowNodeDetail(workflowNode);
             statusResource.setStatusType(StatusType.WORKFLOW_NODE.toString());
             statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
-            if (status.getWorkflowNodeState() == null){
+            if (status.getWorkflowNodeState() == null) {
                 statusResource.setState(WorkflowNodeState.UNKNOWN.toString());
             } else {
                 statusResource.setState(status.getWorkflowNodeState().toString());
@@ -524,8 +496,8 @@ public class ExperimentRegistry {
             ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode(nodeId);
             StatusResource statusResource = workflowNode.getWorkflowNodeStatus();
-            if (statusResource == null){
-                statusResource = (StatusResource)workflowNode.create(ResourceType.STATUS);
+            if (statusResource == null) {
+                statusResource = (StatusResource) workflowNode.create(ResourceType.STATUS);
             }
             statusResource.setExperimentResource(workflowNode.getExperimentResource());
             statusResource.setWorkflowNodeDetail(workflowNode);
@@ -552,7 +524,7 @@ public class ExperimentRegistry {
             statusResource.setTaskDetailResource(taskDetail);
             statusResource.setStatusType(StatusType.TASK.toString());
             statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
-            if (status.getExecutionState() == null){
+            if (status.getExecutionState() == null) {
                 statusResource.setState(TaskState.UNKNOWN.toString());
             } else {
                 statusResource.setState(status.getExecutionState().toString());
@@ -571,10 +543,10 @@ public class ExperimentRegistry {
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = workflowNode.getTaskDetail(taskId);
             StatusResource statusResource;
-            if (taskDetail.isTaskStatusExist(taskId)){
+            if (taskDetail.isTaskStatusExist(taskId)) {
                 statusResource = taskDetail.getWorkflowNodeDetailResource().getTaskStatus(taskId);
             } else {
-                statusResource = (StatusResource)taskDetail.create(ResourceType.STATUS);
+                statusResource = (StatusResource) taskDetail.create(ResourceType.STATUS);
             }
             statusResource.setExperimentResource(taskDetail.getWorkflowNodeDetailResource().getExperimentResource());
             statusResource.setWorkflowNodeDetail(taskDetail.getWorkflowNodeDetailResource());
@@ -607,7 +579,7 @@ public class ExperimentRegistry {
             statusResource.setTaskDetailResource(taskDetail);
             statusResource.setStatusType(StatusType.JOB.toString());
             statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
-            if (status.getJobState() == null){
+            if (status.getJobState() == null) {
                 statusResource.setState(JobState.UNKNOWN.toString());
             } else {
                 statusResource.setState(status.getJobState().toString());
@@ -624,8 +596,8 @@ public class ExperimentRegistry {
         try {
             ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
-            TaskDetailResource taskDetail = workflowNode.getTaskDetail((String)ids.getTopLevelIdentifier());
-            JobDetailResource jobDetail = taskDetail.getJobDetail((String)ids.getSecondLevelIdentifier());
+            TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) ids.getTopLevelIdentifier());
+            JobDetailResource jobDetail = taskDetail.getJobDetail((String) ids.getSecondLevelIdentifier());
             StatusResource statusResource = jobDetail.getJobStatus();
             workflowNode = taskDetail.getWorkflowNodeDetailResource();
             experiment = workflowNode.getExperimentResource();
@@ -661,7 +633,7 @@ public class ExperimentRegistry {
             statusResource.setTaskDetailResource(taskDetail);
             statusResource.setStatusType(StatusType.APPLICATION.toString());
             statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
-            if (status.getApplicationState() == null){
+            if (status.getApplicationState() == null) {
                 statusResource.setState("UNKNOWN");
             } else {
                 statusResource.setState(status.getApplicationState());
@@ -713,7 +685,7 @@ public class ExperimentRegistry {
             statusResource.setDataTransferDetail(dataTransferDetail);
             statusResource.setStatusType(StatusType.DATA_TRANSFER.toString());
             statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
-            if (status.getTransferState() ==  null){
+            if (status.getTransferState() == null) {
                 statusResource.setState(TransferState.UNKNOWN.toString());
             } else {
                 statusResource.setState(status.getTransferState().toString());
@@ -733,11 +705,11 @@ public class ExperimentRegistry {
             TaskDetailResource taskDetail = (TaskDetailResource) workflowNode.create(ResourceType.TASK_DETAIL);
             DataTransferDetailResource dataTransferDetail = taskDetail.getDataTransferDetail(transferId);
             StatusResource statusResource = dataTransferDetail.getDataTransferStatus();
-        
+
             WorkflowNodeDetailResource workflowNodeDetailResource = dataTransferDetail.getTaskDetailResource().getWorkflowNodeDetailResource();
-            if(workflowNodeDetailResource != null){
-            	statusResource.setExperimentResource(workflowNodeDetailResource.getExperimentResource());
-            	statusResource.setWorkflowNodeDetail(workflowNodeDetailResource);
+            if (workflowNodeDetailResource != null) {
+                statusResource.setExperimentResource(workflowNodeDetailResource.getExperimentResource());
+                statusResource.setWorkflowNodeDetail(workflowNodeDetailResource);
             }
             statusResource.setTaskDetailResource(dataTransferDetail.getTaskDetailResource());
             statusResource.setDataTransferDetail(dataTransferDetail);
@@ -768,13 +740,13 @@ public class ExperimentRegistry {
                 addWorkflowInputs(nodeDetails.getNodeInputs(), resource);
             }
             List<OutputDataObjectType> nodeOutputs = nodeDetails.getNodeOutputs();
-            if (nodeOutputs != null && !nodeOutputs.isEmpty()){
+            if (nodeOutputs != null && !nodeOutputs.isEmpty()) {
                 CompositeIdentifier ids = new CompositeIdentifier(expId, nodeId);
                 addNodeOutputs(nodeOutputs, ids);
             }
             WorkflowNodeStatus workflowNodeStatus = nodeDetails.getWorkflowNodeStatus();
             CompositeIdentifier ids = new CompositeIdentifier(expId, nodeId);
-            if (workflowNodeStatus == null ){
+            if (workflowNodeStatus == null) {
                 workflowNodeStatus = new WorkflowNodeStatus();
             }
 //                if (workflowNodeStatus.getWorkflowNodeState() != null){
@@ -791,14 +763,14 @@ public class ExperimentRegistry {
             workflowNodeStatus.setWorkflowNodeState(WorkflowNodeState.UNKNOWN);
             addWorkflowNodeStatus(workflowNodeStatus, ids);
             List<TaskDetails> taskDetails = nodeDetails.getTaskDetailsList();
-            if (taskDetails != null && !taskDetails.isEmpty()){
-                for (TaskDetails task : taskDetails){
+            if (taskDetails != null && !taskDetails.isEmpty()) {
+                for (TaskDetails task : taskDetails) {
                     addTaskDetails(task, nodeId);
                 }
             }
             List<ErrorDetails> errors = nodeDetails.getErrors();
-            if (errors != null && !errors.isEmpty()){
-                for (ErrorDetails error : errors){
+            if (errors != null && !errors.isEmpty()) {
+                for (ErrorDetails error : errors) {
                     addErrorDetails(error, nodeId);
                 }
             }
@@ -825,32 +797,32 @@ public class ExperimentRegistry {
                 updateWorkflowInputs(nodeDetails.getNodeInputs(), workflowNode);
             }
             List<OutputDataObjectType> nodeOutputs = nodeDetails.getNodeOutputs();
-            if (nodeOutputs != null && !nodeOutputs.isEmpty()){
+            if (nodeOutputs != null && !nodeOutputs.isEmpty()) {
                 updateNodeOutputs(nodeOutputs, nodeId);
             }
             WorkflowNodeStatus workflowNodeStatus = nodeDetails.getWorkflowNodeStatus();
-            if (workflowNodeStatus != null){
-                if (isWFNodeExist(nodeId)){
+            if (workflowNodeStatus != null) {
+                if (isWFNodeExist(nodeId)) {
                     updateWorkflowNodeStatus(workflowNodeStatus, nodeId);
-                }else {
+                } else {
                     CompositeIdentifier ids = new CompositeIdentifier(expID, nodeId);
-                    addWorkflowNodeStatus(workflowNodeStatus,ids);
+                    addWorkflowNodeStatus(workflowNodeStatus, ids);
                 }
             }
             List<TaskDetails> taskDetails = nodeDetails.getTaskDetailsList();
-            if (taskDetails != null && !taskDetails.isEmpty()){
-                for (TaskDetails task : taskDetails){
+            if (taskDetails != null && !taskDetails.isEmpty()) {
+                for (TaskDetails task : taskDetails) {
                     String taskID = task.getTaskID();
-                    if(isTaskDetailExist(taskID)){
+                    if (isTaskDetailExist(taskID)) {
                         updateTaskDetails(task, taskID);
-                    }else {
+                    } else {
                         addTaskDetails(task, nodeId);
                     }
                 }
             }
             List<ErrorDetails> errors = nodeDetails.getErrors();
-            if (errors != null && !errors.isEmpty()){
-                for (ErrorDetails error : errors){
+            if (errors != null && !errors.isEmpty()) {
+                for (ErrorDetails error : errors) {
                     addErrorDetails(error, nodeId);
                 }
             }
@@ -868,18 +840,14 @@ public class ExperimentRegistry {
                 resource.setNodeDetailResource(nodeDetailResource);
                 resource.setInputKey(input.getName());
                 resource.setValue(input.getValue());
-                if (input.getType() != null){
+                if (input.getType() != null) {
                     resource.setDataType(input.getType().toString());
                 }
                 resource.setMetadata(input.getMetaData());
                 resource.setAppArgument(input.getApplicationArgument());
                 resource.setInputOrder(input.getInputOrder());
-                if (input.getInputValid() != null){
-                    resource.setValidityType(input.getInputValid().toString());
-                }
-                if (input.getAddedToCommandLine() != null){
-                    resource.setCommandLineType(input.getAddedToCommandLine().toString());
-                }
+                resource.setRequired(input.isIsRequired());
+                resource.setRequiredToCMD(input.isRequiredToAddedToCommandLine());
                 resource.save();
             }
         } catch (Exception e) {
@@ -897,18 +865,14 @@ public class ExperimentRegistry {
                     resource.setNodeDetailResource(nodeDetailResource);
                     resource.setInputKey(input.getName());
                     resource.setValue(input.getValue());
-                    if (input.getType() != null){
+                    if (input.getType() != null) {
                         resource.setDataType(input.getType().toString());
                     }
                     resource.setMetadata(input.getMetaData());
                     resource.setAppArgument(input.getApplicationArgument());
                     resource.setInputOrder(input.getInputOrder());
-                    if (input.getInputValid() != null){
-                        resource.setValidityType(input.getInputValid().toString());
-                    }
-                    if (input.getAddedToCommandLine() != null){
-                        resource.setCommandLineType(input.getAddedToCommandLine().toString());
-                    }
+                    resource.setRequired(input.isIsRequired());
+                    resource.setRequiredToCMD(input.isRequiredToAddedToCommandLine());
                     resource.save();
                 }
             }
@@ -952,37 +916,37 @@ public class ExperimentRegistry {
             }
 
             List<JobDetails> jobDetailsList = taskDetails.getJobDetailsList();
-            if (jobDetailsList != null && !jobDetailsList.isEmpty()){
-                for (JobDetails job : jobDetailsList){
+            if (jobDetailsList != null && !jobDetailsList.isEmpty()) {
+                for (JobDetails job : jobDetailsList) {
                     CompositeIdentifier ids = new CompositeIdentifier(taskDetail.getTaskId(), job.getJobID());
-                    addJobDetails(job,ids);
+                    addJobDetails(job, ids);
                 }
             }
 
             List<DataTransferDetails> dataTransferDetailsList = taskDetails.getDataTransferDetailsList();
-            if (dataTransferDetailsList != null && !dataTransferDetailsList.isEmpty()){
-                for (DataTransferDetails transferDetails : dataTransferDetailsList){
+            if (dataTransferDetailsList != null && !dataTransferDetailsList.isEmpty()) {
+                for (DataTransferDetails transferDetails : dataTransferDetailsList) {
                     addDataTransferDetails(transferDetails, taskDetail.getTaskId());
                 }
             }
 
             List<ErrorDetails> errors = taskDetails.getErrors();
-            if (errors != null && !errors.isEmpty()){
-                for (ErrorDetails error : errors){
+            if (errors != null && !errors.isEmpty()) {
+                for (ErrorDetails error : errors) {
                     addErrorDetails(error, taskDetail.getTaskId());
                 }
             }
 
             TaskStatus taskStatus = taskDetails.getTaskStatus();
             CompositeIdentifier ids = new CompositeIdentifier(nodeId, taskDetail.getTaskId());
-            if (taskStatus != null){
-                if (taskStatus.getExecutionState() != null){
+            if (taskStatus != null) {
+                if (taskStatus.getExecutionState() != null) {
                     addTaskStatus(taskStatus, ids);
-                }else {
+                } else {
                     taskStatus.setExecutionState(TaskState.UNKNOWN);
                     addTaskStatus(taskStatus, ids);
                 }
-            }else {
+            } else {
                 TaskStatus status = new TaskStatus();
                 status.setExecutionState(TaskState.UNKNOWN);
                 addTaskStatus(status, ids);
@@ -1023,29 +987,29 @@ public class ExperimentRegistry {
                 updateOutputDataHandling(outputDataHandling, taskDetail);
             }
             List<JobDetails> jobDetailsList = taskDetails.getJobDetailsList();
-            if (jobDetailsList != null && !jobDetailsList.isEmpty()){
-                for (JobDetails job : jobDetailsList){
+            if (jobDetailsList != null && !jobDetailsList.isEmpty()) {
+                for (JobDetails job : jobDetailsList) {
                     CompositeIdentifier ids = new CompositeIdentifier(taskId, job.getJobID());
                     updateJobDetails(job, ids);
                 }
             }
 
             List<DataTransferDetails> dataTransferDetailsList = taskDetails.getDataTransferDetailsList();
-            if (dataTransferDetailsList != null && !dataTransferDetailsList.isEmpty()){
-                for (DataTransferDetails transferDetails : dataTransferDetailsList){
+            if (dataTransferDetailsList != null && !dataTransferDetailsList.isEmpty()) {
+                for (DataTransferDetails transferDetails : dataTransferDetailsList) {
                     updateDataTransferDetails(transferDetails, transferDetails.getTransferID());
                 }
             }
 
             List<ErrorDetails> errors = taskDetails.getErrors();
-            if (errors != null && !errors.isEmpty()){
-                for (ErrorDetails error : errors){
+            if (errors != null && !errors.isEmpty()) {
+                for (ErrorDetails error : errors) {
                     addErrorDetails(error, taskDetail.getTaskId());
                 }
             }
 
             TaskStatus taskStatus = taskDetails.getTaskStatus();
-            if (taskStatus != null){
+            if (taskStatus != null) {
                 updateTaskStatus(taskStatus, taskId);
             }
             return taskDetail.getTaskId();
@@ -1062,18 +1026,14 @@ public class ExperimentRegistry {
                 resource.setTaskDetailResource(taskDetailResource);
                 resource.setInputKey(input.getName());
                 resource.setValue(input.getValue());
-                if (input.getType() != null){
+                if (input.getType() != null) {
                     resource.setDataType(input.getType().toString());
                 }
                 resource.setMetadata(input.getMetaData());
                 resource.setAppArgument(input.getApplicationArgument());
                 resource.setInputOrder(input.getInputOrder());
-                if (input.getInputValid() != null){
-                    resource.setValidityType(input.getInputValid().toString());
-                }
-                if (input.getAddedToCommandLine() != null){
-                    resource.setCommandLineType(input.getAddedToCommandLine().toString());
-                }
+                resource.setRequired(input.isIsRequired());
+                resource.setRequiredToCMD(input.isRequiredToAddedToCommandLine());
                 resource.save();
             }
         } catch (Exception e) {
@@ -1090,15 +1050,11 @@ public class ExperimentRegistry {
                 resource.setTaskDetailResource(taskDetailResource);
                 resource.setOutputKey(output.getName());
                 resource.setValue(output.getValue());
-                if (output.getType() != null){
+                if (output.getType() != null) {
                     resource.setDataType(output.getType().toString());
                 }
-                if (output.getValidityType() != null){
-                    resource.setValidityType(output.getValidityType().toString());
-                }
-                if (output.getAddedToCommandLine() != null){
-                    resource.setCommandLineType(output.getAddedToCommandLine().toString());
-                }
+                resource.setRequired(output.isIsRequired());
+                resource.setRequiredToCMD(output.isRequiredToAddedToCommandLine());
                 resource.setDataMovement(output.isDataMovement());
                 resource.setDataNameLocation(output.getDataNameLocation());
 //                resource.setMetadata(output.getMetaData());
@@ -1122,15 +1078,11 @@ public class ExperimentRegistry {
                     resource.setTaskDetailResource(taskDetail);
                     resource.setOutputKey(output.getName());
                     resource.setValue(output.getValue());
-                    if (output.getType() != null){
+                    if (output.getType() != null) {
                         resource.setDataType(output.getType().toString());
                     }
-                    if (output.getValidityType() != null){
-                        resource.setValidityType(output.getValidityType().toString());
-                    }
-                    if (output.getAddedToCommandLine() != null){
-                        resource.setCommandLineType(output.getAddedToCommandLine().toString());
-                    }
+                    resource.setRequired(output.isIsRequired());
+                    resource.setRequiredToCMD(output.isRequiredToAddedToCommandLine());
                     resource.setDataMovement(output.isDataMovement());
                     resource.setDataNameLocation(output.getDataNameLocation());
 //                    resource.setMetadata(output.getMetaData());
@@ -1151,18 +1103,14 @@ public class ExperimentRegistry {
                     resource.setTaskDetailResource(taskDetailResource);
                     resource.setInputKey(input.getName());
                     resource.setValue(input.getValue());
-                    if (input.getType() != null){
+                    if (input.getType() != null) {
                         resource.setDataType(input.getType().toString());
                     }
                     resource.setMetadata(input.getMetaData());
                     resource.setAppArgument(input.getApplicationArgument());
                     resource.setInputOrder(input.getInputOrder());
-                    if (input.getInputValid() != null){
-                        resource.setValidityType(input.getInputValid().toString());
-                    }
-                    if (input.getAddedToCommandLine() != null){
-                        resource.setCommandLineType(input.getAddedToCommandLine().toString());
-                    }
+                    resource.setRequired(input.isIsRequired());
+                    resource.setRequiredToCMD(input.isRequiredToAddedToCommandLine());
                     resource.save();
                 }
 
@@ -1186,26 +1134,26 @@ public class ExperimentRegistry {
             jobDetail.setComputeResourceConsumed(jobDetails.getComputeResourceConsumed());
             jobDetail.save();
             JobStatus jobStatus = jobDetails.getJobStatus();
-            if (jobStatus != null){
+            if (jobStatus != null) {
                 JobStatus status = getJobStatus(ids);
-                if (status != null){
+                if (status != null) {
                     updateJobStatus(jobStatus, ids);
-                }else {
+                } else {
                     addJobStatus(jobStatus, ids);
                 }
             }
             ApplicationStatus applicationStatus = jobDetails.getApplicationStatus();
-            if (applicationStatus != null){
+            if (applicationStatus != null) {
                 ApplicationStatus appStatus = getApplicationStatus(ids);
-                if (appStatus != null){
-                    updateApplicationStatus(applicationStatus, (String)ids.getSecondLevelIdentifier());
-                }else {
+                if (appStatus != null) {
+                    updateApplicationStatus(applicationStatus, (String) ids.getSecondLevelIdentifier());
+                } else {
                     addApplicationStatus(applicationStatus, ids);
                 }
             }
             List<ErrorDetails> errors = jobDetails.getErrors();
-            if (errors != null && !errors.isEmpty()){
-                for (ErrorDetails error : errors ){
+            if (errors != null && !errors.isEmpty()) {
+                for (ErrorDetails error : errors) {
                     addErrorDetails(error, ids.getSecondLevelIdentifier());
                 }
             }
@@ -1231,26 +1179,26 @@ public class ExperimentRegistry {
             jobDetail.setComputeResourceConsumed(jobDetails.getComputeResourceConsumed());
             jobDetail.save();
             JobStatus jobStatus = jobDetails.getJobStatus();
-            if (jobStatus != null){
+            if (jobStatus != null) {
                 JobStatus status = getJobStatus(ids);
-                if (status != null){
+                if (status != null) {
                     updateJobStatus(jobStatus, ids);
-                }else {
+                } else {
                     addJobStatus(jobStatus, ids);
                 }
             }
             ApplicationStatus applicationStatus = jobDetails.getApplicationStatus();
-            if (applicationStatus != null){
+            if (applicationStatus != null) {
                 ApplicationStatus appStatus = getApplicationStatus(ids);
-                if (appStatus != null){
+                if (appStatus != null) {
                     updateApplicationStatus(applicationStatus, jobId);
-                }else {
+                } else {
                     addApplicationStatus(applicationStatus, ids);
                 }
             }
             List<ErrorDetails> errors = jobDetails.getErrors();
-            if (errors != null && !errors.isEmpty()){
-                for (ErrorDetails error : errors ){
+            if (errors != null && !errors.isEmpty()) {
+                for (ErrorDetails error : errors) {
                     addErrorDetails(error, jobId);
                 }
             }
@@ -1273,11 +1221,11 @@ public class ExperimentRegistry {
             resource.save();
             String transferId = resource.getTransferId();
             TransferStatus transferStatus = transferDetails.getTransferStatus();
-            if (transferStatus != null){
+            if (transferStatus != null) {
                 TransferStatus status = getDataTransferStatus(transferId);
-                if (status != null){
+                if (status != null) {
                     updateTransferStatus(transferStatus, transferId);
-                }else {
+                } else {
                     CompositeIdentifier ids = new CompositeIdentifier(taskId, transferId);
                     addTransferStatus(transferStatus, ids);
                 }
@@ -1301,11 +1249,11 @@ public class ExperimentRegistry {
             resource.save();
             String taskId = resource.getTaskDetailResource().getTaskId();
             TransferStatus transferStatus = transferDetails.getTransferStatus();
-            if (transferStatus != null){
+            if (transferStatus != null) {
                 TransferStatus status = getDataTransferStatus(transferId);
-                if (status != null){
+                if (status != null) {
                     updateTransferStatus(transferStatus, transferId);
-                }else {
+                } else {
                     CompositeIdentifier ids = new CompositeIdentifier(taskId, transferId);
                     addTransferStatus(transferStatus, ids);
                 }
@@ -1442,16 +1390,16 @@ public class ExperimentRegistry {
 //                    errorResource = (ErrorDetailResource) workflowNode.create(ResourceType.ERROR_DETAIL);
 //                    errorResource.setExperimentResource(workflowNode.getExperimentResource());
 //                } else
-                  if (isTaskDetailExist((String) id)) {
+                if (isTaskDetailExist((String) id)) {
                     experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
                     workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
                     taskDetail = workflowNode.getTaskDetail((String) id);
                     errorResource = (ErrorDetailResource) taskDetail.create(ResourceType.ERROR_DETAIL);
-                    if (error.getErrorID() != null &&  !error.getErrorID().equals(experimentModelConstants.DEFAULT_ID)){
+                    if (error.getErrorID() != null && !error.getErrorID().equals(experimentModelConstants.DEFAULT_ID)) {
                         List<ErrorDetailResource> errorDetailList = taskDetail.getErrorDetailList();
-                        if (errorDetailList != null && !errorDetailList.isEmpty()){
-                            for (ErrorDetailResource errorDetailResource : errorDetailList){
-                                if (errorDetailResource.getErrorId() == Integer.parseInt(error.getErrorID())){
+                        if (errorDetailList != null && !errorDetailList.isEmpty()) {
+                            for (ErrorDetailResource errorDetailResource : errorDetailList) {
+                                if (errorDetailResource.getErrorId() == Integer.parseInt(error.getErrorID())) {
                                     errorResource = errorDetailResource;
                                 }
                             }
@@ -1471,12 +1419,12 @@ public class ExperimentRegistry {
                     taskDetail = workflowNode.getTaskDetail((String) cid.getTopLevelIdentifier());
                     JobDetailResource jobDetail = taskDetail.getJobDetail((String) cid.getSecondLevelIdentifier());
                     errorResource = (ErrorDetailResource) jobDetail.create(ResourceType.ERROR_DETAIL);
-                    if (error.getErrorID() != null &&  !error.getErrorID().equals(experimentModelConstants.DEFAULT_ID)){
+                    if (error.getErrorID() != null && !error.getErrorID().equals(experimentModelConstants.DEFAULT_ID)) {
                         List<ErrorDetailResource> errorDetailList = taskDetail.getErrorDetailList();
-                        if (errorDetailList != null && !errorDetailList.isEmpty()){
-                            for (ErrorDetailResource errorDetailResource : errorDetailList){
-                                if (errorDetailResource.getErrorId() == Integer.parseInt(error.getErrorID())){
-                                       errorResource = errorDetailResource;
+                        if (errorDetailList != null && !errorDetailList.isEmpty()) {
+                            for (ErrorDetailResource errorDetailResource : errorDetailList) {
+                                if (errorDetailResource.getErrorId() == Integer.parseInt(error.getErrorID())) {
+                                    errorResource = errorDetailResource;
                                 }
                             }
                         }
@@ -1495,18 +1443,18 @@ public class ExperimentRegistry {
                 errorResource.setCreationTime(AiravataUtils.getTime(error.getCreationTime()));
                 errorResource.setActualErrorMsg(error.getActualErrorMessage());
                 errorResource.setUserFriendlyErrorMsg(error.getUserFriendlyMessage());
-                if (error.getErrorCategory() != null){
+                if (error.getErrorCategory() != null) {
                     errorResource.setErrorCategory(error.getErrorCategory().toString());
                 }
                 errorResource.setTransientPersistent(error.isTransientOrPersistent());
-                if (error.getCorrectiveAction() != null){
+                if (error.getCorrectiveAction() != null) {
                     errorResource.setCorrectiveAction(error.getCorrectiveAction().toString());
-                }else {
+                } else {
                     errorResource.setCorrectiveAction(CorrectiveAction.CONTACT_SUPPORT.toString());
                 }
-                if (error.getActionableGroup() != null){
+                if (error.getActionableGroup() != null) {
                     errorResource.setActionableGroup(error.getActionableGroup().toString());
-                }else {
+                } else {
                     errorResource.setActionableGroup(ActionableGroup.GATEWAYS_ADMINS.toString());
                 }
                 errorResource.save();
@@ -1625,7 +1573,7 @@ public class ExperimentRegistry {
             existingExperiment.setWorkflowExecutionId(experiment.getWorkflowExecutionInstanceId());
             existingExperiment.save();
             List<InputDataObjectType> experimentInputs = experiment.getExperimentInputs();
-            if (experimentInputs != null && !experimentInputs.isEmpty()){
+            if (experimentInputs != null && !experimentInputs.isEmpty()) {
                 updateExpInputs(experimentInputs, existingExperiment);
             }
 
@@ -1635,22 +1583,22 @@ public class ExperimentRegistry {
             }
 
             List<OutputDataObjectType> experimentOutputs = experiment.getExperimentOutputs();
-            if (experimentOutputs != null && !experimentOutputs.isEmpty()){
+            if (experimentOutputs != null && !experimentOutputs.isEmpty()) {
                 updateExpOutputs(experimentOutputs, expId);
             }
             ExperimentStatus experimentStatus = experiment.getExperimentStatus();
-            if (experimentStatus != null){
+            if (experimentStatus != null) {
                 updateExperimentStatus(experimentStatus, expId);
             }
             List<WorkflowNodeDetails> workflowNodeDetailsList = experiment.getWorkflowNodeDetailsList();
-            if (workflowNodeDetailsList != null && !workflowNodeDetailsList.isEmpty()){
-                for (WorkflowNodeDetails wf : workflowNodeDetailsList){
+            if (workflowNodeDetailsList != null && !workflowNodeDetailsList.isEmpty()) {
+                for (WorkflowNodeDetails wf : workflowNodeDetailsList) {
                     updateWorkflowNodeDetails(wf, wf.getNodeInstanceId());
                 }
             }
             List<ErrorDetails> errors = experiment.getErrors();
-            if (errors != null && !errors.isEmpty()){
-                for (ErrorDetails errror : errors){
+            if (errors != null && !errors.isEmpty()) {
+                for (ErrorDetails errror : errors) {
                     addErrorDetails(errror, expId);
                 }
             }
@@ -1794,8 +1742,8 @@ public class ExperimentRegistry {
         List<Experiment> experiments = new ArrayList<Experiment>();
         try {
             if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
-                WorkerResource resource = (WorkerResource)gatewayResource.create(ResourceType.GATEWAY_WORKER);
-                resource.setUser((String)value);
+                WorkerResource resource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
+                resource.setUser((String) value);
                 List<ExperimentResource> resources = resource.getExperiments();
 //                List<ExperimentResource> resources = resource.getExperimentsByCaching((String)value);
                 for (ExperimentResource experimentResource : resources) {
@@ -1818,20 +1766,21 @@ public class ExperimentRegistry {
                     experiments.add(experiment);
                 }
                 return experiments;
-            } if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.WORKFLOW_NODE_LIST)) {
-            	if (value instanceof List<?>){
-            		return getExperimentList(fieldName,((List<?>) value).get(0));
-            	}else if (value instanceof WorkflowNodeDetails){
-            		WorkflowNodeDetailResource nodeDetailResource = getWorkflowNodeDetailResource(((WorkflowNodeDetails) value).getNodeInstanceId());
-					if (nodeDetailResource!=null) {
-						return Arrays.asList(new Experiment[] { ThriftDataModelConversion
-										.getExperiment(nodeDetailResource
-												.getExperimentResource()) });
-					}
-            	}else{
-            		logger.error("Unsupported field value to retrieve workflow node detail list...");	
-            	}
- 
+            }
+            if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.WORKFLOW_NODE_LIST)) {
+                if (value instanceof List<?>) {
+                    return getExperimentList(fieldName, ((List<?>) value).get(0));
+                } else if (value instanceof WorkflowNodeDetails) {
+                    WorkflowNodeDetailResource nodeDetailResource = getWorkflowNodeDetailResource(((WorkflowNodeDetails) value).getNodeInstanceId());
+                    if (nodeDetailResource != null) {
+                        return Arrays.asList(new Experiment[]{ThriftDataModelConversion
+                                .getExperiment(nodeDetailResource
+                                        .getExperimentResource())});
+                    }
+                } else {
+                    logger.error("Unsupported field value to retrieve workflow node detail list...");
+                }
+
             } else {
                 logger.error("Unsupported field name to retrieve experiment list...");
             }
@@ -1847,21 +1796,22 @@ public class ExperimentRegistry {
             if (fieldName.equals(Constants.FieldConstants.WorkflowNodeConstants.EXPERIMENT_ID)) {
                 ExperimentResource experiment = gatewayResource.getExperiment((String) value);
                 List<WorkflowNodeDetailResource> workflowNodeDetails = experiment.getWorkflowNodeDetails();
-                
+
                 return ThriftDataModelConversion.getWfNodeList(workflowNodeDetails);
-            } if (fieldName.equals(Constants.FieldConstants.WorkflowNodeConstants.TASK_LIST)) {
-            	if (value instanceof List<?>){
-            		return getWFNodeDetails(fieldName,((List<?>) value).get(0));
-            	}else if (value instanceof TaskDetails){
-            		TaskDetailResource taskDetailResource = getTaskDetailResource(((TaskDetails) value).getTaskID());
-					if (taskDetailResource!=null) {
-						return Arrays.asList(new WorkflowNodeDetails[] { ThriftDataModelConversion
-										.getWorkflowNodeDetails(taskDetailResource
-												.getWorkflowNodeDetailResource()) });
-					}
-            	}else{
-            		logger.error("Unsupported field value to retrieve workflow node detail list...");	
-            	}
+            }
+            if (fieldName.equals(Constants.FieldConstants.WorkflowNodeConstants.TASK_LIST)) {
+                if (value instanceof List<?>) {
+                    return getWFNodeDetails(fieldName, ((List<?>) value).get(0));
+                } else if (value instanceof TaskDetails) {
+                    TaskDetailResource taskDetailResource = getTaskDetailResource(((TaskDetails) value).getTaskID());
+                    if (taskDetailResource != null) {
+                        return Arrays.asList(new WorkflowNodeDetails[]{ThriftDataModelConversion
+                                .getWorkflowNodeDetails(taskDetailResource
+                                        .getWorkflowNodeDetailResource())});
+                    }
+                } else {
+                    logger.error("Unsupported field value to retrieve workflow node detail list...");
+                }
             } else {
                 logger.error("Unsupported field name to retrieve workflow detail list...");
             }
@@ -2178,7 +2128,7 @@ public class ExperimentRegistry {
             throw new RegistryException(e);
         }
     }
-    
+
     public WorkflowNodeDetails getWorkflowNodeDetails(String nodeId) throws RegistryException {
         try {
             ExperimentResource resource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
@@ -2234,7 +2184,7 @@ public class ExperimentRegistry {
             throw new RegistryException(e);
         }
     }
-    
+
     public List<OutputDataObjectType> getApplicationOutputs(String taskId) throws RegistryException {
         try {
             ExperimentResource resource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
@@ -2765,46 +2715,46 @@ public class ExperimentRegistry {
         }
     }
 
-    public List<ExperimentSummary> searchExperiments (Map<String, String> filters) throws RegistryException{
+    public List<ExperimentSummary> searchExperiments(Map<String, String> filters) throws RegistryException {
         Map<String, String> fil = new HashMap<String, String>();
-        if (filters != null && filters.size() != 0){
+        if (filters != null && filters.size() != 0) {
             List<ExperimentSummary> experimentSummaries = new ArrayList<ExperimentSummary>();
             long fromTime = 0;
             long toTime = 0;
             try {
-                for (String field : filters.keySet()){
-                    if (field.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME)){
+                for (String field : filters.keySet()) {
+                    if (field.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME)) {
                         fil.put(AbstractResource.ExperimentConstants.EXPERIMENT_NAME, filters.get(field));
-                    }else if (field.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)){
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
                         fil.put(AbstractResource.ExperimentConstants.EXECUTION_USER, filters.get(field));
-                    }else if (field.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_DESC)){
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_DESC)) {
                         fil.put(AbstractResource.ExperimentConstants.DESCRIPTION, filters.get(field));
-                    }else if (field.equals(Constants.FieldConstants.ExperimentConstants.APPLICATION_ID)){
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.APPLICATION_ID)) {
                         fil.put(AbstractResource.ExperimentConstants.APPLICATION_ID, filters.get(field));
-                    }else if (field.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_STATUS)){
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_STATUS)) {
                         return searchExperimentsByStatus(ExperimentState.valueOf(filters.get(field)));
-                    }else if (field.equals(Constants.FieldConstants.ExperimentConstants.FROM_DATE)){
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.FROM_DATE)) {
                         fromTime = Long.parseLong(filters.get(field));
-                    }else if (field.equals(Constants.FieldConstants.ExperimentConstants.TO_DATE)){
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.TO_DATE)) {
                         toTime = Long.parseLong(filters.get(field));
                     }
                 }
-                if (fromTime != 0 && toTime != 0){
+                if (fromTime != 0 && toTime != 0) {
                     return searchExperimentsByCreationTime(new Timestamp(fromTime), new Timestamp(toTime));
                 }
-                if (fil.containsKey(AbstractResource.ExperimentConstants.APPLICATION_ID)){
+                if (fil.containsKey(AbstractResource.ExperimentConstants.APPLICATION_ID)) {
                     return searchExperimentsByApplication(fil);
-                }else {
+                } else {
                     List<ExperimentResource> experimentResources = workerResource.searchExperiments(fil);
-                    if (experimentResources != null && !experimentResources.isEmpty()){
-                        for (ExperimentResource ex : experimentResources){
+                    if (experimentResources != null && !experimentResources.isEmpty()) {
+                        for (ExperimentResource ex : experimentResources) {
                             experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
                         }
                     }
                 }
                 return experimentSummaries;
 
-            }catch (Exception e){
+            } catch (Exception e) {
                 logger.error("Error while retrieving experiment summary from registry", e);
                 throw new RegistryException(e);
             }
@@ -2812,7 +2762,7 @@ public class ExperimentRegistry {
         return null;
     }
 
-    public List<ExperimentSummary> searchExperimentsByStatus (ExperimentState experimentState) throws RegistryException {
+    public List<ExperimentSummary> searchExperimentsByStatus(ExperimentState experimentState) throws RegistryException {
         try {
             List<ExperimentSummary> experimentSummaries = new ArrayList<ExperimentSummary>();
             List<ExperimentResource> experimentResources = workerResource.searchExperimentsByState(experimentState.toString());
@@ -2829,7 +2779,7 @@ public class ExperimentRegistry {
         }
     }
 
-    public List<ExperimentSummary> searchExperimentsByApplication (Map<String, String> fil) throws RegistryException {
+    public List<ExperimentSummary> searchExperimentsByApplication(Map<String, String> fil) throws RegistryException {
         try {
             List<ExperimentSummary> experimentSummaries = new ArrayList<ExperimentSummary>();
             List<ExperimentResource> experimentResources = workerResource.searchExperiments(fil);
@@ -2837,17 +2787,17 @@ public class ExperimentRegistry {
                 for (ExperimentResource ex : experimentResources) {
                     String applicationId = ex.getApplicationId();
                     String[] splits = applicationId.split("_");
-                    if (splits.length != 0){
-                       for (int i = 0; i< splits.length -1; i++){
-                           String appId = fil.get(AbstractResource.ExperimentConstants.APPLICATION_ID);
-                           if (!appId.equals("*")){
-                               if (splits[i].contains(appId)){
-                                   experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
-                               }
-                           }else {
-                               experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
-                           }
-                       }
+                    if (splits.length != 0) {
+                        for (int i = 0; i < splits.length - 1; i++) {
+                            String appId = fil.get(AbstractResource.ExperimentConstants.APPLICATION_ID);
+                            if (!appId.equals("*")) {
+                                if (splits[i].contains(appId)) {
+                                    experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
+                                }
+                            } else {
+                                experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
+                            }
+                        }
                     }
                 }
             }
@@ -2859,7 +2809,7 @@ public class ExperimentRegistry {
         }
     }
 
-    public List<ExperimentSummary> searchExperimentsByCreationTime (Timestamp fromTime, Timestamp toTime) throws RegistryException {
+    public List<ExperimentSummary> searchExperimentsByCreationTime(Timestamp fromTime, Timestamp toTime) throws RegistryException {
         try {
             List<ExperimentSummary> experimentSummaries = new ArrayList<ExperimentSummary>();
             List<ExperimentResource> experimentResources = workerResource.searchExperimentsByCreationTime(fromTime, toTime);

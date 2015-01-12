@@ -46,24 +46,24 @@ public class ApplicationInputResource extends AbstractResource {
     private boolean standardInput;
     private String userFriendlyDesc;
     private int inputOrder;
-    private String validityType;
-    private String commandLineType;
+    private boolean isRequired;
+    private boolean requiredToCMD;
     private boolean dataStaged;
 
-    public String getValidityType() {
-        return validityType;
+    public boolean isRequired() {
+        return isRequired;
     }
 
-    public void setValidityType(String validityType) {
-        this.validityType = validityType;
+    public void setRequired(boolean isRequired) {
+        this.isRequired = isRequired;
     }
 
-    public String getCommandLineType() {
-        return commandLineType;
+    public boolean isRequiredToCMD() {
+        return requiredToCMD;
     }
 
-    public void setCommandLineType(String commandLineType) {
-        this.commandLineType = commandLineType;
+    public void setRequiredToCMD(boolean requiredToCMD) {
+        this.requiredToCMD = requiredToCMD;
     }
 
     public boolean isDataStaged() {
@@ -190,8 +190,8 @@ public class ApplicationInputResource extends AbstractResource {
             applicationInput.setStandardInput(standardInput);
             applicationInput.setUserFriendlyDesc(userFriendlyDesc);
             applicationInput.setInputOrder(inputOrder);
-            applicationInput.setCommandLineType(commandLineType);
-            applicationInput.setValidityType(validityType);
+            applicationInput.setRequiredToCMD(requiredToCMD);
+            applicationInput.setRequired(isRequired);
             applicationInput.setDataStaged(dataStaged);
             if (value != null){
                 applicationInput.setValue(value.toCharArray());
@@ -208,8 +208,8 @@ public class ApplicationInputResource extends AbstractResource {
                 existingInput.setStandardInput(standardInput);
                 existingInput.setUserFriendlyDesc(userFriendlyDesc);
                 existingInput.setInputOrder(inputOrder);
-                existingInput.setCommandLineType(commandLineType);
-                existingInput.setValidityType(validityType);
+                existingInput.setRequiredToCMD(requiredToCMD);
+                existingInput.setRequired(isRequired);
                 existingInput.setDataStaged(dataStaged);
                 if (value != null){
                     existingInput.setValue(value.toCharArray());

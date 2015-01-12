@@ -47,24 +47,24 @@ public class NodeInputResource extends AbstractResource {
     private boolean standardInput;
     private String userFriendlyDesc;
     private int inputOrder;
-    private String validityType;
-    private String commandLineType;
+    private boolean isRequired;
+    private boolean requiredToCMD;
     private boolean dataStaged;
 
-    public String getValidityType() {
-        return validityType;
+    public boolean getRequired() {
+        return isRequired;
     }
 
-    public void setValidityType(String validityType) {
-        this.validityType = validityType;
+    public void setRequired(boolean required) {
+        this.isRequired = required;
     }
 
-    public String getCommandLineType() {
-        return commandLineType;
+    public boolean getRequiredToCMD() {
+        return requiredToCMD;
     }
 
-    public void setCommandLineType(String commandLineType) {
-        this.commandLineType = commandLineType;
+    public void setRequiredToCMD(boolean requiredToCMD) {
+        this.requiredToCMD = requiredToCMD;
     }
 
     public boolean isDataStaged() {
@@ -192,8 +192,8 @@ public class NodeInputResource extends AbstractResource {
             nodeInput.setStandardInput(standardInput);
             nodeInput.setUserFriendlyDesc(userFriendlyDesc);
             nodeInput.setInputOrder(inputOrder);
-            nodeInput.setCommandLineType(commandLineType);
-            nodeInput.setValidityType(validityType);
+            nodeInput.setRequiredToCMD(requiredToCMD);
+            nodeInput.setIsRequired(isRequired);
             nodeInput.setDataStaged(dataStaged);
 
             if (existingInput != null){
@@ -207,8 +207,8 @@ public class NodeInputResource extends AbstractResource {
                 existingInput.setStandardInput(standardInput);
                 existingInput.setUserFriendlyDesc(userFriendlyDesc);
                 existingInput.setInputOrder(inputOrder);
-                existingInput.setCommandLineType(commandLineType);
-                existingInput.setValidityType(validityType);
+                existingInput.setRequiredToCMD(requiredToCMD);
+                existingInput.setIsRequired(isRequired);
                 existingInput.setDataStaged(dataStaged);
                 nodeInput = em.merge(existingInput);
             }else {

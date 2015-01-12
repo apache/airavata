@@ -47,26 +47,8 @@ struct DataType {
 
 extern const std::map<int, const char*> _DataType_VALUES_TO_NAMES;
 
-struct ValidityType {
-  enum type {
-    REQUIRED = 0,
-    OPTIONAL = 1
-  };
-};
-
-extern const std::map<int, const char*> _ValidityType_VALUES_TO_NAMES;
-
-struct CommandLineType {
-  enum type {
-    IMPLICIT = 0,
-    EXPLICIT = 1
-  };
-};
-
-extern const std::map<int, const char*> _CommandLineType_VALUES_TO_NAMES;
-
 typedef struct _InputDataObjectType__isset {
-  _InputDataObjectType__isset() : value(false), type(false), applicationArgument(false), standardInput(true), userFriendlyDescription(false), metaData(false), inputOrder(false), inputValid(false), addedToCommandLine(false), dataStaged(true) {}
+  _InputDataObjectType__isset() : value(false), type(false), applicationArgument(false), standardInput(true), userFriendlyDescription(false), metaData(false), inputOrder(false), isRequired(false), requiredToAddedToCommandLine(false), dataStaged(true) {}
   bool value;
   bool type;
   bool applicationArgument;
@@ -74,18 +56,18 @@ typedef struct _InputDataObjectType__isset {
   bool userFriendlyDescription;
   bool metaData;
   bool inputOrder;
-  bool inputValid;
-  bool addedToCommandLine;
+  bool isRequired;
+  bool requiredToAddedToCommandLine;
   bool dataStaged;
 } _InputDataObjectType__isset;
 
 class InputDataObjectType {
  public:
 
-  static const char* ascii_fingerprint; // = "95DCCA621F7BE3FA34349CC6A45329DA";
-  static const uint8_t binary_fingerprint[16]; // = {0x95,0xDC,0xCA,0x62,0x1F,0x7B,0xE3,0xFA,0x34,0x34,0x9C,0xC6,0xA4,0x53,0x29,0xDA};
+  static const char* ascii_fingerprint; // = "22DB8CAA7C1FBBFDD0CA6E19790BA799";
+  static const uint8_t binary_fingerprint[16]; // = {0x22,0xDB,0x8C,0xAA,0x7C,0x1F,0xBB,0xFD,0xD0,0xCA,0x6E,0x19,0x79,0x0B,0xA7,0x99};
 
-  InputDataObjectType() : name(), value(), type((DataType::type)0), applicationArgument(), standardInput(false), userFriendlyDescription(), metaData(), inputOrder(0), inputValid((ValidityType::type)0), addedToCommandLine((CommandLineType::type)0), dataStaged(false) {
+  InputDataObjectType() : name(), value(), type((DataType::type)0), applicationArgument(), standardInput(false), userFriendlyDescription(), metaData(), inputOrder(0), isRequired(0), requiredToAddedToCommandLine(0), dataStaged(false) {
   }
 
   virtual ~InputDataObjectType() throw() {}
@@ -98,8 +80,8 @@ class InputDataObjectType {
   std::string userFriendlyDescription;
   std::string metaData;
   int32_t inputOrder;
-  ValidityType::type inputValid;
-  CommandLineType::type addedToCommandLine;
+  bool isRequired;
+  bool requiredToAddedToCommandLine;
   bool dataStaged;
 
   _InputDataObjectType__isset __isset;
@@ -143,14 +125,14 @@ class InputDataObjectType {
     __isset.inputOrder = true;
   }
 
-  void __set_inputValid(const ValidityType::type val) {
-    inputValid = val;
-    __isset.inputValid = true;
+  void __set_isRequired(const bool val) {
+    isRequired = val;
+    __isset.isRequired = true;
   }
 
-  void __set_addedToCommandLine(const CommandLineType::type val) {
-    addedToCommandLine = val;
-    __isset.addedToCommandLine = true;
+  void __set_requiredToAddedToCommandLine(const bool val) {
+    requiredToAddedToCommandLine = val;
+    __isset.requiredToAddedToCommandLine = true;
   }
 
   void __set_dataStaged(const bool val) {
@@ -190,13 +172,13 @@ class InputDataObjectType {
       return false;
     else if (__isset.inputOrder && !(inputOrder == rhs.inputOrder))
       return false;
-    if (__isset.inputValid != rhs.__isset.inputValid)
+    if (__isset.isRequired != rhs.__isset.isRequired)
       return false;
-    else if (__isset.inputValid && !(inputValid == rhs.inputValid))
+    else if (__isset.isRequired && !(isRequired == rhs.isRequired))
       return false;
-    if (__isset.addedToCommandLine != rhs.__isset.addedToCommandLine)
+    if (__isset.requiredToAddedToCommandLine != rhs.__isset.requiredToAddedToCommandLine)
       return false;
-    else if (__isset.addedToCommandLine && !(addedToCommandLine == rhs.addedToCommandLine))
+    else if (__isset.requiredToAddedToCommandLine && !(requiredToAddedToCommandLine == rhs.requiredToAddedToCommandLine))
       return false;
     if (__isset.dataStaged != rhs.__isset.dataStaged)
       return false;
@@ -218,11 +200,11 @@ class InputDataObjectType {
 void swap(InputDataObjectType &a, InputDataObjectType &b);
 
 typedef struct _OutputDataObjectType__isset {
-  _OutputDataObjectType__isset() : value(false), type(false), validityType(false), addedToCommandLine(false), dataMovement(false), dataNameLocation(false) {}
+  _OutputDataObjectType__isset() : value(false), type(false), isRequired(false), requiredToAddedToCommandLine(false), dataMovement(false), dataNameLocation(false) {}
   bool value;
   bool type;
-  bool validityType;
-  bool addedToCommandLine;
+  bool isRequired;
+  bool requiredToAddedToCommandLine;
   bool dataMovement;
   bool dataNameLocation;
 } _OutputDataObjectType__isset;
@@ -230,10 +212,10 @@ typedef struct _OutputDataObjectType__isset {
 class OutputDataObjectType {
  public:
 
-  static const char* ascii_fingerprint; // = "C7730F2BFEF5236FD42B9C23095938DB";
-  static const uint8_t binary_fingerprint[16]; // = {0xC7,0x73,0x0F,0x2B,0xFE,0xF5,0x23,0x6F,0xD4,0x2B,0x9C,0x23,0x09,0x59,0x38,0xDB};
+  static const char* ascii_fingerprint; // = "E4852521B22B693B0FFBEBAE57AA4F8A";
+  static const uint8_t binary_fingerprint[16]; // = {0xE4,0x85,0x25,0x21,0xB2,0x2B,0x69,0x3B,0x0F,0xFB,0xEB,0xAE,0x57,0xAA,0x4F,0x8A};
 
-  OutputDataObjectType() : name(), value(), type((DataType::type)0), validityType((ValidityType::type)0), addedToCommandLine((CommandLineType::type)0), dataMovement(0), dataNameLocation() {
+  OutputDataObjectType() : name(), value(), type((DataType::type)0), isRequired(0), requiredToAddedToCommandLine(0), dataMovement(0), dataNameLocation() {
   }
 
   virtual ~OutputDataObjectType() throw() {}
@@ -241,8 +223,8 @@ class OutputDataObjectType {
   std::string name;
   std::string value;
   DataType::type type;
-  ValidityType::type validityType;
-  CommandLineType::type addedToCommandLine;
+  bool isRequired;
+  bool requiredToAddedToCommandLine;
   bool dataMovement;
   std::string dataNameLocation;
 
@@ -262,14 +244,14 @@ class OutputDataObjectType {
     __isset.type = true;
   }
 
-  void __set_validityType(const ValidityType::type val) {
-    validityType = val;
-    __isset.validityType = true;
+  void __set_isRequired(const bool val) {
+    isRequired = val;
+    __isset.isRequired = true;
   }
 
-  void __set_addedToCommandLine(const CommandLineType::type val) {
-    addedToCommandLine = val;
-    __isset.addedToCommandLine = true;
+  void __set_requiredToAddedToCommandLine(const bool val) {
+    requiredToAddedToCommandLine = val;
+    __isset.requiredToAddedToCommandLine = true;
   }
 
   void __set_dataMovement(const bool val) {
@@ -294,13 +276,13 @@ class OutputDataObjectType {
       return false;
     else if (__isset.type && !(type == rhs.type))
       return false;
-    if (__isset.validityType != rhs.__isset.validityType)
+    if (__isset.isRequired != rhs.__isset.isRequired)
       return false;
-    else if (__isset.validityType && !(validityType == rhs.validityType))
+    else if (__isset.isRequired && !(isRequired == rhs.isRequired))
       return false;
-    if (__isset.addedToCommandLine != rhs.__isset.addedToCommandLine)
+    if (__isset.requiredToAddedToCommandLine != rhs.__isset.requiredToAddedToCommandLine)
       return false;
-    else if (__isset.addedToCommandLine && !(addedToCommandLine == rhs.addedToCommandLine))
+    else if (__isset.requiredToAddedToCommandLine && !(requiredToAddedToCommandLine == rhs.requiredToAddedToCommandLine))
       return false;
     if (__isset.dataMovement != rhs.__isset.dataMovement)
       return false;
@@ -336,8 +318,8 @@ typedef struct _ApplicationInterfaceDescription__isset {
 class ApplicationInterfaceDescription {
  public:
 
-  static const char* ascii_fingerprint; // = "3BB1C87ED8E5FD354E5AE0409D72BE54";
-  static const uint8_t binary_fingerprint[16]; // = {0x3B,0xB1,0xC8,0x7E,0xD8,0xE5,0xFD,0x35,0x4E,0x5A,0xE0,0x40,0x9D,0x72,0xBE,0x54};
+  static const char* ascii_fingerprint; // = "29D39A862EDAA850C0484542CD39F4A3";
+  static const uint8_t binary_fingerprint[16]; // = {0x29,0xD3,0x9A,0x86,0x2E,0xDA,0xA8,0x50,0xC0,0x48,0x45,0x42,0xCD,0x39,0xF4,0xA3};
 
   ApplicationInterfaceDescription() : applicationInterfaceId("DO_NOT_SET_AT_CLIENTS"), applicationName(), applicationDescription() {
   }

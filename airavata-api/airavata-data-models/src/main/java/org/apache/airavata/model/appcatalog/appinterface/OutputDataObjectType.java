@@ -81,8 +81,8 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("name", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField VALUE_FIELD_DESC = new org.apache.thrift.protocol.TField("value", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("type", org.apache.thrift.protocol.TType.I32, (short)3);
-  private static final org.apache.thrift.protocol.TField VALIDITY_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("validityType", org.apache.thrift.protocol.TType.I32, (short)4);
-  private static final org.apache.thrift.protocol.TField ADDED_TO_COMMAND_LINE_FIELD_DESC = new org.apache.thrift.protocol.TField("addedToCommandLine", org.apache.thrift.protocol.TType.I32, (short)5);
+  private static final org.apache.thrift.protocol.TField IS_REQUIRED_FIELD_DESC = new org.apache.thrift.protocol.TField("isRequired", org.apache.thrift.protocol.TType.BOOL, (short)4);
+  private static final org.apache.thrift.protocol.TField REQUIRED_TO_ADDED_TO_COMMAND_LINE_FIELD_DESC = new org.apache.thrift.protocol.TField("requiredToAddedToCommandLine", org.apache.thrift.protocol.TType.BOOL, (short)5);
   private static final org.apache.thrift.protocol.TField DATA_MOVEMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("dataMovement", org.apache.thrift.protocol.TType.BOOL, (short)6);
   private static final org.apache.thrift.protocol.TField DATA_NAME_LOCATION_FIELD_DESC = new org.apache.thrift.protocol.TField("dataNameLocation", org.apache.thrift.protocol.TType.STRING, (short)7);
 
@@ -95,8 +95,8 @@ import org.slf4j.LoggerFactory;
   private String name; // required
   private String value; // optional
   private DataType type; // optional
-  private ValidityType validityType; // optional
-  private CommandLineType addedToCommandLine; // optional
+  private boolean isRequired; // optional
+  private boolean requiredToAddedToCommandLine; // optional
   private boolean dataMovement; // optional
   private String dataNameLocation; // optional
 
@@ -109,16 +109,8 @@ import org.slf4j.LoggerFactory;
      * @see DataType
      */
     TYPE((short)3, "type"),
-    /**
-     * 
-     * @see ValidityType
-     */
-    VALIDITY_TYPE((short)4, "validityType"),
-    /**
-     * 
-     * @see CommandLineType
-     */
-    ADDED_TO_COMMAND_LINE((short)5, "addedToCommandLine"),
+    IS_REQUIRED((short)4, "isRequired"),
+    REQUIRED_TO_ADDED_TO_COMMAND_LINE((short)5, "requiredToAddedToCommandLine"),
     DATA_MOVEMENT((short)6, "dataMovement"),
     DATA_NAME_LOCATION((short)7, "dataNameLocation");
 
@@ -141,10 +133,10 @@ import org.slf4j.LoggerFactory;
           return VALUE;
         case 3: // TYPE
           return TYPE;
-        case 4: // VALIDITY_TYPE
-          return VALIDITY_TYPE;
-        case 5: // ADDED_TO_COMMAND_LINE
-          return ADDED_TO_COMMAND_LINE;
+        case 4: // IS_REQUIRED
+          return IS_REQUIRED;
+        case 5: // REQUIRED_TO_ADDED_TO_COMMAND_LINE
+          return REQUIRED_TO_ADDED_TO_COMMAND_LINE;
         case 6: // DATA_MOVEMENT
           return DATA_MOVEMENT;
         case 7: // DATA_NAME_LOCATION
@@ -189,9 +181,11 @@ import org.slf4j.LoggerFactory;
   }
 
   // isset id assignments
-  private static final int __DATAMOVEMENT_ISSET_ID = 0;
+  private static final int __ISREQUIRED_ISSET_ID = 0;
+  private static final int __REQUIREDTOADDEDTOCOMMANDLINE_ISSET_ID = 1;
+  private static final int __DATAMOVEMENT_ISSET_ID = 2;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.VALUE,_Fields.TYPE,_Fields.VALIDITY_TYPE,_Fields.ADDED_TO_COMMAND_LINE,_Fields.DATA_MOVEMENT,_Fields.DATA_NAME_LOCATION};
+  private _Fields optionals[] = {_Fields.VALUE,_Fields.TYPE,_Fields.IS_REQUIRED,_Fields.REQUIRED_TO_ADDED_TO_COMMAND_LINE,_Fields.DATA_MOVEMENT,_Fields.DATA_NAME_LOCATION};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -201,10 +195,10 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.TYPE, new org.apache.thrift.meta_data.FieldMetaData("type", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, DataType.class)));
-    tmpMap.put(_Fields.VALIDITY_TYPE, new org.apache.thrift.meta_data.FieldMetaData("validityType", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ValidityType.class)));
-    tmpMap.put(_Fields.ADDED_TO_COMMAND_LINE, new org.apache.thrift.meta_data.FieldMetaData("addedToCommandLine", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, CommandLineType.class)));
+    tmpMap.put(_Fields.IS_REQUIRED, new org.apache.thrift.meta_data.FieldMetaData("isRequired", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+    tmpMap.put(_Fields.REQUIRED_TO_ADDED_TO_COMMAND_LINE, new org.apache.thrift.meta_data.FieldMetaData("requiredToAddedToCommandLine", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.DATA_MOVEMENT, new org.apache.thrift.meta_data.FieldMetaData("dataMovement", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.DATA_NAME_LOCATION, new org.apache.thrift.meta_data.FieldMetaData("dataNameLocation", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -237,12 +231,8 @@ import org.slf4j.LoggerFactory;
     if (other.isSetType()) {
       this.type = other.type;
     }
-    if (other.isSetValidityType()) {
-      this.validityType = other.validityType;
-    }
-    if (other.isSetAddedToCommandLine()) {
-      this.addedToCommandLine = other.addedToCommandLine;
-    }
+    this.isRequired = other.isRequired;
+    this.requiredToAddedToCommandLine = other.requiredToAddedToCommandLine;
     this.dataMovement = other.dataMovement;
     if (other.isSetDataNameLocation()) {
       this.dataNameLocation = other.dataNameLocation;
@@ -258,8 +248,10 @@ import org.slf4j.LoggerFactory;
     this.name = null;
     this.value = null;
     this.type = null;
-    this.validityType = null;
-    this.addedToCommandLine = null;
+    setIsRequiredIsSet(false);
+    this.isRequired = false;
+    setRequiredToAddedToCommandLineIsSet(false);
+    this.requiredToAddedToCommandLine = false;
     setDataMovementIsSet(false);
     this.dataMovement = false;
     this.dataNameLocation = null;
@@ -342,66 +334,48 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  /**
-   * 
-   * @see ValidityType
-   */
-  public ValidityType getValidityType() {
-    return this.validityType;
+  public boolean isIsRequired() {
+    return this.isRequired;
   }
 
-  /**
-   * 
-   * @see ValidityType
-   */
-  public void setValidityType(ValidityType validityType) {
-    this.validityType = validityType;
+  public void setIsRequired(boolean isRequired) {
+    this.isRequired = isRequired;
+    setIsRequiredIsSet(true);
   }
 
-  public void unsetValidityType() {
-    this.validityType = null;
+  public void unsetIsRequired() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ISREQUIRED_ISSET_ID);
   }
 
-  /** Returns true if field validityType is set (has been assigned a value) and false otherwise */
-  public boolean isSetValidityType() {
-    return this.validityType != null;
+  /** Returns true if field isRequired is set (has been assigned a value) and false otherwise */
+  public boolean isSetIsRequired() {
+    return EncodingUtils.testBit(__isset_bitfield, __ISREQUIRED_ISSET_ID);
   }
 
-  public void setValidityTypeIsSet(boolean value) {
-    if (!value) {
-      this.validityType = null;
-    }
+  public void setIsRequiredIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ISREQUIRED_ISSET_ID, value);
   }
 
-  /**
-   * 
-   * @see CommandLineType
-   */
-  public CommandLineType getAddedToCommandLine() {
-    return this.addedToCommandLine;
+  public boolean isRequiredToAddedToCommandLine() {
+    return this.requiredToAddedToCommandLine;
   }
 
-  /**
-   * 
-   * @see CommandLineType
-   */
-  public void setAddedToCommandLine(CommandLineType addedToCommandLine) {
-    this.addedToCommandLine = addedToCommandLine;
+  public void setRequiredToAddedToCommandLine(boolean requiredToAddedToCommandLine) {
+    this.requiredToAddedToCommandLine = requiredToAddedToCommandLine;
+    setRequiredToAddedToCommandLineIsSet(true);
   }
 
-  public void unsetAddedToCommandLine() {
-    this.addedToCommandLine = null;
+  public void unsetRequiredToAddedToCommandLine() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __REQUIREDTOADDEDTOCOMMANDLINE_ISSET_ID);
   }
 
-  /** Returns true if field addedToCommandLine is set (has been assigned a value) and false otherwise */
-  public boolean isSetAddedToCommandLine() {
-    return this.addedToCommandLine != null;
+  /** Returns true if field requiredToAddedToCommandLine is set (has been assigned a value) and false otherwise */
+  public boolean isSetRequiredToAddedToCommandLine() {
+    return EncodingUtils.testBit(__isset_bitfield, __REQUIREDTOADDEDTOCOMMANDLINE_ISSET_ID);
   }
 
-  public void setAddedToCommandLineIsSet(boolean value) {
-    if (!value) {
-      this.addedToCommandLine = null;
-    }
+  public void setRequiredToAddedToCommandLineIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __REQUIREDTOADDEDTOCOMMANDLINE_ISSET_ID, value);
   }
 
   public boolean isDataMovement() {
@@ -475,19 +449,19 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
-    case VALIDITY_TYPE:
+    case IS_REQUIRED:
       if (value == null) {
-        unsetValidityType();
+        unsetIsRequired();
       } else {
-        setValidityType((ValidityType)value);
+        setIsRequired((Boolean)value);
       }
       break;
 
-    case ADDED_TO_COMMAND_LINE:
+    case REQUIRED_TO_ADDED_TO_COMMAND_LINE:
       if (value == null) {
-        unsetAddedToCommandLine();
+        unsetRequiredToAddedToCommandLine();
       } else {
-        setAddedToCommandLine((CommandLineType)value);
+        setRequiredToAddedToCommandLine((Boolean)value);
       }
       break;
 
@@ -521,11 +495,11 @@ import org.slf4j.LoggerFactory;
     case TYPE:
       return getType();
 
-    case VALIDITY_TYPE:
-      return getValidityType();
+    case IS_REQUIRED:
+      return Boolean.valueOf(isIsRequired());
 
-    case ADDED_TO_COMMAND_LINE:
-      return getAddedToCommandLine();
+    case REQUIRED_TO_ADDED_TO_COMMAND_LINE:
+      return Boolean.valueOf(isRequiredToAddedToCommandLine());
 
     case DATA_MOVEMENT:
       return Boolean.valueOf(isDataMovement());
@@ -550,10 +524,10 @@ import org.slf4j.LoggerFactory;
       return isSetValue();
     case TYPE:
       return isSetType();
-    case VALIDITY_TYPE:
-      return isSetValidityType();
-    case ADDED_TO_COMMAND_LINE:
-      return isSetAddedToCommandLine();
+    case IS_REQUIRED:
+      return isSetIsRequired();
+    case REQUIRED_TO_ADDED_TO_COMMAND_LINE:
+      return isSetRequiredToAddedToCommandLine();
     case DATA_MOVEMENT:
       return isSetDataMovement();
     case DATA_NAME_LOCATION:
@@ -602,21 +576,21 @@ import org.slf4j.LoggerFactory;
         return false;
     }
 
-    boolean this_present_validityType = true && this.isSetValidityType();
-    boolean that_present_validityType = true && that.isSetValidityType();
-    if (this_present_validityType || that_present_validityType) {
-      if (!(this_present_validityType && that_present_validityType))
+    boolean this_present_isRequired = true && this.isSetIsRequired();
+    boolean that_present_isRequired = true && that.isSetIsRequired();
+    if (this_present_isRequired || that_present_isRequired) {
+      if (!(this_present_isRequired && that_present_isRequired))
         return false;
-      if (!this.validityType.equals(that.validityType))
+      if (this.isRequired != that.isRequired)
         return false;
     }
 
-    boolean this_present_addedToCommandLine = true && this.isSetAddedToCommandLine();
-    boolean that_present_addedToCommandLine = true && that.isSetAddedToCommandLine();
-    if (this_present_addedToCommandLine || that_present_addedToCommandLine) {
-      if (!(this_present_addedToCommandLine && that_present_addedToCommandLine))
+    boolean this_present_requiredToAddedToCommandLine = true && this.isSetRequiredToAddedToCommandLine();
+    boolean that_present_requiredToAddedToCommandLine = true && that.isSetRequiredToAddedToCommandLine();
+    if (this_present_requiredToAddedToCommandLine || that_present_requiredToAddedToCommandLine) {
+      if (!(this_present_requiredToAddedToCommandLine && that_present_requiredToAddedToCommandLine))
         return false;
-      if (!this.addedToCommandLine.equals(that.addedToCommandLine))
+      if (this.requiredToAddedToCommandLine != that.requiredToAddedToCommandLine)
         return false;
     }
 
@@ -684,22 +658,22 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetValidityType()).compareTo(other.isSetValidityType());
+    lastComparison = Boolean.valueOf(isSetIsRequired()).compareTo(other.isSetIsRequired());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetValidityType()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.validityType, other.validityType);
+    if (isSetIsRequired()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.isRequired, other.isRequired);
       if (lastComparison != 0) {
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetAddedToCommandLine()).compareTo(other.isSetAddedToCommandLine());
+    lastComparison = Boolean.valueOf(isSetRequiredToAddedToCommandLine()).compareTo(other.isSetRequiredToAddedToCommandLine());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetAddedToCommandLine()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.addedToCommandLine, other.addedToCommandLine);
+    if (isSetRequiredToAddedToCommandLine()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.requiredToAddedToCommandLine, other.requiredToAddedToCommandLine);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -771,24 +745,16 @@ import org.slf4j.LoggerFactory;
       }
       first = false;
     }
-    if (isSetValidityType()) {
+    if (isSetIsRequired()) {
       if (!first) sb.append(", ");
-      sb.append("validityType:");
-      if (this.validityType == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.validityType);
-      }
+      sb.append("isRequired:");
+      sb.append(this.isRequired);
       first = false;
     }
-    if (isSetAddedToCommandLine()) {
+    if (isSetRequiredToAddedToCommandLine()) {
       if (!first) sb.append(", ");
-      sb.append("addedToCommandLine:");
-      if (this.addedToCommandLine == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.addedToCommandLine);
-      }
+      sb.append("requiredToAddedToCommandLine:");
+      sb.append(this.requiredToAddedToCommandLine);
       first = false;
     }
     if (isSetDataMovement()) {
@@ -880,18 +846,18 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // VALIDITY_TYPE
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.validityType = ValidityType.findByValue(iprot.readI32());
-              struct.setValidityTypeIsSet(true);
+          case 4: // IS_REQUIRED
+            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+              struct.isRequired = iprot.readBool();
+              struct.setIsRequiredIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // ADDED_TO_COMMAND_LINE
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.addedToCommandLine = CommandLineType.findByValue(iprot.readI32());
-              struct.setAddedToCommandLineIsSet(true);
+          case 5: // REQUIRED_TO_ADDED_TO_COMMAND_LINE
+            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+              struct.requiredToAddedToCommandLine = iprot.readBool();
+              struct.setRequiredToAddedToCommandLineIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -944,19 +910,15 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldEnd();
         }
       }
-      if (struct.validityType != null) {
-        if (struct.isSetValidityType()) {
-          oprot.writeFieldBegin(VALIDITY_TYPE_FIELD_DESC);
-          oprot.writeI32(struct.validityType.getValue());
-          oprot.writeFieldEnd();
-        }
+      if (struct.isSetIsRequired()) {
+        oprot.writeFieldBegin(IS_REQUIRED_FIELD_DESC);
+        oprot.writeBool(struct.isRequired);
+        oprot.writeFieldEnd();
       }
-      if (struct.addedToCommandLine != null) {
-        if (struct.isSetAddedToCommandLine()) {
-          oprot.writeFieldBegin(ADDED_TO_COMMAND_LINE_FIELD_DESC);
-          oprot.writeI32(struct.addedToCommandLine.getValue());
-          oprot.writeFieldEnd();
-        }
+      if (struct.isSetRequiredToAddedToCommandLine()) {
+        oprot.writeFieldBegin(REQUIRED_TO_ADDED_TO_COMMAND_LINE_FIELD_DESC);
+        oprot.writeBool(struct.requiredToAddedToCommandLine);
+        oprot.writeFieldEnd();
       }
       if (struct.isSetDataMovement()) {
         oprot.writeFieldBegin(DATA_MOVEMENT_FIELD_DESC);
@@ -995,10 +957,10 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetType()) {
         optionals.set(1);
       }
-      if (struct.isSetValidityType()) {
+      if (struct.isSetIsRequired()) {
         optionals.set(2);
       }
-      if (struct.isSetAddedToCommandLine()) {
+      if (struct.isSetRequiredToAddedToCommandLine()) {
         optionals.set(3);
       }
       if (struct.isSetDataMovement()) {
@@ -1014,11 +976,11 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetType()) {
         oprot.writeI32(struct.type.getValue());
       }
-      if (struct.isSetValidityType()) {
-        oprot.writeI32(struct.validityType.getValue());
+      if (struct.isSetIsRequired()) {
+        oprot.writeBool(struct.isRequired);
       }
-      if (struct.isSetAddedToCommandLine()) {
-        oprot.writeI32(struct.addedToCommandLine.getValue());
+      if (struct.isSetRequiredToAddedToCommandLine()) {
+        oprot.writeBool(struct.requiredToAddedToCommandLine);
       }
       if (struct.isSetDataMovement()) {
         oprot.writeBool(struct.dataMovement);
@@ -1043,12 +1005,12 @@ import org.slf4j.LoggerFactory;
         struct.setTypeIsSet(true);
       }
       if (incoming.get(2)) {
-        struct.validityType = ValidityType.findByValue(iprot.readI32());
-        struct.setValidityTypeIsSet(true);
+        struct.isRequired = iprot.readBool();
+        struct.setIsRequiredIsSet(true);
       }
       if (incoming.get(3)) {
-        struct.addedToCommandLine = CommandLineType.findByValue(iprot.readI32());
-        struct.setAddedToCommandLineIsSet(true);
+        struct.requiredToAddedToCommandLine = iprot.readBool();
+        struct.setRequiredToAddedToCommandLineIsSet(true);
       }
       if (incoming.get(4)) {
         struct.dataMovement = iprot.readBool();
