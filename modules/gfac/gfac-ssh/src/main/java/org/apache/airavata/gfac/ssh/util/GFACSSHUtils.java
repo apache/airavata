@@ -41,7 +41,11 @@ import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.impl.GSISSHAbstractCluster;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
+import org.apache.airavata.model.appcatalog.appinterface.CommandLineType;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
@@ -51,6 +55,7 @@ import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.*;
 
 public class GFACSSHUtils {
@@ -248,14 +253,58 @@ public class GFACSSHUtils {
         int i = random.nextInt(Integer.MAX_VALUE);
         jobDescriptor.setJobName(String.valueOf(i + 99999999));
         jobDescriptor.setWorkingDirectory(jobExecutionContext.getWorkingDir());
+
         List<String> inputValues = new ArrayList<String>();
         MessageContext input = jobExecutionContext.getInMessageContext();
-        Map<String, Object> inputs = input.getParameters();
-        Set<String> keys = inputs.keySet();
-        for (String paramName : keys) {
-            InputDataObjectType inputDataObjectType = (InputDataObjectType) inputs.get(paramName);
-            inputValues.add(inputDataObjectType.getValue());
+
+        // sort the inputs first and then build the command List
+        Comparator<InputDataObjectType> inputOrderComparator = new Comparator<InputDataObjectType>() {
+            @Override
+            public int compare(InputDataObjectType inputDataObjectType, InputDataObjectType t1) {
+                return inputDataObjectType.getInputOrder() - t1.getInputOrder();
+            }
+        };
+        Set<InputDataObjectType> sortedInputSet = new TreeSet<InputDataObjectType>(inputOrderComparator);
+        for (Object object : input.getParameters().values()) {
+            if (object instanceof InputDataObjectType) {
+                InputDataObjectType inputDOT = (InputDataObjectType) object;
+                sortedInputSet.add(inputDOT);
+            }
         }
+        for (InputDataObjectType inputDataObjectType : sortedInputSet) {
+            if (inputDataObjectType.getAddedToCommandLine() != null
+                    && inputDataObjectType.getAddedToCommandLine() == CommandLineType.IMPLICIT) {
+                continue;
+            }
+            if (inputDataObjectType.getApplicationArgument() != null
+                    && !inputDataObjectType.getApplicationArgument().equals("")) {
+                inputValues.add(inputDataObjectType.getApplicationArgument());
+            }
+
+            if (inputDataObjectType.getValue() != null
+                    && !inputDataObjectType.getValue().equals("")) {
+                if (inputDataObjectType.getType() == DataType.URI) {
+                    // set only the relative path
+                    String filePath = inputDataObjectType.getValue();
+                    filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
+                    inputValues.add(filePath);
+                }else {
+                    inputValues.add(inputDataObjectType.getValue());
+                }
+
+            }
+        }
+        Map<String, Object> outputParams = jobExecutionContext.getOutMessageContext().getParameters();
+        for (Object outputParam : outputParams.values()) {
+            if (outputParam instanceof OutputDataObjectType) {
+                OutputDataObjectType output = (OutputDataObjectType) outputParam;
+                if (output.getValue() != null && !output.getValue().equals("") && output.getAddedToCommandLine() != null
+                        && output.getAddedToCommandLine() == CommandLineType.EXPLICIT) {
+                    inputValues.add(output.getValue());
+                }
+            }
+        }
+
         jobDescriptor.setInputValues(inputValues);
         jobDescriptor.setUserName(((GSISSHAbstractCluster) cluster).getServerInfo().getUserName());
         jobDescriptor.setShellName("/bin/bash");
@@ -296,9 +345,35 @@ public class GFACSSHUtils {
         } else {
             logger.error("Task scheduling cannot be null at this point..");
         }
+        ApplicationDeploymentDescription appDepDescription = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription();
+        List<String> moduleCmds = appDepDescription.getModuleLoadCmds();
+        if (moduleCmds != null) {
+            for (String moduleCmd : moduleCmds) {
+                jobDescriptor.addModuleLoadCommands(moduleCmd);
+            }
+        }
+        List<String> preJobCommands = appDepDescription.getPreJobCommands();
+        if (preJobCommands != null) {
+            for (String preJobCommand : preJobCommands) {
+                jobDescriptor.addPreJobCommand(parseCommand(preJobCommand, jobExecutionContext));
+            }
+        }
+
+        List<String> postJobCommands = appDepDescription.getPostJobCommands();
+        if (postJobCommands != null) {
+            for (String postJobCommand : postJobCommands) {
+                jobDescriptor.addPostJobCommand(parseCommand(postJobCommand, jobExecutionContext));
+            }
+        }
         return jobDescriptor;
     }
 
+    private static String parseCommand(String value, JobExecutionContext jobExecutionContext) {
+        String parsedValue = value.replaceAll("\\$workingDir", jobExecutionContext.getWorkingDir());
+        parsedValue = parsedValue.replaceAll("\\$inputDir", jobExecutionContext.getInputDir());
+        parsedValue = parsedValue.replaceAll("\\$outputDir", jobExecutionContext.getOutputDir());
+        return parsedValue;
+    }
     /**
      * This method can be used to set the Security Context if its not set and later use it in other places
      * @param jobExecutionContext

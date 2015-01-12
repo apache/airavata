@@ -122,12 +122,12 @@ public class SSHOutputHandler extends AbstractHandler {
             String stdErrStr = GFacUtils.readFileToString(localStdErrFile.getAbsolutePath());
             status.setTransferState(TransferState.STDOUT_DOWNLOAD);
             detail.setTransferStatus(status);
-            detail.setTransferDescription("STDOUT:" + stdOutStr);
+            detail.setTransferDescription("STDOUT:" + localStdOutFile.getAbsolutePath());
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
 
             status.setTransferState(TransferState.STDERROR_DOWNLOAD);
             detail.setTransferStatus(status);
-            detail.setTransferDescription("STDERR:" + stdErrStr);
+            detail.setTransferDescription("STDERR:" + localStdErrFile.getAbsolutePath());
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
 
 
@@ -166,9 +166,28 @@ public class SSHOutputHandler extends AbstractHandler {
                                 dataObjectType.setName(key);
                                 dataObjectType.setType(DataType.URI);
                                 outputArray.add(dataObjectType);
+                            }else if (DataType.STDOUT == actualParameter.getType()) {
+                                String fileName = localStdOutFile.getName();
+                                String localFile = outputDataDir + File.separator + fileName;
+                                jobExecutionContext.addOutputFile(localFile);
+                                actualParameter.setValue(localFile);
+                                OutputDataObjectType dataObjectType = new OutputDataObjectType();
+                                dataObjectType.setValue(localFile);
+                                dataObjectType.setName(key);
+                                dataObjectType.setType(DataType.STDOUT);
+                                outputArray.add(dataObjectType);
+                            }else if (DataType.STDERR == actualParameter.getType()) {
+                                String fileName = localStdErrFile.getName();
+                                String localFile = outputDataDir + File.separator + fileName;
+                                jobExecutionContext.addOutputFile(localFile);
+                                actualParameter.setValue(localFile);
+                                OutputDataObjectType dataObjectType = new OutputDataObjectType();
+                                dataObjectType.setValue(localFile);
+                                dataObjectType.setName(key);
+                                dataObjectType.setType(DataType.STDERR);
+                                outputArray.add(dataObjectType);
                             }
                         }
-
                         break;
                     } else if (outputList.size() == 1) {//FIXME: Ultrascan case
                         String valueList = outputList.get(0);
@@ -194,7 +213,6 @@ public class SSHOutputHandler extends AbstractHandler {
                                     + "and ApplicationDescriptor output Parameter Names");
                 }
             }
-            // FIXME: why we set standard error ouput and outputDirectory again ?
             jobExecutionContext.setStandardError(localStdErrFile.getAbsolutePath());
             jobExecutionContext.setStandardOutput(localStdOutFile.getAbsolutePath());
             jobExecutionContext.setOutputDir(outputDataDir);
