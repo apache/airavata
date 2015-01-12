@@ -41,25 +41,25 @@ public class ExperimentOutputResource extends AbstractResource {
     private String experimentKey;
     private String value;
     private String dataType;
-    private String validityType;
+    private boolean isRequired;
     private boolean dataMovement;
     private String dataNameLocation;
-    private String commandLineType;
+    private boolean requiredToCMD;
 
-    public String getCommandLineType() {
-        return commandLineType;
+    public boolean getRequiredToCMD() {
+        return requiredToCMD;
     }
 
-    public void setCommandLineType(String commandLineType) {
-        this.commandLineType = commandLineType;
+    public void setRequiredToCMD(boolean requiredToCMD) {
+        this.requiredToCMD = requiredToCMD;
     }
 
-    public String getValidityType() {
-        return validityType;
+    public boolean getRequired() {
+        return isRequired;
     }
 
-    public void setValidityType(String validityType) {
-        this.validityType = validityType;
+    public void setRequired(boolean required) {
+        this.isRequired = required;
     }
 
     public boolean isDataMovement() {
@@ -148,8 +148,8 @@ public class ExperimentOutputResource extends AbstractResource {
                 exOutput.setValue(value.toCharArray());
             }
             exOutput.setDataType(dataType);
-            exOutput.setValidityType(validityType);
-            exOutput.setCommandLineType(commandLineType);
+            exOutput.setRequired(isRequired);
+            exOutput.setRequiredToCMD(requiredToCMD);
             exOutput.setDataMovement(dataMovement);
             exOutput.setDataNameLocation(dataNameLocation);
 
@@ -161,8 +161,8 @@ public class ExperimentOutputResource extends AbstractResource {
                 }
                 existingOutput.setExperiment_id(experiment.getExpId());
                 existingOutput.setDataType(dataType);
-                existingOutput.setValidityType(validityType);
-                existingOutput.setCommandLineType(commandLineType);
+                existingOutput.setRequired(isRequired);
+                existingOutput.setRequiredToCMD(requiredToCMD);
                 existingOutput.setDataMovement(dataMovement);
                 existingOutput.setDataNameLocation(dataNameLocation);
                 exOutput = em.merge(existingOutput);

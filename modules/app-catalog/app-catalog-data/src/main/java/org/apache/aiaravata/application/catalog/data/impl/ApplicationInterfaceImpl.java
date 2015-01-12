@@ -104,31 +104,23 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
                     inputResource.setStandardInput(input.isStandardInput());
                     inputResource.setAppArgument(input.getApplicationArgument());
                     inputResource.setInputOrder(input.getInputOrder());
-                    if (input.getInputValid() != null){
-                        inputResource.setValidityType(input.getInputValid().toString());
-                    }
-                    if (input.getAddedToCommandLine() != null){
-                        inputResource.setCommandLineType(input.getAddedToCommandLine().toString());
-                    }
+                    inputResource.setRequired(input.isIsRequired());
+                    inputResource.setRequiredToCMD(input.isRequiredToAddedToCommandLine());
                     inputResource.save();
                 }
             }
 
             List<OutputDataObjectType> applicationOutputs = applicationInterfaceDescription.getApplicationOutputs();
-            if (applicationOutputs != null && !applicationOutputs.isEmpty()){
-                for (OutputDataObjectType output : applicationOutputs){
+            if (applicationOutputs != null && !applicationOutputs.isEmpty()) {
+                for (OutputDataObjectType output : applicationOutputs) {
                     ApplicationOutputResource outputResource = new ApplicationOutputResource();
                     outputResource.setInterfaceID(resource.getInterfaceId());
                     outputResource.setAppInterfaceResource(resource);
                     outputResource.setOutputKey(output.getName());
                     outputResource.setOutputVal(output.getValue());
                     outputResource.setDataType(output.getType().toString());
-                    if (output.getValidityType() != null){
-                        outputResource.setValidityType(output.getValidityType().toString());
-                    }
-                    if (output.getAddedToCommandLine() != null){
-                        outputResource.setCommandLineType(output.getAddedToCommandLine().toString());
-                    }
+                    outputResource.setRequired(output.isIsRequired());
+                    outputResource.setRequiredToCMD(output.isRequiredToAddedToCommandLine());
                     outputResource.setDataMovement(output.isDataMovement());
                     outputResource.setDataNameLocation(output.getDataNameLocation());
                     outputResource.save();
@@ -234,12 +226,8 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
                     inputResource.setStandardInput(input.isStandardInput());
                     inputResource.setAppArgument(input.getApplicationArgument());
                     inputResource.setInputOrder(input.getInputOrder());
-                    if (input.getInputValid() != null){
-                        inputResource.setValidityType(input.getInputValid().toString());
-                    }
-                    if (input.getAddedToCommandLine() != null){
-                        inputResource.setCommandLineType(input.getAddedToCommandLine().toString());
-                    }
+                    inputResource.setRequired(input.isIsRequired());
+                    inputResource.setRequiredToCMD(input.isRequiredToAddedToCommandLine());
                     inputResource.save();
                 }
             }
@@ -264,12 +252,8 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
                     outputResource.setOutputKey(output.getName());
                     outputResource.setOutputVal(output.getValue());
                     outputResource.setDataType(output.getType().toString());
-                    if (output.getValidityType() != null){
-                        outputResource.setValidityType(output.getValidityType().toString());
-                    }
-                    if (output.getAddedToCommandLine() != null){
-                        outputResource.setCommandLineType(output.getAddedToCommandLine().toString());
-                    }
+                    outputResource.setRequired(output.isIsRequired());
+                    outputResource.setRequiredToCMD(output.isRequiredToAddedToCommandLine());
                     outputResource.setDataMovement(output.isDataMovement());
                     outputResource.setDataNameLocation(output.getDataNameLocation());
                     outputResource.save();

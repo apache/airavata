@@ -50,8 +50,8 @@ public class WorkflowInputResource extends AbstractResource {
     private String userFriendlyDesc;
     private boolean standardInput;
     private int inputOrder;
-    private String validityType;
-    private String commandLineType;
+    private boolean isRequired;
+    private boolean requiredToCMD;
     private boolean dataStaged;
 
     private WorkflowResource workflowResource;
@@ -291,8 +291,8 @@ public class WorkflowInputResource extends AbstractResource {
             workflowInput.setAppArgument(appArgument);
             workflowInput.setUserFriendlyDesc(userFriendlyDesc);
             workflowInput.setStandardInput(standardInput);
-            workflowInput.setCommandLineType(commandLineType);
-            workflowInput.setValidityType(validityType);
+            workflowInput.setRequiredToCMD(requiredToCMD);
+            workflowInput.setRequired(isRequired);
             workflowInput.setDataStaged(dataStaged);
             if (existingWFInput == null) {
                 em.persist(workflowInput);
@@ -425,20 +425,20 @@ public class WorkflowInputResource extends AbstractResource {
         this.inputOrder = inputOrder;
     }
 
-    public String getValidityType() {
-        return validityType;
+    public boolean getRequired() {
+        return isRequired;
     }
 
-    public void setValidityType(String validityType) {
-        this.validityType = validityType;
+    public void setRequired(boolean required) {
+        this.isRequired = required;
     }
 
-    public String getCommandLineType() {
-        return commandLineType;
+    public boolean getRequiredToCMD() {
+        return requiredToCMD;
     }
 
-    public void setCommandLineType(String commandLineType) {
-        this.commandLineType = commandLineType;
+    public void setRequiredToCMD(boolean requiredToCMD) {
+        this.requiredToCMD = requiredToCMD;
     }
 
     public boolean isDataStaged() {

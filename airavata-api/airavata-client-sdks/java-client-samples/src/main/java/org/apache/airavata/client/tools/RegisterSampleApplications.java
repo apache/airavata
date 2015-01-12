@@ -398,21 +398,21 @@ public class RegisterSampleApplications {
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(RegisterSampleApplicationsUtils.createAppInput("gams_input", "",
-                    DataType.URI, null, 1, ValidityType.REQUIRED, CommandLineType.IMPLICIT, false, "Gamess Input file", null));
+                    DataType.URI, null, 1, true, false, false, "Gamess Input file", null));
 //            applicationInputs.add(RegisterSampleApplicationsUtils.createAppInput("EXT_FILE", "",
 //                    DataType.URI, null, 2, ValidityType.OPTIONAL, CommandLineType.EXCLUSIVE, false, "Gamess EXT file", null));
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("gams_output",
-                    "", DataType.URI, ValidityType.REQUIRED, CommandLineType.IMPLICIT));
+                    "", DataType.URI, true, false));
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("dat_file",
-                    "", DataType.URI, ValidityType.REQUIRED, CommandLineType.EXPLICIT));
+                    "", DataType.URI, true, true));
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("trj_file",
-                    "", DataType.URI, ValidityType.OPTIONAL, CommandLineType.EXPLICIT));
+                    "", DataType.URI, false, true));
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("rst_file",
-                    "", DataType.URI, ValidityType.OPTIONAL, CommandLineType.EXPLICIT));
+                    "", DataType.URI, false, true));
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("f10_file",
-                    "", DataType.URI, ValidityType.OPTIONAL, CommandLineType.EXPLICIT));
+                    "", DataType.URI, false, true));
 
 
             gamessInterfaceId = airavataClient.registerApplicationInterface(
@@ -434,13 +434,13 @@ public class RegisterSampleApplications {
             appModules.add(echoModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("echo_input", "echo_output=Hello World",
-                    DataType.STRING, null, 1,null, null, false, "A test string to Echo", null);
+                    DataType.STRING, null, 1,false, false, false, "A test string to Echo", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("echo_output",
-                    "", DataType.STRING, null, null);
+                    "", DataType.STRING, false, false);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -464,20 +464,20 @@ public class RegisterSampleApplications {
 
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Input_to_Echo", "",
-                    DataType.STRING, null, 1, null, null,false, "A test string to Echo", null);
+                    DataType.STRING, null, 1, false, false,false, "A test string to Echo", null);
             
             InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("Input_to_Echo2", "",
-                    DataType.URI, null, 2, null, null,false, "A sample input remote file", null);
+                    DataType.URI, null, 2, false, false,false, "A sample input remote file", null);
 
             InputDataObjectType input3 = RegisterSampleApplicationsUtils.createAppInput("Input_to_Echo3", "file:///tmp/test.txt",
-                    DataType.URI, null, 3,null, null, false, "A sample input local file", null);
+                    DataType.URI, null, 3,false, false, false, "A sample input local file", null);
 
             
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1); applicationInputs.add(input2); applicationInputs.add(input3);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Output",
-                    "", DataType.STRING, null, null);
+                    "", DataType.STRING, false, false);
             
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -502,13 +502,13 @@ public class RegisterSampleApplications {
             appModules.add(mpiModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Sample_Input", "",
-                    DataType.STRING, null, 1,null, null, false, "An optional MPI source file", null);
+                    DataType.STRING, null, 1,true, false, false, "An optional MPI source file", null);
             
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
             
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Sample_Output",
-                    "", DataType.STRING, null, null);
+                    "", DataType.STRING, false, false);
             
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -533,23 +533,23 @@ public class RegisterSampleApplications {
             appModules.add(amberModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Heat_Restart_File", null,
-                    DataType.URI, null, 1, null, null,false, "Heating up the system equilibration stage - 02_Heat.rst", null);
+                    DataType.URI, null, 1, true, true,false, "Heating up the system equilibration stage - 02_Heat.rst", null);
 
             InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("Production_Control_File", null,
-                    DataType.URI, null, 2,null, null, false, "Constant pressure and temperature for production stage - 03_Prod.in", null);
+                    DataType.URI, null, 2,true, true, false, "Constant pressure and temperature for production stage - 03_Prod.in", null);
 
             InputDataObjectType input3 = RegisterSampleApplicationsUtils.createAppInput("Parameter_Topology_File", null,
-                    DataType.URI, null, 3,null, null, false, "Parameter and Topology coordinates - prmtop", null);
+                    DataType.URI, null, 3,true, true, false, "Parameter and Topology coordinates - prmtop", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
             applicationInputs.add(input2);
             applicationInputs.add(input3);
 
-            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("AMBER_Execution_Summary",null,DataType.URI, null, null);
-            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("AMBER_Execution_log",null,DataType.URI, null, null);
-            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("AMBER_Trajectory_file",null,DataType.URI, null, null);
-            OutputDataObjectType output4 = RegisterSampleApplicationsUtils.createAppOutput("AMBER_Restart_file",null,DataType.URI, null, null);
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("AMBER_Execution_Summary",null,DataType.URI, true, true);
+            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("AMBER_Execution_log",null,DataType.URI, true, true);
+            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("AMBER_Trajectory_file",null,DataType.URI, true, true);
+            OutputDataObjectType output4 = RegisterSampleApplicationsUtils.createAppOutput("AMBER_Restart_file",null,DataType.URI, true, true);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -575,13 +575,13 @@ public class RegisterSampleApplications {
             appModules.add(autoDockModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Heat_Restart_File", null,
-                    DataType.URI, null, 1,null, null, false, "Heating up the system equilibration stage", null);
+                    DataType.URI, null, 1,true, true, false, "Heating up the system equilibration stage", null);
 
             InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("Production_Control_File", null,
-                    DataType.URI, null, 2,null, null, false, "Constant pressure and temperature for production stage", null);
+                    DataType.URI, null, 2,true, true, false, "Constant pressure and temperature for production stage", null);
 
             InputDataObjectType input3 = RegisterSampleApplicationsUtils.createAppInput("Parameter_Topology_File", null,
-                    DataType.URI, null, 3,null, null, false, "Parameter and Topology coordinates", null);
+                    DataType.URI, null, 3,true, true, false, "Parameter and Topology coordinates", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
@@ -589,7 +589,7 @@ public class RegisterSampleApplications {
             applicationInputs.add(input3);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Output",
-                    "", DataType.STRING, null, null);
+                    "", DataType.STRING, true, true);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -612,17 +612,17 @@ public class RegisterSampleApplications {
             appModules.add(espressoModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("AI_Primitive_Cell", null,
-                    DataType.URI, null, 1, null, null,false, "AI_Metal_Input_File - Al.sample.in", null);
+                    DataType.URI, null, 1, true, true,false, "AI_Metal_Input_File - Al.sample.in", null);
 
             InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("AI_Pseudopotential_File", null,
-                    DataType.URI, null, 2, null, null,false, "Constant pressure and temperature for production stage - Al.pz-vbc.UPF", null);
+                    DataType.URI, null, 2, true, true,false, "Constant pressure and temperature for production stage - Al.pz-vbc.UPF", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
             applicationInputs.add(input2);
 
-            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("ESPRESSO_Execution_Log",null,DataType.URI, null, null);
-            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("ESPRESSO_WFC_Binary_file",null,DataType.URI, null, null);
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("ESPRESSO_Execution_Log",null,DataType.URI, true, true);
+            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("ESPRESSO_WFC_Binary_file",null,DataType.URI, true, true);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -646,18 +646,18 @@ public class RegisterSampleApplications {
             appModules.add(gromacsModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Portable_Input_Binary_File", null,
-                    DataType.URI, null, 1, null, null, false, "Coordinates velocities, molecular topology and simulation parameters - pdb1y6l-EM-vacuum.tpr", null);
+                    DataType.URI, null, 1, true, true, false, "Coordinates velocities, molecular topology and simulation parameters - pdb1y6l-EM-vacuum.tpr", null);
 
             InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("GROMOS_Coordinate_File", null,
-                    DataType.URI, null, 2, null, null,false, "Trajectory Coordinates Molecular Structure in Gromos87 format - pdb1y6l-EM-vacuum.gro", null);
+                    DataType.URI, null, 2, true, true,false, "Trajectory Coordinates Molecular Structure in Gromos87 format - pdb1y6l-EM-vacuum.gro", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
             applicationInputs.add(input2);
 
-            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("GROMACS_Execution_Log",null,DataType.URI, null, null);
-            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("Full_Precision_Trajectory_file",null,DataType.URI, null, null);
-            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("Portable_Energy_file",null,DataType.URI, null, null);
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("GROMACS_Execution_Log",null,DataType.URI, true, true);
+            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("Full_Precision_Trajectory_file",null,DataType.URI, true, true);
+            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("Portable_Energy_file",null,DataType.URI, true, true);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -682,12 +682,12 @@ public class RegisterSampleApplications {
             appModules.add(lammpsModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Friction_Simulation_Input", null,
-                    DataType.URI, "<", 1,ValidityType.REQUIRED, CommandLineType.IMPLICIT, false, "Friction Simulation Input - in.friction", null);
+                    DataType.URI, "<", 1,true, true, false, "Friction Simulation Input - in.friction", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
 
-            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("LAMMPS_Simulation_Log",null,DataType.URI, null, null);
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("LAMMPS_Simulation_Log",null,DataType.URI, true, true);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -710,13 +710,13 @@ public class RegisterSampleApplications {
             appModules.add(nwChemModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Water_Molecule_Input", null,
-                    DataType.URI, null, 1,ValidityType.REQUIRED , CommandLineType.IMPLICIT, false, "Water Molecule Input File - water.nw", null);
+                    DataType.URI, null, 1,true , true, false, "Water Molecule Input File - water.nw", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("NWChem_Execution_Log",
-                    null, DataType.URI, ValidityType.REQUIRED, CommandLineType.IMPLICIT);
+                    null, DataType.URI, true, false);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -740,17 +740,17 @@ public class RegisterSampleApplications {
             appModules.add(trinityModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("RNA_Seq_Left_Input", null,
-                    DataType.URI, null, 1,null, null, false, "RNA-Seq Left Library - reads.left.fq", null);
+                    DataType.URI, null, 1,true, true, false, "RNA-Seq Left Library - reads.left.fq", null);
 
             InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("RNA_Seq_Right_Input", null,
-                    DataType.URI, null, 2, null, null,false, "RNA-Seq Right Library - reads.right.fq", null);
+                    DataType.URI, null, 2, true, true,false, "RNA-Seq Right Library - reads.right.fq", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
             applicationInputs.add(input2);
 
-            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Trinity_Execution_Log",null,DataType.URI, null, null);
-            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("Trinity_FASTA_File",null,DataType.URI, null, null);
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Trinity_Execution_Log",null,DataType.URI, true, true);
+            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("Trinity_FASTA_File",null,DataType.URI, true, true);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -775,13 +775,13 @@ public class RegisterSampleApplications {
             appModules.add(wrfModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Config_Namelist_File", null,
-                    DataType.URI, null, 1,null, null, false, "Namelist Configuration File - namelist.input", null);
+                    DataType.URI, null, 1,true, true, false, "Namelist Configuration File - namelist.input", null);
 
             InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("WRF_Initial_Conditions", null,
-                    DataType.URI, null, 2, null, null,false, "Initial Conditions File - wrfinput_d01", null);
+                    DataType.URI, null, 2, true, true,false, "Initial Conditions File - wrfinput_d01", null);
 
             InputDataObjectType input3 = RegisterSampleApplicationsUtils.createAppInput("WRF_Boundary_File", null,
-                    DataType.URI, null, 3,null, null, false, "Boundary Conditions File - wrfbdy_d01", null);
+                    DataType.URI, null, 3,true, true, false, "Boundary Conditions File - wrfbdy_d01", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
@@ -789,10 +789,10 @@ public class RegisterSampleApplications {
             applicationInputs.add(input3);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("WRF_Output",
-                    "", DataType.URI, null, null);
+                    "", DataType.URI, true, true);
 
             OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("WRF_Execution_Log",
-                    "", DataType.URI, null, null);
+                    "", DataType.URI, true, true);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -816,21 +816,21 @@ public class RegisterSampleApplications {
             appModules.add(phastaModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Parasolid_Geometric_Model", null,
-                    DataType.URI, null, 1, null, null,false, "Parasolid geometric model - geom.xmt_txt", null);
+                    DataType.URI, null, 1, true, true,false, "Parasolid geometric model - geom.xmt_txt", null);
 
             InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("Problem_Definition", null,
-                    DataType.URI, null, 2,null, null, false, "problem definition - geom.smd", null);
+                    DataType.URI, null, 2,true, true, false, "problem definition - geom.smd", null);
 
             InputDataObjectType input3 = RegisterSampleApplicationsUtils.createAppInput("Mesh_Description_File", null,
-                    DataType.URI, null, 3, null, null,false, "Mesh Description - geom.sms", null);
+                    DataType.URI, null, 3, true, true,false, "Mesh Description - geom.sms", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
             applicationInputs.add(input2);
             applicationInputs.add(input3);
 
-            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("PHASTA_Execution_Log",null,DataType.URI, null, null);
-            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("PHASTA_Output_tar",null,DataType.URI, null, null);
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("PHASTA_Execution_Log",null,DataType.URI, true, true);
+            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("PHASTA_Output_tar",null,DataType.URI, true, true);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -869,13 +869,13 @@ public class RegisterSampleApplications {
             appModules.add(gaussianModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("MainInputFile", null,
-                    DataType.URI, null, 1, ValidityType.REQUIRED, CommandLineType.IMPLICIT,  false, "Gaussian main input file", null);
+                    DataType.URI, null, 1, true, true,  false, "Gaussian main input file", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("gaussian.out",
-                    "", DataType.URI, null, null);
+                    "", DataType.URI, true, true );
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -898,19 +898,19 @@ public class RegisterSampleApplications {
             appModules.add(monteXModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("xyzf", "O16.xyz",
-                    DataType.URI, null, 1, ValidityType.REQUIRED, CommandLineType.IMPLICIT, false, "Tinker monte input_1", null);
+                    DataType.URI, null, 1, true, true, false, "Tinker monte input_1", null);
             InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("keyf", "O16.key",
-                    DataType.URI, "-k", 2, ValidityType.REQUIRED, CommandLineType.IMPLICIT, false, "Tinker monte input_2", null);
+                    DataType.URI, "-k", 2, true, true, false, "Tinker monte input_2", null);
             InputDataObjectType input3 = RegisterSampleApplicationsUtils.createAppInput("stps", "20000",
-                    DataType.STRING, null, 3, ValidityType.REQUIRED, CommandLineType.IMPLICIT, false, "Tinker monte input_3", null);
+                    DataType.STRING, null, 3, true, true, false, "Tinker monte input_3", null);
             InputDataObjectType input4 = RegisterSampleApplicationsUtils.createAppInput("Ctc", "C",
-                    DataType.STRING, null, 4, ValidityType.REQUIRED, CommandLineType.IMPLICIT, false, "Tinker monte input_4", null);
+                    DataType.STRING, null, 4, true, true, false, "Tinker monte input_4", null);
             InputDataObjectType input5 = RegisterSampleApplicationsUtils.createAppInput("stpsZ", "3.0",
-                    DataType.STRING, null, 5, ValidityType.REQUIRED, CommandLineType.IMPLICIT, false, "Tinker monte input_5", null);
+                    DataType.STRING, null, 5, true, true, false, "Tinker monte input_5", null);
             InputDataObjectType input6 = RegisterSampleApplicationsUtils.createAppInput("temp", "298",
-                    DataType.STRING, null, 6, ValidityType.REQUIRED, CommandLineType.IMPLICIT, false, "Tinker monte input_6", null);
+                    DataType.STRING, null, 6, true, true, false, "Tinker monte input_6", null);
             InputDataObjectType input7 = RegisterSampleApplicationsUtils.createAppInput("Rconv", "0.01",
-                    DataType.STRING, null, 7, ValidityType.REQUIRED, CommandLineType.IMPLICIT,  false, "Tinker monte input_7", null);
+                    DataType.STRING, null, 7, true, true,  false, "Tinker monte input_7", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
@@ -922,7 +922,7 @@ public class RegisterSampleApplications {
             applicationInputs.add(input7);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Diskoutputfile_with_dir",
-                    "", DataType.URI, null, null);
+                    "", DataType.URI, false, false);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);

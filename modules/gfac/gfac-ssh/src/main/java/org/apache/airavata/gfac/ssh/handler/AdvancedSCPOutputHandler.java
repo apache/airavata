@@ -22,7 +22,6 @@ package org.apache.airavata.gfac.ssh.handler;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.SecurityContext;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
@@ -34,10 +33,8 @@ import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
-import org.apache.airavata.model.appcatalog.appinterface.CommandLineType;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
-import org.apache.airavata.model.appcatalog.appinterface.ValidityType;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.registry.cpi.ChildDataType;
@@ -166,8 +163,8 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                     dataObjectType.setValue(outputPath + File.separatorChar + fileName);
                     dataObjectType.setName(paramName);
                     dataObjectType.setType(DataType.STDOUT);
-                    dataObjectType.setValidityType(ValidityType.REQUIRED);
-                    dataObjectType.setAddedToCommandLine(CommandLineType.IMPLICIT);
+                    dataObjectType.setIsRequired(true);
+                    dataObjectType.setRequiredToAddedToCommandLine(true);
                     outputArray.add(dataObjectType);
                 }else if (outputDataObjectType.getType() == DataType.STDERR) {
                     pbsCluster.scpTo(outputPath, standardError);
@@ -176,8 +173,8 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                     dataObjectType.setValue(outputPath + File.separatorChar + fileName);
                     dataObjectType.setName(paramName);
                     dataObjectType.setType(DataType.STDERR);
-                    dataObjectType.setValidityType(ValidityType.REQUIRED);
-                    dataObjectType.setAddedToCommandLine(CommandLineType.IMPLICIT);
+                    dataObjectType.setIsRequired(true);
+                    dataObjectType.setRequiredToAddedToCommandLine(true);
                     outputArray.add(dataObjectType);
                 }
              }

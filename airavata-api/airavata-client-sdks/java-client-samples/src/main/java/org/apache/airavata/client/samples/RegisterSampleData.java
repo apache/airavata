@@ -25,11 +25,9 @@ import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.client.tools.RegisterSampleApplicationsUtils;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
-import org.apache.airavata.model.appcatalog.appinterface.CommandLineType;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
-import org.apache.airavata.model.appcatalog.appinterface.ValidityType;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
@@ -134,13 +132,13 @@ public class RegisterSampleData {
             appModules.add(gaussianModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("MainInputFile", null,
-                    DataType.URI, null, 1,null, null, false, "Gaussian main input file", null);
+                    DataType.URI, null, 1,true,true, false, "Gaussian main input file", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("gaussian.out",
-                    "", DataType.URI, null, null);
+                    "", DataType.URI, true,true);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -163,19 +161,19 @@ public class RegisterSampleData {
             appModules.add(monteXModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("xyzf", "O16.xyz",
-                    DataType.STRING, null, 1, null, null, false, "Tinker monte input_1", null);
+                    DataType.STRING, null, 1, true,true, false, "Tinker monte input_1", null);
             InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("keyf", "O16.key",
-                    DataType.STRING, "-k", 2, null, null, false, "Tinker monte input_2", null);
+                    DataType.STRING, "-k", 2, true,true, false, "Tinker monte input_2", null);
             InputDataObjectType input3 = RegisterSampleApplicationsUtils.createAppInput("stps", "20000",
-                    DataType.STRING, null, 3, null, null, false, "Tinker monte input_3", null);
+                    DataType.STRING, null, 3, true,true, false, "Tinker monte input_3", null);
             InputDataObjectType input4 = RegisterSampleApplicationsUtils.createAppInput("Ctc", "C",
-                    DataType.STRING, null, 4, null, null, false, "Tinker monte input_4", null);
+                    DataType.STRING, null, 4, true,true, false, "Tinker monte input_4", null);
             InputDataObjectType input5 = RegisterSampleApplicationsUtils.createAppInput("stpsZ", "3.0",
-                    DataType.STRING, null, 5, null, null, false, "Tinker monte input_5", null);
+                    DataType.STRING, null, 5, true,true, false, "Tinker monte input_5", null);
             InputDataObjectType input6 = RegisterSampleApplicationsUtils.createAppInput("temp", "298",
-                    DataType.STRING, null, 6, null, null, false, "Tinker monte input_6", null);
+                    DataType.STRING, null, 6, true,true, false, "Tinker monte input_6", null);
             InputDataObjectType input7 = RegisterSampleApplicationsUtils.createAppInput("Rconv", "0.01",
-                    DataType.STRING, null, 7, null, null, false, "Tinker monte input_7", null);
+                    DataType.STRING, null, 7, true,true, false, "Tinker monte input_7", null);
 
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
@@ -188,7 +186,7 @@ public class RegisterSampleData {
             applicationInputs.add(input7);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Diskoutputfile_with_dir",
-                    "", DataType.URI, null, null);
+                    "", DataType.URI, true,false);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -286,13 +284,13 @@ public class RegisterSampleData {
             appModules.add(echoModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Input_to_Echo", "Hello World",
-                    DataType.STRING, null, 1, null, null, false, "A test string to Echo", null);
+                    DataType.STRING, null, 1, true,true, false, "A test string to Echo", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Output",
-                    "", DataType.STRING, null, null);
+                    "", DataType.STRING, true, false);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -315,16 +313,16 @@ public class RegisterSampleData {
             appModules.add(addModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("x", "2",
-                    DataType.STRING, null, 1, null, null, false, "Add operation input_1", null);
+                    DataType.STRING, null, 1, true,true, false, "Add operation input_1", null);
             InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("y", "3",
-                    DataType.STRING, null, 2, null, null, false, "Add operation input_2", null);
+                    DataType.STRING, null, 2, true,true, false, "Add operation input_2", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
             applicationInputs.add(input2);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Result",
-                    "0", DataType.STRING, null, null);
+                    "0", DataType.STRING, true,false);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -347,16 +345,16 @@ public class RegisterSampleData {
             appModules.add(multiplyModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("x", "4",
-                    DataType.STRING, null, 1,null, null, false, "Multiply operation input_1", null);
+                    DataType.STRING, null, 1,true,true, false, "Multiply operation input_1", null);
             InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("y", "5",
-                    DataType.STRING, null, 2, null, null, false, "Multiply operation input_2", null);
+                    DataType.STRING, null, 2, true,true, false, "Multiply operation input_2", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
             applicationInputs.add(input2);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Result",
-                    "0", DataType.STRING,null, null);
+                    "0", DataType.STRING,true,false);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -379,16 +377,16 @@ public class RegisterSampleData {
             appModules.add(subtractModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("x", "6",
-                    DataType.STRING, null, 1,null, null, false, "Subtract operation input_1", null);
+                    DataType.STRING, null, 1,true,true, false, "Subtract operation input_1", null);
             InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("y", "7",
-                    DataType.STRING, null, 2,null, null, false, "Subtract operation input_2", null);
+                    DataType.STRING, null, 2,true,true, false, "Subtract operation input_2", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
             applicationInputs.add(input2);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Result",
-                    "0", DataType.STRING, null, null);
+                    "0", DataType.STRING, true,false);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);

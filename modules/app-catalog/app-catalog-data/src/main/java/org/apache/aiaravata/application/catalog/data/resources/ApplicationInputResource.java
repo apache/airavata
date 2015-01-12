@@ -50,8 +50,8 @@ public class ApplicationInputResource extends AbstractResource {
     private String userFriendlyDesc;
     private int inputOrder;
     private boolean standardInput;
-    private String validityType;
-    private String commandLineType;
+    private boolean isRequired;
+    private boolean requiredToCMD;
     private boolean dataStaged;
 
     private AppInterfaceResource appInterfaceResource;
@@ -294,8 +294,8 @@ public class ApplicationInputResource extends AbstractResource {
             applicationInput.setUserFriendlyDesc(userFriendlyDesc);
             applicationInput.setStandardInput(standardInput);
             applicationInput.setInputOrder(inputOrder);
-            applicationInput.setCommandLineType(commandLineType);
-            applicationInput.setValidityType(validityType);
+            applicationInput.setRequiredToCMD(requiredToCMD);
+            applicationInput.setRequired(isRequired);
             applicationInput.setDataStaged(dataStaged);
             if (existingApplicationInput == null) {
                 em.persist(applicationInput);
@@ -428,20 +428,20 @@ public class ApplicationInputResource extends AbstractResource {
         this.inputOrder = inputOrder;
     }
 
-    public String getValidityType() {
-        return validityType;
+    public boolean getRequired() {
+        return isRequired;
     }
 
-    public void setValidityType(String validityType) {
-        this.validityType = validityType;
+    public void setRequired(boolean required) {
+        this.isRequired = required;
     }
 
-    public String getCommandLineType() {
-        return commandLineType;
+    public boolean getRequiredToCMD() {
+        return requiredToCMD;
     }
 
-    public void setCommandLineType(String commandLineType) {
-        this.commandLineType = commandLineType;
+    public void setRequiredToCMD(boolean requiredToCMD) {
+        this.requiredToCMD = requiredToCMD;
     }
 
     public boolean isDataStaged() {

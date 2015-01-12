@@ -61,10 +61,10 @@ public class Experiment_Input implements Serializable {
     @Column(name = "INPUT_ORDER")
     private int inputOrder;
 
-    @Column(name="VALIDITY_TYPE")
-    private String validityType;
-    @Column(name="COMMANDLINE_TYPE")
-    private String commandLineType;
+    @Column(name="IS_REQUIRED")
+    private boolean isRequired;
+    @Column(name="REQUIRED_TO_COMMANDLINE")
+    private boolean requiredToCMD;
     @Column(name = "DATA_STAGED")
     private boolean dataStaged;
 
@@ -152,20 +152,20 @@ public class Experiment_Input implements Serializable {
         this.userFriendlyDesc = userFriendlyDesc;
     }
 
-    public String getValidityType() {
-        return validityType;
+    public boolean isRequired() {
+        return isRequired;
     }
 
-    public void setValidityType(String validityType) {
-        this.validityType = validityType;
+    public void setRequired(boolean isRequired) {
+        this.isRequired = isRequired;
     }
 
-    public String getCommandLineType() {
-        return commandLineType;
+    public boolean isRequiredToCMD() {
+        return requiredToCMD;
     }
 
-    public void setCommandLineType(String commandLineType) {
-        this.commandLineType = commandLineType;
+    public void setRequiredToCMD(boolean requiredToCMD) {
+        this.requiredToCMD = requiredToCMD;
     }
 
     public boolean isDataStaged() {

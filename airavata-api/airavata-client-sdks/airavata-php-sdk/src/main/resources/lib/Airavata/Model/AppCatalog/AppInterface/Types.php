@@ -34,24 +34,6 @@ final class DataType {
   );
 }
 
-final class ValidityType {
-  const REQUIRED = 0;
-  const OPTIONAL = 1;
-  static public $__names = array(
-    0 => 'REQUIRED',
-    1 => 'OPTIONAL',
-  );
-}
-
-final class CommandLineType {
-  const IMPLICIT = 0;
-  const EXPLICIT = 1;
-  static public $__names = array(
-    0 => 'IMPLICIT',
-    1 => 'EXPLICIT',
-  );
-}
-
 class InputDataObjectType {
   static $_TSPEC;
 
@@ -63,8 +45,8 @@ class InputDataObjectType {
   public $userFriendlyDescription = null;
   public $metaData = null;
   public $inputOrder = null;
-  public $inputValid = null;
-  public $addedToCommandLine = null;
+  public $isRequired = null;
+  public $requiredToAddedToCommandLine = null;
   public $dataStaged = false;
 
   public function __construct($vals=null) {
@@ -103,12 +85,12 @@ class InputDataObjectType {
           'type' => TType::I32,
           ),
         9 => array(
-          'var' => 'inputValid',
-          'type' => TType::I32,
+          'var' => 'isRequired',
+          'type' => TType::BOOL,
           ),
         10 => array(
-          'var' => 'addedToCommandLine',
-          'type' => TType::I32,
+          'var' => 'requiredToAddedToCommandLine',
+          'type' => TType::BOOL,
           ),
         11 => array(
           'var' => 'dataStaged',
@@ -141,11 +123,11 @@ class InputDataObjectType {
       if (isset($vals['inputOrder'])) {
         $this->inputOrder = $vals['inputOrder'];
       }
-      if (isset($vals['inputValid'])) {
-        $this->inputValid = $vals['inputValid'];
+      if (isset($vals['isRequired'])) {
+        $this->isRequired = $vals['isRequired'];
       }
-      if (isset($vals['addedToCommandLine'])) {
-        $this->addedToCommandLine = $vals['addedToCommandLine'];
+      if (isset($vals['requiredToAddedToCommandLine'])) {
+        $this->requiredToAddedToCommandLine = $vals['requiredToAddedToCommandLine'];
       }
       if (isset($vals['dataStaged'])) {
         $this->dataStaged = $vals['dataStaged'];
@@ -229,15 +211,15 @@ class InputDataObjectType {
           }
           break;
         case 9:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->inputValid);
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->isRequired);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 10:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->addedToCommandLine);
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->requiredToAddedToCommandLine);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -302,14 +284,14 @@ class InputDataObjectType {
       $xfer += $output->writeI32($this->inputOrder);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->inputValid !== null) {
-      $xfer += $output->writeFieldBegin('inputValid', TType::I32, 9);
-      $xfer += $output->writeI32($this->inputValid);
+    if ($this->isRequired !== null) {
+      $xfer += $output->writeFieldBegin('isRequired', TType::BOOL, 9);
+      $xfer += $output->writeBool($this->isRequired);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->addedToCommandLine !== null) {
-      $xfer += $output->writeFieldBegin('addedToCommandLine', TType::I32, 10);
-      $xfer += $output->writeI32($this->addedToCommandLine);
+    if ($this->requiredToAddedToCommandLine !== null) {
+      $xfer += $output->writeFieldBegin('requiredToAddedToCommandLine', TType::BOOL, 10);
+      $xfer += $output->writeBool($this->requiredToAddedToCommandLine);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->dataStaged !== null) {
@@ -330,8 +312,8 @@ class OutputDataObjectType {
   public $name = null;
   public $value = null;
   public $type = null;
-  public $validityType = null;
-  public $addedToCommandLine = null;
+  public $isRequired = null;
+  public $requiredToAddedToCommandLine = null;
   public $dataMovement = null;
   public $dataNameLocation = null;
 
@@ -351,12 +333,12 @@ class OutputDataObjectType {
           'type' => TType::I32,
           ),
         4 => array(
-          'var' => 'validityType',
-          'type' => TType::I32,
+          'var' => 'isRequired',
+          'type' => TType::BOOL,
           ),
         5 => array(
-          'var' => 'addedToCommandLine',
-          'type' => TType::I32,
+          'var' => 'requiredToAddedToCommandLine',
+          'type' => TType::BOOL,
           ),
         6 => array(
           'var' => 'dataMovement',
@@ -378,11 +360,11 @@ class OutputDataObjectType {
       if (isset($vals['type'])) {
         $this->type = $vals['type'];
       }
-      if (isset($vals['validityType'])) {
-        $this->validityType = $vals['validityType'];
+      if (isset($vals['isRequired'])) {
+        $this->isRequired = $vals['isRequired'];
       }
-      if (isset($vals['addedToCommandLine'])) {
-        $this->addedToCommandLine = $vals['addedToCommandLine'];
+      if (isset($vals['requiredToAddedToCommandLine'])) {
+        $this->requiredToAddedToCommandLine = $vals['requiredToAddedToCommandLine'];
       }
       if (isset($vals['dataMovement'])) {
         $this->dataMovement = $vals['dataMovement'];
@@ -434,15 +416,15 @@ class OutputDataObjectType {
           }
           break;
         case 4:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->validityType);
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->isRequired);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 5:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->addedToCommandLine);
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->requiredToAddedToCommandLine);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -489,14 +471,14 @@ class OutputDataObjectType {
       $xfer += $output->writeI32($this->type);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->validityType !== null) {
-      $xfer += $output->writeFieldBegin('validityType', TType::I32, 4);
-      $xfer += $output->writeI32($this->validityType);
+    if ($this->isRequired !== null) {
+      $xfer += $output->writeFieldBegin('isRequired', TType::BOOL, 4);
+      $xfer += $output->writeBool($this->isRequired);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->addedToCommandLine !== null) {
-      $xfer += $output->writeFieldBegin('addedToCommandLine', TType::I32, 5);
-      $xfer += $output->writeI32($this->addedToCommandLine);
+    if ($this->requiredToAddedToCommandLine !== null) {
+      $xfer += $output->writeFieldBegin('requiredToAddedToCommandLine', TType::BOOL, 5);
+      $xfer += $output->writeBool($this->requiredToAddedToCommandLine);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->dataMovement !== null) {

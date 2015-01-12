@@ -192,12 +192,8 @@ public class ThriftDataModelConversion {
                 dataObjectType.setStandardInput(expInput.isStandardInput());
                 dataObjectType.setUserFriendlyDescription(expInput.getUserFriendlyDesc());
                 dataObjectType.setInputOrder(expInput.getInputOrder());
-                if (expInput.getValidityType() != null){
-                    dataObjectType.setInputValid(ValidityType.valueOf(expInput.getValidityType()));
-                }
-                if (expInput.getCommandLineType() != null){
-                    dataObjectType.setAddedToCommandLine(CommandLineType.valueOf(expInput.getCommandLineType()));
-                }
+                dataObjectType.setIsRequired(expInput.getRequired());
+                dataObjectType.setRequiredToAddedToCommandLine(expInput.getRequiredToCMD());
                 dataObjectType.setDataStaged(expInput.isDataStaged());
                 return dataObjectType;
             }else if (object instanceof NodeInputResource){
@@ -212,12 +208,8 @@ public class ThriftDataModelConversion {
                 dataObjectType.setStandardInput(nodeInputResource.isStandardInput());
                 dataObjectType.setUserFriendlyDescription(nodeInputResource.getUserFriendlyDesc());
                 dataObjectType.setInputOrder(nodeInputResource.getInputOrder());
-                if (nodeInputResource.getValidityType() != null){
-                    dataObjectType.setInputValid(ValidityType.valueOf(nodeInputResource.getValidityType()));
-                }
-                if (nodeInputResource.getCommandLineType() != null){
-                    dataObjectType.setAddedToCommandLine(CommandLineType.valueOf(nodeInputResource.getCommandLineType()));
-                }
+                dataObjectType.setIsRequired(nodeInputResource.getRequired());
+                dataObjectType.setRequiredToAddedToCommandLine(nodeInputResource.getRequiredToCMD());
                 dataObjectType.setDataStaged(nodeInputResource.isDataStaged());
                 return dataObjectType;
             }else if (object instanceof ApplicationInputResource){
@@ -232,12 +224,8 @@ public class ThriftDataModelConversion {
                 dataObjectType.setStandardInput(inputResource.isStandardInput());
                 dataObjectType.setUserFriendlyDescription(inputResource.getUserFriendlyDesc());
                 dataObjectType.setInputOrder(inputResource.getInputOrder());
-                if (inputResource.getValidityType() != null){
-                    dataObjectType.setInputValid(ValidityType.valueOf(inputResource.getValidityType()));
-                }
-                if (inputResource.getCommandLineType() != null){
-                    dataObjectType.setAddedToCommandLine(CommandLineType.valueOf(inputResource.getCommandLineType()));
-                }
+                dataObjectType.setIsRequired(inputResource.isRequired());
+                dataObjectType.setRequiredToAddedToCommandLine(inputResource.isRequiredToCMD());
                 dataObjectType.setDataStaged(inputResource.isDataStaged());
                 return dataObjectType;
             }else {
@@ -257,12 +245,8 @@ public class ThriftDataModelConversion {
                 if (expOutput.getDataType() != null){
                     dataObjectType.setType(DataType.valueOf(expOutput.getDataType()));
                 }
-                if (expOutput.getValidityType() != null){
-                    dataObjectType.setValidityType(ValidityType.valueOf(expOutput.getValidityType()));
-                }
-                if (expOutput.getCommandLineType() != null){
-                    dataObjectType.setAddedToCommandLine(CommandLineType.valueOf(expOutput.getCommandLineType()));
-                }
+                dataObjectType.setIsRequired(expOutput.getRequired());
+                dataObjectType.setRequiredToAddedToCommandLine(expOutput.getRequiredToCMD());
                 dataObjectType.setDataMovement(expOutput.isDataMovement());
                 dataObjectType.setDataNameLocation(expOutput.getDataNameLocation());
                 return dataObjectType;
@@ -273,12 +257,8 @@ public class ThriftDataModelConversion {
                 if (nodeOutputResource.getDataType() != null){
                     dataObjectType.setType(DataType.valueOf(nodeOutputResource.getDataType()));
                 }
-                if (nodeOutputResource.getValidityType() != null){
-                    dataObjectType.setValidityType(ValidityType.valueOf(nodeOutputResource.getValidityType()));
-                }
-                if (nodeOutputResource.getCommandLineType() != null){
-                    dataObjectType.setAddedToCommandLine(CommandLineType.valueOf(nodeOutputResource.getCommandLineType()));
-                }
+                dataObjectType.setIsRequired(nodeOutputResource.getRequired());
+                dataObjectType.setRequiredToAddedToCommandLine(nodeOutputResource.getRequiredToCMD());
                 dataObjectType.setDataMovement(nodeOutputResource.isDataMovement());
                 dataObjectType.setDataNameLocation(nodeOutputResource.getDataNameLocation());
                 return dataObjectType;
@@ -286,14 +266,10 @@ public class ThriftDataModelConversion {
                 ApplicationOutputResource outputResource = (ApplicationOutputResource)object;
                 dataObjectType.setName(outputResource.getOutputKey());
                 dataObjectType.setValue(outputResource.getValue());
+                dataObjectType.setIsRequired(outputResource.isRequired());
+                dataObjectType.setRequiredToAddedToCommandLine(outputResource.isRequiredToCMD());
                 if (outputResource.getDataType() != null){
                     dataObjectType.setType(DataType.valueOf(outputResource.getDataType()));
-                }
-                if (outputResource.getValidityType() != null){
-                    dataObjectType.setValidityType(ValidityType.valueOf(outputResource.getValidityType()));
-                }
-                if (outputResource.getCommandLineType() != null){
-                    dataObjectType.setAddedToCommandLine(CommandLineType.valueOf(outputResource.getCommandLineType()));
                 }
                 dataObjectType.setDataMovement(outputResource.isDataMovement());
                 dataObjectType.setDataNameLocation(outputResource.getDataNameLocation());

@@ -42,7 +42,6 @@ import org.apache.airavata.gsi.ssh.impl.GSISSHAbstractCluster;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
-import org.apache.airavata.model.appcatalog.appinterface.CommandLineType;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
@@ -272,8 +271,7 @@ public class GFACSSHUtils {
             }
         }
         for (InputDataObjectType inputDataObjectType : sortedInputSet) {
-            if (inputDataObjectType.getAddedToCommandLine() != null
-                    && inputDataObjectType.getAddedToCommandLine() == CommandLineType.IMPLICIT) {
+            if (!inputDataObjectType.isRequiredToAddedToCommandLine()) {
                 continue;
             }
             if (inputDataObjectType.getApplicationArgument() != null
@@ -298,8 +296,7 @@ public class GFACSSHUtils {
         for (Object outputParam : outputParams.values()) {
             if (outputParam instanceof OutputDataObjectType) {
                 OutputDataObjectType output = (OutputDataObjectType) outputParam;
-                if (output.getValue() != null && !output.getValue().equals("") && output.getAddedToCommandLine() != null
-                        && output.getAddedToCommandLine() == CommandLineType.EXPLICIT) {
+                if (output.getValue() != null && !output.getValue().equals("") && output.isRequiredToAddedToCommandLine()) {
                     inputValues.add(output.getValue());
                 }
             }
