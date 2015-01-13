@@ -245,7 +245,11 @@ public class GFACGSISSHUtils {
                     inputValues.add(output.getApplicationArgument());
                 }
                 if (output.getValue() != null && !output.getValue().equals("") && output.isRequiredToAddedToCommandLine()) {
-                    inputValues.add(output.getValue());
+                    if (output.getType() == DataType.URI){
+                        String filePath = output.getValue();
+                        filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
+                        inputValues.add(filePath);
+                    }
                 }
             }
         }
