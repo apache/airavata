@@ -240,6 +240,10 @@ public class GFACGSISSHUtils {
         for (Object outputParam : outputParams.values()) {
             if (outputParam instanceof OutputDataObjectType) {
                 OutputDataObjectType output = (OutputDataObjectType) outputParam;
+                if (output.getApplicationArgument() != null
+                        && !output.getApplicationArgument().equals("")) {
+                    inputValues.add(output.getApplicationArgument());
+                }
                 if (output.getValue() != null && !output.getValue().equals("") && output.isRequiredToAddedToCommandLine()) {
                     inputValues.add(output.getValue());
                 }
