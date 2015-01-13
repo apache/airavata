@@ -48,6 +48,8 @@ public class ApplicationOutputResource extends AbstractResource {
     private boolean dataMovement;
     private String dataNameLocation;
     private boolean requiredToCMD;
+    private String searchQuery;
+    private String appArgument;
 
     private AppInterfaceResource appInterfaceResource;
 
@@ -291,6 +293,8 @@ public class ApplicationOutputResource extends AbstractResource {
             applicationOutput.setRequiredToCMD(requiredToCMD);
             applicationOutput.setDataMovement(dataMovement);
             applicationOutput.setDataNameLocation(dataNameLocation);
+            applicationOutput.setSearchQuery(searchQuery);
+            applicationOutput.setApplicationArgument(appArgument);
             em.merge(applicationOutput);
             em.getTransaction().commit();
             em.close();
@@ -408,5 +412,21 @@ public class ApplicationOutputResource extends AbstractResource {
 
     public void setRequiredToCMD(boolean requiredToCMD) {
         this.requiredToCMD = requiredToCMD;
+    }
+
+    public String getSearchQuery() {
+        return searchQuery;
+    }
+
+    public void setSearchQuery(String searchQuery) {
+        this.searchQuery = searchQuery;
+    }
+
+    public String getAppArgument() {
+        return appArgument;
+    }
+
+    public void setAppArgument(String appArgument) {
+        this.appArgument = appArgument;
     }
 }

@@ -81,10 +81,12 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("name", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField VALUE_FIELD_DESC = new org.apache.thrift.protocol.TField("value", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("type", org.apache.thrift.protocol.TType.I32, (short)3);
-  private static final org.apache.thrift.protocol.TField IS_REQUIRED_FIELD_DESC = new org.apache.thrift.protocol.TField("isRequired", org.apache.thrift.protocol.TType.BOOL, (short)4);
-  private static final org.apache.thrift.protocol.TField REQUIRED_TO_ADDED_TO_COMMAND_LINE_FIELD_DESC = new org.apache.thrift.protocol.TField("requiredToAddedToCommandLine", org.apache.thrift.protocol.TType.BOOL, (short)5);
-  private static final org.apache.thrift.protocol.TField DATA_MOVEMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("dataMovement", org.apache.thrift.protocol.TType.BOOL, (short)6);
-  private static final org.apache.thrift.protocol.TField DATA_NAME_LOCATION_FIELD_DESC = new org.apache.thrift.protocol.TField("dataNameLocation", org.apache.thrift.protocol.TType.STRING, (short)7);
+  private static final org.apache.thrift.protocol.TField APPLICATION_ARGUMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationArgument", org.apache.thrift.protocol.TType.STRING, (short)4);
+  private static final org.apache.thrift.protocol.TField IS_REQUIRED_FIELD_DESC = new org.apache.thrift.protocol.TField("isRequired", org.apache.thrift.protocol.TType.BOOL, (short)5);
+  private static final org.apache.thrift.protocol.TField REQUIRED_TO_ADDED_TO_COMMAND_LINE_FIELD_DESC = new org.apache.thrift.protocol.TField("requiredToAddedToCommandLine", org.apache.thrift.protocol.TType.BOOL, (short)6);
+  private static final org.apache.thrift.protocol.TField DATA_MOVEMENT_FIELD_DESC = new org.apache.thrift.protocol.TField("dataMovement", org.apache.thrift.protocol.TType.BOOL, (short)7);
+  private static final org.apache.thrift.protocol.TField LOCATION_FIELD_DESC = new org.apache.thrift.protocol.TField("location", org.apache.thrift.protocol.TType.STRING, (short)8);
+  private static final org.apache.thrift.protocol.TField SEARCH_QUERY_FIELD_DESC = new org.apache.thrift.protocol.TField("searchQuery", org.apache.thrift.protocol.TType.STRING, (short)9);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -95,10 +97,12 @@ import org.slf4j.LoggerFactory;
   private String name; // required
   private String value; // optional
   private DataType type; // optional
+  private String applicationArgument; // optional
   private boolean isRequired; // optional
   private boolean requiredToAddedToCommandLine; // optional
   private boolean dataMovement; // optional
-  private String dataNameLocation; // optional
+  private String location; // optional
+  private String searchQuery; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -109,10 +113,12 @@ import org.slf4j.LoggerFactory;
      * @see DataType
      */
     TYPE((short)3, "type"),
-    IS_REQUIRED((short)4, "isRequired"),
-    REQUIRED_TO_ADDED_TO_COMMAND_LINE((short)5, "requiredToAddedToCommandLine"),
-    DATA_MOVEMENT((short)6, "dataMovement"),
-    DATA_NAME_LOCATION((short)7, "dataNameLocation");
+    APPLICATION_ARGUMENT((short)4, "applicationArgument"),
+    IS_REQUIRED((short)5, "isRequired"),
+    REQUIRED_TO_ADDED_TO_COMMAND_LINE((short)6, "requiredToAddedToCommandLine"),
+    DATA_MOVEMENT((short)7, "dataMovement"),
+    LOCATION((short)8, "location"),
+    SEARCH_QUERY((short)9, "searchQuery");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -133,14 +139,18 @@ import org.slf4j.LoggerFactory;
           return VALUE;
         case 3: // TYPE
           return TYPE;
-        case 4: // IS_REQUIRED
+        case 4: // APPLICATION_ARGUMENT
+          return APPLICATION_ARGUMENT;
+        case 5: // IS_REQUIRED
           return IS_REQUIRED;
-        case 5: // REQUIRED_TO_ADDED_TO_COMMAND_LINE
+        case 6: // REQUIRED_TO_ADDED_TO_COMMAND_LINE
           return REQUIRED_TO_ADDED_TO_COMMAND_LINE;
-        case 6: // DATA_MOVEMENT
+        case 7: // DATA_MOVEMENT
           return DATA_MOVEMENT;
-        case 7: // DATA_NAME_LOCATION
-          return DATA_NAME_LOCATION;
+        case 8: // LOCATION
+          return LOCATION;
+        case 9: // SEARCH_QUERY
+          return SEARCH_QUERY;
         default:
           return null;
       }
@@ -185,7 +195,7 @@ import org.slf4j.LoggerFactory;
   private static final int __REQUIREDTOADDEDTOCOMMANDLINE_ISSET_ID = 1;
   private static final int __DATAMOVEMENT_ISSET_ID = 2;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.VALUE,_Fields.TYPE,_Fields.IS_REQUIRED,_Fields.REQUIRED_TO_ADDED_TO_COMMAND_LINE,_Fields.DATA_MOVEMENT,_Fields.DATA_NAME_LOCATION};
+  private _Fields optionals[] = {_Fields.VALUE,_Fields.TYPE,_Fields.APPLICATION_ARGUMENT,_Fields.IS_REQUIRED,_Fields.REQUIRED_TO_ADDED_TO_COMMAND_LINE,_Fields.DATA_MOVEMENT,_Fields.LOCATION,_Fields.SEARCH_QUERY};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -195,13 +205,17 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.TYPE, new org.apache.thrift.meta_data.FieldMetaData("type", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, DataType.class)));
+    tmpMap.put(_Fields.APPLICATION_ARGUMENT, new org.apache.thrift.meta_data.FieldMetaData("applicationArgument", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.IS_REQUIRED, new org.apache.thrift.meta_data.FieldMetaData("isRequired", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.REQUIRED_TO_ADDED_TO_COMMAND_LINE, new org.apache.thrift.meta_data.FieldMetaData("requiredToAddedToCommandLine", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     tmpMap.put(_Fields.DATA_MOVEMENT, new org.apache.thrift.meta_data.FieldMetaData("dataMovement", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
-    tmpMap.put(_Fields.DATA_NAME_LOCATION, new org.apache.thrift.meta_data.FieldMetaData("dataNameLocation", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.LOCATION, new org.apache.thrift.meta_data.FieldMetaData("location", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.SEARCH_QUERY, new org.apache.thrift.meta_data.FieldMetaData("searchQuery", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(OutputDataObjectType.class, metaDataMap);
@@ -231,11 +245,17 @@ import org.slf4j.LoggerFactory;
     if (other.isSetType()) {
       this.type = other.type;
     }
+    if (other.isSetApplicationArgument()) {
+      this.applicationArgument = other.applicationArgument;
+    }
     this.isRequired = other.isRequired;
     this.requiredToAddedToCommandLine = other.requiredToAddedToCommandLine;
     this.dataMovement = other.dataMovement;
-    if (other.isSetDataNameLocation()) {
-      this.dataNameLocation = other.dataNameLocation;
+    if (other.isSetLocation()) {
+      this.location = other.location;
+    }
+    if (other.isSetSearchQuery()) {
+      this.searchQuery = other.searchQuery;
     }
   }
 
@@ -248,13 +268,15 @@ import org.slf4j.LoggerFactory;
     this.name = null;
     this.value = null;
     this.type = null;
+    this.applicationArgument = null;
     setIsRequiredIsSet(false);
     this.isRequired = false;
     setRequiredToAddedToCommandLineIsSet(false);
     this.requiredToAddedToCommandLine = false;
     setDataMovementIsSet(false);
     this.dataMovement = false;
-    this.dataNameLocation = null;
+    this.location = null;
+    this.searchQuery = null;
   }
 
   public String getName() {
@@ -334,6 +356,29 @@ import org.slf4j.LoggerFactory;
     }
   }
 
+  public String getApplicationArgument() {
+    return this.applicationArgument;
+  }
+
+  public void setApplicationArgument(String applicationArgument) {
+    this.applicationArgument = applicationArgument;
+  }
+
+  public void unsetApplicationArgument() {
+    this.applicationArgument = null;
+  }
+
+  /** Returns true if field applicationArgument is set (has been assigned a value) and false otherwise */
+  public boolean isSetApplicationArgument() {
+    return this.applicationArgument != null;
+  }
+
+  public void setApplicationArgumentIsSet(boolean value) {
+    if (!value) {
+      this.applicationArgument = null;
+    }
+  }
+
   public boolean isIsRequired() {
     return this.isRequired;
   }
@@ -400,26 +445,49 @@ import org.slf4j.LoggerFactory;
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __DATAMOVEMENT_ISSET_ID, value);
   }
 
-  public String getDataNameLocation() {
-    return this.dataNameLocation;
+  public String getLocation() {
+    return this.location;
   }
 
-  public void setDataNameLocation(String dataNameLocation) {
-    this.dataNameLocation = dataNameLocation;
+  public void setLocation(String location) {
+    this.location = location;
   }
 
-  public void unsetDataNameLocation() {
-    this.dataNameLocation = null;
+  public void unsetLocation() {
+    this.location = null;
   }
 
-  /** Returns true if field dataNameLocation is set (has been assigned a value) and false otherwise */
-  public boolean isSetDataNameLocation() {
-    return this.dataNameLocation != null;
+  /** Returns true if field location is set (has been assigned a value) and false otherwise */
+  public boolean isSetLocation() {
+    return this.location != null;
   }
 
-  public void setDataNameLocationIsSet(boolean value) {
+  public void setLocationIsSet(boolean value) {
     if (!value) {
-      this.dataNameLocation = null;
+      this.location = null;
+    }
+  }
+
+  public String getSearchQuery() {
+    return this.searchQuery;
+  }
+
+  public void setSearchQuery(String searchQuery) {
+    this.searchQuery = searchQuery;
+  }
+
+  public void unsetSearchQuery() {
+    this.searchQuery = null;
+  }
+
+  /** Returns true if field searchQuery is set (has been assigned a value) and false otherwise */
+  public boolean isSetSearchQuery() {
+    return this.searchQuery != null;
+  }
+
+  public void setSearchQueryIsSet(boolean value) {
+    if (!value) {
+      this.searchQuery = null;
     }
   }
 
@@ -449,6 +517,14 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case APPLICATION_ARGUMENT:
+      if (value == null) {
+        unsetApplicationArgument();
+      } else {
+        setApplicationArgument((String)value);
+      }
+      break;
+
     case IS_REQUIRED:
       if (value == null) {
         unsetIsRequired();
@@ -473,11 +549,19 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
-    case DATA_NAME_LOCATION:
+    case LOCATION:
       if (value == null) {
-        unsetDataNameLocation();
+        unsetLocation();
       } else {
-        setDataNameLocation((String)value);
+        setLocation((String)value);
+      }
+      break;
+
+    case SEARCH_QUERY:
+      if (value == null) {
+        unsetSearchQuery();
+      } else {
+        setSearchQuery((String)value);
       }
       break;
 
@@ -495,6 +579,9 @@ import org.slf4j.LoggerFactory;
     case TYPE:
       return getType();
 
+    case APPLICATION_ARGUMENT:
+      return getApplicationArgument();
+
     case IS_REQUIRED:
       return Boolean.valueOf(isIsRequired());
 
@@ -504,8 +591,11 @@ import org.slf4j.LoggerFactory;
     case DATA_MOVEMENT:
       return Boolean.valueOf(isDataMovement());
 
-    case DATA_NAME_LOCATION:
-      return getDataNameLocation();
+    case LOCATION:
+      return getLocation();
+
+    case SEARCH_QUERY:
+      return getSearchQuery();
 
     }
     throw new IllegalStateException();
@@ -524,14 +614,18 @@ import org.slf4j.LoggerFactory;
       return isSetValue();
     case TYPE:
       return isSetType();
+    case APPLICATION_ARGUMENT:
+      return isSetApplicationArgument();
     case IS_REQUIRED:
       return isSetIsRequired();
     case REQUIRED_TO_ADDED_TO_COMMAND_LINE:
       return isSetRequiredToAddedToCommandLine();
     case DATA_MOVEMENT:
       return isSetDataMovement();
-    case DATA_NAME_LOCATION:
-      return isSetDataNameLocation();
+    case LOCATION:
+      return isSetLocation();
+    case SEARCH_QUERY:
+      return isSetSearchQuery();
     }
     throw new IllegalStateException();
   }
@@ -576,6 +670,15 @@ import org.slf4j.LoggerFactory;
         return false;
     }
 
+    boolean this_present_applicationArgument = true && this.isSetApplicationArgument();
+    boolean that_present_applicationArgument = true && that.isSetApplicationArgument();
+    if (this_present_applicationArgument || that_present_applicationArgument) {
+      if (!(this_present_applicationArgument && that_present_applicationArgument))
+        return false;
+      if (!this.applicationArgument.equals(that.applicationArgument))
+        return false;
+    }
+
     boolean this_present_isRequired = true && this.isSetIsRequired();
     boolean that_present_isRequired = true && that.isSetIsRequired();
     if (this_present_isRequired || that_present_isRequired) {
@@ -603,12 +706,21 @@ import org.slf4j.LoggerFactory;
         return false;
     }
 
-    boolean this_present_dataNameLocation = true && this.isSetDataNameLocation();
-    boolean that_present_dataNameLocation = true && that.isSetDataNameLocation();
-    if (this_present_dataNameLocation || that_present_dataNameLocation) {
-      if (!(this_present_dataNameLocation && that_present_dataNameLocation))
+    boolean this_present_location = true && this.isSetLocation();
+    boolean that_present_location = true && that.isSetLocation();
+    if (this_present_location || that_present_location) {
+      if (!(this_present_location && that_present_location))
         return false;
-      if (!this.dataNameLocation.equals(that.dataNameLocation))
+      if (!this.location.equals(that.location))
+        return false;
+    }
+
+    boolean this_present_searchQuery = true && this.isSetSearchQuery();
+    boolean that_present_searchQuery = true && that.isSetSearchQuery();
+    if (this_present_searchQuery || that_present_searchQuery) {
+      if (!(this_present_searchQuery && that_present_searchQuery))
+        return false;
+      if (!this.searchQuery.equals(that.searchQuery))
         return false;
     }
 
@@ -658,6 +770,16 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetApplicationArgument()).compareTo(other.isSetApplicationArgument());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetApplicationArgument()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.applicationArgument, other.applicationArgument);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = Boolean.valueOf(isSetIsRequired()).compareTo(other.isSetIsRequired());
     if (lastComparison != 0) {
       return lastComparison;
@@ -688,12 +810,22 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetDataNameLocation()).compareTo(other.isSetDataNameLocation());
+    lastComparison = Boolean.valueOf(isSetLocation()).compareTo(other.isSetLocation());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetDataNameLocation()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.dataNameLocation, other.dataNameLocation);
+    if (isSetLocation()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.location, other.location);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetSearchQuery()).compareTo(other.isSetSearchQuery());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetSearchQuery()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.searchQuery, other.searchQuery);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -745,6 +877,16 @@ import org.slf4j.LoggerFactory;
       }
       first = false;
     }
+    if (isSetApplicationArgument()) {
+      if (!first) sb.append(", ");
+      sb.append("applicationArgument:");
+      if (this.applicationArgument == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.applicationArgument);
+      }
+      first = false;
+    }
     if (isSetIsRequired()) {
       if (!first) sb.append(", ");
       sb.append("isRequired:");
@@ -763,13 +905,23 @@ import org.slf4j.LoggerFactory;
       sb.append(this.dataMovement);
       first = false;
     }
-    if (isSetDataNameLocation()) {
+    if (isSetLocation()) {
       if (!first) sb.append(", ");
-      sb.append("dataNameLocation:");
-      if (this.dataNameLocation == null) {
+      sb.append("location:");
+      if (this.location == null) {
         sb.append("null");
       } else {
-        sb.append(this.dataNameLocation);
+        sb.append(this.location);
+      }
+      first = false;
+    }
+    if (isSetSearchQuery()) {
+      if (!first) sb.append(", ");
+      sb.append("searchQuery:");
+      if (this.searchQuery == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.searchQuery);
       }
       first = false;
     }
@@ -846,7 +998,15 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // IS_REQUIRED
+          case 4: // APPLICATION_ARGUMENT
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.applicationArgument = iprot.readString();
+              struct.setApplicationArgumentIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 5: // IS_REQUIRED
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
               struct.isRequired = iprot.readBool();
               struct.setIsRequiredIsSet(true);
@@ -854,7 +1014,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // REQUIRED_TO_ADDED_TO_COMMAND_LINE
+          case 6: // REQUIRED_TO_ADDED_TO_COMMAND_LINE
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
               struct.requiredToAddedToCommandLine = iprot.readBool();
               struct.setRequiredToAddedToCommandLineIsSet(true);
@@ -862,7 +1022,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // DATA_MOVEMENT
+          case 7: // DATA_MOVEMENT
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
               struct.dataMovement = iprot.readBool();
               struct.setDataMovementIsSet(true);
@@ -870,10 +1030,18 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // DATA_NAME_LOCATION
+          case 8: // LOCATION
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.dataNameLocation = iprot.readString();
-              struct.setDataNameLocationIsSet(true);
+              struct.location = iprot.readString();
+              struct.setLocationIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 9: // SEARCH_QUERY
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.searchQuery = iprot.readString();
+              struct.setSearchQueryIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -910,6 +1078,13 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldEnd();
         }
       }
+      if (struct.applicationArgument != null) {
+        if (struct.isSetApplicationArgument()) {
+          oprot.writeFieldBegin(APPLICATION_ARGUMENT_FIELD_DESC);
+          oprot.writeString(struct.applicationArgument);
+          oprot.writeFieldEnd();
+        }
+      }
       if (struct.isSetIsRequired()) {
         oprot.writeFieldBegin(IS_REQUIRED_FIELD_DESC);
         oprot.writeBool(struct.isRequired);
@@ -925,10 +1100,17 @@ import org.slf4j.LoggerFactory;
         oprot.writeBool(struct.dataMovement);
         oprot.writeFieldEnd();
       }
-      if (struct.dataNameLocation != null) {
-        if (struct.isSetDataNameLocation()) {
-          oprot.writeFieldBegin(DATA_NAME_LOCATION_FIELD_DESC);
-          oprot.writeString(struct.dataNameLocation);
+      if (struct.location != null) {
+        if (struct.isSetLocation()) {
+          oprot.writeFieldBegin(LOCATION_FIELD_DESC);
+          oprot.writeString(struct.location);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.searchQuery != null) {
+        if (struct.isSetSearchQuery()) {
+          oprot.writeFieldBegin(SEARCH_QUERY_FIELD_DESC);
+          oprot.writeString(struct.searchQuery);
           oprot.writeFieldEnd();
         }
       }
@@ -957,24 +1139,33 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetType()) {
         optionals.set(1);
       }
-      if (struct.isSetIsRequired()) {
+      if (struct.isSetApplicationArgument()) {
         optionals.set(2);
       }
-      if (struct.isSetRequiredToAddedToCommandLine()) {
+      if (struct.isSetIsRequired()) {
         optionals.set(3);
       }
-      if (struct.isSetDataMovement()) {
+      if (struct.isSetRequiredToAddedToCommandLine()) {
         optionals.set(4);
       }
-      if (struct.isSetDataNameLocation()) {
+      if (struct.isSetDataMovement()) {
         optionals.set(5);
       }
-      oprot.writeBitSet(optionals, 6);
+      if (struct.isSetLocation()) {
+        optionals.set(6);
+      }
+      if (struct.isSetSearchQuery()) {
+        optionals.set(7);
+      }
+      oprot.writeBitSet(optionals, 8);
       if (struct.isSetValue()) {
         oprot.writeString(struct.value);
       }
       if (struct.isSetType()) {
         oprot.writeI32(struct.type.getValue());
+      }
+      if (struct.isSetApplicationArgument()) {
+        oprot.writeString(struct.applicationArgument);
       }
       if (struct.isSetIsRequired()) {
         oprot.writeBool(struct.isRequired);
@@ -985,8 +1176,11 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetDataMovement()) {
         oprot.writeBool(struct.dataMovement);
       }
-      if (struct.isSetDataNameLocation()) {
-        oprot.writeString(struct.dataNameLocation);
+      if (struct.isSetLocation()) {
+        oprot.writeString(struct.location);
+      }
+      if (struct.isSetSearchQuery()) {
+        oprot.writeString(struct.searchQuery);
       }
     }
 
@@ -995,7 +1189,7 @@ import org.slf4j.LoggerFactory;
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.name = iprot.readString();
       struct.setNameIsSet(true);
-      BitSet incoming = iprot.readBitSet(6);
+      BitSet incoming = iprot.readBitSet(8);
       if (incoming.get(0)) {
         struct.value = iprot.readString();
         struct.setValueIsSet(true);
@@ -1005,20 +1199,28 @@ import org.slf4j.LoggerFactory;
         struct.setTypeIsSet(true);
       }
       if (incoming.get(2)) {
+        struct.applicationArgument = iprot.readString();
+        struct.setApplicationArgumentIsSet(true);
+      }
+      if (incoming.get(3)) {
         struct.isRequired = iprot.readBool();
         struct.setIsRequiredIsSet(true);
       }
-      if (incoming.get(3)) {
+      if (incoming.get(4)) {
         struct.requiredToAddedToCommandLine = iprot.readBool();
         struct.setRequiredToAddedToCommandLineIsSet(true);
       }
-      if (incoming.get(4)) {
+      if (incoming.get(5)) {
         struct.dataMovement = iprot.readBool();
         struct.setDataMovementIsSet(true);
       }
-      if (incoming.get(5)) {
-        struct.dataNameLocation = iprot.readString();
-        struct.setDataNameLocationIsSet(true);
+      if (incoming.get(6)) {
+        struct.location = iprot.readString();
+        struct.setLocationIsSet(true);
+      }
+      if (incoming.get(7)) {
+        struct.searchQuery = iprot.readString();
+        struct.setSearchQueryIsSet(true);
       }
     }
   }

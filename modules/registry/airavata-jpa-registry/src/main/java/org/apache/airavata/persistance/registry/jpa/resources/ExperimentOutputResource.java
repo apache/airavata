@@ -45,6 +45,25 @@ public class ExperimentOutputResource extends AbstractResource {
     private boolean dataMovement;
     private String dataNameLocation;
     private boolean requiredToCMD;
+    private String searchQuery;
+    private String appArgument;
+
+    public String getSearchQuery() {
+        return searchQuery;
+    }
+
+    public void setSearchQuery(String searchQuery) {
+        this.searchQuery = searchQuery;
+    }
+
+    public String getAppArgument() {
+        return appArgument;
+    }
+
+    public void setAppArgument(String appArgument) {
+        this.appArgument = appArgument;
+    }
+
 
     public boolean getRequiredToCMD() {
         return requiredToCMD;
@@ -152,6 +171,8 @@ public class ExperimentOutputResource extends AbstractResource {
             exOutput.setRequiredToCMD(requiredToCMD);
             exOutput.setDataMovement(dataMovement);
             exOutput.setDataNameLocation(dataNameLocation);
+            exOutput.setApplicationArgument(appArgument);
+            exOutput.setSearchQuery(searchQuery);
 
             if (existingOutput != null) {
                 existingOutput.setEx_key(experimentKey);
@@ -165,6 +186,8 @@ public class ExperimentOutputResource extends AbstractResource {
                 existingOutput.setRequiredToCMD(requiredToCMD);
                 existingOutput.setDataMovement(dataMovement);
                 existingOutput.setDataNameLocation(dataNameLocation);
+                existingOutput.setApplicationArgument(appArgument);
+                existingOutput.setSearchQuery(searchQuery);
                 exOutput = em.merge(existingOutput);
             } else {
                 em.persist(exOutput);

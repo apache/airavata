@@ -47,6 +47,10 @@ public class ApplicationOutput implements Serializable {
     private boolean dataMovement;
     @Column(name = "DATA_NAME_LOCATION")
     private String dataNameLocation;
+    @Column(name = "SEARCH_QUERY")
+    private String searchQuery;
+    @Column(name = "APP_ARGUMENT")
+    private String applicationArgument;
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "INTERFACE_ID")
@@ -122,5 +126,21 @@ public class ApplicationOutput implements Serializable {
 
     public void setDataNameLocation(String dataNameLocation) {
         this.dataNameLocation = dataNameLocation;
+    }
+
+    public String getSearchQuery() {
+        return searchQuery;
+    }
+
+    public void setSearchQuery(String searchQuery) {
+        this.searchQuery = searchQuery;
+    }
+
+    public String getApplicationArgument() {
+        return applicationArgument;
+    }
+
+    public void setApplicationArgument(String applicationArgument) {
+        this.applicationArgument = applicationArgument;
     }
 }

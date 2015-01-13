@@ -248,7 +248,9 @@ public class ThriftDataModelConversion {
                 dataObjectType.setIsRequired(expOutput.getRequired());
                 dataObjectType.setRequiredToAddedToCommandLine(expOutput.getRequiredToCMD());
                 dataObjectType.setDataMovement(expOutput.isDataMovement());
-                dataObjectType.setDataNameLocation(expOutput.getDataNameLocation());
+                dataObjectType.setLocation(expOutput.getDataNameLocation());
+                dataObjectType.setSearchQuery(expOutput.getSearchQuery());
+                dataObjectType.setApplicationArgument(expOutput.getAppArgument());
                 return dataObjectType;
             }else if (object instanceof NodeOutputResource){
                 NodeOutputResource nodeOutputResource = (NodeOutputResource)object;
@@ -260,7 +262,9 @@ public class ThriftDataModelConversion {
                 dataObjectType.setIsRequired(nodeOutputResource.getRequired());
                 dataObjectType.setRequiredToAddedToCommandLine(nodeOutputResource.getRequiredToCMD());
                 dataObjectType.setDataMovement(nodeOutputResource.isDataMovement());
-                dataObjectType.setDataNameLocation(nodeOutputResource.getDataNameLocation());
+                dataObjectType.setLocation(nodeOutputResource.getDataNameLocation());
+                dataObjectType.setSearchQuery(nodeOutputResource.getSearchQuery());
+                dataObjectType.setApplicationArgument(nodeOutputResource.getAppArgument());
                 return dataObjectType;
             }else if (object instanceof ApplicationOutputResource){
                 ApplicationOutputResource outputResource = (ApplicationOutputResource)object;
@@ -272,7 +276,9 @@ public class ThriftDataModelConversion {
                     dataObjectType.setType(DataType.valueOf(outputResource.getDataType()));
                 }
                 dataObjectType.setDataMovement(outputResource.isDataMovement());
-                dataObjectType.setDataNameLocation(outputResource.getDataNameLocation());
+                dataObjectType.setLocation(outputResource.getDataNameLocation());
+                dataObjectType.setSearchQuery(outputResource.getSearchQuery());
+                dataObjectType.setApplicationArgument(outputResource.getAppArgument());
                 return dataObjectType;
             }else {
                 return null;

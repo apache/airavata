@@ -122,7 +122,9 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
                     outputResource.setRequired(output.isIsRequired());
                     outputResource.setRequiredToCMD(output.isRequiredToAddedToCommandLine());
                     outputResource.setDataMovement(output.isDataMovement());
-                    outputResource.setDataNameLocation(output.getDataNameLocation());
+                    outputResource.setDataNameLocation(output.getLocation());
+                    outputResource.setAppArgument(output.getApplicationArgument());
+                    outputResource.setSearchQuery(output.getSearchQuery());
                     outputResource.save();
                 }
             }
@@ -255,7 +257,9 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
                     outputResource.setRequired(output.isIsRequired());
                     outputResource.setRequiredToCMD(output.isRequiredToAddedToCommandLine());
                     outputResource.setDataMovement(output.isDataMovement());
-                    outputResource.setDataNameLocation(output.getDataNameLocation());
+                    outputResource.setDataNameLocation(output.getLocation());
+                    outputResource.setAppArgument(output.getApplicationArgument());
+                    outputResource.setSearchQuery(output.getSearchQuery());
                     outputResource.save();
                 }
             }

@@ -46,6 +46,25 @@ public class NodeOutputResource extends AbstractResource {
     private boolean dataMovement;
     private String dataNameLocation;
     private boolean requiredToCMD;
+    private String searchQuery;
+    private String appArgument;
+
+    public String getSearchQuery() {
+        return searchQuery;
+    }
+
+    public void setSearchQuery(String searchQuery) {
+        this.searchQuery = searchQuery;
+    }
+
+    public String getAppArgument() {
+        return appArgument;
+    }
+
+    public void setAppArgument(String appArgument) {
+        this.appArgument = appArgument;
+    }
+
 
     public boolean getRequiredToCMD() {
         return requiredToCMD;
@@ -156,6 +175,8 @@ public class NodeOutputResource extends AbstractResource {
             nodeOutput.setRequiredToCMD(requiredToCMD);
             nodeOutput.setDataMovement(dataMovement);
             nodeOutput.setDataNameLocation(dataNameLocation);
+            nodeOutput.setApplicationArgument(appArgument);
+            nodeOutput.setSearchQuery(searchQuery);
 
             if (existingOutput != null) {
                 existingOutput.setNode(nodeDetail);
@@ -167,6 +188,8 @@ public class NodeOutputResource extends AbstractResource {
                 existingOutput.setRequiredToCMD(requiredToCMD);
                 existingOutput.setDataMovement(dataMovement);
                 existingOutput.setDataNameLocation(dataNameLocation);
+                existingOutput.setApplicationArgument(appArgument);
+                existingOutput.setSearchQuery(searchQuery);
                 nodeOutput = em.merge(existingOutput);
             } else {
                 em.persist(nodeOutput);
