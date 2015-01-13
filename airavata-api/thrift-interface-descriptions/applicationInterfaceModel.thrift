@@ -113,10 +113,12 @@ struct OutputDataObjectType {
     1: required string name,
     2: optional string value,
     3: optional DataType type,
-    4: optional bool isRequired,
-    5: optional bool requiredToAddedToCommandLine,
-    6: optional bool dataMovement,
-    7: optional string dataNameLocation
+    4: optional string applicationArgument,
+    5: optional bool isRequired,
+    6: optional bool requiredToAddedToCommandLine,
+    7: optional bool dataMovement,
+    8: optional string location,
+    9: optional string searchQuery
 }
 
 /**

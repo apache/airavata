@@ -583,7 +583,9 @@ public class AppCatalogThriftConversion {
         outputDataObjectType.setIsRequired(output.getRequired());
         outputDataObjectType.setRequiredToAddedToCommandLine(output.getRequiredToCMD());
         outputDataObjectType.setDataMovement(output.isDataMovement());
-        outputDataObjectType.setDataNameLocation(output.getDataNameLocation());
+        outputDataObjectType.setLocation(output.getDataNameLocation());
+        outputDataObjectType.setSearchQuery(output.getSearchQuery());
+        outputDataObjectType.setApplicationArgument(output.getAppArgument());
         return outputDataObjectType;
     }
 

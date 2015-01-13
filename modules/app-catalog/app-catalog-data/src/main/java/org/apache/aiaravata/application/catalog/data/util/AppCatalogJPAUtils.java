@@ -805,6 +805,8 @@ public class AppCatalogJPAUtils {
             resource.setRequiredToCMD(o.isRequiredToCMD());
             resource.setDataMovement(o.isDataMovement());
             resource.setDataNameLocation(o.getDataNameLocation());
+            resource.setSearchQuery(o.getSearchQuery());
+            resource.setAppArgument(o.getApplicationArgument());
             resource.setAppInterfaceResource((AppInterfaceResource)createAppInterfaceResource(o.getApplicationInterface()));
         }
         return resource;

@@ -326,7 +326,9 @@ public class ExperimentRegistry {
                 resource.setRequired(output.isIsRequired());
                 resource.setRequiredToCMD(output.isRequiredToAddedToCommandLine());
                 resource.setDataMovement(output.isDataMovement());
-                resource.setDataNameLocation(output.getDataNameLocation());
+                resource.setDataNameLocation(output.getLocation());
+                resource.setAppArgument(output.getApplicationArgument());
+                resource.setSearchQuery(output.getSearchQuery());
 //                resource.setMetadata(output.get());
                 resource.save();
             }
@@ -353,7 +355,9 @@ public class ExperimentRegistry {
                         resource.setRequired(output.isIsRequired());
                         resource.setRequiredToCMD(output.isRequiredToAddedToCommandLine());
                         resource.setDataMovement(output.isDataMovement());
-                        resource.setDataNameLocation(output.getDataNameLocation());
+                        resource.setDataNameLocation(output.getLocation());
+                        resource.setAppArgument(output.getApplicationArgument());
+                        resource.setSearchQuery(output.getSearchQuery());
 //                        resource.setMetadata(output.getMetaData());
                         resource.save();
                     }
@@ -380,7 +384,9 @@ public class ExperimentRegistry {
                 resource.setRequired(output.isIsRequired());
                 resource.setRequiredToCMD(output.isRequiredToAddedToCommandLine());
                 resource.setDataMovement(output.isDataMovement());
-                resource.setDataNameLocation(output.getDataNameLocation());
+                resource.setDataNameLocation(output.getLocation());
+                resource.setAppArgument(output.getApplicationArgument());
+                resource.setSearchQuery(output.getSearchQuery());
 //                resource.setMetadata(output.getMetaData());
                 resource.save();
             }
@@ -407,7 +413,9 @@ public class ExperimentRegistry {
                     resource.setRequired(output.isIsRequired());
                     resource.setRequiredToCMD(output.isRequiredToAddedToCommandLine());
                     resource.setDataMovement(output.isDataMovement());
-                    resource.setDataNameLocation(output.getDataNameLocation());
+                    resource.setDataNameLocation(output.getLocation());
+                    resource.setAppArgument(output.getApplicationArgument());
+                    resource.setSearchQuery(output.getSearchQuery());
 //                    resource.setMetadata(output.getMetaData());
                     resource.save();
                 }
@@ -434,7 +442,9 @@ public class ExperimentRegistry {
                 resource.setRequired(output.isIsRequired());
                 resource.setRequiredToCMD(output.isRequiredToAddedToCommandLine());
                 resource.setDataMovement(output.isDataMovement());
-                resource.setDataNameLocation(output.getDataNameLocation());
+                resource.setDataNameLocation(output.getLocation());
+                resource.setAppArgument(output.getApplicationArgument());
+                resource.setSearchQuery(output.getSearchQuery());
 //                resource.setMetadata(output.getMetaData());
                 resource.save();
             }
@@ -1056,7 +1066,9 @@ public class ExperimentRegistry {
                 resource.setRequired(output.isIsRequired());
                 resource.setRequiredToCMD(output.isRequiredToAddedToCommandLine());
                 resource.setDataMovement(output.isDataMovement());
-                resource.setDataNameLocation(output.getDataNameLocation());
+                resource.setDataNameLocation(output.getLocation());
+                resource.setAppArgument(output.getApplicationArgument());
+                resource.setSearchQuery(output.getSearchQuery());
 //                resource.setMetadata(output.getMetaData());
                 resource.save();
             }
@@ -1084,7 +1096,9 @@ public class ExperimentRegistry {
                     resource.setRequired(output.isIsRequired());
                     resource.setRequiredToCMD(output.isRequiredToAddedToCommandLine());
                     resource.setDataMovement(output.isDataMovement());
-                    resource.setDataNameLocation(output.getDataNameLocation());
+                    resource.setDataNameLocation(output.getLocation());
+                    resource.setAppArgument(output.getApplicationArgument());
+                    resource.setSearchQuery(output.getSearchQuery());
 //                    resource.setMetadata(output.getMetaData());
                     resource.save();
                 }

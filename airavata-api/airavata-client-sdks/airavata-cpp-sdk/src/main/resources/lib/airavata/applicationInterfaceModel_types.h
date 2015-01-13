@@ -200,22 +200,24 @@ class InputDataObjectType {
 void swap(InputDataObjectType &a, InputDataObjectType &b);
 
 typedef struct _OutputDataObjectType__isset {
-  _OutputDataObjectType__isset() : value(false), type(false), isRequired(false), requiredToAddedToCommandLine(false), dataMovement(false), dataNameLocation(false) {}
+  _OutputDataObjectType__isset() : value(false), type(false), applicationArgument(false), isRequired(false), requiredToAddedToCommandLine(false), dataMovement(false), location(false), searchQuery(false) {}
   bool value;
   bool type;
+  bool applicationArgument;
   bool isRequired;
   bool requiredToAddedToCommandLine;
   bool dataMovement;
-  bool dataNameLocation;
+  bool location;
+  bool searchQuery;
 } _OutputDataObjectType__isset;
 
 class OutputDataObjectType {
  public:
 
-  static const char* ascii_fingerprint; // = "E4852521B22B693B0FFBEBAE57AA4F8A";
-  static const uint8_t binary_fingerprint[16]; // = {0xE4,0x85,0x25,0x21,0xB2,0x2B,0x69,0x3B,0x0F,0xFB,0xEB,0xAE,0x57,0xAA,0x4F,0x8A};
+  static const char* ascii_fingerprint; // = "3259D81CA906AEEBC4D76ED47386A18B";
+  static const uint8_t binary_fingerprint[16]; // = {0x32,0x59,0xD8,0x1C,0xA9,0x06,0xAE,0xEB,0xC4,0xD7,0x6E,0xD4,0x73,0x86,0xA1,0x8B};
 
-  OutputDataObjectType() : name(), value(), type((DataType::type)0), isRequired(0), requiredToAddedToCommandLine(0), dataMovement(0), dataNameLocation() {
+  OutputDataObjectType() : name(), value(), type((DataType::type)0), applicationArgument(), isRequired(0), requiredToAddedToCommandLine(0), dataMovement(0), location(), searchQuery() {
   }
 
   virtual ~OutputDataObjectType() throw() {}
@@ -223,10 +225,12 @@ class OutputDataObjectType {
   std::string name;
   std::string value;
   DataType::type type;
+  std::string applicationArgument;
   bool isRequired;
   bool requiredToAddedToCommandLine;
   bool dataMovement;
-  std::string dataNameLocation;
+  std::string location;
+  std::string searchQuery;
 
   _OutputDataObjectType__isset __isset;
 
@@ -244,6 +248,11 @@ class OutputDataObjectType {
     __isset.type = true;
   }
 
+  void __set_applicationArgument(const std::string& val) {
+    applicationArgument = val;
+    __isset.applicationArgument = true;
+  }
+
   void __set_isRequired(const bool val) {
     isRequired = val;
     __isset.isRequired = true;
@@ -259,9 +268,14 @@ class OutputDataObjectType {
     __isset.dataMovement = true;
   }
 
-  void __set_dataNameLocation(const std::string& val) {
-    dataNameLocation = val;
-    __isset.dataNameLocation = true;
+  void __set_location(const std::string& val) {
+    location = val;
+    __isset.location = true;
+  }
+
+  void __set_searchQuery(const std::string& val) {
+    searchQuery = val;
+    __isset.searchQuery = true;
   }
 
   bool operator == (const OutputDataObjectType & rhs) const
@@ -276,6 +290,10 @@ class OutputDataObjectType {
       return false;
     else if (__isset.type && !(type == rhs.type))
       return false;
+    if (__isset.applicationArgument != rhs.__isset.applicationArgument)
+      return false;
+    else if (__isset.applicationArgument && !(applicationArgument == rhs.applicationArgument))
+      return false;
     if (__isset.isRequired != rhs.__isset.isRequired)
       return false;
     else if (__isset.isRequired && !(isRequired == rhs.isRequired))
@@ -288,9 +306,13 @@ class OutputDataObjectType {
       return false;
     else if (__isset.dataMovement && !(dataMovement == rhs.dataMovement))
       return false;
-    if (__isset.dataNameLocation != rhs.__isset.dataNameLocation)
+    if (__isset.location != rhs.__isset.location)
       return false;
-    else if (__isset.dataNameLocation && !(dataNameLocation == rhs.dataNameLocation))
+    else if (__isset.location && !(location == rhs.location))
+      return false;
+    if (__isset.searchQuery != rhs.__isset.searchQuery)
+      return false;
+    else if (__isset.searchQuery && !(searchQuery == rhs.searchQuery))
       return false;
     return true;
   }
@@ -318,8 +340,8 @@ typedef struct _ApplicationInterfaceDescription__isset {
 class ApplicationInterfaceDescription {
  public:
 
-  static const char* ascii_fingerprint; // = "29D39A862EDAA850C0484542CD39F4A3";
-  static const uint8_t binary_fingerprint[16]; // = {0x29,0xD3,0x9A,0x86,0x2E,0xDA,0xA8,0x50,0xC0,0x48,0x45,0x42,0xCD,0x39,0xF4,0xA3};
+  static const char* ascii_fingerprint; // = "C21011258B830B950ECA4A73DCB61630";
+  static const uint8_t binary_fingerprint[16]; // = {0xC2,0x10,0x11,0x25,0x8B,0x83,0x0B,0x95,0x0E,0xCA,0x4A,0x73,0xDC,0xB6,0x16,0x30};
 
   ApplicationInterfaceDescription() : applicationInterfaceId("DO_NOT_SET_AT_CLIENTS"), applicationName(), applicationDescription() {
   }

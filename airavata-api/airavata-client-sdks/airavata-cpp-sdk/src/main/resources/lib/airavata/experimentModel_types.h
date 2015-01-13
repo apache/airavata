@@ -1294,8 +1294,8 @@ typedef struct _TaskDetails__isset {
 class TaskDetails {
  public:
 
-  static const char* ascii_fingerprint; // = "89E8B92F7318CCFA137F6774D833A5B2";
-  static const uint8_t binary_fingerprint[16]; // = {0x89,0xE8,0xB9,0x2F,0x73,0x18,0xCC,0xFA,0x13,0x7F,0x67,0x74,0xD8,0x33,0xA5,0xB2};
+  static const char* ascii_fingerprint; // = "6FF0ECF6FE53D283757211BADE659108";
+  static const uint8_t binary_fingerprint[16]; // = {0x6F,0xF0,0xEC,0xF6,0xFE,0x53,0xD2,0x83,0x75,0x72,0x11,0xBA,0xDE,0x65,0x91,0x08};
 
   TaskDetails() : taskID("DO_NOT_SET_AT_CLIENTS"), creationTime(0), applicationId(), applicationVersion(), applicationDeploymentId() {
   }
@@ -1473,8 +1473,8 @@ typedef struct _WorkflowNodeDetails__isset {
 class WorkflowNodeDetails {
  public:
 
-  static const char* ascii_fingerprint; // = "848AB686F7E85BB9EA788751E264556B";
-  static const uint8_t binary_fingerprint[16]; // = {0x84,0x8A,0xB6,0x86,0xF7,0xE8,0x5B,0xB9,0xEA,0x78,0x87,0x51,0xE2,0x64,0x55,0x6B};
+  static const char* ascii_fingerprint; // = "D2AF8FCCA5B9C08220AE508BA2D7FB06";
+  static const uint8_t binary_fingerprint[16]; // = {0xD2,0xAF,0x8F,0xCC,0xA5,0xB9,0xC0,0x82,0x20,0xAE,0x50,0x8B,0xA2,0xD7,0xFB,0x06};
 
   WorkflowNodeDetails() : nodeInstanceId("DO_NOT_SET_AT_CLIENTS"), creationTime(0), nodeName("SINGLE_APP_NODE"), executionUnit((ExecutionUnit::type)1), executionUnitData() {
     executionUnit = (ExecutionUnit::type)1;
@@ -1712,8 +1712,8 @@ typedef struct _Experiment__isset {
 class Experiment {
  public:
 
-  static const char* ascii_fingerprint; // = "38B6FB610EBD53743F28A960C25CCEC5";
-  static const uint8_t binary_fingerprint[16]; // = {0x38,0xB6,0xFB,0x61,0x0E,0xBD,0x53,0x74,0x3F,0x28,0xA9,0x60,0xC2,0x5C,0xCE,0xC5};
+  static const char* ascii_fingerprint; // = "4CE20099975A60F2FE0D6D1139972D1A";
+  static const uint8_t binary_fingerprint[16]; // = {0x4C,0xE2,0x00,0x99,0x97,0x5A,0x60,0xF2,0xFE,0x0D,0x6D,0x11,0x39,0x97,0x2D,0x1A};
 
   Experiment() : experimentID("DO_NOT_SET_AT_CLIENTS"), projectID("DEFAULT"), creationTime(0), userName(), name(), description(), applicationId(), applicationVersion(), workflowTemplateId(), workflowTemplateVersion(), workflowExecutionInstanceId() {
   }

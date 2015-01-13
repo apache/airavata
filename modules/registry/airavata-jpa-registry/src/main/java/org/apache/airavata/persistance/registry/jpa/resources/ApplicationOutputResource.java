@@ -45,6 +45,24 @@ public class ApplicationOutputResource extends AbstractResource {
     private boolean dataMovement;
     private String dataNameLocation;
     private boolean requiredToCMD;
+    private String searchQuery;
+    private String appArgument;
+
+    public String getSearchQuery() {
+        return searchQuery;
+    }
+
+    public void setSearchQuery(String searchQuery) {
+        this.searchQuery = searchQuery;
+    }
+
+    public String getAppArgument() {
+        return appArgument;
+    }
+
+    public void setAppArgument(String appArgument) {
+        this.appArgument = appArgument;
+    }
 
     public boolean isRequired() {
         return isRequired;
@@ -154,6 +172,8 @@ public class ApplicationOutputResource extends AbstractResource {
             applicationOutput.setAddedToCmd(requiredToCMD);
             applicationOutput.setDataMovement(dataMovement);
             applicationOutput.setDataNameLocation(dataNameLocation);
+            applicationOutput.setSearchQuery(searchQuery);
+            applicationOutput.setApplicationArgument(appArgument);
             if (value != null){
                 applicationOutput.setValue(value.toCharArray());
             }
@@ -167,6 +187,8 @@ public class ApplicationOutputResource extends AbstractResource {
                 existingOutput.setAddedToCmd(requiredToCMD);
                 existingOutput.setDataMovement(dataMovement);
                 existingOutput.setDataNameLocation(dataNameLocation);
+                existingOutput.setSearchQuery(searchQuery);
+                existingOutput.setApplicationArgument(appArgument);
                 if (value != null){
                     existingOutput.setValue(value.toCharArray());
                 }

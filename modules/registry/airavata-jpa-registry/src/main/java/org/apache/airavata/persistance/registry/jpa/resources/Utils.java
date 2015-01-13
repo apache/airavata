@@ -546,6 +546,8 @@ public class Utils {
             eOutputResource.setRequiredToCMD(o.isRequiredToCMD());
             eOutputResource.setDataMovement(o.isDataMovement());
             eOutputResource.setDataNameLocation(o.getDataNameLocation());
+            eOutputResource.setSearchQuery(o.getSearchQuery());
+            eOutputResource.setAppArgument(o.getApplicationArgument());
         }
         return eOutputResource;
     }
@@ -642,6 +644,8 @@ public class Utils {
             outputResource.setRequiredToCMD(o.isAddedToCmd());
             outputResource.setDataMovement(o.isDataMovement());
             outputResource.setDataNameLocation(o.getDataNameLocation());
+            outputResource.setSearchQuery(o.getSearchQuery());
+            outputResource.setAppArgument(o.getApplicationArgument());
         }
         return outputResource;
     }
@@ -678,6 +682,8 @@ public class Utils {
             outputResource.setRequiredToCMD(o.isRequiredToCMD());
             outputResource.setDataMovement(o.isDataMovement());
             outputResource.setDataNameLocation(o.getDataNameLocation());
+            outputResource.setSearchQuery(o.getSearchQuery());
+            outputResource.setAppArgument(o.getApplicationArgument());
         }
 
         return outputResource;
