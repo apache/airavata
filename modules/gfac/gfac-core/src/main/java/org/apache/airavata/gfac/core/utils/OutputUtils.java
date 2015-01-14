@@ -35,10 +35,10 @@ public class OutputUtils {
     private static String regexPattern = "\\s*=\\s*(.*)\\r?\\n";
 
 	public static void fillOutputFromStdout(Map<String, Object> output, String stdout, String stderr, List<OutputDataObjectType> outputArray) throws Exception {
-
-		if (stdout == null || stdout.equals("")) {
-			throw new GFacHandlerException("Standard output is empty.");
-		}
+        // this is no longer correct
+//		if (stdout == null || stdout.equals("")) {
+//			throw new GFacHandlerException("Standard output is empty.");
+//		}
 
 		Set<String> keys = output.keySet();
         OutputDataObjectType actual = null;
