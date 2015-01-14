@@ -278,7 +278,7 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
                     }
                 } else {
                     OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr, outputArray);
-                    break;
+//                    break;
                 }
             }
             if (outputArray == null || outputArray.isEmpty()) {
