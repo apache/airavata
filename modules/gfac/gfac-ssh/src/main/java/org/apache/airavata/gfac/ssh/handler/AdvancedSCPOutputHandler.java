@@ -155,6 +155,10 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                     dataObjectType.setValue(outputPath + File.separatorChar + fileName);
                     dataObjectType.setName(paramName);
                     dataObjectType.setType(DataType.URI);
+                    dataObjectType.setIsRequired(outputDataObjectType.isIsRequired());
+                    dataObjectType.setRequiredToAddedToCommandLine(outputDataObjectType.isRequiredToAddedToCommandLine());
+                    dataObjectType.setApplicationArgument(outputDataObjectType.getApplicationArgument());
+                    dataObjectType.setSearchQuery(outputDataObjectType.getSearchQuery());
                     outputArray.add(dataObjectType);
                 }else if (outputDataObjectType.getType() == DataType.STDOUT) {
                     pbsCluster.scpTo(outputPath, standardOutput);
@@ -163,8 +167,10 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                     dataObjectType.setValue(outputPath + File.separatorChar + fileName);
                     dataObjectType.setName(paramName);
                     dataObjectType.setType(DataType.STDOUT);
-                    dataObjectType.setIsRequired(true);
-                    dataObjectType.setRequiredToAddedToCommandLine(true);
+                    dataObjectType.setIsRequired(outputDataObjectType.isIsRequired());
+                    dataObjectType.setRequiredToAddedToCommandLine(outputDataObjectType.isRequiredToAddedToCommandLine());
+                    dataObjectType.setApplicationArgument(outputDataObjectType.getApplicationArgument());
+                    dataObjectType.setSearchQuery(outputDataObjectType.getSearchQuery());
                     outputArray.add(dataObjectType);
                 }else if (outputDataObjectType.getType() == DataType.STDERR) {
                     pbsCluster.scpTo(outputPath, standardError);
@@ -173,8 +179,10 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                     dataObjectType.setValue(outputPath + File.separatorChar + fileName);
                     dataObjectType.setName(paramName);
                     dataObjectType.setType(DataType.STDERR);
-                    dataObjectType.setIsRequired(true);
-                    dataObjectType.setRequiredToAddedToCommandLine(true);
+                    dataObjectType.setIsRequired(outputDataObjectType.isIsRequired());
+                    dataObjectType.setRequiredToAddedToCommandLine(outputDataObjectType.isRequiredToAddedToCommandLine());
+                    dataObjectType.setApplicationArgument(outputDataObjectType.getApplicationArgument());
+                    dataObjectType.setSearchQuery(outputDataObjectType.getSearchQuery());
                     outputArray.add(dataObjectType);
                 }
              }
