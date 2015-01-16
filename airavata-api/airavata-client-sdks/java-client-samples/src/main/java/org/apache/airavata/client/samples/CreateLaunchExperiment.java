@@ -57,10 +57,10 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_0018dc21-9359-4063-9672-6ad15a24294d";
+    private static String echoAppId = "Echo_New_65e3939d-3d0e-4308-af8d-d33e629395d3";
     private static String mpiAppId = "HelloMPI_da45305f-5d90-4a18-8716-8dd54c3b2376";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
-    private static String amberAppId = "Amber_49b16f6f-93ab-4885-9971-6ab2ab5eb3d3";
+    private static String amberAppId = "Amber_Sander_a43db05d-1d38-4c3b-930f-723f84acd67a";
     private static String gromacsAppId = "GROMACS_05622038-9edd-4cb1-824e-0b7cb993364b";
     private static String espressoAppId = "ESPRESSO_10cc2820-5d0b-4c63-9546-8a8b595593c1";
     private static String lammpsAppId = "LAMMPS_10893eb5-3840-438c-8446-d26c7ecb001f";
@@ -82,8 +82,8 @@ public class CreateLaunchExperiment {
     public static void main(String[] args) throws Exception {
                 airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
                 System.out.println("API version is " + airavataClient.getAPIVersion());
-                registerApplications(); // run this only the first time
-//                createAndLaunchExp();
+//                registerApplications(); // run this only the first time
+                createAndLaunchExp();
     }
     
     private static String fsdResourceId;
@@ -94,7 +94,7 @@ public class CreateLaunchExperiment {
         try {
             for (int i = 0; i < 1; i++) {
 //                final String expId = createExperimentForSSHHost(airavata);
-                final String expId = createEchoExperimentForFSD(airavataClient);
+//                final String expId = createEchoExperimentForFSD(airavataClient);
 //                final String expId = createMPIExperimentForFSD(airavataClient);
 //                final String expId = createEchoExperimentForStampede(airavataClient);
 //                final String expId = createEchoExperimentForTrestles(airavataClient);
@@ -104,15 +104,16 @@ public class CreateLaunchExperiment {
 //                final String expId = createExperimentForBR2Amber(airavataClient);
 //                final String expId = createExperimentWRFStampede(airavataClient);
 //                final String expId = createExperimentForStampedeAmber(airavataClient);
-//                final String expId = createExperimentForTrestlesAmber(airavataClient);
+                final String expId = createExperimentForTrestlesAmber(airavataClient);
 //                final String expId = createExperimentGROMACSStampede(airavataClient);
 //                final String expId = createExperimentESPRESSOStampede(airavataClient);
 //                final String expId = createExperimentLAMMPSStampede(airavataClient);
 //                final String expId = createExperimentNWCHEMStampede(airavataClient);
 //                final String expId = createExperimentTRINITYStampede(airavataClient);
 //                final String expId = createExperimentAUTODOCKStampede(airavataClient); // this is not working , we need to register AutoDock app on stampede
-                System.out.println("Experiment ID : " + expId);
+            	System.out.println("Experiment ID : " + expId);
 //                updateExperiment(airavata, expId);
+                
                 launchExperiment(airavataClient, expId);
             }
         } catch (Exception e) {
@@ -170,24 +171,24 @@ public class CreateLaunchExperiment {
         try {
             List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
             InputDataObjectType input = new InputDataObjectType();
-            input.setName("Input_to_Echo");
+            input.setName("Echo_Input");
             input.setType(DataType.STRING);
-            input.setValue("Echoed_Output=Hello World");
+            input.setValue("Hello World");
             exInputs.add(input);
 
             List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
             OutputDataObjectType output = new OutputDataObjectType();
-            output.setName("Echoed_Output");
-            output.setType(DataType.STRING);
+            output.setName("STDOUT");
+            output.setType(DataType.STDOUT);
             output.setValue("");
             exOut.add(output);
             
-            OutputDataObjectType output2 = new OutputDataObjectType();
-            output2.setName("Echoed_Output2");
-            output2.setType(DataType.URI);
-            output2.setValue("file:///tmp/test.txt");
-            exOut.add(output2);
-            
+//            OutputDataObjectType output2 = new OutputDataObjectType();
+//            output2.setName("Echoed_Output2");
+//            output2.setType(DataType.URI);
+//            output2.setValue("file:///tmp/test.txt");
+//            exOut.add(output2);
+//            
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment("default", "admin", "echoExperiment", "SimpleEcho2", echoAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
@@ -1473,47 +1474,72 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentForTrestlesAmber(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
-            InputDataObjectType input = new InputDataObjectType();
-            input.setName("Heat_Restart_File");
-            input.setType(DataType.URI);
-            input.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AMBER_FILES/02_Heat.rst");
-            exInputs.add(input);
+        	
+			List<InputDataObjectType> exInputs = client.getApplicationInputs(amberAppId);
+			for (InputDataObjectType inputDataObjectType : exInputs) {
+				if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
+					inputDataObjectType.setValue("/Users/raminder/Documents/Sample/Amber/02_Heat.rst");
+				} else if (inputDataObjectType.getName().equalsIgnoreCase("Production_Control_File")) {
+					inputDataObjectType.setValue("/Users/raminder/Documents/Sample/Amber/03_Prod.in");
+				} else if (inputDataObjectType.getName().equalsIgnoreCase("Parameter_Topology_File")) {
+					inputDataObjectType.setValue("/Users/raminder/Documents/Sample/Amber/prmtop");
+				}
 
-            InputDataObjectType input1 = new InputDataObjectType();
-            input1.setName("Production_Control_File");
-            input1.setType(DataType.URI);
-            input1.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AMBER_FILES/03_Prod.in");
-            exInputs.add(input1);
+			}
+			List<OutputDataObjectType> exOut = client.getApplicationOutputs(amberAppId);
+//			List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+//			InputDataObjectType input = new InputDataObjectType();
+//			input.setName("Heat_Restart_File");
+//			input.setType(DataType.URI);
+//			input.setValue("/Users/raminder/Documents/Sample/Amber/02_Heat.rst");
+//			exInputs.add(input);
+//            InputDataObjectType input1 = new InputDataObjectType();
+//            input1.setName("Production_Control_File");
+//            input1.setType(DataType.URI);
+//            input1.setValue("/Users/raminder/Documents/Sample/Amber/03_Prod.in");
+//            exInputs.add(input1);
+//
+//            InputDataObjectType input2 = new InputDataObjectType();
+//            input2.setName("Parameter_Topology_File");
+//            input2.setType(DataType.URI);
+//            input2.setValue("/Users/raminder/Documents/Sample/Amber/prmtop");
+//            exInputs.add(input2);
 
-            InputDataObjectType input2 = new InputDataObjectType();
-            input2.setName("Parameter_Topology_File");
-            input2.setType(DataType.URI);
-            input2.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AMBER_FILES/prmtop");
-            exInputs.add(input2);
-
-            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
-            OutputDataObjectType output = new OutputDataObjectType();
-            output.setName("AMBER_Execution_Summary");
-            output.setType(DataType.URI);
-            output.setValue("");
-            exOut.add(output);
-
-            OutputDataObjectType output1 = new OutputDataObjectType();
-            output1.setName("AMBER_Execution_log");
-            output1.setType(DataType.URI);
-            output1.setValue("");
-            exOut.add(output1);
-            OutputDataObjectType output2 = new OutputDataObjectType();
-            output2.setName("AMBER_Trajectory_file");
-            output2.setType(DataType.URI);
-            output2.setValue("");
-            exOut.add(output2);
-            OutputDataObjectType output3 = new OutputDataObjectType();
-            output3.setName("AMBER_Restart_file");
-            output3.setType(DataType.URI);
-            output3.setValue("");
-            exOut.add(output3);
+//            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+//            OutputDataObjectType output = new OutputDataObjectType();
+//            output.setName("AMBER_Execution_Summary");
+//            output.setType(DataType.URI);
+//            output.setValue("03_Prod.info");
+//            exOut.add(output);
+//
+//            OutputDataObjectType output1 = new OutputDataObjectType();
+//            output1.setName("AMBER_Execution_log");
+//            output1.setType(DataType.URI);
+//            output1.setValue("03_Prod.out");
+//            exOut.add(output1);
+//            OutputDataObjectType output2 = new OutputDataObjectType();
+//            output2.setName("AMBER_Trajectory_file");
+//            output2.setType(DataType.URI);
+//            output2.setValue("03_Prod.mdcrd");
+//            exOut.add(output2);
+//            OutputDataObjectType output3 = new OutputDataObjectType();
+//            output3.setName("AMBER_Restart_file");
+//            output3.setType(DataType.URI);
+//            output3.setValue("03_Prod.rst");
+//            exOut.add(output3);
+//            
+//            OutputDataObjectType output4 = new OutputDataObjectType();
+//            output4.setName("STDERR");
+//            output4.setType(DataType.STDERR);
+//            output4.setValue("");
+//            exOut.add(output4);
+//            
+//            OutputDataObjectType output5 = new OutputDataObjectType();
+//            output5.setName("STDOUT");
+//            output5.setType(DataType.STDOUT);
+//            output5.setValue("");
+//            exOut.add(output5);
+            
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
             String projectId = client.createProject(project);
