@@ -381,7 +381,7 @@ public class BetterGfacImpl implements GFac,Watcher {
         }
 
         for (OutputDataObjectType objectType : taskOutputs){
-            if (objectType.isRequiredToAddedToCommandLine()){
+            if (objectType.getType() == DataType.URI && objectType.getValue() != null){
               objectType.setValue(jobExecutionContext.getOutputDir() + File.separator + objectType.getValue());
             }
             if (objectType.getType() == DataType.STDOUT){
