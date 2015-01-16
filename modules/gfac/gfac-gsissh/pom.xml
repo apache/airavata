@@ -35,6 +35,11 @@
             <artifactId>airavata-gfac-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-gfac-ssh</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- Credential Store -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
