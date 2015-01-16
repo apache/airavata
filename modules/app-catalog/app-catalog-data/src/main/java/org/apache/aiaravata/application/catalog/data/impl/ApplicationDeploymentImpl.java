@@ -92,7 +92,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             List<String> postJobCommands = deploymentDescription.getPostJobCommands();
             if (postJobCommands != null && !postJobCommands.isEmpty()){
                 for (String cmd : postJobCommands){
-                    PreJobCommandResource cmdResource = new PreJobCommandResource();
+                    PostJobCommandResource cmdResource = new PostJobCommandResource();
                     cmdResource.setAppDeploymentId(deploymentDescription.getAppDeploymentId());
                     cmdResource.setCommand(cmd);
                     cmdResource.save();
@@ -211,9 +211,9 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
 
             PostJobCommandResource postJobCommandResource = new PostJobCommandResource();
             ids = new HashMap<String, String>();
-            ids.put(AbstractResource.PreJobCommandConstants.DEPLOYMENT_ID, deploymentId);
+            ids.put(AbstractResource.PostJobCommandConstants.DEPLOYMENT_ID, deploymentId);
             postJobCommandResource.remove(ids);
-            List<String> postJobCommands = updatedDeployment.getPreJobCommands();
+            List<String> postJobCommands = updatedDeployment.getPostJobCommands();
             if (postJobCommands != null && !postJobCommands.isEmpty()){
                 for (String cmd : postJobCommands){
                     ids = new HashMap<String, String>();
