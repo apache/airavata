@@ -44,7 +44,7 @@ public class HandleOutputs {
 							outputFile = output.getLocation()+ fileName;
 						}
 						cluster.scpFrom(outputFile, outputDataDir);
-						String localFile = outputDataDir + File.separator + output.getValue();
+						String localFile = outputDataDir + File.separator + fileName;
 						jobExecutionContext.addOutputFile(localFile);
 						output.setValue(localFile);
 						outputArray.add(output);
@@ -56,6 +56,7 @@ public class HandleOutputs {
 					cluster.scpFrom(downloadFile, outputDataDir);
 					String localFile = outputDataDir + File.separator + fileName;
 					jobExecutionContext.addOutputFile(localFile);
+					jobExecutionContext.setStandardOutput(localFile);
 					output.setValue(localFile);
 					outputArray.add(output);
 
@@ -65,6 +66,7 @@ public class HandleOutputs {
 					cluster.scpFrom(downloadFile, outputDataDir);
 					String localFile = outputDataDir + File.separator + fileName;
 					jobExecutionContext.addOutputFile(localFile);
+					jobExecutionContext.setStandardError(localFile);
 					output.setValue(localFile);
 					outputArray.add(output);
 
@@ -86,6 +88,7 @@ public class HandleOutputs {
 		} catch (Exception e) {
 			throw new GFacHandlerException(e);
 		}
+		jobExecutionContext.getTaskData().setApplicationOutputs(outputArray);
 		return outputArray;
 	}
 }
