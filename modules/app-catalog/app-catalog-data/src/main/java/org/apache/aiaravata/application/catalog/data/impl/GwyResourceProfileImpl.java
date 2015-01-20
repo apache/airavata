@@ -221,4 +221,25 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
             throw new AppCatalogException(e);
         }
     }
+
+    @Override
+    public List<GatewayResourceProfile> getAllGatewayProfiles() throws AppCatalogException {
+        try {
+            List<GatewayResourceProfile> gatewayResourceProfileList = new ArrayList<GatewayResourceProfile>();
+            GatewayProfileResource profileResource = new GatewayProfileResource();
+            List<Resource> resourceList = profileResource.getAll();
+            if (resourceList != null && !resourceList.isEmpty()){
+                for (Resource resource : resourceList){
+                    GatewayProfileResource gatewayProfileResource = (GatewayProfileResource)resource;
+                    List<ComputeResourcePreference> computeResourcePreferences = getAllComputeResourcePreferences(gatewayProfileResource.getGatewayID());
+                    GatewayResourceProfile gatewayResourceProfile = AppCatalogThriftConversion.getGatewayResourceProfile(gatewayProfileResource, computeResourcePreferences);
+                    gatewayResourceProfileList.add(gatewayResourceProfile);
+                }
+            }
+            return gatewayResourceProfileList;
+        }catch (Exception e) {
+            logger.error("Error while retrieving gateway ids...", e);
+            throw new AppCatalogException(e);
+        }
+    }
 }

@@ -169,7 +169,36 @@ public class GatewayProfileResource extends AbstractResource {
 
     @Override
     public List<Resource> getAll() throws AppCatalogException {
-        return null;
+        List<Resource> resourceList = new ArrayList<Resource>();
+        EntityManager em = null;
+        try {
+            em = AppCatalogJPAUtils.getEntityManager();
+            em.getTransaction().begin();
+            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(GATEWAY_PROFILE);
+            Query q = generator.selectQuery(em);
+            List results = q.getResultList();
+            if (results.size() != 0) {
+                for (Object result : results) {
+                    GatewayProfile gatewayProfile = (GatewayProfile) result;
+                    GatewayProfileResource gatewayProfileResource =
+                            (GatewayProfileResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.GATEWAY_PROFILE, gatewayProfile);
+                    resourceList.add(gatewayProfileResource);
+                }
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new AppCatalogException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+        return resourceList;
     }
 
     @Override

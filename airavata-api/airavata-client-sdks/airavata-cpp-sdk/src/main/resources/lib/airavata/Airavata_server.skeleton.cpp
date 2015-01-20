@@ -494,6 +494,11 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getAllGatewayComputeResourcePreferences\n");
   }
 
+  void getAllGatewayComputeResources(std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile> & _return) {
+    // Your implementation goes here
+    printf("getAllGatewayComputeResources\n");
+  }
+
   bool updateGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& computeResourcePreference) {
     // Your implementation goes here
     printf("updateGatewayComputeResourcePreference\n");
