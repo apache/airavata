@@ -1542,6 +1542,16 @@ service Airavata {
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
 
+
+  /**
+  * Fetch all gateway profiles registered
+  **/
+  list<gatewayResourceProfileModel.GatewayResourceProfile>
+              getAllGatewayComputeResources()
+    	throws (1: airavataErrors.InvalidRequestException ire,
+              2: airavataErrors.AiravataClientException ace,
+              3: airavataErrors.AiravataSystemException ase)
+
   /**
    * Update a Compute Resource Preference to a registered gateway profile.
    *

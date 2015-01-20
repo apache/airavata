@@ -2585,6 +2585,20 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    @Override
+    public List<GatewayResourceProfile> getAllGatewayComputeResources() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
+            return gatewayProfile.getAllGatewayProfiles();
+        } catch (AppCatalogException e) {
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while reading retrieving all gateway profiles. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
     /**
      * Update a Compute Resource Preference to a registered gateway profile.
      *
