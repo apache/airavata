@@ -509,7 +509,6 @@
 			<modules>
 				<module>modules/configuration</module>
 				<module>airavata-api</module>
-				<module>modules/airavata-client</module>
 				<module>modules/commons</module>
 				<module>modules/gfac</module>
 				<module>modules/workflow-model</module>
@@ -601,7 +600,6 @@
 				<module>modules/ws-messenger</module>
 				<module>modules/workflow-model</module>
 				<module>modules/registry</module>
-				<module>modules/airavata-client</module>
 				<module>modules/security</module>
 				<module>modules/credential-store-service</module>
 				<module>modules/orchestrator</module>
