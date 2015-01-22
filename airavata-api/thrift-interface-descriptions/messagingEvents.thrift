@@ -38,7 +38,9 @@ enum MessageType {
     EXPERIMENT,
     TASK,
     WORKFLOWNODE,
-    JOB
+    JOB,
+    EXPERIMENT_OUTPUT,
+    OUTPUT_PARSED
 }
 
 struct ExperimentStatusChangeEvent {
@@ -118,7 +120,18 @@ struct Message {
     5: optional MessageLevel messageLevel;
 }
 
+struct ExperimentOutputCreatedEvent {
+    1: required string experimentId;
+    2: required string filename;
+    3: required string filepath;
 
+}
+
+struct ExperimentOutputParsedEvent {
+    1: required string experimentId;
+    2: required string documentID;
+    3: required string status;
+}
 
 
 
