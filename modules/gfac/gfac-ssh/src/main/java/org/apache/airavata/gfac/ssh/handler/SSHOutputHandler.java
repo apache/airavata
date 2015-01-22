@@ -20,6 +20,8 @@
 */
 package org.apache.airavata.gfac.ssh.handler;
 
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
@@ -30,8 +32,11 @@ import org.apache.airavata.gfac.core.utils.OutputUtils;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
 import org.apache.airavata.gfac.ssh.util.GFACSSHUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
+import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.messaging.event.ExperimentOutputCreatedEvent;
+import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
@@ -221,6 +226,22 @@ public class SSHOutputHandler extends AbstractHandler {
             detail.setTransferDescription(outputDataDir);
             registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
             registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
+
+            //Sending the message to the Datacat server
+            if (ServerSettings.isRabbitMqPublishEnabled()) {
+                String gatewayId = ServerSettings.getDefaultUserGateway();
+                for (String outputFileName : jobExecutionContext.getOutputFiles()) {
+                    String outputPath = jobExecutionContext.getOutputDir();
+                    ExperimentOutputCreatedEvent event = new ExperimentOutputCreatedEvent(
+                            jobExecutionContext.getExperimentID(),
+                            outputFileName, outputPath + File.separatorChar + outputFileName);
+                    String messageId = AiravataUtils.getId("EXPERIMENT");
+                    MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT_OUTPUT
+                            , messageId, gatewayId);
+                    messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+                    datacatPublisher.publish(messageContext);
+                }
+            }
 
         } catch (Exception e) {
             try {

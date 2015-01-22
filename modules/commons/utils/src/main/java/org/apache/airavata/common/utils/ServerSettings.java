@@ -55,6 +55,8 @@ public class ServerSettings extends ApplicationSettings {
     private static final String ACTIVITY_LISTENERS = "activity.listeners";
     public static final String PUBLISH_RABBITMQ = "publish.rabbitmq";
 
+    public static final String DATACAT_EXCHANGE = "datacat.exchange";
+
     private static boolean stopAllThreads = false;
 
     public static String getDefaultUser() throws ApplicationSettingsException {
@@ -63,6 +65,9 @@ public class ServerSettings extends ApplicationSettings {
 
     public static String getDefaultUserPassword() throws ApplicationSettingsException {
         return getSetting(DEFAULT_USER_PASSWORD);
+    }
+    public static String getDatacatExchange() throws ApplicationSettingsException {
+        return getSetting(DATACAT_EXCHANGE);
     }
 
     public static String getDefaultUserGateway() throws ApplicationSettingsException {

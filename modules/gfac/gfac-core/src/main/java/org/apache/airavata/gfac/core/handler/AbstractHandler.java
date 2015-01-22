@@ -23,17 +23,28 @@ package org.apache.airavata.gfac.core.handler;
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
+import org.apache.airavata.messaging.core.impl.RabbitMQDatacatPublisher;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractHandler implements GFacHandler {
-	protected Registry registry = null;
+    private static final Logger log = LoggerFactory.getLogger(AbstractHandler.class);
+
+    protected Registry registry = null;
 
     protected MonitorPublisher publisher = null;
+    protected RabbitMQDatacatPublisher datacatPublisher;
 
     protected AbstractHandler() {
         publisher = BetterGfacImpl.getMonitorPublisher();   // This will not be null because this will be initialize in GFacIml
+        try {
+            datacatPublisher = new RabbitMQDatacatPublisher();
+        } catch (Exception e) {
+            log.error(e.toString());
+        }
     }
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
