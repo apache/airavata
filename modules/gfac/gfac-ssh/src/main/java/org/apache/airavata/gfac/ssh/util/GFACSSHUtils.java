@@ -83,7 +83,7 @@ public class GFACSSHUtils {
                 if (securityProtocol == SecurityProtocol.GSI || securityProtocol == SecurityProtocol.SSH_KEYS) {
                     SSHSecurityContext sshSecurityContext = new SSHSecurityContext();
                     String credentialStoreToken = jobExecutionContext.getCredentialStoreToken(); // this is set by the framework
-                    RequestData requestData = new RequestData(ServerSettings.getDefaultUserGateway());
+                    RequestData requestData = new RequestData(jobExecutionContext.getGatewayID());
                     requestData.setTokenId(credentialStoreToken);
 
                     ServerInfo serverInfo = new ServerInfo(null, jobExecutionContext.getHostName());
