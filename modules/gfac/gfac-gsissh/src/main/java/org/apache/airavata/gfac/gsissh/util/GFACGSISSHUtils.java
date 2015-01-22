@@ -74,7 +74,7 @@ public class GFACGSISSHUtils {
                 logger.error("This is a wrong method to invoke to non ssh host types,please check your gfac-config.xml");
             } else if (jobProtocol == JobSubmissionProtocol.SSH && sshJobSubmission.getSecurityProtocol() == SecurityProtocol.GSI) {
                 String credentialStoreToken = jobExecutionContext.getCredentialStoreToken(); // this is set by the framework
-                RequestData requestData = new RequestData(ServerSettings.getDefaultUserGateway());
+                RequestData requestData = new RequestData(jobExecutionContext.getGatewayID());
                 requestData.setTokenId(credentialStoreToken);
                 PBSCluster pbsCluster = null;
                 GSISecurityContext context = null;
@@ -84,7 +84,7 @@ public class GFACGSISSHUtils {
                 if (credentialReader != null) {
                     CertificateCredential credential = null;
                     try {
-                        credential = (CertificateCredential) credentialReader.getCredential(ServerSettings.getDefaultUserGateway(), credentialStoreToken);
+                        credential = (CertificateCredential) credentialReader.getCredential(jobExecutionContext.getGatewayID(), credentialStoreToken);
                         requestData.setMyProxyUserName(credential.getCommunityUser().getUserName());
                     } catch (Exception e) {
                         logger.error(e.getLocalizedMessage());
