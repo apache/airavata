@@ -23,9 +23,11 @@ package org.apache.airavata.orchestrator.core.impl;
 
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.client.GFACInstance;
 import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.cpi.GFac;
+import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
@@ -57,20 +59,21 @@ public class GFACEmbeddedJobSubmitter implements JobSubmitter {
     }
 
 
-    public boolean submit(String experimentID, String taskID) throws OrchestratorException {
-        try {
-            return gfac.submitJob(experimentID, taskID, ServerSettings.getDefaultUserGateway());
-        } catch (Exception e) {
-            String error = "Error launching the job : " + experimentID;
-            logger.error(error);
-            throw new OrchestratorException(error);
-        }
-    }
-
-
     public boolean submit(String experimentID, String taskID,String tokenId) throws OrchestratorException {
         try {
-            return submit(experimentID,taskID);
+        	 String gatewayId = null;
+        	 CredentialReader credentialReader = GFacUtils.getCredentialReader();
+             if (credentialReader != null) {
+                 try {
+                	 gatewayId = credentialReader.getGatewayID(tokenId);
+                 } catch (Exception e) {
+                     logger.error(e.getLocalizedMessage());
+                 }
+             }
+            if(gatewayId == null || gatewayId.isEmpty()){
+             gatewayId = ServerSettings.getDefaultUserGateway();
+            }
+          return gfac.submitJob(experimentID, taskID, gatewayId);
         } catch (Exception e) {
             String error = "Error launching the job : " + experimentID;
             logger.error(error);

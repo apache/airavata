@@ -97,5 +97,16 @@ public interface CredentialReader {
      *             If an error occurred while retrieving data.
      */
     void removeCredentials(String gatewayName, String tokenId) throws CredentialStoreException;
+    
+    /**
+     * Retrieves gatewayID from the credential store.
+     * 
+     * @param tokenId
+     *            The token id associated with the credential
+     * @return The Credential object associated with the token.
+     * @throws CredentialStoreException
+     *             If an error occurred while retrieving a credential.
+     */
+    String getGatewayID(String tokenId) throws CredentialStoreException;
 
 }

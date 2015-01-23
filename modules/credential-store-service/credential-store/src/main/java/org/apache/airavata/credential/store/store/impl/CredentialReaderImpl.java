@@ -149,4 +149,14 @@ public class CredentialReaderImpl implements CredentialReader, Serializable {
 
     }
 
+	@Override
+	public String getGatewayID(String tokenId) throws CredentialStoreException {
+		 Connection connection = getConnection();
+	        try {
+	            return this.credentialsDAO.getGatewayID(tokenId, connection);
+	        } finally {
+	            DBUtil.cleanup(connection);
+	        }
+	}
+
 }
