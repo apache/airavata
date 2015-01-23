@@ -29,6 +29,7 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.client.GFACInstance;
 import org.apache.airavata.gfac.client.GFacClientFactory;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
@@ -99,8 +100,19 @@ public class GFACServiceJobSubmitter implements JobSubmitter, Watcher {
 				if (zk.exists(gfacServer + File.separator + pickedChild, false) != null) {
 					// before submitting the job we check again the state of the node
 					if (GFacUtils.createExperimentEntry(experimentID, taskID, zk, experimentNode, pickedChild, tokenId)) {
-						// FIXME:: The GatewayID is temporarily read from properties file. It should instead be inferred from the token.
-						return gfacClient.submitJob(experimentID, taskID, ServerSettings.getDefaultUserGateway());
+						 String gatewayId = null;
+                    	 CredentialReader credentialReader = GFacUtils.getCredentialReader();
+                         if (credentialReader != null) {
+                             try {
+                            	 gatewayId = credentialReader.getGatewayID(tokenId);
+                             } catch (Exception e) {
+                                 logger.error(e.getLocalizedMessage());
+                             }
+                         }
+                        if(gatewayId == null || gatewayId.isEmpty()){
+                         gatewayId = ServerSettings.getDefaultUserGateway();
+                        }
+						return gfacClient.submitJob(experimentID, taskID, gatewayId);
 					}
 				}
 			}

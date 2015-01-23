@@ -44,16 +44,6 @@ public interface JobSubmitter {
 
 
     /**
-     * This can be used when user doesn't want to run in a threaded pull mode
-     * just get the request data and do the submission
-     * @param experimentID experimentID cannot be null
-     * @param taskID taskID cannot be null
-     * @return boolean return the submit status
-     */
-    boolean submit(String experimentID, String taskID) throws OrchestratorException;
-
-
-    /**
      * This is similar to submit with expId and taskId but this has extra param called token
      * @param experimentID
      * @param taskID
