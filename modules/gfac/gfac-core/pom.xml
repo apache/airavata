@@ -56,11 +56,11 @@
             <version>${project.version}</version>
         </dependency>
         <!-- Workflow Tracking -->
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-workflow-tracking</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.apache.airavata</groupId>-->
+            <!--<artifactId>airavata-workflow-tracking</artifactId>-->
+            <!--<version>${project.version}</version>-->
+        <!--</dependency>-->
         <!-- Credential Store -->
         <dependency>
             <groupId>org.apache.airavata</groupId>

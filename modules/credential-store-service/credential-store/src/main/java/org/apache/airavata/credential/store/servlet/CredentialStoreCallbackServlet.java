@@ -127,7 +127,7 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
 
         // TODO remove hard coded values, once passing query parameters is
         // fixed in OA4MP client api
-        long duration = 800;
+        long duration = 864000;
 
         if (durationParameter != null) {
             duration = Long.parseLong(durationParameter);

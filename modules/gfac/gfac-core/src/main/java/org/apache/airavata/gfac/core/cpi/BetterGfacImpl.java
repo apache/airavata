@@ -41,7 +41,6 @@ import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.core.monitor.state.GfacExperimentStateChangeRequest;
 import org.apache.airavata.gfac.core.notification.events.ExecutionFailEvent;
 import org.apache.airavata.gfac.core.notification.listeners.LoggingListener;
-import org.apache.airavata.gfac.core.notification.listeners.WorkflowTrackingListener;
 import org.apache.airavata.gfac.core.provider.GFacProvider;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
 import org.apache.airavata.gfac.core.provider.GFacRecoverableProvider;
@@ -51,7 +50,10 @@ import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.PublisherFactory;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
-import org.apache.airavata.model.appcatalog.appinterface.*;
+import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
+import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.messaging.event.*;
@@ -69,12 +71,7 @@ import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * This is the GFac CPI class for external usage, this simply have a single method to submit a job to
@@ -475,7 +472,7 @@ public class BetterGfacImpl implements GFac,Watcher {
             if ((workflowInstanceID = (String) jobExecutionContext.getProperty(Constants.PROP_WORKFLOW_INSTANCE_ID)) != null) {
                 // This mean we need to register workflow tracking listener.
                 //todo implement WorkflowTrackingListener properly
-                registerWorkflowTrackingListener(workflowInstanceID, jobExecutionContext);
+//                registerWorkflowTrackingListener(workflowInstanceID, jobExecutionContext);
             }
             // Register log event listener. This is required in all scenarios.
             jobExecutionContext.getNotificationService().registerListener(new LoggingListener());
@@ -525,7 +522,7 @@ public class BetterGfacImpl implements GFac,Watcher {
             if ((workflowInstanceID = (String) jobExecutionContext.getProperty(Constants.PROP_WORKFLOW_INSTANCE_ID)) != null) {
                 // This mean we need to register workflow tracking listener.
                 //todo implement WorkflowTrackingListener properly
-                registerWorkflowTrackingListener(workflowInstanceID, jobExecutionContext);
+//                registerWorkflowTrackingListener(workflowInstanceID, jobExecutionContext);
             }
             // Register log event listener. This is required in all scenarios.
             jobExecutionContext.getNotificationService().registerListener(new LoggingListener());
@@ -870,14 +867,14 @@ public class BetterGfacImpl implements GFac,Watcher {
         }
     }
 
-    private void registerWorkflowTrackingListener(String workflowInstanceID, JobExecutionContext jobExecutionContext) {
-        String workflowNodeID = (String) jobExecutionContext.getProperty(Constants.PROP_WORKFLOW_NODE_ID);
-        String topic = (String) jobExecutionContext.getProperty(Constants.PROP_TOPIC);
-        String brokerUrl = (String) jobExecutionContext.getProperty(Constants.PROP_BROKER_URL);
-        jobExecutionContext.getNotificationService().registerListener(
-                new WorkflowTrackingListener(workflowInstanceID, workflowNodeID, brokerUrl, topic));
-
-    }
+//    private void registerWorkflowTrackingListener(String workflowInstanceID, JobExecutionContext jobExecutionContext) {
+//        String workflowNodeID = (String) jobExecutionContext.getProperty(Constants.PROP_WORKFLOW_NODE_ID);
+//        String topic = (String) jobExecutionContext.getProperty(Constants.PROP_TOPIC);
+//        String brokerUrl = (String) jobExecutionContext.getProperty(Constants.PROP_BROKER_URL);
+//        jobExecutionContext.getNotificationService().registerListener(
+//                new WorkflowTrackingListener(workflowInstanceID, workflowNodeID, brokerUrl, topic));
+//
+//    }
 
     private void invokeInFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
         List<GFacHandlerConfig> handlers = jobExecutionContext.getGFacConfiguration().getInHandlers();
