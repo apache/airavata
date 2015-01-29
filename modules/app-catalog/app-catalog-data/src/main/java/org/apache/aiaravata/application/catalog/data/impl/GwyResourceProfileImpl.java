@@ -22,7 +22,9 @@
 package org.apache.aiaravata.application.catalog.data.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.airavata.appcatalog.cpi.GwyResourceProfile;
@@ -150,6 +152,21 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
            logger.error("Error while deleting gateway profile...", e);
            throw new AppCatalogException(e);
        }
+    }
+
+    @Override
+    public boolean removeComputeResourcePreferenceFromGateway(String gatewayId, String preferenceId) throws AppCatalogException {
+        try {
+            ComputeHostPreferenceResource resource = new ComputeHostPreferenceResource();
+            Map<String, String> ids = new HashMap<String, String>();
+            ids.put(AbstractResource.ComputeResourcePreferenceConstants.GATEWAY_ID, gatewayId);
+            ids.put(AbstractResource.ComputeResourcePreferenceConstants.RESOURCE_ID, preferenceId);
+            resource.remove(ids);
+            return true;
+        }catch (Exception e) {
+            logger.error("Error while deleting gateway profile...", e);
+            throw new AppCatalogException(e);
+        }
     }
 
     @Override
