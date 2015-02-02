@@ -88,7 +88,11 @@
             <artifactId>airavata-credential-store</artifactId>
             <version>${project.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>net.oauth.core</groupId>
+            <artifactId>oauth-httpclient4</artifactId>
+            <version>20090617</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-security</artifactId>
