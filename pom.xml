@@ -431,6 +431,11 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
+        <repository>
+            <id>oauth</id>
+            <name>OAuth Repository</name>
+            <url>http://oauth.googlecode.com/svn/code/maven</url>
+        </repository>
 	</repositories>
 
 	<profiles>
