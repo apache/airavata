@@ -34,7 +34,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.apache.airavata.common.utils.SwingUtil;
-import org.apache.airavata.ws.monitor.MonitorConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;
@@ -45,7 +44,7 @@ public class MonitorConfigurationWindow {
 
     private XBayaEngine engine;
 
-    private MonitorConfiguration configuration;
+//    private MonitorConfiguration configuration;
 
     private XBayaDialog dialog;
 
@@ -71,10 +70,10 @@ public class MonitorConfigurationWindow {
      * Shows the dialog.
      */
     public void show() {
-        this.brokerTextField.setText(this.configuration.getBrokerURL());
-        this.topicTextField.setText(this.configuration.getTopic());
-        this.pullCheckBox.setSelected(this.configuration.isPullMode());
-        this.messageBoxTextField.setText(this.configuration.getMessageBoxURL());
+//        this.brokerTextField.setText(this.configuration.getBrokerURL());
+//        this.topicTextField.setText(this.configuration.getTopic());
+//        this.pullCheckBox.setSelected(this.configuration.isPullMode());
+//        this.messageBoxTextField.setText(this.configuration.getMessageBoxURL());
 
         this.dialog.show();
     }
@@ -125,10 +124,10 @@ public class MonitorConfigurationWindow {
                 return;
             }
         } else {
-            messageBoxURL = this.configuration.getMessageBoxURL();
+//            messageBoxURL = this.configuration.getMessageBoxURL();
         }
 
-        this.configuration.set(brokerURL, topic, pull, messageBoxURL);
+//        this.configuration.set(brokerURL, topic, pull, messageBoxURL);
         this.engine.getConfiguration().setMessageBoxURL(messageBoxURL);
         this.engine.getConfiguration().setBrokerURL(brokerURL);
         this.engine.getConfiguration().setTopic(topic);
