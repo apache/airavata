@@ -369,6 +369,13 @@ public class ApplicationSettings {
         return getSetting("credential.store.keystore.password");
     }
 
+    public static String getCredentialStoreServerHost() throws ApplicationSettingsException {
+        return getSetting("credential.store.server.host");
+    }
+
+    public static String getCredentialStoreServerPort() throws ApplicationSettingsException {
+        return getSetting("credential.store.server.port");
+    }
     public static String getCredentialStoreNotifierEnabled() throws ApplicationSettingsException {
         return getSetting("notifier.enabled");
     }
