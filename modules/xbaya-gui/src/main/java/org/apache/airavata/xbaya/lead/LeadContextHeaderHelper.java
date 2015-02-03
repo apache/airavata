@@ -21,18 +21,13 @@
 
 package org.apache.airavata.xbaya.lead;
 
-import java.net.URI;
-
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.workflow.model.wf.Workflow;
-import org.apache.airavata.ws.monitor.MonitorConfiguration;
-import org.apache.airavata.wsmg.client.WseMsgBrokerClient;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
-
-import org.apache.axis2.addressing.EndpointReference;
 import xsul.lead.LeadContextHeader;
-import xsul.ws_addressing.WsaEndpointReference;
+
+import java.net.URI;
 
 public class LeadContextHeaderHelper {
 
@@ -102,9 +97,9 @@ public class LeadContextHeaderHelper {
                 topic = XBayaConstants.DEFAULT_TOPIC;
             }
             // TODO remove the xsul dependency here to WsaEndpointReference object
-            EndpointReference eventSink = WseMsgBrokerClient.createEndpointReference(brokerURL.toString(), topic);
-            WsaEndpointReference eprReference = new WsaEndpointReference(URI.create(eventSink.getAddress()));
-            this.leadContextHeader.setEventSink(eprReference);
+//            EndpointReference eventSink = WseMsgBrokerClient.createEndpointReference(brokerURL.toString(), topic);
+//            WsaEndpointReference eprReference = new WsaEndpointReference(URI.create(eventSink.getAddress()));
+//            this.leadContextHeader.setEventSink(eprReference);
         }
     }
 
@@ -134,9 +129,9 @@ public class LeadContextHeaderHelper {
     /**
      * @param monitorConfiguration
      */
-    public void setMonitorConfiguration(MonitorConfiguration monitorConfiguration) {
-        setEventSink(monitorConfiguration.getBrokerURL(), monitorConfiguration.getTopic());
-    }
+//    public void setMonitorConfiguration(MonitorConfiguration monitorConfiguration) {
+//        setEventSink(monitorConfiguration.getBrokerURL(), monitorConfiguration.getTopic());
+//    }
 
     /**
      * This method has to be called before setMonitorConfiguration because this will overwrite some variables.

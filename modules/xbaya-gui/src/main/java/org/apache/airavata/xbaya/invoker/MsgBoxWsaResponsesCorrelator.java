@@ -21,7 +21,6 @@
 package org.apache.airavata.xbaya.invoker;
 
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.wsmg.msgbox.client.MsgBoxClient;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.addressing.EndpointReference;
 import org.slf4j.Logger;
@@ -56,7 +55,7 @@ public class MsgBoxWsaResponsesCorrelator extends WSIFAsyncWsaResponsesCorrelato
     private final static XmlInfosetBuilder builder = XmlConstants.BUILDER;
 
     private String msgBoxServiceLoc;
-    private MsgBoxClient msgBoxClient;
+//    private MsgBoxClient msgBoxClient;
     EndpointReference msgBoxAddr;
     private Thread messageBoxDonwloader;
 
@@ -67,9 +66,9 @@ public class MsgBoxWsaResponsesCorrelator extends WSIFAsyncWsaResponsesCorrelato
     {
         this.invoker = output;
         this.msgBoxServiceLoc = msgBoxServiceLoc;
-        msgBoxClient = new MsgBoxClient();
+//        msgBoxClient = new MsgBoxClient();
         try {
-            msgBoxAddr = msgBoxClient.createMessageBox(msgBoxServiceLoc,5000L);
+//            msgBoxAddr = msgBoxClient.createMessageBox(msgBoxServiceLoc,5000L);
             try {
                 setReplyTo(new WsaEndpointReference(new URI(msgBoxAddr.getAddress())));
             } catch (URISyntaxException e) {
@@ -78,7 +77,7 @@ public class MsgBoxWsaResponsesCorrelator extends WSIFAsyncWsaResponsesCorrelato
             messageBoxDonwloader = new Thread(this, Thread.currentThread().getName()+"-async-msgbox-correlator");
             messageBoxDonwloader.setDaemon(true);
             messageBoxDonwloader.start();
-        } catch (RemoteException e) {
+        } catch (Exception e) {
         	logger.error(e.getLocalizedMessage(),e);  //To change body of catch statement use File | Settings | File Templates.
         }
     }
@@ -90,49 +89,49 @@ public class MsgBoxWsaResponsesCorrelator extends WSIFAsyncWsaResponsesCorrelato
 
 
     public void run() {
-        while(true) {
-            try {
-                Iterator<OMElement> omElementIterator = msgBoxClient.takeMessagesFromMsgBox(msgBoxAddr, 5000L);
-                List<XmlElement> xmlArrayList = new ArrayList<XmlElement>();
-                while (omElementIterator.hasNext()){
-                    OMElement next = omElementIterator.next();
-                    String message = next.toStringWithConsume();
-                    xmlArrayList.add(XMLUtil.stringToXmlElement3(message));
-                }
-                // now hard work: find callbacks
-                for (int i = 0; i < xmlArrayList.size(); i++) {
-                    XmlElement m = xmlArrayList.get(i);
-                    try {
-                        logger.debug(Thread.currentThread().getName());
-                        WSIFMessageElement e = new WSIFMessageElement(m);
-                        this.invoker.setOutputMessage(e);
-                        //ideally there are no multiple messages, so we can return from this thread at this point
-                        //otherwise this thread will keep running forever for each worfklow node, so there can be large
-                        // number of waiting threads in an airavata deployment
-                        return;
-                    } catch (Throwable e) {
-                    	logger.error(e.getLocalizedMessage(),e);  //To change body of catch statement use File | Settings | File Templates.
-                    }
-                }
-                try {
-                    Thread.currentThread().sleep(1000L); //do not overload msg box service ...
-                } catch (InterruptedException e) {
-                    break;
-                }
-            } catch (XsulException e) {
-                logger.error("could not retrieve messages");
-                break;
-            } catch (RemoteException e) {
-                logger.error("could not retrieve messages");
-                break;
-            } catch (XMLStreamException e) {
-                logger.error("could not retrieve messages");
-                break;
-            } catch (Exception e){
-                logger.error("could not retrieve messages");
-                break;
-            }
-        }
+//        while(true) {
+//            try {
+//                Iterator<OMElement> omElementIterator = msgBoxClient.takeMessagesFromMsgBox(msgBoxAddr, 5000L);
+//                List<XmlElement> xmlArrayList = new ArrayList<XmlElement>();
+//                while (omElementIterator.hasNext()){
+//                    OMElement next = omElementIterator.next();
+//                    String message = next.toStringWithConsume();
+//                    xmlArrayList.add(XMLUtil.stringToXmlElement3(message));
+//                }
+//                // now hard work: find callbacks
+//                for (int i = 0; i < xmlArrayList.size(); i++) {
+//                    XmlElement m = xmlArrayList.get(i);
+//                    try {
+//                        logger.debug(Thread.currentThread().getName());
+//                        WSIFMessageElement e = new WSIFMessageElement(m);
+//                        this.invoker.setOutputMessage(e);
+//                        //ideally there are no multiple messages, so we can return from this thread at this point
+//                        //otherwise this thread will keep running forever for each worfklow node, so there can be large
+//                        // number of waiting threads in an airavata deployment
+//                        return;
+//                    } catch (Throwable e) {
+//                    	logger.error(e.getLocalizedMessage(),e);  //To change body of catch statement use File | Settings | File Templates.
+//                    }
+//                }
+//                try {
+//                    Thread.currentThread().sleep(1000L); //do not overload msg box service ...
+//                } catch (InterruptedException e) {
+//                    break;
+//                }
+//            } catch (XsulException e) {
+//                logger.error("could not retrieve messages");
+//                break;
+//            } catch (RemoteException e) {
+//                logger.error("could not retrieve messages");
+//                break;
+//            } catch (XMLStreamException e) {
+//                logger.error("could not retrieve messages");
+//                break;
+//            } catch (Exception e){
+//                logger.error("could not retrieve messages");
+//                break;
+//            }
+//        }
     }
 
 
