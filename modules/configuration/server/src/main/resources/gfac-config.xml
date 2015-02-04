@@ -86,7 +86,7 @@
             <Handler class="org.apache.airavata.gfac.ssh.handler.SSHInputHandler"/>
         </InHandlers>
         <OutHandlers>
-            <Handler class="org.apache.airavata.gfac.ssh.handler.SSHOutputHandler"/>
+            <Handler class="org.apache.airavata.gfac.ssh.handler.NewSSHOutputHandler"/>
             <!--Handler class="org.apache.airavata.gfac.ssh.handler.AdvancedSCPOutputHandler">
                             <property name="privateKeyPath" value="/Users/lahirugunathilake/.ssh/id_dsa"/>
                             <property name="publicKeyPath" value="/Users/lahirugunathilake/.ssh/id_dsa.pub"/>
@@ -113,7 +113,7 @@
                 <Handler class="org.apache.airavata.gfac.gsissh.handler.GSISSHInputHandler"/>
             </InHandlers>
             <OutHandlers>
-                <Handler class="org.apache.airavata.gfac.gsissh.handler.GSISSHOutputHandler"/>
+                <Handler class="org.apache.airavata.gfac.gsissh.handler.NewGSISSHOutputHandler"/>
                 <!--Handler class="org.apache.airavata.gfac.ssh.handler.AdvancedSCPOutputHandler">
                             <property name="privateKeyPath" value="/Users/lahirugunathilake/.ssh/id_dsa"/>
                             <property name="publicKeyPath" value="/Users/lahirugunathilake/.ssh/id_dsa.pub"/>

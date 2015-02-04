@@ -54,6 +54,9 @@ public class ServerSettings extends ApplicationSettings {
     private static final String ACTIVITY_PUBLISHER = "activity.publisher";
     private static final String ACTIVITY_LISTENERS = "activity.listeners";
     public static final String PUBLISH_RABBITMQ = "publish.rabbitmq";
+    public static final String JOB_NOTIFICATION_ENABLE = "job.notification.enable";
+    public static final String JOB_NOTIFICATION_EMAILIDS = "job.notification.emailids";
+    public static final String JOB_NOTIFICATION_FLAGS = "job.notification.flags";
 
     private static boolean stopAllThreads = false;
 
