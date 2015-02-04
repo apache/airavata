@@ -633,57 +633,28 @@ public class SSHUtils {
                     if (buf[0] == ' ') break;
                     filesize = filesize * 10L + (long) (buf[0] - '0');
                 }
-
-//                String file = null;
-//                for (int i = 0; ; i++) {
-//                    in.read(buf, i, 1);
-//                    if (buf[i] == (byte) 0x0a) {
-//                        file = new String(buf, 0, i);
-//                        break;
-//                    }
-//                }
-
-                //System.out.println("filesize="+filesize+", file="+file);
-
-                // send '\0'
-                buf[0] = 0;
-                out.write(buf, 0, 1);
-                out.flush();
-                
+                int foo;
                 while (true) {
-                    int len = in.read(buf, 0, buf.length);
+                	   if (buf.length < filesize) foo = buf.length;
+                       else foo = (int) filesize;
+                    
+                    int len = in.read(buf, 0, foo);
                     if (len <= 0) break;
                     out.write(buf, 0, len); 
                 }
-//                // read a content of lfile
-//                fos = new FileOutputStream(prefix == null ? localFile : prefix + file);
-//                int foo;
-//                while (true) {
-//                    if (buf.length < filesize) foo = buf.length;
-//                    else foo = (int) filesize;
-//                    foo = in.read(buf, 0, foo);
-//                    if (foo < 0) {
-//                        // error
-//                        break;
-//                    }
-//                    fos.write(buf, 0, foo);
-//                    filesize -= foo;
-//                    if (filesize == 0L) break;
-//                }
-//                fos.close();
-//                fos = null;
-
+             // send '\0'
+                buf[0] = 0;
+                out.write(buf, 0, 1);
+                out.flush();
                 if (checkAck(in) != 0) {
                     String error = "Error transfering the file content";
                     log.error(error);
                     throw new SSHApiException(error);
                 }
 
-                // send '\0'
-                buf[0] = 0;
-                out.write(buf, 0, 1);
-                out.flush();
             }
+            out.close();
+
             stdOutReader.onOutput(channel);
             if (stdOutReader.getStdErrorString().contains("scp:")) {
             throw new SSHApiException(stdOutReader.getStdErrorString());

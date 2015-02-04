@@ -46,7 +46,6 @@ public abstract class AbstractHandler implements GFacHandler {
             }
         }
 	}
-
     public MonitorPublisher getPublisher() {
         return publisher;
     }

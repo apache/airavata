@@ -173,6 +173,28 @@ public class GFACGSISSHUtils {
                 }
             }
         }
+        try {
+			if(ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_ENABLE).equalsIgnoreCase("true")){
+				jobDescriptor.setMailOptions(ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_FLAGS));
+				String emailids = ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_EMAILIDS);
+			
+				if(jobExecutionContext.getTaskData().isSetEmailAddresses()){
+					List<String> emailList = jobExecutionContext.getTaskData().getEmailAddresses();
+					String elist = GFacUtils.listToCsv(emailList, ',');
+					if(emailids != null && !emailids.isEmpty()){
+						emailids = emailids +"," + elist;
+					}else{
+						emailids = elist;
+					}
+				}
+				if(emailids != null && !emailids.isEmpty()){
+					logger.info("Email list: "+ emailids);
+					jobDescriptor.setMailAddress(emailids);
+				}
+			}
+		} catch (ApplicationSettingsException e) {
+			 logger.error("ApplicationSettingsException : " +e.getLocalizedMessage());
+		}
         // this is common for any application descriptor
         jobDescriptor.setCallBackIp(ServerSettings.getIp());
         jobDescriptor.setCallBackPort(ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.GFAC_SERVER_PORT, "8950"));
@@ -258,7 +280,6 @@ public class GFACGSISSHUtils {
         jobDescriptor.setUserName(((GSISSHAbstractCluster) cluster).getServerInfo().getUserName());
         jobDescriptor.setShellName("/bin/bash");
         jobDescriptor.setAllEnvExport(true);
-        jobDescriptor.setMailOptions("n");
         jobDescriptor.setOwner(((PBSCluster) cluster).getServerInfo().getUserName());
 
         ComputationalResourceScheduling taskScheduling = taskData.getTaskScheduling();

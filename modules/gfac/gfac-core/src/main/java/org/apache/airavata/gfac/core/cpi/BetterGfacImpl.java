@@ -276,7 +276,8 @@ public class BetterGfacImpl implements GFac,Watcher {
         jobExecutionContext.setTaskData(taskData);
         jobExecutionContext.setGatewayID(gatewayID);
         jobExecutionContext.setAppCatalog(appCatalog);
-
+        
+      
         List<JobDetails> jobDetailsList = taskData.getJobDetailsList();
         //FIXME: Following for loop only set last jobDetails element to the jobExecutionContext
         for(JobDetails jDetails:jobDetailsList){
