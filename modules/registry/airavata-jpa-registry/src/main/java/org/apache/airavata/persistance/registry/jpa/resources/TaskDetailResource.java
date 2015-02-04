@@ -45,7 +45,16 @@ public class TaskDetailResource extends AbstractResource {
     private String applicationId;
     private String applicationVersion;
     private String applicationDeploymentId;
-    
+    private boolean enableEmailNotifications;
+
+    public boolean isEnableEmailNotifications() {
+        return enableEmailNotifications;
+    }
+
+    public void setEnableEmailNotifications(boolean enableEmailNotifications) {
+        this.enableEmailNotifications = enableEmailNotifications;
+    }
+
     public String getTaskId() {
         return taskId;
     }
@@ -93,6 +102,10 @@ public class TaskDetailResource extends AbstractResource {
                ErrorDetailResource errorDetailResource = new ErrorDetailResource();
                errorDetailResource.setTaskDetailResource(this);
                return errorDetailResource;
+           case NOTIFICATION_EMAIL:
+               NotificationEmailResource emailResource = new NotificationEmailResource();
+               emailResource.setTaskDetailResource(this);
+               return emailResource;
            case APPLICATION_INPUT:
                ApplicationInputResource applicationInputResource = new ApplicationInputResource();
                applicationInputResource.setTaskDetailResource(this);
@@ -147,6 +160,12 @@ public class TaskDetailResource extends AbstractResource {
                 case ERROR_DETAIL:
                     generator = new QueryGenerator(ERROR_DETAIL);
                     generator.setParameter(ErrorDetailConstants.TASK_ID, name);
+                    q = generator.deleteQuery(em);
+                    q.executeUpdate();
+                    break;
+                case NOTIFICATION_EMAIL:
+                    generator = new QueryGenerator(NOTIFICATION_EMAIL);
+                    generator.setParameter(NotificationEmailConstants.TASK_ID, name);
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
@@ -243,6 +262,15 @@ public class TaskDetailResource extends AbstractResource {
                     em.getTransaction().commit();
                     em.close();
                     return errorDetailResource;
+                case NOTIFICATION_EMAIL:
+                    generator = new QueryGenerator(NOTIFICATION_EMAIL);
+                    generator.setParameter(NotificationEmailConstants.TASK_ID, name);
+                    q = generator.selectQuery(em);
+                    Notification_Email notificationEmail = (Notification_Email) q.getSingleResult();
+                    NotificationEmailResource emailResource = (NotificationEmailResource) Utils.getResource(ResourceType.NOTIFICATION_EMAIL, notificationEmail);
+                    em.getTransaction().commit();
+                    em.close();
+                    return emailResource;
                 case APPLICATION_INPUT:
                     generator = new QueryGenerator(APPLICATION_INPUT);
                     generator.setParameter(ApplicationInputConstants.TASK_ID, name);
@@ -367,6 +395,20 @@ public class TaskDetailResource extends AbstractResource {
                             ErrorDetailResource errorDetailResource =
                                     (ErrorDetailResource) Utils.getResource(ResourceType.ERROR_DETAIL, errorDetail);
                             resourceList.add(errorDetailResource);
+                        }
+                    }
+                    break;
+                case NOTIFICATION_EMAIL:
+                    generator = new QueryGenerator(NOTIFICATION_EMAIL);
+                    generator.setParameter(NotificationEmailConstants.TASK_ID, taskId);
+                    q = generator.selectQuery(em);
+                    results = q.getResultList();
+                    if (results.size() != 0) {
+                        for (Object result : results) {
+                            Notification_Email notificationEmail = (Notification_Email) result;
+                            NotificationEmailResource emailResource =
+                                    (NotificationEmailResource) Utils.getResource(ResourceType.NOTIFICATION_EMAIL, notificationEmail);
+                            resourceList.add(emailResource);
                         }
                     }
                     break;
@@ -502,6 +544,7 @@ public class TaskDetailResource extends AbstractResource {
 		taskDetail.setCreationTime(creationTime);
 		taskDetail.setAppId(applicationId);
 		taskDetail.setAppVersion(applicationVersion);
+        taskDetail.setAllowNotification(enableEmailNotifications);
 		taskDetail.setApplicationDeploymentId(getApplicationDeploymentId());
 	}
 
@@ -606,4 +649,13 @@ public class TaskDetailResource extends AbstractResource {
 	public void setApplicationDeploymentId(String applicationDeploymentId) {
 		this.applicationDeploymentId = applicationDeploymentId;
 	}
+
+    public List<NotificationEmailResource> getNotificationEmails () throws RegistryException{
+        List<NotificationEmailResource> emailResources = new ArrayList<NotificationEmailResource>();
+        List<Resource> resources = get(ResourceType.NOTIFICATION_EMAIL);
+        for (Resource resource : resources) {
+            emailResources.add((NotificationEmailResource) resource);
+        }
+        return emailResources;
+    }
 }

@@ -219,6 +219,13 @@ public class Utils {
                     logger.error("Object should be a Experiment.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Experiment.");
                 }
+            case NOTIFICATION_EMAIL:
+                if (o instanceof  Notification_Email){
+                    return createNotificationEmail((Notification_Email)o);
+                }else {
+                    logger.error("Object should be a Experiment.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Experiment.");
+                }
             case EXPERIMENT_INPUT:
                 if (o instanceof  Experiment_Input){
                     return createExperimentInput((Experiment_Input)o);
@@ -503,9 +510,22 @@ public class Utils {
             experimentResource.setWorkflowTemplateId(o.getWorkflowTemplateId());
             experimentResource.setWorkflowTemplateVersion(o.getWorkflowTemplateVersion());
             experimentResource.setWorkflowExecutionId(o.getWorkflowExecutionId());
+            experimentResource.setEnableEmailNotifications(o.isAllowNotification());
         }
 
         return experimentResource;
+    }
+
+    private static Resource createNotificationEmail (Notification_Email o){
+        NotificationEmailResource emailResource = new NotificationEmailResource();
+        if (o != null){
+            ExperimentResource experimentResource = (ExperimentResource)createExperiment(o.getExperiment());
+            emailResource.setExperimentResource(experimentResource);
+            TaskDetailResource taskDetailResource =  (TaskDetailResource)createTaskDetail(o.getTaskDetail());
+            emailResource.setTaskDetailResource(taskDetailResource);
+            emailResource.setEmailAddress(o.getEmailAddress());
+        }
+        return emailResource;
     }
 
     private static Resource createExperimentInput (Experiment_Input o){
@@ -577,6 +597,7 @@ public class Utils {
             taskDetailResource.setApplicationId(o.getAppId());
             taskDetailResource.setApplicationVersion(o.getAppVersion());
             taskDetailResource.setApplicationDeploymentId(o.getApplicationDeploymentId());
+            taskDetailResource.setEnableEmailNotifications(o.isAllowNotification());
         }
         return taskDetailResource;
     }
