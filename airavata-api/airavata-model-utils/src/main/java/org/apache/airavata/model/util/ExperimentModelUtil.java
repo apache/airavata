@@ -125,6 +125,11 @@ public class ExperimentModelUtil {
         taskDetails.setCreationTime(experiment.getCreationTime());
         taskDetails.setApplicationId(experiment.getApplicationId());
         taskDetails.setApplicationVersion(experiment.getApplicationVersion());
+        taskDetails.setEnableEmailNotification(experiment.isEnableEmailNotification());
+        List<String> emailAddresses = experiment.getEmailAddresses();
+        if (emailAddresses != null && !emailAddresses.isEmpty()){
+            taskDetails.setEmailAddresses(emailAddresses);
+        }
         List<InputDataObjectType> experimentInputs = experiment.getExperimentInputs();
         if (experimentInputs != null){
             taskDetails.setApplicationInputs(experimentInputs);
@@ -159,6 +164,11 @@ public class ExperimentModelUtil {
 //        String[] split = ;
         taskDetails.setApplicationId(nodeDetails.getExecutionUnitData());
 //        taskDetails.setApplicationVersion(split[1]);
+        taskDetails.setEnableEmailNotification(experiment.isEnableEmailNotification());
+        List<String> emailAddresses = experiment.getEmailAddresses();
+        if (emailAddresses != null && !emailAddresses.isEmpty()){
+            taskDetails.setEmailAddresses(emailAddresses);
+        }
         List<InputDataObjectType> experimentInputs = nodeDetails.getNodeInputs();
         if (experimentInputs != null){
             taskDetails.setApplicationInputs(experimentInputs);
