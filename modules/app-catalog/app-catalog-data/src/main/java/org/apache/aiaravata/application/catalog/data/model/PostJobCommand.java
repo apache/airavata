@@ -33,7 +33,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "POST_JOBCOMMAND")
+@Table(name = "POSTJOB_COMMAND")
 @IdClass(PostJobCommandPK.class)
 public class PostJobCommand implements Serializable {
     @Id
