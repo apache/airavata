@@ -38,6 +38,7 @@ public abstract class AbstractResource implements Resource {
 	public static final String PUBLISHED_WORKFLOW = "Published_Workflow";
 	public static final String USER_WORKFLOW = "User_Workflow";
 	public static final String EXPERIMENT = "Experiment";
+	public static final String NOTIFICATION_EMAIL = "Notification_Email";
 	public static final String EXPERIMENT_CONFIG_DATA = "ExperimentConfigData";
 	public static final String EXPERIMENT_INPUT = "Experiment_Input";
 	public static final String EXPERIMENT_OUTPUT = "Experiment_Output";
@@ -144,6 +145,12 @@ public abstract class AbstractResource implements Resource {
         public static final String AIRAVATA_AUTO_SCHEDULE = "airavataAutoSchedule";
         public static final String OVERRIDE_MANUAL_SCHEDULE = "overrideManualParams";
         public static final String SHARE_EXPERIMENT = "shareExp";
+    }
+
+    public final class NotificationEmailConstants {
+        public static final String EXPERIMENT_ID = "experiment_id";
+        public static final String TASK_ID = "taskId";
+        public static final String EMAIL_ADDRESS = "emailAddress";
     }
 
     //Experiment Input table

@@ -24,6 +24,7 @@ package org.apache.airavata.persistance.registry.jpa.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.model.appcatalog.appinterface.*;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.ActionableGroup;
@@ -54,26 +55,7 @@ import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeState;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeStatus;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
-import org.apache.airavata.persistance.registry.jpa.resources.AdvanceInputDataHandlingResource;
-import org.apache.airavata.persistance.registry.jpa.resources.AdvancedOutputDataHandlingResource;
-import org.apache.airavata.persistance.registry.jpa.resources.ApplicationInputResource;
-import org.apache.airavata.persistance.registry.jpa.resources.ApplicationOutputResource;
-import org.apache.airavata.persistance.registry.jpa.resources.ComputationSchedulingResource;
-import org.apache.airavata.persistance.registry.jpa.resources.ConfigDataResource;
-import org.apache.airavata.persistance.registry.jpa.resources.DataTransferDetailResource;
-import org.apache.airavata.persistance.registry.jpa.resources.ErrorDetailResource;
-import org.apache.airavata.persistance.registry.jpa.resources.ExperimentInputResource;
-import org.apache.airavata.persistance.registry.jpa.resources.ExperimentOutputResource;
-import org.apache.airavata.persistance.registry.jpa.resources.ExperimentResource;
-import org.apache.airavata.persistance.registry.jpa.resources.JobDetailResource;
-import org.apache.airavata.persistance.registry.jpa.resources.NodeInputResource;
-import org.apache.airavata.persistance.registry.jpa.resources.NodeOutputResource;
-import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
-import org.apache.airavata.persistance.registry.jpa.resources.ProjectUserResource;
-import org.apache.airavata.persistance.registry.jpa.resources.QosParamResource;
-import org.apache.airavata.persistance.registry.jpa.resources.StatusResource;
-import org.apache.airavata.persistance.registry.jpa.resources.TaskDetailResource;
-import org.apache.airavata.persistance.registry.jpa.resources.WorkflowNodeDetailResource;
+import org.apache.airavata.persistance.registry.jpa.resources.*;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,6 +101,11 @@ public class ThriftDataModelConversion {
             experiment.setApplicationId(experimentResource.getApplicationId());
             experiment.setApplicationVersion(experimentResource.getApplicationVersion());
             experiment.setWorkflowTemplateId(experimentResource.getWorkflowTemplateId());
+            experiment.setEnableEmailNotification(experimentResource.isEnableEmailNotifications());
+            if (experiment.isEnableEmailNotification()){
+                List<NotificationEmailResource> notificationEmails = experimentResource.getNotificationEmails();
+                experiment.setEmailAddresses(getEmailAddresses(notificationEmails));
+            }
             experiment.setWorkflowTemplateVersion(experimentResource.getWorkflowTemplateVersion());
             experiment.setWorkflowExecutionInstanceId(experimentResource.getWorkflowExecutionId());
             List<ExperimentInputResource> experimentInputs = experimentResource.getExperimentInputs();
@@ -285,6 +272,16 @@ public class ThriftDataModelConversion {
             }
         }
         return null;
+    }
+
+    public static List<String> getEmailAddresses (List<NotificationEmailResource> resourceList){
+        List<String> emailAddresses = new ArrayList<String>();
+        if (resourceList != null && !resourceList.isEmpty()){
+            for (NotificationEmailResource emailResource : resourceList){
+                emailAddresses.add(emailResource.getEmailAddress());
+            }
+        }
+        return emailAddresses;
     }
 
     public static List<InputDataObjectType> getExpInputs (List<ExperimentInputResource> exInputList){
@@ -484,6 +481,11 @@ public class ThriftDataModelConversion {
             taskDetails.setApplicationInputs(getApplicationInputs(applicationInputs));
             List<ApplicationOutputResource> applicationOutputs = taskDetailResource.getApplicationOutputs();
             taskDetails.setApplicationOutputs(getApplicationOutputs(applicationOutputs));
+            taskDetails.setEnableEmailNotification(taskDetailResource.isEnableEmailNotifications());
+            if (taskDetails.isEnableEmailNotification()){
+                List<NotificationEmailResource> notificationEmails = taskDetailResource.getNotificationEmails();
+                taskDetails.setEmailAddresses(getEmailAddresses(notificationEmails));
+            }
             taskDetails.setApplicationDeploymentId(taskDetailResource.getApplicationDeploymentId());
             if (taskDetailResource.isExists(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING, taskId)){
                 ComputationSchedulingResource computationScheduling = taskDetailResource.getComputationScheduling(taskId);

@@ -449,14 +449,14 @@ import org.slf4j.LoggerFactory;
           case 2: // VALIDATION_RESULT_LIST
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list88 = iprot.readListBegin();
-                struct.validationResultList = new ArrayList<ValidatorResult>(_list88.size);
-                for (int _i89 = 0; _i89 < _list88.size; ++_i89)
+                org.apache.thrift.protocol.TList _list96 = iprot.readListBegin();
+                struct.validationResultList = new ArrayList<ValidatorResult>(_list96.size);
+                for (int _i97 = 0; _i97 < _list96.size; ++_i97)
                 {
-                  ValidatorResult _elem90;
-                  _elem90 = new ValidatorResult();
-                  _elem90.read(iprot);
-                  struct.validationResultList.add(_elem90);
+                  ValidatorResult _elem98;
+                  _elem98 = new ValidatorResult();
+                  _elem98.read(iprot);
+                  struct.validationResultList.add(_elem98);
                 }
                 iprot.readListEnd();
               }
@@ -485,9 +485,9 @@ import org.slf4j.LoggerFactory;
         oprot.writeFieldBegin(VALIDATION_RESULT_LIST_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.validationResultList.size()));
-          for (ValidatorResult _iter91 : struct.validationResultList)
+          for (ValidatorResult _iter99 : struct.validationResultList)
           {
-            _iter91.write(oprot);
+            _iter99.write(oprot);
           }
           oprot.writeListEnd();
         }
@@ -513,9 +513,9 @@ import org.slf4j.LoggerFactory;
       oprot.writeBool(struct.validationState);
       {
         oprot.writeI32(struct.validationResultList.size());
-        for (ValidatorResult _iter92 : struct.validationResultList)
+        for (ValidatorResult _iter100 : struct.validationResultList)
         {
-          _iter92.write(oprot);
+          _iter100.write(oprot);
         }
       }
     }
@@ -526,14 +526,14 @@ import org.slf4j.LoggerFactory;
       struct.validationState = iprot.readBool();
       struct.setValidationStateIsSet(true);
       {
-        org.apache.thrift.protocol.TList _list93 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-        struct.validationResultList = new ArrayList<ValidatorResult>(_list93.size);
-        for (int _i94 = 0; _i94 < _list93.size; ++_i94)
+        org.apache.thrift.protocol.TList _list101 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+        struct.validationResultList = new ArrayList<ValidatorResult>(_list101.size);
+        for (int _i102 = 0; _i102 < _list101.size; ++_i102)
         {
-          ValidatorResult _elem95;
-          _elem95 = new ValidatorResult();
-          _elem95.read(iprot);
-          struct.validationResultList.add(_elem95);
+          ValidatorResult _elem103;
+          _elem103 = new ValidatorResult();
+          _elem103.read(iprot);
+          struct.validationResultList.add(_elem103);
         }
       }
       struct.setValidationResultListIsSet(true);

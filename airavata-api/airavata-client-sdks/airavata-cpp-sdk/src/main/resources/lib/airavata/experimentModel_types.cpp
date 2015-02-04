@@ -1843,8 +1843,8 @@ void swap(DataTransferDetails &a, DataTransferDetails &b) {
   swap(a.__isset, b.__isset);
 }
 
-const char* TaskDetails::ascii_fingerprint = "6FF0ECF6FE53D283757211BADE659108";
-const uint8_t TaskDetails::binary_fingerprint[16] = {0x6F,0xF0,0xEC,0xF6,0xFE,0x53,0xD2,0x83,0x75,0x72,0x11,0xBA,0xDE,0x65,0x91,0x08};
+const char* TaskDetails::ascii_fingerprint = "6EAEEB62655ECD5CA7A24BFDE46F678C";
+const uint8_t TaskDetails::binary_fingerprint[16] = {0x6E,0xAE,0xEB,0x62,0x65,0x5E,0xCD,0x5C,0xA7,0xA2,0x4B,0xFD,0xE4,0x6F,0x67,0x8C};
 
 uint32_t TaskDetails::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -2039,6 +2039,34 @@ uint32_t TaskDetails::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 15:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->enableEmailNotification);
+          this->__isset.enableEmailNotification = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 16:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->emailAddresses.clear();
+            uint32_t _size45;
+            ::apache::thrift::protocol::TType _etype48;
+            xfer += iprot->readListBegin(_etype48, _size45);
+            this->emailAddresses.resize(_size45);
+            uint32_t _i49;
+            for (_i49 = 0; _i49 < _size45; ++_i49)
+            {
+              xfer += iprot->readString(this->emailAddresses[_i49]);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.emailAddresses = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -2085,10 +2113,10 @@ uint32_t TaskDetails::write(::apache::thrift::protocol::TProtocol* oprot) const 
     xfer += oprot->writeFieldBegin("applicationInputs", ::apache::thrift::protocol::T_LIST, 6);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->applicationInputs.size()));
-      std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> ::const_iterator _iter45;
-      for (_iter45 = this->applicationInputs.begin(); _iter45 != this->applicationInputs.end(); ++_iter45)
+      std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> ::const_iterator _iter50;
+      for (_iter50 = this->applicationInputs.begin(); _iter50 != this->applicationInputs.end(); ++_iter50)
       {
-        xfer += (*_iter45).write(oprot);
+        xfer += (*_iter50).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -2098,10 +2126,10 @@ uint32_t TaskDetails::write(::apache::thrift::protocol::TProtocol* oprot) const 
     xfer += oprot->writeFieldBegin("applicationOutputs", ::apache::thrift::protocol::T_LIST, 7);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->applicationOutputs.size()));
-      std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> ::const_iterator _iter46;
-      for (_iter46 = this->applicationOutputs.begin(); _iter46 != this->applicationOutputs.end(); ++_iter46)
+      std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> ::const_iterator _iter51;
+      for (_iter51 = this->applicationOutputs.begin(); _iter51 != this->applicationOutputs.end(); ++_iter51)
       {
-        xfer += (*_iter46).write(oprot);
+        xfer += (*_iter51).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -2131,10 +2159,10 @@ uint32_t TaskDetails::write(::apache::thrift::protocol::TProtocol* oprot) const 
     xfer += oprot->writeFieldBegin("jobDetailsList", ::apache::thrift::protocol::T_LIST, 12);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->jobDetailsList.size()));
-      std::vector<JobDetails> ::const_iterator _iter47;
-      for (_iter47 = this->jobDetailsList.begin(); _iter47 != this->jobDetailsList.end(); ++_iter47)
+      std::vector<JobDetails> ::const_iterator _iter52;
+      for (_iter52 = this->jobDetailsList.begin(); _iter52 != this->jobDetailsList.end(); ++_iter52)
       {
-        xfer += (*_iter47).write(oprot);
+        xfer += (*_iter52).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -2144,10 +2172,10 @@ uint32_t TaskDetails::write(::apache::thrift::protocol::TProtocol* oprot) const 
     xfer += oprot->writeFieldBegin("dataTransferDetailsList", ::apache::thrift::protocol::T_LIST, 13);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->dataTransferDetailsList.size()));
-      std::vector<DataTransferDetails> ::const_iterator _iter48;
-      for (_iter48 = this->dataTransferDetailsList.begin(); _iter48 != this->dataTransferDetailsList.end(); ++_iter48)
+      std::vector<DataTransferDetails> ::const_iterator _iter53;
+      for (_iter53 = this->dataTransferDetailsList.begin(); _iter53 != this->dataTransferDetailsList.end(); ++_iter53)
       {
-        xfer += (*_iter48).write(oprot);
+        xfer += (*_iter53).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -2157,10 +2185,28 @@ uint32_t TaskDetails::write(::apache::thrift::protocol::TProtocol* oprot) const 
     xfer += oprot->writeFieldBegin("errors", ::apache::thrift::protocol::T_LIST, 14);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->errors.size()));
-      std::vector<ErrorDetails> ::const_iterator _iter49;
-      for (_iter49 = this->errors.begin(); _iter49 != this->errors.end(); ++_iter49)
+      std::vector<ErrorDetails> ::const_iterator _iter54;
+      for (_iter54 = this->errors.begin(); _iter54 != this->errors.end(); ++_iter54)
       {
-        xfer += (*_iter49).write(oprot);
+        xfer += (*_iter54).write(oprot);
+      }
+      xfer += oprot->writeListEnd();
+    }
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.enableEmailNotification) {
+    xfer += oprot->writeFieldBegin("enableEmailNotification", ::apache::thrift::protocol::T_BOOL, 15);
+    xfer += oprot->writeBool(this->enableEmailNotification);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.emailAddresses) {
+    xfer += oprot->writeFieldBegin("emailAddresses", ::apache::thrift::protocol::T_LIST, 16);
+    {
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->emailAddresses.size()));
+      std::vector<std::string> ::const_iterator _iter55;
+      for (_iter55 = this->emailAddresses.begin(); _iter55 != this->emailAddresses.end(); ++_iter55)
+      {
+        xfer += oprot->writeString((*_iter55));
       }
       xfer += oprot->writeListEnd();
     }
@@ -2187,11 +2233,13 @@ void swap(TaskDetails &a, TaskDetails &b) {
   swap(a.jobDetailsList, b.jobDetailsList);
   swap(a.dataTransferDetailsList, b.dataTransferDetailsList);
   swap(a.errors, b.errors);
+  swap(a.enableEmailNotification, b.enableEmailNotification);
+  swap(a.emailAddresses, b.emailAddresses);
   swap(a.__isset, b.__isset);
 }
 
-const char* WorkflowNodeDetails::ascii_fingerprint = "D2AF8FCCA5B9C08220AE508BA2D7FB06";
-const uint8_t WorkflowNodeDetails::binary_fingerprint[16] = {0xD2,0xAF,0x8F,0xCC,0xA5,0xB9,0xC0,0x82,0x20,0xAE,0x50,0x8B,0xA2,0xD7,0xFB,0x06};
+const char* WorkflowNodeDetails::ascii_fingerprint = "CDDA44A784FD60829B4F4EAA67D71C72";
+const uint8_t WorkflowNodeDetails::binary_fingerprint[16] = {0xCD,0xDA,0x44,0xA7,0x84,0xFD,0x60,0x82,0x9B,0x4F,0x4E,0xAA,0x67,0xD7,0x1C,0x72};
 
 uint32_t WorkflowNodeDetails::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -2242,9 +2290,9 @@ uint32_t WorkflowNodeDetails::read(::apache::thrift::protocol::TProtocol* iprot)
         break;
       case 4:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast50;
-          xfer += iprot->readI32(ecast50);
-          this->executionUnit = (ExecutionUnit::type)ecast50;
+          int32_t ecast56;
+          xfer += iprot->readI32(ecast56);
+          this->executionUnit = (ExecutionUnit::type)ecast56;
           isset_executionUnit = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -2262,14 +2310,14 @@ uint32_t WorkflowNodeDetails::read(::apache::thrift::protocol::TProtocol* iprot)
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->nodeInputs.clear();
-            uint32_t _size51;
-            ::apache::thrift::protocol::TType _etype54;
-            xfer += iprot->readListBegin(_etype54, _size51);
-            this->nodeInputs.resize(_size51);
-            uint32_t _i55;
-            for (_i55 = 0; _i55 < _size51; ++_i55)
+            uint32_t _size57;
+            ::apache::thrift::protocol::TType _etype60;
+            xfer += iprot->readListBegin(_etype60, _size57);
+            this->nodeInputs.resize(_size57);
+            uint32_t _i61;
+            for (_i61 = 0; _i61 < _size57; ++_i61)
             {
-              xfer += this->nodeInputs[_i55].read(iprot);
+              xfer += this->nodeInputs[_i61].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2282,14 +2330,14 @@ uint32_t WorkflowNodeDetails::read(::apache::thrift::protocol::TProtocol* iprot)
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->nodeOutputs.clear();
-            uint32_t _size56;
-            ::apache::thrift::protocol::TType _etype59;
-            xfer += iprot->readListBegin(_etype59, _size56);
-            this->nodeOutputs.resize(_size56);
-            uint32_t _i60;
-            for (_i60 = 0; _i60 < _size56; ++_i60)
+            uint32_t _size62;
+            ::apache::thrift::protocol::TType _etype65;
+            xfer += iprot->readListBegin(_etype65, _size62);
+            this->nodeOutputs.resize(_size62);
+            uint32_t _i66;
+            for (_i66 = 0; _i66 < _size62; ++_i66)
             {
-              xfer += this->nodeOutputs[_i60].read(iprot);
+              xfer += this->nodeOutputs[_i66].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2310,14 +2358,14 @@ uint32_t WorkflowNodeDetails::read(::apache::thrift::protocol::TProtocol* iprot)
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->taskDetailsList.clear();
-            uint32_t _size61;
-            ::apache::thrift::protocol::TType _etype64;
-            xfer += iprot->readListBegin(_etype64, _size61);
-            this->taskDetailsList.resize(_size61);
-            uint32_t _i65;
-            for (_i65 = 0; _i65 < _size61; ++_i65)
+            uint32_t _size67;
+            ::apache::thrift::protocol::TType _etype70;
+            xfer += iprot->readListBegin(_etype70, _size67);
+            this->taskDetailsList.resize(_size67);
+            uint32_t _i71;
+            for (_i71 = 0; _i71 < _size67; ++_i71)
             {
-              xfer += this->taskDetailsList[_i65].read(iprot);
+              xfer += this->taskDetailsList[_i71].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2330,14 +2378,14 @@ uint32_t WorkflowNodeDetails::read(::apache::thrift::protocol::TProtocol* iprot)
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->errors.clear();
-            uint32_t _size66;
-            ::apache::thrift::protocol::TType _etype69;
-            xfer += iprot->readListBegin(_etype69, _size66);
-            this->errors.resize(_size66);
-            uint32_t _i70;
-            for (_i70 = 0; _i70 < _size66; ++_i70)
+            uint32_t _size72;
+            ::apache::thrift::protocol::TType _etype75;
+            xfer += iprot->readListBegin(_etype75, _size72);
+            this->errors.resize(_size72);
+            uint32_t _i76;
+            for (_i76 = 0; _i76 < _size72; ++_i76)
             {
-              xfer += this->errors[_i70].read(iprot);
+              xfer += this->errors[_i76].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2394,10 +2442,10 @@ uint32_t WorkflowNodeDetails::write(::apache::thrift::protocol::TProtocol* oprot
     xfer += oprot->writeFieldBegin("nodeInputs", ::apache::thrift::protocol::T_LIST, 6);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->nodeInputs.size()));
-      std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> ::const_iterator _iter71;
-      for (_iter71 = this->nodeInputs.begin(); _iter71 != this->nodeInputs.end(); ++_iter71)
+      std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> ::const_iterator _iter77;
+      for (_iter77 = this->nodeInputs.begin(); _iter77 != this->nodeInputs.end(); ++_iter77)
       {
-        xfer += (*_iter71).write(oprot);
+        xfer += (*_iter77).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -2407,10 +2455,10 @@ uint32_t WorkflowNodeDetails::write(::apache::thrift::protocol::TProtocol* oprot
     xfer += oprot->writeFieldBegin("nodeOutputs", ::apache::thrift::protocol::T_LIST, 7);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->nodeOutputs.size()));
-      std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> ::const_iterator _iter72;
-      for (_iter72 = this->nodeOutputs.begin(); _iter72 != this->nodeOutputs.end(); ++_iter72)
+      std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> ::const_iterator _iter78;
+      for (_iter78 = this->nodeOutputs.begin(); _iter78 != this->nodeOutputs.end(); ++_iter78)
       {
-        xfer += (*_iter72).write(oprot);
+        xfer += (*_iter78).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -2425,10 +2473,10 @@ uint32_t WorkflowNodeDetails::write(::apache::thrift::protocol::TProtocol* oprot
     xfer += oprot->writeFieldBegin("taskDetailsList", ::apache::thrift::protocol::T_LIST, 9);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->taskDetailsList.size()));
-      std::vector<TaskDetails> ::const_iterator _iter73;
-      for (_iter73 = this->taskDetailsList.begin(); _iter73 != this->taskDetailsList.end(); ++_iter73)
+      std::vector<TaskDetails> ::const_iterator _iter79;
+      for (_iter79 = this->taskDetailsList.begin(); _iter79 != this->taskDetailsList.end(); ++_iter79)
       {
-        xfer += (*_iter73).write(oprot);
+        xfer += (*_iter79).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -2438,10 +2486,10 @@ uint32_t WorkflowNodeDetails::write(::apache::thrift::protocol::TProtocol* oprot
     xfer += oprot->writeFieldBegin("errors", ::apache::thrift::protocol::T_LIST, 10);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->errors.size()));
-      std::vector<ErrorDetails> ::const_iterator _iter74;
-      for (_iter74 = this->errors.begin(); _iter74 != this->errors.end(); ++_iter74)
+      std::vector<ErrorDetails> ::const_iterator _iter80;
+      for (_iter80 = this->errors.begin(); _iter80 != this->errors.end(); ++_iter80)
       {
-        xfer += (*_iter74).write(oprot);
+        xfer += (*_iter80).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -2583,14 +2631,14 @@ uint32_t ValidationResults::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->validationResultList.clear();
-            uint32_t _size75;
-            ::apache::thrift::protocol::TType _etype78;
-            xfer += iprot->readListBegin(_etype78, _size75);
-            this->validationResultList.resize(_size75);
-            uint32_t _i79;
-            for (_i79 = 0; _i79 < _size75; ++_i79)
+            uint32_t _size81;
+            ::apache::thrift::protocol::TType _etype84;
+            xfer += iprot->readListBegin(_etype84, _size81);
+            this->validationResultList.resize(_size81);
+            uint32_t _i85;
+            for (_i85 = 0; _i85 < _size81; ++_i85)
             {
-              xfer += this->validationResultList[_i79].read(iprot);
+              xfer += this->validationResultList[_i85].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2626,10 +2674,10 @@ uint32_t ValidationResults::write(::apache::thrift::protocol::TProtocol* oprot) 
   xfer += oprot->writeFieldBegin("validationResultList", ::apache::thrift::protocol::T_LIST, 2);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->validationResultList.size()));
-    std::vector<ValidatorResult> ::const_iterator _iter80;
-    for (_iter80 = this->validationResultList.begin(); _iter80 != this->validationResultList.end(); ++_iter80)
+    std::vector<ValidatorResult> ::const_iterator _iter86;
+    for (_iter86 = this->validationResultList.begin(); _iter86 != this->validationResultList.end(); ++_iter86)
     {
-      xfer += (*_iter80).write(oprot);
+      xfer += (*_iter86).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
@@ -2646,8 +2694,8 @@ void swap(ValidationResults &a, ValidationResults &b) {
   swap(a.validationResultList, b.validationResultList);
 }
 
-const char* Experiment::ascii_fingerprint = "4CE20099975A60F2FE0D6D1139972D1A";
-const uint8_t Experiment::binary_fingerprint[16] = {0x4C,0xE2,0x00,0x99,0x97,0x5A,0x60,0xF2,0xFE,0x0D,0x6D,0x11,0x39,0x97,0x2D,0x1A};
+const char* Experiment::ascii_fingerprint = "145D3134FA7C46D3D99051850C4984FF";
+const uint8_t Experiment::binary_fingerprint[16] = {0x14,0x5D,0x31,0x34,0xFA,0x7C,0x46,0xD3,0xD9,0x90,0x51,0x85,0x0C,0x49,0x84,0xFF};
 
 uint32_t Experiment::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -2754,6 +2802,34 @@ uint32_t Experiment::read(::apache::thrift::protocol::TProtocol* iprot) {
         }
         break;
       case 11:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->enableEmailNotification);
+          this->__isset.enableEmailNotification = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 12:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->emailAddresses.clear();
+            uint32_t _size87;
+            ::apache::thrift::protocol::TType _etype90;
+            xfer += iprot->readListBegin(_etype90, _size87);
+            this->emailAddresses.resize(_size87);
+            uint32_t _i91;
+            for (_i91 = 0; _i91 < _size87; ++_i91)
+            {
+              xfer += iprot->readString(this->emailAddresses[_i91]);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.emailAddresses = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 13:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->userConfigurationData.read(iprot);
           this->__isset.userConfigurationData = true;
@@ -2761,7 +2837,7 @@ uint32_t Experiment::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 12:
+      case 14:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->workflowExecutionInstanceId);
           this->__isset.workflowExecutionInstanceId = true;
@@ -2769,18 +2845,18 @@ uint32_t Experiment::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 13:
+      case 15:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->experimentInputs.clear();
-            uint32_t _size81;
-            ::apache::thrift::protocol::TType _etype84;
-            xfer += iprot->readListBegin(_etype84, _size81);
-            this->experimentInputs.resize(_size81);
-            uint32_t _i85;
-            for (_i85 = 0; _i85 < _size81; ++_i85)
+            uint32_t _size92;
+            ::apache::thrift::protocol::TType _etype95;
+            xfer += iprot->readListBegin(_etype95, _size92);
+            this->experimentInputs.resize(_size92);
+            uint32_t _i96;
+            for (_i96 = 0; _i96 < _size92; ++_i96)
             {
-              xfer += this->experimentInputs[_i85].read(iprot);
+              xfer += this->experimentInputs[_i96].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2789,18 +2865,18 @@ uint32_t Experiment::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 14:
+      case 16:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->experimentOutputs.clear();
-            uint32_t _size86;
-            ::apache::thrift::protocol::TType _etype89;
-            xfer += iprot->readListBegin(_etype89, _size86);
-            this->experimentOutputs.resize(_size86);
-            uint32_t _i90;
-            for (_i90 = 0; _i90 < _size86; ++_i90)
+            uint32_t _size97;
+            ::apache::thrift::protocol::TType _etype100;
+            xfer += iprot->readListBegin(_etype100, _size97);
+            this->experimentOutputs.resize(_size97);
+            uint32_t _i101;
+            for (_i101 = 0; _i101 < _size97; ++_i101)
             {
-              xfer += this->experimentOutputs[_i90].read(iprot);
+              xfer += this->experimentOutputs[_i101].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2809,7 +2885,7 @@ uint32_t Experiment::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 15:
+      case 17:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->experimentStatus.read(iprot);
           this->__isset.experimentStatus = true;
@@ -2817,18 +2893,18 @@ uint32_t Experiment::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 16:
+      case 18:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->stateChangeList.clear();
-            uint32_t _size91;
-            ::apache::thrift::protocol::TType _etype94;
-            xfer += iprot->readListBegin(_etype94, _size91);
-            this->stateChangeList.resize(_size91);
-            uint32_t _i95;
-            for (_i95 = 0; _i95 < _size91; ++_i95)
+            uint32_t _size102;
+            ::apache::thrift::protocol::TType _etype105;
+            xfer += iprot->readListBegin(_etype105, _size102);
+            this->stateChangeList.resize(_size102);
+            uint32_t _i106;
+            for (_i106 = 0; _i106 < _size102; ++_i106)
             {
-              xfer += this->stateChangeList[_i95].read(iprot);
+              xfer += this->stateChangeList[_i106].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2837,18 +2913,18 @@ uint32_t Experiment::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 17:
+      case 19:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->workflowNodeDetailsList.clear();
-            uint32_t _size96;
-            ::apache::thrift::protocol::TType _etype99;
-            xfer += iprot->readListBegin(_etype99, _size96);
-            this->workflowNodeDetailsList.resize(_size96);
-            uint32_t _i100;
-            for (_i100 = 0; _i100 < _size96; ++_i100)
+            uint32_t _size107;
+            ::apache::thrift::protocol::TType _etype110;
+            xfer += iprot->readListBegin(_etype110, _size107);
+            this->workflowNodeDetailsList.resize(_size107);
+            uint32_t _i111;
+            for (_i111 = 0; _i111 < _size107; ++_i111)
             {
-              xfer += this->workflowNodeDetailsList[_i100].read(iprot);
+              xfer += this->workflowNodeDetailsList[_i111].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2857,18 +2933,18 @@ uint32_t Experiment::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 18:
+      case 20:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->errors.clear();
-            uint32_t _size101;
-            ::apache::thrift::protocol::TType _etype104;
-            xfer += iprot->readListBegin(_etype104, _size101);
-            this->errors.resize(_size101);
-            uint32_t _i105;
-            for (_i105 = 0; _i105 < _size101; ++_i105)
+            uint32_t _size112;
+            ::apache::thrift::protocol::TType _etype115;
+            xfer += iprot->readListBegin(_etype115, _size112);
+            this->errors.resize(_size112);
+            uint32_t _i116;
+            for (_i116 = 0; _i116 < _size112; ++_i116)
             {
-              xfer += this->errors[_i105].read(iprot);
+              xfer += this->errors[_i116].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2947,81 +3023,99 @@ uint32_t Experiment::write(::apache::thrift::protocol::TProtocol* oprot) const {
     xfer += oprot->writeString(this->workflowTemplateVersion);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.enableEmailNotification) {
+    xfer += oprot->writeFieldBegin("enableEmailNotification", ::apache::thrift::protocol::T_BOOL, 11);
+    xfer += oprot->writeBool(this->enableEmailNotification);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.emailAddresses) {
+    xfer += oprot->writeFieldBegin("emailAddresses", ::apache::thrift::protocol::T_LIST, 12);
+    {
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->emailAddresses.size()));
+      std::vector<std::string> ::const_iterator _iter117;
+      for (_iter117 = this->emailAddresses.begin(); _iter117 != this->emailAddresses.end(); ++_iter117)
+      {
+        xfer += oprot->writeString((*_iter117));
+      }
+      xfer += oprot->writeListEnd();
+    }
+    xfer += oprot->writeFieldEnd();
+  }
   if (this->__isset.userConfigurationData) {
-    xfer += oprot->writeFieldBegin("userConfigurationData", ::apache::thrift::protocol::T_STRUCT, 11);
+    xfer += oprot->writeFieldBegin("userConfigurationData", ::apache::thrift::protocol::T_STRUCT, 13);
     xfer += this->userConfigurationData.write(oprot);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.workflowExecutionInstanceId) {
-    xfer += oprot->writeFieldBegin("workflowExecutionInstanceId", ::apache::thrift::protocol::T_STRING, 12);
+    xfer += oprot->writeFieldBegin("workflowExecutionInstanceId", ::apache::thrift::protocol::T_STRING, 14);
     xfer += oprot->writeString(this->workflowExecutionInstanceId);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.experimentInputs) {
-    xfer += oprot->writeFieldBegin("experimentInputs", ::apache::thrift::protocol::T_LIST, 13);
+    xfer += oprot->writeFieldBegin("experimentInputs", ::apache::thrift::protocol::T_LIST, 15);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->experimentInputs.size()));
-      std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> ::const_iterator _iter106;
-      for (_iter106 = this->experimentInputs.begin(); _iter106 != this->experimentInputs.end(); ++_iter106)
+      std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> ::const_iterator _iter118;
+      for (_iter118 = this->experimentInputs.begin(); _iter118 != this->experimentInputs.end(); ++_iter118)
       {
-        xfer += (*_iter106).write(oprot);
+        xfer += (*_iter118).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.experimentOutputs) {
-    xfer += oprot->writeFieldBegin("experimentOutputs", ::apache::thrift::protocol::T_LIST, 14);
+    xfer += oprot->writeFieldBegin("experimentOutputs", ::apache::thrift::protocol::T_LIST, 16);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->experimentOutputs.size()));
-      std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> ::const_iterator _iter107;
-      for (_iter107 = this->experimentOutputs.begin(); _iter107 != this->experimentOutputs.end(); ++_iter107)
+      std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> ::const_iterator _iter119;
+      for (_iter119 = this->experimentOutputs.begin(); _iter119 != this->experimentOutputs.end(); ++_iter119)
       {
-        xfer += (*_iter107).write(oprot);
+        xfer += (*_iter119).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.experimentStatus) {
-    xfer += oprot->writeFieldBegin("experimentStatus", ::apache::thrift::protocol::T_STRUCT, 15);
+    xfer += oprot->writeFieldBegin("experimentStatus", ::apache::thrift::protocol::T_STRUCT, 17);
     xfer += this->experimentStatus.write(oprot);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.stateChangeList) {
-    xfer += oprot->writeFieldBegin("stateChangeList", ::apache::thrift::protocol::T_LIST, 16);
+    xfer += oprot->writeFieldBegin("stateChangeList", ::apache::thrift::protocol::T_LIST, 18);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->stateChangeList.size()));
-      std::vector<WorkflowNodeStatus> ::const_iterator _iter108;
-      for (_iter108 = this->stateChangeList.begin(); _iter108 != this->stateChangeList.end(); ++_iter108)
+      std::vector<WorkflowNodeStatus> ::const_iterator _iter120;
+      for (_iter120 = this->stateChangeList.begin(); _iter120 != this->stateChangeList.end(); ++_iter120)
       {
-        xfer += (*_iter108).write(oprot);
+        xfer += (*_iter120).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.workflowNodeDetailsList) {
-    xfer += oprot->writeFieldBegin("workflowNodeDetailsList", ::apache::thrift::protocol::T_LIST, 17);
+    xfer += oprot->writeFieldBegin("workflowNodeDetailsList", ::apache::thrift::protocol::T_LIST, 19);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->workflowNodeDetailsList.size()));
-      std::vector<WorkflowNodeDetails> ::const_iterator _iter109;
-      for (_iter109 = this->workflowNodeDetailsList.begin(); _iter109 != this->workflowNodeDetailsList.end(); ++_iter109)
+      std::vector<WorkflowNodeDetails> ::const_iterator _iter121;
+      for (_iter121 = this->workflowNodeDetailsList.begin(); _iter121 != this->workflowNodeDetailsList.end(); ++_iter121)
       {
-        xfer += (*_iter109).write(oprot);
+        xfer += (*_iter121).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.errors) {
-    xfer += oprot->writeFieldBegin("errors", ::apache::thrift::protocol::T_LIST, 18);
+    xfer += oprot->writeFieldBegin("errors", ::apache::thrift::protocol::T_LIST, 20);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->errors.size()));
-      std::vector<ErrorDetails> ::const_iterator _iter110;
-      for (_iter110 = this->errors.begin(); _iter110 != this->errors.end(); ++_iter110)
+      std::vector<ErrorDetails> ::const_iterator _iter122;
+      for (_iter122 = this->errors.begin(); _iter122 != this->errors.end(); ++_iter122)
       {
-        xfer += (*_iter110).write(oprot);
+        xfer += (*_iter122).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -3044,6 +3138,8 @@ void swap(Experiment &a, Experiment &b) {
   swap(a.applicationVersion, b.applicationVersion);
   swap(a.workflowTemplateId, b.workflowTemplateId);
   swap(a.workflowTemplateVersion, b.workflowTemplateVersion);
+  swap(a.enableEmailNotification, b.enableEmailNotification);
+  swap(a.emailAddresses, b.emailAddresses);
   swap(a.userConfigurationData, b.userConfigurationData);
   swap(a.workflowExecutionInstanceId, b.workflowExecutionInstanceId);
   swap(a.experimentInputs, b.experimentInputs);
@@ -3150,14 +3246,14 @@ uint32_t ExperimentSummary::read(::apache::thrift::protocol::TProtocol* iprot) {
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->errors.clear();
-            uint32_t _size111;
-            ::apache::thrift::protocol::TType _etype114;
-            xfer += iprot->readListBegin(_etype114, _size111);
-            this->errors.resize(_size111);
-            uint32_t _i115;
-            for (_i115 = 0; _i115 < _size111; ++_i115)
+            uint32_t _size123;
+            ::apache::thrift::protocol::TType _etype126;
+            xfer += iprot->readListBegin(_etype126, _size123);
+            this->errors.resize(_size123);
+            uint32_t _i127;
+            for (_i127 = 0; _i127 < _size123; ++_i127)
             {
-              xfer += this->errors[_i115].read(iprot);
+              xfer += this->errors[_i127].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -3230,10 +3326,10 @@ uint32_t ExperimentSummary::write(::apache::thrift::protocol::TProtocol* oprot) 
     xfer += oprot->writeFieldBegin("errors", ::apache::thrift::protocol::T_LIST, 9);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->errors.size()));
-      std::vector<ErrorDetails> ::const_iterator _iter116;
-      for (_iter116 = this->errors.begin(); _iter116 != this->errors.end(); ++_iter116)
+      std::vector<ErrorDetails> ::const_iterator _iter128;
+      for (_iter128 = this->errors.begin(); _iter128 != this->errors.end(); ++_iter128)
       {
-        xfer += (*_iter116).write(oprot);
+        xfer += (*_iter128).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }

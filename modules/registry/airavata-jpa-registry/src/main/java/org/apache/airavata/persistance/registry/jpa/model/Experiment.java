@@ -56,7 +56,8 @@ public class Experiment implements Serializable {
     private String workflowTemplateVersion;
     @Column(name = "WORKFLOW_EXECUTION_ID")
     private String workflowExecutionId;
-
+    @Column(name = "ALLOW_NOTIFICATION")
+    private boolean allowNotification;
 
     @ManyToOne(cascade=CascadeType.MERGE)
     @JoinColumn(name = "gateway_name")
@@ -188,5 +189,13 @@ public class Experiment implements Serializable {
 
     public void setUser(Users user) {
         this.user = user;
+    }
+
+    public boolean isAllowNotification() {
+        return allowNotification;
+    }
+
+    public void setAllowNotification(boolean allowNotification) {
+        this.allowNotification = allowNotification;
     }
 }

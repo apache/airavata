@@ -2250,6 +2250,8 @@ class TaskDetails {
   public $jobDetailsList = null;
   public $dataTransferDetailsList = null;
   public $errors = null;
+  public $enableEmailNotification = null;
+  public $emailAddresses = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -2339,6 +2341,18 @@ class TaskDetails {
             'class' => '\Airavata\Model\Workspace\Experiment\ErrorDetails',
             ),
           ),
+        15 => array(
+          'var' => 'enableEmailNotification',
+          'type' => TType::BOOL,
+          ),
+        16 => array(
+          'var' => 'emailAddresses',
+          'type' => TType::LST,
+          'etype' => TType::STRING,
+          'elem' => array(
+            'type' => TType::STRING,
+            ),
+          ),
         );
     }
     if (is_array($vals)) {
@@ -2383,6 +2397,12 @@ class TaskDetails {
       }
       if (isset($vals['errors'])) {
         $this->errors = $vals['errors'];
+      }
+      if (isset($vals['enableEmailNotification'])) {
+        $this->enableEmailNotification = $vals['enableEmailNotification'];
+      }
+      if (isset($vals['emailAddresses'])) {
+        $this->emailAddresses = $vals['emailAddresses'];
       }
     }
   }
@@ -2563,6 +2583,30 @@ class TaskDetails {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 15:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->enableEmailNotification);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 16:
+          if ($ftype == TType::LST) {
+            $this->emailAddresses = array();
+            $_size44 = 0;
+            $_etype47 = 0;
+            $xfer += $input->readListBegin($_etype47, $_size44);
+            for ($_i48 = 0; $_i48 < $_size44; ++$_i48)
+            {
+              $elem49 = null;
+              $xfer += $input->readString($elem49);
+              $this->emailAddresses []= $elem49;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -2609,9 +2653,9 @@ class TaskDetails {
       {
         $output->writeListBegin(TType::STRUCT, count($this->applicationInputs));
         {
-          foreach ($this->applicationInputs as $iter44)
+          foreach ($this->applicationInputs as $iter50)
           {
-            $xfer += $iter44->write($output);
+            $xfer += $iter50->write($output);
           }
         }
         $output->writeListEnd();
@@ -2626,9 +2670,9 @@ class TaskDetails {
       {
         $output->writeListBegin(TType::STRUCT, count($this->applicationOutputs));
         {
-          foreach ($this->applicationOutputs as $iter45)
+          foreach ($this->applicationOutputs as $iter51)
           {
-            $xfer += $iter45->write($output);
+            $xfer += $iter51->write($output);
           }
         }
         $output->writeListEnd();
@@ -2675,9 +2719,9 @@ class TaskDetails {
       {
         $output->writeListBegin(TType::STRUCT, count($this->jobDetailsList));
         {
-          foreach ($this->jobDetailsList as $iter46)
+          foreach ($this->jobDetailsList as $iter52)
           {
-            $xfer += $iter46->write($output);
+            $xfer += $iter52->write($output);
           }
         }
         $output->writeListEnd();
@@ -2692,9 +2736,9 @@ class TaskDetails {
       {
         $output->writeListBegin(TType::STRUCT, count($this->dataTransferDetailsList));
         {
-          foreach ($this->dataTransferDetailsList as $iter47)
+          foreach ($this->dataTransferDetailsList as $iter53)
           {
-            $xfer += $iter47->write($output);
+            $xfer += $iter53->write($output);
           }
         }
         $output->writeListEnd();
@@ -2709,9 +2753,31 @@ class TaskDetails {
       {
         $output->writeListBegin(TType::STRUCT, count($this->errors));
         {
-          foreach ($this->errors as $iter48)
+          foreach ($this->errors as $iter54)
           {
-            $xfer += $iter48->write($output);
+            $xfer += $iter54->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->enableEmailNotification !== null) {
+      $xfer += $output->writeFieldBegin('enableEmailNotification', TType::BOOL, 15);
+      $xfer += $output->writeBool($this->enableEmailNotification);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->emailAddresses !== null) {
+      if (!is_array($this->emailAddresses)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('emailAddresses', TType::LST, 16);
+      {
+        $output->writeListBegin(TType::STRING, count($this->emailAddresses));
+        {
+          foreach ($this->emailAddresses as $iter55)
+          {
+            $xfer += $output->writeString($iter55);
           }
         }
         $output->writeListEnd();
@@ -2896,15 +2962,15 @@ class WorkflowNodeDetails {
         case 6:
           if ($ftype == TType::LST) {
             $this->nodeInputs = array();
-            $_size49 = 0;
-            $_etype52 = 0;
-            $xfer += $input->readListBegin($_etype52, $_size49);
-            for ($_i53 = 0; $_i53 < $_size49; ++$_i53)
+            $_size56 = 0;
+            $_etype59 = 0;
+            $xfer += $input->readListBegin($_etype59, $_size56);
+            for ($_i60 = 0; $_i60 < $_size56; ++$_i60)
             {
-              $elem54 = null;
-              $elem54 = new \Airavata\Model\AppCatalog\AppInterface\InputDataObjectType();
-              $xfer += $elem54->read($input);
-              $this->nodeInputs []= $elem54;
+              $elem61 = null;
+              $elem61 = new \Airavata\Model\AppCatalog\AppInterface\InputDataObjectType();
+              $xfer += $elem61->read($input);
+              $this->nodeInputs []= $elem61;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -2914,15 +2980,15 @@ class WorkflowNodeDetails {
         case 7:
           if ($ftype == TType::LST) {
             $this->nodeOutputs = array();
-            $_size55 = 0;
-            $_etype58 = 0;
-            $xfer += $input->readListBegin($_etype58, $_size55);
-            for ($_i59 = 0; $_i59 < $_size55; ++$_i59)
+            $_size62 = 0;
+            $_etype65 = 0;
+            $xfer += $input->readListBegin($_etype65, $_size62);
+            for ($_i66 = 0; $_i66 < $_size62; ++$_i66)
             {
-              $elem60 = null;
-              $elem60 = new \Airavata\Model\AppCatalog\AppInterface\OutputDataObjectType();
-              $xfer += $elem60->read($input);
-              $this->nodeOutputs []= $elem60;
+              $elem67 = null;
+              $elem67 = new \Airavata\Model\AppCatalog\AppInterface\OutputDataObjectType();
+              $xfer += $elem67->read($input);
+              $this->nodeOutputs []= $elem67;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -2940,15 +3006,15 @@ class WorkflowNodeDetails {
         case 9:
           if ($ftype == TType::LST) {
             $this->taskDetailsList = array();
-            $_size61 = 0;
-            $_etype64 = 0;
-            $xfer += $input->readListBegin($_etype64, $_size61);
-            for ($_i65 = 0; $_i65 < $_size61; ++$_i65)
+            $_size68 = 0;
+            $_etype71 = 0;
+            $xfer += $input->readListBegin($_etype71, $_size68);
+            for ($_i72 = 0; $_i72 < $_size68; ++$_i72)
             {
-              $elem66 = null;
-              $elem66 = new \Airavata\Model\Workspace\Experiment\TaskDetails();
-              $xfer += $elem66->read($input);
-              $this->taskDetailsList []= $elem66;
+              $elem73 = null;
+              $elem73 = new \Airavata\Model\Workspace\Experiment\TaskDetails();
+              $xfer += $elem73->read($input);
+              $this->taskDetailsList []= $elem73;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -2958,15 +3024,15 @@ class WorkflowNodeDetails {
         case 10:
           if ($ftype == TType::LST) {
             $this->errors = array();
-            $_size67 = 0;
-            $_etype70 = 0;
-            $xfer += $input->readListBegin($_etype70, $_size67);
-            for ($_i71 = 0; $_i71 < $_size67; ++$_i71)
+            $_size74 = 0;
+            $_etype77 = 0;
+            $xfer += $input->readListBegin($_etype77, $_size74);
+            for ($_i78 = 0; $_i78 < $_size74; ++$_i78)
             {
-              $elem72 = null;
-              $elem72 = new \Airavata\Model\Workspace\Experiment\ErrorDetails();
-              $xfer += $elem72->read($input);
-              $this->errors []= $elem72;
+              $elem79 = null;
+              $elem79 = new \Airavata\Model\Workspace\Experiment\ErrorDetails();
+              $xfer += $elem79->read($input);
+              $this->errors []= $elem79;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -3019,9 +3085,9 @@ class WorkflowNodeDetails {
       {
         $output->writeListBegin(TType::STRUCT, count($this->nodeInputs));
         {
-          foreach ($this->nodeInputs as $iter73)
+          foreach ($this->nodeInputs as $iter80)
           {
-            $xfer += $iter73->write($output);
+            $xfer += $iter80->write($output);
           }
         }
         $output->writeListEnd();
@@ -3036,9 +3102,9 @@ class WorkflowNodeDetails {
       {
         $output->writeListBegin(TType::STRUCT, count($this->nodeOutputs));
         {
-          foreach ($this->nodeOutputs as $iter74)
+          foreach ($this->nodeOutputs as $iter81)
           {
-            $xfer += $iter74->write($output);
+            $xfer += $iter81->write($output);
           }
         }
         $output->writeListEnd();
@@ -3061,9 +3127,9 @@ class WorkflowNodeDetails {
       {
         $output->writeListBegin(TType::STRUCT, count($this->taskDetailsList));
         {
-          foreach ($this->taskDetailsList as $iter75)
+          foreach ($this->taskDetailsList as $iter82)
           {
-            $xfer += $iter75->write($output);
+            $xfer += $iter82->write($output);
           }
         }
         $output->writeListEnd();
@@ -3078,9 +3144,9 @@ class WorkflowNodeDetails {
       {
         $output->writeListBegin(TType::STRUCT, count($this->errors));
         {
-          foreach ($this->errors as $iter76)
+          foreach ($this->errors as $iter83)
           {
-            $xfer += $iter76->write($output);
+            $xfer += $iter83->write($output);
           }
         }
         $output->writeListEnd();
@@ -3249,15 +3315,15 @@ class ValidationResults {
         case 2:
           if ($ftype == TType::LST) {
             $this->validationResultList = array();
-            $_size77 = 0;
-            $_etype80 = 0;
-            $xfer += $input->readListBegin($_etype80, $_size77);
-            for ($_i81 = 0; $_i81 < $_size77; ++$_i81)
+            $_size84 = 0;
+            $_etype87 = 0;
+            $xfer += $input->readListBegin($_etype87, $_size84);
+            for ($_i88 = 0; $_i88 < $_size84; ++$_i88)
             {
-              $elem82 = null;
-              $elem82 = new \Airavata\Model\Workspace\Experiment\ValidatorResult();
-              $xfer += $elem82->read($input);
-              $this->validationResultList []= $elem82;
+              $elem89 = null;
+              $elem89 = new \Airavata\Model\Workspace\Experiment\ValidatorResult();
+              $xfer += $elem89->read($input);
+              $this->validationResultList []= $elem89;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -3290,9 +3356,9 @@ class ValidationResults {
       {
         $output->writeListBegin(TType::STRUCT, count($this->validationResultList));
         {
-          foreach ($this->validationResultList as $iter83)
+          foreach ($this->validationResultList as $iter90)
           {
-            $xfer += $iter83->write($output);
+            $xfer += $iter90->write($output);
           }
         }
         $output->writeListEnd();
@@ -3319,6 +3385,8 @@ class Experiment {
   public $applicationVersion = null;
   public $workflowTemplateId = null;
   public $workflowTemplateVersion = null;
+  public $enableEmailNotification = null;
+  public $emailAddresses = null;
   public $userConfigurationData = null;
   public $workflowExecutionInstanceId = null;
   public $experimentInputs = null;
@@ -3372,15 +3440,27 @@ class Experiment {
           'type' => TType::STRING,
           ),
         11 => array(
+          'var' => 'enableEmailNotification',
+          'type' => TType::BOOL,
+          ),
+        12 => array(
+          'var' => 'emailAddresses',
+          'type' => TType::LST,
+          'etype' => TType::STRING,
+          'elem' => array(
+            'type' => TType::STRING,
+            ),
+          ),
+        13 => array(
           'var' => 'userConfigurationData',
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\Workspace\Experiment\UserConfigurationData',
           ),
-        12 => array(
+        14 => array(
           'var' => 'workflowExecutionInstanceId',
           'type' => TType::STRING,
           ),
-        13 => array(
+        15 => array(
           'var' => 'experimentInputs',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -3389,7 +3469,7 @@ class Experiment {
             'class' => '\Airavata\Model\AppCatalog\AppInterface\InputDataObjectType',
             ),
           ),
-        14 => array(
+        16 => array(
           'var' => 'experimentOutputs',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -3398,12 +3478,12 @@ class Experiment {
             'class' => '\Airavata\Model\AppCatalog\AppInterface\OutputDataObjectType',
             ),
           ),
-        15 => array(
+        17 => array(
           'var' => 'experimentStatus',
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\Workspace\Experiment\ExperimentStatus',
           ),
-        16 => array(
+        18 => array(
           'var' => 'stateChangeList',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -3412,7 +3492,7 @@ class Experiment {
             'class' => '\Airavata\Model\Workspace\Experiment\WorkflowNodeStatus',
             ),
           ),
-        17 => array(
+        19 => array(
           'var' => 'workflowNodeDetailsList',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -3421,7 +3501,7 @@ class Experiment {
             'class' => '\Airavata\Model\Workspace\Experiment\WorkflowNodeDetails',
             ),
           ),
-        18 => array(
+        20 => array(
           'var' => 'errors',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -3462,6 +3542,12 @@ class Experiment {
       }
       if (isset($vals['workflowTemplateVersion'])) {
         $this->workflowTemplateVersion = $vals['workflowTemplateVersion'];
+      }
+      if (isset($vals['enableEmailNotification'])) {
+        $this->enableEmailNotification = $vals['enableEmailNotification'];
+      }
+      if (isset($vals['emailAddresses'])) {
+        $this->emailAddresses = $vals['emailAddresses'];
       }
       if (isset($vals['userConfigurationData'])) {
         $this->userConfigurationData = $vals['userConfigurationData'];
@@ -3580,6 +3666,30 @@ class Experiment {
           }
           break;
         case 11:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->enableEmailNotification);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 12:
+          if ($ftype == TType::LST) {
+            $this->emailAddresses = array();
+            $_size91 = 0;
+            $_etype94 = 0;
+            $xfer += $input->readListBegin($_etype94, $_size91);
+            for ($_i95 = 0; $_i95 < $_size91; ++$_i95)
+            {
+              $elem96 = null;
+              $xfer += $input->readString($elem96);
+              $this->emailAddresses []= $elem96;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 13:
           if ($ftype == TType::STRUCT) {
             $this->userConfigurationData = new \Airavata\Model\Workspace\Experiment\UserConfigurationData();
             $xfer += $this->userConfigurationData->read($input);
@@ -3587,69 +3697,43 @@ class Experiment {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 12:
+        case 14:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->workflowExecutionInstanceId);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 13:
+        case 15:
           if ($ftype == TType::LST) {
             $this->experimentInputs = array();
-            $_size84 = 0;
-            $_etype87 = 0;
-            $xfer += $input->readListBegin($_etype87, $_size84);
-            for ($_i88 = 0; $_i88 < $_size84; ++$_i88)
+            $_size97 = 0;
+            $_etype100 = 0;
+            $xfer += $input->readListBegin($_etype100, $_size97);
+            for ($_i101 = 0; $_i101 < $_size97; ++$_i101)
             {
-              $elem89 = null;
-              $elem89 = new \Airavata\Model\AppCatalog\AppInterface\InputDataObjectType();
-              $xfer += $elem89->read($input);
-              $this->experimentInputs []= $elem89;
+              $elem102 = null;
+              $elem102 = new \Airavata\Model\AppCatalog\AppInterface\InputDataObjectType();
+              $xfer += $elem102->read($input);
+              $this->experimentInputs []= $elem102;
             }
             $xfer += $input->readListEnd();
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 14:
-          if ($ftype == TType::LST) {
-            $this->experimentOutputs = array();
-            $_size90 = 0;
-            $_etype93 = 0;
-            $xfer += $input->readListBegin($_etype93, $_size90);
-            for ($_i94 = 0; $_i94 < $_size90; ++$_i94)
-            {
-              $elem95 = null;
-              $elem95 = new \Airavata\Model\AppCatalog\AppInterface\OutputDataObjectType();
-              $xfer += $elem95->read($input);
-              $this->experimentOutputs []= $elem95;
-            }
-            $xfer += $input->readListEnd();
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 15:
-          if ($ftype == TType::STRUCT) {
-            $this->experimentStatus = new \Airavata\Model\Workspace\Experiment\ExperimentStatus();
-            $xfer += $this->experimentStatus->read($input);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 16:
           if ($ftype == TType::LST) {
-            $this->stateChangeList = array();
-            $_size96 = 0;
-            $_etype99 = 0;
-            $xfer += $input->readListBegin($_etype99, $_size96);
-            for ($_i100 = 0; $_i100 < $_size96; ++$_i100)
+            $this->experimentOutputs = array();
+            $_size103 = 0;
+            $_etype106 = 0;
+            $xfer += $input->readListBegin($_etype106, $_size103);
+            for ($_i107 = 0; $_i107 < $_size103; ++$_i107)
             {
-              $elem101 = null;
-              $elem101 = new \Airavata\Model\Workspace\Experiment\WorkflowNodeStatus();
-              $xfer += $elem101->read($input);
-              $this->stateChangeList []= $elem101;
+              $elem108 = null;
+              $elem108 = new \Airavata\Model\AppCatalog\AppInterface\OutputDataObjectType();
+              $xfer += $elem108->read($input);
+              $this->experimentOutputs []= $elem108;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -3657,35 +3741,61 @@ class Experiment {
           }
           break;
         case 17:
-          if ($ftype == TType::LST) {
-            $this->workflowNodeDetailsList = array();
-            $_size102 = 0;
-            $_etype105 = 0;
-            $xfer += $input->readListBegin($_etype105, $_size102);
-            for ($_i106 = 0; $_i106 < $_size102; ++$_i106)
-            {
-              $elem107 = null;
-              $elem107 = new \Airavata\Model\Workspace\Experiment\WorkflowNodeDetails();
-              $xfer += $elem107->read($input);
-              $this->workflowNodeDetailsList []= $elem107;
-            }
-            $xfer += $input->readListEnd();
+          if ($ftype == TType::STRUCT) {
+            $this->experimentStatus = new \Airavata\Model\Workspace\Experiment\ExperimentStatus();
+            $xfer += $this->experimentStatus->read($input);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 18:
           if ($ftype == TType::LST) {
-            $this->errors = array();
-            $_size108 = 0;
-            $_etype111 = 0;
-            $xfer += $input->readListBegin($_etype111, $_size108);
-            for ($_i112 = 0; $_i112 < $_size108; ++$_i112)
+            $this->stateChangeList = array();
+            $_size109 = 0;
+            $_etype112 = 0;
+            $xfer += $input->readListBegin($_etype112, $_size109);
+            for ($_i113 = 0; $_i113 < $_size109; ++$_i113)
             {
-              $elem113 = null;
-              $elem113 = new \Airavata\Model\Workspace\Experiment\ErrorDetails();
-              $xfer += $elem113->read($input);
-              $this->errors []= $elem113;
+              $elem114 = null;
+              $elem114 = new \Airavata\Model\Workspace\Experiment\WorkflowNodeStatus();
+              $xfer += $elem114->read($input);
+              $this->stateChangeList []= $elem114;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 19:
+          if ($ftype == TType::LST) {
+            $this->workflowNodeDetailsList = array();
+            $_size115 = 0;
+            $_etype118 = 0;
+            $xfer += $input->readListBegin($_etype118, $_size115);
+            for ($_i119 = 0; $_i119 < $_size115; ++$_i119)
+            {
+              $elem120 = null;
+              $elem120 = new \Airavata\Model\Workspace\Experiment\WorkflowNodeDetails();
+              $xfer += $elem120->read($input);
+              $this->workflowNodeDetailsList []= $elem120;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 20:
+          if ($ftype == TType::LST) {
+            $this->errors = array();
+            $_size121 = 0;
+            $_etype124 = 0;
+            $xfer += $input->readListBegin($_etype124, $_size121);
+            for ($_i125 = 0; $_i125 < $_size121; ++$_i125)
+            {
+              $elem126 = null;
+              $elem126 = new \Airavata\Model\Workspace\Experiment\ErrorDetails();
+              $xfer += $elem126->read($input);
+              $this->errors []= $elem126;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -3755,16 +3865,38 @@ class Experiment {
       $xfer += $output->writeString($this->workflowTemplateVersion);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->enableEmailNotification !== null) {
+      $xfer += $output->writeFieldBegin('enableEmailNotification', TType::BOOL, 11);
+      $xfer += $output->writeBool($this->enableEmailNotification);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->emailAddresses !== null) {
+      if (!is_array($this->emailAddresses)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('emailAddresses', TType::LST, 12);
+      {
+        $output->writeListBegin(TType::STRING, count($this->emailAddresses));
+        {
+          foreach ($this->emailAddresses as $iter127)
+          {
+            $xfer += $output->writeString($iter127);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->userConfigurationData !== null) {
       if (!is_object($this->userConfigurationData)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('userConfigurationData', TType::STRUCT, 11);
+      $xfer += $output->writeFieldBegin('userConfigurationData', TType::STRUCT, 13);
       $xfer += $this->userConfigurationData->write($output);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->workflowExecutionInstanceId !== null) {
-      $xfer += $output->writeFieldBegin('workflowExecutionInstanceId', TType::STRING, 12);
+      $xfer += $output->writeFieldBegin('workflowExecutionInstanceId', TType::STRING, 14);
       $xfer += $output->writeString($this->workflowExecutionInstanceId);
       $xfer += $output->writeFieldEnd();
     }
@@ -3772,13 +3904,13 @@ class Experiment {
       if (!is_array($this->experimentInputs)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('experimentInputs', TType::LST, 13);
+      $xfer += $output->writeFieldBegin('experimentInputs', TType::LST, 15);
       {
         $output->writeListBegin(TType::STRUCT, count($this->experimentInputs));
         {
-          foreach ($this->experimentInputs as $iter114)
+          foreach ($this->experimentInputs as $iter128)
           {
-            $xfer += $iter114->write($output);
+            $xfer += $iter128->write($output);
           }
         }
         $output->writeListEnd();
@@ -3789,13 +3921,13 @@ class Experiment {
       if (!is_array($this->experimentOutputs)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('experimentOutputs', TType::LST, 14);
+      $xfer += $output->writeFieldBegin('experimentOutputs', TType::LST, 16);
       {
         $output->writeListBegin(TType::STRUCT, count($this->experimentOutputs));
         {
-          foreach ($this->experimentOutputs as $iter115)
+          foreach ($this->experimentOutputs as $iter129)
           {
-            $xfer += $iter115->write($output);
+            $xfer += $iter129->write($output);
           }
         }
         $output->writeListEnd();
@@ -3806,7 +3938,7 @@ class Experiment {
       if (!is_object($this->experimentStatus)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('experimentStatus', TType::STRUCT, 15);
+      $xfer += $output->writeFieldBegin('experimentStatus', TType::STRUCT, 17);
       $xfer += $this->experimentStatus->write($output);
       $xfer += $output->writeFieldEnd();
     }
@@ -3814,13 +3946,13 @@ class Experiment {
       if (!is_array($this->stateChangeList)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('stateChangeList', TType::LST, 16);
+      $xfer += $output->writeFieldBegin('stateChangeList', TType::LST, 18);
       {
         $output->writeListBegin(TType::STRUCT, count($this->stateChangeList));
         {
-          foreach ($this->stateChangeList as $iter116)
+          foreach ($this->stateChangeList as $iter130)
           {
-            $xfer += $iter116->write($output);
+            $xfer += $iter130->write($output);
           }
         }
         $output->writeListEnd();
@@ -3831,13 +3963,13 @@ class Experiment {
       if (!is_array($this->workflowNodeDetailsList)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('workflowNodeDetailsList', TType::LST, 17);
+      $xfer += $output->writeFieldBegin('workflowNodeDetailsList', TType::LST, 19);
       {
         $output->writeListBegin(TType::STRUCT, count($this->workflowNodeDetailsList));
         {
-          foreach ($this->workflowNodeDetailsList as $iter117)
+          foreach ($this->workflowNodeDetailsList as $iter131)
           {
-            $xfer += $iter117->write($output);
+            $xfer += $iter131->write($output);
           }
         }
         $output->writeListEnd();
@@ -3848,13 +3980,13 @@ class Experiment {
       if (!is_array($this->errors)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('errors', TType::LST, 18);
+      $xfer += $output->writeFieldBegin('errors', TType::LST, 20);
       {
         $output->writeListBegin(TType::STRUCT, count($this->errors));
         {
-          foreach ($this->errors as $iter118)
+          foreach ($this->errors as $iter132)
           {
-            $xfer += $iter118->write($output);
+            $xfer += $iter132->write($output);
           }
         }
         $output->writeListEnd();
@@ -4038,15 +4170,15 @@ class ExperimentSummary {
         case 9:
           if ($ftype == TType::LST) {
             $this->errors = array();
-            $_size119 = 0;
-            $_etype122 = 0;
-            $xfer += $input->readListBegin($_etype122, $_size119);
-            for ($_i123 = 0; $_i123 < $_size119; ++$_i123)
+            $_size133 = 0;
+            $_etype136 = 0;
+            $xfer += $input->readListBegin($_etype136, $_size133);
+            for ($_i137 = 0; $_i137 < $_size133; ++$_i137)
             {
-              $elem124 = null;
-              $elem124 = new \Airavata\Model\Workspace\Experiment\ErrorDetails();
-              $xfer += $elem124->read($input);
-              $this->errors []= $elem124;
+              $elem138 = null;
+              $elem138 = new \Airavata\Model\Workspace\Experiment\ErrorDetails();
+              $xfer += $elem138->read($input);
+              $this->errors []= $elem138;
             }
             $xfer += $input->readListEnd();
           } else {
@@ -4117,9 +4249,9 @@ class ExperimentSummary {
       {
         $output->writeListBegin(TType::STRUCT, count($this->errors));
         {
-          foreach ($this->errors as $iter125)
+          foreach ($this->errors as $iter139)
           {
-            $xfer += $iter125->write($output);
+            $xfer += $iter139->write($output);
           }
         }
         $output->writeListEnd();
