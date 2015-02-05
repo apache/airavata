@@ -24,7 +24,7 @@
 */
 
 include "csDataModel.thrift"
-include "airavataErrors.thrift"
+include "credentialStoreErrors.thrift"
 
 namespace java org.apache.airavata.credential.store.cpi
 
@@ -38,12 +38,12 @@ service CredentialStoreService {
   /**
   * This method is to add SSHCredential which will return the token Id in success
   **/
-  string addSSHCredential (1: required csDataModel.SSHCredential sshCredential) ;
-  string addCertificateCredential (1: required csDataModel.CertificateCredential certificateCredential);
-  string addPasswordCredential (1: required csDataModel.PasswordCredential passwordCredential);
-  csDataModel.SSHCredential getSSHCredential (1: required string tokenId);
-  csDataModel.CertificateCredential getCertificateCredential (1: required string tokenId);
-  csDataModel.PasswordCredential getPasswordCredential (1: required string tokenId);
+  string addSSHCredential (1: required csDataModel.SSHCredential sshCredential) throws (1:credentialStoreErrors.CredentialStoreException csException) ;
+  string addCertificateCredential (1: required csDataModel.CertificateCredential certificateCredential) throws (1:credentialStoreErrors.CredentialStoreException csException);
+  string addPasswordCredential (1: required csDataModel.PasswordCredential passwordCredential) throws (1:credentialStoreErrors.CredentialStoreException csException);
+  csDataModel.SSHCredential getSSHCredential (1: required string tokenId) throws (1:credentialStoreErrors.CredentialStoreException csException);
+  csDataModel.CertificateCredential getCertificateCredential (1: required string tokenId) throws (1:credentialStoreErrors.CredentialStoreException csException);
+  csDataModel.PasswordCredential getPasswordCredential (1: required string tokenId) throws (1:credentialStoreErrors.CredentialStoreException csException);
 
 
 
