@@ -63,17 +63,17 @@ import org.slf4j.LoggerFactory;
      * 
      * @param sshCredential
      */
-    public String addSSHCredential(org.apache.airavata.credential.store.datamodel.SSHCredential sshCredential) throws org.apache.thrift.TException;
+    public String addSSHCredential(org.apache.airavata.credential.store.datamodel.SSHCredential sshCredential) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
 
-    public String addCertificateCredential(org.apache.airavata.credential.store.datamodel.CertificateCredential certificateCredential) throws org.apache.thrift.TException;
+    public String addCertificateCredential(org.apache.airavata.credential.store.datamodel.CertificateCredential certificateCredential) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
 
-    public String addPasswordCredential(org.apache.airavata.credential.store.datamodel.PasswordCredential passwordCredential) throws org.apache.thrift.TException;
+    public String addPasswordCredential(org.apache.airavata.credential.store.datamodel.PasswordCredential passwordCredential) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
 
-    public org.apache.airavata.credential.store.datamodel.SSHCredential getSSHCredential(String tokenId) throws org.apache.thrift.TException;
+    public org.apache.airavata.credential.store.datamodel.SSHCredential getSSHCredential(String tokenId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
 
-    public org.apache.airavata.credential.store.datamodel.CertificateCredential getCertificateCredential(String tokenId) throws org.apache.thrift.TException;
+    public org.apache.airavata.credential.store.datamodel.CertificateCredential getCertificateCredential(String tokenId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
 
-    public org.apache.airavata.credential.store.datamodel.PasswordCredential getPasswordCredential(String tokenId) throws org.apache.thrift.TException;
+    public org.apache.airavata.credential.store.datamodel.PasswordCredential getPasswordCredential(String tokenId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
 
   }
 
@@ -137,7 +137,7 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getCSServiceVersion failed: unknown result");
     }
 
-    public String addSSHCredential(org.apache.airavata.credential.store.datamodel.SSHCredential sshCredential) throws org.apache.thrift.TException
+    public String addSSHCredential(org.apache.airavata.credential.store.datamodel.SSHCredential sshCredential) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
       send_addSSHCredential(sshCredential);
       return recv_addSSHCredential();
@@ -150,17 +150,20 @@ import org.slf4j.LoggerFactory;
       sendBase("addSSHCredential", args);
     }
 
-    public String recv_addSSHCredential() throws org.apache.thrift.TException
+    public String recv_addSSHCredential() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
       addSSHCredential_result result = new addSSHCredential_result();
       receiveBase(result, "addSSHCredential");
       if (result.isSetSuccess()) {
         return result.success;
       }
+      if (result.csException != null) {
+        throw result.csException;
+      }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "addSSHCredential failed: unknown result");
     }
 
-    public String addCertificateCredential(org.apache.airavata.credential.store.datamodel.CertificateCredential certificateCredential) throws org.apache.thrift.TException
+    public String addCertificateCredential(org.apache.airavata.credential.store.datamodel.CertificateCredential certificateCredential) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
       send_addCertificateCredential(certificateCredential);
       return recv_addCertificateCredential();
@@ -173,17 +176,20 @@ import org.slf4j.LoggerFactory;
       sendBase("addCertificateCredential", args);
     }
 
-    public String recv_addCertificateCredential() throws org.apache.thrift.TException
+    public String recv_addCertificateCredential() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
       addCertificateCredential_result result = new addCertificateCredential_result();
       receiveBase(result, "addCertificateCredential");
       if (result.isSetSuccess()) {
         return result.success;
       }
+      if (result.csException != null) {
+        throw result.csException;
+      }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "addCertificateCredential failed: unknown result");
     }
 
-    public String addPasswordCredential(org.apache.airavata.credential.store.datamodel.PasswordCredential passwordCredential) throws org.apache.thrift.TException
+    public String addPasswordCredential(org.apache.airavata.credential.store.datamodel.PasswordCredential passwordCredential) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
       send_addPasswordCredential(passwordCredential);
       return recv_addPasswordCredential();
@@ -196,17 +202,20 @@ import org.slf4j.LoggerFactory;
       sendBase("addPasswordCredential", args);
     }
 
-    public String recv_addPasswordCredential() throws org.apache.thrift.TException
+    public String recv_addPasswordCredential() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
       addPasswordCredential_result result = new addPasswordCredential_result();
       receiveBase(result, "addPasswordCredential");
       if (result.isSetSuccess()) {
         return result.success;
       }
+      if (result.csException != null) {
+        throw result.csException;
+      }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "addPasswordCredential failed: unknown result");
     }
 
-    public org.apache.airavata.credential.store.datamodel.SSHCredential getSSHCredential(String tokenId) throws org.apache.thrift.TException
+    public org.apache.airavata.credential.store.datamodel.SSHCredential getSSHCredential(String tokenId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
       send_getSSHCredential(tokenId);
       return recv_getSSHCredential();
@@ -219,17 +228,20 @@ import org.slf4j.LoggerFactory;
       sendBase("getSSHCredential", args);
     }
 
-    public org.apache.airavata.credential.store.datamodel.SSHCredential recv_getSSHCredential() throws org.apache.thrift.TException
+    public org.apache.airavata.credential.store.datamodel.SSHCredential recv_getSSHCredential() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
       getSSHCredential_result result = new getSSHCredential_result();
       receiveBase(result, "getSSHCredential");
       if (result.isSetSuccess()) {
         return result.success;
       }
+      if (result.csException != null) {
+        throw result.csException;
+      }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getSSHCredential failed: unknown result");
     }
 
-    public org.apache.airavata.credential.store.datamodel.CertificateCredential getCertificateCredential(String tokenId) throws org.apache.thrift.TException
+    public org.apache.airavata.credential.store.datamodel.CertificateCredential getCertificateCredential(String tokenId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
       send_getCertificateCredential(tokenId);
       return recv_getCertificateCredential();
@@ -242,17 +254,20 @@ import org.slf4j.LoggerFactory;
       sendBase("getCertificateCredential", args);
     }
 
-    public org.apache.airavata.credential.store.datamodel.CertificateCredential recv_getCertificateCredential() throws org.apache.thrift.TException
+    public org.apache.airavata.credential.store.datamodel.CertificateCredential recv_getCertificateCredential() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
       getCertificateCredential_result result = new getCertificateCredential_result();
       receiveBase(result, "getCertificateCredential");
       if (result.isSetSuccess()) {
         return result.success;
       }
+      if (result.csException != null) {
+        throw result.csException;
+      }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getCertificateCredential failed: unknown result");
     }
 
-    public org.apache.airavata.credential.store.datamodel.PasswordCredential getPasswordCredential(String tokenId) throws org.apache.thrift.TException
+    public org.apache.airavata.credential.store.datamodel.PasswordCredential getPasswordCredential(String tokenId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
       send_getPasswordCredential(tokenId);
       return recv_getPasswordCredential();
@@ -265,12 +280,15 @@ import org.slf4j.LoggerFactory;
       sendBase("getPasswordCredential", args);
     }
 
-    public org.apache.airavata.credential.store.datamodel.PasswordCredential recv_getPasswordCredential() throws org.apache.thrift.TException
+    public org.apache.airavata.credential.store.datamodel.PasswordCredential recv_getPasswordCredential() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
       getPasswordCredential_result result = new getPasswordCredential_result();
       receiveBase(result, "getPasswordCredential");
       if (result.isSetSuccess()) {
         return result.success;
+      }
+      if (result.csException != null) {
+        throw result.csException;
       }
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getPasswordCredential failed: unknown result");
     }
@@ -344,7 +362,7 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public String getResult() throws org.apache.thrift.TException {
+      public String getResult() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -376,7 +394,7 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public String getResult() throws org.apache.thrift.TException {
+      public String getResult() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -408,7 +426,7 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public String getResult() throws org.apache.thrift.TException {
+      public String getResult() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -440,7 +458,7 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public org.apache.airavata.credential.store.datamodel.SSHCredential getResult() throws org.apache.thrift.TException {
+      public org.apache.airavata.credential.store.datamodel.SSHCredential getResult() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -472,7 +490,7 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public org.apache.airavata.credential.store.datamodel.CertificateCredential getResult() throws org.apache.thrift.TException {
+      public org.apache.airavata.credential.store.datamodel.CertificateCredential getResult() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -504,7 +522,7 @@ import org.slf4j.LoggerFactory;
         prot.writeMessageEnd();
       }
 
-      public org.apache.airavata.credential.store.datamodel.PasswordCredential getResult() throws org.apache.thrift.TException {
+      public org.apache.airavata.credential.store.datamodel.PasswordCredential getResult() throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException {
         if (getState() != org.apache.thrift.async.TAsyncMethodCall.State.RESPONSE_READ) {
           throw new IllegalStateException("Method call not finished!");
         }
@@ -572,7 +590,11 @@ import org.slf4j.LoggerFactory;
 
       public addSSHCredential_result getResult(I iface, addSSHCredential_args args) throws org.apache.thrift.TException {
         addSSHCredential_result result = new addSSHCredential_result();
-        result.success = iface.addSSHCredential(args.sshCredential);
+        try {
+          result.success = iface.addSSHCredential(args.sshCredential);
+        } catch (org.apache.airavata.credential.store.exception.CredentialStoreException csException) {
+          result.csException = csException;
+        }
         return result;
       }
     }
@@ -592,7 +614,11 @@ import org.slf4j.LoggerFactory;
 
       public addCertificateCredential_result getResult(I iface, addCertificateCredential_args args) throws org.apache.thrift.TException {
         addCertificateCredential_result result = new addCertificateCredential_result();
-        result.success = iface.addCertificateCredential(args.certificateCredential);
+        try {
+          result.success = iface.addCertificateCredential(args.certificateCredential);
+        } catch (org.apache.airavata.credential.store.exception.CredentialStoreException csException) {
+          result.csException = csException;
+        }
         return result;
       }
     }
@@ -612,7 +638,11 @@ import org.slf4j.LoggerFactory;
 
       public addPasswordCredential_result getResult(I iface, addPasswordCredential_args args) throws org.apache.thrift.TException {
         addPasswordCredential_result result = new addPasswordCredential_result();
-        result.success = iface.addPasswordCredential(args.passwordCredential);
+        try {
+          result.success = iface.addPasswordCredential(args.passwordCredential);
+        } catch (org.apache.airavata.credential.store.exception.CredentialStoreException csException) {
+          result.csException = csException;
+        }
         return result;
       }
     }
@@ -632,7 +662,11 @@ import org.slf4j.LoggerFactory;
 
       public getSSHCredential_result getResult(I iface, getSSHCredential_args args) throws org.apache.thrift.TException {
         getSSHCredential_result result = new getSSHCredential_result();
-        result.success = iface.getSSHCredential(args.tokenId);
+        try {
+          result.success = iface.getSSHCredential(args.tokenId);
+        } catch (org.apache.airavata.credential.store.exception.CredentialStoreException csException) {
+          result.csException = csException;
+        }
         return result;
       }
     }
@@ -652,7 +686,11 @@ import org.slf4j.LoggerFactory;
 
       public getCertificateCredential_result getResult(I iface, getCertificateCredential_args args) throws org.apache.thrift.TException {
         getCertificateCredential_result result = new getCertificateCredential_result();
-        result.success = iface.getCertificateCredential(args.tokenId);
+        try {
+          result.success = iface.getCertificateCredential(args.tokenId);
+        } catch (org.apache.airavata.credential.store.exception.CredentialStoreException csException) {
+          result.csException = csException;
+        }
         return result;
       }
     }
@@ -672,7 +710,11 @@ import org.slf4j.LoggerFactory;
 
       public getPasswordCredential_result getResult(I iface, getPasswordCredential_args args) throws org.apache.thrift.TException {
         getPasswordCredential_result result = new getPasswordCredential_result();
-        result.success = iface.getPasswordCredential(args.tokenId);
+        try {
+          result.success = iface.getPasswordCredential(args.tokenId);
+        } catch (org.apache.airavata.credential.store.exception.CredentialStoreException csException) {
+          result.csException = csException;
+        }
         return result;
       }
     }
@@ -778,6 +820,12 @@ import org.slf4j.LoggerFactory;
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             addSSHCredential_result result = new addSSHCredential_result();
+            if (e instanceof org.apache.airavata.credential.store.exception.CredentialStoreException) {
+                        result.csException = (org.apache.airavata.credential.store.exception.CredentialStoreException) e;
+                        result.setCsExceptionIsSet(true);
+                        msg = result;
+            }
+             else 
             {
               msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
               msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
@@ -829,6 +877,12 @@ import org.slf4j.LoggerFactory;
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             addCertificateCredential_result result = new addCertificateCredential_result();
+            if (e instanceof org.apache.airavata.credential.store.exception.CredentialStoreException) {
+                        result.csException = (org.apache.airavata.credential.store.exception.CredentialStoreException) e;
+                        result.setCsExceptionIsSet(true);
+                        msg = result;
+            }
+             else 
             {
               msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
               msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
@@ -880,6 +934,12 @@ import org.slf4j.LoggerFactory;
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             addPasswordCredential_result result = new addPasswordCredential_result();
+            if (e instanceof org.apache.airavata.credential.store.exception.CredentialStoreException) {
+                        result.csException = (org.apache.airavata.credential.store.exception.CredentialStoreException) e;
+                        result.setCsExceptionIsSet(true);
+                        msg = result;
+            }
+             else 
             {
               msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
               msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
@@ -931,6 +991,12 @@ import org.slf4j.LoggerFactory;
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             getSSHCredential_result result = new getSSHCredential_result();
+            if (e instanceof org.apache.airavata.credential.store.exception.CredentialStoreException) {
+                        result.csException = (org.apache.airavata.credential.store.exception.CredentialStoreException) e;
+                        result.setCsExceptionIsSet(true);
+                        msg = result;
+            }
+             else 
             {
               msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
               msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
@@ -982,6 +1048,12 @@ import org.slf4j.LoggerFactory;
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             getCertificateCredential_result result = new getCertificateCredential_result();
+            if (e instanceof org.apache.airavata.credential.store.exception.CredentialStoreException) {
+                        result.csException = (org.apache.airavata.credential.store.exception.CredentialStoreException) e;
+                        result.setCsExceptionIsSet(true);
+                        msg = result;
+            }
+             else 
             {
               msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
               msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
@@ -1033,6 +1105,12 @@ import org.slf4j.LoggerFactory;
             byte msgType = org.apache.thrift.protocol.TMessageType.REPLY;
             org.apache.thrift.TBase msg;
             getPasswordCredential_result result = new getPasswordCredential_result();
+            if (e instanceof org.apache.airavata.credential.store.exception.CredentialStoreException) {
+                        result.csException = (org.apache.airavata.credential.store.exception.CredentialStoreException) e;
+                        result.setCsExceptionIsSet(true);
+                        msg = result;
+            }
+             else 
             {
               msgType = org.apache.thrift.protocol.TMessageType.EXCEPTION;
               msg = (org.apache.thrift.TBase)new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.INTERNAL_ERROR, e.getMessage());
@@ -2015,6 +2093,7 @@ import org.slf4j.LoggerFactory;
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("addSSHCredential_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
+    private static final org.apache.thrift.protocol.TField CS_EXCEPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("csException", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -2023,10 +2102,12 @@ import org.slf4j.LoggerFactory;
     }
 
     public String success; // required
+    public org.apache.airavata.credential.store.exception.CredentialStoreException csException; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      SUCCESS((short)0, "success");
+      SUCCESS((short)0, "success"),
+      CS_EXCEPTION((short)1, "csException");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -2043,6 +2124,8 @@ import org.slf4j.LoggerFactory;
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
+          case 1: // CS_EXCEPTION
+            return CS_EXCEPTION;
           default:
             return null;
         }
@@ -2088,6 +2171,8 @@ import org.slf4j.LoggerFactory;
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.CS_EXCEPTION, new org.apache.thrift.meta_data.FieldMetaData("csException", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(addSSHCredential_result.class, metaDataMap);
     }
@@ -2096,10 +2181,12 @@ import org.slf4j.LoggerFactory;
     }
 
     public addSSHCredential_result(
-      String success)
+      String success,
+      org.apache.airavata.credential.store.exception.CredentialStoreException csException)
     {
       this();
       this.success = success;
+      this.csException = csException;
     }
 
     /**
@@ -2108,6 +2195,9 @@ import org.slf4j.LoggerFactory;
     public addSSHCredential_result(addSSHCredential_result other) {
       if (other.isSetSuccess()) {
         this.success = other.success;
+      }
+      if (other.isSetCsException()) {
+        this.csException = new org.apache.airavata.credential.store.exception.CredentialStoreException(other.csException);
       }
     }
 
@@ -2118,6 +2208,7 @@ import org.slf4j.LoggerFactory;
     @Override
     public void clear() {
       this.success = null;
+      this.csException = null;
     }
 
     public String getSuccess() {
@@ -2144,6 +2235,30 @@ import org.slf4j.LoggerFactory;
       }
     }
 
+    public org.apache.airavata.credential.store.exception.CredentialStoreException getCsException() {
+      return this.csException;
+    }
+
+    public addSSHCredential_result setCsException(org.apache.airavata.credential.store.exception.CredentialStoreException csException) {
+      this.csException = csException;
+      return this;
+    }
+
+    public void unsetCsException() {
+      this.csException = null;
+    }
+
+    /** Returns true if field csException is set (has been assigned a value) and false otherwise */
+    public boolean isSetCsException() {
+      return this.csException != null;
+    }
+
+    public void setCsExceptionIsSet(boolean value) {
+      if (!value) {
+        this.csException = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -2154,6 +2269,14 @@ import org.slf4j.LoggerFactory;
         }
         break;
 
+      case CS_EXCEPTION:
+        if (value == null) {
+          unsetCsException();
+        } else {
+          setCsException((org.apache.airavata.credential.store.exception.CredentialStoreException)value);
+        }
+        break;
+
       }
     }
 
@@ -2161,6 +2284,9 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case SUCCESS:
         return getSuccess();
+
+      case CS_EXCEPTION:
+        return getCsException();
 
       }
       throw new IllegalStateException();
@@ -2175,6 +2301,8 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
+      case CS_EXCEPTION:
+        return isSetCsException();
       }
       throw new IllegalStateException();
     }
@@ -2198,6 +2326,15 @@ import org.slf4j.LoggerFactory;
         if (!(this_present_success && that_present_success))
           return false;
         if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_csException = true && this.isSetCsException();
+      boolean that_present_csException = true && that.isSetCsException();
+      if (this_present_csException || that_present_csException) {
+        if (!(this_present_csException && that_present_csException))
+          return false;
+        if (!this.csException.equals(that.csException))
           return false;
       }
 
@@ -2227,6 +2364,16 @@ import org.slf4j.LoggerFactory;
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetCsException()).compareTo(other.isSetCsException());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetCsException()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.csException, other.csException);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -2252,6 +2399,14 @@ import org.slf4j.LoggerFactory;
         sb.append("null");
       } else {
         sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("csException:");
+      if (this.csException == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.csException);
       }
       first = false;
       sb.append(")");
@@ -2305,6 +2460,15 @@ import org.slf4j.LoggerFactory;
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 1: // CS_EXCEPTION
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.csException = new org.apache.airavata.credential.store.exception.CredentialStoreException();
+                struct.csException.read(iprot);
+                struct.setCsExceptionIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -2323,6 +2487,11 @@ import org.slf4j.LoggerFactory;
         if (struct.success != null) {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           oprot.writeString(struct.success);
+          oprot.writeFieldEnd();
+        }
+        if (struct.csException != null) {
+          oprot.writeFieldBegin(CS_EXCEPTION_FIELD_DESC);
+          struct.csException.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -2346,19 +2515,30 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetCsException()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
         if (struct.isSetSuccess()) {
           oprot.writeString(struct.success);
+        }
+        if (struct.isSetCsException()) {
+          struct.csException.write(oprot);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, addSSHCredential_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           struct.success = iprot.readString();
           struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.csException = new org.apache.airavata.credential.store.exception.CredentialStoreException();
+          struct.csException.read(iprot);
+          struct.setCsExceptionIsSet(true);
         }
       }
     }
@@ -2721,6 +2901,7 @@ import org.slf4j.LoggerFactory;
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("addCertificateCredential_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
+    private static final org.apache.thrift.protocol.TField CS_EXCEPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("csException", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -2729,10 +2910,12 @@ import org.slf4j.LoggerFactory;
     }
 
     public String success; // required
+    public org.apache.airavata.credential.store.exception.CredentialStoreException csException; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      SUCCESS((short)0, "success");
+      SUCCESS((short)0, "success"),
+      CS_EXCEPTION((short)1, "csException");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -2749,6 +2932,8 @@ import org.slf4j.LoggerFactory;
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
+          case 1: // CS_EXCEPTION
+            return CS_EXCEPTION;
           default:
             return null;
         }
@@ -2794,6 +2979,8 @@ import org.slf4j.LoggerFactory;
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.CS_EXCEPTION, new org.apache.thrift.meta_data.FieldMetaData("csException", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(addCertificateCredential_result.class, metaDataMap);
     }
@@ -2802,10 +2989,12 @@ import org.slf4j.LoggerFactory;
     }
 
     public addCertificateCredential_result(
-      String success)
+      String success,
+      org.apache.airavata.credential.store.exception.CredentialStoreException csException)
     {
       this();
       this.success = success;
+      this.csException = csException;
     }
 
     /**
@@ -2814,6 +3003,9 @@ import org.slf4j.LoggerFactory;
     public addCertificateCredential_result(addCertificateCredential_result other) {
       if (other.isSetSuccess()) {
         this.success = other.success;
+      }
+      if (other.isSetCsException()) {
+        this.csException = new org.apache.airavata.credential.store.exception.CredentialStoreException(other.csException);
       }
     }
 
@@ -2824,6 +3016,7 @@ import org.slf4j.LoggerFactory;
     @Override
     public void clear() {
       this.success = null;
+      this.csException = null;
     }
 
     public String getSuccess() {
@@ -2850,6 +3043,30 @@ import org.slf4j.LoggerFactory;
       }
     }
 
+    public org.apache.airavata.credential.store.exception.CredentialStoreException getCsException() {
+      return this.csException;
+    }
+
+    public addCertificateCredential_result setCsException(org.apache.airavata.credential.store.exception.CredentialStoreException csException) {
+      this.csException = csException;
+      return this;
+    }
+
+    public void unsetCsException() {
+      this.csException = null;
+    }
+
+    /** Returns true if field csException is set (has been assigned a value) and false otherwise */
+    public boolean isSetCsException() {
+      return this.csException != null;
+    }
+
+    public void setCsExceptionIsSet(boolean value) {
+      if (!value) {
+        this.csException = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -2860,6 +3077,14 @@ import org.slf4j.LoggerFactory;
         }
         break;
 
+      case CS_EXCEPTION:
+        if (value == null) {
+          unsetCsException();
+        } else {
+          setCsException((org.apache.airavata.credential.store.exception.CredentialStoreException)value);
+        }
+        break;
+
       }
     }
 
@@ -2867,6 +3092,9 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case SUCCESS:
         return getSuccess();
+
+      case CS_EXCEPTION:
+        return getCsException();
 
       }
       throw new IllegalStateException();
@@ -2881,6 +3109,8 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
+      case CS_EXCEPTION:
+        return isSetCsException();
       }
       throw new IllegalStateException();
     }
@@ -2904,6 +3134,15 @@ import org.slf4j.LoggerFactory;
         if (!(this_present_success && that_present_success))
           return false;
         if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_csException = true && this.isSetCsException();
+      boolean that_present_csException = true && that.isSetCsException();
+      if (this_present_csException || that_present_csException) {
+        if (!(this_present_csException && that_present_csException))
+          return false;
+        if (!this.csException.equals(that.csException))
           return false;
       }
 
@@ -2933,6 +3172,16 @@ import org.slf4j.LoggerFactory;
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetCsException()).compareTo(other.isSetCsException());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetCsException()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.csException, other.csException);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -2958,6 +3207,14 @@ import org.slf4j.LoggerFactory;
         sb.append("null");
       } else {
         sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("csException:");
+      if (this.csException == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.csException);
       }
       first = false;
       sb.append(")");
@@ -3011,6 +3268,15 @@ import org.slf4j.LoggerFactory;
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 1: // CS_EXCEPTION
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.csException = new org.apache.airavata.credential.store.exception.CredentialStoreException();
+                struct.csException.read(iprot);
+                struct.setCsExceptionIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -3029,6 +3295,11 @@ import org.slf4j.LoggerFactory;
         if (struct.success != null) {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           oprot.writeString(struct.success);
+          oprot.writeFieldEnd();
+        }
+        if (struct.csException != null) {
+          oprot.writeFieldBegin(CS_EXCEPTION_FIELD_DESC);
+          struct.csException.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -3052,19 +3323,30 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetCsException()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
         if (struct.isSetSuccess()) {
           oprot.writeString(struct.success);
+        }
+        if (struct.isSetCsException()) {
+          struct.csException.write(oprot);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, addCertificateCredential_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           struct.success = iprot.readString();
           struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.csException = new org.apache.airavata.credential.store.exception.CredentialStoreException();
+          struct.csException.read(iprot);
+          struct.setCsExceptionIsSet(true);
         }
       }
     }
@@ -3427,6 +3709,7 @@ import org.slf4j.LoggerFactory;
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("addPasswordCredential_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRING, (short)0);
+    private static final org.apache.thrift.protocol.TField CS_EXCEPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("csException", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -3435,10 +3718,12 @@ import org.slf4j.LoggerFactory;
     }
 
     public String success; // required
+    public org.apache.airavata.credential.store.exception.CredentialStoreException csException; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      SUCCESS((short)0, "success");
+      SUCCESS((short)0, "success"),
+      CS_EXCEPTION((short)1, "csException");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -3455,6 +3740,8 @@ import org.slf4j.LoggerFactory;
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
+          case 1: // CS_EXCEPTION
+            return CS_EXCEPTION;
           default:
             return null;
         }
@@ -3500,6 +3787,8 @@ import org.slf4j.LoggerFactory;
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.CS_EXCEPTION, new org.apache.thrift.meta_data.FieldMetaData("csException", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(addPasswordCredential_result.class, metaDataMap);
     }
@@ -3508,10 +3797,12 @@ import org.slf4j.LoggerFactory;
     }
 
     public addPasswordCredential_result(
-      String success)
+      String success,
+      org.apache.airavata.credential.store.exception.CredentialStoreException csException)
     {
       this();
       this.success = success;
+      this.csException = csException;
     }
 
     /**
@@ -3520,6 +3811,9 @@ import org.slf4j.LoggerFactory;
     public addPasswordCredential_result(addPasswordCredential_result other) {
       if (other.isSetSuccess()) {
         this.success = other.success;
+      }
+      if (other.isSetCsException()) {
+        this.csException = new org.apache.airavata.credential.store.exception.CredentialStoreException(other.csException);
       }
     }
 
@@ -3530,6 +3824,7 @@ import org.slf4j.LoggerFactory;
     @Override
     public void clear() {
       this.success = null;
+      this.csException = null;
     }
 
     public String getSuccess() {
@@ -3556,6 +3851,30 @@ import org.slf4j.LoggerFactory;
       }
     }
 
+    public org.apache.airavata.credential.store.exception.CredentialStoreException getCsException() {
+      return this.csException;
+    }
+
+    public addPasswordCredential_result setCsException(org.apache.airavata.credential.store.exception.CredentialStoreException csException) {
+      this.csException = csException;
+      return this;
+    }
+
+    public void unsetCsException() {
+      this.csException = null;
+    }
+
+    /** Returns true if field csException is set (has been assigned a value) and false otherwise */
+    public boolean isSetCsException() {
+      return this.csException != null;
+    }
+
+    public void setCsExceptionIsSet(boolean value) {
+      if (!value) {
+        this.csException = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -3566,6 +3885,14 @@ import org.slf4j.LoggerFactory;
         }
         break;
 
+      case CS_EXCEPTION:
+        if (value == null) {
+          unsetCsException();
+        } else {
+          setCsException((org.apache.airavata.credential.store.exception.CredentialStoreException)value);
+        }
+        break;
+
       }
     }
 
@@ -3573,6 +3900,9 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case SUCCESS:
         return getSuccess();
+
+      case CS_EXCEPTION:
+        return getCsException();
 
       }
       throw new IllegalStateException();
@@ -3587,6 +3917,8 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
+      case CS_EXCEPTION:
+        return isSetCsException();
       }
       throw new IllegalStateException();
     }
@@ -3610,6 +3942,15 @@ import org.slf4j.LoggerFactory;
         if (!(this_present_success && that_present_success))
           return false;
         if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_csException = true && this.isSetCsException();
+      boolean that_present_csException = true && that.isSetCsException();
+      if (this_present_csException || that_present_csException) {
+        if (!(this_present_csException && that_present_csException))
+          return false;
+        if (!this.csException.equals(that.csException))
           return false;
       }
 
@@ -3639,6 +3980,16 @@ import org.slf4j.LoggerFactory;
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetCsException()).compareTo(other.isSetCsException());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetCsException()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.csException, other.csException);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -3664,6 +4015,14 @@ import org.slf4j.LoggerFactory;
         sb.append("null");
       } else {
         sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("csException:");
+      if (this.csException == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.csException);
       }
       first = false;
       sb.append(")");
@@ -3717,6 +4076,15 @@ import org.slf4j.LoggerFactory;
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 1: // CS_EXCEPTION
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.csException = new org.apache.airavata.credential.store.exception.CredentialStoreException();
+                struct.csException.read(iprot);
+                struct.setCsExceptionIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -3735,6 +4103,11 @@ import org.slf4j.LoggerFactory;
         if (struct.success != null) {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           oprot.writeString(struct.success);
+          oprot.writeFieldEnd();
+        }
+        if (struct.csException != null) {
+          oprot.writeFieldBegin(CS_EXCEPTION_FIELD_DESC);
+          struct.csException.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -3758,19 +4131,30 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetCsException()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
         if (struct.isSetSuccess()) {
           oprot.writeString(struct.success);
+        }
+        if (struct.isSetCsException()) {
+          struct.csException.write(oprot);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, addPasswordCredential_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           struct.success = iprot.readString();
           struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.csException = new org.apache.airavata.credential.store.exception.CredentialStoreException();
+          struct.csException.read(iprot);
+          struct.setCsExceptionIsSet(true);
         }
       }
     }
@@ -4128,6 +4512,7 @@ import org.slf4j.LoggerFactory;
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getSSHCredential_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
+    private static final org.apache.thrift.protocol.TField CS_EXCEPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("csException", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -4136,10 +4521,12 @@ import org.slf4j.LoggerFactory;
     }
 
     public org.apache.airavata.credential.store.datamodel.SSHCredential success; // required
+    public org.apache.airavata.credential.store.exception.CredentialStoreException csException; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      SUCCESS((short)0, "success");
+      SUCCESS((short)0, "success"),
+      CS_EXCEPTION((short)1, "csException");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -4156,6 +4543,8 @@ import org.slf4j.LoggerFactory;
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
+          case 1: // CS_EXCEPTION
+            return CS_EXCEPTION;
           default:
             return null;
         }
@@ -4201,6 +4590,8 @@ import org.slf4j.LoggerFactory;
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.credential.store.datamodel.SSHCredential.class)));
+      tmpMap.put(_Fields.CS_EXCEPTION, new org.apache.thrift.meta_data.FieldMetaData("csException", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getSSHCredential_result.class, metaDataMap);
     }
@@ -4209,10 +4600,12 @@ import org.slf4j.LoggerFactory;
     }
 
     public getSSHCredential_result(
-      org.apache.airavata.credential.store.datamodel.SSHCredential success)
+      org.apache.airavata.credential.store.datamodel.SSHCredential success,
+      org.apache.airavata.credential.store.exception.CredentialStoreException csException)
     {
       this();
       this.success = success;
+      this.csException = csException;
     }
 
     /**
@@ -4221,6 +4614,9 @@ import org.slf4j.LoggerFactory;
     public getSSHCredential_result(getSSHCredential_result other) {
       if (other.isSetSuccess()) {
         this.success = new org.apache.airavata.credential.store.datamodel.SSHCredential(other.success);
+      }
+      if (other.isSetCsException()) {
+        this.csException = new org.apache.airavata.credential.store.exception.CredentialStoreException(other.csException);
       }
     }
 
@@ -4231,6 +4627,7 @@ import org.slf4j.LoggerFactory;
     @Override
     public void clear() {
       this.success = null;
+      this.csException = null;
     }
 
     public org.apache.airavata.credential.store.datamodel.SSHCredential getSuccess() {
@@ -4257,6 +4654,30 @@ import org.slf4j.LoggerFactory;
       }
     }
 
+    public org.apache.airavata.credential.store.exception.CredentialStoreException getCsException() {
+      return this.csException;
+    }
+
+    public getSSHCredential_result setCsException(org.apache.airavata.credential.store.exception.CredentialStoreException csException) {
+      this.csException = csException;
+      return this;
+    }
+
+    public void unsetCsException() {
+      this.csException = null;
+    }
+
+    /** Returns true if field csException is set (has been assigned a value) and false otherwise */
+    public boolean isSetCsException() {
+      return this.csException != null;
+    }
+
+    public void setCsExceptionIsSet(boolean value) {
+      if (!value) {
+        this.csException = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -4267,6 +4688,14 @@ import org.slf4j.LoggerFactory;
         }
         break;
 
+      case CS_EXCEPTION:
+        if (value == null) {
+          unsetCsException();
+        } else {
+          setCsException((org.apache.airavata.credential.store.exception.CredentialStoreException)value);
+        }
+        break;
+
       }
     }
 
@@ -4274,6 +4703,9 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case SUCCESS:
         return getSuccess();
+
+      case CS_EXCEPTION:
+        return getCsException();
 
       }
       throw new IllegalStateException();
@@ -4288,6 +4720,8 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
+      case CS_EXCEPTION:
+        return isSetCsException();
       }
       throw new IllegalStateException();
     }
@@ -4311,6 +4745,15 @@ import org.slf4j.LoggerFactory;
         if (!(this_present_success && that_present_success))
           return false;
         if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_csException = true && this.isSetCsException();
+      boolean that_present_csException = true && that.isSetCsException();
+      if (this_present_csException || that_present_csException) {
+        if (!(this_present_csException && that_present_csException))
+          return false;
+        if (!this.csException.equals(that.csException))
           return false;
       }
 
@@ -4340,6 +4783,16 @@ import org.slf4j.LoggerFactory;
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetCsException()).compareTo(other.isSetCsException());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetCsException()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.csException, other.csException);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -4365,6 +4818,14 @@ import org.slf4j.LoggerFactory;
         sb.append("null");
       } else {
         sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("csException:");
+      if (this.csException == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.csException);
       }
       first = false;
       sb.append(")");
@@ -4422,6 +4883,15 @@ import org.slf4j.LoggerFactory;
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 1: // CS_EXCEPTION
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.csException = new org.apache.airavata.credential.store.exception.CredentialStoreException();
+                struct.csException.read(iprot);
+                struct.setCsExceptionIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -4440,6 +4910,11 @@ import org.slf4j.LoggerFactory;
         if (struct.success != null) {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.csException != null) {
+          oprot.writeFieldBegin(CS_EXCEPTION_FIELD_DESC);
+          struct.csException.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -4463,20 +4938,31 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetCsException()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
         if (struct.isSetSuccess()) {
           struct.success.write(oprot);
+        }
+        if (struct.isSetCsException()) {
+          struct.csException.write(oprot);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, getSSHCredential_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           struct.success = new org.apache.airavata.credential.store.datamodel.SSHCredential();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.csException = new org.apache.airavata.credential.store.exception.CredentialStoreException();
+          struct.csException.read(iprot);
+          struct.setCsExceptionIsSet(true);
         }
       }
     }
@@ -4834,6 +5320,7 @@ import org.slf4j.LoggerFactory;
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getCertificateCredential_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
+    private static final org.apache.thrift.protocol.TField CS_EXCEPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("csException", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -4842,10 +5329,12 @@ import org.slf4j.LoggerFactory;
     }
 
     public org.apache.airavata.credential.store.datamodel.CertificateCredential success; // required
+    public org.apache.airavata.credential.store.exception.CredentialStoreException csException; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      SUCCESS((short)0, "success");
+      SUCCESS((short)0, "success"),
+      CS_EXCEPTION((short)1, "csException");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -4862,6 +5351,8 @@ import org.slf4j.LoggerFactory;
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
+          case 1: // CS_EXCEPTION
+            return CS_EXCEPTION;
           default:
             return null;
         }
@@ -4907,6 +5398,8 @@ import org.slf4j.LoggerFactory;
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.credential.store.datamodel.CertificateCredential.class)));
+      tmpMap.put(_Fields.CS_EXCEPTION, new org.apache.thrift.meta_data.FieldMetaData("csException", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getCertificateCredential_result.class, metaDataMap);
     }
@@ -4915,10 +5408,12 @@ import org.slf4j.LoggerFactory;
     }
 
     public getCertificateCredential_result(
-      org.apache.airavata.credential.store.datamodel.CertificateCredential success)
+      org.apache.airavata.credential.store.datamodel.CertificateCredential success,
+      org.apache.airavata.credential.store.exception.CredentialStoreException csException)
     {
       this();
       this.success = success;
+      this.csException = csException;
     }
 
     /**
@@ -4927,6 +5422,9 @@ import org.slf4j.LoggerFactory;
     public getCertificateCredential_result(getCertificateCredential_result other) {
       if (other.isSetSuccess()) {
         this.success = new org.apache.airavata.credential.store.datamodel.CertificateCredential(other.success);
+      }
+      if (other.isSetCsException()) {
+        this.csException = new org.apache.airavata.credential.store.exception.CredentialStoreException(other.csException);
       }
     }
 
@@ -4937,6 +5435,7 @@ import org.slf4j.LoggerFactory;
     @Override
     public void clear() {
       this.success = null;
+      this.csException = null;
     }
 
     public org.apache.airavata.credential.store.datamodel.CertificateCredential getSuccess() {
@@ -4963,6 +5462,30 @@ import org.slf4j.LoggerFactory;
       }
     }
 
+    public org.apache.airavata.credential.store.exception.CredentialStoreException getCsException() {
+      return this.csException;
+    }
+
+    public getCertificateCredential_result setCsException(org.apache.airavata.credential.store.exception.CredentialStoreException csException) {
+      this.csException = csException;
+      return this;
+    }
+
+    public void unsetCsException() {
+      this.csException = null;
+    }
+
+    /** Returns true if field csException is set (has been assigned a value) and false otherwise */
+    public boolean isSetCsException() {
+      return this.csException != null;
+    }
+
+    public void setCsExceptionIsSet(boolean value) {
+      if (!value) {
+        this.csException = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -4973,6 +5496,14 @@ import org.slf4j.LoggerFactory;
         }
         break;
 
+      case CS_EXCEPTION:
+        if (value == null) {
+          unsetCsException();
+        } else {
+          setCsException((org.apache.airavata.credential.store.exception.CredentialStoreException)value);
+        }
+        break;
+
       }
     }
 
@@ -4980,6 +5511,9 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case SUCCESS:
         return getSuccess();
+
+      case CS_EXCEPTION:
+        return getCsException();
 
       }
       throw new IllegalStateException();
@@ -4994,6 +5528,8 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
+      case CS_EXCEPTION:
+        return isSetCsException();
       }
       throw new IllegalStateException();
     }
@@ -5017,6 +5553,15 @@ import org.slf4j.LoggerFactory;
         if (!(this_present_success && that_present_success))
           return false;
         if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_csException = true && this.isSetCsException();
+      boolean that_present_csException = true && that.isSetCsException();
+      if (this_present_csException || that_present_csException) {
+        if (!(this_present_csException && that_present_csException))
+          return false;
+        if (!this.csException.equals(that.csException))
           return false;
       }
 
@@ -5046,6 +5591,16 @@ import org.slf4j.LoggerFactory;
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetCsException()).compareTo(other.isSetCsException());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetCsException()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.csException, other.csException);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -5071,6 +5626,14 @@ import org.slf4j.LoggerFactory;
         sb.append("null");
       } else {
         sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("csException:");
+      if (this.csException == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.csException);
       }
       first = false;
       sb.append(")");
@@ -5128,6 +5691,15 @@ import org.slf4j.LoggerFactory;
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 1: // CS_EXCEPTION
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.csException = new org.apache.airavata.credential.store.exception.CredentialStoreException();
+                struct.csException.read(iprot);
+                struct.setCsExceptionIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -5146,6 +5718,11 @@ import org.slf4j.LoggerFactory;
         if (struct.success != null) {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.csException != null) {
+          oprot.writeFieldBegin(CS_EXCEPTION_FIELD_DESC);
+          struct.csException.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -5169,20 +5746,31 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetCsException()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
         if (struct.isSetSuccess()) {
           struct.success.write(oprot);
+        }
+        if (struct.isSetCsException()) {
+          struct.csException.write(oprot);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, getCertificateCredential_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           struct.success = new org.apache.airavata.credential.store.datamodel.CertificateCredential();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.csException = new org.apache.airavata.credential.store.exception.CredentialStoreException();
+          struct.csException.read(iprot);
+          struct.setCsExceptionIsSet(true);
         }
       }
     }
@@ -5540,6 +6128,7 @@ import org.slf4j.LoggerFactory;
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getPasswordCredential_result");
 
     private static final org.apache.thrift.protocol.TField SUCCESS_FIELD_DESC = new org.apache.thrift.protocol.TField("success", org.apache.thrift.protocol.TType.STRUCT, (short)0);
+    private static final org.apache.thrift.protocol.TField CS_EXCEPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("csException", org.apache.thrift.protocol.TType.STRUCT, (short)1);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -5548,10 +6137,12 @@ import org.slf4j.LoggerFactory;
     }
 
     public org.apache.airavata.credential.store.datamodel.PasswordCredential success; // required
+    public org.apache.airavata.credential.store.exception.CredentialStoreException csException; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      SUCCESS((short)0, "success");
+      SUCCESS((short)0, "success"),
+      CS_EXCEPTION((short)1, "csException");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -5568,6 +6159,8 @@ import org.slf4j.LoggerFactory;
         switch(fieldId) {
           case 0: // SUCCESS
             return SUCCESS;
+          case 1: // CS_EXCEPTION
+            return CS_EXCEPTION;
           default:
             return null;
         }
@@ -5613,6 +6206,8 @@ import org.slf4j.LoggerFactory;
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.SUCCESS, new org.apache.thrift.meta_data.FieldMetaData("success", org.apache.thrift.TFieldRequirementType.DEFAULT, 
           new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, org.apache.airavata.credential.store.datamodel.PasswordCredential.class)));
+      tmpMap.put(_Fields.CS_EXCEPTION, new org.apache.thrift.meta_data.FieldMetaData("csException", org.apache.thrift.TFieldRequirementType.DEFAULT, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRUCT)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getPasswordCredential_result.class, metaDataMap);
     }
@@ -5621,10 +6216,12 @@ import org.slf4j.LoggerFactory;
     }
 
     public getPasswordCredential_result(
-      org.apache.airavata.credential.store.datamodel.PasswordCredential success)
+      org.apache.airavata.credential.store.datamodel.PasswordCredential success,
+      org.apache.airavata.credential.store.exception.CredentialStoreException csException)
     {
       this();
       this.success = success;
+      this.csException = csException;
     }
 
     /**
@@ -5633,6 +6230,9 @@ import org.slf4j.LoggerFactory;
     public getPasswordCredential_result(getPasswordCredential_result other) {
       if (other.isSetSuccess()) {
         this.success = new org.apache.airavata.credential.store.datamodel.PasswordCredential(other.success);
+      }
+      if (other.isSetCsException()) {
+        this.csException = new org.apache.airavata.credential.store.exception.CredentialStoreException(other.csException);
       }
     }
 
@@ -5643,6 +6243,7 @@ import org.slf4j.LoggerFactory;
     @Override
     public void clear() {
       this.success = null;
+      this.csException = null;
     }
 
     public org.apache.airavata.credential.store.datamodel.PasswordCredential getSuccess() {
@@ -5669,6 +6270,30 @@ import org.slf4j.LoggerFactory;
       }
     }
 
+    public org.apache.airavata.credential.store.exception.CredentialStoreException getCsException() {
+      return this.csException;
+    }
+
+    public getPasswordCredential_result setCsException(org.apache.airavata.credential.store.exception.CredentialStoreException csException) {
+      this.csException = csException;
+      return this;
+    }
+
+    public void unsetCsException() {
+      this.csException = null;
+    }
+
+    /** Returns true if field csException is set (has been assigned a value) and false otherwise */
+    public boolean isSetCsException() {
+      return this.csException != null;
+    }
+
+    public void setCsExceptionIsSet(boolean value) {
+      if (!value) {
+        this.csException = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case SUCCESS:
@@ -5679,6 +6304,14 @@ import org.slf4j.LoggerFactory;
         }
         break;
 
+      case CS_EXCEPTION:
+        if (value == null) {
+          unsetCsException();
+        } else {
+          setCsException((org.apache.airavata.credential.store.exception.CredentialStoreException)value);
+        }
+        break;
+
       }
     }
 
@@ -5686,6 +6319,9 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case SUCCESS:
         return getSuccess();
+
+      case CS_EXCEPTION:
+        return getCsException();
 
       }
       throw new IllegalStateException();
@@ -5700,6 +6336,8 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case SUCCESS:
         return isSetSuccess();
+      case CS_EXCEPTION:
+        return isSetCsException();
       }
       throw new IllegalStateException();
     }
@@ -5723,6 +6361,15 @@ import org.slf4j.LoggerFactory;
         if (!(this_present_success && that_present_success))
           return false;
         if (!this.success.equals(that.success))
+          return false;
+      }
+
+      boolean this_present_csException = true && this.isSetCsException();
+      boolean that_present_csException = true && that.isSetCsException();
+      if (this_present_csException || that_present_csException) {
+        if (!(this_present_csException && that_present_csException))
+          return false;
+        if (!this.csException.equals(that.csException))
           return false;
       }
 
@@ -5752,6 +6399,16 @@ import org.slf4j.LoggerFactory;
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetCsException()).compareTo(other.isSetCsException());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetCsException()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.csException, other.csException);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -5777,6 +6434,14 @@ import org.slf4j.LoggerFactory;
         sb.append("null");
       } else {
         sb.append(this.success);
+      }
+      first = false;
+      if (!first) sb.append(", ");
+      sb.append("csException:");
+      if (this.csException == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.csException);
       }
       first = false;
       sb.append(")");
@@ -5834,6 +6499,15 @@ import org.slf4j.LoggerFactory;
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 1: // CS_EXCEPTION
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
+                struct.csException = new org.apache.airavata.credential.store.exception.CredentialStoreException();
+                struct.csException.read(iprot);
+                struct.setCsExceptionIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -5852,6 +6526,11 @@ import org.slf4j.LoggerFactory;
         if (struct.success != null) {
           oprot.writeFieldBegin(SUCCESS_FIELD_DESC);
           struct.success.write(oprot);
+          oprot.writeFieldEnd();
+        }
+        if (struct.csException != null) {
+          oprot.writeFieldBegin(CS_EXCEPTION_FIELD_DESC);
+          struct.csException.write(oprot);
           oprot.writeFieldEnd();
         }
         oprot.writeFieldStop();
@@ -5875,20 +6554,31 @@ import org.slf4j.LoggerFactory;
         if (struct.isSetSuccess()) {
           optionals.set(0);
         }
-        oprot.writeBitSet(optionals, 1);
+        if (struct.isSetCsException()) {
+          optionals.set(1);
+        }
+        oprot.writeBitSet(optionals, 2);
         if (struct.isSetSuccess()) {
           struct.success.write(oprot);
+        }
+        if (struct.isSetCsException()) {
+          struct.csException.write(oprot);
         }
       }
 
       @Override
       public void read(org.apache.thrift.protocol.TProtocol prot, getPasswordCredential_result struct) throws org.apache.thrift.TException {
         TTupleProtocol iprot = (TTupleProtocol) prot;
-        BitSet incoming = iprot.readBitSet(1);
+        BitSet incoming = iprot.readBitSet(2);
         if (incoming.get(0)) {
           struct.success = new org.apache.airavata.credential.store.datamodel.PasswordCredential();
           struct.success.read(iprot);
           struct.setSuccessIsSet(true);
+        }
+        if (incoming.get(1)) {
+          struct.csException = new org.apache.airavata.credential.store.exception.CredentialStoreException();
+          struct.csException.read(iprot);
+          struct.setCsExceptionIsSet(true);
         }
       }
     }
