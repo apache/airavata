@@ -909,6 +909,7 @@ public class ExperimentRegistry {
         try {
             ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode(nodeId);
+            experiment = workflowNode.getExperimentResource();
             TaskDetailResource taskDetail = (TaskDetailResource) workflowNode.create(ResourceType.TASK_DETAIL);
             taskDetail.setWorkflowNodeDetailResource(workflowNode);
             taskDetail.setTaskId(getTaskID(workflowNode.getNodeName()));
