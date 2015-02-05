@@ -998,7 +998,6 @@ public class ExperimentRegistry {
         try {
             ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
-            experiment = workflowNode.getExperimentResource();
             TaskDetailResource taskDetail = workflowNode.getTaskDetail(taskId);
 //            taskDetail.setWorkflowNodeDetailResource(workflowNode);
             taskDetail.setApplicationId(taskDetails.getApplicationId());
@@ -1007,6 +1006,7 @@ public class ExperimentRegistry {
             taskDetail.setApplicationDeploymentId(taskDetails.getApplicationDeploymentId());
             taskDetail.setEnableEmailNotifications(taskDetails.isEnableEmailNotification());
             taskDetail.save();
+            experiment = taskDetail.getWorkflowNodeDetailResource().getExperimentResource();
 
             List<String> emailAddresses = taskDetails.getEmailAddresses();
             // remove existing emails
