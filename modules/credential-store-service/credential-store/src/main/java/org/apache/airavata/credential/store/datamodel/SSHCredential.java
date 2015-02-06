@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField PASSPHRASE_FIELD_DESC = new org.apache.thrift.protocol.TField("passphrase", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField PUBLIC_KEY_FIELD_DESC = new org.apache.thrift.protocol.TField("publicKey", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField PRIVATE_KEY_FIELD_DESC = new org.apache.thrift.protocol.TField("privateKey", org.apache.thrift.protocol.TType.STRING, (short)5);
-  private static final org.apache.thrift.protocol.TField PERSISTED_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("persistedTime", org.apache.thrift.protocol.TType.I32, (short)6);
+  private static final org.apache.thrift.protocol.TField PERSISTED_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("persistedTime", org.apache.thrift.protocol.TType.I64, (short)6);
   private static final org.apache.thrift.protocol.TField TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("token", org.apache.thrift.protocol.TType.STRING, (short)7);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -67,10 +67,10 @@ import org.slf4j.LoggerFactory;
 
   public String gatewayId; // required
   public String username; // required
-  public String passphrase; // optional
+  public String passphrase; // required
   public String publicKey; // optional
   public String privateKey; // optional
-  public int persistedTime; // optional
+  public long persistedTime; // optional
   public String token; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -152,7 +152,7 @@ import org.slf4j.LoggerFactory;
   // isset id assignments
   private static final int __PERSISTEDTIME_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.PASSPHRASE,_Fields.PUBLIC_KEY,_Fields.PRIVATE_KEY,_Fields.PERSISTED_TIME,_Fields.TOKEN};
+  private _Fields optionals[] = {_Fields.PUBLIC_KEY,_Fields.PRIVATE_KEY,_Fields.PERSISTED_TIME,_Fields.TOKEN};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -160,14 +160,14 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.USERNAME, new org.apache.thrift.meta_data.FieldMetaData("username", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.PASSPHRASE, new org.apache.thrift.meta_data.FieldMetaData("passphrase", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.PASSPHRASE, new org.apache.thrift.meta_data.FieldMetaData("passphrase", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.PUBLIC_KEY, new org.apache.thrift.meta_data.FieldMetaData("publicKey", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.PRIVATE_KEY, new org.apache.thrift.meta_data.FieldMetaData("privateKey", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.PERSISTED_TIME, new org.apache.thrift.meta_data.FieldMetaData("persistedTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     tmpMap.put(_Fields.TOKEN, new org.apache.thrift.meta_data.FieldMetaData("token", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -179,11 +179,13 @@ import org.slf4j.LoggerFactory;
 
   public SSHCredential(
     String gatewayId,
-    String username)
+    String username,
+    String passphrase)
   {
     this();
     this.gatewayId = gatewayId;
     this.username = username;
+    this.passphrase = passphrase;
   }
 
   /**
@@ -348,11 +350,11 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public int getPersistedTime() {
+  public long getPersistedTime() {
     return this.persistedTime;
   }
 
-  public SSHCredential setPersistedTime(int persistedTime) {
+  public SSHCredential setPersistedTime(long persistedTime) {
     this.persistedTime = persistedTime;
     setPersistedTimeIsSet(true);
     return this;
@@ -441,7 +443,7 @@ import org.slf4j.LoggerFactory;
       if (value == null) {
         unsetPersistedTime();
       } else {
-        setPersistedTime((Integer)value);
+        setPersistedTime((Long)value);
       }
       break;
 
@@ -474,7 +476,7 @@ import org.slf4j.LoggerFactory;
       return getPrivateKey();
 
     case PERSISTED_TIME:
-      return Integer.valueOf(getPersistedTime());
+      return Long.valueOf(getPersistedTime());
 
     case TOKEN:
       return getToken();
@@ -705,16 +707,14 @@ import org.slf4j.LoggerFactory;
       sb.append(this.username);
     }
     first = false;
-    if (isSetPassphrase()) {
-      if (!first) sb.append(", ");
-      sb.append("passphrase:");
-      if (this.passphrase == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.passphrase);
-      }
-      first = false;
+    if (!first) sb.append(", ");
+    sb.append("passphrase:");
+    if (this.passphrase == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.passphrase);
     }
+    first = false;
     if (isSetPublicKey()) {
       if (!first) sb.append(", ");
       sb.append("publicKey:");
@@ -762,6 +762,9 @@ import org.slf4j.LoggerFactory;
     }
     if (username == null) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'username' was not present! Struct: " + toString());
+    }
+    if (passphrase == null) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'passphrase' was not present! Struct: " + toString());
     }
     // check for sub-struct validity
   }
@@ -843,8 +846,8 @@ import org.slf4j.LoggerFactory;
             }
             break;
           case 6: // PERSISTED_TIME
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.persistedTime = iprot.readI32();
+            if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+              struct.persistedTime = iprot.readI64();
               struct.setPersistedTimeIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -884,11 +887,9 @@ import org.slf4j.LoggerFactory;
         oprot.writeFieldEnd();
       }
       if (struct.passphrase != null) {
-        if (struct.isSetPassphrase()) {
-          oprot.writeFieldBegin(PASSPHRASE_FIELD_DESC);
-          oprot.writeString(struct.passphrase);
-          oprot.writeFieldEnd();
-        }
+        oprot.writeFieldBegin(PASSPHRASE_FIELD_DESC);
+        oprot.writeString(struct.passphrase);
+        oprot.writeFieldEnd();
       }
       if (struct.publicKey != null) {
         if (struct.isSetPublicKey()) {
@@ -906,7 +907,7 @@ import org.slf4j.LoggerFactory;
       }
       if (struct.isSetPersistedTime()) {
         oprot.writeFieldBegin(PERSISTED_TIME_FIELD_DESC);
-        oprot.writeI32(struct.persistedTime);
+        oprot.writeI64(struct.persistedTime);
         oprot.writeFieldEnd();
       }
       if (struct.token != null) {
@@ -935,26 +936,21 @@ import org.slf4j.LoggerFactory;
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeString(struct.gatewayId);
       oprot.writeString(struct.username);
+      oprot.writeString(struct.passphrase);
       BitSet optionals = new BitSet();
-      if (struct.isSetPassphrase()) {
+      if (struct.isSetPublicKey()) {
         optionals.set(0);
       }
-      if (struct.isSetPublicKey()) {
+      if (struct.isSetPrivateKey()) {
         optionals.set(1);
       }
-      if (struct.isSetPrivateKey()) {
+      if (struct.isSetPersistedTime()) {
         optionals.set(2);
       }
-      if (struct.isSetPersistedTime()) {
+      if (struct.isSetToken()) {
         optionals.set(3);
       }
-      if (struct.isSetToken()) {
-        optionals.set(4);
-      }
-      oprot.writeBitSet(optionals, 5);
-      if (struct.isSetPassphrase()) {
-        oprot.writeString(struct.passphrase);
-      }
+      oprot.writeBitSet(optionals, 4);
       if (struct.isSetPublicKey()) {
         oprot.writeString(struct.publicKey);
       }
@@ -962,7 +958,7 @@ import org.slf4j.LoggerFactory;
         oprot.writeString(struct.privateKey);
       }
       if (struct.isSetPersistedTime()) {
-        oprot.writeI32(struct.persistedTime);
+        oprot.writeI64(struct.persistedTime);
       }
       if (struct.isSetToken()) {
         oprot.writeString(struct.token);
@@ -976,24 +972,22 @@ import org.slf4j.LoggerFactory;
       struct.setGatewayIdIsSet(true);
       struct.username = iprot.readString();
       struct.setUsernameIsSet(true);
-      BitSet incoming = iprot.readBitSet(5);
+      struct.passphrase = iprot.readString();
+      struct.setPassphraseIsSet(true);
+      BitSet incoming = iprot.readBitSet(4);
       if (incoming.get(0)) {
-        struct.passphrase = iprot.readString();
-        struct.setPassphraseIsSet(true);
-      }
-      if (incoming.get(1)) {
         struct.publicKey = iprot.readString();
         struct.setPublicKeyIsSet(true);
       }
-      if (incoming.get(2)) {
+      if (incoming.get(1)) {
         struct.privateKey = iprot.readString();
         struct.setPrivateKeyIsSet(true);
       }
-      if (incoming.get(3)) {
-        struct.persistedTime = iprot.readI32();
+      if (incoming.get(2)) {
+        struct.persistedTime = iprot.readI64();
         struct.setPersistedTimeIsSet(true);
       }
-      if (incoming.get(4)) {
+      if (incoming.get(3)) {
         struct.token = iprot.readString();
         struct.setTokenIsSet(true);
       }

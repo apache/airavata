@@ -69,11 +69,11 @@ import org.slf4j.LoggerFactory;
 
     public String addPasswordCredential(org.apache.airavata.credential.store.datamodel.PasswordCredential passwordCredential) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
 
-    public org.apache.airavata.credential.store.datamodel.SSHCredential getSSHCredential(String tokenId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
+    public org.apache.airavata.credential.store.datamodel.SSHCredential getSSHCredential(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
 
-    public org.apache.airavata.credential.store.datamodel.CertificateCredential getCertificateCredential(String tokenId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
+    public org.apache.airavata.credential.store.datamodel.CertificateCredential getCertificateCredential(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
 
-    public org.apache.airavata.credential.store.datamodel.PasswordCredential getPasswordCredential(String tokenId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
+    public org.apache.airavata.credential.store.datamodel.PasswordCredential getPasswordCredential(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException;
 
   }
 
@@ -87,11 +87,11 @@ import org.slf4j.LoggerFactory;
 
     public void addPasswordCredential(org.apache.airavata.credential.store.datamodel.PasswordCredential passwordCredential, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void getSSHCredential(String tokenId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void getSSHCredential(String tokenId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void getCertificateCredential(String tokenId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void getCertificateCredential(String tokenId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void getPasswordCredential(String tokenId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void getPasswordCredential(String tokenId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -215,16 +215,17 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "addPasswordCredential failed: unknown result");
     }
 
-    public org.apache.airavata.credential.store.datamodel.SSHCredential getSSHCredential(String tokenId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
+    public org.apache.airavata.credential.store.datamodel.SSHCredential getSSHCredential(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
-      send_getSSHCredential(tokenId);
+      send_getSSHCredential(tokenId, gatewayId);
       return recv_getSSHCredential();
     }
 
-    public void send_getSSHCredential(String tokenId) throws org.apache.thrift.TException
+    public void send_getSSHCredential(String tokenId, String gatewayId) throws org.apache.thrift.TException
     {
       getSSHCredential_args args = new getSSHCredential_args();
       args.setTokenId(tokenId);
+      args.setGatewayId(gatewayId);
       sendBase("getSSHCredential", args);
     }
 
@@ -241,16 +242,17 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getSSHCredential failed: unknown result");
     }
 
-    public org.apache.airavata.credential.store.datamodel.CertificateCredential getCertificateCredential(String tokenId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
+    public org.apache.airavata.credential.store.datamodel.CertificateCredential getCertificateCredential(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
-      send_getCertificateCredential(tokenId);
+      send_getCertificateCredential(tokenId, gatewayId);
       return recv_getCertificateCredential();
     }
 
-    public void send_getCertificateCredential(String tokenId) throws org.apache.thrift.TException
+    public void send_getCertificateCredential(String tokenId, String gatewayId) throws org.apache.thrift.TException
     {
       getCertificateCredential_args args = new getCertificateCredential_args();
       args.setTokenId(tokenId);
+      args.setGatewayId(gatewayId);
       sendBase("getCertificateCredential", args);
     }
 
@@ -267,16 +269,17 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "getCertificateCredential failed: unknown result");
     }
 
-    public org.apache.airavata.credential.store.datamodel.PasswordCredential getPasswordCredential(String tokenId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
+    public org.apache.airavata.credential.store.datamodel.PasswordCredential getPasswordCredential(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, org.apache.thrift.TException
     {
-      send_getPasswordCredential(tokenId);
+      send_getPasswordCredential(tokenId, gatewayId);
       return recv_getPasswordCredential();
     }
 
-    public void send_getPasswordCredential(String tokenId) throws org.apache.thrift.TException
+    public void send_getPasswordCredential(String tokenId, String gatewayId) throws org.apache.thrift.TException
     {
       getPasswordCredential_args args = new getPasswordCredential_args();
       args.setTokenId(tokenId);
+      args.setGatewayId(gatewayId);
       sendBase("getPasswordCredential", args);
     }
 
@@ -436,24 +439,27 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public void getSSHCredential(String tokenId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void getSSHCredential(String tokenId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      getSSHCredential_call method_call = new getSSHCredential_call(tokenId, resultHandler, this, ___protocolFactory, ___transport);
+      getSSHCredential_call method_call = new getSSHCredential_call(tokenId, gatewayId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class getSSHCredential_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String tokenId;
-      public getSSHCredential_call(String tokenId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private String gatewayId;
+      public getSSHCredential_call(String tokenId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.tokenId = tokenId;
+        this.gatewayId = gatewayId;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getSSHCredential", org.apache.thrift.protocol.TMessageType.CALL, 0));
         getSSHCredential_args args = new getSSHCredential_args();
         args.setTokenId(tokenId);
+        args.setGatewayId(gatewayId);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -468,24 +474,27 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public void getCertificateCredential(String tokenId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void getCertificateCredential(String tokenId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      getCertificateCredential_call method_call = new getCertificateCredential_call(tokenId, resultHandler, this, ___protocolFactory, ___transport);
+      getCertificateCredential_call method_call = new getCertificateCredential_call(tokenId, gatewayId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class getCertificateCredential_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String tokenId;
-      public getCertificateCredential_call(String tokenId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private String gatewayId;
+      public getCertificateCredential_call(String tokenId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.tokenId = tokenId;
+        this.gatewayId = gatewayId;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getCertificateCredential", org.apache.thrift.protocol.TMessageType.CALL, 0));
         getCertificateCredential_args args = new getCertificateCredential_args();
         args.setTokenId(tokenId);
+        args.setGatewayId(gatewayId);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -500,24 +509,27 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public void getPasswordCredential(String tokenId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void getPasswordCredential(String tokenId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      getPasswordCredential_call method_call = new getPasswordCredential_call(tokenId, resultHandler, this, ___protocolFactory, ___transport);
+      getPasswordCredential_call method_call = new getPasswordCredential_call(tokenId, gatewayId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class getPasswordCredential_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String tokenId;
-      public getPasswordCredential_call(String tokenId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private String gatewayId;
+      public getPasswordCredential_call(String tokenId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.tokenId = tokenId;
+        this.gatewayId = gatewayId;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("getPasswordCredential", org.apache.thrift.protocol.TMessageType.CALL, 0));
         getPasswordCredential_args args = new getPasswordCredential_args();
         args.setTokenId(tokenId);
+        args.setGatewayId(gatewayId);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -663,7 +675,7 @@ import org.slf4j.LoggerFactory;
       public getSSHCredential_result getResult(I iface, getSSHCredential_args args) throws org.apache.thrift.TException {
         getSSHCredential_result result = new getSSHCredential_result();
         try {
-          result.success = iface.getSSHCredential(args.tokenId);
+          result.success = iface.getSSHCredential(args.tokenId, args.gatewayId);
         } catch (org.apache.airavata.credential.store.exception.CredentialStoreException csException) {
           result.csException = csException;
         }
@@ -687,7 +699,7 @@ import org.slf4j.LoggerFactory;
       public getCertificateCredential_result getResult(I iface, getCertificateCredential_args args) throws org.apache.thrift.TException {
         getCertificateCredential_result result = new getCertificateCredential_result();
         try {
-          result.success = iface.getCertificateCredential(args.tokenId);
+          result.success = iface.getCertificateCredential(args.tokenId, args.gatewayId);
         } catch (org.apache.airavata.credential.store.exception.CredentialStoreException csException) {
           result.csException = csException;
         }
@@ -711,7 +723,7 @@ import org.slf4j.LoggerFactory;
       public getPasswordCredential_result getResult(I iface, getPasswordCredential_args args) throws org.apache.thrift.TException {
         getPasswordCredential_result result = new getPasswordCredential_result();
         try {
-          result.success = iface.getPasswordCredential(args.tokenId);
+          result.success = iface.getPasswordCredential(args.tokenId, args.gatewayId);
         } catch (org.apache.airavata.credential.store.exception.CredentialStoreException csException) {
           result.csException = csException;
         }
@@ -1017,7 +1029,7 @@ import org.slf4j.LoggerFactory;
       }
 
       public void start(I iface, getSSHCredential_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.credential.store.datamodel.SSHCredential> resultHandler) throws TException {
-        iface.getSSHCredential(args.tokenId,resultHandler);
+        iface.getSSHCredential(args.tokenId, args.gatewayId,resultHandler);
       }
     }
 
@@ -1074,7 +1086,7 @@ import org.slf4j.LoggerFactory;
       }
 
       public void start(I iface, getCertificateCredential_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.credential.store.datamodel.CertificateCredential> resultHandler) throws TException {
-        iface.getCertificateCredential(args.tokenId,resultHandler);
+        iface.getCertificateCredential(args.tokenId, args.gatewayId,resultHandler);
       }
     }
 
@@ -1131,7 +1143,7 @@ import org.slf4j.LoggerFactory;
       }
 
       public void start(I iface, getPasswordCredential_args args, org.apache.thrift.async.AsyncMethodCallback<org.apache.airavata.credential.store.datamodel.PasswordCredential> resultHandler) throws TException {
-        iface.getPasswordCredential(args.tokenId,resultHandler);
+        iface.getPasswordCredential(args.tokenId, args.gatewayId,resultHandler);
       }
     }
 
@@ -4165,6 +4177,7 @@ import org.slf4j.LoggerFactory;
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getSSHCredential_args");
 
     private static final org.apache.thrift.protocol.TField TOKEN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("tokenId", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -4173,10 +4186,12 @@ import org.slf4j.LoggerFactory;
     }
 
     public String tokenId; // required
+    public String gatewayId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      TOKEN_ID((short)1, "tokenId");
+      TOKEN_ID((short)1, "tokenId"),
+      GATEWAY_ID((short)2, "gatewayId");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -4193,6 +4208,8 @@ import org.slf4j.LoggerFactory;
         switch(fieldId) {
           case 1: // TOKEN_ID
             return TOKEN_ID;
+          case 2: // GATEWAY_ID
+            return GATEWAY_ID;
           default:
             return null;
         }
@@ -4238,6 +4255,8 @@ import org.slf4j.LoggerFactory;
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.TOKEN_ID, new org.apache.thrift.meta_data.FieldMetaData("tokenId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getSSHCredential_args.class, metaDataMap);
     }
@@ -4246,10 +4265,12 @@ import org.slf4j.LoggerFactory;
     }
 
     public getSSHCredential_args(
-      String tokenId)
+      String tokenId,
+      String gatewayId)
     {
       this();
       this.tokenId = tokenId;
+      this.gatewayId = gatewayId;
     }
 
     /**
@@ -4258,6 +4279,9 @@ import org.slf4j.LoggerFactory;
     public getSSHCredential_args(getSSHCredential_args other) {
       if (other.isSetTokenId()) {
         this.tokenId = other.tokenId;
+      }
+      if (other.isSetGatewayId()) {
+        this.gatewayId = other.gatewayId;
       }
     }
 
@@ -4268,6 +4292,7 @@ import org.slf4j.LoggerFactory;
     @Override
     public void clear() {
       this.tokenId = null;
+      this.gatewayId = null;
     }
 
     public String getTokenId() {
@@ -4294,6 +4319,30 @@ import org.slf4j.LoggerFactory;
       }
     }
 
+    public String getGatewayId() {
+      return this.gatewayId;
+    }
+
+    public getSSHCredential_args setGatewayId(String gatewayId) {
+      this.gatewayId = gatewayId;
+      return this;
+    }
+
+    public void unsetGatewayId() {
+      this.gatewayId = null;
+    }
+
+    /** Returns true if field gatewayId is set (has been assigned a value) and false otherwise */
+    public boolean isSetGatewayId() {
+      return this.gatewayId != null;
+    }
+
+    public void setGatewayIdIsSet(boolean value) {
+      if (!value) {
+        this.gatewayId = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case TOKEN_ID:
@@ -4304,6 +4353,14 @@ import org.slf4j.LoggerFactory;
         }
         break;
 
+      case GATEWAY_ID:
+        if (value == null) {
+          unsetGatewayId();
+        } else {
+          setGatewayId((String)value);
+        }
+        break;
+
       }
     }
 
@@ -4311,6 +4368,9 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case TOKEN_ID:
         return getTokenId();
+
+      case GATEWAY_ID:
+        return getGatewayId();
 
       }
       throw new IllegalStateException();
@@ -4325,6 +4385,8 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case TOKEN_ID:
         return isSetTokenId();
+      case GATEWAY_ID:
+        return isSetGatewayId();
       }
       throw new IllegalStateException();
     }
@@ -4351,6 +4413,15 @@ import org.slf4j.LoggerFactory;
           return false;
       }
 
+      boolean this_present_gatewayId = true && this.isSetGatewayId();
+      boolean that_present_gatewayId = true && that.isSetGatewayId();
+      if (this_present_gatewayId || that_present_gatewayId) {
+        if (!(this_present_gatewayId && that_present_gatewayId))
+          return false;
+        if (!this.gatewayId.equals(that.gatewayId))
+          return false;
+      }
+
       return true;
     }
 
@@ -4373,6 +4444,16 @@ import org.slf4j.LoggerFactory;
       }
       if (isSetTokenId()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.tokenId, other.tokenId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetGatewayId()).compareTo(other.isSetGatewayId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetGatewayId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayId, other.gatewayId);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -4404,6 +4485,14 @@ import org.slf4j.LoggerFactory;
         sb.append(this.tokenId);
       }
       first = false;
+      if (!first) sb.append(", ");
+      sb.append("gatewayId:");
+      if (this.gatewayId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.gatewayId);
+      }
+      first = false;
       sb.append(")");
       return sb.toString();
     }
@@ -4412,6 +4501,9 @@ import org.slf4j.LoggerFactory;
       // check for required fields
       if (tokenId == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'tokenId' was not present! Struct: " + toString());
+      }
+      if (gatewayId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayId' was not present! Struct: " + toString());
       }
       // check for sub-struct validity
     }
@@ -4458,6 +4550,14 @@ import org.slf4j.LoggerFactory;
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 2: // GATEWAY_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.gatewayId = iprot.readString();
+                struct.setGatewayIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -4478,6 +4578,11 @@ import org.slf4j.LoggerFactory;
           oprot.writeString(struct.tokenId);
           oprot.writeFieldEnd();
         }
+        if (struct.gatewayId != null) {
+          oprot.writeFieldBegin(GATEWAY_ID_FIELD_DESC);
+          oprot.writeString(struct.gatewayId);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -4496,6 +4601,7 @@ import org.slf4j.LoggerFactory;
       public void write(org.apache.thrift.protocol.TProtocol prot, getSSHCredential_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         oprot.writeString(struct.tokenId);
+        oprot.writeString(struct.gatewayId);
       }
 
       @Override
@@ -4503,6 +4609,8 @@ import org.slf4j.LoggerFactory;
         TTupleProtocol iprot = (TTupleProtocol) prot;
         struct.tokenId = iprot.readString();
         struct.setTokenIdIsSet(true);
+        struct.gatewayId = iprot.readString();
+        struct.setGatewayIdIsSet(true);
       }
     }
 
@@ -4973,6 +5081,7 @@ import org.slf4j.LoggerFactory;
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getCertificateCredential_args");
 
     private static final org.apache.thrift.protocol.TField TOKEN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("tokenId", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -4981,10 +5090,12 @@ import org.slf4j.LoggerFactory;
     }
 
     public String tokenId; // required
+    public String gatewayId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      TOKEN_ID((short)1, "tokenId");
+      TOKEN_ID((short)1, "tokenId"),
+      GATEWAY_ID((short)2, "gatewayId");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -5001,6 +5112,8 @@ import org.slf4j.LoggerFactory;
         switch(fieldId) {
           case 1: // TOKEN_ID
             return TOKEN_ID;
+          case 2: // GATEWAY_ID
+            return GATEWAY_ID;
           default:
             return null;
         }
@@ -5046,6 +5159,8 @@ import org.slf4j.LoggerFactory;
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.TOKEN_ID, new org.apache.thrift.meta_data.FieldMetaData("tokenId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getCertificateCredential_args.class, metaDataMap);
     }
@@ -5054,10 +5169,12 @@ import org.slf4j.LoggerFactory;
     }
 
     public getCertificateCredential_args(
-      String tokenId)
+      String tokenId,
+      String gatewayId)
     {
       this();
       this.tokenId = tokenId;
+      this.gatewayId = gatewayId;
     }
 
     /**
@@ -5066,6 +5183,9 @@ import org.slf4j.LoggerFactory;
     public getCertificateCredential_args(getCertificateCredential_args other) {
       if (other.isSetTokenId()) {
         this.tokenId = other.tokenId;
+      }
+      if (other.isSetGatewayId()) {
+        this.gatewayId = other.gatewayId;
       }
     }
 
@@ -5076,6 +5196,7 @@ import org.slf4j.LoggerFactory;
     @Override
     public void clear() {
       this.tokenId = null;
+      this.gatewayId = null;
     }
 
     public String getTokenId() {
@@ -5102,6 +5223,30 @@ import org.slf4j.LoggerFactory;
       }
     }
 
+    public String getGatewayId() {
+      return this.gatewayId;
+    }
+
+    public getCertificateCredential_args setGatewayId(String gatewayId) {
+      this.gatewayId = gatewayId;
+      return this;
+    }
+
+    public void unsetGatewayId() {
+      this.gatewayId = null;
+    }
+
+    /** Returns true if field gatewayId is set (has been assigned a value) and false otherwise */
+    public boolean isSetGatewayId() {
+      return this.gatewayId != null;
+    }
+
+    public void setGatewayIdIsSet(boolean value) {
+      if (!value) {
+        this.gatewayId = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case TOKEN_ID:
@@ -5112,6 +5257,14 @@ import org.slf4j.LoggerFactory;
         }
         break;
 
+      case GATEWAY_ID:
+        if (value == null) {
+          unsetGatewayId();
+        } else {
+          setGatewayId((String)value);
+        }
+        break;
+
       }
     }
 
@@ -5119,6 +5272,9 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case TOKEN_ID:
         return getTokenId();
+
+      case GATEWAY_ID:
+        return getGatewayId();
 
       }
       throw new IllegalStateException();
@@ -5133,6 +5289,8 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case TOKEN_ID:
         return isSetTokenId();
+      case GATEWAY_ID:
+        return isSetGatewayId();
       }
       throw new IllegalStateException();
     }
@@ -5159,6 +5317,15 @@ import org.slf4j.LoggerFactory;
           return false;
       }
 
+      boolean this_present_gatewayId = true && this.isSetGatewayId();
+      boolean that_present_gatewayId = true && that.isSetGatewayId();
+      if (this_present_gatewayId || that_present_gatewayId) {
+        if (!(this_present_gatewayId && that_present_gatewayId))
+          return false;
+        if (!this.gatewayId.equals(that.gatewayId))
+          return false;
+      }
+
       return true;
     }
 
@@ -5181,6 +5348,16 @@ import org.slf4j.LoggerFactory;
       }
       if (isSetTokenId()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.tokenId, other.tokenId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetGatewayId()).compareTo(other.isSetGatewayId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetGatewayId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayId, other.gatewayId);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -5212,6 +5389,14 @@ import org.slf4j.LoggerFactory;
         sb.append(this.tokenId);
       }
       first = false;
+      if (!first) sb.append(", ");
+      sb.append("gatewayId:");
+      if (this.gatewayId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.gatewayId);
+      }
+      first = false;
       sb.append(")");
       return sb.toString();
     }
@@ -5220,6 +5405,9 @@ import org.slf4j.LoggerFactory;
       // check for required fields
       if (tokenId == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'tokenId' was not present! Struct: " + toString());
+      }
+      if (gatewayId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayId' was not present! Struct: " + toString());
       }
       // check for sub-struct validity
     }
@@ -5266,6 +5454,14 @@ import org.slf4j.LoggerFactory;
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 2: // GATEWAY_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.gatewayId = iprot.readString();
+                struct.setGatewayIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -5286,6 +5482,11 @@ import org.slf4j.LoggerFactory;
           oprot.writeString(struct.tokenId);
           oprot.writeFieldEnd();
         }
+        if (struct.gatewayId != null) {
+          oprot.writeFieldBegin(GATEWAY_ID_FIELD_DESC);
+          oprot.writeString(struct.gatewayId);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -5304,6 +5505,7 @@ import org.slf4j.LoggerFactory;
       public void write(org.apache.thrift.protocol.TProtocol prot, getCertificateCredential_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         oprot.writeString(struct.tokenId);
+        oprot.writeString(struct.gatewayId);
       }
 
       @Override
@@ -5311,6 +5513,8 @@ import org.slf4j.LoggerFactory;
         TTupleProtocol iprot = (TTupleProtocol) prot;
         struct.tokenId = iprot.readString();
         struct.setTokenIdIsSet(true);
+        struct.gatewayId = iprot.readString();
+        struct.setGatewayIdIsSet(true);
       }
     }
 
@@ -5781,6 +5985,7 @@ import org.slf4j.LoggerFactory;
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("getPasswordCredential_args");
 
     private static final org.apache.thrift.protocol.TField TOKEN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("tokenId", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -5789,10 +5994,12 @@ import org.slf4j.LoggerFactory;
     }
 
     public String tokenId; // required
+    public String gatewayId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      TOKEN_ID((short)1, "tokenId");
+      TOKEN_ID((short)1, "tokenId"),
+      GATEWAY_ID((short)2, "gatewayId");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -5809,6 +6016,8 @@ import org.slf4j.LoggerFactory;
         switch(fieldId) {
           case 1: // TOKEN_ID
             return TOKEN_ID;
+          case 2: // GATEWAY_ID
+            return GATEWAY_ID;
           default:
             return null;
         }
@@ -5854,6 +6063,8 @@ import org.slf4j.LoggerFactory;
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.TOKEN_ID, new org.apache.thrift.meta_data.FieldMetaData("tokenId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(getPasswordCredential_args.class, metaDataMap);
     }
@@ -5862,10 +6073,12 @@ import org.slf4j.LoggerFactory;
     }
 
     public getPasswordCredential_args(
-      String tokenId)
+      String tokenId,
+      String gatewayId)
     {
       this();
       this.tokenId = tokenId;
+      this.gatewayId = gatewayId;
     }
 
     /**
@@ -5874,6 +6087,9 @@ import org.slf4j.LoggerFactory;
     public getPasswordCredential_args(getPasswordCredential_args other) {
       if (other.isSetTokenId()) {
         this.tokenId = other.tokenId;
+      }
+      if (other.isSetGatewayId()) {
+        this.gatewayId = other.gatewayId;
       }
     }
 
@@ -5884,6 +6100,7 @@ import org.slf4j.LoggerFactory;
     @Override
     public void clear() {
       this.tokenId = null;
+      this.gatewayId = null;
     }
 
     public String getTokenId() {
@@ -5910,6 +6127,30 @@ import org.slf4j.LoggerFactory;
       }
     }
 
+    public String getGatewayId() {
+      return this.gatewayId;
+    }
+
+    public getPasswordCredential_args setGatewayId(String gatewayId) {
+      this.gatewayId = gatewayId;
+      return this;
+    }
+
+    public void unsetGatewayId() {
+      this.gatewayId = null;
+    }
+
+    /** Returns true if field gatewayId is set (has been assigned a value) and false otherwise */
+    public boolean isSetGatewayId() {
+      return this.gatewayId != null;
+    }
+
+    public void setGatewayIdIsSet(boolean value) {
+      if (!value) {
+        this.gatewayId = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case TOKEN_ID:
@@ -5920,6 +6161,14 @@ import org.slf4j.LoggerFactory;
         }
         break;
 
+      case GATEWAY_ID:
+        if (value == null) {
+          unsetGatewayId();
+        } else {
+          setGatewayId((String)value);
+        }
+        break;
+
       }
     }
 
@@ -5927,6 +6176,9 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case TOKEN_ID:
         return getTokenId();
+
+      case GATEWAY_ID:
+        return getGatewayId();
 
       }
       throw new IllegalStateException();
@@ -5941,6 +6193,8 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case TOKEN_ID:
         return isSetTokenId();
+      case GATEWAY_ID:
+        return isSetGatewayId();
       }
       throw new IllegalStateException();
     }
@@ -5967,6 +6221,15 @@ import org.slf4j.LoggerFactory;
           return false;
       }
 
+      boolean this_present_gatewayId = true && this.isSetGatewayId();
+      boolean that_present_gatewayId = true && that.isSetGatewayId();
+      if (this_present_gatewayId || that_present_gatewayId) {
+        if (!(this_present_gatewayId && that_present_gatewayId))
+          return false;
+        if (!this.gatewayId.equals(that.gatewayId))
+          return false;
+      }
+
       return true;
     }
 
@@ -5989,6 +6252,16 @@ import org.slf4j.LoggerFactory;
       }
       if (isSetTokenId()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.tokenId, other.tokenId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetGatewayId()).compareTo(other.isSetGatewayId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetGatewayId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayId, other.gatewayId);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -6020,6 +6293,14 @@ import org.slf4j.LoggerFactory;
         sb.append(this.tokenId);
       }
       first = false;
+      if (!first) sb.append(", ");
+      sb.append("gatewayId:");
+      if (this.gatewayId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.gatewayId);
+      }
+      first = false;
       sb.append(")");
       return sb.toString();
     }
@@ -6028,6 +6309,9 @@ import org.slf4j.LoggerFactory;
       // check for required fields
       if (tokenId == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'tokenId' was not present! Struct: " + toString());
+      }
+      if (gatewayId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayId' was not present! Struct: " + toString());
       }
       // check for sub-struct validity
     }
@@ -6074,6 +6358,14 @@ import org.slf4j.LoggerFactory;
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 2: // GATEWAY_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.gatewayId = iprot.readString();
+                struct.setGatewayIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -6094,6 +6386,11 @@ import org.slf4j.LoggerFactory;
           oprot.writeString(struct.tokenId);
           oprot.writeFieldEnd();
         }
+        if (struct.gatewayId != null) {
+          oprot.writeFieldBegin(GATEWAY_ID_FIELD_DESC);
+          oprot.writeString(struct.gatewayId);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -6112,6 +6409,7 @@ import org.slf4j.LoggerFactory;
       public void write(org.apache.thrift.protocol.TProtocol prot, getPasswordCredential_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         oprot.writeString(struct.tokenId);
+        oprot.writeString(struct.gatewayId);
       }
 
       @Override
@@ -6119,6 +6417,8 @@ import org.slf4j.LoggerFactory;
         TTupleProtocol iprot = (TTupleProtocol) prot;
         struct.tokenId = iprot.readString();
         struct.setTokenIdIsSet(true);
+        struct.gatewayId = iprot.readString();
+        struct.setGatewayIdIsSet(true);
       }
     }
 

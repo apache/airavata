@@ -52,12 +52,12 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("CertificateCredential");
 
   private static final org.apache.thrift.protocol.TField COMMUNITY_USER_FIELD_DESC = new org.apache.thrift.protocol.TField("communityUser", org.apache.thrift.protocol.TType.STRUCT, (short)1);
-  private static final org.apache.thrift.protocol.TField NOT_AFTER_FIELD_DESC = new org.apache.thrift.protocol.TField("notAfter", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField X509_CERT_FIELD_DESC = new org.apache.thrift.protocol.TField("x509Cert", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField X509_CERT_FIELD_DESC = new org.apache.thrift.protocol.TField("x509Cert", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField NOT_AFTER_FIELD_DESC = new org.apache.thrift.protocol.TField("notAfter", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField PRIVATE_KEY_FIELD_DESC = new org.apache.thrift.protocol.TField("privateKey", org.apache.thrift.protocol.TType.STRING, (short)4);
-  private static final org.apache.thrift.protocol.TField LIFE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("lifeTime", org.apache.thrift.protocol.TType.I32, (short)5);
+  private static final org.apache.thrift.protocol.TField LIFE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("lifeTime", org.apache.thrift.protocol.TType.I64, (short)5);
   private static final org.apache.thrift.protocol.TField NOT_BEFORE_FIELD_DESC = new org.apache.thrift.protocol.TField("notBefore", org.apache.thrift.protocol.TType.STRING, (short)6);
-  private static final org.apache.thrift.protocol.TField PERSISTED_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("persistedTime", org.apache.thrift.protocol.TType.I32, (short)7);
+  private static final org.apache.thrift.protocol.TField PERSISTED_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("persistedTime", org.apache.thrift.protocol.TType.I64, (short)7);
   private static final org.apache.thrift.protocol.TField TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("token", org.apache.thrift.protocol.TType.STRING, (short)8);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -67,19 +67,19 @@ import org.slf4j.LoggerFactory;
   }
 
   public CommunityUser communityUser; // required
+  public String x509Cert; // required
   public String notAfter; // optional
-  public String x509Cert; // optional
   public String privateKey; // optional
-  public int lifeTime; // optional
+  public long lifeTime; // optional
   public String notBefore; // optional
-  public int persistedTime; // optional
+  public long persistedTime; // optional
   public String token; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     COMMUNITY_USER((short)1, "communityUser"),
-    NOT_AFTER((short)2, "notAfter"),
-    X509_CERT((short)3, "x509Cert"),
+    X509_CERT((short)2, "x509Cert"),
+    NOT_AFTER((short)3, "notAfter"),
     PRIVATE_KEY((short)4, "privateKey"),
     LIFE_TIME((short)5, "lifeTime"),
     NOT_BEFORE((short)6, "notBefore"),
@@ -101,10 +101,10 @@ import org.slf4j.LoggerFactory;
       switch(fieldId) {
         case 1: // COMMUNITY_USER
           return COMMUNITY_USER;
-        case 2: // NOT_AFTER
-          return NOT_AFTER;
-        case 3: // X509_CERT
+        case 2: // X509_CERT
           return X509_CERT;
+        case 3: // NOT_AFTER
+          return NOT_AFTER;
         case 4: // PRIVATE_KEY
           return PRIVATE_KEY;
         case 5: // LIFE_TIME
@@ -158,24 +158,24 @@ import org.slf4j.LoggerFactory;
   private static final int __LIFETIME_ISSET_ID = 0;
   private static final int __PERSISTEDTIME_ISSET_ID = 1;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.NOT_AFTER,_Fields.X509_CERT,_Fields.PRIVATE_KEY,_Fields.LIFE_TIME,_Fields.NOT_BEFORE,_Fields.PERSISTED_TIME,_Fields.TOKEN};
+  private _Fields optionals[] = {_Fields.NOT_AFTER,_Fields.PRIVATE_KEY,_Fields.LIFE_TIME,_Fields.NOT_BEFORE,_Fields.PERSISTED_TIME,_Fields.TOKEN};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.COMMUNITY_USER, new org.apache.thrift.meta_data.FieldMetaData("communityUser", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, CommunityUser.class)));
-    tmpMap.put(_Fields.NOT_AFTER, new org.apache.thrift.meta_data.FieldMetaData("notAfter", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.X509_CERT, new org.apache.thrift.meta_data.FieldMetaData("x509Cert", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.X509_CERT, new org.apache.thrift.meta_data.FieldMetaData("x509Cert", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.NOT_AFTER, new org.apache.thrift.meta_data.FieldMetaData("notAfter", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.PRIVATE_KEY, new org.apache.thrift.meta_data.FieldMetaData("privateKey", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.LIFE_TIME, new org.apache.thrift.meta_data.FieldMetaData("lifeTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     tmpMap.put(_Fields.NOT_BEFORE, new org.apache.thrift.meta_data.FieldMetaData("notBefore", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.PERSISTED_TIME, new org.apache.thrift.meta_data.FieldMetaData("persistedTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
     tmpMap.put(_Fields.TOKEN, new org.apache.thrift.meta_data.FieldMetaData("token", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -186,10 +186,12 @@ import org.slf4j.LoggerFactory;
   }
 
   public CertificateCredential(
-    CommunityUser communityUser)
+    CommunityUser communityUser,
+    String x509Cert)
   {
     this();
     this.communityUser = communityUser;
+    this.x509Cert = x509Cert;
   }
 
   /**
@@ -200,11 +202,11 @@ import org.slf4j.LoggerFactory;
     if (other.isSetCommunityUser()) {
       this.communityUser = new CommunityUser(other.communityUser);
     }
-    if (other.isSetNotAfter()) {
-      this.notAfter = other.notAfter;
-    }
     if (other.isSetX509Cert()) {
       this.x509Cert = other.x509Cert;
+    }
+    if (other.isSetNotAfter()) {
+      this.notAfter = other.notAfter;
     }
     if (other.isSetPrivateKey()) {
       this.privateKey = other.privateKey;
@@ -226,8 +228,8 @@ import org.slf4j.LoggerFactory;
   @Override
   public void clear() {
     this.communityUser = null;
-    this.notAfter = null;
     this.x509Cert = null;
+    this.notAfter = null;
     this.privateKey = null;
     setLifeTimeIsSet(false);
     this.lifeTime = 0;
@@ -261,30 +263,6 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public String getNotAfter() {
-    return this.notAfter;
-  }
-
-  public CertificateCredential setNotAfter(String notAfter) {
-    this.notAfter = notAfter;
-    return this;
-  }
-
-  public void unsetNotAfter() {
-    this.notAfter = null;
-  }
-
-  /** Returns true if field notAfter is set (has been assigned a value) and false otherwise */
-  public boolean isSetNotAfter() {
-    return this.notAfter != null;
-  }
-
-  public void setNotAfterIsSet(boolean value) {
-    if (!value) {
-      this.notAfter = null;
-    }
-  }
-
   public String getX509Cert() {
     return this.x509Cert;
   }
@@ -306,6 +284,30 @@ import org.slf4j.LoggerFactory;
   public void setX509CertIsSet(boolean value) {
     if (!value) {
       this.x509Cert = null;
+    }
+  }
+
+  public String getNotAfter() {
+    return this.notAfter;
+  }
+
+  public CertificateCredential setNotAfter(String notAfter) {
+    this.notAfter = notAfter;
+    return this;
+  }
+
+  public void unsetNotAfter() {
+    this.notAfter = null;
+  }
+
+  /** Returns true if field notAfter is set (has been assigned a value) and false otherwise */
+  public boolean isSetNotAfter() {
+    return this.notAfter != null;
+  }
+
+  public void setNotAfterIsSet(boolean value) {
+    if (!value) {
+      this.notAfter = null;
     }
   }
 
@@ -333,11 +335,11 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public int getLifeTime() {
+  public long getLifeTime() {
     return this.lifeTime;
   }
 
-  public CertificateCredential setLifeTime(int lifeTime) {
+  public CertificateCredential setLifeTime(long lifeTime) {
     this.lifeTime = lifeTime;
     setLifeTimeIsSet(true);
     return this;
@@ -380,11 +382,11 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public int getPersistedTime() {
+  public long getPersistedTime() {
     return this.persistedTime;
   }
 
-  public CertificateCredential setPersistedTime(int persistedTime) {
+  public CertificateCredential setPersistedTime(long persistedTime) {
     this.persistedTime = persistedTime;
     setPersistedTimeIsSet(true);
     return this;
@@ -437,19 +439,19 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
-    case NOT_AFTER:
-      if (value == null) {
-        unsetNotAfter();
-      } else {
-        setNotAfter((String)value);
-      }
-      break;
-
     case X509_CERT:
       if (value == null) {
         unsetX509Cert();
       } else {
         setX509Cert((String)value);
+      }
+      break;
+
+    case NOT_AFTER:
+      if (value == null) {
+        unsetNotAfter();
+      } else {
+        setNotAfter((String)value);
       }
       break;
 
@@ -465,7 +467,7 @@ import org.slf4j.LoggerFactory;
       if (value == null) {
         unsetLifeTime();
       } else {
-        setLifeTime((Integer)value);
+        setLifeTime((Long)value);
       }
       break;
 
@@ -481,7 +483,7 @@ import org.slf4j.LoggerFactory;
       if (value == null) {
         unsetPersistedTime();
       } else {
-        setPersistedTime((Integer)value);
+        setPersistedTime((Long)value);
       }
       break;
 
@@ -501,23 +503,23 @@ import org.slf4j.LoggerFactory;
     case COMMUNITY_USER:
       return getCommunityUser();
 
-    case NOT_AFTER:
-      return getNotAfter();
-
     case X509_CERT:
       return getX509Cert();
+
+    case NOT_AFTER:
+      return getNotAfter();
 
     case PRIVATE_KEY:
       return getPrivateKey();
 
     case LIFE_TIME:
-      return Integer.valueOf(getLifeTime());
+      return Long.valueOf(getLifeTime());
 
     case NOT_BEFORE:
       return getNotBefore();
 
     case PERSISTED_TIME:
-      return Integer.valueOf(getPersistedTime());
+      return Long.valueOf(getPersistedTime());
 
     case TOKEN:
       return getToken();
@@ -535,10 +537,10 @@ import org.slf4j.LoggerFactory;
     switch (field) {
     case COMMUNITY_USER:
       return isSetCommunityUser();
-    case NOT_AFTER:
-      return isSetNotAfter();
     case X509_CERT:
       return isSetX509Cert();
+    case NOT_AFTER:
+      return isSetNotAfter();
     case PRIVATE_KEY:
       return isSetPrivateKey();
     case LIFE_TIME:
@@ -575,21 +577,21 @@ import org.slf4j.LoggerFactory;
         return false;
     }
 
-    boolean this_present_notAfter = true && this.isSetNotAfter();
-    boolean that_present_notAfter = true && that.isSetNotAfter();
-    if (this_present_notAfter || that_present_notAfter) {
-      if (!(this_present_notAfter && that_present_notAfter))
-        return false;
-      if (!this.notAfter.equals(that.notAfter))
-        return false;
-    }
-
     boolean this_present_x509Cert = true && this.isSetX509Cert();
     boolean that_present_x509Cert = true && that.isSetX509Cert();
     if (this_present_x509Cert || that_present_x509Cert) {
       if (!(this_present_x509Cert && that_present_x509Cert))
         return false;
       if (!this.x509Cert.equals(that.x509Cert))
+        return false;
+    }
+
+    boolean this_present_notAfter = true && this.isSetNotAfter();
+    boolean that_present_notAfter = true && that.isSetNotAfter();
+    if (this_present_notAfter || that_present_notAfter) {
+      if (!(this_present_notAfter && that_present_notAfter))
+        return false;
+      if (!this.notAfter.equals(that.notAfter))
         return false;
     }
 
@@ -664,22 +666,22 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetNotAfter()).compareTo(other.isSetNotAfter());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetNotAfter()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.notAfter, other.notAfter);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     lastComparison = Boolean.valueOf(isSetX509Cert()).compareTo(other.isSetX509Cert());
     if (lastComparison != 0) {
       return lastComparison;
     }
     if (isSetX509Cert()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.x509Cert, other.x509Cert);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetNotAfter()).compareTo(other.isSetNotAfter());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetNotAfter()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.notAfter, other.notAfter);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -761,6 +763,14 @@ import org.slf4j.LoggerFactory;
       sb.append(this.communityUser);
     }
     first = false;
+    if (!first) sb.append(", ");
+    sb.append("x509Cert:");
+    if (this.x509Cert == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.x509Cert);
+    }
+    first = false;
     if (isSetNotAfter()) {
       if (!first) sb.append(", ");
       sb.append("notAfter:");
@@ -768,16 +778,6 @@ import org.slf4j.LoggerFactory;
         sb.append("null");
       } else {
         sb.append(this.notAfter);
-      }
-      first = false;
-    }
-    if (isSetX509Cert()) {
-      if (!first) sb.append(", ");
-      sb.append("x509Cert:");
-      if (this.x509Cert == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.x509Cert);
       }
       first = false;
     }
@@ -832,6 +832,9 @@ import org.slf4j.LoggerFactory;
     if (communityUser == null) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'communityUser' was not present! Struct: " + toString());
     }
+    if (x509Cert == null) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'x509Cert' was not present! Struct: " + toString());
+    }
     // check for sub-struct validity
     if (communityUser != null) {
       communityUser.validate();
@@ -883,18 +886,18 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // NOT_AFTER
+          case 2: // X509_CERT
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.notAfter = iprot.readString();
-              struct.setNotAfterIsSet(true);
+              struct.x509Cert = iprot.readString();
+              struct.setX509CertIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // X509_CERT
+          case 3: // NOT_AFTER
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.x509Cert = iprot.readString();
-              struct.setX509CertIsSet(true);
+              struct.notAfter = iprot.readString();
+              struct.setNotAfterIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -908,8 +911,8 @@ import org.slf4j.LoggerFactory;
             }
             break;
           case 5: // LIFE_TIME
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.lifeTime = iprot.readI32();
+            if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+              struct.lifeTime = iprot.readI64();
               struct.setLifeTimeIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -924,8 +927,8 @@ import org.slf4j.LoggerFactory;
             }
             break;
           case 7: // PERSISTED_TIME
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.persistedTime = iprot.readI32();
+            if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
+              struct.persistedTime = iprot.readI64();
               struct.setPersistedTimeIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -959,17 +962,15 @@ import org.slf4j.LoggerFactory;
         struct.communityUser.write(oprot);
         oprot.writeFieldEnd();
       }
+      if (struct.x509Cert != null) {
+        oprot.writeFieldBegin(X509_CERT_FIELD_DESC);
+        oprot.writeString(struct.x509Cert);
+        oprot.writeFieldEnd();
+      }
       if (struct.notAfter != null) {
         if (struct.isSetNotAfter()) {
           oprot.writeFieldBegin(NOT_AFTER_FIELD_DESC);
           oprot.writeString(struct.notAfter);
-          oprot.writeFieldEnd();
-        }
-      }
-      if (struct.x509Cert != null) {
-        if (struct.isSetX509Cert()) {
-          oprot.writeFieldBegin(X509_CERT_FIELD_DESC);
-          oprot.writeString(struct.x509Cert);
           oprot.writeFieldEnd();
         }
       }
@@ -982,7 +983,7 @@ import org.slf4j.LoggerFactory;
       }
       if (struct.isSetLifeTime()) {
         oprot.writeFieldBegin(LIFE_TIME_FIELD_DESC);
-        oprot.writeI32(struct.lifeTime);
+        oprot.writeI64(struct.lifeTime);
         oprot.writeFieldEnd();
       }
       if (struct.notBefore != null) {
@@ -994,7 +995,7 @@ import org.slf4j.LoggerFactory;
       }
       if (struct.isSetPersistedTime()) {
         oprot.writeFieldBegin(PERSISTED_TIME_FIELD_DESC);
-        oprot.writeI32(struct.persistedTime);
+        oprot.writeI64(struct.persistedTime);
         oprot.writeFieldEnd();
       }
       if (struct.token != null) {
@@ -1022,46 +1023,41 @@ import org.slf4j.LoggerFactory;
     public void write(org.apache.thrift.protocol.TProtocol prot, CertificateCredential struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       struct.communityUser.write(oprot);
+      oprot.writeString(struct.x509Cert);
       BitSet optionals = new BitSet();
       if (struct.isSetNotAfter()) {
         optionals.set(0);
       }
-      if (struct.isSetX509Cert()) {
+      if (struct.isSetPrivateKey()) {
         optionals.set(1);
       }
-      if (struct.isSetPrivateKey()) {
+      if (struct.isSetLifeTime()) {
         optionals.set(2);
       }
-      if (struct.isSetLifeTime()) {
+      if (struct.isSetNotBefore()) {
         optionals.set(3);
       }
-      if (struct.isSetNotBefore()) {
+      if (struct.isSetPersistedTime()) {
         optionals.set(4);
       }
-      if (struct.isSetPersistedTime()) {
+      if (struct.isSetToken()) {
         optionals.set(5);
       }
-      if (struct.isSetToken()) {
-        optionals.set(6);
-      }
-      oprot.writeBitSet(optionals, 7);
+      oprot.writeBitSet(optionals, 6);
       if (struct.isSetNotAfter()) {
         oprot.writeString(struct.notAfter);
-      }
-      if (struct.isSetX509Cert()) {
-        oprot.writeString(struct.x509Cert);
       }
       if (struct.isSetPrivateKey()) {
         oprot.writeString(struct.privateKey);
       }
       if (struct.isSetLifeTime()) {
-        oprot.writeI32(struct.lifeTime);
+        oprot.writeI64(struct.lifeTime);
       }
       if (struct.isSetNotBefore()) {
         oprot.writeString(struct.notBefore);
       }
       if (struct.isSetPersistedTime()) {
-        oprot.writeI32(struct.persistedTime);
+        oprot.writeI64(struct.persistedTime);
       }
       if (struct.isSetToken()) {
         oprot.writeString(struct.token);
@@ -1074,32 +1070,30 @@ import org.slf4j.LoggerFactory;
       struct.communityUser = new CommunityUser();
       struct.communityUser.read(iprot);
       struct.setCommunityUserIsSet(true);
-      BitSet incoming = iprot.readBitSet(7);
+      struct.x509Cert = iprot.readString();
+      struct.setX509CertIsSet(true);
+      BitSet incoming = iprot.readBitSet(6);
       if (incoming.get(0)) {
         struct.notAfter = iprot.readString();
         struct.setNotAfterIsSet(true);
       }
       if (incoming.get(1)) {
-        struct.x509Cert = iprot.readString();
-        struct.setX509CertIsSet(true);
-      }
-      if (incoming.get(2)) {
         struct.privateKey = iprot.readString();
         struct.setPrivateKeyIsSet(true);
       }
-      if (incoming.get(3)) {
-        struct.lifeTime = iprot.readI32();
+      if (incoming.get(2)) {
+        struct.lifeTime = iprot.readI64();
         struct.setLifeTimeIsSet(true);
       }
-      if (incoming.get(4)) {
+      if (incoming.get(3)) {
         struct.notBefore = iprot.readString();
         struct.setNotBeforeIsSet(true);
       }
-      if (incoming.get(5)) {
-        struct.persistedTime = iprot.readI32();
+      if (incoming.get(4)) {
+        struct.persistedTime = iprot.readI64();
         struct.setPersistedTimeIsSet(true);
       }
-      if (incoming.get(6)) {
+      if (incoming.get(5)) {
         struct.token = iprot.readString();
         struct.setTokenIsSet(true);
       }

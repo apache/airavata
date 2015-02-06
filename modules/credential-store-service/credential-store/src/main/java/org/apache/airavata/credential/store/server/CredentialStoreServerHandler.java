@@ -1,29 +1,35 @@
 package org.apache.airavata.credential.store.server;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.common.utils.DBUtil;
-import org.apache.airavata.common.utils.DefaultKeyStorePasswordCallback;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
 import org.apache.airavata.credential.store.cpi.cs_cpi_serviceConstants;
+import org.apache.airavata.credential.store.credential.CommunityUser;
+import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.datamodel.CertificateCredential;
 import org.apache.airavata.credential.store.datamodel.PasswordCredential;
 import org.apache.airavata.credential.store.datamodel.SSHCredential;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
-import org.apache.airavata.credential.store.store.impl.db.CredentialsDAO;
+import org.apache.airavata.credential.store.store.impl.CertificateCredentialWriter;
+import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
+import org.apache.airavata.credential.store.store.impl.SSHCredentialWriter;
 import org.apache.airavata.credential.store.util.TokenGenerator;
+import org.apache.airavata.credential.store.util.Utility;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.io.ByteArrayInputStream;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 
 public class CredentialStoreServerHandler implements CredentialStoreService.Iface {
     protected static Logger log = LoggerFactory.getLogger(CredentialStoreServerHandler.class);
     private DBUtil dbUtil;
-    private CredentialsDAO credentialsDAO;
+    private SSHCredentialWriter sshCredentialWriter;
+    private CertificateCredentialWriter certificateCredentialWriter;
+    private CredentialReaderImpl credentialReader;
 
     public CredentialStoreServerHandler() throws ApplicationSettingsException, IllegalAccessException, ClassNotFoundException, InstantiationException {
         String jdbcUrl = ServerSettings.getCredentialStoreDBURL();
@@ -33,8 +39,9 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
 
         log.debug("Starting credential store, connecting to database - " + jdbcUrl + " DB user - " + userName + " driver name - " + driverName);
         dbUtil = new DBUtil(jdbcUrl, userName, password, driverName);
-        this.credentialsDAO = new CredentialsDAO(ApplicationSettings.getCredentialStoreKeyStorePath(),
-                ApplicationSettings.getCredentialStoreKeyAlias(), new DefaultKeyStorePasswordCallback());
+        sshCredentialWriter = new SSHCredentialWriter(dbUtil);
+        certificateCredentialWriter = new CertificateCredentialWriter(dbUtil);
+        credentialReader = new CredentialReaderImpl(dbUtil);
     }
 
     @Override
@@ -44,53 +51,58 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
 
     @Override
     public String addSSHCredential(SSHCredential sshCredential) throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
-        Connection connection = null;
-        org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential credential = new org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential();
-        credential.setGateway(sshCredential.getGatewayId());
-        credential.setPortalUserName(sshCredential.getUsername());
-        // only username and gateway id will be sent by client.
-        String token = TokenGenerator.generateToken(sshCredential.getGatewayId(), null);
-        credential.setToken(token);
-        credential.setPassphrase(sshCredential.getPassphrase());
-        if (sshCredential.getPrivateKey() != null){
-            credential.setPrivateKey(sshCredential.getPrivateKey().getBytes());
-        }
-        if (sshCredential.getPublicKey() != null){
-            credential.setPublicKey(sshCredential.getPublicKey().getBytes());
-        }
         try {
-            connection = dbUtil.getConnection();
-            // First delete existing credentials
-            credentialsDAO.deleteCredentials(sshCredential.getGatewayId(), sshCredential.getToken(), connection);
-            // Add the new certificate
-            credentialsDAO.addCredentials(sshCredential.getGatewayId(), credential, connection);
-
-            if (!connection.getAutoCommit()) {
-                connection.commit();
+            org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential credential = new org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential();
+            credential.setGateway(sshCredential.getGatewayId());
+            credential.setPortalUserName(sshCredential.getUsername());
+            // only username and gateway id will be sent by client.
+            String token = TokenGenerator.generateToken(sshCredential.getGatewayId(), null);
+            credential.setToken(token);
+            credential.setPassphrase(sshCredential.getPassphrase());
+            if (sshCredential.getPrivateKey() != null) {
+                credential.setPrivateKey(sshCredential.getPrivateKey().getBytes());
             }
+            if (sshCredential.getPublicKey() != null) {
+                credential.setPublicKey(sshCredential.getPublicKey().getBytes());
+            }
+            if (sshCredential.getPublicKey() == null || sshCredential.getPrivateKey() == null) {
+                credential = Utility.generateKeyPair(sshCredential.getUsername(), sshCredential.getPassphrase());
+            }
+            sshCredentialWriter.writeCredentials(credential);
             return token;
-
-        } catch (SQLException e) {
-            if (connection != null) {
-                try {
-                    connection.rollback();
-                } catch (SQLException e1) {
-                    log.error("Unable to rollback transaction", e1);
-                }
-            }
-            log.error("Unable to retrieve database connection.", e);
-            throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Unable to retrieve database connection.");
         } catch (CredentialStoreException e) {
             log.error("Error occurred while saving SSH Credentials.", e);
             throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Error occurred while saving SSH Credentials.");
-        } finally {
-            DBUtil.cleanup(connection);
+        } catch (Exception e) {
+            log.error("Error occurred while generating key pair.", e);
+            throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Error occurred while generating key pair..");
         }
     }
 
     @Override
     public String addCertificateCredential(CertificateCredential certificateCredential) throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
-        return null;
+        try {
+            org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential credential = new org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential();
+            credential.setPortalUserName(certificateCredential.getCommunityUser().getUsername());
+            credential.setCommunityUser(new CommunityUser(certificateCredential.getCommunityUser().getGatewayNmae(),
+                    certificateCredential.getCommunityUser().getUsername(), certificateCredential.getCommunityUser().getUserEmail()));
+            String token = TokenGenerator.generateToken(certificateCredential.getCommunityUser().getGatewayNmae(), null);
+            credential.setToken(token);
+            CertificateFactory cf = CertificateFactory.getInstance("X.509");
+            ByteArrayInputStream stream = new ByteArrayInputStream(certificateCredential.getX509Cert().getBytes());
+            X509Certificate certificate = (X509Certificate)cf.generateCertificate(stream);
+            X509Certificate[] certificates = new X509Certificate[1];
+            certificates[0] = certificate;
+            credential.setCertificates(certificates);
+            certificateCredentialWriter.writeCredentials(credential);
+            return token;
+        } catch (CredentialStoreException e) {
+            log.error("Error occurred while saving SSH Credentials.", e);
+            throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Error occurred while saving SSH Credentials.");
+        } catch (Exception e) {
+            log.error("Error occurred while generating key pair.", e);
+            throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Error occurred while generating key pair..");
+        }
     }
 
     @Override
@@ -99,17 +111,66 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
     }
 
     @Override
-    public SSHCredential getSSHCredential(String tokenId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
-        return null;
+    public SSHCredential getSSHCredential(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
+        try {
+            Credential credential = credentialReader.getCredential(gatewayId, tokenId);
+            if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) {
+                org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential credential1 = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential) credential;
+                SSHCredential sshCredential = new SSHCredential();
+                sshCredential.setUsername(credential1.getPortalUserName());
+                sshCredential.setGatewayId(credential1.getGateway());
+                sshCredential.setPublicKey(new String(credential1.getPublicKey()));
+                sshCredential.setPrivateKey(new String(credential1.getPrivateKey()));
+                sshCredential.setPassphrase(credential1.getPassphrase());
+                sshCredential.setToken(credential1.getToken());
+                sshCredential.setPersistedTime(credential1.getCertificateRequestedTime().getTime());
+                return sshCredential;
+            } else {
+                log.info("Could not find SSH credentials for token - " + tokenId + " and "
+                        + "gateway id - " + gatewayId);
+                return null;
+            }
+        } catch (CredentialStoreException e) {
+            log.error("Error occurred while retrieving SSH credentialfor token - " +  tokenId + " and gateway id - " + gatewayId, e);
+            throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Error occurred while retrieving SSH credential for token - " +  tokenId + " and gateway id - " + gatewayId);
+        }
     }
 
     @Override
-    public CertificateCredential getCertificateCredential(String tokenId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
-        return null;
+    public CertificateCredential getCertificateCredential(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
+        try {
+            Credential credential = credentialReader.getCredential(gatewayId, tokenId);
+            if (credential instanceof org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential) {
+                org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential credential1 = (org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential) credential;
+                CertificateCredential certificateCredential = new CertificateCredential();
+                org.apache.airavata.credential.store.datamodel.CommunityUser communityUser = new org.apache.airavata.credential.store.datamodel.CommunityUser();
+                communityUser.setGatewayNmae(credential1.getCommunityUser().getGatewayName());
+                communityUser.setUsername(credential1.getCommunityUser().getUserName());
+                communityUser.setUserEmail(credential1.getCommunityUser().getUserEmail());
+                certificateCredential.setCommunityUser(communityUser);
+                certificateCredential.setToken(credential1.getToken());
+                certificateCredential.setLifeTime(credential1.getLifeTime());
+                certificateCredential.setNotAfter(credential1.getNotAfter());
+                certificateCredential.setNotBefore(credential1.getNotBefore());
+                certificateCredential.setPersistedTime(credential1.getCertificateRequestedTime().getTime());
+                if (credential1.getPrivateKey() != null){
+                    certificateCredential.setPrivateKey(credential1.getPrivateKey().toString());
+                }
+                certificateCredential.setX509Cert(credential1.getCertificates()[0].toString());
+                return certificateCredential;
+            } else {
+                log.info("Could not find Certificate credentials for token - " + tokenId + " and "
+                        + "gateway id - " + gatewayId);
+                return null;
+            }
+        } catch (CredentialStoreException e) {
+            log.error("Error occurred while retrieving Certificate credential for token - " +  tokenId + " and gateway id - " + gatewayId, e);
+            throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Error occurred while retrieving Certificate credential for token - " +  tokenId + " and gateway id - " + gatewayId);
+        }
     }
 
     @Override
-    public PasswordCredential getPasswordCredential(String tokenId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
+    public PasswordCredential getPasswordCredential(String tokenId, String gatewayId) throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
         return null;
     }
 

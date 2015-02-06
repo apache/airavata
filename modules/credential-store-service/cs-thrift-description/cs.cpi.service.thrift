@@ -41,9 +41,9 @@ service CredentialStoreService {
   string addSSHCredential (1: required csDataModel.SSHCredential sshCredential) throws (1:credentialStoreErrors.CredentialStoreException csException) ;
   string addCertificateCredential (1: required csDataModel.CertificateCredential certificateCredential) throws (1:credentialStoreErrors.CredentialStoreException csException);
   string addPasswordCredential (1: required csDataModel.PasswordCredential passwordCredential) throws (1:credentialStoreErrors.CredentialStoreException csException);
-  csDataModel.SSHCredential getSSHCredential (1: required string tokenId) throws (1:credentialStoreErrors.CredentialStoreException csException);
-  csDataModel.CertificateCredential getCertificateCredential (1: required string tokenId) throws (1:credentialStoreErrors.CredentialStoreException csException);
-  csDataModel.PasswordCredential getPasswordCredential (1: required string tokenId) throws (1:credentialStoreErrors.CredentialStoreException csException);
+  csDataModel.SSHCredential getSSHCredential (1: required string tokenId, 2: required string gatewayId) throws (1:credentialStoreErrors.CredentialStoreException csException);
+  csDataModel.CertificateCredential getCertificateCredential (1: required string tokenId, 2: required string gatewayId) throws (1:credentialStoreErrors.CredentialStoreException csException);
+  csDataModel.PasswordCredential getPasswordCredential (1: required string tokenId, 2: required string gatewayId) throws (1:credentialStoreErrors.CredentialStoreException csException);
 
 
 
