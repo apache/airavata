@@ -20,14 +20,15 @@
                 debug="true"/>
         <id>myproxy:oa4mp,2012:/client/5a323fc6fcffcff7a95401046a303520</id>
         <serviceUri>https://oa4mp.xsede.org/oauth</serviceUri>
-        <callbackUri>https://149.160.145.44:8443/credential-store/callback</callbackUri>
+        <callbackUri>https://localhost:8443/credential-store/callback</callbackUri>
+        <!--callbackUri>http://149.165.228.118/PHP-Reference-Gateway/xsede_login.php</callbackUri-->
         <lifetime>864000</lifetime>
-        <publicKeyFile>/Users/chathuri/dev/airavata/source/trunk_git/airavata/modules/credential-store-service/credential-store-webapp/keys/credential-store/oauth-pubkey.pem</publicKeyFile>
-        <privateKeyFile>/Users/chathuri/dev/airavata/source/trunk_git/airavata/modules/credential-store-service/credential-store-webapp/keys/credential-store/oauth-privkey.pk8</privateKeyFile>
+        <publicKeyFile>/Users/chathuri/dev/airavata/credential-store/oa4mp/oauth-pubkey.pem</publicKeyFile>
+        <privateKeyFile>/Users/chathuri/dev/airavata/credential-store/oa4mp/oauth-privkey.pk8</privateKeyFile>
     </client>
 
     <credential-store>
-        <successUri>/credential-store/success.jsp</successUri>
+        <successUri>http://gw120.iu.xsede.org/PHP-Reference-Gateway/</successUri>
         <errorUri>/credential-store/error.jsp</errorUri>
         <redirectUri>/credential-store/show-redirect.jsp</redirectUri>
     </credential-store>

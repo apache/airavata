@@ -146,6 +146,10 @@ public class ComputeResourceTest {
             ComputeResourceDescription host = null;
             if (computeResource.isComputeResourceExists(resourceId)){
                 host = computeResource.getComputeResource(resourceId);
+                List<BatchQueue> batchQueues = host.getBatchQueues();
+                for (BatchQueue queue : batchQueues){
+                    System.out.println("%%%%%%%%%%%%%%%% queue description :  %%%%%%%%%%%%%%%%%%% : " + queue.getQueueDescription());
+                }
                 List<String> hostAliases = host.getHostAliases();
                 if (hostAliases != null && !hostAliases.isEmpty()){
                     for (String alias : hostAliases){

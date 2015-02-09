@@ -45,7 +45,6 @@ import java.util.jar.JarFile;
 import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.xbaya.XBayaVersion;
-import org.apache.airavata.xbaya.jython.lib.NotificationSender;
 import org.python.util.PythonInterpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -170,10 +169,11 @@ public class JythonClassLoader extends SecureClassLoader {
         // JythonOneTimeRunner also needs to be loaded separatly.
         if (name.startsWith("org.python.")) {
             klass = findClassFromURL(name, this.jythonURL, this.jythonJarFile);
-        } else if (name.startsWith(NotificationSender.class.getPackage().getName())
-                || name.startsWith(JythonOneTimeRunnerImpl.class.getName())) {
-            klass = findClassFromURL(name, this.xbayaURL, this.xbayaJarFile);
         }
+//        else if (name.startsWith(NotificationSender.class.getPackage().getName())
+//                || name.startsWith(JythonOneTimeRunnerImpl.class.getName())) {
+//            klass = findClassFromURL(name, this.xbayaURL, this.xbayaJarFile);
+//        }
 
         if (klass != null) {
             this.classes.put(name, klass);

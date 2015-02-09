@@ -50,7 +50,6 @@ import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaVersion;
 import org.apache.airavata.xbaya.invoker.GenericInvoker;
-import org.apache.airavata.xbaya.jython.lib.NotificationSender;
 
 public class JythonScript {
 
@@ -76,7 +75,7 @@ public class JythonScript {
 
     private static final String INVOKER_CLASS = StringUtil.getClassName(GenericInvoker.class);
 
-    private static final String NOTIFICATION_CLASS = StringUtil.getClassName(NotificationSender.class);
+//    private static final String NOTIFICATION_CLASS = StringUtil.getClassName(NotificationSender.class);
 
     private static final String WORKFLOW_STARTED_METHOD = "workflowStarted";
 
@@ -266,7 +265,7 @@ public class JythonScript {
     }
 
     /**
-     * @throws GraphExceptionconcreteWSDL
+     * @throws org.apache.airavata.workflow.model.graph.GraphException
      */
     public void create() throws GraphException {
         StringWriter stringWriter = new StringWriter();
@@ -339,7 +338,7 @@ public class JythonScript {
         pw.println("from java.io import FileInputStream");
         pw.println("from javax.xml.namespace import QName");
         pw.println("from " + GenericInvoker.class.getPackage().getName() + " import " + INVOKER_CLASS);
-        pw.println("from " + NotificationSender.class.getPackage().getName() + " import " + NOTIFICATION_CLASS);
+//        pw.println("from " + NotificationSender.class.getPackage().getName() + " import " + NOTIFICATION_CLASS);
         pw.println();
     }
 
@@ -431,8 +430,8 @@ public class JythonScript {
                 + MESSAGE_BOX_URL_VARIABLE + "')");
 
         // Initialize a notification sender.
-        pw.println(NOTIFICATION_VARIABLE + " = " + NOTIFICATION_CLASS + "(" + BROKER_URL_VARIABLE + ", "
-                + TOPIC_VARIABLE + ")");
+//        pw.println(NOTIFICATION_VARIABLE + " = " + NOTIFICATION_CLASS + "(" + BROKER_URL_VARIABLE + ", "
+//                + TOPIC_VARIABLE + ")");
 
         // Send a START_WORKFLOW notification.
         pw.println(NOTIFICATION_VARIABLE + "." + WORKFLOW_STARTED_METHOD + "(");

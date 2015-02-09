@@ -1275,7 +1275,7 @@ class DataTransferDetails {
 void swap(DataTransferDetails &a, DataTransferDetails &b);
 
 typedef struct _TaskDetails__isset {
-  _TaskDetails__isset() : creationTime(false), applicationId(false), applicationVersion(false), applicationDeploymentId(false), applicationInputs(false), applicationOutputs(false), taskScheduling(false), advancedInputDataHandling(false), advancedOutputDataHandling(false), taskStatus(false), jobDetailsList(false), dataTransferDetailsList(false), errors(false) {}
+  _TaskDetails__isset() : creationTime(false), applicationId(false), applicationVersion(false), applicationDeploymentId(false), applicationInputs(false), applicationOutputs(false), taskScheduling(false), advancedInputDataHandling(false), advancedOutputDataHandling(false), taskStatus(false), jobDetailsList(false), dataTransferDetailsList(false), errors(false), enableEmailNotification(false), emailAddresses(false) {}
   bool creationTime;
   bool applicationId;
   bool applicationVersion;
@@ -1289,15 +1289,17 @@ typedef struct _TaskDetails__isset {
   bool jobDetailsList;
   bool dataTransferDetailsList;
   bool errors;
+  bool enableEmailNotification;
+  bool emailAddresses;
 } _TaskDetails__isset;
 
 class TaskDetails {
  public:
 
-  static const char* ascii_fingerprint; // = "6FF0ECF6FE53D283757211BADE659108";
-  static const uint8_t binary_fingerprint[16]; // = {0x6F,0xF0,0xEC,0xF6,0xFE,0x53,0xD2,0x83,0x75,0x72,0x11,0xBA,0xDE,0x65,0x91,0x08};
+  static const char* ascii_fingerprint; // = "6EAEEB62655ECD5CA7A24BFDE46F678C";
+  static const uint8_t binary_fingerprint[16]; // = {0x6E,0xAE,0xEB,0x62,0x65,0x5E,0xCD,0x5C,0xA7,0xA2,0x4B,0xFD,0xE4,0x6F,0x67,0x8C};
 
-  TaskDetails() : taskID("DO_NOT_SET_AT_CLIENTS"), creationTime(0), applicationId(), applicationVersion(), applicationDeploymentId() {
+  TaskDetails() : taskID("DO_NOT_SET_AT_CLIENTS"), creationTime(0), applicationId(), applicationVersion(), applicationDeploymentId(), enableEmailNotification(0) {
   }
 
   virtual ~TaskDetails() throw() {}
@@ -1316,6 +1318,8 @@ class TaskDetails {
   std::vector<JobDetails>  jobDetailsList;
   std::vector<DataTransferDetails>  dataTransferDetailsList;
   std::vector<ErrorDetails>  errors;
+  bool enableEmailNotification;
+  std::vector<std::string>  emailAddresses;
 
   _TaskDetails__isset __isset;
 
@@ -1388,6 +1392,16 @@ class TaskDetails {
     __isset.errors = true;
   }
 
+  void __set_enableEmailNotification(const bool val) {
+    enableEmailNotification = val;
+    __isset.enableEmailNotification = true;
+  }
+
+  void __set_emailAddresses(const std::vector<std::string> & val) {
+    emailAddresses = val;
+    __isset.emailAddresses = true;
+  }
+
   bool operator == (const TaskDetails & rhs) const
   {
     if (!(taskID == rhs.taskID))
@@ -1444,6 +1458,14 @@ class TaskDetails {
       return false;
     else if (__isset.errors && !(errors == rhs.errors))
       return false;
+    if (__isset.enableEmailNotification != rhs.__isset.enableEmailNotification)
+      return false;
+    else if (__isset.enableEmailNotification && !(enableEmailNotification == rhs.enableEmailNotification))
+      return false;
+    if (__isset.emailAddresses != rhs.__isset.emailAddresses)
+      return false;
+    else if (__isset.emailAddresses && !(emailAddresses == rhs.emailAddresses))
+      return false;
     return true;
   }
   bool operator != (const TaskDetails &rhs) const {
@@ -1473,8 +1495,8 @@ typedef struct _WorkflowNodeDetails__isset {
 class WorkflowNodeDetails {
  public:
 
-  static const char* ascii_fingerprint; // = "D2AF8FCCA5B9C08220AE508BA2D7FB06";
-  static const uint8_t binary_fingerprint[16]; // = {0xD2,0xAF,0x8F,0xCC,0xA5,0xB9,0xC0,0x82,0x20,0xAE,0x50,0x8B,0xA2,0xD7,0xFB,0x06};
+  static const char* ascii_fingerprint; // = "CDDA44A784FD60829B4F4EAA67D71C72";
+  static const uint8_t binary_fingerprint[16]; // = {0xCD,0xDA,0x44,0xA7,0x84,0xFD,0x60,0x82,0x9B,0x4F,0x4E,0xAA,0x67,0xD7,0x1C,0x72};
 
   WorkflowNodeDetails() : nodeInstanceId("DO_NOT_SET_AT_CLIENTS"), creationTime(0), nodeName("SINGLE_APP_NODE"), executionUnit((ExecutionUnit::type)1), executionUnitData() {
     executionUnit = (ExecutionUnit::type)1;
@@ -1692,13 +1714,15 @@ class ValidationResults {
 void swap(ValidationResults &a, ValidationResults &b);
 
 typedef struct _Experiment__isset {
-  _Experiment__isset() : creationTime(false), description(false), applicationId(false), applicationVersion(false), workflowTemplateId(false), workflowTemplateVersion(false), userConfigurationData(false), workflowExecutionInstanceId(false), experimentInputs(false), experimentOutputs(false), experimentStatus(false), stateChangeList(false), workflowNodeDetailsList(false), errors(false) {}
+  _Experiment__isset() : creationTime(false), description(false), applicationId(false), applicationVersion(false), workflowTemplateId(false), workflowTemplateVersion(false), enableEmailNotification(false), emailAddresses(false), userConfigurationData(false), workflowExecutionInstanceId(false), experimentInputs(false), experimentOutputs(false), experimentStatus(false), stateChangeList(false), workflowNodeDetailsList(false), errors(false) {}
   bool creationTime;
   bool description;
   bool applicationId;
   bool applicationVersion;
   bool workflowTemplateId;
   bool workflowTemplateVersion;
+  bool enableEmailNotification;
+  bool emailAddresses;
   bool userConfigurationData;
   bool workflowExecutionInstanceId;
   bool experimentInputs;
@@ -1712,10 +1736,10 @@ typedef struct _Experiment__isset {
 class Experiment {
  public:
 
-  static const char* ascii_fingerprint; // = "4CE20099975A60F2FE0D6D1139972D1A";
-  static const uint8_t binary_fingerprint[16]; // = {0x4C,0xE2,0x00,0x99,0x97,0x5A,0x60,0xF2,0xFE,0x0D,0x6D,0x11,0x39,0x97,0x2D,0x1A};
+  static const char* ascii_fingerprint; // = "145D3134FA7C46D3D99051850C4984FF";
+  static const uint8_t binary_fingerprint[16]; // = {0x14,0x5D,0x31,0x34,0xFA,0x7C,0x46,0xD3,0xD9,0x90,0x51,0x85,0x0C,0x49,0x84,0xFF};
 
-  Experiment() : experimentID("DO_NOT_SET_AT_CLIENTS"), projectID("DEFAULT"), creationTime(0), userName(), name(), description(), applicationId(), applicationVersion(), workflowTemplateId(), workflowTemplateVersion(), workflowExecutionInstanceId() {
+  Experiment() : experimentID("DO_NOT_SET_AT_CLIENTS"), projectID("DEFAULT"), creationTime(0), userName(), name(), description(), applicationId(), applicationVersion(), workflowTemplateId(), workflowTemplateVersion(), enableEmailNotification(0), workflowExecutionInstanceId() {
   }
 
   virtual ~Experiment() throw() {}
@@ -1730,6 +1754,8 @@ class Experiment {
   std::string applicationVersion;
   std::string workflowTemplateId;
   std::string workflowTemplateVersion;
+  bool enableEmailNotification;
+  std::vector<std::string>  emailAddresses;
   UserConfigurationData userConfigurationData;
   std::string workflowExecutionInstanceId;
   std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType>  experimentInputs;
@@ -1785,6 +1811,16 @@ class Experiment {
   void __set_workflowTemplateVersion(const std::string& val) {
     workflowTemplateVersion = val;
     __isset.workflowTemplateVersion = true;
+  }
+
+  void __set_enableEmailNotification(const bool val) {
+    enableEmailNotification = val;
+    __isset.enableEmailNotification = true;
+  }
+
+  void __set_emailAddresses(const std::vector<std::string> & val) {
+    emailAddresses = val;
+    __isset.emailAddresses = true;
   }
 
   void __set_userConfigurationData(const UserConfigurationData& val) {
@@ -1860,6 +1896,14 @@ class Experiment {
     if (__isset.workflowTemplateVersion != rhs.__isset.workflowTemplateVersion)
       return false;
     else if (__isset.workflowTemplateVersion && !(workflowTemplateVersion == rhs.workflowTemplateVersion))
+      return false;
+    if (__isset.enableEmailNotification != rhs.__isset.enableEmailNotification)
+      return false;
+    else if (__isset.enableEmailNotification && !(enableEmailNotification == rhs.enableEmailNotification))
+      return false;
+    if (__isset.emailAddresses != rhs.__isset.emailAddresses)
+      return false;
+    else if (__isset.emailAddresses && !(emailAddresses == rhs.emailAddresses))
       return false;
     if (__isset.userConfigurationData != rhs.__isset.userConfigurationData)
       return false;

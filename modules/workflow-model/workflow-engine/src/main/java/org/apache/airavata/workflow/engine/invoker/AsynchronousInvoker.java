@@ -70,11 +70,12 @@ public class AsynchronousInvoker extends SimpleInvoker {
             correlator = new XsulSoapHttpWsaResponsesCorrelator();
             String serverLoc = ((XsulSoapHttpWsaResponsesCorrelator) correlator).getServerLocation();
             logger.debug("using async correlator at " + serverLoc);
-        } else {
-            correlator = new MsgBoxWsaResponsesCorrelator(this.messageBoxURL,this);
-            logger.debug("using message box at " + this.messageBoxURL);
+            this.client.useAsyncMessaging(correlator);
         }
-        this.client.useAsyncMessaging(correlator);
+//        else {
+//            correlator = new MsgBoxWsaResponsesCorrelator(this.messageBoxURL,this);
+//            logger.debug("using message box at " + this.messageBoxURL);
+//        }
     }
 
      public boolean invoke() throws WorkflowException {

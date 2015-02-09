@@ -244,7 +244,41 @@ public class CredentialsDAO extends ParentDAO {
 
         return null;
     }
+    /**
+     * 
+     */
+    public String getGatewayID(String tokenId, Connection connection)
+            throws CredentialStoreException {
 
+        String sql = "SELECT GATEWAY_ID FROM CREDENTIALS WHERE TOKEN_ID=?";
+
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+
+            preparedStatement.setString(1, tokenId);
+         
+            resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+            	return resultSet.getString("GATEWAY_ID");
+              }
+
+        } catch (SQLException e) {
+            StringBuilder stringBuilder = new StringBuilder("Error retrieving credentials for user.");
+            stringBuilder.append("token id - ").append(tokenId);
+
+            log.debug(stringBuilder.toString(), e);
+
+            throw new CredentialStoreException(stringBuilder.toString(), e);
+        } finally {
+            DBUtil.cleanup(preparedStatement, resultSet);
+        }
+
+        return null;
+    }
     /**
      * String createTable = "CREATE TABLE CREDENTIALS\n" + "(\n" + "        GATEWAY_ID VARCHAR(256) NOT NULL,\n" +
      * "        TOKEN_ID VARCHAR(256) NOT NULL,\n" + // Actual token used to identify the credential

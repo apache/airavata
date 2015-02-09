@@ -439,6 +439,21 @@ public class JobDescriptor {
         return this.jobDescriptionDocument.getJobDescriptor().getCallBackPort();
     }
 
+    public void setMailType(String emailType) {
+        this.getJobDescriptorDocument().getJobDescriptor().setMailType(emailType);
+    }
+
+    public String getMailType() {
+        return this.getJobDescriptorDocument().getJobDescriptor().getMailType();
+    }
+    public void setMailAddress(String emailAddress) {
+        this.getJobDescriptorDocument().getJobDescriptor().setMailAddress(emailAddress);
+    }
+
+    public String getMailAddress() {
+        return this.getJobDescriptorDocument().getJobDescriptor().getMailAddress();
+    }
+    
 
 }
 

@@ -134,11 +134,11 @@ public class RegisterSampleApplications {
 
             registerLocalHost();
             //Register all compute hosts
-//            registerSampleApplications.registerXSEDEHosts();
+            registerSampleApplications.registerXSEDEHosts();
 
 
             //Register Gateway Resource Preferences
-//            registerSampleApplications.registerGatewayResourceProfile();
+            registerSampleApplications.registerGatewayResourceProfile();
 
             //Register all application modules
             registerSampleApplications.registerAppModules();

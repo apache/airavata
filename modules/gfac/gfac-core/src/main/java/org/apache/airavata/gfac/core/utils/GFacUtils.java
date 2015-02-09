@@ -55,6 +55,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.xpath.*;
+
 import java.io.*;
 import java.net.InetAddress;
 import java.net.URISyntaxException;
@@ -1316,4 +1317,26 @@ public class GFacUtils {
         }
     }
 
+    /**
+     * To convert list to separated value
+     * @param listOfStrings
+     * @param separator
+     * @return
+     */
+    public static  String listToCsv(List<String> listOfStrings, char separator) {
+        StringBuilder sb = new StringBuilder();
+
+        // all but last
+        for(int i = 0; i < listOfStrings.size() - 1 ; i++) {
+            sb.append(listOfStrings.get(i));
+            sb.append(separator);
+        }
+
+        // last string, no separator
+        if(listOfStrings.size() > 0){
+            sb.append(listOfStrings.get(listOfStrings.size()-1));
+        }
+
+        return sb.toString();
+    }
 }

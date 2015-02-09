@@ -34,20 +34,9 @@ import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
-import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
-import org.apache.airavata.model.messaging.event.MessageType;
-import org.apache.airavata.model.messaging.event.TaskOutputChangeEvent;
-import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
-import org.apache.airavata.model.messaging.event.WorkflowIdentifier;
-import org.apache.airavata.model.messaging.event.WorkflowNodeStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.util.ExperimentModelUtil;
-import org.apache.airavata.model.workspace.experiment.ExecutionUnit;
-import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.model.workspace.experiment.ExperimentState;
-import org.apache.airavata.model.workspace.experiment.TaskDetails;
-import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
-import org.apache.airavata.model.workspace.experiment.WorkflowNodeState;
-import org.apache.airavata.model.workspace.experiment.WorkflowNodeStatus;
+import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.ChildDataType;
@@ -63,19 +52,7 @@ import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.amazon.InstanceComponent;
 import org.apache.airavata.workflow.model.component.amazon.TerminateInstanceComponent;
 import org.apache.airavata.workflow.model.component.dynamic.DynamicComponent;
-import org.apache.airavata.workflow.model.component.system.ConstantComponent;
-import org.apache.airavata.workflow.model.component.system.DifferedInputComponent;
-import org.apache.airavata.workflow.model.component.system.DoWhileComponent;
-import org.apache.airavata.workflow.model.component.system.EndDoWhileComponent;
-import org.apache.airavata.workflow.model.component.system.EndForEachComponent;
-import org.apache.airavata.workflow.model.component.system.EndifComponent;
-import org.apache.airavata.workflow.model.component.system.ForEachComponent;
-import org.apache.airavata.workflow.model.component.system.IfComponent;
-import org.apache.airavata.workflow.model.component.system.InputComponent;
-import org.apache.airavata.workflow.model.component.system.MemoComponent;
-import org.apache.airavata.workflow.model.component.system.OutputComponent;
-import org.apache.airavata.workflow.model.component.system.S3InputComponent;
-import org.apache.airavata.workflow.model.component.system.SubWorkflowComponent;
+import org.apache.airavata.workflow.model.component.system.*;
 import org.apache.airavata.workflow.model.component.ws.WSComponent;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
@@ -88,42 +65,24 @@ import org.apache.airavata.workflow.model.graph.dynamic.DynamicNode;
 import org.apache.airavata.workflow.model.graph.impl.EdgeImpl;
 import org.apache.airavata.workflow.model.graph.impl.NodeImpl;
 import org.apache.airavata.workflow.model.graph.subworkflow.SubWorkflowNode;
-import org.apache.airavata.workflow.model.graph.system.ConstantNode;
-import org.apache.airavata.workflow.model.graph.system.DoWhileNode;
-import org.apache.airavata.workflow.model.graph.system.EndForEachNode;
-import org.apache.airavata.workflow.model.graph.system.EndifNode;
-import org.apache.airavata.workflow.model.graph.system.ForEachNode;
-import org.apache.airavata.workflow.model.graph.system.IfNode;
-import org.apache.airavata.workflow.model.graph.system.InputNode;
-import org.apache.airavata.workflow.model.graph.system.OutputNode;
+import org.apache.airavata.workflow.model.graph.system.*;
 import org.apache.airavata.workflow.model.graph.ws.WSGraph;
 import org.apache.airavata.workflow.model.graph.ws.WSNode;
 import org.apache.airavata.workflow.model.graph.ws.WSPort;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.workflow.model.wf.WorkflowExecutionState;
-import org.apache.airavata.ws.monitor.MonitorException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
-import xsul5.XmlConstants;
 
-import javax.xml.namespace.QName;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.net.URL;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -461,10 +420,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 		notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_STATE_CHANGED, WorkflowExecutionState.PAUSED);
 	}
 
-	/**
-	 * @throws MonitorException
-	 */
-	public void cleanup() throws MonitorException {
+	public void cleanup() {
 		this.getWorkflow().setExecutionState(WorkflowExecutionState.STOPPED);
 		notifyViaInteractor(WorkflowExecutionMessage.EXECUTION_CLEANUP, null);
 	}
