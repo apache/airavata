@@ -43,6 +43,8 @@ public class TaskDetail implements Serializable {
     private String appId;
     @Column(name = "APPLICATION_VERSION")
     private String appVersion;
+    @Column(name = "ALLOW_NOTIFICATION")
+    private boolean allowNotification;
 
     @Column(name = "APPLICATION_DEPLOYMENT_ID")
     private String applicationDeploymentId;
@@ -106,4 +108,12 @@ public class TaskDetail implements Serializable {
 	public void setApplicationDeploymentId(String applicationDeploymentId) {
 		this.applicationDeploymentId = applicationDeploymentId;
 	}
+
+    public boolean isAllowNotification() {
+        return allowNotification;
+    }
+
+    public void setAllowNotification(boolean allowNotification) {
+        this.allowNotification = allowNotification;
+    }
 }

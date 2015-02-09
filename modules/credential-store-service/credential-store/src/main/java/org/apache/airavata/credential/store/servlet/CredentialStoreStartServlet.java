@@ -21,7 +21,9 @@
 
 package org.apache.airavata.credential.store.servlet;
 
+import edu.uiuc.ncsa.myproxy.oa4mp.client.ClientEnvironment;
 import edu.uiuc.ncsa.myproxy.oa4mp.client.OA4MPResponse;
+import edu.uiuc.ncsa.myproxy.oa4mp.client.OA4MPService;
 import edu.uiuc.ncsa.myproxy.oa4mp.client.servlet.ClientServlet;
 import edu.uiuc.ncsa.security.servlet.JSPUtil;
 import org.apache.airavata.credential.store.store.CredentialStoreException;
@@ -35,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +52,7 @@ public class CredentialStoreStartServlet extends ClientServlet {
     private static ConfigurationReader configurationReader = null;
 
     private static Logger log = LoggerFactory.getLogger(CredentialStoreStartServlet.class);
+    private OA4MPService oa4mpService;
 
     protected String decorateURI(URI inputURI, Map<String, String> parameters) {
 
@@ -91,6 +95,17 @@ public class CredentialStoreStartServlet extends ClientServlet {
     }
 
     @Override
+    public OA4MPService getOA4MPService() {
+        return oa4mpService;
+    }
+
+    @Override
+    public void loadEnvironment() throws IOException {
+        environment = getConfigurationLoader().load();
+        oa4mpService = new OA4MPService((ClientEnvironment) environment);
+    }
+
+    @Override
     protected void doIt(HttpServletRequest request, HttpServletResponse response) throws Throwable {
 
         String gatewayName
@@ -129,6 +144,10 @@ public class CredentialStoreStartServlet extends ClientServlet {
         queryParameters.put(CredentialStoreConstants.PORTAL_TOKEN_ID_ASSIGNED, associatedToken);
 
         Map<String, String> additionalParameters = new HashMap<String, String>();
+
+        if (getOA4MPService() == null) {
+            loadEnvironment();
+        }
 
         String modifiedCallbackUri = decorateURI(getOA4MPService().getEnvironment().getCallback(), queryParameters);
 

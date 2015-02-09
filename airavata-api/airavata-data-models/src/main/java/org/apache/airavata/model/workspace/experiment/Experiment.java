@@ -78,14 +78,16 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField APPLICATION_VERSION_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationVersion", org.apache.thrift.protocol.TType.STRING, (short)8);
   private static final org.apache.thrift.protocol.TField WORKFLOW_TEMPLATE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("workflowTemplateId", org.apache.thrift.protocol.TType.STRING, (short)9);
   private static final org.apache.thrift.protocol.TField WORKFLOW_TEMPLATE_VERSION_FIELD_DESC = new org.apache.thrift.protocol.TField("workflowTemplateVersion", org.apache.thrift.protocol.TType.STRING, (short)10);
-  private static final org.apache.thrift.protocol.TField USER_CONFIGURATION_DATA_FIELD_DESC = new org.apache.thrift.protocol.TField("userConfigurationData", org.apache.thrift.protocol.TType.STRUCT, (short)11);
-  private static final org.apache.thrift.protocol.TField WORKFLOW_EXECUTION_INSTANCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("workflowExecutionInstanceId", org.apache.thrift.protocol.TType.STRING, (short)12);
-  private static final org.apache.thrift.protocol.TField EXPERIMENT_INPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentInputs", org.apache.thrift.protocol.TType.LIST, (short)13);
-  private static final org.apache.thrift.protocol.TField EXPERIMENT_OUTPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentOutputs", org.apache.thrift.protocol.TType.LIST, (short)14);
-  private static final org.apache.thrift.protocol.TField EXPERIMENT_STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentStatus", org.apache.thrift.protocol.TType.STRUCT, (short)15);
-  private static final org.apache.thrift.protocol.TField STATE_CHANGE_LIST_FIELD_DESC = new org.apache.thrift.protocol.TField("stateChangeList", org.apache.thrift.protocol.TType.LIST, (short)16);
-  private static final org.apache.thrift.protocol.TField WORKFLOW_NODE_DETAILS_LIST_FIELD_DESC = new org.apache.thrift.protocol.TField("workflowNodeDetailsList", org.apache.thrift.protocol.TType.LIST, (short)17);
-  private static final org.apache.thrift.protocol.TField ERRORS_FIELD_DESC = new org.apache.thrift.protocol.TField("errors", org.apache.thrift.protocol.TType.LIST, (short)18);
+  private static final org.apache.thrift.protocol.TField ENABLE_EMAIL_NOTIFICATION_FIELD_DESC = new org.apache.thrift.protocol.TField("enableEmailNotification", org.apache.thrift.protocol.TType.BOOL, (short)11);
+  private static final org.apache.thrift.protocol.TField EMAIL_ADDRESSES_FIELD_DESC = new org.apache.thrift.protocol.TField("emailAddresses", org.apache.thrift.protocol.TType.LIST, (short)12);
+  private static final org.apache.thrift.protocol.TField USER_CONFIGURATION_DATA_FIELD_DESC = new org.apache.thrift.protocol.TField("userConfigurationData", org.apache.thrift.protocol.TType.STRUCT, (short)13);
+  private static final org.apache.thrift.protocol.TField WORKFLOW_EXECUTION_INSTANCE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("workflowExecutionInstanceId", org.apache.thrift.protocol.TType.STRING, (short)14);
+  private static final org.apache.thrift.protocol.TField EXPERIMENT_INPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentInputs", org.apache.thrift.protocol.TType.LIST, (short)15);
+  private static final org.apache.thrift.protocol.TField EXPERIMENT_OUTPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentOutputs", org.apache.thrift.protocol.TType.LIST, (short)16);
+  private static final org.apache.thrift.protocol.TField EXPERIMENT_STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentStatus", org.apache.thrift.protocol.TType.STRUCT, (short)17);
+  private static final org.apache.thrift.protocol.TField STATE_CHANGE_LIST_FIELD_DESC = new org.apache.thrift.protocol.TField("stateChangeList", org.apache.thrift.protocol.TType.LIST, (short)18);
+  private static final org.apache.thrift.protocol.TField WORKFLOW_NODE_DETAILS_LIST_FIELD_DESC = new org.apache.thrift.protocol.TField("workflowNodeDetailsList", org.apache.thrift.protocol.TType.LIST, (short)19);
+  private static final org.apache.thrift.protocol.TField ERRORS_FIELD_DESC = new org.apache.thrift.protocol.TField("errors", org.apache.thrift.protocol.TType.LIST, (short)20);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -103,6 +105,8 @@ import org.slf4j.LoggerFactory;
   private String applicationVersion; // optional
   private String workflowTemplateId; // optional
   private String workflowTemplateVersion; // optional
+  private boolean enableEmailNotification; // optional
+  private List<String> emailAddresses; // optional
   private UserConfigurationData userConfigurationData; // optional
   private String workflowExecutionInstanceId; // optional
   private List<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType> experimentInputs; // optional
@@ -124,14 +128,16 @@ import org.slf4j.LoggerFactory;
     APPLICATION_VERSION((short)8, "applicationVersion"),
     WORKFLOW_TEMPLATE_ID((short)9, "workflowTemplateId"),
     WORKFLOW_TEMPLATE_VERSION((short)10, "workflowTemplateVersion"),
-    USER_CONFIGURATION_DATA((short)11, "userConfigurationData"),
-    WORKFLOW_EXECUTION_INSTANCE_ID((short)12, "workflowExecutionInstanceId"),
-    EXPERIMENT_INPUTS((short)13, "experimentInputs"),
-    EXPERIMENT_OUTPUTS((short)14, "experimentOutputs"),
-    EXPERIMENT_STATUS((short)15, "experimentStatus"),
-    STATE_CHANGE_LIST((short)16, "stateChangeList"),
-    WORKFLOW_NODE_DETAILS_LIST((short)17, "workflowNodeDetailsList"),
-    ERRORS((short)18, "errors");
+    ENABLE_EMAIL_NOTIFICATION((short)11, "enableEmailNotification"),
+    EMAIL_ADDRESSES((short)12, "emailAddresses"),
+    USER_CONFIGURATION_DATA((short)13, "userConfigurationData"),
+    WORKFLOW_EXECUTION_INSTANCE_ID((short)14, "workflowExecutionInstanceId"),
+    EXPERIMENT_INPUTS((short)15, "experimentInputs"),
+    EXPERIMENT_OUTPUTS((short)16, "experimentOutputs"),
+    EXPERIMENT_STATUS((short)17, "experimentStatus"),
+    STATE_CHANGE_LIST((short)18, "stateChangeList"),
+    WORKFLOW_NODE_DETAILS_LIST((short)19, "workflowNodeDetailsList"),
+    ERRORS((short)20, "errors");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -166,21 +172,25 @@ import org.slf4j.LoggerFactory;
           return WORKFLOW_TEMPLATE_ID;
         case 10: // WORKFLOW_TEMPLATE_VERSION
           return WORKFLOW_TEMPLATE_VERSION;
-        case 11: // USER_CONFIGURATION_DATA
+        case 11: // ENABLE_EMAIL_NOTIFICATION
+          return ENABLE_EMAIL_NOTIFICATION;
+        case 12: // EMAIL_ADDRESSES
+          return EMAIL_ADDRESSES;
+        case 13: // USER_CONFIGURATION_DATA
           return USER_CONFIGURATION_DATA;
-        case 12: // WORKFLOW_EXECUTION_INSTANCE_ID
+        case 14: // WORKFLOW_EXECUTION_INSTANCE_ID
           return WORKFLOW_EXECUTION_INSTANCE_ID;
-        case 13: // EXPERIMENT_INPUTS
+        case 15: // EXPERIMENT_INPUTS
           return EXPERIMENT_INPUTS;
-        case 14: // EXPERIMENT_OUTPUTS
+        case 16: // EXPERIMENT_OUTPUTS
           return EXPERIMENT_OUTPUTS;
-        case 15: // EXPERIMENT_STATUS
+        case 17: // EXPERIMENT_STATUS
           return EXPERIMENT_STATUS;
-        case 16: // STATE_CHANGE_LIST
+        case 18: // STATE_CHANGE_LIST
           return STATE_CHANGE_LIST;
-        case 17: // WORKFLOW_NODE_DETAILS_LIST
+        case 19: // WORKFLOW_NODE_DETAILS_LIST
           return WORKFLOW_NODE_DETAILS_LIST;
-        case 18: // ERRORS
+        case 20: // ERRORS
           return ERRORS;
         default:
           return null;
@@ -223,8 +233,9 @@ import org.slf4j.LoggerFactory;
 
   // isset id assignments
   private static final int __CREATIONTIME_ISSET_ID = 0;
+  private static final int __ENABLEEMAILNOTIFICATION_ISSET_ID = 1;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.DESCRIPTION,_Fields.APPLICATION_ID,_Fields.APPLICATION_VERSION,_Fields.WORKFLOW_TEMPLATE_ID,_Fields.WORKFLOW_TEMPLATE_VERSION,_Fields.USER_CONFIGURATION_DATA,_Fields.WORKFLOW_EXECUTION_INSTANCE_ID,_Fields.EXPERIMENT_INPUTS,_Fields.EXPERIMENT_OUTPUTS,_Fields.EXPERIMENT_STATUS,_Fields.STATE_CHANGE_LIST,_Fields.WORKFLOW_NODE_DETAILS_LIST,_Fields.ERRORS};
+  private _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.DESCRIPTION,_Fields.APPLICATION_ID,_Fields.APPLICATION_VERSION,_Fields.WORKFLOW_TEMPLATE_ID,_Fields.WORKFLOW_TEMPLATE_VERSION,_Fields.ENABLE_EMAIL_NOTIFICATION,_Fields.EMAIL_ADDRESSES,_Fields.USER_CONFIGURATION_DATA,_Fields.WORKFLOW_EXECUTION_INSTANCE_ID,_Fields.EXPERIMENT_INPUTS,_Fields.EXPERIMENT_OUTPUTS,_Fields.EXPERIMENT_STATUS,_Fields.STATE_CHANGE_LIST,_Fields.WORKFLOW_NODE_DETAILS_LIST,_Fields.ERRORS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -248,6 +259,11 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.WORKFLOW_TEMPLATE_VERSION, new org.apache.thrift.meta_data.FieldMetaData("workflowTemplateVersion", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.ENABLE_EMAIL_NOTIFICATION, new org.apache.thrift.meta_data.FieldMetaData("enableEmailNotification", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+    tmpMap.put(_Fields.EMAIL_ADDRESSES, new org.apache.thrift.meta_data.FieldMetaData("emailAddresses", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING))));
     tmpMap.put(_Fields.USER_CONFIGURATION_DATA, new org.apache.thrift.meta_data.FieldMetaData("userConfigurationData", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, UserConfigurationData.class)));
     tmpMap.put(_Fields.WORKFLOW_EXECUTION_INSTANCE_ID, new org.apache.thrift.meta_data.FieldMetaData("workflowExecutionInstanceId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
@@ -326,6 +342,11 @@ import org.slf4j.LoggerFactory;
     if (other.isSetWorkflowTemplateVersion()) {
       this.workflowTemplateVersion = other.workflowTemplateVersion;
     }
+    this.enableEmailNotification = other.enableEmailNotification;
+    if (other.isSetEmailAddresses()) {
+      List<String> __this__emailAddresses = new ArrayList<String>(other.emailAddresses);
+      this.emailAddresses = __this__emailAddresses;
+    }
     if (other.isSetUserConfigurationData()) {
       this.userConfigurationData = new UserConfigurationData(other.userConfigurationData);
     }
@@ -391,6 +412,9 @@ import org.slf4j.LoggerFactory;
     this.applicationVersion = null;
     this.workflowTemplateId = null;
     this.workflowTemplateVersion = null;
+    setEnableEmailNotificationIsSet(false);
+    this.enableEmailNotification = false;
+    this.emailAddresses = null;
     this.userConfigurationData = null;
     this.workflowExecutionInstanceId = null;
     this.experimentInputs = null;
@@ -627,6 +651,66 @@ import org.slf4j.LoggerFactory;
   public void setWorkflowTemplateVersionIsSet(boolean value) {
     if (!value) {
       this.workflowTemplateVersion = null;
+    }
+  }
+
+  public boolean isEnableEmailNotification() {
+    return this.enableEmailNotification;
+  }
+
+  public void setEnableEmailNotification(boolean enableEmailNotification) {
+    this.enableEmailNotification = enableEmailNotification;
+    setEnableEmailNotificationIsSet(true);
+  }
+
+  public void unsetEnableEmailNotification() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __ENABLEEMAILNOTIFICATION_ISSET_ID);
+  }
+
+  /** Returns true if field enableEmailNotification is set (has been assigned a value) and false otherwise */
+  public boolean isSetEnableEmailNotification() {
+    return EncodingUtils.testBit(__isset_bitfield, __ENABLEEMAILNOTIFICATION_ISSET_ID);
+  }
+
+  public void setEnableEmailNotificationIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __ENABLEEMAILNOTIFICATION_ISSET_ID, value);
+  }
+
+  public int getEmailAddressesSize() {
+    return (this.emailAddresses == null) ? 0 : this.emailAddresses.size();
+  }
+
+  public java.util.Iterator<String> getEmailAddressesIterator() {
+    return (this.emailAddresses == null) ? null : this.emailAddresses.iterator();
+  }
+
+  public void addToEmailAddresses(String elem) {
+    if (this.emailAddresses == null) {
+      this.emailAddresses = new ArrayList<String>();
+    }
+    this.emailAddresses.add(elem);
+  }
+
+  public List<String> getEmailAddresses() {
+    return this.emailAddresses;
+  }
+
+  public void setEmailAddresses(List<String> emailAddresses) {
+    this.emailAddresses = emailAddresses;
+  }
+
+  public void unsetEmailAddresses() {
+    this.emailAddresses = null;
+  }
+
+  /** Returns true if field emailAddresses is set (has been assigned a value) and false otherwise */
+  public boolean isSetEmailAddresses() {
+    return this.emailAddresses != null;
+  }
+
+  public void setEmailAddressesIsSet(boolean value) {
+    if (!value) {
+      this.emailAddresses = null;
     }
   }
 
@@ -971,6 +1055,22 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case ENABLE_EMAIL_NOTIFICATION:
+      if (value == null) {
+        unsetEnableEmailNotification();
+      } else {
+        setEnableEmailNotification((Boolean)value);
+      }
+      break;
+
+    case EMAIL_ADDRESSES:
+      if (value == null) {
+        unsetEmailAddresses();
+      } else {
+        setEmailAddresses((List<String>)value);
+      }
+      break;
+
     case USER_CONFIGURATION_DATA:
       if (value == null) {
         unsetUserConfigurationData();
@@ -1070,6 +1170,12 @@ import org.slf4j.LoggerFactory;
     case WORKFLOW_TEMPLATE_VERSION:
       return getWorkflowTemplateVersion();
 
+    case ENABLE_EMAIL_NOTIFICATION:
+      return Boolean.valueOf(isEnableEmailNotification());
+
+    case EMAIL_ADDRESSES:
+      return getEmailAddresses();
+
     case USER_CONFIGURATION_DATA:
       return getUserConfigurationData();
 
@@ -1125,6 +1231,10 @@ import org.slf4j.LoggerFactory;
       return isSetWorkflowTemplateId();
     case WORKFLOW_TEMPLATE_VERSION:
       return isSetWorkflowTemplateVersion();
+    case ENABLE_EMAIL_NOTIFICATION:
+      return isSetEnableEmailNotification();
+    case EMAIL_ADDRESSES:
+      return isSetEmailAddresses();
     case USER_CONFIGURATION_DATA:
       return isSetUserConfigurationData();
     case WORKFLOW_EXECUTION_INSTANCE_ID:
@@ -1245,6 +1355,24 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_workflowTemplateVersion && that_present_workflowTemplateVersion))
         return false;
       if (!this.workflowTemplateVersion.equals(that.workflowTemplateVersion))
+        return false;
+    }
+
+    boolean this_present_enableEmailNotification = true && this.isSetEnableEmailNotification();
+    boolean that_present_enableEmailNotification = true && that.isSetEnableEmailNotification();
+    if (this_present_enableEmailNotification || that_present_enableEmailNotification) {
+      if (!(this_present_enableEmailNotification && that_present_enableEmailNotification))
+        return false;
+      if (this.enableEmailNotification != that.enableEmailNotification)
+        return false;
+    }
+
+    boolean this_present_emailAddresses = true && this.isSetEmailAddresses();
+    boolean that_present_emailAddresses = true && that.isSetEmailAddresses();
+    if (this_present_emailAddresses || that_present_emailAddresses) {
+      if (!(this_present_emailAddresses && that_present_emailAddresses))
+        return false;
+      if (!this.emailAddresses.equals(that.emailAddresses))
         return false;
     }
 
@@ -1436,6 +1564,26 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetEnableEmailNotification()).compareTo(other.isSetEnableEmailNotification());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetEnableEmailNotification()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.enableEmailNotification, other.enableEmailNotification);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetEmailAddresses()).compareTo(other.isSetEmailAddresses());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetEmailAddresses()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.emailAddresses, other.emailAddresses);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = Boolean.valueOf(isSetUserConfigurationData()).compareTo(other.isSetUserConfigurationData());
     if (lastComparison != 0) {
       return lastComparison;
@@ -1620,6 +1768,22 @@ import org.slf4j.LoggerFactory;
         sb.append("null");
       } else {
         sb.append(this.workflowTemplateVersion);
+      }
+      first = false;
+    }
+    if (isSetEnableEmailNotification()) {
+      if (!first) sb.append(", ");
+      sb.append("enableEmailNotification:");
+      sb.append(this.enableEmailNotification);
+      first = false;
+    }
+    if (isSetEmailAddresses()) {
+      if (!first) sb.append(", ");
+      sb.append("emailAddresses:");
+      if (this.emailAddresses == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.emailAddresses);
       }
       first = false;
     }
@@ -1850,7 +2014,33 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 11: // USER_CONFIGURATION_DATA
+          case 11: // ENABLE_EMAIL_NOTIFICATION
+            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+              struct.enableEmailNotification = iprot.readBool();
+              struct.setEnableEmailNotificationIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 12: // EMAIL_ADDRESSES
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list104 = iprot.readListBegin();
+                struct.emailAddresses = new ArrayList<String>(_list104.size);
+                for (int _i105 = 0; _i105 < _list104.size; ++_i105)
+                {
+                  String _elem106;
+                  _elem106 = iprot.readString();
+                  struct.emailAddresses.add(_elem106);
+                }
+                iprot.readListEnd();
+              }
+              struct.setEmailAddressesIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 13: // USER_CONFIGURATION_DATA
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
               struct.userConfigurationData = new UserConfigurationData();
               struct.userConfigurationData.read(iprot);
@@ -1859,7 +2049,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 12: // WORKFLOW_EXECUTION_INSTANCE_ID
+          case 14: // WORKFLOW_EXECUTION_INSTANCE_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.workflowExecutionInstanceId = iprot.readString();
               struct.setWorkflowExecutionInstanceIdIsSet(true);
@@ -1867,17 +2057,17 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 13: // EXPERIMENT_INPUTS
+          case 15: // EXPERIMENT_INPUTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list96 = iprot.readListBegin();
-                struct.experimentInputs = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType>(_list96.size);
-                for (int _i97 = 0; _i97 < _list96.size; ++_i97)
+                org.apache.thrift.protocol.TList _list107 = iprot.readListBegin();
+                struct.experimentInputs = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType>(_list107.size);
+                for (int _i108 = 0; _i108 < _list107.size; ++_i108)
                 {
-                  org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _elem98;
-                  _elem98 = new org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType();
-                  _elem98.read(iprot);
-                  struct.experimentInputs.add(_elem98);
+                  org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _elem109;
+                  _elem109 = new org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType();
+                  _elem109.read(iprot);
+                  struct.experimentInputs.add(_elem109);
                 }
                 iprot.readListEnd();
               }
@@ -1886,17 +2076,17 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 14: // EXPERIMENT_OUTPUTS
+          case 16: // EXPERIMENT_OUTPUTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list99 = iprot.readListBegin();
-                struct.experimentOutputs = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>(_list99.size);
-                for (int _i100 = 0; _i100 < _list99.size; ++_i100)
+                org.apache.thrift.protocol.TList _list110 = iprot.readListBegin();
+                struct.experimentOutputs = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>(_list110.size);
+                for (int _i111 = 0; _i111 < _list110.size; ++_i111)
                 {
-                  org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _elem101;
-                  _elem101 = new org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType();
-                  _elem101.read(iprot);
-                  struct.experimentOutputs.add(_elem101);
+                  org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _elem112;
+                  _elem112 = new org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType();
+                  _elem112.read(iprot);
+                  struct.experimentOutputs.add(_elem112);
                 }
                 iprot.readListEnd();
               }
@@ -1905,7 +2095,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 15: // EXPERIMENT_STATUS
+          case 17: // EXPERIMENT_STATUS
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
               struct.experimentStatus = new ExperimentStatus();
               struct.experimentStatus.read(iprot);
@@ -1914,17 +2104,17 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 16: // STATE_CHANGE_LIST
+          case 18: // STATE_CHANGE_LIST
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list102 = iprot.readListBegin();
-                struct.stateChangeList = new ArrayList<WorkflowNodeStatus>(_list102.size);
-                for (int _i103 = 0; _i103 < _list102.size; ++_i103)
+                org.apache.thrift.protocol.TList _list113 = iprot.readListBegin();
+                struct.stateChangeList = new ArrayList<WorkflowNodeStatus>(_list113.size);
+                for (int _i114 = 0; _i114 < _list113.size; ++_i114)
                 {
-                  WorkflowNodeStatus _elem104;
-                  _elem104 = new WorkflowNodeStatus();
-                  _elem104.read(iprot);
-                  struct.stateChangeList.add(_elem104);
+                  WorkflowNodeStatus _elem115;
+                  _elem115 = new WorkflowNodeStatus();
+                  _elem115.read(iprot);
+                  struct.stateChangeList.add(_elem115);
                 }
                 iprot.readListEnd();
               }
@@ -1933,17 +2123,17 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 17: // WORKFLOW_NODE_DETAILS_LIST
+          case 19: // WORKFLOW_NODE_DETAILS_LIST
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list105 = iprot.readListBegin();
-                struct.workflowNodeDetailsList = new ArrayList<WorkflowNodeDetails>(_list105.size);
-                for (int _i106 = 0; _i106 < _list105.size; ++_i106)
+                org.apache.thrift.protocol.TList _list116 = iprot.readListBegin();
+                struct.workflowNodeDetailsList = new ArrayList<WorkflowNodeDetails>(_list116.size);
+                for (int _i117 = 0; _i117 < _list116.size; ++_i117)
                 {
-                  WorkflowNodeDetails _elem107;
-                  _elem107 = new WorkflowNodeDetails();
-                  _elem107.read(iprot);
-                  struct.workflowNodeDetailsList.add(_elem107);
+                  WorkflowNodeDetails _elem118;
+                  _elem118 = new WorkflowNodeDetails();
+                  _elem118.read(iprot);
+                  struct.workflowNodeDetailsList.add(_elem118);
                 }
                 iprot.readListEnd();
               }
@@ -1952,17 +2142,17 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 18: // ERRORS
+          case 20: // ERRORS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list108 = iprot.readListBegin();
-                struct.errors = new ArrayList<ErrorDetails>(_list108.size);
-                for (int _i109 = 0; _i109 < _list108.size; ++_i109)
+                org.apache.thrift.protocol.TList _list119 = iprot.readListBegin();
+                struct.errors = new ArrayList<ErrorDetails>(_list119.size);
+                for (int _i120 = 0; _i120 < _list119.size; ++_i120)
                 {
-                  ErrorDetails _elem110;
-                  _elem110 = new ErrorDetails();
-                  _elem110.read(iprot);
-                  struct.errors.add(_elem110);
+                  ErrorDetails _elem121;
+                  _elem121 = new ErrorDetails();
+                  _elem121.read(iprot);
+                  struct.errors.add(_elem121);
                 }
                 iprot.readListEnd();
               }
@@ -2044,6 +2234,25 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldEnd();
         }
       }
+      if (struct.isSetEnableEmailNotification()) {
+        oprot.writeFieldBegin(ENABLE_EMAIL_NOTIFICATION_FIELD_DESC);
+        oprot.writeBool(struct.enableEmailNotification);
+        oprot.writeFieldEnd();
+      }
+      if (struct.emailAddresses != null) {
+        if (struct.isSetEmailAddresses()) {
+          oprot.writeFieldBegin(EMAIL_ADDRESSES_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, struct.emailAddresses.size()));
+            for (String _iter122 : struct.emailAddresses)
+            {
+              oprot.writeString(_iter122);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+      }
       if (struct.userConfigurationData != null) {
         if (struct.isSetUserConfigurationData()) {
           oprot.writeFieldBegin(USER_CONFIGURATION_DATA_FIELD_DESC);
@@ -2063,9 +2272,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(EXPERIMENT_INPUTS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.experimentInputs.size()));
-            for (org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _iter111 : struct.experimentInputs)
+            for (org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _iter123 : struct.experimentInputs)
             {
-              _iter111.write(oprot);
+              _iter123.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -2077,9 +2286,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(EXPERIMENT_OUTPUTS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.experimentOutputs.size()));
-            for (org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _iter112 : struct.experimentOutputs)
+            for (org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _iter124 : struct.experimentOutputs)
             {
-              _iter112.write(oprot);
+              _iter124.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -2098,9 +2307,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(STATE_CHANGE_LIST_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.stateChangeList.size()));
-            for (WorkflowNodeStatus _iter113 : struct.stateChangeList)
+            for (WorkflowNodeStatus _iter125 : struct.stateChangeList)
             {
-              _iter113.write(oprot);
+              _iter125.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -2112,9 +2321,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(WORKFLOW_NODE_DETAILS_LIST_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.workflowNodeDetailsList.size()));
-            for (WorkflowNodeDetails _iter114 : struct.workflowNodeDetailsList)
+            for (WorkflowNodeDetails _iter126 : struct.workflowNodeDetailsList)
             {
-              _iter114.write(oprot);
+              _iter126.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -2126,9 +2335,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(ERRORS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.errors.size()));
-            for (ErrorDetails _iter115 : struct.errors)
+            for (ErrorDetails _iter127 : struct.errors)
             {
-              _iter115.write(oprot);
+              _iter127.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -2175,31 +2384,37 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetWorkflowTemplateVersion()) {
         optionals.set(5);
       }
-      if (struct.isSetUserConfigurationData()) {
+      if (struct.isSetEnableEmailNotification()) {
         optionals.set(6);
       }
-      if (struct.isSetWorkflowExecutionInstanceId()) {
+      if (struct.isSetEmailAddresses()) {
         optionals.set(7);
       }
-      if (struct.isSetExperimentInputs()) {
+      if (struct.isSetUserConfigurationData()) {
         optionals.set(8);
       }
-      if (struct.isSetExperimentOutputs()) {
+      if (struct.isSetWorkflowExecutionInstanceId()) {
         optionals.set(9);
       }
-      if (struct.isSetExperimentStatus()) {
+      if (struct.isSetExperimentInputs()) {
         optionals.set(10);
       }
-      if (struct.isSetStateChangeList()) {
+      if (struct.isSetExperimentOutputs()) {
         optionals.set(11);
       }
-      if (struct.isSetWorkflowNodeDetailsList()) {
+      if (struct.isSetExperimentStatus()) {
         optionals.set(12);
       }
-      if (struct.isSetErrors()) {
+      if (struct.isSetStateChangeList()) {
         optionals.set(13);
       }
-      oprot.writeBitSet(optionals, 14);
+      if (struct.isSetWorkflowNodeDetailsList()) {
+        optionals.set(14);
+      }
+      if (struct.isSetErrors()) {
+        optionals.set(15);
+      }
+      oprot.writeBitSet(optionals, 16);
       if (struct.isSetCreationTime()) {
         oprot.writeI64(struct.creationTime);
       }
@@ -2218,6 +2433,18 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetWorkflowTemplateVersion()) {
         oprot.writeString(struct.workflowTemplateVersion);
       }
+      if (struct.isSetEnableEmailNotification()) {
+        oprot.writeBool(struct.enableEmailNotification);
+      }
+      if (struct.isSetEmailAddresses()) {
+        {
+          oprot.writeI32(struct.emailAddresses.size());
+          for (String _iter128 : struct.emailAddresses)
+          {
+            oprot.writeString(_iter128);
+          }
+        }
+      }
       if (struct.isSetUserConfigurationData()) {
         struct.userConfigurationData.write(oprot);
       }
@@ -2227,18 +2454,18 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetExperimentInputs()) {
         {
           oprot.writeI32(struct.experimentInputs.size());
-          for (org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _iter116 : struct.experimentInputs)
+          for (org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _iter129 : struct.experimentInputs)
           {
-            _iter116.write(oprot);
+            _iter129.write(oprot);
           }
         }
       }
       if (struct.isSetExperimentOutputs()) {
         {
           oprot.writeI32(struct.experimentOutputs.size());
-          for (org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _iter117 : struct.experimentOutputs)
+          for (org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _iter130 : struct.experimentOutputs)
           {
-            _iter117.write(oprot);
+            _iter130.write(oprot);
           }
         }
       }
@@ -2248,27 +2475,27 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetStateChangeList()) {
         {
           oprot.writeI32(struct.stateChangeList.size());
-          for (WorkflowNodeStatus _iter118 : struct.stateChangeList)
+          for (WorkflowNodeStatus _iter131 : struct.stateChangeList)
           {
-            _iter118.write(oprot);
+            _iter131.write(oprot);
           }
         }
       }
       if (struct.isSetWorkflowNodeDetailsList()) {
         {
           oprot.writeI32(struct.workflowNodeDetailsList.size());
-          for (WorkflowNodeDetails _iter119 : struct.workflowNodeDetailsList)
+          for (WorkflowNodeDetails _iter132 : struct.workflowNodeDetailsList)
           {
-            _iter119.write(oprot);
+            _iter132.write(oprot);
           }
         }
       }
       if (struct.isSetErrors()) {
         {
           oprot.writeI32(struct.errors.size());
-          for (ErrorDetails _iter120 : struct.errors)
+          for (ErrorDetails _iter133 : struct.errors)
           {
-            _iter120.write(oprot);
+            _iter133.write(oprot);
           }
         }
       }
@@ -2285,7 +2512,7 @@ import org.slf4j.LoggerFactory;
       struct.setUserNameIsSet(true);
       struct.name = iprot.readString();
       struct.setNameIsSet(true);
-      BitSet incoming = iprot.readBitSet(14);
+      BitSet incoming = iprot.readBitSet(16);
       if (incoming.get(0)) {
         struct.creationTime = iprot.readI64();
         struct.setCreationTimeIsSet(true);
@@ -2311,85 +2538,102 @@ import org.slf4j.LoggerFactory;
         struct.setWorkflowTemplateVersionIsSet(true);
       }
       if (incoming.get(6)) {
+        struct.enableEmailNotification = iprot.readBool();
+        struct.setEnableEmailNotificationIsSet(true);
+      }
+      if (incoming.get(7)) {
+        {
+          org.apache.thrift.protocol.TList _list134 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRING, iprot.readI32());
+          struct.emailAddresses = new ArrayList<String>(_list134.size);
+          for (int _i135 = 0; _i135 < _list134.size; ++_i135)
+          {
+            String _elem136;
+            _elem136 = iprot.readString();
+            struct.emailAddresses.add(_elem136);
+          }
+        }
+        struct.setEmailAddressesIsSet(true);
+      }
+      if (incoming.get(8)) {
         struct.userConfigurationData = new UserConfigurationData();
         struct.userConfigurationData.read(iprot);
         struct.setUserConfigurationDataIsSet(true);
       }
-      if (incoming.get(7)) {
+      if (incoming.get(9)) {
         struct.workflowExecutionInstanceId = iprot.readString();
         struct.setWorkflowExecutionInstanceIdIsSet(true);
       }
-      if (incoming.get(8)) {
+      if (incoming.get(10)) {
         {
-          org.apache.thrift.protocol.TList _list121 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.experimentInputs = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType>(_list121.size);
-          for (int _i122 = 0; _i122 < _list121.size; ++_i122)
+          org.apache.thrift.protocol.TList _list137 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.experimentInputs = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType>(_list137.size);
+          for (int _i138 = 0; _i138 < _list137.size; ++_i138)
           {
-            org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _elem123;
-            _elem123 = new org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType();
-            _elem123.read(iprot);
-            struct.experimentInputs.add(_elem123);
+            org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType _elem139;
+            _elem139 = new org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType();
+            _elem139.read(iprot);
+            struct.experimentInputs.add(_elem139);
           }
         }
         struct.setExperimentInputsIsSet(true);
       }
-      if (incoming.get(9)) {
+      if (incoming.get(11)) {
         {
-          org.apache.thrift.protocol.TList _list124 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.experimentOutputs = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>(_list124.size);
-          for (int _i125 = 0; _i125 < _list124.size; ++_i125)
+          org.apache.thrift.protocol.TList _list140 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.experimentOutputs = new ArrayList<org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType>(_list140.size);
+          for (int _i141 = 0; _i141 < _list140.size; ++_i141)
           {
-            org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _elem126;
-            _elem126 = new org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType();
-            _elem126.read(iprot);
-            struct.experimentOutputs.add(_elem126);
+            org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType _elem142;
+            _elem142 = new org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType();
+            _elem142.read(iprot);
+            struct.experimentOutputs.add(_elem142);
           }
         }
         struct.setExperimentOutputsIsSet(true);
       }
-      if (incoming.get(10)) {
+      if (incoming.get(12)) {
         struct.experimentStatus = new ExperimentStatus();
         struct.experimentStatus.read(iprot);
         struct.setExperimentStatusIsSet(true);
       }
-      if (incoming.get(11)) {
+      if (incoming.get(13)) {
         {
-          org.apache.thrift.protocol.TList _list127 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.stateChangeList = new ArrayList<WorkflowNodeStatus>(_list127.size);
-          for (int _i128 = 0; _i128 < _list127.size; ++_i128)
+          org.apache.thrift.protocol.TList _list143 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.stateChangeList = new ArrayList<WorkflowNodeStatus>(_list143.size);
+          for (int _i144 = 0; _i144 < _list143.size; ++_i144)
           {
-            WorkflowNodeStatus _elem129;
-            _elem129 = new WorkflowNodeStatus();
-            _elem129.read(iprot);
-            struct.stateChangeList.add(_elem129);
+            WorkflowNodeStatus _elem145;
+            _elem145 = new WorkflowNodeStatus();
+            _elem145.read(iprot);
+            struct.stateChangeList.add(_elem145);
           }
         }
         struct.setStateChangeListIsSet(true);
       }
-      if (incoming.get(12)) {
+      if (incoming.get(14)) {
         {
-          org.apache.thrift.protocol.TList _list130 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.workflowNodeDetailsList = new ArrayList<WorkflowNodeDetails>(_list130.size);
-          for (int _i131 = 0; _i131 < _list130.size; ++_i131)
+          org.apache.thrift.protocol.TList _list146 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.workflowNodeDetailsList = new ArrayList<WorkflowNodeDetails>(_list146.size);
+          for (int _i147 = 0; _i147 < _list146.size; ++_i147)
           {
-            WorkflowNodeDetails _elem132;
-            _elem132 = new WorkflowNodeDetails();
-            _elem132.read(iprot);
-            struct.workflowNodeDetailsList.add(_elem132);
+            WorkflowNodeDetails _elem148;
+            _elem148 = new WorkflowNodeDetails();
+            _elem148.read(iprot);
+            struct.workflowNodeDetailsList.add(_elem148);
           }
         }
         struct.setWorkflowNodeDetailsListIsSet(true);
       }
-      if (incoming.get(13)) {
+      if (incoming.get(15)) {
         {
-          org.apache.thrift.protocol.TList _list133 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.errors = new ArrayList<ErrorDetails>(_list133.size);
-          for (int _i134 = 0; _i134 < _list133.size; ++_i134)
+          org.apache.thrift.protocol.TList _list149 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.errors = new ArrayList<ErrorDetails>(_list149.size);
+          for (int _i150 = 0; _i150 < _list149.size; ++_i150)
           {
-            ErrorDetails _elem135;
-            _elem135 = new ErrorDetails();
-            _elem135.read(iprot);
-            struct.errors.add(_elem135);
+            ErrorDetails _elem151;
+            _elem151 = new ErrorDetails();
+            _elem151.read(iprot);
+            struct.errors.add(_elem151);
           }
         }
         struct.setErrorsIsSet(true);

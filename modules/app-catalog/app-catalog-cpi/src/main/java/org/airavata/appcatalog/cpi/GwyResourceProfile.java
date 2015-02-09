@@ -52,6 +52,7 @@ public interface GwyResourceProfile {
      * @return true or false
      */
     boolean removeGatewayResourceProfile(String gatewayId) throws AppCatalogException;
+    boolean removeComputeResourcePreferenceFromGateway(String gatewayId, String preferenceId) throws AppCatalogException;
 
     /**
      * This method will check whether gateway profile exists

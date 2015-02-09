@@ -297,7 +297,9 @@ struct TaskDetails {
     11: optional TaskStatus taskStatus,
     12: optional list<JobDetails> jobDetailsList,
     13: optional list<DataTransferDetails> dataTransferDetailsList,
-    14: optional list<ErrorDetails> errors
+    14: optional list<ErrorDetails> errors,
+    15: optional bool enableEmailNotification,
+    16: optional list<string> emailAddresses,
 }
 
 enum ExecutionUnit {
@@ -370,14 +372,16 @@ struct Experiment {
     8: optional string applicationVersion,
     9: optional string workflowTemplateId,
     10: optional string workflowTemplateVersion,
-    11: optional UserConfigurationData userConfigurationData,
-    12: optional string workflowExecutionInstanceId,
-    13: optional list<applicationInterfaceModel.InputDataObjectType> experimentInputs,
-    14: optional list<applicationInterfaceModel.OutputDataObjectType> experimentOutputs,
-    15: optional ExperimentStatus experimentStatus,
-    16: optional list<WorkflowNodeStatus> stateChangeList,
-    17: optional list<WorkflowNodeDetails> workflowNodeDetailsList,
-    18: optional list<ErrorDetails> errors
+    11: optional bool enableEmailNotification,
+    12: optional list<string> emailAddresses,
+    13: optional UserConfigurationData userConfigurationData,
+    14: optional string workflowExecutionInstanceId,
+    15: optional list<applicationInterfaceModel.InputDataObjectType> experimentInputs,
+    16: optional list<applicationInterfaceModel.OutputDataObjectType> experimentOutputs,
+    17: optional ExperimentStatus experimentStatus,
+    18: optional list<WorkflowNodeStatus> stateChangeList,
+    19: optional list<WorkflowNodeDetails> workflowNodeDetailsList,
+    20: optional list<ErrorDetails> errors
 }
 
 struct ExperimentSummary {

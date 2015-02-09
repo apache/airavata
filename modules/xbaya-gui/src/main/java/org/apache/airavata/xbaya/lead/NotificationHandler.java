@@ -21,30 +21,23 @@
 
 package org.apache.airavata.xbaya.lead;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Properties;
-
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
-import org.apache.airavata.workflow.tracking.NotifierFactory;
-import org.apache.airavata.workflow.tracking.WorkflowNotifier;
-import org.apache.airavata.workflow.tracking.common.InvocationContext;
-import org.apache.airavata.workflow.tracking.common.InvocationEntity;
-import org.apache.airavata.workflow.tracking.common.WorkflowTrackingContext;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.xmlbeans.XmlObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.v1.builder.XmlElement;
-
 import xsul.XmlConstants;
 import xsul.invoker.DynamicInfosetInvokerException;
 import xsul.lead.LeadContextHeader;
 import xsul.message_router.MessageContext;
 import xsul.xbeans_util.XBeansUtil;
 import xsul.xhandler.BaseHandler;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class NotificationHandler extends BaseHandler {
 
@@ -58,13 +51,13 @@ public class NotificationHandler extends BaseHandler {
 
     private LeadContextHeader leadContext;
 
-    private WorkflowNotifier notifier;
+//    private WorkflowNotifier notifier;
 
-    private WorkflowTrackingContext context;
+//    private WorkflowTrackingContext context;
 
-    private InvocationContext invocationContext;
+//    private InvocationContext invocationContext;
 
-    private InvocationEntity invocationEntity;
+//    private InvocationEntity invocationEntity;
 
     private WorkflowContextHeaderBuilder builder;
 
@@ -76,7 +69,7 @@ public class NotificationHandler extends BaseHandler {
     public NotificationHandler(LeadContextHeader leadContext) {
         super(NotificationHandler.class.getName());
         this.leadContext = leadContext;
-        this.notifier = NotifierFactory.createNotifier();
+//        this.notifier = NotifierFactory.createNotifier();
         URI myWorkflowID = null;
         URI myServiceID = URI.create(XBayaConstants.APPLICATION_SHORT_NAME);
         String userDN = this.leadContext.getUserDn();
@@ -93,15 +86,15 @@ public class NotificationHandler extends BaseHandler {
         String myNodeID = null;
         Integer myTimestep = null;
         EndpointReference epr = new EndpointReference(leadContext.getEventSink().getAddress().toString());
-        this.invocationEntity = this.notifier.createEntity(myWorkflowID, myServiceID, myNodeID, myTimestep);
-        this.context = this.notifier.createTrackingContext(new Properties(), epr.getAddress().toString(), myWorkflowID,
-                myServiceID, myNodeID, myTimestep);
+//        this.invocationEntity = this.notifier.createEntity(myWorkflowID, myServiceID, myNodeID, myTimestep);
+//        this.context = this.notifier.createTrackingContext(new Properties(), epr.getAddress().toString(), myWorkflowID,
+//                myServiceID, myNodeID, myTimestep);
     }
 
     public NotificationHandler(WorkflowContextHeaderBuilder builder) {
         super(NotificationHandler.class.getName());
         this.builder = builder;
-        this.notifier = NotifierFactory.createNotifier();
+//        this.notifier = NotifierFactory.createNotifier();
         URI myWorkflowID = null;
         URI myServiceID = URI.create(XBayaConstants.APPLICATION_SHORT_NAME);
         String userDN = this.builder.getUserIdentifier();
@@ -118,9 +111,9 @@ public class NotificationHandler extends BaseHandler {
         String myNodeID = null;
         Integer myTimestep = null;
         EndpointReference epr = new EndpointReference(builder.getWorkflowMonitoringContext().getEventPublishEpr());
-        this.invocationEntity = this.notifier.createEntity(myWorkflowID, myServiceID, myNodeID, myTimestep);
-        this.context = this.notifier.createTrackingContext(new Properties(), epr.getAddress().toString(), myWorkflowID,
-                myServiceID, myNodeID, myTimestep);
+//        this.invocationEntity = this.notifier.createEntity(myWorkflowID, myServiceID, myNodeID, myTimestep);
+//        this.context = this.notifier.createTrackingContext(new Properties(), epr.getAddress().toString(), myWorkflowID,
+//                myServiceID, myNodeID, myTimestep);
     }
 
     /**
@@ -154,8 +147,8 @@ public class NotificationHandler extends BaseHandler {
         }
         XmlObject bodyObject = XBeansUtil.xmlElementToXmlObject(soapBody);
 
-        this.invocationContext = this.notifier.invokingService(this.context, this.invocationEntity, headerObject,
-                bodyObject, INVOKING_MESSAGE);
+//        this.invocationContext = this.notifier.invokingService(this.context, this.invocationEntity, headerObject,
+//                bodyObject, INVOKING_MESSAGE);
         return super.processOutgoingXml(soapEnvelope, context);
     }
 
@@ -178,11 +171,11 @@ public class NotificationHandler extends BaseHandler {
         XmlObject bodyObject = XBeansUtil.xmlElementToXmlObject(soapBody);
         XmlElement faultElement = soapBody.element(null, "Fault");
         if (faultElement == null) {
-            this.notifier.receivedResult(this.context, this.invocationContext, headerObject, bodyObject,
-                    RECEIVE_RESULT_MESSAGE);
+//            this.notifier.receivedResult(this.context, this.invocationContext, headerObject, bodyObject,
+//                    RECEIVE_RESULT_MESSAGE);
         } else {
-            this.notifier.receivedFault(this.context, this.invocationContext, headerObject, bodyObject,
-                    RECEIVE_FAULT_MESSAGE);
+//            this.notifier.receivedFault(this.context, this.invocationContext, headerObject, bodyObject,
+//                    RECEIVE_FAULT_MESSAGE);
         }
 
         return super.processIncomingXml(soapEnvelope, context);

@@ -52,6 +52,7 @@ public class ExperimentResource extends AbstractResource {
     private String workflowTemplateId;
     private String workflowTemplateVersion;
     private String workflowExecutionId;
+    private boolean enableEmailNotifications;
 
     /**
      *
@@ -125,6 +126,14 @@ public class ExperimentResource extends AbstractResource {
         this.description = description;
     }
 
+    public boolean isEnableEmailNotifications() {
+        return enableEmailNotifications;
+    }
+
+    public void setEnableEmailNotifications(boolean enableEmailNotifications) {
+        this.enableEmailNotifications = enableEmailNotifications;
+    }
+
     /**
      * Since experiments are at the leaf level, this method is not
      * valid for an experiment
@@ -141,6 +150,10 @@ public class ExperimentResource extends AbstractResource {
                 ExperimentOutputResource experimentOutputResource = new ExperimentOutputResource();
                 experimentOutputResource.setExperimentResource(this);
                 return experimentOutputResource;
+            case NOTIFICATION_EMAIL:
+                NotificationEmailResource emailResource = new NotificationEmailResource();
+                emailResource.setExperimentResource(this);
+                return emailResource;
             case WORKFLOW_NODE_DETAIL:
                 WorkflowNodeDetailResource nodeDetailResource = new WorkflowNodeDetailResource();
                 nodeDetailResource.setExperimentResource(this);
@@ -202,6 +215,12 @@ public class ExperimentResource extends AbstractResource {
                 case EXPERIMENT_OUTPUT:
                     generator = new QueryGenerator(EXPERIMENT_OUTPUT);
                     generator.setParameter(ExperimentOutputConstants.EXPERIMENT_ID, name);
+                    q = generator.deleteQuery(em);
+                    q.executeUpdate();
+                    break;
+                case NOTIFICATION_EMAIL:
+                    generator = new QueryGenerator(NOTIFICATION_EMAIL);
+                    generator.setParameter(NotificationEmailConstants.EXPERIMENT_ID, name);
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
@@ -305,6 +324,15 @@ public class ExperimentResource extends AbstractResource {
                     em.getTransaction().commit();
                     em.close();
                     return outputResource;
+                case NOTIFICATION_EMAIL:
+                    generator = new QueryGenerator(NOTIFICATION_EMAIL);
+                    generator.setParameter(NotificationEmailConstants.EXPERIMENT_ID, name);
+                    q = generator.selectQuery(em);
+                    Notification_Email notificationEmail = (Notification_Email) q.getSingleResult();
+                    NotificationEmailResource notificationEmailResource = (NotificationEmailResource) Utils.getResource(ResourceType.NOTIFICATION_EMAIL, notificationEmail);
+                    em.getTransaction().commit();
+                    em.close();
+                    return notificationEmailResource;
                 case WORKFLOW_NODE_DETAIL:
                     generator = new QueryGenerator(WORKFLOW_NODE_DETAIL);
                     generator.setParameter(WorkflowNodeDetailsConstants.NODE_INSTANCE_ID, name);
@@ -444,6 +472,20 @@ public class ExperimentResource extends AbstractResource {
                         }
                     }
                     break;
+                case NOTIFICATION_EMAIL:
+                    generator = new QueryGenerator(NOTIFICATION_EMAIL);
+                    generator.setParameter(NotificationEmailConstants.EXPERIMENT_ID, expID);
+                    q = generator.selectQuery(em);
+                    results = q.getResultList();
+                    if (results.size() != 0) {
+                        for (Object result : results) {
+                            Notification_Email notificationEmail = (Notification_Email) result;
+                            NotificationEmailResource emailResource =
+                                    (NotificationEmailResource) Utils.getResource(ResourceType.NOTIFICATION_EMAIL, notificationEmail);
+                            resourceList.add(emailResource);
+                        }
+                    }
+                    break;
                 case WORKFLOW_NODE_DETAIL:
                     generator = new QueryGenerator(WORKFLOW_NODE_DETAIL);
                     generator.setParameter(WorkflowNodeDetailsConstants.EXPERIMENT_ID, expID);
@@ -540,6 +582,7 @@ public class ExperimentResource extends AbstractResource {
             experiment.setWorkflowExecutionId(workflowExecutionId);
             experiment.setWorkflowTemplateVersion(workflowTemplateVersion);
             experiment.setWorkflowExecutionId(workflowExecutionId);
+            experiment.setAllowNotification(enableEmailNotifications);
             if (existingExp != null) {
                 existingExp.setGateway(gateway);
                 existingExp.setGatewayName(gateway.getGateway_name());
@@ -555,6 +598,7 @@ public class ExperimentResource extends AbstractResource {
                 existingExp.setWorkflowExecutionId(workflowExecutionId);
                 existingExp.setWorkflowTemplateVersion(workflowTemplateVersion);
                 existingExp.setWorkflowExecutionId(workflowExecutionId);
+                existingExp.setAllowNotification(enableEmailNotifications);
                 experiment = em.merge(existingExp);
             } else {
                 em.persist(experiment);
@@ -621,6 +665,15 @@ public class ExperimentResource extends AbstractResource {
     public void setProject(ProjectResource project) {
 		this.project = project;
 	}
+
+    public List<NotificationEmailResource> getNotificationEmails () throws RegistryException{
+        List<NotificationEmailResource> emailResources = new ArrayList<NotificationEmailResource>();
+        List<Resource> resources = get(ResourceType.NOTIFICATION_EMAIL);
+        for (Resource resource : resources) {
+            emailResources.add((NotificationEmailResource) resource);
+        }
+        return emailResources;
+    }
 
     public List<ExperimentInputResource> getExperimentInputs () throws RegistryException{
         List<ExperimentInputResource> expInputs = new ArrayList<ExperimentInputResource>();

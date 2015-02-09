@@ -21,9 +21,15 @@
 
 package org.apache.airavata.credential.store.util;
 
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.KeyPair;
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
 import java.io.FileInputStream;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -33,6 +39,8 @@ import java.util.Date;
  * Contains some utility methods.
  */
 public class Utility {
+
+    protected static Logger log = LoggerFactory.getLogger(Utility.class);
 
     private static final String DATE_FORMAT = "MM/dd/yyyy HH:mm:ss";
 
@@ -73,6 +81,32 @@ public class Utility {
 
     public static char[] getPassword() {
         return new char[0];
+    }
+
+    public static org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential generateKeyPair(String userName, String passphrase) throws Exception{
+        JSch jsch=new JSch();
+        try{
+            KeyPair kpair=KeyPair.genKeyPair(jsch, KeyPair.RSA);
+            File file = File.createTempFile("id_rsa", "");
+            String fileName = file.getAbsolutePath();
+
+            kpair.writePrivateKey(fileName,passphrase.getBytes());
+            kpair.writePublicKey(fileName + ".pub"  , "");
+            kpair.dispose();
+            byte[] priKey = FileUtils.readFileToByteArray(new File(fileName));
+
+            byte[] pubKey = FileUtils.readFileToByteArray(new File(fileName + ".pub"));
+            org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential sshCredential = new org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential();
+            sshCredential.setPrivateKey(priKey);
+            sshCredential.setPublicKey(pubKey);
+            sshCredential.setPortalUserName(userName);
+            sshCredential.setPassphrase(passphrase);
+            return sshCredential;
+        }
+        catch(Exception e){
+            log.error("Error while creating key pair", e);
+            throw new Exception("Error while creating key pair", e);
+        }
     }
 
 }

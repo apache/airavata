@@ -32,6 +32,7 @@
         <class>org.apache.airavata.persistance.registry.jpa.model.Published_Workflow</class>
         <class>org.apache.airavata.persistance.registry.jpa.model.User_Workflow</class>
         <class>org.apache.airavata.persistance.registry.jpa.model.Experiment</class>
+        <class>org.apache.airavata.persistance.registry.jpa.model.Notification_Email</class>
         <class>org.apache.airavata.persistance.registry.jpa.model.Experiment_Input</class>
         <class>org.apache.airavata.persistance.registry.jpa.model.Experiment_Output</class>
         <class>org.apache.airavata.persistance.registry.jpa.model.WorkflowNodeDetail</class>

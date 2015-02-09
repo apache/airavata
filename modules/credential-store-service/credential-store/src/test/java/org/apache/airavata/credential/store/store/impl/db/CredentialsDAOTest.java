@@ -314,15 +314,18 @@ public class CredentialsDAOTest extends DatabaseTestCases {
         try {
             CertificateCredential certificateCredential = (CertificateCredential) credentialsDAO.getCredential("gw1",
                     "tom", connection);
+            //Test get gateway name
+            String gateway = credentialsDAO.getGatewayID("tom", connection);
             Assert.assertNotNull(certificateCredential);
             Assert.assertEquals("jerry", certificateCredential.getPortalUserName());
+            Assert.assertEquals("gw1", gateway);
             checkEquality(x509Certificates, certificateCredential.getCertificates());
             Assert.assertEquals(privateKey.getFormat(), certificateCredential.getPrivateKey().getFormat());
         } finally {
             connection.close();
         }
     }
-
+    
     @Test
     public void testDeleteCredentials() throws Exception {
 

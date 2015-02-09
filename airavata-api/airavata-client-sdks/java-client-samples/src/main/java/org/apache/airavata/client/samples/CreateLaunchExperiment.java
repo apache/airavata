@@ -52,15 +52,18 @@ public class CreateLaunchExperiment {
     //FIXME: Read from a config file
     public static final String THRIFT_SERVER_HOST = "localhost";
     public static final int THRIFT_SERVER_PORT = 8930;
+//	public static final String THRIFT_SERVER_HOST = "gw127.iu.xsede.org";
+//	public static final int THRIFT_SERVER_PORT = 9930;	
+	
     private final static Logger logger = LoggerFactory.getLogger(CreateLaunchExperiment.class);
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_New_65e3939d-3d0e-4308-af8d-d33e629395d3";
-    private static String mpiAppId = "HelloMPI_da45305f-5d90-4a18-8716-8dd54c3b2376";
+    private static String echoAppId = "Echo_2e539083-665d-40fd-aaa2-4a751028326b";
+    private static String mpiAppId = "HelloMPI_720e159f-198f-4daa-96ca-9f5eafee92c9";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
-    private static String amberAppId = "Amber_Sander_a43db05d-1d38-4c3b-930f-723f84acd67a";
+    private static String amberAppId = "Amber_eda074ea-223d-49d7-a942-6c8742249f36";
     private static String gromacsAppId = "GROMACS_05622038-9edd-4cb1-824e-0b7cb993364b";
     private static String espressoAppId = "ESPRESSO_10cc2820-5d0b-4c63-9546-8a8b595593c1";
     private static String lammpsAppId = "LAMMPS_10893eb5-3840-438c-8446-d26c7ecb001f";
@@ -96,7 +99,7 @@ public class CreateLaunchExperiment {
 //                final String expId = createExperimentForSSHHost(airavata);
 //                final String expId = createEchoExperimentForFSD(airavataClient);
 //                final String expId = createMPIExperimentForFSD(airavataClient);
-//                final String expId = createEchoExperimentForStampede(airavataClient);
+//               final String expId = createEchoExperimentForStampede(airavataClient);
 //                final String expId = createEchoExperimentForTrestles(airavataClient);
 //                final String expId = createExperimentEchoForLocalHost(airavataClient);
 //                final String expId = createExperimentWRFTrestles(airavataClient);
@@ -111,6 +114,7 @@ public class CreateLaunchExperiment {
 //                final String expId = createExperimentNWCHEMStampede(airavataClient);
 //                final String expId = createExperimentTRINITYStampede(airavataClient);
 //                final String expId = createExperimentAUTODOCKStampede(airavataClient); // this is not working , we need to register AutoDock app on stampede
+//            	  final String expId = "Ultrascan_ln_eb029947-391a-4ccf-8ace-9bafebe07cc0";
             	System.out.println("Experiment ID : " + expId);
 //                updateExperiment(airavata, expId);
                 
@@ -1131,19 +1135,13 @@ public class CreateLaunchExperiment {
 
     public static String createEchoExperimentForStampede(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
-            InputDataObjectType input = new InputDataObjectType();
-            input.setName("Input_to_Echo");
-            input.setType(DataType.STRING);
-            input.setValue("Echoed_Output=Hello World");
-            exInputs.add(input);
-
-            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
-            OutputDataObjectType output = new OutputDataObjectType();
-            output.setName("Echoed_Output");
-            output.setType(DataType.STRING);
-            output.setValue("");
-            exOut.add(output);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(echoAppId);
+            for (InputDataObjectType inputDataObjectType : exInputs) {
+				if (inputDataObjectType.getName().equalsIgnoreCase("Input_to_Echo")) {
+					inputDataObjectType.setValue("Hello World");
+				} 
+			}
+			List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
             String projectId = client.createProject(project);
@@ -1476,13 +1474,23 @@ public class CreateLaunchExperiment {
         try {
         	
 			List<InputDataObjectType> exInputs = client.getApplicationInputs(amberAppId);
+//			for (InputDataObjectType inputDataObjectType : exInputs) {
+//				if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
+//					inputDataObjectType.setValue("/Users/raminder/Documents/Sample/Amber/02_Heat.rst");
+//				} else if (inputDataObjectType.getName().equalsIgnoreCase("Production_Control_File")) {
+//					inputDataObjectType.setValue("/Users/raminder/Documents/Sample/Amber/03_Prod.in");
+//				} else if (inputDataObjectType.getName().equalsIgnoreCase("Parameter_Topology_File")) {
+//					inputDataObjectType.setValue("/Users/raminder/Documents/Sample/Amber/prmtop");
+//				}
+//
+//			}
 			for (InputDataObjectType inputDataObjectType : exInputs) {
 				if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
-					inputDataObjectType.setValue("/Users/raminder/Documents/Sample/Amber/02_Heat.rst");
+					inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/02_Heat.rst");
 				} else if (inputDataObjectType.getName().equalsIgnoreCase("Production_Control_File")) {
-					inputDataObjectType.setValue("/Users/raminder/Documents/Sample/Amber/03_Prod.in");
+					inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/03_Prod.in");
 				} else if (inputDataObjectType.getName().equalsIgnoreCase("Parameter_Topology_File")) {
-					inputDataObjectType.setValue("/Users/raminder/Documents/Sample/Amber/prmtop");
+					inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/prmtop");
 				}
 
 			}
@@ -1547,7 +1555,8 @@ public class CreateLaunchExperiment {
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "sshEchoExperiment", "SimpleEchoBR", amberAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
-
+            simpleExperiment.setEnableEmailNotification(true);
+            simpleExperiment.addToEmailAddresses("raman@ogce.org");
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(amberAppId);
             if (computeResources != null && computeResources.size() != 0) {
                 for (String id : computeResources.keySet()) {
@@ -1582,9 +1591,9 @@ public class CreateLaunchExperiment {
     public static void launchExperiment(Airavata.Client client, String expId)
             throws TException {
         try {
-            String sshTokenId = "2c308fa9-99f8-4baa-92e4-d062e311483c";
-            String gsisshTokenId = "61abd2ff-f92b-4901-a077-07b51abe2c5d";
-            client.launchExperiment(expId, sshTokenId);
+        	String tokenId = "5f116091-0ad3-4ab6-9df7-6ac909f21f8b";
+//        	String tokenId ="aaaaaa";
+            client.launchExperiment(expId, tokenId);
         } catch (ExperimentNotFoundException e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());
             throw new ExperimentNotFoundException(e);

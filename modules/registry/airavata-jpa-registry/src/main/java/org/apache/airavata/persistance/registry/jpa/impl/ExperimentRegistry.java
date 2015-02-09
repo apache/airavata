@@ -69,6 +69,7 @@ public class ExperimentRegistry {
             experimentResource.setExpName(experiment.getName());
             experimentResource.setExecutionUser(experiment.getUserName());
             experimentResource.setGateway(gatewayResource);
+            experimentResource.setEnableEmailNotifications(experiment.isEnableEmailNotification());
             if (!workerResource.isProjectExists(experiment.getProjectID())) {
                 logger.error("Project does not exist in the system..");
                 throw new Exception("Project does not exist in the system, Please create the project first...");
@@ -83,6 +84,17 @@ public class ExperimentRegistry {
             experimentResource.setWorkflowTemplateVersion(experiment.getWorkflowTemplateVersion());
             experimentResource.setWorkflowExecutionId(experiment.getWorkflowExecutionInstanceId());
             experimentResource.save();
+
+            List<String> emailAddresses = experiment.getEmailAddresses();
+            if (emailAddresses != null && !emailAddresses.isEmpty()){
+                for (String email : emailAddresses){
+                    NotificationEmailResource emailResource = new NotificationEmailResource();
+                    emailResource.setExperimentResource(experimentResource);
+                    emailResource.setEmailAddress(email);
+                    emailResource.save();
+                }
+            }
+
             List<InputDataObjectType> experimentInputs = experiment.getExperimentInputs();
             if (experimentInputs != null) {
                 addExpInputs(experimentInputs, experimentResource);
@@ -897,13 +909,27 @@ public class ExperimentRegistry {
         try {
             ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode(nodeId);
+            experiment = workflowNode.getExperimentResource();
             TaskDetailResource taskDetail = (TaskDetailResource) workflowNode.create(ResourceType.TASK_DETAIL);
             taskDetail.setWorkflowNodeDetailResource(workflowNode);
             taskDetail.setTaskId(getTaskID(workflowNode.getNodeName()));
             taskDetail.setApplicationId(taskDetails.getApplicationId());
             taskDetail.setApplicationVersion(taskDetails.getApplicationVersion());
             taskDetail.setCreationTime(AiravataUtils.getTime(taskDetails.getCreationTime()));
+            taskDetail.setEnableEmailNotifications(taskDetails.isEnableEmailNotification());
             taskDetail.save();
+
+            List<String> emailAddresses = taskDetails.getEmailAddresses();
+            if (emailAddresses != null && !emailAddresses.isEmpty()){
+                for (String email : emailAddresses){
+                    NotificationEmailResource emailResource = new NotificationEmailResource();
+                    emailResource.setExperimentResource(experiment);
+                    emailResource.setTaskDetailResource(taskDetail);
+                    emailResource.setEmailAddress(email);
+                    emailResource.save();
+                }
+            }
+
             List<InputDataObjectType> applicationInputs = taskDetails.getApplicationInputs();
             if (applicationInputs != null) {
                 addAppInputs(applicationInputs, taskDetail);
@@ -978,8 +1004,22 @@ public class ExperimentRegistry {
             taskDetail.setApplicationVersion(taskDetails.getApplicationVersion());
             taskDetail.setCreationTime(AiravataUtils.getTime(taskDetails.getCreationTime()));
             taskDetail.setApplicationDeploymentId(taskDetails.getApplicationDeploymentId());
-
+            taskDetail.setEnableEmailNotifications(taskDetails.isEnableEmailNotification());
             taskDetail.save();
+            experiment = taskDetail.getWorkflowNodeDetailResource().getExperimentResource();
+
+            List<String> emailAddresses = taskDetails.getEmailAddresses();
+            // remove existing emails
+            taskDetail.remove(ResourceType.NOTIFICATION_EMAIL, taskId);
+            if (emailAddresses != null && !emailAddresses.isEmpty()){
+                for (String email : emailAddresses){
+                    NotificationEmailResource emailResource = new NotificationEmailResource();
+                    emailResource.setExperimentResource(experiment);
+                    emailResource.setTaskDetailResource(taskDetail);
+                    emailResource.setEmailAddress(email);
+                    emailResource.save();
+                }
+            }
             List<InputDataObjectType> applicationInputs = taskDetails.getApplicationInputs();
             if (applicationInputs != null) {
                 updateAppInputs(applicationInputs, taskDetail);
@@ -1585,7 +1625,21 @@ public class ExperimentRegistry {
             existingExperiment.setWorkflowTemplateId(experiment.getWorkflowTemplateId());
             existingExperiment.setWorkflowTemplateVersion(experiment.getWorkflowTemplateVersion());
             existingExperiment.setWorkflowExecutionId(experiment.getWorkflowExecutionInstanceId());
+            existingExperiment.setEnableEmailNotifications(experiment.isEnableEmailNotification());
             existingExperiment.save();
+
+            List<String> emailAddresses = experiment.getEmailAddresses();
+            // remove existing email addresses
+            existingExperiment.remove(ResourceType.NOTIFICATION_EMAIL, expId);
+            if (emailAddresses != null && !emailAddresses.isEmpty()){
+                for (String email : emailAddresses){
+                    NotificationEmailResource emailResource = new NotificationEmailResource();
+                    emailResource.setExperimentResource(existingExperiment);
+                    emailResource.setEmailAddress(email);
+                    emailResource.save();
+                }
+            }
+
             List<InputDataObjectType> experimentInputs = experiment.getExperimentInputs();
             if (experimentInputs != null && !experimentInputs.isEmpty()) {
                 updateExpInputs(experimentInputs, existingExperiment);
