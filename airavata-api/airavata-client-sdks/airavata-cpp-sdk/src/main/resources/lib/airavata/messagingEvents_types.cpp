@@ -45,15 +45,19 @@ int _kMessageTypeValues[] = {
   MessageType::EXPERIMENT,
   MessageType::TASK,
   MessageType::WORKFLOWNODE,
-  MessageType::JOB
+  MessageType::JOB,
+  MessageType::LAUNCHTASK,
+  MessageType::TERMINATETASK
 };
 const char* _kMessageTypeNames[] = {
   "EXPERIMENT",
   "TASK",
   "WORKFLOWNODE",
-  "JOB"
+  "JOB",
+  "LAUNCHTASK",
+  "TERMINATETASK"
 };
-const std::map<int, const char*> _MessageType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(4, _kMessageTypeValues, _kMessageTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _MessageType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(6, _kMessageTypeValues, _kMessageTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 const char* ExperimentStatusChangeEvent::ascii_fingerprint = "38C252E94E93B69D04EB3A6EE2F9EDFB";
 const uint8_t ExperimentStatusChangeEvent::binary_fingerprint[16] = {0x38,0xC2,0x52,0xE9,0x4E,0x93,0xB6,0x9D,0x04,0xEB,0x3A,0x6E,0xE2,0xF9,0xED,0xFB};
@@ -833,6 +837,182 @@ void swap(JobIdentifier &a, JobIdentifier &b) {
   swap(a.workflowNodeId, b.workflowNodeId);
   swap(a.experimentId, b.experimentId);
   swap(a.gatewayId, b.gatewayId);
+}
+
+const char* TaskSubmitEvent::ascii_fingerprint = "AB879940BD15B6B25691265F7384B271";
+const uint8_t TaskSubmitEvent::binary_fingerprint[16] = {0xAB,0x87,0x99,0x40,0xBD,0x15,0xB6,0xB2,0x56,0x91,0x26,0x5F,0x73,0x84,0xB2,0x71};
+
+uint32_t TaskSubmitEvent::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_experimentId = false;
+  bool isset_taskId = false;
+  bool isset_gatewayId = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->experimentId);
+          isset_experimentId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->taskId);
+          isset_taskId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_experimentId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_taskId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t TaskSubmitEvent::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("TaskSubmitEvent");
+
+  xfer += oprot->writeFieldBegin("experimentId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->experimentId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("taskId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->taskId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(TaskSubmitEvent &a, TaskSubmitEvent &b) {
+  using ::std::swap;
+  swap(a.experimentId, b.experimentId);
+  swap(a.taskId, b.taskId);
+  swap(a.gatewayId, b.gatewayId);
+}
+
+const char* TaskTerminateEvent::ascii_fingerprint = "07A9615F837F7D0A952B595DD3020972";
+const uint8_t TaskTerminateEvent::binary_fingerprint[16] = {0x07,0xA9,0x61,0x5F,0x83,0x7F,0x7D,0x0A,0x95,0x2B,0x59,0x5D,0xD3,0x02,0x09,0x72};
+
+uint32_t TaskTerminateEvent::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_experimentId = false;
+  bool isset_taskId = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->experimentId);
+          isset_experimentId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->taskId);
+          isset_taskId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_experimentId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_taskId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t TaskTerminateEvent::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("TaskTerminateEvent");
+
+  xfer += oprot->writeFieldBegin("experimentId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->experimentId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("taskId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->taskId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(TaskTerminateEvent &a, TaskTerminateEvent &b) {
+  using ::std::swap;
+  swap(a.experimentId, b.experimentId);
+  swap(a.taskId, b.taskId);
 }
 
 const char* JobStatusChangeEvent::ascii_fingerprint = "062775D589B60D1687103FD465B0F5E8";
