@@ -121,11 +121,21 @@ the License. -->
             <artifactId>airavata-server-configuration</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- zookeeper dependencies -->
+        <!-- zookeeper and curator dependencies -->
         <dependency>
         	<groupId>org.apache.zookeeper</groupId>
         	<artifactId>zookeeper</artifactId>
-        	<version>3.4.0</version>
+        	<version>${zk.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-recipes</artifactId>
+            <version>${curator.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-framework</artifactId>
+            <version>${curator.version}</version>
         </dependency>
     </dependencies>
     <build>

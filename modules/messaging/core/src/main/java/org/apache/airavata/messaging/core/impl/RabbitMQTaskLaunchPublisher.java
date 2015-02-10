@@ -17,8 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- */
-
+*/
 package org.apache.airavata.messaging.core.impl;
 
 import org.apache.airavata.common.exception.AiravataException;
@@ -33,14 +32,14 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RabbitMQPublisher implements Publisher {
-
-    private static Logger log = LoggerFactory.getLogger(RabbitMQPublisher.class);
+public class RabbitMQTaskLaunchPublisher implements Publisher{
+    private final static Logger log = LoggerFactory.getLogger(RabbitMQTaskLaunchPublisher.class);
+    public static final String LAUNCH_TASK = "launch.task";
+    public static final String TERMINATE_TASK = "teminate.task";
 
     private RabbitMQProducer rabbitMQProducer;
 
-
-    public RabbitMQPublisher() throws Exception {
+    public RabbitMQTaskLaunchPublisher() throws Exception {
         String brokerUrl;
         String exchangeName;
         try {
@@ -57,7 +56,7 @@ public class RabbitMQPublisher implements Publisher {
 
     public void publish(MessageContext msgCtx) throws AiravataException {
         try {
-            log.info("Publishing status to rabbitmq...");
+            log.info("Publishing to lauch queue ...");
             byte[] body = ThriftUtils.serializeThriftObject(msgCtx.getEvent());
             Message message = new Message();
             message.setEvent(body);
@@ -65,24 +64,14 @@ public class RabbitMQPublisher implements Publisher {
             message.setMessageType(msgCtx.getType());
             message.setUpdatedTime(msgCtx.getUpdatedTime().getTime());
             String routingKey = null;
-            if (msgCtx.getType().equals(MessageType.EXPERIMENT)){
-                ExperimentStatusChangeEvent event = (ExperimentStatusChangeEvent) msgCtx.getEvent();
-                routingKey = event.getExperimentId();
-            } else if (msgCtx.getType().equals(MessageType.TASK)) {
-                TaskStatusChangeEvent event = (TaskStatusChangeEvent) msgCtx.getEvent();
-                routingKey = event.getTaskIdentity().getExperimentId() + "." +
-                        event.getTaskIdentity().getWorkflowNodeId() + "." + event.getTaskIdentity().getTaskId();
-            }else if (msgCtx.getType().equals(MessageType.WORKFLOWNODE)){
-                WorkflowNodeStatusChangeEvent event = (WorkflowNodeStatusChangeEvent) msgCtx.getEvent();
-                WorkflowIdentifier workflowNodeIdentity = event.getWorkflowNodeIdentity();
-                routingKey = workflowNodeIdentity.getExperimentId() + "." + workflowNodeIdentity.getWorkflowNodeId();
-            }else if (msgCtx.getType().equals(MessageType.JOB)){
-                JobStatusChangeEvent event = (JobStatusChangeEvent)msgCtx.getEvent();
-                JobIdentifier identity = event.getJobIdentity();
-                routingKey = identity.getExperimentId() + "." +
-                        identity.getWorkflowNodeId() + "." +
-                        identity.getTaskId() + "." +
-                        identity.getJobId();
+            if (msgCtx.getType().equals(MessageType.LAUNCHTASK)){
+                TaskSubmitEvent event = (TaskSubmitEvent) msgCtx.getEvent();
+                routingKey = LAUNCH_TASK + "."+event.getExperimentId() + "." +
+                        event.getTaskId() + "." + event.getGatewayId();
+            }else if(msgCtx.getType().equals(MessageType.TERMINATETASK)){
+                TaskTerminateEvent event = (TaskTerminateEvent) msgCtx.getEvent();
+                routingKey = TERMINATE_TASK + "."+event.getExperimentId() + "." +
+                        event.getTaskId();
             }
             byte[] messageBody = ThriftUtils.serializeThriftObject(message);
             rabbitMQProducer.send(messageBody, routingKey);

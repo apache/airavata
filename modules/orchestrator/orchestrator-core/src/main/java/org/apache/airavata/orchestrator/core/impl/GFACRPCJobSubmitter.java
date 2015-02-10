@@ -50,8 +50,8 @@ import org.slf4j.LoggerFactory;
  * it will select a gfac instance based on the incoming request and submit to that
  * gfac instance.
  */
-public class GFACServiceJobSubmitter implements JobSubmitter, Watcher {
-	private final static Logger logger = LoggerFactory.getLogger(GFACServiceJobSubmitter.class);
+public class GFACRPCJobSubmitter implements JobSubmitter, Watcher {
+	private final static Logger logger = LoggerFactory.getLogger(GFACRPCJobSubmitter.class);
 	public static final String IP = "ip";
 
 	private OrchestratorContext orchestratorContext;

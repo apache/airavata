@@ -52,6 +52,7 @@ public class ServerSettings extends ApplicationSettings {
     private static final String MY_PROXY_PASSWORD = "myproxy.password";
     private static final String MY_PROXY_LIFETIME = "myproxy.life";
     private static final String ACTIVITY_PUBLISHER = "activity.publisher";
+    private static final String TASK_LAUNCH_PUBLISHER = "task.launch.publisher";
     private static final String ACTIVITY_LISTENERS = "activity.listeners";
     public static final String PUBLISH_RABBITMQ = "publish.rabbitmq";
     public static final String JOB_NOTIFICATION_ENABLE = "job.notification.enable";
@@ -152,6 +153,10 @@ public class ServerSettings extends ApplicationSettings {
 
     public static String getActivityPublisher() throws ApplicationSettingsException{
         return getSetting(ACTIVITY_PUBLISHER);
+    }
+
+    public static String getTaskLaunchPublisher() throws ApplicationSettingsException{
+        return getSetting(TASK_LAUNCH_PUBLISHER);
     }
 
     public static boolean isRabbitMqPublishEnabled() throws ApplicationSettingsException{
