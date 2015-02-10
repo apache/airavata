@@ -44,6 +44,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import org.apache.commons.codec.binary.Base64;
 
 public class TestSSLClient {
     private void invoke() {
@@ -102,7 +103,13 @@ public class TestSSLClient {
             char[] password = "airavata".toCharArray();
             ks.load(fis,password);
             x509Certificates[0] = (X509Certificate) ks.getCertificate("airavata");
-            certificateCredential.setX509Cert(x509Certificates[0].toString());
+            Base64 encoder = new Base64(64);
+            String cert_begin = "-----BEGIN CERTIFICATE-----\n";
+            String end_cert = "-----END CERTIFICATE-----";
+            byte[] derCert = x509Certificates[0].getEncoded();
+            String pemCertPre = new String(encoder.encode(derCert));
+            String pemCert = cert_begin + pemCertPre + end_cert;
+            certificateCredential.setX509Cert(pemCert);
             String token = client.addCertificateCredential(certificateCredential);
             System.out.println("Certificate Token :" + token);
             CertificateCredential credential = client.getCertificateCredential(token, "testGateway");

@@ -36,9 +36,11 @@ import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
 import org.apache.airavata.credential.store.store.impl.SSHCredentialWriter;
 import org.apache.airavata.credential.store.util.TokenGenerator;
 import org.apache.airavata.credential.store.util.Utility;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.security.provider.X509Factory;
 
 import java.io.ByteArrayInputStream;
 import java.security.cert.CertificateFactory;
@@ -108,9 +110,10 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
                     certificateCredential.getCommunityUser().getUsername(), certificateCredential.getCommunityUser().getUserEmail()));
             String token = TokenGenerator.generateToken(certificateCredential.getCommunityUser().getGatewayNmae(), null);
             credential.setToken(token);
+            Base64 encoder = new Base64(64);
+            byte [] decoded = encoder.decode(certificateCredential.getX509Cert().replaceAll(X509Factory.BEGIN_CERT, "").replaceAll(X509Factory.END_CERT, ""));
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            ByteArrayInputStream stream = new ByteArrayInputStream(certificateCredential.getX509Cert().getBytes());
-            X509Certificate certificate = (X509Certificate)cf.generateCertificate(stream);
+            X509Certificate certificate = (X509Certificate)cf.generateCertificate(new ByteArrayInputStream(decoded));
             X509Certificate[] certificates = new X509Certificate[1];
             certificates[0] = certificate;
             credential.setCertificates(certificates);
