@@ -30,8 +30,6 @@ public interface Edge {
     public OutPort getOutPort();
 
     public void setOutPort(OutPort outPort);
-
-
-
+    
 
 }
