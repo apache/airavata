@@ -1,11 +1,14 @@
+/*
 package org.apache.ariavata.simple.workflow.engine.dag.links;
 
 import org.apache.ariavata.simple.workflow.engine.dag.nodes.WorkflowNode;
 
+*/
 /**
  * Created by shameera on 1/29/15.
- */
-public class DirectedLink implements Link{
+ *//*
+
+public class DirectedLink implements Edge{
 
     private WorkflowNode _fromNode;
 
@@ -34,3 +37,4 @@ public class DirectedLink implements Link{
         this._toNode = _toNode;
     }
 }
+*/

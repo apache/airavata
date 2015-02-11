@@ -19,20 +19,13 @@
  *
  */
 
-package org.apache.ariavata.simple.workflow.engine.dag.nodes;
+package org.apache.ariavata.simple.workflow.engine.dag.port;
 
-public interface WorkflowNode {
+import org.apache.ariavata.simple.workflow.engine.dag.nodes.WorkflowNode;
 
-    public String getNodeId();
-
-    public String getNodeName();
-
-    public NodeType getNodeType();
-
-    public NodeState getNodeState();
-
-    public void setNodeState(NodeState newNodeState);
+public interface Port {
 
     public boolean isSatisfy();
 
+    public WorkflowNode getNode();
 }

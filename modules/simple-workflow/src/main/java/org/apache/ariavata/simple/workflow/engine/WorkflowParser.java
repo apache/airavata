@@ -19,20 +19,16 @@
  *
  */
 
-package org.apache.ariavata.simple.workflow.engine.dag.nodes;
+package org.apache.ariavata.simple.workflow.engine;
 
-public interface WorkflowNode {
+import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.ariavata.simple.workflow.engine.dag.nodes.WorkflowInputNode;
 
-    public String getNodeId();
+import java.util.List;
 
-    public String getNodeName();
+public interface WorkflowParser {
 
-    public NodeType getNodeType();
-
-    public NodeState getNodeState();
-
-    public void setNodeState(NodeState newNodeState);
-
-    public boolean isSatisfy();
+    public List<WorkflowInputNode> parse() throws Exception;
 
 }

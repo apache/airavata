@@ -17,22 +17,28 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- */
+ *//*
 
-package org.apache.ariavata.simple.workflow.engine.dag.nodes;
 
-public interface WorkflowNode {
+package org.apache.ariavata.simple.workflow.engine.dag.port;
 
-    public String getNodeId();
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.ariavata.simple.workflow.engine.dag.links.Edge;
 
-    public String getNodeName();
+public class InputPortIml implements InputPort {
+    @Override
+    public InputDataObjectType getInputObject() {
+        return null;
+    }
 
-    public NodeType getNodeType();
+    @Override
+    public Edge getInputLink() {
+        return null;
+    }
 
-    public NodeState getNodeState();
-
-    public void setNodeState(NodeState newNodeState);
-
-    public boolean isSatisfy();
-
+    @Override
+    public boolean isSatisfy() {
+        return false;
+    }
 }
+*/
