@@ -22,7 +22,7 @@
 package org.apache.ariavata.simple.workflow.engine.dag.nodes;
 
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
-import org.apache.ariavata.simple.workflow.engine.dag.links.Edge;
+import org.apache.ariavata.simple.workflow.engine.dag.edge.Edge;
 
 public interface WorkflowOutputNode extends WorkflowNode {
 
