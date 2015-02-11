@@ -19,20 +19,21 @@
  *
  */
 
-package org.apache.ariavata.simple.workflow.engine.dag.nodes;
+package org.apache.ariavata.simple.workflow.engine.dag.port;
 
-public interface WorkflowNode {
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.ariavata.simple.workflow.engine.dag.links.Edge;
 
-    public String getNodeId();
+import java.util.List;
 
-    public String getNodeName();
+public interface OutPort extends Port {
 
-    public NodeType getNodeType();
+    public void setOutputObject(OutputDataObjectType outputObject);
 
-    public NodeState getNodeState();
+    public OutputDataObjectType getOutputObject();
 
-    public void setNodeState(NodeState newNodeState);
+    public List<Edge> getOutputLinks();
 
-    public boolean isSatisfy();
+    public void addOutputLink();
 
 }

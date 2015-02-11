@@ -19,20 +19,34 @@
  *
  */
 
-package org.apache.ariavata.simple.workflow.engine.dag.nodes;
+package org.apache.ariavata.simple.workflow.engine;
 
-public interface WorkflowNode {
+/**
+ * Singleton class, only one instance can exist in runtime.
+ */
+public class WorkflowFactoryImpl implements WorkflowFactory {
 
-    public String getNodeId();
+    private static WorkflowFactoryImpl workflowFactoryImpl;
 
-    public String getNodeName();
+    private WorkflowFactoryImpl(){
 
-    public NodeType getNodeType();
+    }
 
-    public NodeState getNodeState();
+    public static WorkflowFactoryImpl getInstance() {
+        if (workflowFactoryImpl == null) {
+            synchronized (workflowFactoryImpl) {
+                if (workflowFactoryImpl == null) {
+                    workflowFactoryImpl = new WorkflowFactoryImpl();
+                }
+            }
+        }
+        return workflowFactoryImpl;
+    }
 
-    public void setNodeState(NodeState newNodeState);
 
-    public boolean isSatisfy();
+    @Override
+    public WorkflowParser getWorkflowParser() {
 
+        return null; // TODO: Auto generated method body.
+    }
 }
