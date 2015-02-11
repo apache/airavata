@@ -17,10 +17,8 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- */
-
+*/
 package org.apache.airavata.messaging.core.impl;
-
 
 import com.rabbitmq.client.*;
 import org.apache.airavata.common.exception.AiravataException;
@@ -28,7 +26,6 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
-import org.apache.airavata.messaging.core.Consumer;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.messaging.core.MessagingConstants;
@@ -44,20 +41,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RabbitMQConsumer implements Consumer {
-    private static Logger log = LoggerFactory.getLogger(RabbitMQConsumer.class);
+public class RabbitMQTaskLaunchConsumer {
+    private final static Logger logger = LoggerFactory.getLogger(RabbitMQTaskLaunchConsumer.class);
+    private static Logger log = LoggerFactory.getLogger(RabbitMQStatusConsumer.class);
 
-    private String exchangeName;
+    private String taskLaunchExchangeName;
     private String url;
     private Connection connection;
     private Channel channel;
     private Map<String, QueueDetails> queueDetailsMap = new HashMap<String, QueueDetails>();
 
-    public RabbitMQConsumer() throws AiravataException {
+    public RabbitMQTaskLaunchConsumer() throws AiravataException {
         try {
             url = ServerSettings.getSetting(MessagingConstants.RABBITMQ_BROKER_URL);
-            exchangeName = ServerSettings.getSetting(MessagingConstants.RABBITMQ_EXCHANGE_NAME);
-
+            taskLaunchExchangeName = ServerSettings.getSetting(MessagingConstants.RABBITMQ_TASK_LAUNCH_EXCHANGE_NAME);
             createConnection();
         } catch (ApplicationSettingsException e) {
             String message = "Failed to get read the required properties from airavata to initialize rabbitmq";
@@ -66,8 +63,8 @@ public class RabbitMQConsumer implements Consumer {
         }
     }
 
-    public RabbitMQConsumer(String brokerUrl, String exchangeName) throws AiravataException {
-        this.exchangeName = exchangeName;
+    public RabbitMQTaskLaunchConsumer(String brokerUrl, String exchangeName) throws AiravataException {
+        this.taskLaunchExchangeName = exchangeName;
         this.url = brokerUrl;
 
         createConnection();
@@ -82,13 +79,13 @@ public class RabbitMQConsumer implements Consumer {
                 public void shutdownCompleted(ShutdownSignalException cause) {
                 }
             });
-            log.info("connected to rabbitmq: " + connection + " for " + exchangeName);
+            log.info("connected to rabbitmq: " + connection + " for " + taskLaunchExchangeName);
 
             channel = connection.createChannel();
-            channel.exchangeDeclare(exchangeName, "topic", false);
+            channel.exchangeDeclare(taskLaunchExchangeName, "fanout");
 
         } catch (Exception e) {
-            String msg = "could not open channel for exchange " + exchangeName;
+            String msg = "could not open channel for exchange " + taskLaunchExchangeName;
             log.error(msg);
             throw new AiravataException(msg, e);
         }
@@ -116,7 +113,7 @@ public class RabbitMQConsumer implements Consumer {
             if (queueName == null) {
                 if (!channel.isOpen()) {
                     channel = connection.createChannel();
-                    channel.exchangeDeclare(exchangeName, "topic", false);
+                    channel.exchangeDeclare(taskLaunchExchangeName, "fanout");
                 }
                 queueName = channel.queueDeclare().getQueue();
             } else {
@@ -135,7 +132,7 @@ public class RabbitMQConsumer implements Consumer {
 
             // bind all the routing keys
             for (String routingKey : keys) {
-                channel.queueBind(queueName, exchangeName, routingKey);
+                channel.queueBind(queueName, taskLaunchExchangeName, routingKey);
             }
 
             channel.basicConsume(queueName, true, consumerTag, new DefaultConsumer(channel) {
@@ -150,38 +147,22 @@ public class RabbitMQConsumer implements Consumer {
                         ThriftUtils.createThriftFromBytes(body, message);
                         TBase event = null;
                         String gatewayId = null;
-                        if (message.getMessageType().equals(MessageType.EXPERIMENT)) {
-                            ExperimentStatusChangeEvent experimentStatusChangeEvent = new ExperimentStatusChangeEvent();
-                            ThriftUtils.createThriftFromBytes(message.getEvent(), experimentStatusChangeEvent);
+                        if(message.getMessageType().equals(MessageType.LAUNCHTASK)) {
+                            TaskSubmitEvent taskSubmitEvent = new TaskSubmitEvent();
+                            ThriftUtils.createThriftFromBytes(message.getEvent(), taskSubmitEvent);
                             log.debug(" Message Received with message id '" + message.getMessageId()
-                                    + "' and with message type '" + message.getMessageType() + "'  with status " +
-                                    experimentStatusChangeEvent.getState());
-                            event = experimentStatusChangeEvent;
-                            gatewayId = experimentStatusChangeEvent.getGatewayId();
-                        } else if (message.getMessageType().equals(MessageType.WORKFLOWNODE)) {
-                            WorkflowNodeStatusChangeEvent wfnStatusChangeEvent = new WorkflowNodeStatusChangeEvent();
-                            ThriftUtils.createThriftFromBytes(message.getEvent(), wfnStatusChangeEvent);
+                                    + "' and with message type '" + message.getMessageType() + "'  for experimentId: " +
+                                    taskSubmitEvent.getExperimentId() + "and taskId: " + taskSubmitEvent.getTaskId());
+                            event = taskSubmitEvent;
+                            gatewayId = taskSubmitEvent.getGatewayId();
+                        }else if(message.getMessageType().equals(MessageType.TERMINATETASK)) {
+                            TaskTerminateEvent taskTerminateEvent = new TaskTerminateEvent();
+                            ThriftUtils.createThriftFromBytes(message.getEvent(), taskTerminateEvent);
                             log.debug(" Message Received with message id '" + message.getMessageId()
-                                    + "' and with message type '" + message.getMessageType() + "'  with status " +
-                                    wfnStatusChangeEvent.getState());
-                            event = wfnStatusChangeEvent;
-                            gatewayId = wfnStatusChangeEvent.getWorkflowNodeIdentity().getGatewayId();
-                        } else if (message.getMessageType().equals(MessageType.TASK)) {
-                            TaskStatusChangeEvent taskStatusChangeEvent = new TaskStatusChangeEvent();
-                            ThriftUtils.createThriftFromBytes(message.getEvent(), taskStatusChangeEvent);
-                            log.debug(" Message Received with message id '" + message.getMessageId()
-                                    + "' and with message type '" + message.getMessageType() + "'  with status " +
-                                    taskStatusChangeEvent.getState());
-                            event = taskStatusChangeEvent;
-                            gatewayId = taskStatusChangeEvent.getTaskIdentity().getGatewayId();
-                        } else if (message.getMessageType().equals(MessageType.JOB)) {
-                            JobStatusChangeEvent jobStatusChangeEvent = new JobStatusChangeEvent();
-                            ThriftUtils.createThriftFromBytes(message.getEvent(), jobStatusChangeEvent);
-                            log.debug(" Message Received with message id '" + message.getMessageId()
-                                    + "' and with message type '" + message.getMessageType() + "'  with status " +
-                                    jobStatusChangeEvent.getState());
-                            event = jobStatusChangeEvent;
-                            gatewayId = jobStatusChangeEvent.getJobIdentity().getGatewayId();
+                                    + "' and with message type '" + message.getMessageType() + "'  for experimentId: " +
+                                    taskTerminateEvent.getExperimentId() + "and taskId: " + taskTerminateEvent.getTaskId());
+                            event = taskTerminateEvent;
+                            gatewayId = null;
                         }
                         MessageContext messageContext = new MessageContext(event, message.getMessageType(), message.getMessageId(), gatewayId);
                         messageContext.setUpdatedTime(AiravataUtils.getTime(message.getUpdatedTime()));
@@ -196,7 +177,7 @@ public class RabbitMQConsumer implements Consumer {
             queueDetailsMap.put(id, new QueueDetails(queueName, keys));
             return id;
         } catch (Exception e) {
-            String msg = "could not open channel for exchange " + exchangeName;
+            String msg = "could not open channel for exchange " + taskLaunchExchangeName;
             log.error(msg);
             throw new AiravataException(msg, e);
         }
@@ -207,11 +188,11 @@ public class RabbitMQConsumer implements Consumer {
         if (details != null) {
             try {
                 for (String key : details.getRoutingKeys()) {
-                    channel.queueUnbind(details.getQueueName(), exchangeName, key);
+                    channel.queueUnbind(details.getQueueName(), taskLaunchExchangeName, key);
                 }
                 channel.queueDelete(details.getQueueName(), true, true);
             } catch (IOException e) {
-                String msg = "could not un-bind queue: " + details.getQueueName() + " for exchange " + exchangeName;
+                String msg = "could not un-bind queue: " + details.getQueueName() + " for exchange " + taskLaunchExchangeName;
                 log.debug(msg);
             }
         }

@@ -44,7 +44,7 @@ public class RabbitMQTaskLaunchPublisher implements Publisher{
         String exchangeName;
         try {
             brokerUrl = ServerSettings.getSetting(MessagingConstants.RABBITMQ_BROKER_URL);
-            exchangeName = ServerSettings.getSetting(MessagingConstants.RABBITMQ_EXCHANGE_NAME);
+            exchangeName = ServerSettings.getSetting(MessagingConstants.RABBITMQ_STATUS_EXCHANGE_NAME);
         } catch (ApplicationSettingsException e) {
             String message = "Failed to get read the required properties from airavata to initialize rabbitmq";
             log.error(message, e);
@@ -56,7 +56,7 @@ public class RabbitMQTaskLaunchPublisher implements Publisher{
 
     public void publish(MessageContext msgCtx) throws AiravataException {
         try {
-            log.info("Publishing to lauch queue ...");
+            log.info("Publishing to launch queue ...");
             byte[] body = ThriftUtils.serializeThriftObject(msgCtx.getEvent());
             Message message = new Message();
             message.setEvent(body);
@@ -65,13 +65,9 @@ public class RabbitMQTaskLaunchPublisher implements Publisher{
             message.setUpdatedTime(msgCtx.getUpdatedTime().getTime());
             String routingKey = null;
             if (msgCtx.getType().equals(MessageType.LAUNCHTASK)){
-                TaskSubmitEvent event = (TaskSubmitEvent) msgCtx.getEvent();
-                routingKey = LAUNCH_TASK + "."+event.getExperimentId() + "." +
-                        event.getTaskId() + "." + event.getGatewayId();
+                routingKey = LAUNCH_TASK;
             }else if(msgCtx.getType().equals(MessageType.TERMINATETASK)){
-                TaskTerminateEvent event = (TaskTerminateEvent) msgCtx.getEvent();
-                routingKey = TERMINATE_TASK + "."+event.getExperimentId() + "." +
-                        event.getTaskId();
+                routingKey = TERMINATE_TASK;
             }
             byte[] messageBody = ThriftUtils.serializeThriftObject(message);
             rabbitMQProducer.send(messageBody, routingKey);
