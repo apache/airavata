@@ -1,4 +1,4 @@
-package org.apache.ariavata.simple.workflow.engine.dag.links;
+package org.apache.ariavata.simple.workflow.engine.dag.edge;
 
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
@@ -30,6 +30,6 @@ public interface Edge {
     public OutPort getOutPort();
 
     public void setOutPort(OutPort outPort);
-    
+
 
 }
