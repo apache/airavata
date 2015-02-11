@@ -22,12 +22,11 @@
 package org.apache.airavata.xbaya.messaging;
 
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.messaging.core.Consumer;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.messaging.core.MessagingConstants;
-import org.apache.airavata.messaging.core.impl.RabbitMQConsumer;
+import org.apache.airavata.messaging.core.impl.RabbitMQStatusConsumer;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.workspace.experiment.ExperimentState;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
@@ -101,7 +100,7 @@ public class Monitor extends EventProducer {
     	getEventDataRepository().triggerListenerForPreMonitorStart();
         try {
 //            AiravataUtils.setExecutionAsServer();
-            this.messageClient = new RabbitMQConsumer("amqp://localhost:5672", "airavata_rabbitmq_exchange");
+            this.messageClient = new RabbitMQStatusConsumer("amqp://localhost:5672", "airavata_rabbitmq_exchange");
         } catch (AiravataException e) {
             String msg = "Failed to start the consumer";
             logger.error(msg, e);

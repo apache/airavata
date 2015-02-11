@@ -30,7 +30,7 @@ public class PublisherFactory {
     private static Logger log = LoggerFactory.getLogger(PublisherFactory.class);
 
     public static Publisher createActivityPublisher() throws AiravataException {
-        String activityPublisher = ServerSettings.getActivityPublisher();
+        String activityPublisher = ServerSettings.getStatusPublisher();
 
         if (activityPublisher == null) {
             String s = "Activity publisher is not specified";

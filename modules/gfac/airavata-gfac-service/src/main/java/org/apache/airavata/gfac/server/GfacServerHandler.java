@@ -27,28 +27,34 @@ import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.logger.AiravataLogger;
 import org.apache.airavata.common.logger.AiravataLoggerFactory;
-import org.apache.airavata.common.utils.AiravataZKUtils;
-import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.common.utils.MonitorPublisher;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.common.utils.*;
 import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.cpi.GFac;
 import org.apache.airavata.gfac.core.utils.GFacThreadPoolExecutor;
 import org.apache.airavata.gfac.core.utils.InputHandlerWorker;
 import org.apache.airavata.gfac.cpi.GfacService;
 import org.apache.airavata.gfac.cpi.gfac_cpi_serviceConstants;
+import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.messaging.core.MessageHandler;
+import org.apache.airavata.messaging.core.MessagingConstants;
+import org.apache.airavata.messaging.core.impl.RabbitMQStatusConsumer;
+import org.apache.airavata.messaging.core.impl.RabbitMQTaskLaunchConsumer;
+import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.airavata.model.messaging.event.TaskSubmitEvent;
+import org.apache.airavata.model.messaging.event.TaskTerminateEvent;
+import org.apache.airavata.model.workspace.experiment.ExperimentState;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Future;
 
 
@@ -80,6 +86,8 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
 
     private List<Future> inHandlerFutures;
 
+    private RabbitMQTaskLaunchConsumer rabbitMQTaskLaunchConsumer;
+
     public GfacServerHandler() throws Exception{
         // registering with zk
         try {
@@ -102,7 +110,13 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
             BetterGfacImpl.startDaemonHandlers();
             BetterGfacImpl.startStatusUpdators(registry, zk, publisher);
             inHandlerFutures = new ArrayList<Future>();
-        } catch (ApplicationSettingsException e) {
+
+            if(ServerSettings.isGFacPassiveMode()) {
+                rabbitMQTaskLaunchConsumer = new RabbitMQTaskLaunchConsumer();
+            }
+
+
+            } catch (ApplicationSettingsException e) {
             logger.error("Error initialising GFAC", e);
             throw new Exception("Error initialising GFAC", e);
         } catch (InterruptedException e) {
@@ -274,6 +288,51 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
             return new BetterGfacImpl(registry, appCatalog, zk,publisher);
         } catch (Exception e) {
             throw new TException("Error initializing gfac instance",e);
+        }
+    }
+
+    private class NotificationMessageHandler implements MessageHandler {
+        private String experimentId;
+
+        private NotificationMessageHandler(String experimentId) {
+            this.experimentId = experimentId;
+        }
+
+        public Map<String, Object> getProperties() {
+            Map<String, Object> props = new HashMap<String, Object>();
+            List<String> routingKeys = new ArrayList<String>();
+            routingKeys.add(experimentId);
+            routingKeys.add(experimentId + ".*");
+            props.put(MessagingConstants.RABBIT_ROUTING_KEY, routingKeys);
+            return props;
+        }
+
+        public void onMessage(MessageContext message) {
+            if (message.getType().equals(MessageType.LAUNCHTASK)){
+                try {
+                    TaskSubmitEvent event = new TaskSubmitEvent();
+                    TBase messageEvent = message.getEvent();
+                    byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
+                    ThriftUtils.createThriftFromBytes(bytes, event);
+                    submitJob(event.getExperimentId(), event.getTaskId(), event.getGatewayId());
+                    System.out.println(" Message Received with message id '" + message.getMessageId()
+                            + "' and with message type '" + message.getType());
+                } catch (TException e) {
+                    logger.error(e.getMessage(), e); //nobody is listening so nothing to throw
+                }
+            }else if(message.getType().equals(MessageType.TERMINATETASK)){
+                try {
+                    TaskTerminateEvent event = new TaskTerminateEvent();
+                    TBase messageEvent = message.getEvent();
+                    byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
+                    ThriftUtils.createThriftFromBytes(bytes, event);
+                    cancelJob(event.getExperimentId(), event.getTaskId());
+                    System.out.println(" Message Received with message id '" + message.getMessageId()
+                            + "' and with message type '" + message.getType());
+                } catch (TException e) {
+                    logger.error(e.getMessage(), e); //nobody is listening so nothing to throw
+                }
+            }
         }
     }
 
