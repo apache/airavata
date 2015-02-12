@@ -64,22 +64,23 @@ public class RabbitMQPublisher implements Publisher {
             message.setMessageId(msgCtx.getMessageId());
             message.setMessageType(msgCtx.getType());
             message.setUpdatedTime(msgCtx.getUpdatedTime().getTime());
+            String gatewayId = msgCtx.getGatewayId();
             String routingKey = null;
             if (msgCtx.getType().equals(MessageType.EXPERIMENT)){
                 ExperimentStatusChangeEvent event = (ExperimentStatusChangeEvent) msgCtx.getEvent();
-                routingKey = event.getExperimentId();
+                routingKey = gatewayId + "." + event.getExperimentId();
             } else if (msgCtx.getType().equals(MessageType.TASK)) {
                 TaskStatusChangeEvent event = (TaskStatusChangeEvent) msgCtx.getEvent();
-                routingKey = event.getTaskIdentity().getExperimentId() + "." +
+                routingKey =  gatewayId + "." + event.getTaskIdentity().getExperimentId() + "." +
                         event.getTaskIdentity().getWorkflowNodeId() + "." + event.getTaskIdentity().getTaskId();
             }else if (msgCtx.getType().equals(MessageType.WORKFLOWNODE)){
                 WorkflowNodeStatusChangeEvent event = (WorkflowNodeStatusChangeEvent) msgCtx.getEvent();
                 WorkflowIdentifier workflowNodeIdentity = event.getWorkflowNodeIdentity();
-                routingKey = workflowNodeIdentity.getExperimentId() + "." + workflowNodeIdentity.getWorkflowNodeId();
+                routingKey =  gatewayId + "." + workflowNodeIdentity.getExperimentId() + "." + workflowNodeIdentity.getWorkflowNodeId();
             }else if (msgCtx.getType().equals(MessageType.JOB)){
                 JobStatusChangeEvent event = (JobStatusChangeEvent)msgCtx.getEvent();
                 JobIdentifier identity = event.getJobIdentity();
-                routingKey = identity.getExperimentId() + "." +
+                routingKey =  gatewayId + "." + identity.getExperimentId() + "." +
                         identity.getWorkflowNodeId() + "." +
                         identity.getTaskId() + "." +
                         identity.getJobId();
