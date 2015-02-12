@@ -1,0 +1,15 @@
+How to run
+========================
+
+1. Copy airavata-messaging-client-0.15-SNAPSHOT-jar-with-dependencies.jar to a location
+2. Create a folder called "resources" in the same location and copy airavata-server.properties with updated broker url in to the resources folder.
+3. To run the jar, in the command line type :
+        java -Xmx1024m -jar airavata-messaging-client-0.15-SNAPSHOT-jar-with-dependencies.jar -a
+
+        You can provide different parameters.
+            -a = to listen to all the messages
+            -gId = to listen to all the messages for given gateway Id
+            -eId = to listen to all the messages for given experiment Id
+            -jId = to listen to all the messages for given job Id
+
+
