@@ -113,6 +113,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
 
             if(ServerSettings.isGFacPassiveMode()) {
                 rabbitMQTaskLaunchConsumer = new RabbitMQTaskLaunchConsumer();
+                rabbitMQTaskLaunchConsumer.listen(new TaskLaunchMessageHandler());
             }
 
 
@@ -291,19 +292,13 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
         }
     }
 
-    private class NotificationMessageHandler implements MessageHandler {
+    private class TaskLaunchMessageHandler implements MessageHandler {
         private String experimentId;
 
-        private NotificationMessageHandler(String experimentId) {
-            this.experimentId = experimentId;
-        }
-
+      
         public Map<String, Object> getProperties() {
             Map<String, Object> props = new HashMap<String, Object>();
-            List<String> routingKeys = new ArrayList<String>();
-            routingKeys.add(experimentId);
-            routingKeys.add(experimentId + ".*");
-            props.put(MessagingConstants.RABBIT_ROUTING_KEY, routingKeys);
+            props.put(MessagingConstants.RABBIT_ROUTING_KEY, UUID.randomUUID().toString());
             return props;
         }
 

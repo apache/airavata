@@ -48,6 +48,15 @@ public class RabbitMQProducer {
 
     private String url;
 
+    private String getExchangeType = "topic";
+
+
+    public RabbitMQProducer(String url, String exchangeName,String getExchangeType) {
+        this.exchangeName = exchangeName;
+        this.url = url;
+        this.getExchangeType = getExchangeType;
+    }
+
     public RabbitMQProducer(String url, String exchangeName) {
         this.exchangeName = exchangeName;
         this.url = url;
@@ -104,7 +113,7 @@ public class RabbitMQProducer {
                 log.info("setting basic.qos / prefetch count to " + prefetchCount + " for " + exchangeName);
                 channel.basicQos(prefetchCount);
             }
-            channel.exchangeDeclare(exchangeName, "topic", false);
+            channel.exchangeDeclare(exchangeName, getExchangeType, false);
         } catch (Exception e) {
             reset();
             String msg = "could not open channel for exchange " + exchangeName;
