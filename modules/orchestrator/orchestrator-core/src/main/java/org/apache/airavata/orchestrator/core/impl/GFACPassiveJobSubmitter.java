@@ -22,6 +22,7 @@ package org.apache.airavata.orchestrator.core.impl;
 
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -141,7 +142,8 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
                             gatewayId = ServerSettings.getDefaultUserGateway();
                         }
                         TaskSubmitEvent taskSubmitEvent = new TaskSubmitEvent(experimentID, taskID, gatewayId);
-                        MessageContext messageContext = new MessageContext(taskSubmitEvent, MessageType.LAUNCHTASK,"LAUNCH.TASK-"+ UUID.randomUUID().toString(),gatewayId);
+                        MessageContext messageContext = new MessageContext(taskSubmitEvent, MessageType.LAUNCHTASK, "LAUNCH.TASK-" + UUID.randomUUID().toString(), gatewayId);
+                        messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
                         publisher.publish(messageContext);
                     }
                 }
