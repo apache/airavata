@@ -32,8 +32,8 @@ public interface OutPort extends Port {
 
     public OutputDataObjectType getOutputObject();
 
-    public List<Edge> getOutputLinks();
+    public List<Edge> getOutEdges();
 
-    public void addOutputLink();
+    public void addEdge(Edge edge);
 
 }

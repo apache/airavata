@@ -17,32 +17,40 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- *//*
+ */
 
 
 package org.apache.ariavata.simple.workflow.engine.dag.nodes;
 
-import org.apache.ariavata.simple.workflow.engine.dag.links.Edge;
-import org.apache.ariavata.simple.workflow.engine.dag.port.InputPort;
-import org.apache.ariavata.simple.workflow.engine.dag.port.OutputPort;
 
-import java.util.ArrayList;
+import org.apache.ariavata.simple.workflow.engine.dag.port.InPort;
+import org.apache.ariavata.simple.workflow.engine.dag.port.OutPort;
+
 import java.util.List;
 
 public class ApplicationNodeImpl implements ApplicationNode {
 
     private final String nodeId;
     private NodeState myState = NodeState.WAITING;
-    private List<Edge> inputLinks = new ArrayList<Edge>();
-    private List<Edge> outputLinks = new ArrayList<Edge>();
+    private String applicationId;
 
     public ApplicationNodeImpl(String nodeId) {
+        this(nodeId, null);
+    }
+
+    public ApplicationNodeImpl(String nodeId, String applicationId) {
         this.nodeId = nodeId;
+        this.applicationId = applicationId;
     }
 
     @Override
     public String getNodeId() {
         return this.nodeId;
+    }
+
+    @Override
+    public String getNodeName() {
+        return null; // TODO: Auto generated method body.
     }
 
     @Override
@@ -62,47 +70,22 @@ public class ApplicationNodeImpl implements ApplicationNode {
     }
 
     @Override
-    public void addInputPort(InputPort inputPort) {
-
+    public boolean isSatisfy() {
+        return false; // TODO: Auto generated method body.
     }
 
     @Override
-    public List<InputPort> getInputPorts() {
-        return null;
+    public String getApplicationId() {
+        return null; // TODO: Auto generated method body.
     }
 
     @Override
-    public void addOutputPort(OutputPort outputPort) {
-
+    public List<InPort> getInputPorts() {
+        return null; // TODO: Auto generated method body.
     }
 
     @Override
-    public List<OutputPort> getOutputPorts() {
-        return null;
-    }
-
-    public List<Edge> getInputLinks() {
-        return inputLinks;
-    }
-
-    public List<Edge> getOutputLinks() {
-        return outputLinks;
-    }
-
-    public void setInputLinks(List<Edge> inputLinks) {
-        this.inputLinks = inputLinks;
-    }
-
-    public void setOutputLinks(List<Edge> outputLinks) {
-        this.outputLinks = outputLinks;
-    }
-
-    public void addInputLink(Edge inputLink) {
-        inputLinks.add(inputLink);
-    }
-
-    public void addOutputLink(Edge outputLink) {
-        outputLinks.add(outputLink);
+    public List<OutPort> getOutputPorts() {
+        return null; // TODO: Auto generated method body.
     }
 }
-*/

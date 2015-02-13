@@ -17,27 +17,38 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- *//*
+ */
 
 
 package org.apache.ariavata.simple.workflow.engine.dag.nodes;
 
-import org.apache.ariavata.simple.workflow.engine.dag.port.InputPort;
 
-import java.util.List;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.ariavata.simple.workflow.engine.dag.edge.Edge;
 
 public class WorkflowOutputNodeImpl implements WorkflowOutputNode {
 
     private NodeState myState = NodeState.WAITING;
     private final String nodeId;
+    private String nodeName;
 
     public WorkflowOutputNodeImpl(String nodeId) {
+        this(nodeId, null);
+    }
+
+    public WorkflowOutputNodeImpl(String nodeId, String nodeName) {
         this.nodeId = nodeId;
+        this.nodeName = nodeName;
     }
 
     @Override
     public String getNodeId() {
         return null;
+    }
+
+    @Override
+    public String getNodeName() {
+        return null; // TODO: Auto generated method body.
     }
 
     @Override
@@ -62,14 +73,13 @@ public class WorkflowOutputNodeImpl implements WorkflowOutputNode {
     }
 
     @Override
-    public void addInputPort(InputPort inputPort) {
-
+    public OutputDataObjectType getOutputObject() {
+        return null; // TODO: Auto generated method body.
     }
 
     @Override
-    public List<InputPort> getInputPorts() {
-        return null;
+    public Edge getInputLink() {
+        return null; // TODO: Auto generated method body.
     }
-
 }
-*/
+

@@ -7,29 +7,19 @@ import org.apache.ariavata.simple.workflow.engine.dag.port.InPort;
 import org.apache.ariavata.simple.workflow.engine.dag.port.OutPort;
 
 /**
- * Created by shameera on 1/29/15.
+ * Edge is a link to one node to another, basically edge should have outPort of a workflow node ,
+ * which is starting point and inPort of a workflow node, which is end point of the edge.
  */
+
 public interface Edge {
 
-//    public WorkflowNode fromNode();
+    public InPort getToPort();
 
-//    public WorkflowNode toNode();
+    public void setToPort(InPort inPort);
 
-/*    public InputDataObjectType getInputObject();
+    public OutPort getFromPort();
 
-    public void setInputObject();
-
-    public OutputDataObjectType getOutputObject();
-
-    public void setOutputObject();*/
-
-    public InPort getInPort();
-
-    public void setInPort(InPort inPort);
-
-    public OutPort getOutPort();
-
-    public void setOutPort(OutPort outPort);
+    public void setFromPort(OutPort outPort);
 
 
 }

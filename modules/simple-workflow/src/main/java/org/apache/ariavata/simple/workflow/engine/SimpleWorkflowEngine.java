@@ -22,4 +22,10 @@
 package org.apache.ariavata.simple.workflow.engine;
 
 public class SimpleWorkflowEngine{
+
+
+    public void invoke () {
+        WorkflowParser parser = WorkflowFactoryImpl.getInstance().getWorkflowParser();
+
+    }
 }
