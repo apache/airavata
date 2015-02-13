@@ -76,7 +76,7 @@ public class SimpleWorkflowInterpreter {
     }
 
 
-    public void launchWorkflow() {
+    public void launchWorkflow() throws Exception {
         // process workflow input nodes
         processWorkflowInputNodes(getWorkflowInputNodes());
         processReadyList();
@@ -151,10 +151,10 @@ public class SimpleWorkflowInterpreter {
         Set<WorkflowNode> tempNodeSet = new HashSet<WorkflowNode>();
         for (WorkflowInputNode wfInputNode : wfInputNodes) {
             if (wfInputNode.isSatisfy()) {
-                for (Edge edge : wfInputNode.getOutputLinks()) {
-                    WorkflowUtil.copyValues(wfInputNode.getInputObject(), edge.getInPort().getInputObject());
-                    tempNodeSet.add(edge.getInPort().getNode());
-                }
+//                for (Edge edge : wfInputNode.getOutputLinks()) {
+//                    WorkflowUtil.copyValues(wfInputNode.getInputObject(), edge.getToPort().getInputObject());
+//                    tempNodeSet.add(edge.getToPort().getNode());
+//                }
             }
         }
         for (WorkflowNode workflowNode : tempNodeSet) {
@@ -167,7 +167,7 @@ public class SimpleWorkflowInterpreter {
     }
 
 
-    public List<WorkflowInputNode> getWorkflowInputNodes() {
+    public List<WorkflowInputNode> getWorkflowInputNodes() throws Exception {
         if (workflowInputNodes == null) {
             // read workflow description from registry and parse it
             WorkflowFactoryImpl wfFactory = WorkflowFactoryImpl.getInstance();
@@ -215,10 +215,10 @@ public class SimpleWorkflowInterpreter {
                 ApplicationNode applicationNode = (ApplicationNode) workflowNode;
                 // Workflow node can have one to many output ports and each output port can have one to many links
                 for (OutPort outPort : applicationNode.getOutputPorts()) {
-                    for (Edge edge : outPort.getOutputLinks()) {
-                        WorkflowUtil.copyValues(outPort.getOutputObject(), edge.getInPort().getInputObject());
-                        tempWfNodeSet.add(edge.getInPort().getNode());
-                    }
+//                    for (Edge edge : outPort.getOutputLinks()) {
+//                        WorkflowUtil.copyValues(outPort.getOutputObject(), edge.getToPort().getInputObject());
+//                        tempWfNodeSet.add(edge.getToPort().getNode());
+//                    }
                 }
 
                 for (WorkflowNode node : tempWfNodeSet) {

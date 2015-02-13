@@ -29,6 +29,24 @@
             <artifactId>airavata-jpa-registry</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <!-- Airavata default parser dependency -->
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-workflow-model-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>app-catalog-data</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>app-catalog-cpi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- Messaging dependency -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>

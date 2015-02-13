@@ -1,5 +1,4 @@
 /*
- *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -16,29 +15,39 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
- *//*
+ */
+
 
 
 package org.apache.ariavata.simple.workflow.engine.dag.nodes;
 
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
-import org.apache.ariavata.simple.workflow.engine.dag.port.OutputPort;
+import org.apache.ariavata.simple.workflow.engine.dag.port.OutPort;
 
-import java.util.List;
 
 public class WorkflowInputNodeImpl implements WorkflowInputNode {
 
     private NodeState myState = NodeState.READY;
     private final String nodeId;
+    private String nodeName;
 
     public WorkflowInputNodeImpl(String nodeId) {
+        this(nodeId, null);
+    }
+
+    public WorkflowInputNodeImpl(String nodeId, String nodeName) {
         this.nodeId = nodeId;
+        this.nodeName = nodeName;
     }
 
     @Override
     public String getNodeId() {
         return null;
+    }
+
+    @Override
+    public String getNodeName() {
+        return null; // TODO: Auto generated method body.
     }
 
     @Override
@@ -68,14 +77,14 @@ public class WorkflowInputNodeImpl implements WorkflowInputNode {
     }
 
     @Override
-    public void addOutputPort(OutputPort outputPort) {
+    public void setInputObject(InputDataObjectType inputObject) {
         // TODO: Auto generated method body.
     }
 
     @Override
-    public List<OutputPort> getOutputPorts() {
+    public OutPort getOutPort() {
         return null; // TODO: Auto generated method body.
     }
 
+
 }
-*/

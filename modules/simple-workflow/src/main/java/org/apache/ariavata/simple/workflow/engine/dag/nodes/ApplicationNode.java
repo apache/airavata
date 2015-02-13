@@ -28,14 +28,14 @@ import java.util.List;
 
 public interface ApplicationNode extends WorkflowNode {
 
-    public void addInputPort(InPort inPort);
+    public String getApplicationId();
+
+//    public void addInputPort(InPort inPort);
 
     public List<InPort> getInputPorts();
 
-    public void addOutputPort(OutPort outPort);
+//    public void addOutputPort(OutPort outPort);
 
     public List<OutPort> getOutputPorts();
-
-    public String getApplicationId();
 
 }

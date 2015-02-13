@@ -30,7 +30,8 @@ public interface InPort extends Port {
 
     public InputDataObjectType getInputObject();
 
-    public Edge getInputLink();
+    public Edge getEdge();
 
-    public void setInputLink();
+    public void addEdge(Edge edge);
+
 }

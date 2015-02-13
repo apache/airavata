@@ -1,5 +1,4 @@
 /*
- *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -16,29 +15,64 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
- *//*
-
-
+ */
 package org.apache.ariavata.simple.workflow.engine.dag.port;
 
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
-import org.apache.ariavata.simple.workflow.engine.dag.links.Edge;
+import org.apache.ariavata.simple.workflow.engine.dag.edge.Edge;
+import org.apache.ariavata.simple.workflow.engine.dag.nodes.WorkflowNode;
 
-public class InputPortIml implements InputPort {
-    @Override
-    public InputDataObjectType getInputObject() {
-        return null;
+import java.util.List;
+
+public class InputPortIml implements InPort {
+
+    private InputDataObjectType inputDataObjectType;
+    private boolean isSatisfy = false;
+    private String portId;
+    private Edge edge;
+
+    public InputPortIml(String portId) {
+        this.portId = portId;
     }
 
     @Override
-    public Edge getInputLink() {
-        return null;
+    public void setInputObject(InputDataObjectType inputObject) {
+        // TODO: Auto generated method body.
+    }
+
+    @Override
+    public InputDataObjectType getInputObject() {
+        return null; // TODO: Auto generated method body.
+    }
+
+    @Override
+    public Edge getEdge() {
+        return this.edge;
+    }
+
+    @Override
+    public void addEdge(Edge edge) {
+        this.edge = edge;
     }
 
     @Override
     public boolean isSatisfy() {
-        return false;
+        return false; // TODO: Auto generated method body.
     }
+
+    @Override
+    public WorkflowNode getNode() {
+        return null; // TODO: Auto generated method body.
+    }
+
+    @Override
+    public void setNode(WorkflowNode workflowNode) {
+        // TODO: Auto generated method body.
+    }
+
+    @Override
+    public String getId() {
+        return null; // TODO: Auto generated method body.
+    }
+
 }
-*/
