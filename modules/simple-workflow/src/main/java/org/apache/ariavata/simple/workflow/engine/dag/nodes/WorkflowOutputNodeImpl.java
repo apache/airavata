@@ -25,12 +25,15 @@ package org.apache.ariavata.simple.workflow.engine.dag.nodes;
 
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.ariavata.simple.workflow.engine.dag.edge.Edge;
+import org.apache.ariavata.simple.workflow.engine.dag.port.InPort;
 
 public class WorkflowOutputNodeImpl implements WorkflowOutputNode {
 
     private NodeState myState = NodeState.WAITING;
     private final String nodeId;
     private String nodeName;
+    private OutputDataObjectType outputDataObjectType;
+    private InPort inPort;
 
     public WorkflowOutputNodeImpl(String nodeId) {
         this(nodeId, null);
@@ -43,12 +46,12 @@ public class WorkflowOutputNodeImpl implements WorkflowOutputNode {
 
     @Override
     public String getNodeId() {
-        return null;
+        return this.nodeId;
     }
 
     @Override
     public String getNodeName() {
-        return null; // TODO: Auto generated method body.
+        return this.nodeName;
     }
 
     @Override
@@ -69,17 +72,28 @@ public class WorkflowOutputNodeImpl implements WorkflowOutputNode {
 
     @Override
     public boolean isSatisfy() {
-        return false; // TODO: Auto generated method body.
+        return this.outputDataObjectType.getValue() != null && !this.outputDataObjectType.getValue().equals("");
     }
 
     @Override
     public OutputDataObjectType getOutputObject() {
-        return null; // TODO: Auto generated method body.
+        return this.outputDataObjectType;
     }
 
     @Override
-    public Edge getInputLink() {
-        return null; // TODO: Auto generated method body.
+    public void setOutputObject(OutputDataObjectType outputObject) {
+        this.outputDataObjectType = outputObject;
     }
+
+    @Override
+    public InPort getInPort() {
+        return this.inPort;
+    }
+
+    @Override
+    public void setInPort(InPort inPort) {
+        this.inPort = inPort;
+    }
+
 }
 

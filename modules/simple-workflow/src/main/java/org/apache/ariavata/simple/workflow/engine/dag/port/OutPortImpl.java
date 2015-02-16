@@ -4,6 +4,7 @@ import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.ariavata.simple.workflow.engine.dag.edge.Edge;
 import org.apache.ariavata.simple.workflow.engine.dag.nodes.WorkflowNode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,9 +13,10 @@ import java.util.List;
 public class OutPortImpl implements OutPort {
 
     private OutputDataObjectType outputDataObjectType;
-    private List<Edge> outEdges;
+    private List<Edge> outEdges = new ArrayList<Edge>();
     private boolean isSatisfy = false;
     private String portId;
+    private WorkflowNode node;
 
     public OutPortImpl(String portId) {
         this.portId = portId;
@@ -22,41 +24,42 @@ public class OutPortImpl implements OutPort {
 
     @Override
     public void setOutputObject(OutputDataObjectType outputObject) {
-        // TODO: Auto generated method body.
+        this.outputDataObjectType = outputObject;
     }
 
     @Override
     public OutputDataObjectType getOutputObject() {
-        return null; // TODO: Auto generated method body.
+        return this.outputDataObjectType;
     }
 
     @Override
     public List<Edge> getOutEdges() {
-        return null; // TODO: Auto generated method body.
+        return this.outEdges;
     }
 
     @Override
     public void addEdge(Edge edge) {
-        // TODO: Auto generated method body.
+        this.outEdges.add(edge);
     }
 
     @Override
     public boolean isSatisfy() {
-        return false; // TODO: Auto generated method body.
+        return this.outputDataObjectType.getValue() != null
+                && !this.outputDataObjectType.getValue().equals("");
     }
 
     @Override
     public WorkflowNode getNode() {
-        return null; // TODO: Auto generated method body.
+        return this.node;
     }
 
     @Override
     public void setNode(WorkflowNode workflowNode) {
-        // TODO: Auto generated method body.
+        this.node = workflowNode;
     }
 
     @Override
     public String getId() {
-        return null; // TODO: Auto generated method body.
+        return portId;
     }
 }
