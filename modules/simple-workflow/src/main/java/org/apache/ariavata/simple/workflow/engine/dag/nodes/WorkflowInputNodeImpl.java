@@ -30,6 +30,8 @@ public class WorkflowInputNodeImpl implements WorkflowInputNode {
     private NodeState myState = NodeState.READY;
     private final String nodeId;
     private String nodeName;
+    private OutPort outPort;
+    private InputDataObjectType inputDataObjectType;
 
     public WorkflowInputNodeImpl(String nodeId) {
         this(nodeId, null);
@@ -42,12 +44,12 @@ public class WorkflowInputNodeImpl implements WorkflowInputNode {
 
     @Override
     public String getNodeId() {
-        return null;
+        return this.nodeId;
     }
 
     @Override
     public String getNodeName() {
-        return null; // TODO: Auto generated method body.
+        return this.nodeName;
     }
 
     @Override
@@ -68,22 +70,27 @@ public class WorkflowInputNodeImpl implements WorkflowInputNode {
 
     @Override
     public boolean isSatisfy() {
-        return false; // TODO: Auto generated method body.
+        return inputDataObjectType.getValue() != null && !inputDataObjectType.getValue().equals("");
     }
 
     @Override
     public InputDataObjectType getInputObject() {
-        return null; // TODO: Auto generated method body.
+        return this.inputDataObjectType;
     }
 
     @Override
     public void setInputObject(InputDataObjectType inputObject) {
-        // TODO: Auto generated method body.
+        this.inputDataObjectType = inputObject;
     }
 
     @Override
     public OutPort getOutPort() {
-        return null; // TODO: Auto generated method body.
+        return this.outPort;
+    }
+
+    @Override
+    public void setOutPort(OutPort outPort) {
+        this.outPort = outPort;
     }
 
 

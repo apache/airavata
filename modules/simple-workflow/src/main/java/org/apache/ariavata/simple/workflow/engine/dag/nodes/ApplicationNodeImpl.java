@@ -26,6 +26,7 @@ package org.apache.ariavata.simple.workflow.engine.dag.nodes;
 import org.apache.ariavata.simple.workflow.engine.dag.port.InPort;
 import org.apache.ariavata.simple.workflow.engine.dag.port.OutPort;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ApplicationNodeImpl implements ApplicationNode {
@@ -33,6 +34,8 @@ public class ApplicationNodeImpl implements ApplicationNode {
     private final String nodeId;
     private NodeState myState = NodeState.WAITING;
     private String applicationId;
+    private List<InPort> inPorts = new ArrayList<InPort>();
+    private List<OutPort> outPorts = new ArrayList<OutPort>();
 
     public ApplicationNodeImpl(String nodeId) {
         this(nodeId, null);
@@ -50,7 +53,7 @@ public class ApplicationNodeImpl implements ApplicationNode {
 
     @Override
     public String getNodeName() {
-        return null; // TODO: Auto generated method body.
+        return this.getNodeName();
     }
 
     @Override
@@ -71,21 +74,36 @@ public class ApplicationNodeImpl implements ApplicationNode {
 
     @Override
     public boolean isSatisfy() {
-        return false; // TODO: Auto generated method body.
+        for (InPort inPort : getInputPorts()) {
+            if (!inPort.isSatisfy()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
     public String getApplicationId() {
-        return null; // TODO: Auto generated method body.
+        return this.applicationId;
+    }
+
+    @Override
+    public void addInPort(InPort inPort) {
+        this.inPorts.add(inPort);
     }
 
     @Override
     public List<InPort> getInputPorts() {
-        return null; // TODO: Auto generated method body.
+        return this.inPorts;
+    }
+
+    @Override
+    public void addOutPort(OutPort outPort) {
+        this.outPorts.add(outPort);
     }
 
     @Override
     public List<OutPort> getOutputPorts() {
-        return null; // TODO: Auto generated method body.
+        return this.outPorts;
     }
 }

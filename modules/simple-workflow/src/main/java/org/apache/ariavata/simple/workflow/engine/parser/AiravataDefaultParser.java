@@ -3,6 +3,7 @@ package org.apache.ariavata.simple.workflow.engine.parser;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.airavata.appcatalog.cpi.WorkflowCatalog;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
+import org.apache.aiaravata.application.catalog.data.model.WorkflowOutput;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
@@ -31,6 +32,8 @@ import org.apache.ariavata.simple.workflow.engine.dag.nodes.ApplicationNodeImpl;
 import org.apache.ariavata.simple.workflow.engine.dag.nodes.WorkflowInputNode;
 import org.apache.ariavata.simple.workflow.engine.dag.nodes.WorkflowInputNodeImpl;
 import org.apache.ariavata.simple.workflow.engine.dag.nodes.WorkflowNode;
+import org.apache.ariavata.simple.workflow.engine.dag.nodes.WorkflowOutputNode;
+import org.apache.ariavata.simple.workflow.engine.dag.nodes.WorkflowOutputNodeImpl;
 import org.apache.ariavata.simple.workflow.engine.dag.port.InPort;
 import org.apache.ariavata.simple.workflow.engine.dag.port.InputPortIml;
 import org.apache.ariavata.simple.workflow.engine.dag.port.OutPort;
@@ -51,8 +54,14 @@ public class AiravataDefaultParser implements WorkflowParser {
     private String experimentId;
     private String credentialToken ;
     private Workflow workflow;
+
+    // TODO : remove this setter method
+    public void setExperiment(Experiment experiment) {
+        this.experiment = experiment;
+    }
+
     private Experiment experiment;
-    private Map<String, ApplicationNode> wfNodes = new HashMap<String, ApplicationNode>();
+    private Map<String, WorkflowNode> wfNodes = new HashMap<String, WorkflowNode>();
 
 
     public AiravataDefaultParser(String experimentId, String credentialToken) {
@@ -66,7 +75,7 @@ public class AiravataDefaultParser implements WorkflowParser {
         return parseWorkflow(getWorkflowFromExperiment());
     }
 
-    private List<WorkflowInputNode> parseWorkflow(Workflow workflow) {
+    public List<WorkflowInputNode> parseWorkflow(Workflow workflow) {
         List<Node> gNodes = getInputNodes(workflow);
         List<WorkflowInputNode> wfInputNodes = new ArrayList<WorkflowInputNode>();
         List<PortContainer> portContainers = new ArrayList<PortContainer>();
@@ -85,7 +94,8 @@ public class AiravataDefaultParser implements WorkflowParser {
             if (wfInputNode.getInputObject() == null) {
                 // TODO: throw an error and exit.
             }
-            for (DataPort dataPort : gNode.getInputPorts()) {
+            portContainers.addAll(processOutPorts(gNode, wfInputNode));
+/*            for (DataPort dataPort : gNode.getOutputPorts()) {
                 outPort = new OutPortImpl(dataPort.getID());
                 for (DataEdge dataEdge : dataPort.getEdges()) {
                     edge = new DirectedEdge();
@@ -96,8 +106,8 @@ public class AiravataDefaultParser implements WorkflowParser {
                     inPort.addEdge(edge);
                     portContainers.add(new PortContainer(dataEdge.getToPort(), inPort));
                 }
-                outPort.setOutputObject(getOutputDataObject(wfInputNode.getInputObject()));
-            }
+//                outPort.setOutputObject(getOutputDataObject(wfInputNode.getInputObject()));
+            }*/
             wfInputNodes.add(wfInputNode);
         }
 
@@ -114,7 +124,8 @@ public class AiravataDefaultParser implements WorkflowParser {
         }
         DataPort dataPort = null;
         InPort inPort = null;
-        WorkflowNode wfNode = null;
+        ApplicationNode wfApplicationNode = null;
+        WorkflowOutputNode wfOutportNode = null;
         List<PortContainer> nextPortContainerList = new ArrayList<PortContainer>();
         for (PortContainer portContainer : portContainerList) {
             dataPort = portContainer.getDataPort();
@@ -123,17 +134,21 @@ public class AiravataDefaultParser implements WorkflowParser {
             inPort.setInputObject(getInputDataObject(dataPort));
             if (node instanceof WSNode) {
                 WSNode wsNode = (WSNode) node;
-                wfNode = wfNodes.get(wsNode.getID());
-                if (wfNode == null) {
-                    wfNode = new ApplicationNodeImpl(wsNode.getID(),
+                wfApplicationNode = (ApplicationNode) wfNodes.get(wsNode.getID());
+                if (wfApplicationNode == null) {
+                    wfApplicationNode = new ApplicationNodeImpl(wsNode.getID(),
                             wsNode.getComponent().getApplication().getApplicationId());
-                    nextPortContainerList.addAll(processOutPorts(wsNode, wfNode));
+                    wfNodes.put(wfApplicationNode.getNodeId(), wfApplicationNode);
+                    nextPortContainerList.addAll(processOutPorts(wsNode, wfApplicationNode));
                 }
+                inPort.setNode(wfApplicationNode);
+                wfApplicationNode.addInPort(inPort);
+
             }else if (node instanceof OutputNode) {
                 OutputNode oNode = (OutputNode) node;
-                wfNode = new WorkflowInputNodeImpl(oNode.getID(), oNode.getName());
+                wfOutportNode = new WorkflowOutputNodeImpl(oNode.getID(), oNode.getName());
+                wfOutportNode.setInPort(inPort);
             }
-            inPort.setNode(wfNode);
             buildModel(nextPortContainerList);
             // set the workflow node to inPort
             // if require check the types of inputs and output ports,
@@ -148,7 +163,7 @@ public class AiravataDefaultParser implements WorkflowParser {
     private List<PortContainer> processOutPorts(Node node, WorkflowNode wfNode) {
         OutPort outPort ;
         Edge edge;
-        InPort inPort;
+        InPort inPort = null;
         List<PortContainer> portContainers = new ArrayList<PortContainer>();
         for (DataPort dataPort : node.getOutputPorts()) {
             outPort = new OutPortImpl(dataPort.getID());
@@ -160,6 +175,15 @@ public class AiravataDefaultParser implements WorkflowParser {
                 edge.setToPort(inPort);
                 inPort.addEdge(edge);
                 portContainers.add(new PortContainer(dataEdge.getToPort(), inPort));
+            }
+            outPort.setNode(wfNode);
+            if (wfNode instanceof WorkflowInputNode) {
+                WorkflowInputNode workflowInputNode = (WorkflowInputNode) wfNode;
+                workflowInputNode.setOutPort(outPort);
+            }else if (wfNode instanceof ApplicationNode) {
+                ApplicationNode applicationNode = ((ApplicationNode) wfNode);
+                applicationNode.addOutPort(outPort);
+                applicationNode.addInPort(inPort);
             }
         }
         return portContainers;

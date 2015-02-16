@@ -23,11 +23,16 @@ package org.apache.ariavata.simple.workflow.engine.dag.nodes;
 
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.ariavata.simple.workflow.engine.dag.edge.Edge;
+import org.apache.ariavata.simple.workflow.engine.dag.port.InPort;
 
 public interface WorkflowOutputNode extends WorkflowNode {
 
     public OutputDataObjectType getOutputObject();
 
-    public Edge getInputLink();
+    public void setOutputObject(OutputDataObjectType outputObject);
+
+    public InPort getInPort();
+
+    public void setInPort(InPort inPort);
 
 }

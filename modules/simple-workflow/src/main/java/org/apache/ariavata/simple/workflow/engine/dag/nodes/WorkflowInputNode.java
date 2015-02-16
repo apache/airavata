@@ -35,4 +35,6 @@ public interface WorkflowInputNode extends WorkflowNode {
 
     public OutPort getOutPort();
 
+    public void setOutPort(OutPort outPort);
+
 }

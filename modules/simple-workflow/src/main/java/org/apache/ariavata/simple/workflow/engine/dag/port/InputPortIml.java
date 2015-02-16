@@ -30,6 +30,7 @@ public class InputPortIml implements InPort {
     private boolean isSatisfy = false;
     private String portId;
     private Edge edge;
+    private WorkflowNode node;
 
     public InputPortIml(String portId) {
         this.portId = portId;
@@ -37,12 +38,12 @@ public class InputPortIml implements InPort {
 
     @Override
     public void setInputObject(InputDataObjectType inputObject) {
-        // TODO: Auto generated method body.
+        this.inputDataObjectType = inputObject;
     }
 
     @Override
     public InputDataObjectType getInputObject() {
-        return null; // TODO: Auto generated method body.
+        return this.inputDataObjectType;
     }
 
     @Override
@@ -57,22 +58,22 @@ public class InputPortIml implements InPort {
 
     @Override
     public boolean isSatisfy() {
-        return false; // TODO: Auto generated method body.
+        return inputDataObjectType.getValue() != null && !inputDataObjectType.getValue().equals("");
     }
 
     @Override
     public WorkflowNode getNode() {
-        return null; // TODO: Auto generated method body.
+        return this.node;
     }
 
     @Override
     public void setNode(WorkflowNode workflowNode) {
-        // TODO: Auto generated method body.
+        this.node = workflowNode;
     }
 
     @Override
     public String getId() {
-        return null; // TODO: Auto generated method body.
+        return this.portId;
     }
 
 }

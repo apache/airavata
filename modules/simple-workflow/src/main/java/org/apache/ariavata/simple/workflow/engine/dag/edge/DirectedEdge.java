@@ -11,21 +11,21 @@ public class DirectedEdge implements Edge {
 
     @Override
     public InPort getToPort() {
-        return null; // TODO: Auto generated method body.
+        return inPort;
     }
 
     @Override
     public void setToPort(InPort inPort) {
-        // TODO: Auto generated method body.
+        this.inPort = inPort;
     }
 
     @Override
     public OutPort getFromPort() {
-        return null; // TODO: Auto generated method body.
+        return outPort;
     }
 
     @Override
     public void setFromPort(OutPort outPort) {
-        // TODO: Auto generated method body.
+        this.outPort = outPort;
     }
 }
