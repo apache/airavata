@@ -466,15 +466,16 @@ public class RegisterSampleApplications {
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Input_to_Echo", "",
                     DataType.STRING, null, 1, false, false,false, "A test string to Echo", null);
             
-            InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("Input_to_Echo2", "",
-                    DataType.URI, null, 2, false, false,false, "A sample input remote file", null);
-
-            InputDataObjectType input3 = RegisterSampleApplicationsUtils.createAppInput("Input_to_Echo3", "file:///tmp/test.txt",
-                    DataType.URI, null, 3,false, false, false, "A sample input local file", null);
+//            InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("Input_to_Echo2", "",
+//                    DataType.URI, null, 2, false, false,false, "A sample input remote file", null);
+//
+//            InputDataObjectType input3 = RegisterSampleApplicationsUtils.createAppInput("Input_to_Echo3", "file:///tmp/test.txt",
+//                    DataType.URI, null, 3,false, false, false, "A sample input local file", null);
 
             
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
-            applicationInputs.add(input1); applicationInputs.add(input2); applicationInputs.add(input3);
+            applicationInputs.add(input1);
+//            applicationInputs.add(input2); applicationInputs.add(input3);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Output",
                     "", DataType.STRING, false, false);
