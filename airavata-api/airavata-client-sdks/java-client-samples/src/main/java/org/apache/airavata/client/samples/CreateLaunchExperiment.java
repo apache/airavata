@@ -25,7 +25,6 @@ import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.client.tools.RegisterSampleApplications;
 import org.apache.airavata.client.tools.RegisterSampleApplicationsUtils;
-import org.apache.airavata.messaging.core.stats.StatCounter;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
