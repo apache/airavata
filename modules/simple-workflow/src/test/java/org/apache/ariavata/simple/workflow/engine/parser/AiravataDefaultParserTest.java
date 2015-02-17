@@ -5,7 +5,9 @@ import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.workflow.model.wf.Workflow;
+import org.apache.ariavata.simple.workflow.engine.dag.nodes.ApplicationNode;
 import org.apache.ariavata.simple.workflow.engine.dag.nodes.WorkflowInputNode;
+import org.apache.ariavata.simple.workflow.engine.dag.nodes.WorkflowNode;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +17,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class AiravataDefaultParserTest {
 
@@ -66,6 +69,16 @@ public class AiravataDefaultParserTest {
         List<WorkflowInputNode> workflowInputNodes = parser.parseWorkflow(workflow);
         Assert.assertNotNull(workflowInputNodes);
         Assert.assertEquals(3, workflowInputNodes.size());
+
+        Map<String, WorkflowNode> wfNodes = parser.getWfNodes();
+        for (String wfId : wfNodes.keySet()) {
+            WorkflowNode wfNode = wfNodes.get(wfId);
+            if (wfNode instanceof ApplicationNode) {
+                ApplicationNode node = (ApplicationNode) wfNode;
+                Assert.assertEquals(2, node.getInputPorts().size());
+                Assert.assertEquals(1, node.getOutputPorts().size());
+            }
+        }
 
     }
 }
