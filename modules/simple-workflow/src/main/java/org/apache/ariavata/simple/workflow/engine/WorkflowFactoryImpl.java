@@ -21,12 +21,17 @@
 
 package org.apache.ariavata.simple.workflow.engine;
 
+import org.apache.ariavata.simple.workflow.engine.parser.AiravataDefaultParser;
+
 /**
  * Singleton class, only one instance can exist in runtime.
  */
 public class WorkflowFactoryImpl implements WorkflowFactory {
 
     private static WorkflowFactoryImpl workflowFactoryImpl;
+
+    private WorkflowEnactor workflowEnactor;
+    private WorkflowParser workflowParser;
 
     private WorkflowFactoryImpl(){
 
@@ -45,8 +50,18 @@ public class WorkflowFactoryImpl implements WorkflowFactory {
 
 
     @Override
-    public WorkflowParser getWorkflowParser() {
+    public WorkflowParser getWorkflowParser(String experimentId, String credentialToken) {
+        if (workflowParser == null) {
+            workflowParser = new AiravataDefaultParser(experimentId, credentialToken);
+        }
+        return workflowParser;
+    }
 
-        return null; // TODO: Auto generated method body.
+    @Override
+    public WorkflowEnactor getWorkflowEnactor() {
+        if (workflowEnactor == null) {
+            workflowEnactor = new WorkflowEnactor();
+        }
+        return workflowEnactor;
     }
 }

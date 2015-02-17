@@ -125,7 +125,7 @@ public class AiravataDefaultParser implements WorkflowParser {
         DataPort dataPort = null;
         InPort inPort = null;
         ApplicationNode wfApplicationNode = null;
-        WorkflowOutputNode wfOutportNode = null;
+        WorkflowOutputNode wfOutputNode = null;
         List<PortContainer> nextPortContainerList = new ArrayList<PortContainer>();
         for (PortContainer portContainer : portContainerList) {
             dataPort = portContainer.getDataPort();
@@ -150,8 +150,9 @@ public class AiravataDefaultParser implements WorkflowParser {
 
             }else if (node instanceof OutputNode) {
                 OutputNode oNode = (OutputNode) node;
-                wfOutportNode = new WorkflowOutputNodeImpl(oNode.getID(), oNode.getName());
-                wfOutportNode.setInPort(inPort);
+                wfOutputNode = new WorkflowOutputNodeImpl(oNode.getID(), oNode.getName());
+                wfOutputNode.setInPort(inPort);
+                wfNodes.put(wfOutputNode.getNodeId(), wfOutputNode);
             }
             // set the workflow node to inPort
             // if require check the types of inputs and output ports,

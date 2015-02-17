@@ -5,6 +5,6 @@ package org.apache.ariavata.simple.workflow.engine;
  */
 public interface WorkflowFactory {
 
-    public WorkflowParser getWorkflowParser();
+    public WorkflowParser getWorkflowParser(String experimentId, String credentialToken);
 
 }
