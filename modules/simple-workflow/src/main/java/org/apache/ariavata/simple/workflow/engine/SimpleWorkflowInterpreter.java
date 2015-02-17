@@ -52,7 +52,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class SimpleWorkflowInterpreter {
+public class SimpleWorkflowInterpreter implements Runnable{
 
 
     private List<WorkflowInputNode> workflowInputNodes;
@@ -151,6 +151,7 @@ public class SimpleWorkflowInterpreter {
         Set<WorkflowNode> tempNodeSet = new HashSet<WorkflowNode>();
         for (WorkflowInputNode wfInputNode : wfInputNodes) {
             if (wfInputNode.isSatisfy()) {
+
 //                for (Edge edge : wfInputNode.getOutputLinks()) {
 //                    WorkflowUtil.copyValues(wfInputNode.getInputObject(), edge.getToPort().getInputObject());
 //                    tempNodeSet.add(edge.getToPort().getNode());
@@ -171,7 +172,8 @@ public class SimpleWorkflowInterpreter {
         if (workflowInputNodes == null) {
             // read workflow description from registry and parse it
             WorkflowFactoryImpl wfFactory = WorkflowFactoryImpl.getInstance();
-            List<WorkflowInputNode> wfInputNodes = wfFactory.getWorkflowParser().parse();
+            List<WorkflowInputNode> wfInputNodes = wfFactory.getWorkflowParser(experiment.getExperimentID(),
+                    credentialToken).parse();
             setWorkflowInputNodes(wfInputNodes);
         }
         return workflowInputNodes;
@@ -286,5 +288,10 @@ public class SimpleWorkflowInterpreter {
             }
         }
 
+    }
+
+    @Override
+    public void run() {
+        // TODO: Auto generated method body.
     }
 }

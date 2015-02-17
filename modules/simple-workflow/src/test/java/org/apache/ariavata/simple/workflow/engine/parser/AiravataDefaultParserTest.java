@@ -8,6 +8,7 @@ import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.ariavata.simple.workflow.engine.dag.nodes.ApplicationNode;
 import org.apache.ariavata.simple.workflow.engine.dag.nodes.WorkflowInputNode;
 import org.apache.ariavata.simple.workflow.engine.dag.nodes.WorkflowNode;
+import org.apache.ariavata.simple.workflow.engine.dag.nodes.WorkflowOutputNode;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -77,6 +78,9 @@ public class AiravataDefaultParserTest {
                 ApplicationNode node = (ApplicationNode) wfNode;
                 Assert.assertEquals(2, node.getInputPorts().size());
                 Assert.assertEquals(1, node.getOutputPorts().size());
+            }else if (wfNode instanceof WorkflowOutputNode) {
+                WorkflowOutputNode workflowOutputNode = (WorkflowOutputNode) wfNode;
+                Assert.assertNotNull(workflowOutputNode.getInPort());
             }
         }
 
