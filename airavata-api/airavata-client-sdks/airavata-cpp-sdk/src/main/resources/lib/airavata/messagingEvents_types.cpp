@@ -839,8 +839,8 @@ void swap(JobIdentifier &a, JobIdentifier &b) {
   swap(a.gatewayId, b.gatewayId);
 }
 
-const char* TaskSubmitEvent::ascii_fingerprint = "AB879940BD15B6B25691265F7384B271";
-const uint8_t TaskSubmitEvent::binary_fingerprint[16] = {0xAB,0x87,0x99,0x40,0xBD,0x15,0xB6,0xB2,0x56,0x91,0x26,0x5F,0x73,0x84,0xB2,0x71};
+const char* TaskSubmitEvent::ascii_fingerprint = "C93D890311F28844166CF6E571EB3AC2";
+const uint8_t TaskSubmitEvent::binary_fingerprint[16] = {0xC9,0x3D,0x89,0x03,0x11,0xF2,0x88,0x44,0x16,0x6C,0xF6,0xE5,0x71,0xEB,0x3A,0xC2};
 
 uint32_t TaskSubmitEvent::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -856,6 +856,7 @@ uint32_t TaskSubmitEvent::read(::apache::thrift::protocol::TProtocol* iprot) {
   bool isset_experimentId = false;
   bool isset_taskId = false;
   bool isset_gatewayId = false;
+  bool isset_tokenId = false;
 
   while (true)
   {
@@ -889,6 +890,14 @@ uint32_t TaskSubmitEvent::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->tokenId);
+          isset_tokenId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -903,6 +912,8 @@ uint32_t TaskSubmitEvent::read(::apache::thrift::protocol::TProtocol* iprot) {
   if (!isset_taskId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_tokenId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
@@ -923,6 +934,10 @@ uint32_t TaskSubmitEvent::write(::apache::thrift::protocol::TProtocol* oprot) co
   xfer += oprot->writeString(this->gatewayId);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("tokenId", ::apache::thrift::protocol::T_STRING, 4);
+  xfer += oprot->writeString(this->tokenId);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -933,6 +948,7 @@ void swap(TaskSubmitEvent &a, TaskSubmitEvent &b) {
   swap(a.experimentId, b.experimentId);
   swap(a.taskId, b.taskId);
   swap(a.gatewayId, b.gatewayId);
+  swap(a.tokenId, b.tokenId);
 }
 
 const char* TaskTerminateEvent::ascii_fingerprint = "07A9615F837F7D0A952B595DD3020972";

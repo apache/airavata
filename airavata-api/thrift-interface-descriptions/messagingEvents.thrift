@@ -105,7 +105,8 @@ struct JobIdentifier {
 struct TaskSubmitEvent{
     1: required string experimentId,
     2: required string taskId,
-    3: required string gatewayId
+    3: required string gatewayId,
+    4: required string tokenId
 }
 
 struct TaskTerminateEvent{

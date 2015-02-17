@@ -39,7 +39,6 @@ import org.apache.airavata.model.messaging.event.TaskSubmitEvent;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
-import org.apache.thrift.TException;
 import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
@@ -113,40 +112,29 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
                 }
             }
             String gfacServer = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NODE, "/gfac-server");
-            String experimentNode = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
             List<String> children = zk.getChildren(gfacServer, this);
 
             if (children.size() == 0) {
                 // Zookeeper data need cleaning
                 throw new OrchestratorException("There is no active GFac instance to route the request");
             } else {
-                String pickedChild = children.get(new Random().nextInt(Integer.MAX_VALUE) % children.size());
-                // here we are not using an index because the getChildren does not return the same order everytime
-                String gfacNodeData = new String(zk.getData(gfacServer + File.separator + pickedChild, false, null));
-                logger.info("GFAC instance node data: " + gfacNodeData);
-                String[] split = gfacNodeData.split(":");
-                gfacClient = GFacClientFactory.createGFacClient(split[0], Integer.parseInt(split[1]));
-                if (zk.exists(gfacServer + File.separator + pickedChild, false) != null) {
-                    // before submitting the job we check again the state of the node
-                    if (GFacUtils.createExperimentEntry(experimentID, taskID, zk, experimentNode, pickedChild, tokenId)) {
-                        String gatewayId = null;
-                        CredentialReader credentialReader = GFacUtils.getCredentialReader();
-                        if (credentialReader != null) {
-                            try {
-                                gatewayId = credentialReader.getGatewayID(tokenId);
-                            } catch (Exception e) {
-                                logger.error(e.getLocalizedMessage());
-                            }
-                        }
-                        if(gatewayId == null || gatewayId.isEmpty()){
-                            gatewayId = ServerSettings.getDefaultUserGateway();
-                        }
-                        TaskSubmitEvent taskSubmitEvent = new TaskSubmitEvent(experimentID, taskID, gatewayId);
-                        MessageContext messageContext = new MessageContext(taskSubmitEvent, MessageType.LAUNCHTASK, "LAUNCH.TASK-" + UUID.randomUUID().toString(), gatewayId);
-                        messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-                        publisher.publish(messageContext);
+                String gatewayId = null;
+                CredentialReader credentialReader = GFacUtils.getCredentialReader();
+                if (credentialReader != null) {
+                    try {
+                        gatewayId = credentialReader.getGatewayID(tokenId);
+                    } catch (Exception e) {
+                        logger.error(e.getLocalizedMessage());
                     }
                 }
+                if(gatewayId == null || gatewayId.isEmpty()){
+                    gatewayId = ServerSettings.getDefaultUserGateway();
+                }
+
+                TaskSubmitEvent taskSubmitEvent = new TaskSubmitEvent(experimentID, taskID, gatewayId,tokenId);
+                MessageContext messageContext = new MessageContext(taskSubmitEvent, MessageType.LAUNCHTASK, "LAUNCH.TASK-" + UUID.randomUUID().toString(), gatewayId);
+                messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+                publisher.publish(messageContext);
             }
         } catch (InterruptedException e) {
             logger.error(e.getMessage(), e);
@@ -204,8 +192,8 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
                 localhost = GFacClientFactory.createGFacClient(split[0], Integer.parseInt(split[1]));
                 if (zk.exists(gfacServer + File.separator + pickedChild, false) != null) {
                     // before submitting the job we check again the state of the node
-                    if (GFacUtils.createExperimentEntry(experimentID, taskID, zk, experimentNode, pickedChild, null)) {
-                        TaskSubmitEvent taskSubmitEvent = new TaskSubmitEvent(experimentID, taskID, null);
+                    if (GFacUtils.createExperimentEntryForRPC(experimentID, taskID, zk, experimentNode, pickedChild, null)) {
+                        TaskSubmitEvent taskSubmitEvent = new TaskSubmitEvent(experimentID, taskID, null,null);
                         MessageContext messageContext = new MessageContext(taskSubmitEvent, MessageType.LAUNCHTASK,"LAUNCH.TERMINATE-"+ UUID.randomUUID().toString(),null);
                         publisher.publish(messageContext);
                     }

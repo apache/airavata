@@ -27,7 +27,7 @@ DATAMODEL_SRC_DIR='airavata-data-models/src/main/java'
 JAVA_API_SDK_DIR='airavata-api-stubs/src/main/java'
 CPP_SDK_DIR='airavata-client-sdks/airavata-cpp-sdk/src/main/resources/lib/airavata/'
 PHP_SDK_DIR='airavata-client-sdks/airavata-php-sdk/src/main/resources/lib'
-THRIFT_EXEC=thrift
+THRIFT_EXEC=/usr/local/Cellar/thrift/0.9.1/bin/thrift
 # The Function fail prints error messages on failure and quits the script.
 fail() {
     echo $@
