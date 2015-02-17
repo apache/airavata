@@ -134,12 +134,16 @@ public class AiravataDefaultParser implements WorkflowParser {
             inPort.setInputObject(getInputDataObject(dataPort));
             if (node instanceof WSNode) {
                 WSNode wsNode = (WSNode) node;
-                wfApplicationNode = (ApplicationNode) wfNodes.get(wsNode.getID());
-                if (wfApplicationNode == null) {
+                WorkflowNode wfNode = wfNodes.get(wsNode.getID());
+                if (wfNode == null) {
                     wfApplicationNode = new ApplicationNodeImpl(wsNode.getID(),
                             wsNode.getComponent().getApplication().getApplicationId());
                     wfNodes.put(wfApplicationNode.getNodeId(), wfApplicationNode);
                     nextPortContainerList.addAll(processOutPorts(wsNode, wfApplicationNode));
+                } else if (wfNode instanceof ApplicationNode) {
+                    wfApplicationNode = (ApplicationNode) wfNode;
+                } else {
+                    // TODO : handle this scenario
                 }
                 inPort.setNode(wfApplicationNode);
                 wfApplicationNode.addInPort(inPort);
@@ -149,7 +153,6 @@ public class AiravataDefaultParser implements WorkflowParser {
                 wfOutportNode = new WorkflowOutputNodeImpl(oNode.getID(), oNode.getName());
                 wfOutportNode.setInPort(inPort);
             }
-            buildModel(nextPortContainerList);
             // set the workflow node to inPort
             // if require check the types of inputs and output ports,
             // add outputPorts to the workflow node
@@ -157,6 +160,7 @@ public class AiravataDefaultParser implements WorkflowParser {
             // add inport and indataport to the list
             // recursively call the function.
         }
+        buildModel(nextPortContainerList);
 
     }
 
@@ -183,7 +187,7 @@ public class AiravataDefaultParser implements WorkflowParser {
             }else if (wfNode instanceof ApplicationNode) {
                 ApplicationNode applicationNode = ((ApplicationNode) wfNode);
                 applicationNode.addOutPort(outPort);
-                applicationNode.addInPort(inPort);
+//                applicationNode.addInPort(inPort);
             }
         }
         return portContainers;
@@ -241,5 +245,9 @@ public class AiravataDefaultParser implements WorkflowParser {
             }
         }
         return list;
+    }
+
+    public Map<String, WorkflowNode> getWfNodes() {
+        return wfNodes;
     }
 }
