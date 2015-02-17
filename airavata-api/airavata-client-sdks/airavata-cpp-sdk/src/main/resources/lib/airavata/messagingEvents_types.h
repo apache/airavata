@@ -465,10 +465,10 @@ void swap(JobIdentifier &a, JobIdentifier &b);
 class TaskSubmitEvent {
  public:
 
-  static const char* ascii_fingerprint; // = "AB879940BD15B6B25691265F7384B271";
-  static const uint8_t binary_fingerprint[16]; // = {0xAB,0x87,0x99,0x40,0xBD,0x15,0xB6,0xB2,0x56,0x91,0x26,0x5F,0x73,0x84,0xB2,0x71};
+  static const char* ascii_fingerprint; // = "C93D890311F28844166CF6E571EB3AC2";
+  static const uint8_t binary_fingerprint[16]; // = {0xC9,0x3D,0x89,0x03,0x11,0xF2,0x88,0x44,0x16,0x6C,0xF6,0xE5,0x71,0xEB,0x3A,0xC2};
 
-  TaskSubmitEvent() : experimentId(), taskId(), gatewayId() {
+  TaskSubmitEvent() : experimentId(), taskId(), gatewayId(), tokenId() {
   }
 
   virtual ~TaskSubmitEvent() throw() {}
@@ -476,6 +476,7 @@ class TaskSubmitEvent {
   std::string experimentId;
   std::string taskId;
   std::string gatewayId;
+  std::string tokenId;
 
   void __set_experimentId(const std::string& val) {
     experimentId = val;
@@ -489,6 +490,10 @@ class TaskSubmitEvent {
     gatewayId = val;
   }
 
+  void __set_tokenId(const std::string& val) {
+    tokenId = val;
+  }
+
   bool operator == (const TaskSubmitEvent & rhs) const
   {
     if (!(experimentId == rhs.experimentId))
@@ -496,6 +501,8 @@ class TaskSubmitEvent {
     if (!(taskId == rhs.taskId))
       return false;
     if (!(gatewayId == rhs.gatewayId))
+      return false;
+    if (!(tokenId == rhs.tokenId))
       return false;
     return true;
   }

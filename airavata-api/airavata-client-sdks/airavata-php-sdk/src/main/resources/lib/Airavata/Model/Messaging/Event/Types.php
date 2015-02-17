@@ -977,6 +977,7 @@ class TaskSubmitEvent {
   public $experimentId = null;
   public $taskId = null;
   public $gatewayId = null;
+  public $tokenId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -993,6 +994,10 @@ class TaskSubmitEvent {
           'var' => 'gatewayId',
           'type' => TType::STRING,
           ),
+        4 => array(
+          'var' => 'tokenId',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -1004,6 +1009,9 @@ class TaskSubmitEvent {
       }
       if (isset($vals['gatewayId'])) {
         $this->gatewayId = $vals['gatewayId'];
+      }
+      if (isset($vals['tokenId'])) {
+        $this->tokenId = $vals['tokenId'];
       }
     }
   }
@@ -1048,6 +1056,13 @@ class TaskSubmitEvent {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->tokenId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -1074,6 +1089,11 @@ class TaskSubmitEvent {
     if ($this->gatewayId !== null) {
       $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 3);
       $xfer += $output->writeString($this->gatewayId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->tokenId !== null) {
+      $xfer += $output->writeFieldBegin('tokenId', TType::STRING, 4);
+      $xfer += $output->writeString($this->tokenId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

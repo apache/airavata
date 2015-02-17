@@ -99,7 +99,7 @@ public class GFACRPCJobSubmitter implements JobSubmitter, Watcher {
 				gfacClient = GFacClientFactory.createGFacClient(split[0], Integer.parseInt(split[1]));
 				if (zk.exists(gfacServer + File.separator + pickedChild, false) != null) {
 					// before submitting the job we check again the state of the node
-					if (GFacUtils.createExperimentEntry(experimentID, taskID, zk, experimentNode, pickedChild, tokenId)) {
+					if (GFacUtils.createExperimentEntryForRPC(experimentID, taskID, zk, experimentNode, pickedChild, tokenId)) {
 						 String gatewayId = null;
                     	 CredentialReader credentialReader = GFacUtils.getCredentialReader();
                          if (credentialReader != null) {
@@ -167,7 +167,7 @@ public class GFACRPCJobSubmitter implements JobSubmitter, Watcher {
                 localhost = GFacClientFactory.createGFacClient(split[0], Integer.parseInt(split[1]));
                 if (zk.exists(gfacServer + File.separator + pickedChild, false) != null) {
                     // before submitting the job we check again the state of the node
-                    if (GFacUtils.createExperimentEntry(experimentID, taskID, zk, experimentNode, pickedChild, null)) {
+                    if (GFacUtils.createExperimentEntryForRPC(experimentID, taskID, zk, experimentNode, pickedChild, null)) {
                         return localhost.cancelJob(experimentID, taskID);
                     }
                 }
