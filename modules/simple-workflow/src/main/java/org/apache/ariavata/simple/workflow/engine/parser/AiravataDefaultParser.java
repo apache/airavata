@@ -66,28 +66,28 @@ import java.util.Map;
 
 public class AiravataDefaultParser implements WorkflowParser {
 
-    private String experimentId;
     private String credentialToken ;
     private Workflow workflow;
 
-    // TODO : remove this setter method
-    public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
-    }
 
     private Experiment experiment;
     private Map<String, WorkflowNode> wfNodes = new HashMap<String, WorkflowNode>();
 
 
-    public AiravataDefaultParser(String experimentId, String credentialToken) {
-        this.experimentId = experimentId;
+    public AiravataDefaultParser(String experimentId, String credentialToken) throws RegistryException {
+        this.experiment = getExperiment(experimentId);
         this.credentialToken = credentialToken;
+    }
+
+    public AiravataDefaultParser(Experiment experiment, String credentialToken) {
+        this.credentialToken = credentialToken;
+        this.experiment = experiment;
     }
 
     @Override
     public List<WorkflowInputNode> parse() throws RegistryException, AppCatalogException,
             ComponentException, GraphException {
-        return parseWorkflow(getWorkflowFromExperiment());
+        return parseWorkflow(getWorkflowFromExperiment(experiment));
     }
 
     public List<WorkflowInputNode> parseWorkflow(Workflow workflow) {
@@ -216,9 +216,12 @@ public class AiravataDefaultParser implements WorkflowParser {
         return outputDataObjectType;
     }
 
-    private Workflow getWorkflowFromExperiment() throws RegistryException, AppCatalogException, GraphException, ComponentException {
+    private Experiment getExperiment(String experimentId) throws RegistryException {
         Registry registry = RegistryFactory.getDefaultRegistry();
-        experiment = (Experiment)registry.get(RegistryModelType.EXPERIMENT, experimentId);
+        return (Experiment)registry.get(RegistryModelType.EXPERIMENT, experimentId);
+    }
+
+    private Workflow getWorkflowFromExperiment(Experiment experiment) throws RegistryException, AppCatalogException, GraphException, ComponentException {
         WorkflowCatalog workflowCatalog = getWorkflowCatalog();
         return new Workflow(workflowCatalog.getWorkflow(experiment.getApplicationId()).getGraph());
     }

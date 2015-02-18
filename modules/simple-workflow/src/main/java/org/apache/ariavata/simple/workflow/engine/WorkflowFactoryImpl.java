@@ -21,6 +21,7 @@
 
 package org.apache.ariavata.simple.workflow.engine;
 
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.ariavata.simple.workflow.engine.parser.AiravataDefaultParser;
 
 /**
@@ -51,7 +52,11 @@ public class WorkflowFactoryImpl implements WorkflowFactory {
     @Override
     public WorkflowParser getWorkflowParser(String experimentId, String credentialToken) {
         if (workflowParser == null) {
-            workflowParser = new AiravataDefaultParser(experimentId, credentialToken);
+            try {
+                workflowParser = new AiravataDefaultParser(experimentId, credentialToken);
+            } catch (RegistryException e) {
+                // TODO : handle this scenario
+            }
         }
         return workflowParser;
     }

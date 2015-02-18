@@ -21,7 +21,6 @@
 
 package org.apache.ariavata.simple.workflow.engine.parser;
 
-import junit.framework.Assert;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
@@ -31,12 +30,12 @@ import org.apache.ariavata.simple.workflow.engine.dag.nodes.WorkflowInputNode;
 import org.apache.ariavata.simple.workflow.engine.dag.nodes.WorkflowNode;
 import org.apache.ariavata.simple.workflow.engine.dag.nodes.WorkflowOutputNode;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -55,18 +54,16 @@ public class AiravataDefaultParserTest {
 
     @Test
     public void testWorkflowParse() throws Exception {
-//        File jsonWfFile = new File("modules/simple-workflow/src/test/resources/ComplexMathWorkflow.awf");
-        File jsonWfFile = new File("/Users/shameera/work/source/git_airavata/modules/simple-workflow/src/test/resources/ComplexMathWorkflow.awf");
-        BufferedReader br = new BufferedReader(new FileReader(jsonWfFile));
+        Assert.assertNotNull("Test file (ComplexMathWorkflow.awf) is missing", getClass().getResource("/ComplexMathWorkflow.awf"));
+        InputStreamReader isr = new InputStreamReader(this.getClass().getResourceAsStream("/ComplexMathWorkflow.awf"));
+        BufferedReader br = new BufferedReader(isr);
         StringBuffer sb = new StringBuffer();
         String nextLine = br.readLine();
         while (nextLine != null) {
             sb.append(nextLine);
             nextLine = br.readLine();
         }
-
         Workflow workflow = new Workflow(sb.toString());
-        AiravataDefaultParser parser = new AiravataDefaultParser("testExperimentId", "testCredentialId");
         Experiment experiment = new Experiment();
         InputDataObjectType x = new InputDataObjectType();
         x.setValue("6");
@@ -88,7 +85,8 @@ public class AiravataDefaultParserTest {
         inputs.add(y);
         inputs.add(z);
         experiment.setExperimentInputs(inputs);
-        parser.setExperiment(experiment);
+        // create parser
+        AiravataDefaultParser parser = new AiravataDefaultParser(experiment, "testCredentialId");
         List<WorkflowInputNode> workflowInputNodes = parser.parseWorkflow(workflow);
         Assert.assertNotNull(workflowInputNodes);
         Assert.assertEquals(3, workflowInputNodes.size());
@@ -111,7 +109,7 @@ public class AiravataDefaultParserTest {
                 Assert.assertEquals(1, node.getOutputPorts().size());
                 Assert.assertEquals(1, node.getOutputPorts().get(0).getOutEdges().size());
                 Assert.assertNotNull(node.getOutputPorts().get(0).getOutEdges().get(0));
-            }else if (wfNode instanceof WorkflowOutputNode) {
+            } else if (wfNode instanceof WorkflowOutputNode) {
                 WorkflowOutputNode workflowOutputNode = (WorkflowOutputNode) wfNode;
                 Assert.assertNotNull(workflowOutputNode.getInPort());
             }
