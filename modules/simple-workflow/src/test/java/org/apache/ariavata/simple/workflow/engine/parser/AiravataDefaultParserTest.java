@@ -1,3 +1,24 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
 package org.apache.ariavata.simple.workflow.engine.parser;
 
 import junit.framework.Assert;
@@ -34,7 +55,8 @@ public class AiravataDefaultParserTest {
 
     @Test
     public void testWorkflowParse() throws Exception {
-        File jsonWfFile = new File("modules/simple-workflow/src/test/resources/ComplexMathWorkflow.awf");
+//        File jsonWfFile = new File("modules/simple-workflow/src/test/resources/ComplexMathWorkflow.awf");
+        File jsonWfFile = new File("/Users/shameera/work/source/git_airavata/modules/simple-workflow/src/test/resources/ComplexMathWorkflow.awf");
         BufferedReader br = new BufferedReader(new FileReader(jsonWfFile));
         StringBuffer sb = new StringBuffer();
         String nextLine = br.readLine();
@@ -70,6 +92,10 @@ public class AiravataDefaultParserTest {
         List<WorkflowInputNode> workflowInputNodes = parser.parseWorkflow(workflow);
         Assert.assertNotNull(workflowInputNodes);
         Assert.assertEquals(3, workflowInputNodes.size());
+        for (WorkflowInputNode workflowInputNode : workflowInputNodes) {
+            Assert.assertNotNull(workflowInputNode.getOutPort());
+            Assert.assertNotNull(workflowInputNode.getInputObject());
+        }
 
         Map<String, WorkflowNode> wfNodes = parser.getWfNodes();
         for (String wfId : wfNodes.keySet()) {
@@ -77,7 +103,14 @@ public class AiravataDefaultParserTest {
             if (wfNode instanceof ApplicationNode) {
                 ApplicationNode node = (ApplicationNode) wfNode;
                 Assert.assertEquals(2, node.getInputPorts().size());
+                Assert.assertNotNull(node.getInputPorts().get(0).getInputObject());
+                Assert.assertNotNull(node.getInputPorts().get(1).getInputObject());
+                Assert.assertNotNull(node.getInputPorts().get(0).getEdge());
+                Assert.assertNotNull(node.getInputPorts().get(1).getEdge());
+
                 Assert.assertEquals(1, node.getOutputPorts().size());
+                Assert.assertEquals(1, node.getOutputPorts().get(0).getOutEdges().size());
+                Assert.assertNotNull(node.getOutputPorts().get(0).getOutEdges().get(0));
             }else if (wfNode instanceof WorkflowOutputNode) {
                 WorkflowOutputNode workflowOutputNode = (WorkflowOutputNode) wfNode;
                 Assert.assertNotNull(workflowOutputNode.getInPort());

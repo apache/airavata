@@ -30,7 +30,6 @@ public class WorkflowFactoryImpl implements WorkflowFactory {
 
     private static WorkflowFactoryImpl workflowFactoryImpl;
 
-    private WorkflowEnactor workflowEnactor;
     private WorkflowParser workflowParser;
 
     private WorkflowFactoryImpl(){
@@ -57,11 +56,4 @@ public class WorkflowFactoryImpl implements WorkflowFactory {
         return workflowParser;
     }
 
-    @Override
-    public WorkflowEnactor getWorkflowEnactor() {
-        if (workflowEnactor == null) {
-            workflowEnactor = new WorkflowEnactor();
-        }
-        return workflowEnactor;
-    }
 }

@@ -17,13 +17,10 @@
  * under the License.
  */
 
-
-
 package org.apache.ariavata.simple.workflow.engine.dag.nodes;
 
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.ariavata.simple.workflow.engine.dag.port.OutPort;
-
 
 public class WorkflowInputNodeImpl implements WorkflowInputNode {
 

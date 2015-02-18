@@ -21,10 +21,7 @@
 
 package org.apache.ariavata.simple.workflow.engine.dag.port;
 
-import org.apache.ariavata.simple.workflow.engine.dag.edge.Edge;
 import org.apache.ariavata.simple.workflow.engine.dag.nodes.WorkflowNode;
-
-import java.util.List;
 
 public interface Port {
 

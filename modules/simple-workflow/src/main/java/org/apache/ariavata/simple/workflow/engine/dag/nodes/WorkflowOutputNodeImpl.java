@@ -19,12 +19,9 @@
  *
  */
 
-
 package org.apache.ariavata.simple.workflow.engine.dag.nodes;
 
-
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
-import org.apache.ariavata.simple.workflow.engine.dag.edge.Edge;
 import org.apache.ariavata.simple.workflow.engine.dag.port.InPort;
 
 public class WorkflowOutputNodeImpl implements WorkflowOutputNode {
