@@ -1,7 +1,27 @@
-
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
 package org.apache.airavata.credential.store.server;
 
 
+import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
@@ -14,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 
 public class CredentialStoreServer  implements IServer {
     private final static Logger logger = LoggerFactory.getLogger(CredentialStoreServer.class);
@@ -39,49 +60,52 @@ public class CredentialStoreServer  implements IServer {
 
     @Override
     public void start() throws Exception {
-        try {
-            setStatus(ServerStatus.STARTING);
-            TSSLTransportFactory.TSSLTransportParameters params =
-                    new TSSLTransportFactory.TSSLTransportParameters();
-            String keystorePath = ServerSettings.getCredentialStoreKeyStorePath();
-            String keystorePWD = ServerSettings.getCredentialStoreKeyStorePassword();
-            String host = ServerSettings.getCredentialStoreServerHost();
-            final int port = Integer.valueOf(ServerSettings.getCredentialStoreServerPort());
-            params.setKeyStore(keystorePath, keystorePWD);
+        if(ServerSettings.isCredentialStoreStartEnabled()) {
+            try {
+                setStatus(ServerStatus.STARTING);
+                TSSLTransportFactory.TSSLTransportParameters params =
+                        new TSSLTransportFactory.TSSLTransportParameters();
+                String keystorePath = ServerSettings.getCredentialStoreThriftServerKeyStorePath();
+                String keystorePWD = ServerSettings.getCredentialStoreThriftServerKeyStorePassword();
+                final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.CREDNETIAL_SERVER_PORT, "8960"));
+                final String serverHost = ServerSettings.getSetting(Constants.CREDNETIAL_SERVER_HOST, null);
+                params.setKeyStore(keystorePath, keystorePWD);
 
-            TServerSocket serverTransport = TSSLTransportFactory.getServerSocket(
-                    port, 10000, InetAddress.getByName(host), params);
-            CredentialStoreService.Processor processor = new CredentialStoreService.Processor(new CredentialStoreServerHandler());
+                TServerSocket serverTransport = TSSLTransportFactory.getServerSocket(serverPort, 100, InetAddress.getByName(serverHost), params);
 
-            server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).
-                    processor(processor));
-            new Thread() {
-                public void run() {
-                    server.serve();
-                    setStatus(ServerStatus.STOPPED);
-                    logger.info("Credential Store Server Stopped.");
-                }
-            }.start();
-            new Thread() {
-                public void run() {
-                    while(!server.isServing()){
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            break;
+
+                CredentialStoreService.Processor processor = new CredentialStoreService.Processor(new CredentialStoreServerHandler());
+
+                server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).
+                        processor(processor));
+                new Thread() {
+                    public void run() {
+                        server.serve();
+                        setStatus(ServerStatus.STOPPED);
+                        logger.info("Credential Store Server Stopped.");
+                    }
+                }.start();
+                new Thread() {
+                    public void run() {
+                        while (!server.isServing()) {
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e) {
+                                break;
+                            }
+                        }
+                        if (server.isServing()) {
+                            setStatus(ServerStatus.STARTED);
+                            logger.info("Starting Credential Store Server on Port " + serverPort);
+                            logger.info("Listening to Credential Store Clients ....");
                         }
                     }
-                    if (server.isServing()){
-                        setStatus(ServerStatus.STARTED);
-                        logger.info("Starting Credential Store Server on Port " + port);
-                        logger.info("Listening to Credential Store Clients ....");
-                    }
-                }
-            }.start();
-        } catch (TTransportException e) {
-            setStatus(ServerStatus.FAILED);
-            logger.error("Error while starting the credential store service", e);
-            throw new Exception("Error while starting the credential store service", e);
+                }.start();
+            } catch (TTransportException e) {
+                setStatus(ServerStatus.FAILED);
+                logger.error("Error while starting the credential store service", e);
+                throw new Exception("Error while starting the credential store service", e);
+            }
         }
     }
 
@@ -129,5 +153,6 @@ public class CredentialStoreServer  implements IServer {
     public void setServer(TServer server) {
         this.server = server;
     }
+
 
 }
