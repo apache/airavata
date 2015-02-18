@@ -21,8 +21,6 @@
 
 package org.apache.ariavata.simple.workflow.engine;
 
-import org.airavata.appcatalog.cpi.AppCatalogException;
-import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.ariavata.simple.workflow.engine.dag.nodes.WorkflowInputNode;
 
 import java.util.List;

@@ -36,7 +36,6 @@ import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.RegistryModelType;
-import org.apache.ariavata.simple.workflow.engine.dag.edge.Edge;
 import org.apache.ariavata.simple.workflow.engine.dag.nodes.ApplicationNode;
 import org.apache.ariavata.simple.workflow.engine.dag.nodes.NodeState;
 import org.apache.ariavata.simple.workflow.engine.dag.nodes.WorkflowInputNode;

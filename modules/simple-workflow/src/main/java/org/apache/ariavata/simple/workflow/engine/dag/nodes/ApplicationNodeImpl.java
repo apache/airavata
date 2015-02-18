@@ -19,9 +19,7 @@
  *
  */
 
-
 package org.apache.ariavata.simple.workflow.engine.dag.nodes;
-
 
 import org.apache.ariavata.simple.workflow.engine.dag.port.InPort;
 import org.apache.ariavata.simple.workflow.engine.dag.port.OutPort;
