@@ -95,7 +95,7 @@ public class CreateLaunchExperiment {
     public static void createAndLaunchExp() throws TException {
 //        final String expId = createEchoExperimentForFSD(airavataClient);
         try {
-            for (int i = 0; i < 1; i++) {
+            for (int i = 0; i < 10; i++) {
 //                final String expId = createExperimentForSSHHost(airavata);
 //                final String expId = createEchoExperimentForFSD(airavataClient);
 //                final String expId = createMPIExperimentForFSD(airavataClient);
