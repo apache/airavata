@@ -61,7 +61,7 @@ public class OutPortImpl implements OutPort {
     }
 
     @Override
-    public boolean isSatisfy() {
+    public boolean isReady() {
         return this.outputDataObjectType.getValue() != null
                 && !this.outputDataObjectType.getValue().equals("");
     }

@@ -25,7 +25,7 @@ import org.apache.ariavata.simple.workflow.engine.dag.nodes.WorkflowNode;
 
 public interface Port {
 
-    public boolean isSatisfy();
+    public boolean isReady();
 
     public WorkflowNode getNode();
 
