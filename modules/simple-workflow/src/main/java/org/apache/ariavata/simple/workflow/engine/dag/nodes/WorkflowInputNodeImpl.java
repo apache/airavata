@@ -66,7 +66,7 @@ public class WorkflowInputNodeImpl implements WorkflowInputNode {
     }
 
     @Override
-    public boolean isSatisfy() {
+    public boolean isReady() {
         return inputDataObjectType.getValue() != null && !inputDataObjectType.getValue().equals("");
     }
 

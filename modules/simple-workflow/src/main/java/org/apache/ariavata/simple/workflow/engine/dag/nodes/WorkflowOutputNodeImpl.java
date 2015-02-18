@@ -68,7 +68,7 @@ public class WorkflowOutputNodeImpl implements WorkflowOutputNode {
     }
 
     @Override
-    public boolean isSatisfy() {
+    public boolean isReady() {
         return this.outputDataObjectType.getValue() != null && !this.outputDataObjectType.getValue().equals("");
     }
 

@@ -33,6 +33,6 @@ public interface WorkflowNode {
 
     public void setNodeState(NodeState newNodeState);
 
-    public boolean isSatisfy();
+    public boolean isReady();
 
 }

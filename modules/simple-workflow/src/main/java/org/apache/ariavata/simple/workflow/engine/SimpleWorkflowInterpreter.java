@@ -133,7 +133,7 @@ public class SimpleWorkflowInterpreter implements Runnable{
     private void setupNodeDetailsInput(WorkflowNode readyNode, WorkflowNodeDetails wfNodeDetails) {
         if (readyNode instanceof ApplicationNode) {
             ApplicationNode applicationNode = (ApplicationNode) readyNode;
-            if (applicationNode.isSatisfy()) {
+            if (applicationNode.isReady()) {
                 for (InPort inPort : applicationNode.getInputPorts()) {
                     wfNodeDetails.addToNodeInputs(inPort.getInputObject());
                 }
@@ -149,7 +149,7 @@ public class SimpleWorkflowInterpreter implements Runnable{
     private void processWorkflowInputNodes(List<WorkflowInputNode> wfInputNodes) {
         Set<WorkflowNode> tempNodeSet = new HashSet<WorkflowNode>();
         for (WorkflowInputNode wfInputNode : wfInputNodes) {
-            if (wfInputNode.isSatisfy()) {
+            if (wfInputNode.isReady()) {
 
 //                for (Edge edge : wfInputNode.getOutputLinks()) {
 //                    WorkflowUtil.copyValues(wfInputNode.getInputObject(), edge.getToPort().getInputObject());
@@ -158,7 +158,7 @@ public class SimpleWorkflowInterpreter implements Runnable{
             }
         }
         for (WorkflowNode workflowNode : tempNodeSet) {
-            if (workflowNode.isSatisfy()) {
+            if (workflowNode.isReady()) {
                 readList.add(workflowNode);
             } else {
                 waitingList.add(workflowNode);
@@ -223,7 +223,7 @@ public class SimpleWorkflowInterpreter implements Runnable{
                 }
 
                 for (WorkflowNode node : tempWfNodeSet) {
-                    if (node.isSatisfy()) {
+                    if (node.isReady()) {
                         waitingList.remove(node);
                         readList.add(node);
                     }
