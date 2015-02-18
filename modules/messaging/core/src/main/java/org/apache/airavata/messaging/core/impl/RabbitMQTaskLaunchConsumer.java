@@ -190,7 +190,6 @@ public class RabbitMQTaskLaunchConsumer {
                 for (String key : details.getRoutingKeys()) {
                     channel.queueUnbind(details.getQueueName(), taskLaunchExchangeName, key);
                 }
-                channel.queueDelete(details.getQueueName(), true, true);
             } catch (IOException e) {
                 String msg = "could not un-bind queue: " + details.getQueueName() + " for exchange " + taskLaunchExchangeName;
                 log.debug(msg);
