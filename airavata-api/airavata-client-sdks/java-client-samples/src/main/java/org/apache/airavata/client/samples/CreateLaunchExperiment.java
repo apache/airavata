@@ -94,14 +94,16 @@ public class CreateLaunchExperiment {
 
     public static void createAndLaunchExp() throws TException {
 //        final String expId = createEchoExperimentForFSD(airavataClient);
+        List<String> experimentIds = new ArrayList<String>();
         try {
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 100; i++) {
 //                final String expId = createExperimentForSSHHost(airavata);
 //                final String expId = createEchoExperimentForFSD(airavataClient);
 //                final String expId = createMPIExperimentForFSD(airavataClient);
 //               final String expId = createEchoExperimentForStampede(airavataClient);
 //                final String expId = createEchoExperimentForTrestles(airavataClient);
                 final String expId = createExperimentEchoForLocalHost(airavataClient);
+                experimentIds.add(expId);
 //                final String expId = createExperimentWRFTrestles(airavataClient);
 //                final String expId = createExperimentForBR2(airavataClient);
 //                final String expId = createExperimentForBR2Amber(airavataClient);
@@ -115,11 +117,20 @@ public class CreateLaunchExperiment {
 //                final String expId = createExperimentTRINITYStampede(airavataClient);
 //                final String expId = createExperimentAUTODOCKStampede(airavataClient); // this is not working , we need to register AutoDock app on stampede
 //            	  final String expId = "Ultrascan_ln_eb029947-391a-4ccf-8ace-9bafebe07cc0";
-            	System.out.println("Experiment ID : " + expId);
+                System.out.println("Experiment ID : " + expId);
 //                updateExperiment(airavata, expId);
-                
+
                 launchExperiment(airavataClient, expId);
             }
+
+            Thread.sleep(10000);
+
+            for(String exId:experimentIds) {
+                Experiment experiment = airavataClient.getExperiment(exId);
+                System.out.println(experiment.getExperimentStatus().toString());
+            }
+
+
         } catch (Exception e) {
             logger.error("Error while connecting with server", e.getMessage());
             e.printStackTrace();

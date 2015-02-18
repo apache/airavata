@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.messaging.core.impl;
 
+import com.rabbitmq.client.MessageProperties;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -50,7 +51,7 @@ public class RabbitMQTaskLaunchPublisher implements Publisher{
             log.error(message, e);
             throw new AiravataException(message, e);
         }
-        rabbitMQProducer = new RabbitMQProducer(brokerUrl, exchangeName,"fanout");
+        rabbitMQProducer = new RabbitMQProducer(brokerUrl, null,null);
         rabbitMQProducer.open();
     }
 
@@ -70,7 +71,7 @@ public class RabbitMQTaskLaunchPublisher implements Publisher{
                 routingKey = TERMINATE_TASK;
             }
             byte[] messageBody = ThriftUtils.serializeThriftObject(message);
-            rabbitMQProducer.send(messageBody, routingKey);
+            rabbitMQProducer.sendToWorkerQueue(messageBody, routingKey);
         } catch (TException e) {
             String msg = "Error while deserializing the object";
             log.error(msg, e);

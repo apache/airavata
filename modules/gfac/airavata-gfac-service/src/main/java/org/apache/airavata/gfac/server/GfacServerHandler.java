@@ -45,29 +45,22 @@ import org.apache.airavata.model.messaging.event.TaskTerminateEvent;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.framework.recipes.leader.LeaderSelector;
-import org.apache.curator.framework.recipes.leader.LeaderSelectorListenerAdapter;
-import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 
-public class GfacServerHandler implements GfacService.Iface, Watcher{
+public class GfacServerHandler implements GfacService.Iface, Watcher {
     private final static AiravataLogger logger = AiravataLoggerFactory.getLogger(GfacServerHandler.class);
+
+    private RabbitMQTaskLaunchConsumer rabbitMQTaskLaunchConsumer;
 
     private Registry registry;
     private AppCatalog appCatalog;
@@ -79,8 +72,6 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
     private String airavataUserName;
 
     private ZooKeeper zk;
-
-    private boolean connected = false;
 
     private static Integer mutex = -1;
 
@@ -94,16 +85,10 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
 
     private List<Future> inHandlerFutures;
 
-    private String nodeName = null;
-
-    private CuratorFramework curatorFramework = null;
 
     private BlockingQueue<TaskSubmitEvent> taskSubmitEvents;
 
-    private BlockingQueue<TaskTerminateEvent> taskTerminateEvents;
-
-    private CuratorClient curatorClient;
-    public GfacServerHandler() throws Exception{
+    public GfacServerHandler() throws Exception {
         // registering with zk
         try {
             String zkhostPort = AiravataZKUtils.getZKhostPort();
@@ -112,7 +97,6 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
             zk = new ZooKeeper(zkhostPort, 6000, this);   // no watcher is required, this will only use to store some data
             gfacServer = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NODE, "/gfac-server");
             gfacExperiments = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
-            nodeName = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME);
             synchronized (mutex) {
                 mutex.wait();  // waiting for the syncConnected event
             }
@@ -128,17 +112,11 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
             inHandlerFutures = new ArrayList<Future>();
 
             if (ServerSettings.isGFacPassiveMode()) {
-                taskSubmitEvents = new LinkedBlockingDeque<TaskSubmitEvent>();
-                taskTerminateEvents = new LinkedBlockingDeque<TaskTerminateEvent>();
-                curatorFramework = CuratorFrameworkFactory.newClient(AiravataZKUtils.getZKhostPort(), new ExponentialBackoffRetry(1000, 3));
-                curatorClient = new CuratorClient(curatorFramework, nodeName);
+                rabbitMQTaskLaunchConsumer = new RabbitMQTaskLaunchConsumer();
+                rabbitMQTaskLaunchConsumer.listen(new TaskLaunchMessageHandler());
 
-                curatorFramework.start();
-                curatorClient.start();
             }
-
-
-            } catch (ApplicationSettingsException e) {
+        } catch (ApplicationSettingsException e) {
             logger.error("Error initialising GFAC", e);
             throw new Exception("Error initialising GFAC", e);
         } catch (InterruptedException e) {
@@ -184,7 +162,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
             zk.create(gfacExperiments + File.separator + instanceId,
                     airavataServerHostPort.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
                     CreateMode.PERSISTENT);
-        }else{
+        } else {
             logger.error(" Zookeeper is inconsistent state  !!!!!");
         }
     }
@@ -195,9 +173,8 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
             logger.info(state.name());
             if (state == Event.KeeperState.SyncConnected) {
                 mutex.notify();
-                connected = true;
-            } else if(state == Event.KeeperState.Expired ||
-                    state == Event.KeeperState.Disconnected){
+            } else if (state == Event.KeeperState.Expired ||
+                    state == Event.KeeperState.Disconnected) {
                 try {
                     mutex = -1;
                     zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), 6000, this);
@@ -292,24 +269,29 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
     public void setAiravataUserName(String airavataUserName) {
         this.airavataUserName = airavataUserName;
     }
-    protected void setGatewayProperties() throws ApplicationSettingsException {
-         setAiravataUserName(ServerSettings.getDefaultUser());
-         setGatewayName(ServerSettings.getDefaultUserGateway());
-     }
 
-    private GFac getGfac()throws TException{
+    protected void setGatewayProperties() throws ApplicationSettingsException {
+        setAiravataUserName(ServerSettings.getDefaultUser());
+        setGatewayName(ServerSettings.getDefaultUserGateway());
+    }
+
+    private GFac getGfac() throws TException {
         try {
-            return new BetterGfacImpl(registry, appCatalog, zk,publisher);
+            return new BetterGfacImpl(registry, appCatalog, zk, publisher);
         } catch (Exception e) {
-            throw new TException("Error initializing gfac instance",e);
+            throw new TException("Error initializing gfac instance", e);
         }
     }
 
     private class TaskLaunchMessageHandler implements MessageHandler {
         public static final String LAUNCH_TASK = "launch.task";
         public static final String TERMINATE_TASK = "teminate.task";
-        public TaskLaunchMessageHandler(){
+        private String experimentNode;
+        private String nodeName;
 
+        public TaskLaunchMessageHandler() {
+            experimentNode = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
+            nodeName = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME,"gfac-node0");
         }
 
         public Map<String, Object> getProperties() {
@@ -318,6 +300,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
             keys.add(LAUNCH_TASK);
             keys.add(TERMINATE_TASK);
             props.put(MessagingConstants.RABBIT_ROUTING_KEY, keys);
+            props.put(MessagingConstants.RABBIT_QUEUE, LAUNCH_TASK);
             return props;
         }
 
@@ -328,9 +311,16 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
                     TBase messageEvent = message.getEvent();
                     byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
                     ThriftUtils.createThriftFromBytes(bytes, event);
-                    taskSubmitEvents.add(event);
+                    experimentNode = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
 
-
+                    try {
+                        GFacUtils.createExperimentEntryForRPC(event.getExperimentId(), event.getTaskId(), zk, experimentNode, nodeName, event.getTokenId());
+                        submitJob(event.getExperimentId(), event.getTaskId(), event.getGatewayId());
+                    } catch (KeeperException e) {
+                        logger.error(nodeName + " was interrupted.");
+                    } catch (InterruptedException e) {
+                        logger.error(e.getMessage(), e);
+                    }
                     System.out.println(" Message Received with message id '" + message.getMessageId()
                             + "' and with message type '" + message.getType());
                 } catch (TException e) {
@@ -351,61 +341,4 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
             }
         }
     }
-
-    public class CuratorClient extends LeaderSelectorListenerAdapter implements Closeable {
-        private final String name;
-        private final LeaderSelector leaderSelector;
-        private final AtomicInteger leaderCount = new AtomicInteger();
-        private final String path;
-        private String experimentNode;
-
-        public CuratorClient(CuratorFramework client, String name) {
-            this.name = name;
-            // create a leader selector using the given path for management
-            // all participants in a given leader selection must use the same path
-            // ExampleClient here is also a LeaderSelectorListener but this isn't required
-            experimentNode = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
-            path = experimentNode + File.separator + "leader";
-            leaderSelector = new LeaderSelector(client, path, this);
-            // for most cases you will want your instance to requeue when it relinquishes leadership
-            leaderSelector.autoRequeue();
-        }
-
-        public void start() throws IOException {
-            // the selection for this instance doesn't start until the leader selector is started
-            // leader selection is done in the background so this call to leaderSelector.start() returns immediately
-            leaderSelector.start();
-        }
-
-        @Override
-        public void close() throws IOException {
-            leaderSelector.close();
-        }
-
-        @Override
-        public void takeLeadership(CuratorFramework client) throws Exception {
-            // we are now the leader. This method should not return until we want to relinquish leadership
-            final int waitSeconds = (int) (5 * Math.random()) + 1;
-
-            logger.info(name + " is now the leader. Waiting " + waitSeconds + " seconds...");
-            logger.info(name + " has been leader " + leaderCount.getAndIncrement() + " time(s) before.");
-            RabbitMQTaskLaunchConsumer rabbitMQTaskLaunchConsumer = new RabbitMQTaskLaunchConsumer();
-            String listenId = rabbitMQTaskLaunchConsumer.listen(new TaskLaunchMessageHandler());
-
-            TaskSubmitEvent event = taskSubmitEvents.take();
-            try {
-                GFacUtils.createExperimentEntryForRPC(event.getExperimentId(),event.getTaskId(),client.getZookeeperClient().getZooKeeper(),experimentNode,name,event.getTokenId());
-                submitJob(event.getExperimentId(), event.getTaskId(), event.getGatewayId());
-                Thread.sleep(TimeUnit.SECONDS.toMillis(waitSeconds));
-            } catch (InterruptedException e) {
-                logger.error(name + " was interrupted.");
-                Thread.currentThread().interrupt();
-            } finally {
-                Thread.sleep(5);
-                logger.info(name + " relinquishing leadership.: "+ new Date().toString());
-                rabbitMQTaskLaunchConsumer.stopListen(listenId);
-            }
-        }
-    }
-
 }

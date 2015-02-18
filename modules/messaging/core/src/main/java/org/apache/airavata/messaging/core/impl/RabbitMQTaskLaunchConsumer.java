@@ -24,6 +24,7 @@ import com.rabbitmq.client.*;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.messaging.core.MessageContext;
@@ -82,7 +83,7 @@ public class RabbitMQTaskLaunchConsumer {
             log.info("connected to rabbitmq: " + connection + " for " + taskLaunchExchangeName);
 
             channel = connection.createChannel();
-            channel.exchangeDeclare(taskLaunchExchangeName, "fanout");
+//            channel.exchangeDeclare(taskLaunchExchangeName, "fanout");
 
         } catch (Exception e) {
             String msg = "could not open channel for exchange " + taskLaunchExchangeName;
@@ -98,7 +99,6 @@ public class RabbitMQTaskLaunchConsumer {
             if (routing == null) {
                 throw new IllegalArgumentException("The routing key must be present");
             }
-
             List<String> keys = new ArrayList<String>();
             if (routing instanceof List) {
                 for (Object o : (List)routing) {
@@ -113,7 +113,7 @@ public class RabbitMQTaskLaunchConsumer {
             if (queueName == null) {
                 if (!channel.isOpen()) {
                     channel = connection.createChannel();
-                    channel.exchangeDeclare(taskLaunchExchangeName, "fanout");
+//                    channel.exchangeDeclare(taskLaunchExchangeName, "fanout");
                 }
                 queueName = channel.queueDeclare().getQueue();
             } else {
@@ -131,11 +131,11 @@ public class RabbitMQTaskLaunchConsumer {
             }
 
             // bind all the routing keys
-            for (String routingKey : keys) {
-                channel.queueBind(queueName, taskLaunchExchangeName, routingKey);
-            }
-
-            channel.basicConsume(queueName, true, consumerTag, new DefaultConsumer(channel) {
+//            for (String routingKey : keys) {
+//                channel.queueBind(queueName, taskLaunchExchangeName, routingKey);
+//            }
+            // autoAck=false, we will ack after task is done
+            channel.basicConsume(queueName, false, consumerTag, new QueueingConsumer(channel) {
                 @Override
                 public void handleDelivery(String consumerTag,
                                            Envelope envelope,
@@ -147,6 +147,7 @@ public class RabbitMQTaskLaunchConsumer {
                         ThriftUtils.createThriftFromBytes(body, message);
                         TBase event = null;
                         String gatewayId = null;
+                        long deliveryTag = envelope.getDeliveryTag(); //todo store this in zookeeper, once job is done we can ack
                         if(message.getMessageType().equals(MessageType.LAUNCHTASK)) {
                             TaskSubmitEvent taskSubmitEvent = new TaskSubmitEvent();
                             ThriftUtils.createThriftFromBytes(message.getEvent(), taskSubmitEvent);
@@ -167,6 +168,11 @@ public class RabbitMQTaskLaunchConsumer {
                         MessageContext messageContext = new MessageContext(event, message.getMessageType(), message.getMessageId(), gatewayId);
                         messageContext.setUpdatedTime(AiravataUtils.getTime(message.getUpdatedTime()));
                         handler.onMessage(messageContext);
+                        try {
+                            channel.basicAck(deliveryTag,false); //todo move this logic to monitoring component to ack when the job is done
+                        } catch (IOException e) {
+                            logger.error(e.getMessage(), e);
+                        }
                     } catch (TException e) {
                         String msg = "Failed to de-serialize the thrift message, from routing keys and queueName " + id;
                         log.warn(msg, e);

@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.util.List;
 
 public class AiravataZKUtils {
@@ -171,5 +172,26 @@ public class AiravataZKUtils {
         }else{
             logger.info("Skipping Zookeeper embedded startup ...");
         }
+    }
+
+    public static void storeDeliveryTag(ZooKeeper zk,String newExpNode,Double deliveryTag) throws KeeperException, InterruptedException {
+        String s = zk.create(newExpNode, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                CreateMode.PERSISTENT);
+
+        Stat expParent = zk.exists(newExpNode, false);
+        if (expParent != null) {
+            zk.setData(newExpNode, toByteArray(deliveryTag),
+                    expParent.getVersion());
+        }
+    }
+
+    public static byte[] toByteArray(double value) {
+        byte[] bytes = new byte[8];
+        ByteBuffer.wrap(bytes).putDouble(value);
+        return bytes;
+    }
+
+    public static double toDouble(byte[] bytes) {
+        return ByteBuffer.wrap(bytes).getDouble();
     }
 }
