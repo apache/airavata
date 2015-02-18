@@ -28,6 +28,7 @@ import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingConstants;
 import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.messaging.core.stats.StatCounter;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -39,6 +40,7 @@ public class RabbitMQPublisher implements Publisher {
 
     private RabbitMQProducer rabbitMQProducer;
 
+    StatCounter statCounter = StatCounter.getInstance();
 
     public RabbitMQPublisher() throws Exception {
         String brokerUrl;
@@ -64,28 +66,30 @@ public class RabbitMQPublisher implements Publisher {
             message.setMessageId(msgCtx.getMessageId());
             message.setMessageType(msgCtx.getType());
             message.setUpdatedTime(msgCtx.getUpdatedTime().getTime());
+            String gatewayId = msgCtx.getGatewayId();
             String routingKey = null;
             if (msgCtx.getType().equals(MessageType.EXPERIMENT)){
                 ExperimentStatusChangeEvent event = (ExperimentStatusChangeEvent) msgCtx.getEvent();
-                routingKey = event.getExperimentId();
+                routingKey = gatewayId + "." + event.getExperimentId();
             } else if (msgCtx.getType().equals(MessageType.TASK)) {
                 TaskStatusChangeEvent event = (TaskStatusChangeEvent) msgCtx.getEvent();
-                routingKey = event.getTaskIdentity().getExperimentId() + "." +
+                routingKey =  gatewayId + "." + event.getTaskIdentity().getExperimentId() + "." +
                         event.getTaskIdentity().getWorkflowNodeId() + "." + event.getTaskIdentity().getTaskId();
             }else if (msgCtx.getType().equals(MessageType.WORKFLOWNODE)){
                 WorkflowNodeStatusChangeEvent event = (WorkflowNodeStatusChangeEvent) msgCtx.getEvent();
                 WorkflowIdentifier workflowNodeIdentity = event.getWorkflowNodeIdentity();
-                routingKey = workflowNodeIdentity.getExperimentId() + "." + workflowNodeIdentity.getWorkflowNodeId();
+                routingKey =  gatewayId + "." + workflowNodeIdentity.getExperimentId() + "." + workflowNodeIdentity.getWorkflowNodeId();
             }else if (msgCtx.getType().equals(MessageType.JOB)){
                 JobStatusChangeEvent event = (JobStatusChangeEvent)msgCtx.getEvent();
                 JobIdentifier identity = event.getJobIdentity();
-                routingKey = identity.getExperimentId() + "." +
+                routingKey =  gatewayId + "." + identity.getExperimentId() + "." +
                         identity.getWorkflowNodeId() + "." +
                         identity.getTaskId() + "." +
                         identity.getJobId();
             }
             byte[] messageBody = ThriftUtils.serializeThriftObject(message);
             rabbitMQProducer.send(messageBody, routingKey);
+            statCounter.add();
         } catch (TException e) {
             String msg = "Error while deserializing the object";
             log.error(msg, e);

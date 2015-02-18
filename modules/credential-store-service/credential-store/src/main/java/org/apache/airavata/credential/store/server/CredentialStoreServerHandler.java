@@ -1,3 +1,23 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
 package org.apache.airavata.credential.store.server;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -16,9 +36,11 @@ import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
 import org.apache.airavata.credential.store.store.impl.SSHCredentialWriter;
 import org.apache.airavata.credential.store.util.TokenGenerator;
 import org.apache.airavata.credential.store.util.Utility;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.security.provider.X509Factory;
 
 import java.io.ByteArrayInputStream;
 import java.security.cert.CertificateFactory;
@@ -66,7 +88,7 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
                 credential.setPublicKey(sshCredential.getPublicKey().getBytes());
             }
             if (sshCredential.getPublicKey() == null || sshCredential.getPrivateKey() == null) {
-                credential = Utility.generateKeyPair(sshCredential.getUsername(), sshCredential.getPassphrase());
+                credential = Utility.generateKeyPair(credential);
             }
             sshCredentialWriter.writeCredentials(credential);
             return token;
@@ -88,20 +110,21 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
                     certificateCredential.getCommunityUser().getUsername(), certificateCredential.getCommunityUser().getUserEmail()));
             String token = TokenGenerator.generateToken(certificateCredential.getCommunityUser().getGatewayNmae(), null);
             credential.setToken(token);
+            Base64 encoder = new Base64(64);
+            byte [] decoded = encoder.decode(certificateCredential.getX509Cert().replaceAll(X509Factory.BEGIN_CERT, "").replaceAll(X509Factory.END_CERT, ""));
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            ByteArrayInputStream stream = new ByteArrayInputStream(certificateCredential.getX509Cert().getBytes());
-            X509Certificate certificate = (X509Certificate)cf.generateCertificate(stream);
+            X509Certificate certificate = (X509Certificate)cf.generateCertificate(new ByteArrayInputStream(decoded));
             X509Certificate[] certificates = new X509Certificate[1];
             certificates[0] = certificate;
             credential.setCertificates(certificates);
             certificateCredentialWriter.writeCredentials(credential);
             return token;
         } catch (CredentialStoreException e) {
-            log.error("Error occurred while saving SSH Credentials.", e);
-            throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Error occurred while saving SSH Credentials.");
+            log.error("Error occurred while saving Certificate Credentials.", e);
+            throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Error occurred while saving Certificate Credentials.");
         } catch (Exception e) {
-            log.error("Error occurred while generating key pair.", e);
-            throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Error occurred while generating key pair..");
+            log.error("Error occurred while converting to X509 certificate.", e);
+            throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Error occurred while converting to X509 certificate..");
         }
     }
 

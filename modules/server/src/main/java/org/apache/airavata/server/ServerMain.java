@@ -313,7 +313,7 @@ public class ServerMain {
 			count+=SERVER_STATUS_CHANGE_WAIT_INTERVAL;
 		}
 		if (server.getStatus()!=ServerStatus.STARTED){
-			throw new Exception("The "+server.getName()+" did not start!!!");
+			logger.error("The "+server.getName()+" did not start!!!");
 		}
 	}
 
@@ -328,7 +328,7 @@ public class ServerMain {
 			count+=SERVER_STATUS_CHANGE_WAIT_INTERVAL;
 		}
 		if (server.getStatus()!=ServerStatus.STOPPED){
-			throw new Exception("Error stopping the "+server.getName()+"!!!");
+            logger.error("Error stopping the "+server.getName()+"!!!");
 		}
 	}
 

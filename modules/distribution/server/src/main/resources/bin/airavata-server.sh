@@ -27,7 +27,7 @@ IS_DAEMON_MODE=false
 LOGO=true
 STOP=false
 FORCE=false
-SERVERS="--servers=apiserver,orchestrator,gfac"
+SERVERS="--servers=apiserver,orchestrator,gfac,credentialstore"
 for var in "$@"
 do
     case $var in
