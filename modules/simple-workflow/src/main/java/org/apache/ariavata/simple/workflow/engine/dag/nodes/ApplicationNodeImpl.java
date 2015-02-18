@@ -71,7 +71,7 @@ public class ApplicationNodeImpl implements ApplicationNode {
     }
 
     @Override
-    public boolean isSatisfy() {
+    public boolean isReady() {
         for (InPort inPort : getInputPorts()) {
             if (!inPort.isSatisfy()) {
                 return false;
