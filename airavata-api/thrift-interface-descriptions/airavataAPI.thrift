@@ -1122,6 +1122,11 @@ service Airavata {
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
 
+  bool updateUnicoreJobSubmissionDetails(1: required string jobSubmissionInterfaceId,
+              2: required computeResourceModel.UnicoreJobSubmission unicoreJobSubmission)
+    	throws (1: airavataErrors.InvalidRequestException ire,
+              2: airavataErrors.AiravataClientException ace,
+              3: airavataErrors.AiravataSystemException ase)
   /**
    * Add a Local data movement details to a compute resource
    *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
@@ -1232,6 +1237,24 @@ service Airavata {
                             2: airavataErrors.AiravataClientException ace,
                             3: airavataErrors.AiravataSystemException ase)
 
+
+ string addUnicoreDataMovementDetails(1: required string computeResourceId,
+              2: required i32 priorityOrder,
+              3: required computeResourceModel.UnicoreDataMovement unicoreDataMovement)
+    	throws (1: airavataErrors.InvalidRequestException ire,
+              2: airavataErrors.AiravataClientException ace,
+              3: airavataErrors.AiravataSystemException ase)
+
+ bool updateUnicoreDataMovementDetails(1: required string dataMovementInterfaceId,
+             2: required computeResourceModel.UnicoreDataMovement unicoreDataMovement)
+   	throws (1: airavataErrors.InvalidRequestException ire,
+             2: airavataErrors.AiravataClientException ace,
+             3: airavataErrors.AiravataSystemException ase)
+
+ computeResourceModel.UnicoreDataMovement getUnicoreDataMovement(1: required string dataMovementId)
+                     throws (1: airavataErrors.InvalidRequestException ire,
+                             2: airavataErrors.AiravataClientException ace,
+                             3: airavataErrors.AiravataSystemException ase)
 
   /**
    * Add a GridFTP data movement details to a compute resource

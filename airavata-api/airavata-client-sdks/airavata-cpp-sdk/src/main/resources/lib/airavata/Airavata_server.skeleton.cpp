@@ -359,6 +359,11 @@ class AiravataHandler : virtual public AiravataIf {
     printf("updateCloudJobSubmissionDetails\n");
   }
 
+  bool updateUnicoreJobSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& unicoreJobSubmission) {
+    // Your implementation goes here
+    printf("updateUnicoreJobSubmissionDetails\n");
+  }
+
   void addLocalDataMovementDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement) {
     // Your implementation goes here
     printf("addLocalDataMovementDetails\n");
@@ -387,6 +392,21 @@ class AiravataHandler : virtual public AiravataIf {
   void getSCPDataMovement( ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& _return, const std::string& dataMovementId) {
     // Your implementation goes here
     printf("getSCPDataMovement\n");
+  }
+
+  void addUnicoreDataMovementDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreDataMovement& unicoreDataMovement) {
+    // Your implementation goes here
+    printf("addUnicoreDataMovementDetails\n");
+  }
+
+  bool updateUnicoreDataMovementDetails(const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreDataMovement& unicoreDataMovement) {
+    // Your implementation goes here
+    printf("updateUnicoreDataMovementDetails\n");
+  }
+
+  void getUnicoreDataMovement( ::apache::airavata::model::appcatalog::computeresource::UnicoreDataMovement& _return, const std::string& dataMovementId) {
+    // Your implementation goes here
+    printf("getUnicoreDataMovement\n");
   }
 
   void addGridFTPDataMovementDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement) {

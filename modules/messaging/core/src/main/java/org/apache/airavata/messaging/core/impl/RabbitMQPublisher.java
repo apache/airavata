@@ -89,7 +89,7 @@ public class RabbitMQPublisher implements Publisher {
             }
             byte[] messageBody = ThriftUtils.serializeThriftObject(message);
             rabbitMQProducer.send(messageBody, routingKey);
-            statCounter.add();
+            statCounter.add(message);
         } catch (TException e) {
             String msg = "Error while deserializing the object";
             log.error(msg, e);

@@ -218,8 +218,6 @@ public class ComputeResourceImpl implements ComputeResource {
 		 
 	}
 
-    
-
     @Override
     public String addJobSubmissionProtocol(String computeResourceId, JobSubmissionInterface jobSubmissionInterface) throws AppCatalogException {
         try {
@@ -346,6 +344,19 @@ public class ComputeResourceImpl implements ComputeResource {
     }
 
     @Override
+    public String addUnicoreDataMovement(UnicoreDataMovement unicoreDataMovement) throws AppCatalogException {
+        try {
+            unicoreDataMovement.setDataMovementInterfaceId(AppCatalogUtils.getID("UNICORE"));
+            UnicoreDataMovementResource resource = AppCatalogThriftConversion.getUnicoreDMResource(unicoreDataMovement);
+            resource.save();
+            return resource.getDataMovementId();
+        }catch (Exception e){
+            logger.error("Error while saving UNICORE Data Movement...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
     public String addDataMovementProtocol(String computeResourceId, DataMovementInterface dataMovementInterface) throws AppCatalogException {
         try {
         	DataMovementInterfaceResource dmi = AppCatalogThriftConversion.getDataMovementInterface(dataMovementInterface);
@@ -364,7 +375,7 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public String addGridFTPDataMovement(GridFTPDataMovement gridFTPDataMovement) throws AppCatalogException {
         try {
-        	gridFTPDataMovement.setDataMovementInterfaceId(AppCatalogUtils.getID("SCP"));
+        	gridFTPDataMovement.setDataMovementInterfaceId(AppCatalogUtils.getID("GRIDFTP"));
         	GridftpDataMovementResource resource = AppCatalogThriftConversion.getGridFTPDataMovementDescription(gridFTPDataMovement);
             resource.save();
             List<String> gridFTPEndPoint = gridFTPDataMovement.getGridFTPEndPoints();
@@ -577,6 +588,19 @@ public class ComputeResourceImpl implements ComputeResource {
 	            throw new AppCatalogException(e);
 	        }
 		}
+
+    @Override
+    public UnicoreDataMovement getUNICOREDataMovement(String dataMovementId)
+            throws AppCatalogException {
+        try {
+            UnicoreDataMovementResource resource = new UnicoreDataMovementResource();
+            resource = (UnicoreDataMovementResource)resource.get(dataMovementId);
+            return AppCatalogThriftConversion.getUnicoreDMDescription(resource);
+        }catch (Exception e){
+            logger.error("Error while retrieving UNICORE data movement...", e);
+            throw new AppCatalogException(e);
+        }
+    }
 
 	@Override
     public CloudJobSubmission getCloudJobSubmission(String submissionId) throws AppCatalogException {
