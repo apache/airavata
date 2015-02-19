@@ -32,6 +32,7 @@ public abstract class AbstractResource implements Resource {
     public static final String POST_JOBCOMMAND = "PostJobCommand";
     public static final String GLOBUS_SUBMISSION = "GlobusJobSubmission";
     public static final String UNICORE_JOB_SUBMISSION = "UnicoreJobSubmission";
+    public static final String UNICORE_DATA_MOVEMENT = "UnicoreDataMovement";
     public static final String GLOBUS_GK_ENDPOINT = "GlobusGKEndpoint";
     public static final String SSH_SUBMISSION = "SSHSubmission";
 	public static final String SCP_DATA_MOVEMENT = "ScpDataMovement";
@@ -122,6 +123,12 @@ public abstract class AbstractResource implements Resource {
     // Unicore Post Job Command Table
     public final class UnicoreJobSubmissionConstants {
         public static final String SUBMISSION_ID = "submissionID";
+        public static final String SECURITY_PROTOCAL = "securityProtocol";
+        public static final String UNICORE_ENDPOINT_URL = "unicoreEndpointUrl";
+    }
+
+    public final class UnicoreDataMovementConstants {
+        public static final String DATAMOVEMENT_ID = "dataMovementId";
         public static final String SECURITY_PROTOCAL = "securityProtocol";
         public static final String UNICORE_ENDPOINT_URL = "unicoreEndpointUrl";
     }

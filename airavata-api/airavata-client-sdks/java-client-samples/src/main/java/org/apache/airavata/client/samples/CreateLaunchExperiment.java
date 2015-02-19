@@ -47,17 +47,17 @@ import java.util.*;
 public class CreateLaunchExperiment {
 
     //FIXME: Read from a config file
-    public static final String THRIFT_SERVER_HOST = "localhost";
-    public static final int THRIFT_SERVER_PORT = 8930;
-//	public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
-//	public static final int THRIFT_SERVER_PORT = 9930;
+//    public static final String THRIFT_SERVER_HOST = "localhost";
+//    public static final int THRIFT_SERVER_PORT = 8930;
+	public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
+	public static final int THRIFT_SERVER_PORT = 9930;
 	
     private final static Logger logger = LoggerFactory.getLogger(CreateLaunchExperiment.class);
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_7d2a5cde-5b2a-4cad-ae50-f71668f4876d";
+    private static String echoAppId = "Echo_2e539083-665d-40fd-aaa2-4a751028326b";
     private static String mpiAppId = "HelloMPI_720e159f-198f-4daa-96ca-9f5eafee92c9";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
     private static String amberAppId = "Amber_42124128-628b-484c-829d-aff8b584eb00";
@@ -92,7 +92,7 @@ public class CreateLaunchExperiment {
     public static void createAndLaunchExp() throws TException {
 //        final String expId = createEchoExperimentForFSD(airavataClient);
         try {
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 300; i++) {
 //                final String expId = createExperimentForSSHHost(airavata);
 //                final String expId = createEchoExperimentForFSD(airavataClient);
 //                final String expId = createMPIExperimentForFSD(airavataClient);
