@@ -21,12 +21,21 @@
 
 package org.apache.ariavata.simple.workflow.engine;
 
+import com.google.common.eventbus.EventBus;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.messaging.event.TaskIdentifier;
+import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.model.workspace.experiment.TaskState;
+import org.apache.airavata.persistance.registry.jpa.model.TaskDetail;
 
 public class WorkflowUtil {
 
     public static InputDataObjectType copyValues(InputDataObjectType fromInputObj, InputDataObjectType toInputObj){
+        if (toInputObj == null) {
+            // TODO : throw an error
+        }
         toInputObj.setValue(fromInputObj.getValue());
         if (fromInputObj.getApplicationArgument() != null
                 && !fromInputObj.getApplicationArgument().trim().equals("")) {
@@ -39,5 +48,6 @@ public class WorkflowUtil {
         inputData.setValue(outputData.getValue());
         return inputData;
     }
+
 
 }

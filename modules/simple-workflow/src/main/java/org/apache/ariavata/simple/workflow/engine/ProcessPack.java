@@ -21,16 +21,19 @@
 
 package org.apache.ariavata.simple.workflow.engine;
 
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.ariavata.simple.workflow.engine.dag.nodes.WorkflowNode;
 
-public class WfNodeContainer {
+public class ProcessPack {
     private WorkflowNode workflowNode;
     private WorkflowNodeDetails wfNodeDetails;
+    private TaskDetails taskDetails;
 
-    public WfNodeContainer(WorkflowNode workflowNode, WorkflowNodeDetails wfNodeDetails) {
+    public ProcessPack(WorkflowNode workflowNode, WorkflowNodeDetails wfNodeDetails, TaskDetails taskDetails) {
         this.workflowNode = workflowNode;
         this.wfNodeDetails = wfNodeDetails;
+        this.taskDetails = taskDetails;
     }
 
     public WorkflowNode getWorkflowNode() {
@@ -47,5 +50,13 @@ public class WfNodeContainer {
 
     public void setWfNodeDetails(WorkflowNodeDetails wfNodeDetails) {
         this.wfNodeDetails = wfNodeDetails;
+    }
+
+    public TaskDetails getTaskDetails() {
+        return taskDetails;
+    }
+
+    public void setTaskDetails(TaskDetails taskDetails) {
+        this.taskDetails = taskDetails;
     }
 }
