@@ -26,10 +26,11 @@ import org.apache.ariavata.simple.workflow.engine.dag.nodes.WorkflowNode;
 public class InputPortIml implements InPort {
 
     private InputDataObjectType inputDataObjectType;
-    private boolean isSatisfy = false;
+    private boolean ready = false;
     private String portId;
     private Edge edge;
     private WorkflowNode node;
+    private String defaultValue;
 
     public InputPortIml(String portId) {
         this.portId = portId;
@@ -38,6 +39,8 @@ public class InputPortIml implements InPort {
     @Override
     public void setInputObject(InputDataObjectType inputObject) {
         this.inputDataObjectType = inputObject;
+        ready = (inputDataObjectType.getValue() != null && !inputDataObjectType.getValue().equals(""))
+                || !inputDataObjectType.isIsRequired();
     }
 
     @Override
@@ -56,8 +59,17 @@ public class InputPortIml implements InPort {
     }
 
     @Override
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    @Override
     public boolean isReady() {
-        return inputDataObjectType.getValue() != null && !inputDataObjectType.getValue().equals("");
+        return getInputObject() != null && inputDataObjectType.getValue() != null && !inputDataObjectType.getValue().equals("");
     }
 
     @Override

@@ -34,4 +34,8 @@ public interface InPort extends Port {
 
     public void addEdge(Edge edge);
 
+    public String getDefaultValue();
+
+    public void setDefaultValue(String defaultValue);
+
 }

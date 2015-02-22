@@ -49,6 +49,7 @@ import org.apache.ariavata.simple.workflow.engine.dag.nodes.WorkflowNode;
 import org.apache.ariavata.simple.workflow.engine.dag.nodes.WorkflowOutputNode;
 import org.apache.ariavata.simple.workflow.engine.dag.port.InPort;
 import org.apache.ariavata.simple.workflow.engine.dag.port.OutPort;
+import org.apache.ariavata.simple.workflow.engine.parser.AiravataDefaultParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +59,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class SimpleWorkflowInterpreter implements Runnable{
 
@@ -69,12 +71,18 @@ public class SimpleWorkflowInterpreter implements Runnable{
 
     private String credentialToken;
 
-    private Map<String, WorkflowNode> readList = new HashMap<String, WorkflowNode>();
-    private Map<String, WorkflowNode> waitingList = new HashMap<String, WorkflowNode>();
-    private Map<String, ProcessPack> processingQueue = new HashMap<String, ProcessPack>();
+    private Map<String, WorkflowNode> readList = new ConcurrentHashMap<String, WorkflowNode>();
+    private Map<String, WorkflowNode> waitingList = new ConcurrentHashMap<String, WorkflowNode>();
+    private Map<String, ProcessPack> processingQueue = new ConcurrentHashMap<String, ProcessPack>();
     private Map<String, ProcessPack> completeList = new HashMap<String, ProcessPack>();
     private Registry registry;
     private EventBus eventBus = new EventBus();
+    private List<WorkflowOutputNode> completeWorkflowOutputs = new ArrayList<WorkflowOutputNode>();
+
+    public SimpleWorkflowInterpreter(String experimentId, String credentialToken) throws RegistryException {
+        setExperiment(experimentId);
+        this.credentialToken = credentialToken;
+    }
 
     public SimpleWorkflowInterpreter(Experiment experiment, String credentialStoreToken) {
         // read the workflow file and build the topology to a DAG. Then execute that dag
@@ -87,11 +95,14 @@ public class SimpleWorkflowInterpreter implements Runnable{
 
     public void launchWorkflow() throws Exception {
         // process workflow input nodes
-        WorkflowFactoryImpl wfFactory = WorkflowFactoryImpl.getInstance();
-        WorkflowParser workflowParser = wfFactory.getWorkflowParser(experiment.getExperimentID(), credentialToken);
+//        WorkflowFactoryImpl wfFactory = WorkflowFactoryImpl.getInstance();
+//        WorkflowParser workflowParser = wfFactory.getWorkflowParser(experiment.getExperimentID(), credentialToken);
+        WorkflowParser workflowParser = new AiravataDefaultParser(experiment, credentialToken);
+        log.debug("Initialized workflow parser");
         setWorkflowInputNodes(workflowParser.parse());
+        log.debug("Parsed the workflow and got the workflow input nodes");
         processWorkflowInputNodes(getWorkflowInputNodes());
-        processReadyList();
+//        processReadyList();
         // process workflow application nodes
         // process workflow output nodes
     }
@@ -100,10 +111,17 @@ public class SimpleWorkflowInterpreter implements Runnable{
     private synchronized void processReadyList() {
         for (WorkflowNode readyNode : readList.values()) {
             try {
+                if (readyNode instanceof WorkflowOutputNode) {
+                    WorkflowOutputNode wfOutputNode = (WorkflowOutputNode) readyNode;
+                    completeWorkflowOutputs.add(wfOutputNode);
+                    continue;
+                }
                 WorkflowNodeDetails workflowNodeDetails = createWorkflowNodeDetails(readyNode);
                 TaskDetails process = getProcess(workflowNodeDetails);
-                addToProcessingQueue(new ProcessPack(readyNode, workflowNodeDetails, process));
-                publishToProcessQueue(process);
+                ProcessPack processPack = new ProcessPack(readyNode, workflowNodeDetails, process);
+                addToProcessingQueue(processPack);
+//                publishToProcessQueue(process);
+                publishToProcessQueue(processPack);
             } catch (RegistryException e) {
                 // FIXME : handle this exception
             }
@@ -114,6 +132,41 @@ public class SimpleWorkflowInterpreter implements Runnable{
         Thread thread = new Thread(new TempPublisher(process, eventBus));
         thread.start();
         //TODO: publish to process queue.
+    }
+
+    // TODO : remove this test method
+    private void publishToProcessQueue(ProcessPack process) {
+        WorkflowNode workflowNode = process.getWorkflowNode();
+        if (workflowNode instanceof ApplicationNode) {
+            ApplicationNode applicationNode = (ApplicationNode) workflowNode;
+            List<InPort> inputPorts = applicationNode.getInputPorts();
+            if (applicationNode.getNodeName().equals("Add")) {
+                applicationNode.getOutputPorts().get(0).getOutputObject().setValue(String.valueOf(
+                        Integer.parseInt(inputPorts.get(0).getInputObject().getValue()) + Integer.parseInt(inputPorts.get(1).getInputObject().getValue())));
+            } else if (applicationNode.getNodeName().equals("Multiply")) {
+                applicationNode.getOutputPorts().get(0).getOutputObject().setValue(String.valueOf(
+                        Integer.parseInt(inputPorts.get(0).getInputObject().getValue()) * Integer.parseInt(inputPorts.get(1).getInputObject().getValue())));
+            } else if (applicationNode.getNodeName().equals("Subtract")) {
+                applicationNode.getOutputPorts().get(0).getOutputObject().setValue(String.valueOf(
+                        Integer.parseInt(inputPorts.get(0).getInputObject().getValue()) - Integer.parseInt(inputPorts.get(1).getInputObject().getValue())));
+            } else {
+                throw new RuntimeException("Invalid Application name");
+            }
+
+            for (Edge edge : applicationNode.getOutputPorts().get(0).getOutEdges()) {
+                WorkflowUtil.copyValues(applicationNode.getOutputPorts().get(0).getOutputObject(), edge.getToPort().getInputObject());
+                if (edge.getToPort().getNode().isReady()) {
+                    addToReadyQueue(edge.getToPort().getNode());
+                } else {
+                    addToWaitingQueue(edge.getToPort().getNode());
+                }
+            }
+        } else if (workflowNode instanceof WorkflowOutputNode) {
+            WorkflowOutputNode wfOutputNode = (WorkflowOutputNode) workflowNode;
+            throw new RuntimeException("Workflow output node in processing queue");
+        }
+
+        processingQueue.remove(process.getTaskDetails().getTaskID());
     }
 
     private TaskDetails getProcess(WorkflowNodeDetails wfNodeDetails) throws RegistryException {
@@ -165,13 +218,16 @@ public class SimpleWorkflowInterpreter implements Runnable{
         Set<WorkflowNode> tempNodeSet = new HashSet<WorkflowNode>();
         for (WorkflowInputNode wfInputNode : wfInputNodes) {
             if (wfInputNode.isReady()) {
+                log.debug("Workflow node : " + wfInputNode.getNodeId() + " is ready to execute");
                 for (Edge edge : wfInputNode.getOutPort().getOutEdges()) {
-                    edge.getToPort().setInputObject(
-                            WorkflowUtil.copyValues(wfInputNode.getInputObject(), edge.getToPort().getInputObject()));
+                    edge.getToPort().getInputObject().setValue(wfInputNode.getInputObject().getValue());
                     if (edge.getToPort().getNode().isReady()) {
                         addToReadyQueue(edge.getToPort().getNode());
+                        log.debug("Added workflow node : " + edge.getToPort().getNode().getNodeId() + " to the readyQueue");
                     } else {
                         addToWaitingQueue(edge.getToPort().getNode());
+                        log.debug("Added workflow node " + edge.getToPort().getNode().getNodeId() + " to the waitingQueue");
+
                     }
                 }
             }
@@ -213,6 +269,8 @@ public class SimpleWorkflowInterpreter implements Runnable{
     @Subscribe
     public void taskOutputChanged(TaskOutputChangeEvent taskOutputEvent){
         String taskId = taskOutputEvent.getTaskIdentity().getTaskId();
+        log.debug("Task Output changed event received for workflow node : " +
+                taskOutputEvent.getTaskIdentity().getWorkflowNodeId() + ", task : " + taskId);
         ProcessPack processPack = processingQueue.get(taskId);
         Set<WorkflowNode> tempWfNodeSet = new HashSet<WorkflowNode>();
         if (processPack != null) {
@@ -236,6 +294,7 @@ public class SimpleWorkflowInterpreter implements Runnable{
                 }
             }
             processingQueue.remove(taskId);
+            log.debug("removed task from processing queue : " + taskId);
         }
 
     }
@@ -257,11 +316,11 @@ public class SimpleWorkflowInterpreter implements Runnable{
                 case INPUT_DATA_STAGING:
                     processPack.getWorkflowNode().setNodeState(NodeState.PRE_PROCESSING);
                     break;
-                case OUTPUT_DATA_STAGING:
-                    processPack.getWorkflowNode().setNodeState(NodeState.POST_PROCESSING);
-                    break;
                 case EXECUTING:
                     processPack.getWorkflowNode().setNodeState(NodeState.EXECUTING);
+                    break;
+                case OUTPUT_DATA_STAGING:
+                    processPack.getWorkflowNode().setNodeState(NodeState.POST_PROCESSING);
                     break;
                 case POST_PROCESSING:
                     processPack.getWorkflowNode().setNodeState(NodeState.POST_PROCESSING);
@@ -327,13 +386,20 @@ public class SimpleWorkflowInterpreter implements Runnable{
     public void run() {
         // TODO: Auto generated method body.
         try {
+            log.debug("Launching workflow");
             launchWorkflow();
             while (!(waitingList.isEmpty() && readList.isEmpty())) {
                 processReadyList();
+                Thread.sleep(1000);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void setExperiment(String experimentId) throws RegistryException {
+        experiment = (Experiment) getRegistry().get(RegistryModelType.EXPERIMENT, experimentId);
+        log.debug("Retrieve Experiment for experiment id : " + experimentId);
     }
 
 

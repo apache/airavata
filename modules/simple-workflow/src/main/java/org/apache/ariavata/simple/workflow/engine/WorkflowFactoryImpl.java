@@ -33,13 +33,15 @@ public class WorkflowFactoryImpl implements WorkflowFactory {
 
     private WorkflowParser workflowParser;
 
+    private static final String synch = "sync";
+
     private WorkflowFactoryImpl(){
 
     }
 
     public static WorkflowFactoryImpl getInstance() {
         if (workflowFactoryImpl == null) {
-            synchronized (workflowFactoryImpl) {
+            synchronized (synch) {
                 if (workflowFactoryImpl == null) {
                     workflowFactoryImpl = new WorkflowFactoryImpl();
                 }
