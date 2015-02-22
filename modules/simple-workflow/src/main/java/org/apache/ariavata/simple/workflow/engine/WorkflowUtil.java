@@ -41,6 +41,9 @@ public class WorkflowUtil {
                 && !fromInputObj.getApplicationArgument().trim().equals("")) {
             toInputObj.setApplicationArgument(fromInputObj.getApplicationArgument());
         }
+        if (toInputObj.getType() == null) {
+            toInputObj.setType(fromInputObj.getType());
+        }
         return fromInputObj;
     }
 
@@ -50,4 +53,11 @@ public class WorkflowUtil {
     }
 
 
+    public static OutputDataObjectType copyValues(InputDataObjectType inputObject, OutputDataObjectType outputObject) {
+        if (outputObject == null) {
+            outputObject = new OutputDataObjectType();
+        }
+        outputObject.setValue(inputObject.getValue());
+        return outputObject;
+    }
 }

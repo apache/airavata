@@ -21,6 +21,7 @@
 
 package org.apache.ariavata.simple.workflow.engine.parser;
 
+import com.sun.corba.se.pept.encoding.OutputObject;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.airavata.appcatalog.cpi.WorkflowCatalog;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
@@ -41,6 +42,7 @@ import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.Node;
 import org.apache.airavata.workflow.model.graph.impl.NodeImpl;
 import org.apache.airavata.workflow.model.graph.system.OutputNode;
+import org.apache.airavata.workflow.model.graph.system.SystemDataPort;
 import org.apache.airavata.workflow.model.graph.ws.WSNode;
 import org.apache.airavata.workflow.model.graph.ws.WSPort;
 import org.apache.airavata.workflow.model.wf.Workflow;
@@ -100,9 +102,6 @@ public class AiravataDefaultParser implements WorkflowParser {
         for (InputDataObjectType dataObjectType : experimentInputs) {
             inputDataMap.put(dataObjectType.getName(), dataObjectType);
         }
-        OutPort outPort = null;
-        InPort inPort = null;
-        Edge edge = null;
         for (Node gNode : gNodes) {
             wfInputNode = new WorkflowInputNodeImpl(gNode.getID(), gNode.getName());
             wfInputNode.setInputObject(inputDataMap.get(wfInputNode.getNodeName()));
@@ -133,13 +132,12 @@ public class AiravataDefaultParser implements WorkflowParser {
             dataPort = portContainer.getDataPort();
             inPort = portContainer.getInPort();
             Node node = dataPort.getNode();
-            inPort.setInputObject(getInputDataObject(dataPort));
+//            inPort.setInputObject(getInputDataObject(dataPort));
             if (node instanceof WSNode) {
                 WSNode wsNode = (WSNode) node;
                 WorkflowNode wfNode = wfNodes.get(wsNode.getID());
                 if (wfNode == null) {
-                    wfApplicationNode = new ApplicationNodeImpl(wsNode.getID(),
-                            wsNode.getComponent().getApplication().getApplicationId());
+                    wfApplicationNode = createApplicationNode(wsNode);
                     wfNodes.put(wfApplicationNode.getNodeId(), wfApplicationNode);
                     nextPortContainerList.addAll(processOutPorts(wsNode, wfApplicationNode));
                 } else if (wfNode instanceof ApplicationNode) {
@@ -152,7 +150,7 @@ public class AiravataDefaultParser implements WorkflowParser {
 
             }else if (node instanceof OutputNode) {
                 OutputNode oNode = (OutputNode) node;
-                wfOutputNode = new WorkflowOutputNodeImpl(oNode.getID(), oNode.getName());
+                wfOutputNode = createWorkflowOutputNode(oNode);
                 wfOutputNode.setInPort(inPort);
                 wfNodes.put(wfOutputNode.getNodeId(), wfOutputNode);
             }
@@ -161,18 +159,33 @@ public class AiravataDefaultParser implements WorkflowParser {
 
     }
 
+    private WorkflowOutputNode createWorkflowOutputNode(OutputNode oNode) {
+        WorkflowOutputNodeImpl workflowOutputNode = new WorkflowOutputNodeImpl(oNode.getID(), oNode.getName());
+        OutputDataObjectType outputDataObjectType = new OutputDataObjectType();
+        outputDataObjectType.setType(oNode.getParameterType());
+        workflowOutputNode.setOutputObject(outputDataObjectType);
+        return workflowOutputNode;
+    }
+
+    private ApplicationNode createApplicationNode(WSNode wsNode) {
+        ApplicationNode applicationNode = new ApplicationNodeImpl(wsNode.getID(),
+                wsNode.getComponent().getApplication().getApplicationId());
+//        wsNode.getComponent().getInputPorts()
+        return applicationNode;
+    }
+
     private List<PortContainer> processOutPorts(Node node, WorkflowNode wfNode) {
         OutPort outPort ;
         Edge edge;
         InPort inPort = null;
         List<PortContainer> portContainers = new ArrayList<PortContainer>();
         for (DataPort dataPort : node.getOutputPorts()) {
-            outPort = new OutPortImpl(dataPort.getID());
+            outPort = createOutPort(dataPort);
             for (DataEdge dataEdge : dataPort.getEdges()) {
                 edge = new DirectedEdge();
                 edge.setFromPort(outPort);
                 outPort.addEdge(edge);
-                inPort = getInPort(dataEdge.getToPort());
+                inPort = createInPort(dataEdge.getToPort());
                 edge.setToPort(inPort);
                 inPort.addEdge(edge);
                 portContainers.add(new PortContainer(dataEdge.getToPort(), inPort));
@@ -181,7 +194,7 @@ public class AiravataDefaultParser implements WorkflowParser {
             if (wfNode instanceof WorkflowInputNode) {
                 WorkflowInputNode workflowInputNode = (WorkflowInputNode) wfNode;
                 workflowInputNode.setOutPort(outPort);
-            }else if (wfNode instanceof ApplicationNode) {
+            } else if (wfNode instanceof ApplicationNode) {
                 ApplicationNode applicationNode = ((ApplicationNode) wfNode);
                 applicationNode.addOutPort(outPort);
 //                applicationNode.addInPort(inPort);
@@ -190,8 +203,42 @@ public class AiravataDefaultParser implements WorkflowParser {
         return portContainers;
     }
 
-    private InPort getInPort(DataPort toPort) {
-        return new InputPortIml(toPort.getID());
+    private OutPort createOutPort(DataPort dataPort) {
+        OutPortImpl outPort = new OutPortImpl(dataPort.getID());
+        OutputDataObjectType outputDataObjectType = new OutputDataObjectType();
+        if (dataPort instanceof WSPort) {
+            WSPort wsPort = (WSPort) dataPort;
+            outputDataObjectType.setName(wsPort.getFromNode().getName());
+            outputDataObjectType.setType(wsPort.getType());
+        }else if (dataPort instanceof SystemDataPort) {
+            SystemDataPort sysPort = (SystemDataPort) dataPort;
+            outputDataObjectType.setName(sysPort.getFromNode().getName());
+            outputDataObjectType.setType(sysPort.getType());
+        }
+
+        outPort.setOutputObject(outputDataObjectType);
+        return outPort;
+    }
+
+    private InPort createInPort(DataPort toPort) {
+        InPort inPort = new InputPortIml(toPort.getID());
+        InputDataObjectType inputDataObjectType = new InputDataObjectType();
+        if (toPort instanceof WSPort) {
+            WSPort wsPort = (WSPort) toPort;
+            inputDataObjectType.setName(wsPort.getName());
+            inputDataObjectType.setType(wsPort.getType());
+            inputDataObjectType.setApplicationArgument(wsPort.getComponentPort().getApplicationArgument());
+            inputDataObjectType.setIsRequired(!wsPort.getComponentPort().isOptional());
+            inputDataObjectType.setInputOrder(wsPort.getComponentPort().getInputOrder());
+
+            inPort.setDefaultValue(wsPort.getComponentPort().getDefaultValue());
+        }else if (toPort instanceof SystemDataPort) {
+            SystemDataPort sysPort = (SystemDataPort) toPort;
+            inputDataObjectType.setName(sysPort.getName());
+            inputDataObjectType.setType(sysPort.getType());
+        }
+        inPort.setInputObject(inputDataObjectType);
+        return inPort;
     }
 
     private InputDataObjectType getInputDataObject(DataPort dataPort) {
