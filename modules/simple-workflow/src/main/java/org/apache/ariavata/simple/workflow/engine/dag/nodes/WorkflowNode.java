@@ -23,15 +23,15 @@ package org.apache.ariavata.simple.workflow.engine.dag.nodes;
 
 public interface WorkflowNode {
 
-    public String getNodeId();
+    public String getId();
 
-    public String getNodeName();
+    public String getName();
 
-    public NodeType getNodeType();
+    public NodeType getType();
 
-    public NodeState getNodeState();
+    public NodeState getState();
 
-    public void setNodeState(NodeState newNodeState);
+    public void setState(NodeState newState);
 
     public boolean isReady();
 

@@ -21,7 +21,6 @@
 
 package org.apache.ariavata.simple.workflow.engine.parser;
 
-import com.sun.corba.se.pept.encoding.OutputObject;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.airavata.appcatalog.cpi.WorkflowCatalog;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
@@ -104,7 +103,7 @@ public class AiravataDefaultParser implements WorkflowParser {
         }
         for (Node gNode : gNodes) {
             wfInputNode = new WorkflowInputNodeImpl(gNode.getID(), gNode.getName());
-            wfInputNode.setInputObject(inputDataMap.get(wfInputNode.getNodeName()));
+            wfInputNode.setInputObject(inputDataMap.get(wfInputNode.getName()));
             if (wfInputNode.getInputObject() == null) {
                 // TODO: throw an error and exit.
             }
@@ -120,7 +119,7 @@ public class AiravataDefaultParser implements WorkflowParser {
 
     private void buildModel(List<PortContainer> portContainerList) {
         // end condition of recursive call.
-        if (portContainerList == null || portContainerList.size() == 0) {
+        if (portContainerList == null || portContainerList.isEmpty()) {
             return ;
         }
         DataPort dataPort = null;
@@ -132,13 +131,12 @@ public class AiravataDefaultParser implements WorkflowParser {
             dataPort = portContainer.getDataPort();
             inPort = portContainer.getInPort();
             Node node = dataPort.getNode();
-//            inPort.setInputObject(getInputDataObject(dataPort));
             if (node instanceof WSNode) {
                 WSNode wsNode = (WSNode) node;
                 WorkflowNode wfNode = wfNodes.get(wsNode.getID());
                 if (wfNode == null) {
                     wfApplicationNode = createApplicationNode(wsNode);
-                    wfNodes.put(wfApplicationNode.getNodeId(), wfApplicationNode);
+                    wfNodes.put(wfApplicationNode.getId(), wfApplicationNode);
                     nextPortContainerList.addAll(processOutPorts(wsNode, wfApplicationNode));
                 } else if (wfNode instanceof ApplicationNode) {
                     wfApplicationNode = (ApplicationNode) wfNode;
@@ -152,7 +150,8 @@ public class AiravataDefaultParser implements WorkflowParser {
                 OutputNode oNode = (OutputNode) node;
                 wfOutputNode = createWorkflowOutputNode(oNode);
                 wfOutputNode.setInPort(inPort);
-                wfNodes.put(wfOutputNode.getNodeId(), wfOutputNode);
+                inPort.setNode(wfOutputNode);
+                wfNodes.put(wfOutputNode.getId(), wfOutputNode);
             }
         }
         buildModel(nextPortContainerList);
@@ -169,8 +168,8 @@ public class AiravataDefaultParser implements WorkflowParser {
 
     private ApplicationNode createApplicationNode(WSNode wsNode) {
         ApplicationNode applicationNode = new ApplicationNodeImpl(wsNode.getID(),
+                wsNode.getComponent().getApplication().getName(),
                 wsNode.getComponent().getApplication().getApplicationId());
-//        wsNode.getComponent().getInputPorts()
         return applicationNode;
     }
 
@@ -197,7 +196,6 @@ public class AiravataDefaultParser implements WorkflowParser {
             } else if (wfNode instanceof ApplicationNode) {
                 ApplicationNode applicationNode = ((ApplicationNode) wfNode);
                 applicationNode.addOutPort(outPort);
-//                applicationNode.addInPort(inPort);
             }
         }
         return portContainers;

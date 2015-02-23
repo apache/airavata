@@ -42,34 +42,35 @@ public class WorkflowOutputNodeImpl implements WorkflowOutputNode {
     }
 
     @Override
-    public String getNodeId() {
+    public String getId() {
         return this.nodeId;
     }
 
     @Override
-    public String getNodeName() {
+    public String getName() {
         return this.nodeName;
     }
 
     @Override
-    public NodeType getNodeType() {
+    public NodeType getType() {
         return NodeType.WORKFLOW_OUTPUT;
     }
 
     @Override
-    public NodeState getNodeState() {
+    public NodeState getState() {
         return myState;
     }
 
     @Override
-    public void setNodeState(NodeState newNodeState) {
+    public void setState(NodeState newState) {
         // TODO: node state can't be reversed , correct order WAITING --> READY --> EXECUTING --> EXECUTED --> COMPLETE
-        myState = newNodeState;
+        myState = newState;
     }
 
     @Override
     public boolean isReady() {
-        return this.outputDataObjectType.getValue() != null && !this.outputDataObjectType.getValue().equals("");
+        return !(inPort.getInputObject() == null || inPort.getInputObject().getValue() == null
+                || inPort.getInputObject().getValue().equals(""));
     }
 
     @Override

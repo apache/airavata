@@ -29,6 +29,7 @@ public class WorkflowInputNodeImpl implements WorkflowInputNode {
     private String nodeName;
     private OutPort outPort;
     private InputDataObjectType inputDataObjectType;
+    private String name;
 
     public WorkflowInputNodeImpl(String nodeId) {
         this(nodeId, null);
@@ -40,29 +41,29 @@ public class WorkflowInputNodeImpl implements WorkflowInputNode {
     }
 
     @Override
-    public String getNodeId() {
+    public String getId() {
         return this.nodeId;
     }
 
     @Override
-    public String getNodeName() {
+    public String getName() {
         return this.nodeName;
     }
 
     @Override
-    public NodeType getNodeType() {
+    public NodeType getType() {
         return NodeType.WORKFLOW_INPUT;
     }
 
     @Override
-    public NodeState getNodeState() {
+    public NodeState getState() {
         return myState;
     }
 
     @Override
-    public void setNodeState(NodeState newNodeState) {
+    public void setState(NodeState newState) {
         // TODO: node state can't be reversed , correct order WAITING --> READY --> EXECUTING --> EXECUTED --> COMPLETE
-        myState = newNodeState;
+        myState = newState;
     }
 
     @Override
