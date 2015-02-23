@@ -34,40 +34,46 @@ public class ApplicationNodeImpl implements ApplicationNode {
     private String applicationId;
     private List<InPort> inPorts = new ArrayList<InPort>();
     private List<OutPort> outPorts = new ArrayList<OutPort>();
+    private String applicationName;
 
-    public ApplicationNodeImpl(String nodeId) {
-        this(nodeId, null);
-    }
+//    public ApplicationNodeImpl(String nodeId) {
+//        this(nodeId, null);
+//    }
+//
+//    public ApplicationNodeImpl(String nodeId, String applicationId) {
+//        this(nodeId, null, applicationId);
+//    }
 
-    public ApplicationNodeImpl(String nodeId, String applicationId) {
+    public ApplicationNodeImpl(String nodeId, String applicationName, String applicationId) {
         this.nodeId = nodeId;
+        this.applicationName = applicationName;
         this.applicationId = applicationId;
     }
 
     @Override
-    public String getNodeId() {
+    public String getId() {
         return this.nodeId;
     }
 
     @Override
-    public String getNodeName() {
-        return this.getNodeName();
+    public String getName() {
+        return applicationName;
     }
 
     @Override
-    public NodeType getNodeType() {
+    public NodeType getType() {
         return NodeType.APPLICATION;
     }
 
     @Override
-    public NodeState getNodeState() {
+    public NodeState getState() {
         return myState;
     }
 
     @Override
-    public void setNodeState(NodeState newNodeState) {
+    public void setState(NodeState newState) {
         // TODO: node state can't be reversed , correct order WAITING --> READY --> EXECUTING --> EXECUTED --> COMPLETE
-        myState = newNodeState;
+        myState = newState;
     }
 
     @Override

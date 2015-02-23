@@ -102,9 +102,6 @@ public class SimpleWorkflowInterpreter implements Runnable{
         setWorkflowInputNodes(workflowParser.parse());
         log.debug("Parsed the workflow and got the workflow input nodes");
         processWorkflowInputNodes(getWorkflowInputNodes());
-//        processReadyList();
-        // process workflow application nodes
-        // process workflow output nodes
     }
 
     // try to remove synchronization tag
@@ -113,7 +110,8 @@ public class SimpleWorkflowInterpreter implements Runnable{
             try {
                 if (readyNode instanceof WorkflowOutputNode) {
                     WorkflowOutputNode wfOutputNode = (WorkflowOutputNode) readyNode;
-                    completeWorkflowOutputs.add(wfOutputNode);
+                    wfOutputNode.getOutputObject().setValue(wfOutputNode.getInPort().getInputObject().getValue());
+                    addToCompleteOutputNodeList(wfOutputNode);
                     continue;
                 }
                 WorkflowNodeDetails workflowNodeDetails = createWorkflowNodeDetails(readyNode);
@@ -128,6 +126,7 @@ public class SimpleWorkflowInterpreter implements Runnable{
         }
     }
 
+
     private void publishToProcessQueue(TaskDetails process) {
         Thread thread = new Thread(new TempPublisher(process, eventBus));
         thread.start();
@@ -140,13 +139,13 @@ public class SimpleWorkflowInterpreter implements Runnable{
         if (workflowNode instanceof ApplicationNode) {
             ApplicationNode applicationNode = (ApplicationNode) workflowNode;
             List<InPort> inputPorts = applicationNode.getInputPorts();
-            if (applicationNode.getNodeName().equals("Add")) {
+            if (applicationNode.getName().equals("Add")) {
                 applicationNode.getOutputPorts().get(0).getOutputObject().setValue(String.valueOf(
                         Integer.parseInt(inputPorts.get(0).getInputObject().getValue()) + Integer.parseInt(inputPorts.get(1).getInputObject().getValue())));
-            } else if (applicationNode.getNodeName().equals("Multiply")) {
+            } else if (applicationNode.getName().equals("Multiply")) {
                 applicationNode.getOutputPorts().get(0).getOutputObject().setValue(String.valueOf(
                         Integer.parseInt(inputPorts.get(0).getInputObject().getValue()) * Integer.parseInt(inputPorts.get(1).getInputObject().getValue())));
-            } else if (applicationNode.getNodeName().equals("Subtract")) {
+            } else if (applicationNode.getName().equals("Subtract")) {
                 applicationNode.getOutputPorts().get(0).getOutputObject().setValue(String.valueOf(
                         Integer.parseInt(inputPorts.get(0).getInputObject().getValue()) - Integer.parseInt(inputPorts.get(1).getInputObject().getValue())));
             } else {
@@ -178,7 +177,7 @@ public class SimpleWorkflowInterpreter implements Runnable{
     }
 
     private WorkflowNodeDetails createWorkflowNodeDetails(WorkflowNode readyNode) throws RegistryException {
-        WorkflowNodeDetails wfNodeDetails = ExperimentModelUtil.createWorkflowNode(readyNode.getNodeId(), null);
+        WorkflowNodeDetails wfNodeDetails = ExperimentModelUtil.createWorkflowNode(readyNode.getId(), null);
         ExecutionUnit executionUnit = ExecutionUnit.APPLICATION;
         String executionData = null;
         if (readyNode instanceof ApplicationNode) {
@@ -218,15 +217,15 @@ public class SimpleWorkflowInterpreter implements Runnable{
         Set<WorkflowNode> tempNodeSet = new HashSet<WorkflowNode>();
         for (WorkflowInputNode wfInputNode : wfInputNodes) {
             if (wfInputNode.isReady()) {
-                log.debug("Workflow node : " + wfInputNode.getNodeId() + " is ready to execute");
+                log.debug("Workflow node : " + wfInputNode.getId() + " is ready to execute");
                 for (Edge edge : wfInputNode.getOutPort().getOutEdges()) {
                     edge.getToPort().getInputObject().setValue(wfInputNode.getInputObject().getValue());
                     if (edge.getToPort().getNode().isReady()) {
                         addToReadyQueue(edge.getToPort().getNode());
-                        log.debug("Added workflow node : " + edge.getToPort().getNode().getNodeId() + " to the readyQueue");
+                        log.debug("Added workflow node : " + edge.getToPort().getNode().getId() + " to the readyQueue");
                     } else {
                         addToWaitingQueue(edge.getToPort().getNode());
-                        log.debug("Added workflow node " + edge.getToPort().getNode().getNodeId() + " to the waitingQueue");
+                        log.debug("Added workflow node " + edge.getToPort().getNode().getId() + " to the waitingQueue");
 
                     }
                 }
@@ -311,25 +310,25 @@ public class SimpleWorkflowInterpreter implements Runnable{
                 case STARTED:
                     break;
                 case PRE_PROCESSING:
-                    processPack.getWorkflowNode().setNodeState(NodeState.PRE_PROCESSING);
+                    processPack.getWorkflowNode().setState(NodeState.PRE_PROCESSING);
                     break;
                 case INPUT_DATA_STAGING:
-                    processPack.getWorkflowNode().setNodeState(NodeState.PRE_PROCESSING);
+                    processPack.getWorkflowNode().setState(NodeState.PRE_PROCESSING);
                     break;
                 case EXECUTING:
-                    processPack.getWorkflowNode().setNodeState(NodeState.EXECUTING);
+                    processPack.getWorkflowNode().setState(NodeState.EXECUTING);
                     break;
                 case OUTPUT_DATA_STAGING:
-                    processPack.getWorkflowNode().setNodeState(NodeState.POST_PROCESSING);
+                    processPack.getWorkflowNode().setState(NodeState.POST_PROCESSING);
                     break;
                 case POST_PROCESSING:
-                    processPack.getWorkflowNode().setNodeState(NodeState.POST_PROCESSING);
+                    processPack.getWorkflowNode().setState(NodeState.POST_PROCESSING);
                     break;
                 case COMPLETED:
-                    processPack.getWorkflowNode().setNodeState(NodeState.EXECUTED);
+                    processPack.getWorkflowNode().setState(NodeState.EXECUTED);
                     break;
                 case FAILED:
-                    processPack.getWorkflowNode().setNodeState(NodeState.FAILED);
+                    processPack.getWorkflowNode().setState(NodeState.FAILED);
                     break;
                 case UNKNOWN:
                     break;
@@ -337,7 +336,7 @@ public class SimpleWorkflowInterpreter implements Runnable{
                     break;
                 case CANCELED:
                 case CANCELING:
-                    processPack.getWorkflowNode().setNodeState(NodeState.FAILED);
+                    processPack.getWorkflowNode().setState(NodeState.FAILED);
                     break;
                 default:
                     break;
@@ -358,12 +357,12 @@ public class SimpleWorkflowInterpreter implements Runnable{
      * @param workflowNode - Workflow Node
      */
     private synchronized void addToReadyQueue(WorkflowNode workflowNode) {
-        waitingList.remove(workflowNode.getNodeId());
-        readList.put(workflowNode.getNodeId(), workflowNode);
+        waitingList.remove(workflowNode.getId());
+        readList.put(workflowNode.getId(), workflowNode);
     }
 
     private void addToWaitingQueue(WorkflowNode workflowNode) {
-        waitingList.put(workflowNode.getNodeId(), workflowNode);
+        waitingList.put(workflowNode.getId(), workflowNode);
     }
 
     /**
@@ -372,7 +371,7 @@ public class SimpleWorkflowInterpreter implements Runnable{
      * @param processPack - has both workflow and correspond workflowNodeDetails and TaskDetails
      */
     private synchronized void addToProcessingQueue(ProcessPack processPack) {
-        readList.remove(processPack.getWorkflowNode().getNodeId());
+        readList.remove(processPack.getWorkflowNode().getId());
         processingQueue.put(processPack.getTaskDetails().getTaskID(), processPack);
     }
 
@@ -381,6 +380,11 @@ public class SimpleWorkflowInterpreter implements Runnable{
         completeList.put(processPack.getTaskDetails().getTaskID(), processPack);
     }
 
+
+    private void addToCompleteOutputNodeList(WorkflowOutputNode wfOutputNode) {
+        completeWorkflowOutputs.add(wfOutputNode);
+        readList.remove(wfOutputNode.getId());
+    }
 
     @Override
     public void run() {
