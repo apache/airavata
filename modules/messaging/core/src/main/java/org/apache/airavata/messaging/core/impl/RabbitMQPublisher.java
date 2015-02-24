@@ -28,7 +28,6 @@ import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingConstants;
 import org.apache.airavata.messaging.core.Publisher;
-import org.apache.airavata.messaging.core.stats.StatCounter;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -40,7 +39,7 @@ public class RabbitMQPublisher implements Publisher {
 
     private RabbitMQProducer rabbitMQProducer;
 
-    StatCounter statCounter = StatCounter.getInstance();
+//    StatCounter statCounter = StatCounter.getInstance();
 
     public RabbitMQPublisher() throws Exception {
         String brokerUrl;
@@ -89,7 +88,7 @@ public class RabbitMQPublisher implements Publisher {
             }
             byte[] messageBody = ThriftUtils.serializeThriftObject(message);
             rabbitMQProducer.send(messageBody, routingKey);
-            statCounter.add(message);
+//            statCounter.add(message);
         } catch (TException e) {
             String msg = "Error while deserializing the object";
             log.error(msg, e);
