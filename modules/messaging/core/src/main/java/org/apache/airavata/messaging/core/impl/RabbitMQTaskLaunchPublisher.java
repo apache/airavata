@@ -17,10 +17,10 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- */
-
+*/
 package org.apache.airavata.messaging.core.impl;
 
+import com.rabbitmq.client.MessageProperties;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -28,68 +28,50 @@ import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingConstants;
 import org.apache.airavata.messaging.core.Publisher;
-import org.apache.airavata.messaging.core.stats.StatCounter;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RabbitMQPublisher implements Publisher {
-
-    private static Logger log = LoggerFactory.getLogger(RabbitMQPublisher.class);
+public class RabbitMQTaskLaunchPublisher implements Publisher{
+    private final static Logger log = LoggerFactory.getLogger(RabbitMQTaskLaunchPublisher.class);
+    public static final String LAUNCH_TASK = "launch.task";
+    public static final String TERMINATE_TASK = "teminate.task";
 
     private RabbitMQProducer rabbitMQProducer;
 
-    StatCounter statCounter = StatCounter.getInstance();
-
-    public RabbitMQPublisher() throws Exception {
+    public RabbitMQTaskLaunchPublisher() throws Exception {
         String brokerUrl;
         String exchangeName;
         try {
             brokerUrl = ServerSettings.getSetting(MessagingConstants.RABBITMQ_BROKER_URL);
-            exchangeName = ServerSettings.getSetting(MessagingConstants.RABBITMQ_EXCHANGE_NAME);
+            exchangeName = ServerSettings.getSetting(MessagingConstants.RABBITMQ_TASK_LAUNCH_EXCHANGE_NAME);
         } catch (ApplicationSettingsException e) {
             String message = "Failed to get read the required properties from airavata to initialize rabbitmq";
             log.error(message, e);
             throw new AiravataException(message, e);
         }
-        rabbitMQProducer = new RabbitMQProducer(brokerUrl, exchangeName);
+        rabbitMQProducer = new RabbitMQProducer(brokerUrl, null,null);
         rabbitMQProducer.open();
     }
 
     public void publish(MessageContext msgCtx) throws AiravataException {
         try {
-            log.info("Publishing status to rabbitmq...");
+            log.info("Publishing to launch queue ...");
             byte[] body = ThriftUtils.serializeThriftObject(msgCtx.getEvent());
             Message message = new Message();
             message.setEvent(body);
             message.setMessageId(msgCtx.getMessageId());
             message.setMessageType(msgCtx.getType());
             message.setUpdatedTime(msgCtx.getUpdatedTime().getTime());
-            String gatewayId = msgCtx.getGatewayId();
             String routingKey = null;
-            if (msgCtx.getType().equals(MessageType.EXPERIMENT)){
-                ExperimentStatusChangeEvent event = (ExperimentStatusChangeEvent) msgCtx.getEvent();
-                routingKey = gatewayId + "." + event.getExperimentId();
-            } else if (msgCtx.getType().equals(MessageType.TASK)) {
-                TaskStatusChangeEvent event = (TaskStatusChangeEvent) msgCtx.getEvent();
-                routingKey =  gatewayId + "." + event.getTaskIdentity().getExperimentId() + "." +
-                        event.getTaskIdentity().getWorkflowNodeId() + "." + event.getTaskIdentity().getTaskId();
-            }else if (msgCtx.getType().equals(MessageType.WORKFLOWNODE)){
-                WorkflowNodeStatusChangeEvent event = (WorkflowNodeStatusChangeEvent) msgCtx.getEvent();
-                WorkflowIdentifier workflowNodeIdentity = event.getWorkflowNodeIdentity();
-                routingKey =  gatewayId + "." + workflowNodeIdentity.getExperimentId() + "." + workflowNodeIdentity.getWorkflowNodeId();
-            }else if (msgCtx.getType().equals(MessageType.JOB)){
-                JobStatusChangeEvent event = (JobStatusChangeEvent)msgCtx.getEvent();
-                JobIdentifier identity = event.getJobIdentity();
-                routingKey =  gatewayId + "." + identity.getExperimentId() + "." +
-                        identity.getWorkflowNodeId() + "." +
-                        identity.getTaskId() + "." +
-                        identity.getJobId();
+            if (msgCtx.getType().equals(MessageType.LAUNCHTASK)){
+                routingKey = LAUNCH_TASK;
+            }else if(msgCtx.getType().equals(MessageType.TERMINATETASK)){
+                routingKey = TERMINATE_TASK;
             }
             byte[] messageBody = ThriftUtils.serializeThriftObject(message);
-            rabbitMQProducer.send(messageBody, routingKey);
-            statCounter.add();
+            rabbitMQProducer.sendToWorkerQueue(messageBody, routingKey);
         } catch (TException e) {
             String msg = "Error while deserializing the object";
             log.error(msg, e);

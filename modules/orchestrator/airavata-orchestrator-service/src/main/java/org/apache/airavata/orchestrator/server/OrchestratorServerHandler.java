@@ -98,7 +98,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 		// registering with zk
 		try {
 			if (ServerSettings.isRabbitMqPublishEnabled()) {
-	                publisher = PublisherFactory.createPublisher();
+	                publisher = PublisherFactory.createActivityPublisher();
 	        }
 			String zkhostPort = AiravataZKUtils.getZKhostPort();
 			String airavataServerHostPort = ServerSettings
@@ -151,6 +151,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 			registry = RegistryFactory.getDefaultRegistry();
 			orchestrator.initialize();
 			orchestrator.getOrchestratorContext().setZk(this.zk);
+			orchestrator.getOrchestratorContext().setPublisher(this.publisher);
 		} catch (OrchestratorException e) {
             log.error(e.getMessage(), e);
             throw new OrchestratorException("Error while initializing orchestrator service", e);
