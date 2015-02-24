@@ -232,13 +232,21 @@ public class AppCatalogThriftConversion {
     
     public static UnicoreJobSubmissionResource getUnicoreJobSubmission (UnicoreJobSubmission submission){
     	UnicoreJobSubmissionResource resource = new UnicoreJobSubmissionResource();
-        
         resource.setjobSubmissionInterfaceId(submission.getJobSubmissionInterfaceId());
-        
         if (submission.getSecurityProtocol() != null){
             resource.setSecurityProtocol(submission.getSecurityProtocol().toString());
         }
         resource.setUnicoreEndpointUrl(submission.getUnicoreEndPointURL());
+        return resource;
+    }
+
+    public static UnicoreDataMovementResource getUnicoreDMResource (UnicoreDataMovement dataMovement){
+        UnicoreDataMovementResource resource = new UnicoreDataMovementResource();
+        resource.setDataMovementId(dataMovement.getDataMovementInterfaceId());
+        if (dataMovement.getSecurityProtocol() != null){
+            resource.setSecurityProtocol(dataMovement.getSecurityProtocol().toString());
+        }
+        resource.setUnicoreEndpointUrl(dataMovement.getUnicoreEndPointURL());
         return resource;
     }
 
@@ -331,6 +339,14 @@ public class AppCatalogThriftConversion {
     	unicoreJobSubmission.setJobSubmissionInterfaceId(submission.getjobSubmissionInterfaceId());
     	unicoreJobSubmission.setSecurityProtocol(SecurityProtocol.GSI);
         return unicoreJobSubmission;
+    }
+
+    public static UnicoreDataMovement getUnicoreDMDescription (UnicoreDataMovementResource resource) throws AppCatalogException {
+        UnicoreDataMovement dataMovement = new UnicoreDataMovement();
+        dataMovement.setUnicoreEndPointURL(resource.getUnicoreEndpointUrl());
+        dataMovement.setDataMovementInterfaceId(resource.getDataMovementId());
+        dataMovement.setSecurityProtocol(SecurityProtocol.GSI);
+        return dataMovement;
     }
 
     

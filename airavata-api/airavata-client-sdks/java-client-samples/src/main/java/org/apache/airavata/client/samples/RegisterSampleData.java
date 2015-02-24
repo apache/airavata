@@ -78,7 +78,7 @@ public class RegisterSampleData {
     public void register() throws AiravataClientConnectException, TException {
         airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
         registerLocalhost();
-//        registerGatewayProfile();
+        registerGatewayProfile();
         registerApplicationModules();
         registerApplicationDeployments();
         registerApplicationInterfaces();

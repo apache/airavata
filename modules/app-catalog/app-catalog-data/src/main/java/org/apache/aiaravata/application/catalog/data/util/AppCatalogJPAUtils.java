@@ -122,7 +122,13 @@ public class AppCatalogJPAUtils {
                     logger.error("Object should be a GSISSH Submission", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a GSISSH Submission.");
                 }
-
+            case UNICORE_DATA_MOVEMENT:
+                if (o instanceof UnicoreDataMovement){
+                    return createUnicoreDataMovement((UnicoreDataMovement) o);
+                }else {
+                    logger.error("Object should be a GSISSH Submission", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a GSISSH Submission.");
+                }
             case GSISSH_EXPORT:
                 if (o instanceof GSISSHExport){
                     return createGSISSHExport((GSISSHExport) o);
@@ -526,8 +532,19 @@ public class AppCatalogJPAUtils {
         if (o != null) {
             submissionResource.setjobSubmissionInterfaceId(o.getSubmissionID());
             submissionResource.setUnicoreEndpointUrl(o.getUnicoreEndpointUrl());
+            submissionResource.setSecurityProtocol(o.getSecurityProtocol());
         }
         return submissionResource;
+    }
+
+    private static Resource createUnicoreDataMovement(UnicoreDataMovement o) {
+        UnicoreDataMovementResource dataMovementResource = new UnicoreDataMovementResource();
+        if (o != null) {
+            dataMovementResource.setDataMovementId(o.getDataMovementId());
+            dataMovementResource.setUnicoreEndpointUrl(o.getUnicoreEndpointUrl());
+            dataMovementResource.setSecurityProtocol(o.getSecurityProtocol());
+        }
+        return dataMovementResource;
     }
     
     private static Resource createGSISSHExport(GSISSHExport o){
