@@ -28,13 +28,7 @@ import org.airavata.appcatalog.cpi.ComputeResource;
 import org.airavata.appcatalog.cpi.GwyResourceProfile;
 import org.airavata.appcatalog.cpi.WorkflowCatalog;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
-import org.apache.aiaravata.application.catalog.data.resources.AbstractResource;
-import org.apache.aiaravata.application.catalog.data.resources.CloudSubmissionResource;
-import org.apache.aiaravata.application.catalog.data.resources.GridftpDataMovementResource;
-import org.apache.aiaravata.application.catalog.data.resources.LocalDataMovementResource;
-import org.apache.aiaravata.application.catalog.data.resources.LocalSubmissionResource;
-import org.apache.aiaravata.application.catalog.data.resources.ScpDataMovementResource;
-import org.apache.aiaravata.application.catalog.data.resources.SshJobSubmissionResource;
+import org.apache.aiaravata.application.catalog.data.resources.*;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogThriftConversion;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavataAPIConstants;
@@ -53,19 +47,7 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
-import org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
-import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.GridFTPDataMovement;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.LOCALDataMovement;
-import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
-import org.apache.airavata.model.appcatalog.computeresource.SCPDataMovement;
-import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.error.AiravataClientConnectException;
@@ -2025,6 +2007,23 @@ public class AiravataServerHandler implements Airavata.Iface {
             throw exception;
         }
     }
+
+    @Override
+    public boolean updateUnicoreJobSubmissionDetails(String jobSubmissionInterfaceId, UnicoreJobSubmission unicoreJobSubmission) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            UnicoreJobSubmissionResource submission = AppCatalogThriftConversion.getUnicoreJobSubmission(unicoreJobSubmission);
+            submission.setjobSubmissionInterfaceId(jobSubmissionInterfaceId);
+            submission.save();
+            return true;
+        } catch (AppCatalogException e) {
+            logger.errorId(jobSubmissionInterfaceId, "Error while adding job submission interface to resource compute resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
     /**
      * Add a Local data moevement details to a compute resource
      * App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
@@ -2159,6 +2158,53 @@ public class AiravataServerHandler implements Airavata.Iface {
             return appCatalog.getComputeResource().getSCPDataMovement(dataMovementId);
         } catch (AppCatalogException e) {
             String errorMsg = "Error while retrieving SCP data movement interface to resource compute resource...";
+            logger.errorId(dataMovementId, errorMsg, e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage(errorMsg + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public String addUnicoreDataMovementDetails(String computeResourceId, int priorityOrder, UnicoreDataMovement unicoreDataMovement) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            ComputeResource computeResource = appCatalog.getComputeResource();
+            return addDataMovementInterface(computeResource, computeResourceId,
+                    computeResource.addUnicoreDataMovement(unicoreDataMovement), DataMovementProtocol.UNICORE_STORAGE_SERVICE, priorityOrder);
+        } catch (AppCatalogException e) {
+            logger.errorId(computeResourceId, "Error while adding data movement interface to resource compute resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding data movement interface to resource compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public boolean updateUnicoreDataMovementDetails(String dataMovementInterfaceId, UnicoreDataMovement unicoreDataMovement) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            UnicoreDataMovementResource movment = AppCatalogThriftConversion.getUnicoreDMResource(unicoreDataMovement);
+            movment.setDataMovementId(dataMovementInterfaceId);
+            movment.save();
+            return true;
+        } catch (AppCatalogException e) {
+            logger.errorId(dataMovementInterfaceId, "Error while updating unicore data movement to compute resource...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while updating unicore data movement to compute resource. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public UnicoreDataMovement getUnicoreDataMovement(String dataMovementId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            appCatalog = AppCatalogFactory.getAppCatalog();
+            return appCatalog.getComputeResource().getUNICOREDataMovement(dataMovementId);
+        } catch (AppCatalogException e) {
+            String errorMsg = "Error while retrieving UNICORE data movement interface...";
             logger.errorId(dataMovementId, errorMsg, e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
