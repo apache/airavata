@@ -34,7 +34,6 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.core.scheduler.HostScheduler;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
@@ -51,10 +50,8 @@ import org.apache.airavata.model.util.ExecutionType;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
-import org.apache.airavata.orchestrator.cpi.OrchestratorService.Client;
 import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
 import org.apache.airavata.orchestrator.cpi.orchestrator_cpi_serviceConstants;
-import org.apache.airavata.orchestrator.util.OrchestratorRecoveryHandler;
 import org.apache.airavata.orchestrator.util.OrchestratorServerThreadPoolExecutor;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
@@ -62,10 +59,8 @@ import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.TaskDetailConstants;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants;
-import org.apache.airavata.workflow.engine.WorkflowEngine;
-import org.apache.airavata.workflow.engine.WorkflowEngineException;
-import org.apache.airavata.workflow.engine.WorkflowEngineFactory;
 import org.apache.airavata.orchestrator.util.DataModelUtils;
+import org.apache.airavata.simple.workflow.engine.SimpleWorkflowInterpreter;
 import org.apache.thrift.TException;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
@@ -632,11 +627,20 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
         return true;
     }
     private void launchWorkflowExperiment(String experimentId, String airavataCredStoreToken) throws TException {
-    	try {
-			WorkflowEngine workflowEngine = WorkflowEngineFactory.getWorkflowEngine();
-			workflowEngine.launchExperiment(experimentId, airavataCredStoreToken);
-		} catch (WorkflowEngineException e) {
-            log.errorId(experimentId, "Error while launching experiment.", e);
+//    	try {
+//			WorkflowEngine workflowEngine = WorkflowEngineFactory.getWorkflowEngine();
+//			workflowEngine.launchExperiment(experimentId, airavataCredStoreToken);
+//		} catch (WorkflowEngineException e) {
+//            log.errorId(experimentId, "Error while launching experiment.", e);
+//        }
+
+        try {
+            SimpleWorkflowInterpreter simpleWorkflowInterpreter = new SimpleWorkflowInterpreter(experimentId, airavataCredStoreToken);
+            Thread thread = new Thread(simpleWorkflowInterpreter);
+            thread.start();
+//            simpleWorkflowInterpreter.run();
+        } catch (RegistryException e) {
+            log.error("Error while launching workflow", e);
         }
     }
 
