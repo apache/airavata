@@ -28,7 +28,7 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 
 public class ServerSettings extends ApplicationSettings {
 
-	private static final String DEFAULT_USER = "default.registry.user";
+    private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_USER_PASSWORD = "default.registry.password";
     private static final String DEFAULT_USER_GATEWAY = "default.registry.gateway";
 
@@ -51,12 +51,15 @@ public class ServerSettings extends ApplicationSettings {
     private static final String MY_PROXY_USER = "myproxy.user";
     private static final String MY_PROXY_PASSWORD = "myproxy.password";
     private static final String MY_PROXY_LIFETIME = "myproxy.life";
-    private static final String ACTIVITY_PUBLISHER = "activity.publisher";
+    private static final String STATUS_PUBLISHER = "status.publisher";
+    private static final String TASK_LAUNCH_PUBLISHER = "task.launch.publisher";
     private static final String ACTIVITY_LISTENERS = "activity.listeners";
     public static final String PUBLISH_RABBITMQ = "publish.rabbitmq";
     public static final String JOB_NOTIFICATION_ENABLE = "job.notification.enable";
     public static final String JOB_NOTIFICATION_EMAILIDS = "job.notification.emailids";
     public static final String JOB_NOTIFICATION_FLAGS = "job.notification.flags";
+    public static final String GFAC_PASSIVE = "gfac.passive"; // by default this is desabled
+
 
     private static boolean stopAllThreads = false;
 
@@ -72,7 +75,7 @@ public class ServerSettings extends ApplicationSettings {
         return getSetting(DEFAULT_USER_GATEWAY);
     }
 
-   public static String getServerContextRoot() {
+    public static String getServerContextRoot() {
         return getSetting(SERVER_CONTEXT_ROOT, "axis2");
     }
 
@@ -150,12 +153,21 @@ public class ServerSettings extends ApplicationSettings {
         return getSetting(ACTIVITY_LISTENERS).split(",");
     }
 
-    public static String getActivityPublisher() throws ApplicationSettingsException{
-        return getSetting(ACTIVITY_PUBLISHER);
+    public static String getStatusPublisher() throws ApplicationSettingsException {
+        return getSetting(STATUS_PUBLISHER);
     }
 
-    public static boolean isRabbitMqPublishEnabled() throws ApplicationSettingsException{
+    public static String getTaskLaunchPublisher() throws ApplicationSettingsException {
+        return getSetting(TASK_LAUNCH_PUBLISHER);
+    }
+
+    public static boolean isRabbitMqPublishEnabled() throws ApplicationSettingsException {
         String setting = getSetting(PUBLISH_RABBITMQ);
+        return Boolean.parseBoolean(setting);
+    }
+
+    public static boolean isGFacPassiveMode()throws ApplicationSettingsException {
+        String setting = getSetting(GFAC_PASSIVE);
         return Boolean.parseBoolean(setting);
     }
 

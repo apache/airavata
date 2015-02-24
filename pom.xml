@@ -75,6 +75,7 @@
 		<axiom.version>1.2.8</axiom.version>
 		<surefire.version>2.12</surefire.version>
 		<junit.version>4.7</junit.version>
+		<curator.version>2.7.1</curator.version>
 		<jcr.version>2.0</jcr.version>
 		<xmlbeans.version>2.5.0</xmlbeans.version>
 		<xpp3.version>1.1.6</xpp3.version>
@@ -97,6 +98,7 @@
 		<mysql.connector.version>5.1.31</mysql.connector.version>
 		<skipTests>false</skipTests>
         <google.gson.version>2.3</google.gson.version>
+		<zk.version>3.4.0</zk.version>
 	</properties>
 
 	<developers>
@@ -408,6 +410,11 @@
                 <artifactId>gson</artifactId>
                 <version>${google.gson.version}</version>
             </dependency>
+			<dependency>
+				<groupId>org.apache.zookeeper</groupId>
+				<artifactId>zookeeper</artifactId>
+				<version>${zk.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 

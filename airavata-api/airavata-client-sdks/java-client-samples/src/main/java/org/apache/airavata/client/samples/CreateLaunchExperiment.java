@@ -57,7 +57,7 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_7d2a5cde-5b2a-4cad-ae50-f71668f4876d";
+    private static String echoAppId = "Echo_a8fc8511-7b8e-431a-ad0f-de5eb1a9c576";
     private static String mpiAppId = "HelloMPI_720e159f-198f-4daa-96ca-9f5eafee92c9";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
     private static String amberAppId = "Amber_42124128-628b-484c-829d-aff8b584eb00";
@@ -82,7 +82,7 @@ public class CreateLaunchExperiment {
     public static void main(String[] args) throws Exception {
                 airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
                 System.out.println("API version is " + airavataClient.getAPIVersion());
-//                registerApplications(); // run this only the first time
+//               registerApplications(); // run this only the first time
                 createAndLaunchExp();
     }
     
@@ -91,14 +91,16 @@ public class CreateLaunchExperiment {
 
     public static void createAndLaunchExp() throws TException {
 //        final String expId = createEchoExperimentForFSD(airavataClient);
+        List<String> experimentIds = new ArrayList<String>();
         try {
             for (int i = 0; i < 100; i++) {
 //                final String expId = createExperimentForSSHHost(airavata);
 //                final String expId = createEchoExperimentForFSD(airavataClient);
 //                final String expId = createMPIExperimentForFSD(airavataClient);
 //               final String expId = createEchoExperimentForStampede(airavataClient);
-                final String expId = createEchoExperimentForTrestles(airavataClient);
-//                final String expId = createExperimentEchoForLocalHost(airavataClient);
+//                final String expId = createEchoExperimentForTrestles(airavataClient);
+                final String expId = createExperimentEchoForLocalHost(airavataClient);
+                experimentIds.add(expId);
 //                final String expId = createExperimentWRFTrestles(airavataClient);
 //                final String expId = createExperimentForBR2(airavataClient);
 //                final String expId = createExperimentForBR2Amber(airavataClient);
@@ -117,6 +119,15 @@ public class CreateLaunchExperiment {
 
                 launchExperiment(airavataClient, expId);
             }
+
+            Thread.sleep(10000);
+
+            for(String exId:experimentIds) {
+                Experiment experiment = airavataClient.getExperiment(exId);
+                System.out.println(experiment.getExperimentStatus().toString());
+            }
+
+
         } catch (Exception e) {
             logger.error("Error while connecting with server", e.getMessage());
             e.printStackTrace();
