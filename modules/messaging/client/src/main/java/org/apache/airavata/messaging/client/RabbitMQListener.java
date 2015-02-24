@@ -28,7 +28,7 @@ import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.messaging.core.MessagingConstants;
-import org.apache.airavata.messaging.core.impl.RabbitMQConsumer;
+import org.apache.airavata.messaging.core.impl.RabbitMQStatusConsumer;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.commons.cli.*;
 import org.apache.thrift.TBase;
@@ -42,10 +42,10 @@ import java.util.List;
 import java.util.Map;
 
 
-public class RabbitMQListner {
+public class RabbitMQListener {
     public static final String RABBITMQ_BROKER_URL = "rabbitmq.broker.url";
     public static final String RABBITMQ_EXCHANGE_NAME = "rabbitmq.exchange.name";
-    private final static Logger logger = LoggerFactory.getLogger(RabbitMQListner.class);
+    private final static Logger logger = LoggerFactory.getLogger(RabbitMQListener.class);
     private static String gatewayId = "*";
     private static boolean gatewayLevelMessages = false;
     private static boolean experimentLevelMessages = false;
@@ -60,7 +60,7 @@ public class RabbitMQListner {
             AiravataUtils.setExecutionAsServer();
             String brokerUrl = ServerSettings.getSetting(RABBITMQ_BROKER_URL);
             final String exchangeName = ServerSettings.getSetting(RABBITMQ_EXCHANGE_NAME);
-            RabbitMQConsumer consumer = new RabbitMQConsumer(brokerUrl, exchangeName);
+            RabbitMQStatusConsumer consumer = new RabbitMQStatusConsumer(brokerUrl, exchangeName);
             consumer.listen(new MessageHandler() {
                 @Override
                 public Map<String, Object> getProperties() {

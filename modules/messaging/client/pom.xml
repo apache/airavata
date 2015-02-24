@@ -80,7 +80,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.apache.airavata.messaging.client.RabbitMQListner</mainClass>
+                            <mainClass>org.apache.airavata.messaging.client.RabbitMQListener</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
