@@ -22,30 +22,24 @@
 package org.apache.airavata.workflow.model.component.ws;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
-import javax.xml.namespace.QName;
-
-import org.apache.airavata.common.exception.UtilsException;
-import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.graph.Graph;
 import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.ws.WorkflowNode;
 import org.apache.airavata.workflow.model.wf.Workflow;
-import org.gpel.GpelConstants;
-import org.xmlpull.infoset.XmlElement;
-import org.xmlpull.infoset.XmlNamespace;
+//import org.gpel.GpelConstants;
+//import org.xmlpull.infoset.XmlNamespace;
 
-import xsul5.wsdl.WsdlDefinitions;
-import xsul5.wsdl.WsdlPortType;
+//import xsul5.wsdl.WsdlDefinitions;
+//import xsul5.wsdl.WsdlPortType;
 
 public class WorkflowComponent extends WSComponent {
 
     /**
      * GPEL_NAMESPACE
      */
-    public static final XmlNamespace GPEL_NAMESPACE = GpelConstants.GPEL_NS;
+//    public static final XmlNamespace GPEL_NAMESPACE = GpelConstants.GPEL_NS;
 
     /**
      * workflowTemplateID
@@ -84,28 +78,28 @@ public class WorkflowComponent extends WSComponent {
         return this.templateID;
     }
 
-    /**
-     * Constructs a WorkflowComponent.
-     * 
-     * This method is used when loading a workflow component from an xwf file.
-     * 
-     * @param wsdl
-     * @param portTypeQName
-     * @param operationName
-     * @throws ComponentException
-     */
-    public WorkflowComponent(WsdlDefinitions wsdl, QName portTypeQName, String operationName) throws ComponentException {
-//        super(wsdl, portTypeQName, operationName);
-//        try {
-//            // Get template ID from WSDL
-//            WsdlPortType portType = this.wsdl.getPortType(portTypeQName.getLocalPart());
-//            XmlElement templateIDElement = portType.xml().element(GPEL_NAMESPACE, WORKFLOW_TEMPLATE_ID_TAG);
-//            String templateIDString = templateIDElement.requiredText();
-//            this.templateID = new URI(templateIDString);
-//        } catch (URISyntaxException e) {
-//            throw new ComponentException(e);
-//        }
-    }
+//    /**
+//     * Constructs a WorkflowComponent.
+//     * 
+//     * This method is used when loading a workflow component from an xwf file.
+//     * 
+//     * @param wsdl
+//     * @param portTypeQName
+//     * @param operationName
+//     * @throws ComponentException
+//     */
+//    public WorkflowComponent(WsdlDefinitions wsdl, QName portTypeQName, String operationName) throws ComponentException {
+////        super(wsdl, portTypeQName, operationName);
+////        try {
+////            // Get template ID from WSDL
+////            WsdlPortType portType = this.wsdl.getPortType(portTypeQName.getLocalPart());
+////            XmlElement templateIDElement = portType.xml().element(GPEL_NAMESPACE, WORKFLOW_TEMPLATE_ID_TAG);
+////            String templateIDString = templateIDElement.requiredText();
+////            this.templateID = new URI(templateIDString);
+////        } catch (URISyntaxException e) {
+////            throw new ComponentException(e);
+////        }
+//    }
 
     /**
      * @param workflowClient
@@ -140,28 +134,28 @@ public class WorkflowComponent extends WSComponent {
         return node;
     }
 
-    /**
-     * @param definitions
-     * @return workflow template ID if the specified WSDL definition is for a workflow; null otherwise.
-     * @throws ComponentException
-     */
-    public static URI getWorkflowTemplateID(WsdlDefinitions definitions) throws ComponentException {
-        try {
-            // Get template ID from WSDL
-            WsdlPortType portType = WSDLUtil.getFirstPortType(definitions);
-            XmlElement templateIDElement = portType.xml().element(GPEL_NAMESPACE, WORKFLOW_TEMPLATE_ID_TAG);
-            if (templateIDElement == null) {
-                // Not a workflow
-                return null;
-            } else {
-                String templateIDString = templateIDElement.requiredText();
-                URI templateID = new URI(templateIDString);
-                return templateID;
-            }
-        } catch (URISyntaxException e) {
-            throw new ComponentException(e);
-        } catch (UtilsException e) {
-            throw new ComponentException(e);
-        }
-    }
+//    /**
+//     * @param definitions
+//     * @return workflow template ID if the specified WSDL definition is for a workflow; null otherwise.
+//     * @throws ComponentException
+//     */
+//    public static URI getWorkflowTemplateID(WsdlDefinitions definitions) throws ComponentException {
+//        try {
+//            // Get template ID from WSDL
+//            WsdlPortType portType = WSDLUtil.getFirstPortType(definitions);
+//            XmlElement templateIDElement = portType.xml().element(GPEL_NAMESPACE, WORKFLOW_TEMPLATE_ID_TAG);
+//            if (templateIDElement == null) {
+//                // Not a workflow
+//                return null;
+//            } else {
+//                String templateIDString = templateIDElement.requiredText();
+//                URI templateID = new URI(templateIDString);
+//                return templateID;
+//            }
+//        } catch (URISyntaxException e) {
+//            throw new ComponentException(e);
+//        } catch (UtilsException e) {
+//            throw new ComponentException(e);
+//        }
+//    }
 }

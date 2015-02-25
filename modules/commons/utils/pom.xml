@@ -44,7 +44,7 @@
             <artifactId>xpp5</artifactId>
             <version>${xpp5.version}</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.ogce</groupId>
             <artifactId>xsul</artifactId>
             <version>${xsul.version}</version>
@@ -64,7 +64,7 @@
             <groupId>org.apache.axis2</groupId>
             <artifactId>axis2-kernel</artifactId>
             <version>${axis2.version}</version>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>commons-dbcp</groupId>
             <artifactId>commons-dbcp</artifactId>

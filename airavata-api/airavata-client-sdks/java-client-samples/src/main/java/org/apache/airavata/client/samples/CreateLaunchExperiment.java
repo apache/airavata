@@ -47,10 +47,10 @@ import java.util.*;
 public class CreateLaunchExperiment {
 
     //FIXME: Read from a config file
-//    public static final String THRIFT_SERVER_HOST = "localhost";
-//    public static final int THRIFT_SERVER_PORT = 8930;
-	public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
-	public static final int THRIFT_SERVER_PORT = 9930;
+    public static final String THRIFT_SERVER_HOST = "localhost";
+    public static final int THRIFT_SERVER_PORT = 8930;
+//	public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
+//	public static final int THRIFT_SERVER_PORT = 9930;
 	
     private final static Logger logger = LoggerFactory.getLogger(CreateLaunchExperiment.class);
     private static final String DEFAULT_USER = "default.registry.user";
@@ -60,7 +60,7 @@ public class CreateLaunchExperiment {
     private static String echoAppId = "Echo_2e539083-665d-40fd-aaa2-4a751028326b";
     private static String mpiAppId = "HelloMPI_720e159f-198f-4daa-96ca-9f5eafee92c9";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
-    private static String amberAppId = "Amber_42124128-628b-484c-829d-aff8b584eb00";
+    private static String amberAppId = "Amber_9e4f28b6-7a5d-4fe1-b07f-2053f8f0deb3";
     private static String gromacsAppId = "GROMACS_05622038-9edd-4cb1-824e-0b7cb993364b";
     private static String espressoAppId = "ESPRESSO_10cc2820-5d0b-4c63-9546-8a8b595593c1";
     private static String lammpsAppId = "LAMMPS_10893eb5-3840-438c-8446-d26c7ecb001f";
@@ -92,19 +92,19 @@ public class CreateLaunchExperiment {
     public static void createAndLaunchExp() throws TException {
 //        final String expId = createEchoExperimentForFSD(airavataClient);
         try {
-            for (int i = 0; i < 300; i++) {
+            for (int i = 0; i < 1; i++) {
 //                final String expId = createExperimentForSSHHost(airavata);
 //                final String expId = createEchoExperimentForFSD(airavataClient);
 //                final String expId = createMPIExperimentForFSD(airavataClient);
 //               final String expId = createEchoExperimentForStampede(airavataClient);
-                final String expId = createEchoExperimentForTrestles(airavataClient);
+//                final String expId = createEchoExperimentForTrestles(airavataClient);
 //                final String expId = createExperimentEchoForLocalHost(airavataClient);
 //                final String expId = createExperimentWRFTrestles(airavataClient);
 //                final String expId = createExperimentForBR2(airavataClient);
 //                final String expId = createExperimentForBR2Amber(airavataClient);
 //                final String expId = createExperimentWRFStampede(airavataClient);
 //                final String expId = createExperimentForStampedeAmber(airavataClient);
-//                final String expId = createExperimentForTrestlesAmber(airavataClient);
+                final String expId = createExperimentForTrestlesAmber(airavataClient);
 //                final String expId = createExperimentGROMACSStampede(airavataClient);
 //                final String expId = createExperimentESPRESSOStampede(airavataClient);
 //                final String expId = createExperimentLAMMPSStampede(airavataClient);
@@ -1295,47 +1295,28 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentForBR2Amber(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
-            InputDataObjectType input = new InputDataObjectType();
-            input.setName("Heat_Restart_File");
-            input.setType(DataType.URI);
-            input.setValue("/Users/lahirugunathilake/Downloads/02_Heat.rst");
-            exInputs.add(input);
+			List<InputDataObjectType> exInputs = client.getApplicationInputs(amberAppId);
+//			for (InputDataObjectType inputDataObjectType : exInputs) {
+//				if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
+//					inputDataObjectType.setValue("/Users/raminder/Documents/Sample/Amber/02_Heat.rst");
+//				} else if (inputDataObjectType.getName().equalsIgnoreCase("Production_Control_File")) {
+//					inputDataObjectType.setValue("/Users/raminder/Documents/Sample/Amber/03_Prod.in");
+//				} else if (inputDataObjectType.getName().equalsIgnoreCase("Parameter_Topology_File")) {
+//					inputDataObjectType.setValue("/Users/raminder/Documents/Sample/Amber/prmtop");
+//				}
+//
+//			}
+			for (InputDataObjectType inputDataObjectType : exInputs) {
+				if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
+					inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/02_Heat.rst");
+				} else if (inputDataObjectType.getName().equalsIgnoreCase("Production_Control_File")) {
+					inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/03_Prod.in");
+				} else if (inputDataObjectType.getName().equalsIgnoreCase("Parameter_Topology_File")) {
+					inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/prmtop");
+				}
+			}
 
-            InputDataObjectType input1 = new InputDataObjectType();
-            input1.setName("Production_Control_File");
-            input1.setType(DataType.URI);
-            input1.setValue("/Users/lahirugunathilake/Downloads/03_Prod.in");
-            exInputs.add(input1);
-
-            InputDataObjectType input2 = new InputDataObjectType();
-            input2.setName("Parameter_Topology_File");
-            input2.setType(DataType.URI);
-            input2.setValue("/Users/lahirugunathilake/Downloads/prmtop");
-            exInputs.add(input2);
-
-            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
-            OutputDataObjectType output = new OutputDataObjectType();
-            output.setName("AMBER_Execution_Summary");
-            output.setType(DataType.URI);
-            output.setValue("");
-            exOut.add(output);
-
-            OutputDataObjectType output1 = new OutputDataObjectType();
-            output1.setName("AMBER_Execution_log");
-            output1.setType(DataType.URI);
-            output1.setValue("");
-            exOut.add(output1);
-            OutputDataObjectType output2 = new OutputDataObjectType();
-            output2.setName("AMBER_Trajectory_file");
-            output2.setType(DataType.URI);
-            output2.setValue("");
-            exOut.add(output2);
-            OutputDataObjectType output3 = new OutputDataObjectType();
-            output3.setName("AMBER_Restart_file");
-            output3.setType(DataType.URI);
-            output3.setValue("");
-            exOut.add(output3);
+			List<OutputDataObjectType> exOut = client.getApplicationOutputs(amberAppId);
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
             String projectId = client.createProject(project);
@@ -1378,47 +1359,29 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentForStampedeAmber(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
-            InputDataObjectType input = new InputDataObjectType();
-            input.setName("Heat_Restart_File");
-            input.setType(DataType.URI);
-            input.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AMBER_FILES/02_Heat.rst");
-            exInputs.add(input);
+			List<InputDataObjectType> exInputs = client.getApplicationInputs(amberAppId);
+//			for (InputDataObjectType inputDataObjectType : exInputs) {
+//				if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
+//					inputDataObjectType.setValue("/Users/raminder/Documents/Sample/Amber/02_Heat.rst");
+//				} else if (inputDataObjectType.getName().equalsIgnoreCase("Production_Control_File")) {
+//					inputDataObjectType.setValue("/Users/raminder/Documents/Sample/Amber/03_Prod.in");
+//				} else if (inputDataObjectType.getName().equalsIgnoreCase("Parameter_Topology_File")) {
+//					inputDataObjectType.setValue("/Users/raminder/Documents/Sample/Amber/prmtop");
+//				}
+//
+//			}
+			for (InputDataObjectType inputDataObjectType : exInputs) {
+				if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
+					inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/02_Heat.rst");
+				} else if (inputDataObjectType.getName().equalsIgnoreCase("Production_Control_File")) {
+					inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/03_Prod.in");
+				} else if (inputDataObjectType.getName().equalsIgnoreCase("Parameter_Topology_File")) {
+					inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/prmtop");
+				}
+			}
 
-            InputDataObjectType input1 = new InputDataObjectType();
-            input1.setName("Production_Control_File");
-            input1.setType(DataType.URI);
-            input1.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AMBER_FILES/03_Prod.in");
-            exInputs.add(input1);
+			List<OutputDataObjectType> exOut = client.getApplicationOutputs(amberAppId);
 
-            InputDataObjectType input2 = new InputDataObjectType();
-            input2.setName("Parameter_Topology_File");
-            input2.setType(DataType.URI);
-            input2.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AMBER_FILES/prmtop");
-            exInputs.add(input2);
-
-            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
-            OutputDataObjectType output = new OutputDataObjectType();
-            output.setName("AMBER_Execution_Summary");
-            output.setType(DataType.URI);
-            output.setValue("");
-            exOut.add(output);
-
-            OutputDataObjectType output1 = new OutputDataObjectType();
-            output1.setName("AMBER_Execution_Summary");
-            output1.setType(DataType.URI);
-            output1.setValue("");
-            exOut.add(output1);
-            OutputDataObjectType output2 = new OutputDataObjectType();
-            output2.setName("AMBER_Trajectory_file");
-            output2.setType(DataType.URI);
-            output2.setValue("");
-            exOut.add(output2);
-            OutputDataObjectType output3 = new OutputDataObjectType();
-            output3.setName("AMBER_Restart_file");
-            output3.setType(DataType.URI);
-            output3.setValue("");
-            exOut.add(output3);
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
             String projectId = client.createProject(project);
@@ -1473,69 +1436,15 @@ public class CreateLaunchExperiment {
 //
 //			}
 			for (InputDataObjectType inputDataObjectType : exInputs) {
-				if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
-					inputDataObjectType.setValue("/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/02_Heat.rst");
-				} else if (inputDataObjectType.getName().equalsIgnoreCase("Production_Control_File")) {
-					inputDataObjectType.setValue("/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/03_Prod.in");
-				} else if (inputDataObjectType.getName().equalsIgnoreCase("Parameter_Topology_File")) {
-					inputDataObjectType.setValue("/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/prmtop");
-				}
-
+					if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
+						inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/02_Heat.rst");
+					} else if (inputDataObjectType.getName().equalsIgnoreCase("Production_Control_File")) {
+						inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/03_Prod.in");
+					} else if (inputDataObjectType.getName().equalsIgnoreCase("Parameter_Topology_File")) {
+						inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/prmtop");
+					}
 			}
 			List<OutputDataObjectType> exOut = client.getApplicationOutputs(amberAppId);
-//			List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
-//			InputDataObjectType input = new InputDataObjectType();
-//			input.setName("Heat_Restart_File");
-//			input.setType(DataType.URI);
-//			input.setValue("/Users/raminder/Documents/Sample/Amber/02_Heat.rst");
-//			exInputs.add(input);
-//            InputDataObjectType input1 = new InputDataObjectType();
-//            input1.setName("Production_Control_File");
-//            input1.setType(DataType.URI);
-//            input1.setValue("/Users/raminder/Documents/Sample/Amber/03_Prod.in");
-//            exInputs.add(input1);
-//
-//            InputDataObjectType input2 = new InputDataObjectType();
-//            input2.setName("Parameter_Topology_File");
-//            input2.setType(DataType.URI);
-//            input2.setValue("/Users/raminder/Documents/Sample/Amber/prmtop");
-//            exInputs.add(input2);
-
-//            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
-//            OutputDataObjectType output = new OutputDataObjectType();
-//            output.setName("AMBER_Execution_Summary");
-//            output.setType(DataType.URI);
-//            output.setValue("03_Prod.info");
-//            exOut.add(output);
-//
-//            OutputDataObjectType output1 = new OutputDataObjectType();
-//            output1.setName("AMBER_Execution_log");
-//            output1.setType(DataType.URI);
-//            output1.setValue("03_Prod.out");
-//            exOut.add(output1);
-//            OutputDataObjectType output2 = new OutputDataObjectType();
-//            output2.setName("AMBER_Trajectory_file");
-//            output2.setType(DataType.URI);
-//            output2.setValue("03_Prod.mdcrd");
-//            exOut.add(output2);
-//            OutputDataObjectType output3 = new OutputDataObjectType();
-//            output3.setName("AMBER_Restart_file");
-//            output3.setType(DataType.URI);
-//            output3.setValue("03_Prod.rst");
-//            exOut.add(output3);
-//            
-//            OutputDataObjectType output4 = new OutputDataObjectType();
-//            output4.setName("STDERR");
-//            output4.setType(DataType.STDERR);
-//            output4.setValue("");
-//            exOut.add(output4);
-//            
-//            OutputDataObjectType output5 = new OutputDataObjectType();
-//            output5.setName("STDOUT");
-//            output5.setType(DataType.STDOUT);
-//            output5.setValue("");
-//            exOut.add(output5);
-            
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
             String projectId = client.createProject(project);

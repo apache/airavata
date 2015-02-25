@@ -28,9 +28,9 @@ import java.util.Iterator;
 import org.apache.airavata.workflow.model.component.ComponentRegistryException;
 import org.xmlpull.v1.builder.Iterable;
 import org.xmlpull.v1.builder.XmlElement;
-
-import xsul.wsif.WSIFMessage;
-import xsul.wsif.impl.WSIFMessageElement;
+//
+//import xsul.wsif.WSIFMessage;
+//import xsul.wsif.impl.WSIFMessageElement;
 
 public class GFacRegistryClient {
 
@@ -76,94 +76,94 @@ public class GFacRegistryClient {
         this.client = new SimpleWSClient();
     }
 
-    /**
-     * @param appDescAsStr
-     * @throws ComponentRegistryException
-     */
-    public void registerAppDesc(String appDescAsStr) throws ComponentRegistryException {
-        this.client.sendSOAPMessage(this.wsdlURL, new String[][] { { DESC_AS_STRING, appDescAsStr } },
-                "registerAppDesc");
-    }
-
-    /**
-     * @param wsdlAsStr
-     * @param lifetimeAsSeconds
-     * @throws ComponentRegistryException
-     */
-    public void registerConcreteWsdl(String wsdlAsStr, int lifetimeAsSeconds) throws ComponentRegistryException {
-        this.client.sendSOAPMessage(this.wsdlURL,
-                new String[][] { { DESC_AS_STRING, wsdlAsStr }, { LIFE_TIME, String.valueOf(lifetimeAsSeconds) } },
-                "registerConcreteWsdl");
-
-    }
-
-    /**
-     * @param wsdlQName
-     * @return The concrete WSDL
-     * @throws ComponentRegistryException
-     */
-    public String getConcreteWsdl(String wsdlQName) throws ComponentRegistryException {
-        WSIFMessage response = this.client.sendSOAPMessage(this.wsdlURL, new String[][] { { QNAME, wsdlQName } },
-                "getConcreateWsdl");
-        return (String) response.getObjectPart(DESC_AS_STRING);
-    }
-
-    /**
-     * @param wsdlQName
-     * @throws ComponentRegistryException
-     */
-    public void removeConcreteWsdl(String wsdlQName) throws ComponentRegistryException {
-        this.client.sendSOAPMessage(this.wsdlURL, new String[][] { { QNAME, wsdlQName } }, "removeConcreteWsdl");
-
-    }
-
-    /**
-     * @param serviceName
-     * @return The list of concreate WSDL QNames.
-     * @throws ComponentRegistryException
-     */
-    public String[] findService(String serviceName) throws ComponentRegistryException {
-        WSIFMessage response = this.client.sendSOAPMessage(this.wsdlURL, new String[][] { { QNAME, serviceName } },
-                SEARCH_SERVICE_INSTANCE);
-        return findArrayValue(RESULTS, (WSIFMessageElement) response).toArray(new String[] {});
-    }
-
-    /**
-     * @param serviceName
-     * @return The list of abstract WSDL QNames.
-     * @throws ComponentRegistryException
-     */
-    public String[] findServiceDesc(String serviceName) throws ComponentRegistryException {
-        WSIFMessage response = this.client.sendSOAPMessage(this.wsdlURL, new String[][] { { QNAME, serviceName } },
-                SEARCH_SERVIE);
-        return findArrayValue(RESULTS, (WSIFMessageElement) response).toArray(new String[] {});
-    }
-
-    /**
-     * @param wsdlQName
-     * @return The AWSDL.
-     * @throws ComponentRegistryException
-     */
-    public String getAbstractWsdl(String wsdlQName) throws ComponentRegistryException {
-        WSIFMessage response = this.client.sendSOAPMessage(this.wsdlURL, new String[][] { { QNAME, wsdlQName } },
-                GET_ABSTRACT_WSDL);
-        return (String) response.getObjectPart(DESC_AS_STRING);
-    }
-
-    private static ArrayList<String> findArrayValue(String name, WSIFMessageElement response) {
-        XmlElement param = response.element(null, name);
-        if (param != null) {
-            Iterable it = param.elements(null, "value");
-            if (it != null) {
-                ArrayList<String> values = new ArrayList<String>();
-
-                Iterator arrayValues = it.iterator();
-                while (arrayValues.hasNext()) {
-                    values.add(((XmlElement) arrayValues.next()).requiredTextContent());
-                }
-                return values;
-            }
-        }
-        return null;
-    }
+//    /**
+//     * @param appDescAsStr
+//     * @throws ComponentRegistryException
+//     */
+//    public void registerAppDesc(String appDescAsStr) throws ComponentRegistryException {
+//        this.client.sendSOAPMessage(this.wsdlURL, new String[][] { { DESC_AS_STRING, appDescAsStr } },
+//                "registerAppDesc");
+//    }
+//
+//    /**
+//     * @param wsdlAsStr
+//     * @param lifetimeAsSeconds
+//     * @throws ComponentRegistryException
+//     */
+//    public void registerConcreteWsdl(String wsdlAsStr, int lifetimeAsSeconds) throws ComponentRegistryException {
+//        this.client.sendSOAPMessage(this.wsdlURL,
+//                new String[][] { { DESC_AS_STRING, wsdlAsStr }, { LIFE_TIME, String.valueOf(lifetimeAsSeconds) } },
+//                "registerConcreteWsdl");
+//
+//    }
+//
+//    /**
+//     * @param wsdlQName
+//     * @return The concrete WSDL
+//     * @throws ComponentRegistryException
+//     */
+//    public String getConcreteWsdl(String wsdlQName) throws ComponentRegistryException {
+//        WSIFMessage response = this.client.sendSOAPMessage(this.wsdlURL, new String[][] { { QNAME, wsdlQName } },
+//                "getConcreateWsdl");
+//        return (String) response.getObjectPart(DESC_AS_STRING);
+//    }
+//
+//    /**
+//     * @param wsdlQName
+//     * @throws ComponentRegistryException
+//     */
+//    public void removeConcreteWsdl(String wsdlQName) throws ComponentRegistryException {
+//        this.client.sendSOAPMessage(this.wsdlURL, new String[][] { { QNAME, wsdlQName } }, "removeConcreteWsdl");
+//
+//    }
+//
+//    /**
+//     * @param serviceName
+//     * @return The list of concreate WSDL QNames.
+//     * @throws ComponentRegistryException
+//     */
+//    public String[] findService(String serviceName) throws ComponentRegistryException {
+//        WSIFMessage response = this.client.sendSOAPMessage(this.wsdlURL, new String[][] { { QNAME, serviceName } },
+//                SEARCH_SERVICE_INSTANCE);
+//        return findArrayValue(RESULTS, (WSIFMessageElement) response).toArray(new String[] {});
+//    }
+//
+//    /**
+//     * @param serviceName
+//     * @return The list of abstract WSDL QNames.
+//     * @throws ComponentRegistryException
+//     */
+//    public String[] findServiceDesc(String serviceName) throws ComponentRegistryException {
+//        WSIFMessage response = this.client.sendSOAPMessage(this.wsdlURL, new String[][] { { QNAME, serviceName } },
+//                SEARCH_SERVIE);
+//        return findArrayValue(RESULTS, (WSIFMessageElement) response).toArray(new String[] {});
+//    }
+//
+//    /**
+//     * @param wsdlQName
+//     * @return The AWSDL.
+//     * @throws ComponentRegistryException
+//     */
+//    public String getAbstractWsdl(String wsdlQName) throws ComponentRegistryException {
+//        WSIFMessage response = this.client.sendSOAPMessage(this.wsdlURL, new String[][] { { QNAME, wsdlQName } },
+//                GET_ABSTRACT_WSDL);
+//        return (String) response.getObjectPart(DESC_AS_STRING);
+//    }
+//
+//    private static ArrayList<String> findArrayValue(String name, WSIFMessageElement response) {
+//        XmlElement param = response.element(null, name);
+//        if (param != null) {
+//            Iterable it = param.elements(null, "value");
+//            if (it != null) {
+//                ArrayList<String> values = new ArrayList<String>();
+//
+//                Iterator arrayValues = it.iterator();
+//                while (arrayValues.hasNext()) {
+//                    values.add(((XmlElement) arrayValues.next()).requiredTextContent());
+//                }
+//                return values;
+//            }
+//        }
+//        return null;
+//    }
 }

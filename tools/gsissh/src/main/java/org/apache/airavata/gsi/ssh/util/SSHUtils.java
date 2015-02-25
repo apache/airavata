@@ -97,7 +97,7 @@ public class SSHUtils {
         if (new File(lFile).isDirectory()) {
             prefix = lFile + File.separator;
         }
-        JSch jsch = new ExtendedJSch();
+        JSch jsch = new JSch();
 
         log.debug("Connecting to server - " + serverInfo.getHost() + ":" + serverInfo.getPort() + " with user name - "
                 + serverInfo.getUserName());
@@ -442,7 +442,7 @@ public class SSHUtils {
      * @param localFile  This is the local file to copy, this can be a directory too
      */
     public void scpFrom(String remoteFile, String localFile) throws SSHApiException {
-        JSch jsch = new ExtendedJSch();
+        JSch jsch = new JSch();
 
         log.debug("Connecting to server - " + serverInfo.getHost() + ":" + serverInfo.getPort() + " with user name - "
                 + serverInfo.getUserName());
