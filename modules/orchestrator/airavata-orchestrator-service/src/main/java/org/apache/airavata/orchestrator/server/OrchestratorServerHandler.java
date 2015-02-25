@@ -38,14 +38,19 @@ import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.core.scheduler.HostScheduler;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.messaging.core.MessageHandler;
+import org.apache.airavata.messaging.core.MessagingConstants;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.PublisherFactory;
+import org.apache.airavata.messaging.core.impl.RabbitMQProcessConsumer;
+import org.apache.airavata.messaging.core.impl.RabbitMQProcessPublisher;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.airavata.model.messaging.event.ProcessSubmitEvent;
 import org.apache.airavata.model.util.ExecutionType;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
@@ -61,6 +66,7 @@ import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.TaskDetai
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants;
 import org.apache.airavata.orchestrator.util.DataModelUtils;
 import org.apache.airavata.simple.workflow.engine.SimpleWorkflowInterpreter;
+import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
@@ -86,7 +92,10 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 	private String gatewayName;
 	private Publisher publisher;
 
-	/**
+    private RabbitMQProcessConsumer rabbitMQProcessConsumer;
+    private RabbitMQProcessPublisher rabbitMQProcessPublisher;
+
+    /**
 	 * Query orchestrator server to fetch the CPI version
 	 */
 	public String getOrchestratorCPIVersion() throws TException {
@@ -152,7 +161,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 			orchestrator.initialize();
 			orchestrator.getOrchestratorContext().setZk(this.zk);
 			orchestrator.getOrchestratorContext().setPublisher(this.publisher);
-		} catch (OrchestratorException e) {
+            startProcessConsumer();
+        } catch (OrchestratorException e) {
             log.error(e.getMessage(), e);
             throw new OrchestratorException("Error while initializing orchestrator service", e);
 		} catch (RegistryException e) {
@@ -160,6 +170,19 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
             throw new OrchestratorException("Error while initializing orchestrator service", e);
 		}
 	}
+
+    private void startProcessConsumer() throws OrchestratorException {
+        try {
+            rabbitMQProcessConsumer = new RabbitMQProcessConsumer();
+            ProcessConsumer processConsumer = new ProcessConsumer();
+            Thread thread = new Thread(processConsumer);
+            thread.start();
+
+        } catch (AiravataException e) {
+            throw new OrchestratorException("Error while starting process consumer", e);
+        }
+
+    }
 
     private void registerOrchestratorService(String airavataServerHostPort, String orchServer) throws KeeperException, InterruptedException {
         Stat zkStat = zk.exists(orchServer, false);
@@ -627,6 +650,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
         }
         return true;
     }
+
     private void launchWorkflowExperiment(String experimentId, String airavataCredStoreToken) throws TException {
 //    	try {
 //			WorkflowEngine workflowEngine = WorkflowEngineFactory.getWorkflowEngine();
@@ -634,15 +658,25 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 //		} catch (WorkflowEngineException e) {
 //            log.errorId(experimentId, "Error while launching experiment.", e);
 //        }
-
         try {
-            SimpleWorkflowInterpreter simpleWorkflowInterpreter = new SimpleWorkflowInterpreter(experimentId, airavataCredStoreToken);
+            SimpleWorkflowInterpreter simpleWorkflowInterpreter = new SimpleWorkflowInterpreter(
+                    experimentId, airavataCredStoreToken,getGatewayName(), getRabbitMQProcessPublisher());
+
             Thread thread = new Thread(simpleWorkflowInterpreter);
             thread.start();
 //            simpleWorkflowInterpreter.run();
         } catch (RegistryException e) {
             log.error("Error while launching workflow", e);
+        } catch (Exception e) {
+            log.error("Error while initializing rabbit mq process publisher");
         }
+    }
+
+    public synchronized RabbitMQProcessPublisher getRabbitMQProcessPublisher() throws Exception {
+        if (rabbitMQProcessPublisher == null) {
+            rabbitMQProcessPublisher = new RabbitMQProcessPublisher();
+        }
+        return rabbitMQProcessPublisher;
     }
 
 
@@ -729,6 +763,40 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
                 throw new TException(e);
             }
             return true;
+        }
+    }
+
+    private class ProcessConsumer implements Runnable, MessageHandler{
+
+
+        @Override
+        public void run() {
+            try {
+                rabbitMQProcessConsumer.listen(this);
+            } catch (AiravataException e) {
+                log.error("Error while listen to the RabbitMQProcessConsumer");
+            }
+        }
+
+        @Override
+        public Map<String, Object> getProperties() {
+            Map<String, Object> props = new HashMap<String, Object>();
+            props.put(MessagingConstants.RABBIT_QUEUE, RabbitMQProcessPublisher.PROCESS);
+            props.put(MessagingConstants.RABBIT_ROUTING_KEY, RabbitMQProcessPublisher.PROCESS);
+            return props;
+        }
+
+        @Override
+        public void onMessage(MessageContext msgCtx) {
+            TBase event = msgCtx.getEvent();
+            if (event instanceof ProcessSubmitEvent) {
+                ProcessSubmitEvent processSubmitEvent = (ProcessSubmitEvent) event;
+                try {
+                    launchTask(processSubmitEvent.getTaskId(), processSubmitEvent.getCredentialToken());
+                } catch (TException e) {
+                    log.error("Error while launching task : " + processSubmitEvent.getTaskId());
+                }
+            }
         }
     }
 
