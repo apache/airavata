@@ -187,11 +187,9 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
                 String[] split = gfacNodeData.split(":");
                 if (zk.exists(gfacServer + File.separator + pickedChild, false) != null) {
                     // before submitting the job we check again the state of the node
-                    if (GFacUtils.createExperimentEntryForRPC(experimentID, taskID, zk, experimentNode, pickedChild, null)) {
-                        TaskSubmitEvent taskSubmitEvent = new TaskSubmitEvent(experimentID, taskID, null,null);
-                        MessageContext messageContext = new MessageContext(taskSubmitEvent, MessageType.LAUNCHTASK,"LAUNCH.TERMINATE-"+ UUID.randomUUID().toString(),null);
-                        publisher.publish(messageContext);
-                    }
+                    TaskSubmitEvent taskSubmitEvent = new TaskSubmitEvent(experimentID, taskID, null, null);
+                    MessageContext messageContext = new MessageContext(taskSubmitEvent, MessageType.TERMINATETASK, "LAUNCH.TERMINATE-" + UUID.randomUUID().toString(), null);
+                    publisher.publish(messageContext);
                 }
             }
         } catch (InterruptedException e) {
@@ -217,6 +215,8 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
     }
 
     synchronized public void process(WatchedEvent event) {
+        logger.info(getClass().getName() + event.getPath());
+        logger.info(getClass().getName()+event.getType());
         synchronized (mutex) {
             switch (event.getState()) {
                 case SyncConnected:

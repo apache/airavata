@@ -32,6 +32,7 @@ public class MessageContext {
     private final String messageId;
     private final String gatewayId;
     private Timestamp updatedTime;
+    private long deliveryTag;
 
 
     public MessageContext(TBase message, MessageType type, String messageId, String gatewayId) {
@@ -39,6 +40,14 @@ public class MessageContext {
         this.type = type;
         this.messageId = messageId;
         this.gatewayId = gatewayId;
+    }
+
+    public MessageContext(TBase event, MessageType type, String messageId, String gatewayId, long deliveryTag) {
+        this.event = event;
+        this.type = type;
+        this.messageId = messageId;
+        this.gatewayId = gatewayId;
+        this.deliveryTag = deliveryTag;
     }
 
     public TBase getEvent() {
@@ -63,5 +72,13 @@ public class MessageContext {
 
     public String getGatewayId() {
         return gatewayId;
+    }
+
+    public long getDeliveryTag() {
+        return deliveryTag;
+    }
+
+    public void setDeliveryTag(long deliveryTag) {
+        this.deliveryTag = deliveryTag;
     }
 }

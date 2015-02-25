@@ -60,12 +60,14 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 import java.util.*;
 
 //import org.apache.airavata.commons.gfac.type.ActualParameter;
 
 public class GFacUtils {
 	private final static Logger log = LoggerFactory.getLogger(GFacUtils.class);
+	public static final String DELIVERY_TAG_POSTFIX = "-deliveryTag";
 
 	private GFacUtils() {
 	}
@@ -1156,7 +1158,7 @@ public class GFacUtils {
 	// This method is dangerous because of moving the experiment data
 	public static boolean createExperimentEntryForPassive(String experimentID,
 													  String taskID, ZooKeeper zk, String experimentNode,
-													  String pickedChild, String tokenId) throws KeeperException,
+													  String pickedChild, String tokenId,long deliveryTag) throws KeeperException,
 			InterruptedException {
 		String experimentPath = experimentNode + File.separator + pickedChild;
 		String newExpNode = experimentPath + File.separator + experimentID
@@ -1165,15 +1167,14 @@ public class GFacUtils {
 		String experimentEntry = GFacUtils.findExperimentEntry(experimentID, taskID, zk);
 		String foundExperimentPath = null;
 		if (exists1 == null && experimentEntry == null) {  // this means this is a very new experiment
-			List<String> runningGfacNodeNames = AiravataZKUtils
-					.getAllGfacNodeNames(zk); // here we take old gfac servers
-			// too
+			List<String> runningGfacNodeNames = AiravataZKUtils.getAllGfacNodeNames(zk); // here we take old gfac servers
+
 			for (String gfacServerNode : runningGfacNodeNames) {
 				if (!gfacServerNode.equals(pickedChild)) {
 					foundExperimentPath = experimentNode + File.separator
 							+ gfacServerNode + File.separator + experimentID
 							+ "+" + taskID;
-					exists1 = zk.exists(foundExperimentPath, false);
+					exists1 = zk.exists(foundExperimentPath, true);
 					if (exists1 != null) { // when the experiment is found we
 						// break the loop
 						break;
@@ -1183,21 +1184,23 @@ public class GFacUtils {
 			if (exists1 == null) { // OK this is a pretty new experiment so we
 				// are going to create a new node
 				log.info("This is a new Job, so creating all the experiment docs from the scratch");
+				Stat expParent = zk.exists(newExpNode, false);
 				zk.create(newExpNode, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
 						CreateMode.PERSISTENT);
 
-				Stat expParent = zk.exists(newExpNode, false);
 				if (tokenId != null && expParent != null) {
 					zk.setData(newExpNode, tokenId.getBytes(),
 							expParent.getVersion());
 				}
-				zk.create(newExpNode + File.separator + "state", String
+				String s = zk.create(newExpNode + File.separator + "state", String
 								.valueOf(GfacExperimentState.LAUNCHED.getValue())
 								.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
 						CreateMode.PERSISTENT);
-				zk.create(newExpNode + File.separator + "operation","submit".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
+				String s1 = zk.create(newExpNode + File.separator + "operation", "submit".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
 						CreateMode.PERSISTENT);
-
+				zk.exists(s1, true);// we want to know when this node get deleted
+				String s2 = zk.create(newExpNode + DELIVERY_TAG_POSTFIX, ByteBuffer.allocate(8).putLong(deliveryTag).array(), ZooDefs.Ids.OPEN_ACL_UNSAFE,  // here we store the value of delivery message
+						CreateMode.PERSISTENT);
 			} else {
 				// ohhh this node exists in some other failed gfac folder, we
 				// have to move it to this gfac experiment list,safely

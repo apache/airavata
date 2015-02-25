@@ -47,17 +47,17 @@ import java.util.*;
 public class CreateLaunchExperiment {
 
     //FIXME: Read from a config file
-//    public static final String THRIFT_SERVER_HOST = "localhost";
-//    public static final int THRIFT_SERVER_PORT = 8930;
-	public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
-	public static final int THRIFT_SERVER_PORT = 9930;
+    public static final String THRIFT_SERVER_HOST = "localhost";
+    public static final int THRIFT_SERVER_PORT = 8930;
+//	public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
+//	public static final int THRIFT_SERVER_PORT = 9930;
 	
     private final static Logger logger = LoggerFactory.getLogger(CreateLaunchExperiment.class);
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_a8fc8511-7b8e-431a-ad0f-de5eb1a9c576";
+    private static String echoAppId = "Echo_1365a7fd-eae1-4575-b447-99afb4d79c82";
     private static String mpiAppId = "HelloMPI_720e159f-198f-4daa-96ca-9f5eafee92c9";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
     private static String amberAppId = "Amber_42124128-628b-484c-829d-aff8b584eb00";
@@ -93,7 +93,7 @@ public class CreateLaunchExperiment {
 //        final String expId = createEchoExperimentForFSD(airavataClient);
         List<String> experimentIds = new ArrayList<String>();
         try {
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 1; i++) {
 //                final String expId = createExperimentForSSHHost(airavata);
 //                final String expId = createEchoExperimentForFSD(airavataClient);
 //                final String expId = createMPIExperimentForFSD(airavataClient);
@@ -120,12 +120,11 @@ public class CreateLaunchExperiment {
                 launchExperiment(airavataClient, expId);
             }
 
-            Thread.sleep(10000);
-
-            for(String exId:experimentIds) {
-                Experiment experiment = airavataClient.getExperiment(exId);
-                System.out.println(experiment.getExperimentStatus().toString());
-            }
+            Thread.sleep(100);
+                for (String exId : experimentIds) {
+                    Experiment experiment = airavataClient.getExperiment(exId);
+                    System.out.println(experiment.getExperimentStatus().toString());
+                }
 
 
         } catch (Exception e) {

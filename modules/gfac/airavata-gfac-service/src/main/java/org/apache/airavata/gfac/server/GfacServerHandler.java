@@ -65,8 +65,6 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
     private Registry registry;
     private AppCatalog appCatalog;
 
-    private String registryURL;
-
     private String gatewayName;
 
     private String airavataUserName;
@@ -144,12 +142,13 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                     CreateMode.PERSISTENT);
         }
         String instanceId = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME);
-        String instantNode = gfacServer + File.separator + instanceId;
-        zkStat = zk.exists(instantNode, true);
+        String instanceNode = gfacServer + File.separator + instanceId;
+        zkStat = zk.exists(instanceNode, true);
         if (zkStat == null) {
-            zk.create(instantNode,
+            zk.create(instanceNode,
                     airavataServerHostPort.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
                     CreateMode.EPHEMERAL);      // other component will watch these childeren creation deletion to monitor the status of the node
+            zk.getChildren(instanceNode, true);
         }
         zkStat = zk.exists(gfacExperiments, false);
         if (zkStat == null) {
@@ -168,6 +167,8 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
     }
 
     synchronized public void process(WatchedEvent watchedEvent) {
+        logger.info(watchedEvent.getPath());
+        logger.info(watchedEvent.getType().toString());
         synchronized (mutex) {
             Event.KeeperState state = watchedEvent.getState();
             logger.info(state.name());
@@ -191,8 +192,37 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                 } catch (KeeperException e) {
                     logger.error(e.getMessage(), e);
                 }
+            } else if (Event.EventType.NodeDeleted.equals(watchedEvent.getType())) {
+                String path = watchedEvent.getPath();
+                String experimentNode = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
+                if (path.startsWith(experimentNode)) {
+                    // we got a watch when experiment is removed
+                    String deliveryPath = path + GFacUtils.DELIVERY_TAG_POSTFIX;
+                    try {
+                        Stat exists = zk.exists(deliveryPath, false);
+                        byte[] data = zk.getData(path + GFacUtils.DELIVERY_TAG_POSTFIX, false, exists);
+                        long value = ByateArrayToLong(data);
+                        logger.info("ExperimentId+taskId" + path);
+                        logger.info("Sending Ack back to the Queue, because task is over");
+                        rabbitMQTaskLaunchConsumer.sendAck(value);
+                        ZKUtil.deleteRecursive(zk,deliveryPath);
+                    } catch (KeeperException e) {
+                        logger.error(e.getMessage(), e);
+                    } catch (InterruptedException e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                }
             }
         }
+    }
+
+    private long ByateArrayToLong(byte[] data) {
+        long value = 0;
+        for (int i = 0; i < data.length; i++)
+        {
+            value += ((long) data[i] & 0xffL) << (8 * i);
+        }
+        return value;
     }
 
     public String getGFACServiceVersion() throws TException {
@@ -314,12 +344,18 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                     experimentNode = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
 
                     try {
-                        GFacUtils.createExperimentEntryForRPC(event.getExperimentId(), event.getTaskId(), zk, experimentNode, nodeName, event.getTokenId());
+                        GFacUtils.createExperimentEntryForPassive(event.getExperimentId(), event.getTaskId(), zk, experimentNode, nodeName, event.getTokenId(), message.getDeliveryTag());
+                        AiravataZKUtils.getExpStatePath(event.getExperimentId(),event.getTaskId());
                         submitJob(event.getExperimentId(), event.getTaskId(), event.getGatewayId());
                     } catch (KeeperException e) {
                         logger.error(nodeName + " was interrupted.");
+                        rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
                     } catch (InterruptedException e) {
                         logger.error(e.getMessage(), e);
+                        rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
+                    } catch (ApplicationSettingsException e) {
+                        logger.error(e.getMessage(), e);
+                        rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
                     }
                     System.out.println(" Message Received with message id '" + message.getMessageId()
                             + "' and with message type '" + message.getType());
