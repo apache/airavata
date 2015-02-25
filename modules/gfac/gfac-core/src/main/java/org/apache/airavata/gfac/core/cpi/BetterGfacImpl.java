@@ -1158,6 +1158,7 @@ public class BetterGfacImpl implements GFac,Watcher {
     }
 
     public void process(WatchedEvent watchedEvent) {
+        log.info(watchedEvent.getPath());
         if(Event.EventType.NodeDataChanged.equals(watchedEvent.getType())){
             // node data is changed, this means node is cancelled.
             log.info("Experiment is cancelled with this path:"+watchedEvent.getPath());

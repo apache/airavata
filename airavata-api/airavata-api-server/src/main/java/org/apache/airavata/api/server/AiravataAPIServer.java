@@ -299,6 +299,7 @@ public class AiravataAPIServer implements IServer, Watcher{
 
     @Override
     synchronized public void process(WatchedEvent watchedEvent) {
+        logger.info(watchedEvent.getPath());
         synchronized (mutex) {
             Event.KeeperState state = watchedEvent.getState();
             logger.info(state.name());

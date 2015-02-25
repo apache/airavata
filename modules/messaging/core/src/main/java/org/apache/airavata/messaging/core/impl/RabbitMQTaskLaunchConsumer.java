@@ -165,7 +165,7 @@ public class RabbitMQTaskLaunchConsumer {
                             event = taskTerminateEvent;
                             gatewayId = null;
                         }
-                        MessageContext messageContext = new MessageContext(event, message.getMessageType(), message.getMessageId(), gatewayId);
+                        MessageContext messageContext = new MessageContext(event, message.getMessageType(), message.getMessageId(), gatewayId,deliveryTag);
                         messageContext.setUpdatedTime(AiravataUtils.getTime(message.getUpdatedTime()));
                         handler.onMessage(messageContext);
                         try {
@@ -239,6 +239,14 @@ public class RabbitMQTaskLaunchConsumer {
                 connection.close();
             } catch (IOException ignore) {
             }
+        }
+    }
+
+    public void sendAck(long deliveryTag){
+        try {
+            channel.basicAck(deliveryTag,false); //todo move this logic to monitoring component to ack when the job is done
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
         }
     }
 }

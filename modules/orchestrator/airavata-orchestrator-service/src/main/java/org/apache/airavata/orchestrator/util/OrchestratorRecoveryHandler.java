@@ -95,6 +95,7 @@ public class OrchestratorRecoveryHandler implements Watcher {
     }
 
     synchronized public void process(WatchedEvent watchedEvent) {
+        log.info(watchedEvent.getPath());
         synchronized (mutex) {
             Event.KeeperState state = watchedEvent.getState();
             switch (state) {

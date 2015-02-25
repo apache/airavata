@@ -29,6 +29,7 @@ import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
 import org.apache.airavata.gfac.core.monitor.state.GfacExperimentStateChangeRequest;
+import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
@@ -49,6 +50,7 @@ public class GfacInternalStatusUpdator implements AbstractActivityListener, Watc
         MonitorID monitorID = statusChangeRequest.getMonitorID();
         String experimentPath = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments") +
                 File.separator + ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME) + File.separator + statusChangeRequest.getMonitorID().getExperimentID() + "+" + monitorID.getTaskID();
+        String deliveryTagPath = experimentPath + GFacUtils.DELIVERY_TAG_POSTFIX;
         Stat exists = null;
         try {
             if (!zk.getState().isConnected()) {
@@ -107,6 +109,7 @@ public class GfacInternalStatusUpdator implements AbstractActivityListener, Watc
     }
 
     public void process(WatchedEvent watchedEvent) {
+        logger.info(watchedEvent.getPath());
         synchronized (mutex) {
             Event.KeeperState state = watchedEvent.getState();
             if (state == Event.KeeperState.SyncConnected) {
