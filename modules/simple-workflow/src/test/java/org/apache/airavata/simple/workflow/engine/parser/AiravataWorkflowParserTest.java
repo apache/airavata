@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class AiravataDefaultParserTest {
+public class AiravataWorkflowParserTest {
 
     @Before
     public void setUp() throws Exception {
@@ -86,7 +86,7 @@ public class AiravataDefaultParserTest {
         inputs.add(z);
         experiment.setExperimentInputs(inputs);
         // create parser
-        AiravataDefaultParser parser = new AiravataDefaultParser(experiment, "testCredentialId");
+        AiravataWorkflowParser parser = new AiravataWorkflowParser(experiment, "testCredentialId");
         List<WorkflowInputNode> workflowInputNodes = parser.parseWorkflow(workflow);
         Assert.assertNotNull(workflowInputNodes);
         Assert.assertEquals(3, workflowInputNodes.size());

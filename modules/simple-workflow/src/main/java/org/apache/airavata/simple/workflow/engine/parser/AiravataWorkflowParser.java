@@ -65,22 +65,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AiravataDefaultParser implements WorkflowParser {
+public class AiravataWorkflowParser implements WorkflowParser {
 
     private String credentialToken ;
-    private Workflow workflow;
-
 
     private Experiment experiment;
     private Map<String, WorkflowNode> wfNodes = new HashMap<String, WorkflowNode>();
 
 
-    public AiravataDefaultParser(String experimentId, String credentialToken) throws RegistryException {
+    public AiravataWorkflowParser(String experimentId, String credentialToken) throws RegistryException {
         this.experiment = getExperiment(experimentId);
         this.credentialToken = credentialToken;
     }
 
-    public AiravataDefaultParser(Experiment experiment, String credentialToken) {
+    public AiravataWorkflowParser(Experiment experiment, String credentialToken) {
         this.credentialToken = credentialToken;
         this.experiment = experiment;
     }
@@ -206,7 +204,7 @@ public class AiravataDefaultParser implements WorkflowParser {
         OutputDataObjectType outputDataObjectType = new OutputDataObjectType();
         if (dataPort instanceof WSPort) {
             WSPort wsPort = (WSPort) dataPort;
-            outputDataObjectType.setName(wsPort.getFromNode().getName());
+            outputDataObjectType.setName(wsPort.getComponentPort().getName());
             outputDataObjectType.setType(wsPort.getType());
         }else if (dataPort instanceof SystemDataPort) {
             SystemDataPort sysPort = (SystemDataPort) dataPort;

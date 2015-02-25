@@ -25,12 +25,12 @@ import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.simple.workflow.engine.dag.nodes.WorkflowNode;
 
-public class ProcessPack {
+public class ProcessContext {
     private WorkflowNode workflowNode;
     private WorkflowNodeDetails wfNodeDetails;
     private TaskDetails taskDetails;
 
-    public ProcessPack(WorkflowNode workflowNode, WorkflowNodeDetails wfNodeDetails, TaskDetails taskDetails) {
+    public ProcessContext(WorkflowNode workflowNode, WorkflowNodeDetails wfNodeDetails, TaskDetails taskDetails) {
         this.workflowNode = workflowNode;
         this.wfNodeDetails = wfNodeDetails;
         this.taskDetails = taskDetails;

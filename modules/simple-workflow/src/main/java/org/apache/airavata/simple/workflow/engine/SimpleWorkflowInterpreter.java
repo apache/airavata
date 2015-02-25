@@ -21,10 +21,16 @@
 
 package org.apache.airavata.simple.workflow.engine;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.messaging.core.MessageHandler;
+import org.apache.airavata.messaging.core.MessagingConstants;
+import org.apache.airavata.messaging.core.impl.RabbitMQProcessPublisher;
+import org.apache.airavata.messaging.core.impl.RabbitMQStatusConsumer;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.airavata.model.messaging.event.ProcessSubmitEvent;
 import org.apache.airavata.model.messaging.event.TaskIdentifier;
 import org.apache.airavata.model.messaging.event.TaskOutputChangeEvent;
 import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
@@ -45,11 +51,11 @@ import org.apache.airavata.simple.workflow.engine.dag.edge.Edge;
 import org.apache.airavata.simple.workflow.engine.dag.nodes.ApplicationNode;
 import org.apache.airavata.simple.workflow.engine.dag.nodes.NodeState;
 import org.apache.airavata.simple.workflow.engine.dag.nodes.WorkflowInputNode;
-import org.apache.airavata.simple.workflow.engine.dag.nodes.WorkflowOutputNode;
-import org.apache.airavata.simple.workflow.engine.parser.AiravataDefaultParser;
 import org.apache.airavata.simple.workflow.engine.dag.nodes.WorkflowNode;
+import org.apache.airavata.simple.workflow.engine.dag.nodes.WorkflowOutputNode;
 import org.apache.airavata.simple.workflow.engine.dag.port.InPort;
 import org.apache.airavata.simple.workflow.engine.dag.port.OutPort;
+import org.apache.airavata.simple.workflow.engine.parser.AiravataWorkflowParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,32 +70,36 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SimpleWorkflowInterpreter implements Runnable{
 
     private static final Logger log = LoggerFactory.getLogger(SimpleWorkflowInterpreter.class);
-
     private List<WorkflowInputNode> workflowInputNodes;
 
     private Experiment experiment;
 
     private String credentialToken;
 
+    private String gatewayName;
+
     private Map<String, WorkflowNode> readList = new ConcurrentHashMap<String, WorkflowNode>();
     private Map<String, WorkflowNode> waitingList = new ConcurrentHashMap<String, WorkflowNode>();
-    private Map<String, ProcessPack> processingQueue = new ConcurrentHashMap<String, ProcessPack>();
-    private Map<String, ProcessPack> completeList = new HashMap<String, ProcessPack>();
+    private Map<String, ProcessContext> processingQueue = new ConcurrentHashMap<String, ProcessContext>();
+    private Map<String, ProcessContext> completeList = new HashMap<String, ProcessContext>();
     private Registry registry;
-    private EventBus eventBus = new EventBus();
     private List<WorkflowOutputNode> completeWorkflowOutputs = new ArrayList<WorkflowOutputNode>();
+    private RabbitMQProcessPublisher publisher;
+    private RabbitMQStatusConsumer statusConsumer;
+    private String consumerId;
 
-    public SimpleWorkflowInterpreter(String experimentId, String credentialToken) throws RegistryException {
+    public SimpleWorkflowInterpreter(String experimentId, String credentialToken, String gatewayName, RabbitMQProcessPublisher publisher) throws RegistryException {
+        this.gatewayName = gatewayName;
         setExperiment(experimentId);
         this.credentialToken = credentialToken;
+        this.publisher = publisher;
     }
 
-    public SimpleWorkflowInterpreter(Experiment experiment, String credentialStoreToken) {
-        // read the workflow file and build the topology to a DAG. Then execute that dag
-        // get workflowInputNode list and start processing
-        // next() will return ready task and block the thread if no task in ready state.
+    public SimpleWorkflowInterpreter(Experiment experiment, String credentialStoreToken, String gatewayName, RabbitMQProcessPublisher publisher) {
+        this.gatewayName = gatewayName;
         this.experiment = experiment;
         this.credentialToken = credentialStoreToken;
+        this.publisher = publisher;
     }
 
 
@@ -97,11 +107,15 @@ public class SimpleWorkflowInterpreter implements Runnable{
         // process workflow input nodes
 //        WorkflowFactoryImpl wfFactory = WorkflowFactoryImpl.getInstance();
 //        WorkflowParser workflowParser = wfFactory.getWorkflowParser(experiment.getExperimentID(), credentialToken);
-        WorkflowParser workflowParser = new AiravataDefaultParser(experiment, credentialToken);
+        WorkflowParser workflowParser = new AiravataWorkflowParser(experiment, credentialToken);
         log.debug("Initialized workflow parser");
         setWorkflowInputNodes(workflowParser.parse());
         log.debug("Parsed the workflow and got the workflow input nodes");
         processWorkflowInputNodes(getWorkflowInputNodes());
+
+
+        statusConsumer = new RabbitMQStatusConsumer();
+        consumerId = statusConsumer.listen(new TaskMessageHandler());
     }
 
     // try to remove synchronization tag
@@ -116,56 +130,31 @@ public class SimpleWorkflowInterpreter implements Runnable{
                 }
                 WorkflowNodeDetails workflowNodeDetails = createWorkflowNodeDetails(readyNode);
                 TaskDetails process = getProcess(workflowNodeDetails);
-                ProcessPack processPack = new ProcessPack(readyNode, workflowNodeDetails, process);
-                addToProcessingQueue(processPack);
-//                publishToProcessQueue(process);
-                publishToProcessQueue(processPack);
+                ProcessContext processContext = new ProcessContext(readyNode, workflowNodeDetails, process);
+                addToProcessingQueue(processContext);
+                publishToProcessQueue(process);
+//                publishToProcessQueue(processPack);
             } catch (RegistryException e) {
                 // FIXME : handle this exception
+            } catch (AiravataException e) {
+                log.error("Error while publishing process to the process queue");
             }
         }
     }
 
 
-    private void publishToProcessQueue(TaskDetails process) {
-        Thread thread = new Thread(new TempPublisher(process, eventBus));
-        thread.start();
+    private void publishToProcessQueue(TaskDetails process) throws AiravataException {
+        ProcessSubmitEvent processSubmitEvent = new ProcessSubmitEvent();
+        processSubmitEvent.setCredentialToken(credentialToken);
+        processSubmitEvent.setTaskId(process.getTaskID());
+        MessageContext messageContext = new MessageContext(processSubmitEvent, MessageType.TASK, process.getTaskID(), null);
+        messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+        publisher.publish(messageContext);
+
+
+//        Thread thread = new Thread(new TempPublisher(process, eventBus));
+//        thread.start();
         //TODO: publish to process queue.
-    }
-
-    // TODO : remove this test method
-    private void publishToProcessQueue(ProcessPack process) {
-        WorkflowNode workflowNode = process.getWorkflowNode();
-        if (workflowNode instanceof ApplicationNode) {
-            ApplicationNode applicationNode = (ApplicationNode) workflowNode;
-            List<InPort> inputPorts = applicationNode.getInputPorts();
-            if (applicationNode.getName().equals("Add")) {
-                applicationNode.getOutputPorts().get(0).getOutputObject().setValue(String.valueOf(
-                        Integer.parseInt(inputPorts.get(0).getInputObject().getValue()) + Integer.parseInt(inputPorts.get(1).getInputObject().getValue())));
-            } else if (applicationNode.getName().equals("Multiply")) {
-                applicationNode.getOutputPorts().get(0).getOutputObject().setValue(String.valueOf(
-                        Integer.parseInt(inputPorts.get(0).getInputObject().getValue()) * Integer.parseInt(inputPorts.get(1).getInputObject().getValue())));
-            } else if (applicationNode.getName().equals("Subtract")) {
-                applicationNode.getOutputPorts().get(0).getOutputObject().setValue(String.valueOf(
-                        Integer.parseInt(inputPorts.get(0).getInputObject().getValue()) - Integer.parseInt(inputPorts.get(1).getInputObject().getValue())));
-            } else {
-                throw new RuntimeException("Invalid Application name");
-            }
-
-            for (Edge edge : applicationNode.getOutputPorts().get(0).getOutEdges()) {
-                WorkflowUtil.copyValues(applicationNode.getOutputPorts().get(0).getOutputObject(), edge.getToPort().getInputObject());
-                if (edge.getToPort().getNode().isReady()) {
-                    addToReadyQueue(edge.getToPort().getNode());
-                } else {
-                    addToWaitingQueue(edge.getToPort().getNode());
-                }
-            }
-        } else if (workflowNode instanceof WorkflowOutputNode) {
-            WorkflowOutputNode wfOutputNode = (WorkflowOutputNode) workflowNode;
-            throw new RuntimeException("Workflow output node in processing queue");
-        }
-
-        processingQueue.remove(process.getTaskDetails().getTaskID());
     }
 
     private TaskDetails getProcess(WorkflowNodeDetails wfNodeDetails) throws RegistryException {
@@ -242,12 +231,6 @@ public class SimpleWorkflowInterpreter implements Runnable{
         this.workflowInputNodes = workflowInputNodes;
     }
 
-
-    private List<WorkflowInputNode> parseWorkflowDescription(){
-        return null;
-    }
-
-
     private Registry getRegistry() throws RegistryException {
         if (registry==null){
             registry = RegistryFactory.getDefaultRegistry();
@@ -263,93 +246,6 @@ public class SimpleWorkflowInterpreter implements Runnable{
         WorkflowNodeStatus status = ExperimentModelUtil.createWorkflowNodeStatus(state);
         wfNodeDetails.setWorkflowNodeStatus(status);
         getRegistry().update(RegistryModelType.WORKFLOW_NODE_STATUS, status, wfNodeDetails.getNodeInstanceId());
-    }
-
-    @Subscribe
-    public void taskOutputChanged(TaskOutputChangeEvent taskOutputEvent){
-        String taskId = taskOutputEvent.getTaskIdentity().getTaskId();
-        log.debug("Task Output changed event received for workflow node : " +
-                taskOutputEvent.getTaskIdentity().getWorkflowNodeId() + ", task : " + taskId);
-        ProcessPack processPack = processingQueue.get(taskId);
-        Set<WorkflowNode> tempWfNodeSet = new HashSet<WorkflowNode>();
-        if (processPack != null) {
-            WorkflowNode workflowNode = processPack.getWorkflowNode();
-            if (workflowNode instanceof ApplicationNode) {
-                ApplicationNode applicationNode = (ApplicationNode) workflowNode;
-                // Workflow node can have one to many output ports and each output port can have one to many links
-                for (OutPort outPort : applicationNode.getOutputPorts()) {
-                    for (OutputDataObjectType outputDataObjectType : taskOutputEvent.getOutput()) {
-                        if (outPort.getOutputObject().getName().equals(outputDataObjectType.getName())) {
-                            outPort.getOutputObject().setValue(outputDataObjectType.getValue());
-                            break;
-                        }
-                    }
-                    for (Edge edge : outPort.getOutEdges()) {
-                        WorkflowUtil.copyValues(outPort.getOutputObject(), edge.getToPort().getInputObject());
-                        if (edge.getToPort().getNode().isReady()) {
-                            addToReadyQueue(edge.getToPort().getNode());
-                        }
-                    }
-                }
-            }
-            processingQueue.remove(taskId);
-            log.debug("removed task from processing queue : " + taskId);
-        }
-
-    }
-
-    @Subscribe
-    public void taskStatusChanged(TaskStatusChangeEvent taskStatus){
-        String taskId = taskStatus.getTaskIdentity().getTaskId();
-        ProcessPack processPack = processingQueue.get(taskId);
-        if (processPack != null) {
-            WorkflowNodeState wfNodeState = WorkflowNodeState.UNKNOWN;
-            switch (taskStatus.getState()) {
-                case WAITING:
-                    break;
-                case STARTED:
-                    break;
-                case PRE_PROCESSING:
-                    processPack.getWorkflowNode().setState(NodeState.PRE_PROCESSING);
-                    break;
-                case INPUT_DATA_STAGING:
-                    processPack.getWorkflowNode().setState(NodeState.PRE_PROCESSING);
-                    break;
-                case EXECUTING:
-                    processPack.getWorkflowNode().setState(NodeState.EXECUTING);
-                    break;
-                case OUTPUT_DATA_STAGING:
-                    processPack.getWorkflowNode().setState(NodeState.POST_PROCESSING);
-                    break;
-                case POST_PROCESSING:
-                    processPack.getWorkflowNode().setState(NodeState.POST_PROCESSING);
-                    break;
-                case COMPLETED:
-                    processPack.getWorkflowNode().setState(NodeState.EXECUTED);
-                    break;
-                case FAILED:
-                    processPack.getWorkflowNode().setState(NodeState.FAILED);
-                    break;
-                case UNKNOWN:
-                    break;
-                case CONFIGURING_WORKSPACE:
-                    break;
-                case CANCELED:
-                case CANCELING:
-                    processPack.getWorkflowNode().setState(NodeState.FAILED);
-                    break;
-                default:
-                    break;
-            }
-            if (wfNodeState != WorkflowNodeState.UNKNOWN) {
-                try {
-                    updateWorkflowNodeStatus(processPack.getWfNodeDetails(), wfNodeState);
-                } catch (RegistryException e) {
-                    // TODO: handle this.
-                }
-            }
-        }
-
     }
 
     /**
@@ -368,16 +264,16 @@ public class SimpleWorkflowInterpreter implements Runnable{
     /**
      * First remove the node from ready list and then add the WfNodeContainer to the process queue.
      * Note that underline data structure of the process queue is a Map.
-     * @param processPack - has both workflow and correspond workflowNodeDetails and TaskDetails
+     * @param processContext - has both workflow and correspond workflowNodeDetails and TaskDetails
      */
-    private synchronized void addToProcessingQueue(ProcessPack processPack) {
-        readList.remove(processPack.getWorkflowNode().getId());
-        processingQueue.put(processPack.getTaskDetails().getTaskID(), processPack);
+    private synchronized void addToProcessingQueue(ProcessContext processContext) {
+        readList.remove(processContext.getWorkflowNode().getId());
+        processingQueue.put(processContext.getTaskDetails().getTaskID(), processContext);
     }
 
-    private synchronized void addToCompleteQueue(ProcessPack processPack) {
-        processingQueue.remove(processPack.getTaskDetails().getTaskID());
-        completeList.put(processPack.getTaskDetails().getTaskID(), processPack);
+    private synchronized void addToCompleteQueue(ProcessContext processContext) {
+        processingQueue.remove(processContext.getTaskDetails().getTaskID());
+        completeList.put(processContext.getTaskDetails().getTaskID(), processContext);
     }
 
 
@@ -388,7 +284,6 @@ public class SimpleWorkflowInterpreter implements Runnable{
 
     @Override
     public void run() {
-        // TODO: Auto generated method body.
         try {
             log.debug("Launching workflow");
             launchWorkflow();
@@ -396,8 +291,11 @@ public class SimpleWorkflowInterpreter implements Runnable{
                 processReadyList();
                 Thread.sleep(1000);
             }
+            log.info("Successfully launched workflow for experiment : " + getExperiment().getExperimentID());
+            statusConsumer.stopListen(consumerId);
+            log.info("Successfully un-bind status consumer for experiment " + getExperiment().getExperimentID());
         } catch (Exception e) {
-            e.printStackTrace();
+           //TODO - handle this.
         }
     }
 
@@ -406,65 +304,129 @@ public class SimpleWorkflowInterpreter implements Runnable{
         log.debug("Retrieve Experiment for experiment id : " + experimentId);
     }
 
+    class TaskMessageHandler implements MessageHandler{
 
-    class TempPublisher implements Runnable {
-        private TaskDetails tempTaskDetails;
-        private EventBus tempEventBus;
-
-        public TempPublisher(TaskDetails tempTaskDetails, EventBus tempEventBus) {
-            this.tempTaskDetails = tempTaskDetails;
-            this.tempEventBus = tempEventBus;
+        @Override
+        public Map<String, Object> getProperties() {
+            Map<String, Object> props = new HashMap<String, Object>();
+            String gatewayId = "*";
+            String experimentId = getExperiment().getExperimentID();
+            List<String> routingKeys = new ArrayList<String>();
+//            routingKeys.add(gatewayName+ "." + getExperiment().getExperimentID() + ".*");
+            routingKeys.add(gatewayId);
+            routingKeys.add(gatewayId + "." + experimentId);
+            routingKeys.add(gatewayId + "." + experimentId+ ".*");
+            routingKeys.add(gatewayId + "." + experimentId+ ".*.*");
+            props.put(MessagingConstants.RABBIT_ROUTING_KEY, routingKeys);
+            return props;
         }
 
         @Override
-        public void run() {
-            try {
-                TaskIdentifier identifier = new TaskIdentifier(tempTaskDetails.getTaskID(), null, null, null);
-                TaskStatusChangeEvent statusChangeEvent = new TaskStatusChangeEvent(TaskState.PRE_PROCESSING, identifier);
-                tempEventBus.post(statusChangeEvent);
-                Thread.sleep(1000);
-                statusChangeEvent = new TaskStatusChangeEvent(TaskState.WAITING, identifier);
-                tempEventBus.post(statusChangeEvent);
-                Thread.sleep(1000);
-                statusChangeEvent = new TaskStatusChangeEvent(TaskState.INPUT_DATA_STAGING, identifier);
-                tempEventBus.post(statusChangeEvent);
-                Thread.sleep(1000);
-                statusChangeEvent = new TaskStatusChangeEvent(TaskState.STARTED, identifier);
-                tempEventBus.post(statusChangeEvent);
-                Thread.sleep(1000);
-                statusChangeEvent = new TaskStatusChangeEvent(TaskState.EXECUTING, identifier);
-                tempEventBus.post(statusChangeEvent);
-                Thread.sleep(1000);
-                statusChangeEvent = new TaskStatusChangeEvent(TaskState.POST_PROCESSING, identifier);
-                tempEventBus.post(statusChangeEvent);
-                Thread.sleep(1000);
-                statusChangeEvent = new TaskStatusChangeEvent(TaskState.OUTPUT_DATA_STAGING, identifier);
-                tempEventBus.post(statusChangeEvent);
-                Thread.sleep(1000);
-                statusChangeEvent = new TaskStatusChangeEvent(TaskState.COMPLETED, identifier);
-                tempEventBus.post(statusChangeEvent);
-                Thread.sleep(1000);
+        public void onMessage(MessageContext msgCtx) {
+            String message;
+            if (msgCtx.getType() == MessageType.TASK) {
+                TaskStatusChangeEvent event = (TaskStatusChangeEvent) msgCtx.getEvent();
+                TaskIdentifier taskIdentifier = event.getTaskIdentity();
+                handleTaskStatusChangeEvent(event);
+                message = "Received task output change event , expId : " + taskIdentifier.getExperimentId() + ", taskId : " + taskIdentifier.getTaskId() + ", workflow node Id : " + taskIdentifier.getWorkflowNodeId();
+                log.debug(message);
+            }else if (msgCtx.getType() == MessageType.TASKOUTPUT) {
+                TaskOutputChangeEvent event = (TaskOutputChangeEvent) msgCtx.getEvent();
+                TaskIdentifier taskIdentifier = event.getTaskIdentity();
+                handleTaskOutputChangeEvent(event);
+                message = "Received task output change event , expId : " + taskIdentifier.getExperimentId() + ", taskId : " + taskIdentifier.getTaskId() + ", workflow node Id : " + taskIdentifier.getWorkflowNodeId();
+                log.debug(message);
+            } else {
+                // not interesting, ignores
+            }
+        }
 
-                List<InputDataObjectType> applicationInputs = tempTaskDetails.getApplicationInputs();
-                List<OutputDataObjectType> applicationOutputs = tempTaskDetails.getApplicationOutputs();
-                log.info("**************   Task output change event fired for application id :" + tempTaskDetails.getApplicationId());
-                if (tempTaskDetails.getApplicationId().equals("Add") || tempTaskDetails.getApplicationId().equals("Add_2")) {
-                    applicationOutputs.get(0).setValue((Integer.parseInt(applicationInputs.get(0).getValue()) +
-                            Integer.parseInt(applicationInputs.get(1).getValue())) + "");
-                } else if (tempTaskDetails.getApplicationId().equals("Subtract")) {
-                    applicationOutputs.get(0).setValue((Integer.parseInt(applicationInputs.get(0).getValue()) -
-                            Integer.parseInt(applicationInputs.get(1).getValue())) + "");
-                } else if (tempTaskDetails.getApplicationId().equals("Multiply")) {
-                    applicationOutputs.get(0).setValue((Integer.parseInt(applicationInputs.get(0).getValue()) *
-                            Integer.parseInt(applicationInputs.get(1).getValue())) + "");
+        private void handleTaskOutputChangeEvent(TaskOutputChangeEvent taskOutputChangeEvent) {
+
+            String taskId = taskOutputChangeEvent.getTaskIdentity().getTaskId();
+            log.debug("Task Output changed event received for workflow node : " +
+                    taskOutputChangeEvent.getTaskIdentity().getWorkflowNodeId() + ", task : " + taskId);
+            ProcessContext processContext = processingQueue.get(taskId);
+            Set<WorkflowNode> tempWfNodeSet = new HashSet<WorkflowNode>();
+            if (processContext != null) {
+                WorkflowNode workflowNode = processContext.getWorkflowNode();
+                if (workflowNode instanceof ApplicationNode) {
+                    ApplicationNode applicationNode = (ApplicationNode) workflowNode;
+                    // Workflow node can have one to many output ports and each output port can have one to many links
+                    for (OutPort outPort : applicationNode.getOutputPorts()) {
+                        for (OutputDataObjectType outputDataObjectType : taskOutputChangeEvent.getOutput()) {
+                            if (outPort.getOutputObject().getName().equals(outputDataObjectType.getName())) {
+                                outPort.getOutputObject().setValue(outputDataObjectType.getValue());
+                                break;
+                            }
+                        }
+                        for (Edge edge : outPort.getOutEdges()) {
+                            edge.getToPort().getInputObject().setValue(outPort.getOutputObject().getValue());
+                            if (edge.getToPort().getNode().isReady()) {
+                                addToReadyQueue(edge.getToPort().getNode());
+                            }
+                        }
+                    }
                 }
-                TaskOutputChangeEvent taskOutputChangeEvent = new TaskOutputChangeEvent(applicationOutputs, identifier);
-                eventBus.post(taskOutputChangeEvent);
+                addToCompleteQueue(processContext);
+                log.debug("removed task from processing queue : " + taskId);
+            }
+        }
 
-            } catch (InterruptedException e) {
-                log.error("Thread was interrupted while sleeping");
+        private void handleTaskStatusChangeEvent(TaskStatusChangeEvent taskStatusChangeEvent) {
+            TaskState taskState = taskStatusChangeEvent.getState();
+            TaskIdentifier taskIdentity = taskStatusChangeEvent.getTaskIdentity();
+            String taskId = taskIdentity.getTaskId();
+            ProcessContext processContext = processingQueue.get(taskId);
+            if (processContext != null) {
+                WorkflowNodeState wfNodeState = WorkflowNodeState.UNKNOWN;
+                switch (taskState) {
+                    case WAITING:
+                        break;
+                    case STARTED:
+                        break;
+                    case PRE_PROCESSING:
+                        processContext.getWorkflowNode().setState(NodeState.PRE_PROCESSING);
+                        break;
+                    case INPUT_DATA_STAGING:
+                        processContext.getWorkflowNode().setState(NodeState.PRE_PROCESSING);
+                        break;
+                    case EXECUTING:
+                        processContext.getWorkflowNode().setState(NodeState.EXECUTING);
+                        break;
+                    case OUTPUT_DATA_STAGING:
+                        processContext.getWorkflowNode().setState(NodeState.POST_PROCESSING);
+                        break;
+                    case POST_PROCESSING:
+                        processContext.getWorkflowNode().setState(NodeState.POST_PROCESSING);
+                        break;
+                    case COMPLETED:
+                        processContext.getWorkflowNode().setState(NodeState.EXECUTED);
+                        break;
+                    case FAILED:
+                        processContext.getWorkflowNode().setState(NodeState.FAILED);
+                        break;
+                    case UNKNOWN:
+                        break;
+                    case CONFIGURING_WORKSPACE:
+                        break;
+                    case CANCELED:
+                    case CANCELING:
+                        processContext.getWorkflowNode().setState(NodeState.FAILED);
+                        break;
+                    default:
+                        break;
+                }
+                if (wfNodeState != WorkflowNodeState.UNKNOWN) {
+                    try {
+                        updateWorkflowNodeStatus(processContext.getWfNodeDetails(), wfNodeState);
+                    } catch (RegistryException e) {
+                        // TODO: handle this.
+                    }
+                }
             }
 
         }
     }
+
 }

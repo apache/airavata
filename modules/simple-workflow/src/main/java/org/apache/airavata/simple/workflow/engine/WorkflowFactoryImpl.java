@@ -22,7 +22,7 @@
 package org.apache.airavata.simple.workflow.engine;
 
 import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.airavata.simple.workflow.engine.parser.AiravataDefaultParser;
+import org.apache.airavata.simple.workflow.engine.parser.AiravataWorkflowParser;
 
 /**
  * Singleton class, only one instance can exist in runtime.
@@ -55,7 +55,7 @@ public class WorkflowFactoryImpl implements WorkflowFactory {
     public WorkflowParser getWorkflowParser(String experimentId, String credentialToken) {
         if (workflowParser == null) {
             try {
-                workflowParser = new AiravataDefaultParser(experimentId, credentialToken);
+                workflowParser = new AiravataWorkflowParser(experimentId, credentialToken);
             } catch (RegistryException e) {
                 // TODO : handle this scenario
             }

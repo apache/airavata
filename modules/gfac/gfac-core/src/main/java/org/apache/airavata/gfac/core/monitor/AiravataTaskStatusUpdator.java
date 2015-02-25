@@ -21,6 +21,7 @@
 package org.apache.airavata.gfac.core.monitor;
 
 import com.google.common.eventbus.Subscribe;
+import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -150,4 +151,16 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
             }
         }
 	}
+
+
+    @Subscribe
+    public void taskOutputChanged(TaskOutputChangeEvent taskOutputEvent) throws AiravataException {
+        String taskId = taskOutputEvent.getTaskIdentity().getTaskId();
+        logger.debug("Task Output changed event received for workflow node : " +
+                taskOutputEvent.getTaskIdentity().getWorkflowNodeId() + ", task : " + taskId);
+        // TODO - do we need to update the output to the registry? , we do it in the workflowInterpreter too.
+        MessageContext messageContext = new MessageContext(taskOutputEvent, MessageType.TASKOUTPUT, taskOutputEvent.getTaskIdentity().getTaskId(), taskOutputEvent.getTaskIdentity().getGatewayId());
+        messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+        publisher.publish(messageContext);
+    }
 }
