@@ -61,7 +61,7 @@ public interface Orchestrator {
 
 
     /**
-     * This method will parse the ExperimentConfiguration and based on the configuration
+     * This method will parseSingleJob the ExperimentConfiguration and based on the configuration
      * we create a single or multiple tasks for the experiment.
      * @param experimentId
      * @return

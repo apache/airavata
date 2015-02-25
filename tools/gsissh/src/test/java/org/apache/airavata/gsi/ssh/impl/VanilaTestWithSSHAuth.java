@@ -185,6 +185,49 @@ public class VanilaTestWithSSHAuth {
     }
 
     @Test
+    public void testSimpleLSFJob() throws Exception {
+
+        AuthenticationInfo authenticationInfo = null;
+        if (password != null) {
+            authenticationInfo = new DefaultPasswordAuthenticationInfo(this.password);
+        } else {
+            authenticationInfo = new DefaultPublicKeyFileAuthentication(this.publicKeyPath, this.privateKeyPath,
+                    this.passPhrase);
+        }
+        // Server info
+        ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
+
+
+        // constructing the job object
+        JobDescriptor jobDescriptor = new JobDescriptor();
+        jobDescriptor.setWorkingDirectory(workingDirectory);
+        jobDescriptor.setShellName("/bin/bash");
+        jobDescriptor.setJobName("GSI_SSH_SLEEP_JOB");
+        jobDescriptor.setExecutablePath("/bin/echo");
+        jobDescriptor.setAllEnvExport(true);
+        jobDescriptor.setMailOptions("n");
+        jobDescriptor.setMailAddress("test@gmail.com");
+        jobDescriptor.setStandardOutFile(workingDirectory + File.separator + "application.out");
+        jobDescriptor.setStandardErrorFile(workingDirectory + File.separator + "application.err");
+        jobDescriptor.setNodes(1);
+        jobDescriptor.setProcessesPerNode(1);
+        jobDescriptor.setQueueName("long");
+        jobDescriptor.setMaxWallTimeForLSF("5");
+        jobDescriptor.setJobSubmitter("mpiexec");
+        jobDescriptor.setModuleLoadCommands(new String[]{"module load openmpi/1.6.5"});
+        jobDescriptor.setUsedMemory("1000");
+        jobDescriptor.setChassisName("01");
+
+        //jobDescriptor.setJobSubmitter("aprun -n 1");
+        List<String> inputs = new ArrayList<String>();
+        jobDescriptor.setInputValues(inputs);
+        //finished construction of job object
+        System.out.println(jobDescriptor.toXML());
+        Cluster pbsCluster = new PBSCluster(CommonUtils.getLSFJobManager(""));
+        ((PBSCluster) pbsCluster).generateJobScript(jobDescriptor);
+    }
+
+    @Test
     public void testSCPFromAndSCPTo() throws Exception {
 
         AuthenticationInfo authenticationInfo = null;
@@ -197,6 +240,7 @@ public class VanilaTestWithSSHAuth {
         // Server info
         ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
         Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager(path));
+        new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager(path));;
 
         String date = new Date().toString();
         date = date.replaceAll(" ", "_");

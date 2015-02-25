@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URL;
 import java.security.SecureRandom;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -101,6 +100,9 @@ public class GSISSHAbstractCluster implements Cluster {
         reconnect(serverInfo, authenticationInfo);
     }
 
+    public GSISSHAbstractCluster(JobManagerConfiguration config) {
+        this.jobManagerConfiguration = config;
+    }
     private synchronized void reconnect(ServerInfo serverInfo, AuthenticationInfo authenticationInfo) throws SSHApiException {
         this.serverInfo = serverInfo;
 
@@ -274,7 +276,7 @@ public class GSISSHAbstractCluster implements Cluster {
         //
         String outputifAvailable = getOutputifAvailable(standardOutReader,"Error reading output of job submission",rawCommandInfo.getBaseCommand(jobManagerConfiguration.getInstalledPath()));
         OutputParser outputParser = jobManagerConfiguration.getParser();
-        return  outputParser.parse(outputifAvailable);
+        return  outputParser.parseJobSubmission(outputifAvailable);
     }
 
     public synchronized String submitBatchJob(JobDescriptor jobDescriptor) throws SSHApiException {
@@ -354,6 +356,56 @@ public class GSISSHAbstractCluster implements Cluster {
     }
 
 
+    public void generateJobScript(JobDescriptor jobDescriptor) throws SSHApiException {
+        TransformerFactory factory = TransformerFactory.newInstance();
+        URL resource = this.getClass().getClassLoader().getResource(jobManagerConfiguration.getJobDescriptionTemplateName());
+
+        if (resource == null) {
+            String error = "System configuration file '" + jobManagerConfiguration.getJobDescriptionTemplateName()
+                    + "' not found in the classpath";
+            throw new SSHApiException(error);
+        }
+
+        Source xslt = new StreamSource(new File(resource.getPath()));
+        Transformer transformer;
+        StringWriter results = new StringWriter();
+        File tempPBSFile = null;
+        try {
+            // generate the pbs script using xslt
+            transformer = factory.newTransformer(xslt);
+            Source text = new StreamSource(new ByteArrayInputStream(jobDescriptor.toXML().getBytes()));
+            transformer.transform(text, new StreamResult(results));
+            String scriptContent = results.toString().replaceAll("^[ |\t]*\n$", "");
+            if (scriptContent.startsWith("\n")) {
+                scriptContent = scriptContent.substring(1);
+            }
+//            log.debug("generated PBS:" + results.toString());
+
+            // creating a temporary file using pbs script generated above
+            int number = new SecureRandom().nextInt();
+            number = (number < 0 ? -number : number);
+
+            tempPBSFile = new File(Integer.toString(number) + jobManagerConfiguration.getScriptExtension());
+            log.info("File Path: " + tempPBSFile.getAbsolutePath());
+            log.info("File Content: " + scriptContent);
+            FileUtils.writeStringToFile(tempPBSFile, scriptContent);
+        } catch (TransformerConfigurationException e) {
+            throw new SSHApiException("Error parsing PBS transformation", e);
+        } catch (TransformerException e) {
+            throw new SSHApiException("Error generating PBS script", e);
+        } catch (IOException e) {
+            throw new SSHApiException("An exception occurred while connecting to server." +
+                    "Connecting server - " + serverInfo.getHost() + ":" + serverInfo.getPort() +
+                    " connecting user name - "
+                    + serverInfo.getUserName(), e);
+        } finally {
+            if (tempPBSFile != null) {
+                tempPBSFile.delete();
+            }
+        }
+    }
+
+
 
     public synchronized JobDescriptor getJobDescriptorById(String jobID) throws SSHApiException {
         RawCommandInfo rawCommandInfo = jobManagerConfiguration.getMonitorCommand(jobID);
@@ -361,7 +413,7 @@ public class GSISSHAbstractCluster implements Cluster {
         CommandExecutor.executeCommand(rawCommandInfo, this.getSession(), stdOutReader);
         String result = getOutputifAvailable(stdOutReader, "Error getting job information from the resource !",rawCommandInfo.getBaseCommand(jobManagerConfiguration.getInstalledPath()));
         JobDescriptor jobDescriptor = new JobDescriptor();
-        jobManagerConfiguration.getParser().parse(jobDescriptor,result);
+        jobManagerConfiguration.getParser().parseSingleJob(jobDescriptor, result);
         return jobDescriptor;
     }
 
@@ -370,7 +422,7 @@ public class GSISSHAbstractCluster implements Cluster {
         StandardOutReader stdOutReader = new StandardOutReader();
         CommandExecutor.executeCommand(rawCommandInfo, this.getSession(), stdOutReader);
         String result = getOutputifAvailable(stdOutReader, "Error getting job information from the resource !", rawCommandInfo.getBaseCommand(jobManagerConfiguration.getInstalledPath()));
-        return jobManagerConfiguration.getParser().parse(jobID, result);
+        return jobManagerConfiguration.getParser().parseJobStatus(jobID, result);
     }
 
     private static void logDebug(String message) {
@@ -587,7 +639,7 @@ public class GSISSHAbstractCluster implements Cluster {
             }
         }
         String result = getOutputifAvailable(stdOutReader, "Error getting job information from the resource !", rawCommandInfo.getBaseCommand(jobManagerConfiguration.getInstalledPath()));
-        jobManagerConfiguration.getParser().parse(userName,jobIDs, result);
+        jobManagerConfiguration.getParser().parseJobStatuses(userName, jobIDs, result);
     }
 
     public ServerInfo getServerInfo() {

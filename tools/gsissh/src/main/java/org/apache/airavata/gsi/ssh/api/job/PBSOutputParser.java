@@ -34,7 +34,7 @@ import java.util.Map;
 public class PBSOutputParser implements OutputParser {
     private static final Logger log = LoggerFactory.getLogger(PBSOutputParser.class);
 
-    public void parse(JobDescriptor jobDescriptor, String rawOutput) {
+    public void parseSingleJob(JobDescriptor jobDescriptor, String rawOutput) {
         log.debug(rawOutput);
         String[] info = rawOutput.split("\n");
         String[] line;
@@ -120,12 +120,12 @@ public class PBSOutputParser implements OutputParser {
         }
     }
 
-    public String parse(String rawOutput) {
+    public String parseJobSubmission(String rawOutput) {
         log.debug(rawOutput);
         return rawOutput;  //In PBS stdout is going to be directly the jobID
     }
 
-    public JobStatus parse(String jobID, String rawOutput) {
+    public JobStatus parseJobStatus(String jobID, String rawOutput) {
         boolean jobFount = false;
         log.debug(rawOutput);
         String[] info = rawOutput.split("\n");
@@ -156,7 +156,7 @@ public class PBSOutputParser implements OutputParser {
         return null;
     }
 
-    public void parse(String userName, Map<String, JobStatus> statusMap, String rawOutput) {
+    public void parseJobStatuses(String userName, Map<String, JobStatus> statusMap, String rawOutput) {
         log.debug(rawOutput);
         String[]    info = rawOutput.split("\n");
 //        int lastStop = 0;

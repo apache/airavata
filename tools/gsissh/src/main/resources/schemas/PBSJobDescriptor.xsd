@@ -59,7 +59,8 @@
             <element name="jobSubmitterCommand" type="xsd:string" minOccurs="0" maxOccurs="1"/>
             <element name="callBackIp" type="xsd:string" minOccurs="0" maxOccurs="1"/>
             <element name="callBackPort" type="xsd:string" minOccurs="0" maxOccurs="1"/>
-		</sequence>
+            <element name="chassisName" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+        </sequence>
 	</complexType>
 
     <complexType name="moduleLoadCommands">
