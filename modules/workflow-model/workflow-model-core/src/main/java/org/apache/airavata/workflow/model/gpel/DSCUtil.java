@@ -41,80 +41,80 @@ import org.apache.airavata.workflow.model.graph.util.GraphUtil;
 import org.apache.airavata.workflow.model.graph.ws.WSNode;
 import org.apache.airavata.workflow.model.wf.Workflow;
 
-import xsul5.wsdl.WsdlDefinitions;
-import xsul5.wsdl.WsdlPortType;
-import xsul5.wsdl.WsdlResolver;
-import xsul5.wsdl.WsdlUtil;
+//import xsul5.wsdl.WsdlDefinitions;
+//import xsul5.wsdl.WsdlPortType;
+//import xsul5.wsdl.WsdlResolver;
+//import xsul5.wsdl.WsdlUtil;
 
 public class DSCUtil {
 
-    /**
-     * For debugging
-     * 
-     * @param args
-     */
-    public static void main(String[] args) {
-        WsdlDefinitions awsdl = WsdlResolver.getInstance().loadWsdl(DSCUtil.class, "wsdls/math/adder-awsdl.xml");
-        WsdlDefinitions cwsdl = convertToCWSDL(awsdl, URI.create("http://localhost"));
-        System.out.println(cwsdl.xmlStringPretty());
-    }
-
-    /**
-     * Creates CWSDLs for all WSDLs in a workflow.
-     * 
-     * @param workflow
-     * @param dscURL
-     * @return The Map<partnerLinkName, CWSDL>.
-     * @throws URISyntaxException
-     */
-    public static Map<String, WsdlDefinitions> createCWSDLs(Workflow workflow, String dscURL) throws URISyntaxException {
-        return createCWSDLs(workflow, new URI(dscURL));
-    }
-
-    /**
-     * @param workflow
-     * @param dscURL
-     * @return The Map<partnerLinkName, CWSDL>.
-     */
-    public static Map<String, WsdlDefinitions> createCWSDLs(Workflow workflow, URI dscURL) {
-        Map<String, WsdlDefinitions> WSDLMap = new HashMap<String, WsdlDefinitions>();
-        Graph graph = workflow.getGraph();
-//        for (WSNode node : GraphUtil.getWSNodes(graph)) {
-//            String partnerLinkName = BPELScript.createPartnerLinkName(node.getID());
-//            WsdlDefinitions wsdl = node.getComponent().getWSDL();
-//            if (WSDLUtil.isAWSDL(wsdl)) {
-//                try {
-//                    wsdl = convertToCWSDL(WSDLUtil.deepClone(wsdl), dscURL);
-//                } catch (UtilsException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//            WSDLMap.put(partnerLinkName, wsdl);
+////    /**
+////     * For debugging
+////     * 
+////     * @param args
+////     */
+////    public static void main(String[] args) {
+////        WsdlDefinitions awsdl = WsdlResolver.getInstance().loadWsdl(DSCUtil.class, "wsdls/math/adder-awsdl.xml");
+////        WsdlDefinitions cwsdl = convertToCWSDL(awsdl, URI.create("http://localhost"));
+////        System.out.println(cwsdl.xmlStringPretty());
+////    }
+//
+//    /**
+//     * Creates CWSDLs for all WSDLs in a workflow.
+//     * 
+//     * @param workflow
+//     * @param dscURL
+//     * @return The Map<partnerLinkName, CWSDL>.
+//     * @throws URISyntaxException
+//     */
+//    public static Map<String, WsdlDefinitions> createCWSDLs(Workflow workflow, String dscURL) throws URISyntaxException {
+//        return createCWSDLs(workflow, new URI(dscURL));
+//    }
+//
+//    /**
+//     * @param workflow
+//     * @param dscURL
+//     * @return The Map<partnerLinkName, CWSDL>.
+//     */
+//    public static Map<String, WsdlDefinitions> createCWSDLs(Workflow workflow, URI dscURL) {
+//        Map<String, WsdlDefinitions> WSDLMap = new HashMap<String, WsdlDefinitions>();
+//        Graph graph = workflow.getGraph();
+////        for (WSNode node : GraphUtil.getWSNodes(graph)) {
+////            String partnerLinkName = BPELScript.createPartnerLinkName(node.getID());
+////            WsdlDefinitions wsdl = node.getComponent().getWSDL();
+////            if (WSDLUtil.isAWSDL(wsdl)) {
+////                try {
+////                    wsdl = convertToCWSDL(WSDLUtil.deepClone(wsdl), dscURL);
+////                } catch (UtilsException e) {
+////                    e.printStackTrace();
+////                }
+////            }
+////            WSDLMap.put(partnerLinkName, wsdl);
+////        }
+//        return WSDLMap;
+//    }
+//
+//    /**
+//     * Converts a specified AWSDL to CWSDL using DSC URI.
+//     * 
+//     * @param definitions
+//     *            The specified AWSDL. This will be modified.
+//     * @param dscURI
+//     * @return The CWSDL converted.
+//     */
+//    public static WsdlDefinitions convertToCWSDL(WsdlDefinitions definitions, URI dscURI) {
+//        // Create a new List to avoid ConcurrentModificationException.
+//        List<WsdlPortType> portTypes = new ArrayList<WsdlPortType>();
+//        for (WsdlPortType portType : definitions.portTypes()) {
+//            portTypes.add(portType);
 //        }
-        return WSDLMap;
-    }
-
-    /**
-     * Converts a specified AWSDL to CWSDL using DSC URI.
-     * 
-     * @param definitions
-     *            The specified AWSDL. This will be modified.
-     * @param dscURI
-     * @return The CWSDL converted.
-     */
-    public static WsdlDefinitions convertToCWSDL(WsdlDefinitions definitions, URI dscURI) {
-        // Create a new List to avoid ConcurrentModificationException.
-        List<WsdlPortType> portTypes = new ArrayList<WsdlPortType>();
-        for (WsdlPortType portType : definitions.portTypes()) {
-            portTypes.add(portType);
-        }
-
-        for (WsdlPortType portType : portTypes) {
-            URI uri = creatEPR(dscURI, portType.getQName());
-            WsdlUtil.createCWSDL(definitions, portType, uri);
-        }
-        return definitions;
-    }
+//
+//        for (WsdlPortType portType : portTypes) {
+//            URI uri = creatEPR(dscURI, portType.getQName());
+//            WsdlUtil.createCWSDL(definitions, portType, uri);
+//        }
+//        return definitions;
+//    }
 
     private static URI creatEPR(URI dscURI, QName portTypeQName) {
         String encodedPortType;

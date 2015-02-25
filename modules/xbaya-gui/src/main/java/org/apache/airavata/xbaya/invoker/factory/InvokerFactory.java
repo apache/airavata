@@ -50,11 +50,11 @@ public class InvokerFactory {
 
         if (definitions != null && definitions.getServices().iterator().hasNext()) {
             // check if this web service supports asynchronous invocation
-            if (WSDLUtil.isAsynchronousSupported(WSDLUtil.wsdlDefinitions3ToWsdlDefintions5(definitions))) {
-                invoker = new AsynchronousInvoker(definitions, messageBoxURL);
-            } else {
+//            if (WSDLUtil.isAsynchronousSupported(WSDLUtil.wsdlDefinitions3ToWsdlDefintions5(definitions))) {
+//                invoker = new AsynchronousInvoker(definitions, messageBoxURL);
+//            } else {
                 invoker = new SimpleInvoker(definitions);
-            }
+//            }
         } else if (gfacURL != null && gfacURL.length() != 0) {
             invoker = new GFacInvoker(portTypeQName, gfacURL, messageBoxURL, leadContext);
         }
@@ -72,11 +72,11 @@ public class InvokerFactory {
 
         if (definitions != null && definitions.getServices().iterator().hasNext()) {
             // check if this web service supports asynchronous invocation
-            if (WSDLUtil.isAsynchronousSupported(WSDLUtil.wsdlDefinitions3ToWsdlDefintions5(definitions))) {
-                invoker = new AsynchronousInvoker(definitions, messageBoxURL);
-            } else {
+//            if (WSDLUtil.isAsynchronousSupported(WSDLUtil.wsdlDefinitions3ToWsdlDefintions5(definitions))) {
+//                invoker = new AsynchronousInvoker(definitions, messageBoxURL);
+//            } else {
                 invoker = new SimpleInvoker(definitions);
-            }
+//            }
         } else if (gfacURL != null && gfacURL.length() != 0) {
             invoker = new GFacInvoker(portTypeQName, gfacURL, messageBoxURL, builder);
         }

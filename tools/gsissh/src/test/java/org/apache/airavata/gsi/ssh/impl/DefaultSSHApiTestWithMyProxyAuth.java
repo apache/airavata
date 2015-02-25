@@ -49,9 +49,9 @@ public class DefaultSSHApiTestWithMyProxyAuth {
 
 
     public static void main(String[]ars){
-         String myProxyUserName = "us3";
-         String myProxyPassword = "Cme4UScan";
-         String certificateLocation = "/Users/smarru/deploy/certificates";
+         String myProxyUserName = "ogce";
+         String myProxyPassword = "OGCE@xsede14";
+         String certificateLocation = "/Users/raminder/.globus/certificates";
 
 
         GSIAuthenticationInfo authenticationInfo
@@ -62,8 +62,13 @@ public class DefaultSSHApiTestWithMyProxyAuth {
         CommandInfo commandInfo = new RawCommandInfo("/bin/ls");
 
         // Server info
-        ServerInfo serverInfo = new ServerInfo("us3", "stampede.tacc.utexas.edu", 2222);
-
+        //Stampede
+//        ServerInfo serverInfo = new ServerInfo(myProxyUserName, "stampede.tacc.utexas.edu", 2222);
+        //Trestles
+//        ServerInfo serverInfo = new ServerInfo(myProxyUserName, "trestles.sdsc.xsede.org", 22);
+        
+        //Lonestar
+         ServerInfo serverInfo = new ServerInfo(myProxyUserName, "lonestar.tacc.utexas.edu", 22);
         // Output
         CommandOutput commandOutput = new SystemCommandOutput();
 

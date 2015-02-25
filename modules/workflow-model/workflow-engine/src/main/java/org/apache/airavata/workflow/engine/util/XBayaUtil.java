@@ -37,7 +37,7 @@ import org.apache.airavata.workflow.model.graph.system.InputNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
-import xsul5.XmlConstants;
+//import xsul5.XmlConstants;
 
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
@@ -111,52 +111,52 @@ public class XBayaUtil {
      */
 	public static Object findInputFromPort(DataPort inputPort, Map<Node, Invoker>  invokerMap) throws WorkflowException {
 		Object outputVal = null;
-		Node fromNode = inputPort.getFromNode();
-		if (fromNode instanceof InputNode) {
-			outputVal = ((InputNode) fromNode).getDefaultValue();
-		} else if (fromNode instanceof ConstantNode) {
-			outputVal = ((ConstantNode) fromNode).getValue();
-		} else if (fromNode instanceof EndifNode) {
-			Invoker fromInvoker = invokerMap.get(fromNode);
-			outputVal = fromInvoker.getOutput(inputPort.getFromPort().getID());
-		} else if (fromNode instanceof InstanceNode) {
-			return ((InstanceNode) fromNode).getOutputInstanceId();
-		} else if (fromNode instanceof EndForEachNode) {
-			outputVal = "";
-			Invoker workflowInvoker = invokerMap.get(fromNode);
-			String outputName = fromNode.getOutputPort(0).getName();
-			XmlElement msgElmt = XmlConstants.BUILDER
-					.parseFragmentFromString("<temp>"
-							+ workflowInvoker.getOutput(outputName) + "</temp>");
-			Iterator valItr = msgElmt.children().iterator();
-			while (valItr.hasNext()) {
-				Object object2 = valItr.next();
-				if (object2 instanceof XmlElement) {
-					outputVal = outputVal
-							+ StringUtil.DELIMETER 
-							+ StringUtil.quoteString(((XmlElement) object2).children().iterator()
-									.next().toString());
-				}
-			}
-			outputVal = ((String) outputVal).substring(1,
-					((String) outputVal).length());
-		} else {
-			Invoker fromInvoker = invokerMap.get(fromNode);
-			try {
-				if (fromInvoker != null)
-					outputVal = fromInvoker.getOutput(inputPort.getFromPort()
-							.getName());
-
-			} catch (Exception e) {
-				// if the value is still null look it up from the inputport name
-				// because the value is set to the input port name at some point
-				// there is no harm in doing this
-				if (null == outputVal) {
-					outputVal = fromInvoker.getOutput(inputPort.getName());
-				}
-			}
-
-		}
+//		Node fromNode = inputPort.getFromNode();
+//		if (fromNode instanceof InputNode) {
+//			outputVal = ((InputNode) fromNode).getDefaultValue();
+//		} else if (fromNode instanceof ConstantNode) {
+//			outputVal = ((ConstantNode) fromNode).getValue();
+//		} else if (fromNode instanceof EndifNode) {
+//			Invoker fromInvoker = invokerMap.get(fromNode);
+//			outputVal = fromInvoker.getOutput(inputPort.getFromPort().getID());
+//		} else if (fromNode instanceof InstanceNode) {
+//			return ((InstanceNode) fromNode).getOutputInstanceId();
+//		} else if (fromNode instanceof EndForEachNode) {
+//			outputVal = "";
+//			Invoker workflowInvoker = invokerMap.get(fromNode);
+//			String outputName = fromNode.getOutputPort(0).getName();
+//			XmlElement msgElmt = XmlConstants.BUILDER
+//					.parseFragmentFromString("<temp>"
+//							+ workflowInvoker.getOutput(outputName) + "</temp>");
+//			Iterator valItr = msgElmt.children().iterator();
+//			while (valItr.hasNext()) {
+//				Object object2 = valItr.next();
+//				if (object2 instanceof XmlElement) {
+//					outputVal = outputVal
+//							+ StringUtil.DELIMETER 
+//							+ StringUtil.quoteString(((XmlElement) object2).children().iterator()
+//									.next().toString());
+//				}
+//			}
+//			outputVal = ((String) outputVal).substring(1,
+//					((String) outputVal).length());
+//		} else {
+//			Invoker fromInvoker = invokerMap.get(fromNode);
+//			try {
+//				if (fromInvoker != null)
+//					outputVal = fromInvoker.getOutput(inputPort.getFromPort()
+//							.getName());
+//
+//			} catch (Exception e) {
+//				// if the value is still null look it up from the inputport name
+//				// because the value is set to the input port name at some point
+//				// there is no harm in doing this
+//				if (null == outputVal) {
+//					outputVal = fromInvoker.getOutput(inputPort.getName());
+//				}
+//			}
+//
+//		}
 		return outputVal;
 
 	}

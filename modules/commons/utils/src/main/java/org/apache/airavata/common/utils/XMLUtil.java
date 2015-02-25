@@ -183,23 +183,23 @@ public class XMLUtil {
         return domElement;
     }
 
-    /**
-     * @param definitions3
-     * @return The WsdlDefinitions (XSUL5)
-     */
-    @Deprecated
-    public static xsul5.wsdl.WsdlDefinitions wsdlDefinitions3ToWsdlDefintions5(xsul.wsdl.WsdlDefinitions definitions3) {
-        return WSDLUtil.wsdlDefinitions3ToWsdlDefintions5(definitions3);
-    }
-
-    /**
-     * @param definitions5
-     * @return The WsdlDefinitions (XSUL3)
-     */
-    @Deprecated
-    public static xsul.wsdl.WsdlDefinitions wsdlDefinitions5ToWsdlDefintions3(xsul5.wsdl.WsdlDefinitions definitions5) {
-        return WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(definitions5);
-    }
+//    /**
+//     * @param definitions3
+//     * @return The WsdlDefinitions (XSUL5)
+//     */
+//    @Deprecated
+//    public static xsul5.wsdl.WsdlDefinitions wsdlDefinitions3ToWsdlDefintions5(xsul.wsdl.WsdlDefinitions definitions3) {
+//        return WSDLUtil.wsdlDefinitions3ToWsdlDefintions5(definitions3);
+//    }
+//
+//    /**
+//     * @param definitions5
+//     * @return The WsdlDefinitions (XSUL3)
+//     */
+//    @Deprecated
+//    public static xsul.wsdl.WsdlDefinitions wsdlDefinitions5ToWsdlDefintions3(xsul5.wsdl.WsdlDefinitions definitions5) {
+//        return WSDLUtil.wsdlDefinitions5ToWsdlDefintions3(definitions5);
+//    }
 
     /**
      * Converts a specified XPP3 XML element to a DOM element under a specified document.

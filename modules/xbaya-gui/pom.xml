@@ -103,6 +103,11 @@
         </dependency>
         <dependency>
             <groupId>org.ogce</groupId>
+            <artifactId>xsul5</artifactId>
+            <version>${xsul5.version}</version>
+        </dependency> 
+        <dependency>
+            <groupId>org.ogce</groupId>
             <artifactId>xsul</artifactId>
             <version>${xsul.version}</version>
         </dependency>

@@ -27,23 +27,23 @@ import java.io.FileInputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import edu.illinois.ncsa.BCGSS.BCGSSContextImpl;
 import org.globus.common.CoGProperties;
 import org.globus.gsi.GSIConstants;
 import org.globus.gsi.gssapi.GSSConstants;
-import org.globus.gsi.gssapi.GlobusGSSContextImpl;
 import org.globus.gsi.gssapi.GlobusGSSCredentialImpl;
 import org.globus.gsi.gssapi.auth.HostAuthorization;
-import org.globus.myproxy.MyProxy;
-import org.globus.myproxy.MyProxyException;
 import org.gridforum.jgss.ExtendedGSSContext;
 import org.gridforum.jgss.ExtendedGSSCredential;
 import org.gridforum.jgss.ExtendedGSSManager;
-import org.ietf.jgss.*;
-
-import com.jcraft.jsch.JSchException;
+import org.ietf.jgss.GSSContext;
+import org.ietf.jgss.GSSCredential;
+import org.ietf.jgss.GSSException;
+import org.ietf.jgss.GSSName;
+import org.ietf.jgss.MessageProp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.jcraft.jsch.JSchException;
 
 /**
  * This class is based on GSSContextKrb5; it substitutes the globus
@@ -102,15 +102,15 @@ public class GSSContextX509 implements com.jcraft.jsch.GSSContext {
 //			context.requestCredDeleg(true);
 //			context.requestAnonymity(false);
 
-            context = new BCGSSContextImpl(name, (GlobusGSSCredentialImpl) credential);
-            context.requestLifetime(GSSCredential.DEFAULT_LIFETIME);
-            context.requestCredDeleg(true);
-            context.requestMutualAuth(true);
-            context.requestReplayDet(true);
-            context.requestSequenceDet(true);
-            context.requestConf(false);
-            context.requestInteg(true);
-            ((ExtendedGSSContext)context).setOption(GSSConstants.DELEGATION_TYPE, GSIConstants.DELEGATION_TYPE_FULL);
+//            context = new BCGSSContextImpl(name, (GlobusGSSCredentialImpl) credential);
+//            context.requestLifetime(GSSCredential.DEFAULT_LIFETIME);
+//            context.requestCredDeleg(true);
+//            context.requestMutualAuth(true);
+//            context.requestReplayDet(true);
+//            context.requestSequenceDet(true);
+//            context.requestConf(false);
+//            context.requestInteg(true);
+//            ((ExtendedGSSContext)context).setOption(GSSConstants.DELEGATION_TYPE, GSIConstants.DELEGATION_TYPE_FULL);
 
             return;
         } catch (GSSException ex) {

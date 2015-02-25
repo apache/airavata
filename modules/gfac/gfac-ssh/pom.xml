@@ -93,11 +93,6 @@
             <version>0.1.50</version>
         </dependency>
         <dependency>
-            <groupId>org.ogce</groupId>
-            <artifactId>bcgss</artifactId>
-            <version>146</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.xmlbeans</groupId>
             <artifactId>xmlbeans</artifactId>
             <version>${xmlbeans.version}</version>
@@ -106,11 +101,6 @@
             <groupId>net.schmizz</groupId>
             <artifactId>sshj</artifactId>
             <version>0.6.1</version>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql.connector.version}</version>
         </dependency>
     </dependencies>
 
