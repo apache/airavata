@@ -35,7 +35,7 @@
         <dependency>
             <groupId>com.jcraft</groupId>
             <artifactId>jsch</artifactId>
-            <version>0.1.50</version>
+            <version>0.1.51</version>
         </dependency>
         <dependency>
 			<groupId>org.jglobus</groupId>
@@ -76,10 +76,14 @@
 			<version>6.1.1</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
+		<!-- dependency>
 			<groupId>org.ogce</groupId>
 			<artifactId>bcgss</artifactId>
 			<version>146</version>
+		</dependency> -->
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.xmlbeans</groupId>

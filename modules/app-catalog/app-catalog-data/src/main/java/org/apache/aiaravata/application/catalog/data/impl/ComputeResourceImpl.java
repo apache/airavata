@@ -206,12 +206,15 @@ public class ComputeResourceImpl implements ComputeResource {
 	public String addUNICOREJobSubmission(UnicoreJobSubmission unicoreJobSubmission)
 			throws AppCatalogException {
 		 try {
-			 	unicoreJobSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("UNICORE"));
-			 	UnicoreJobSubmissionResource resource = AppCatalogThriftConversion.getUnicoreJobSubmission(unicoreJobSubmission);
-			 	resource.setUnicoreEndpointUrl(unicoreJobSubmission.getUnicoreEndPointURL());
-			 	resource.save();
-	            return resource.getjobSubmissionInterfaceId();
-	        }catch (Exception e){
+             unicoreJobSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("UNICORE"));
+             UnicoreJobSubmissionResource resource = AppCatalogThriftConversion.getUnicoreJobSubmission(unicoreJobSubmission);
+             resource.setUnicoreEndpointUrl(unicoreJobSubmission.getUnicoreEndPointURL());
+             if (unicoreJobSubmission.getSecurityProtocol() !=  null){
+                 resource.setSecurityProtocol(unicoreJobSubmission.getSecurityProtocol().toString());
+             }
+             resource.save();
+             return resource.getjobSubmissionInterfaceId();
+         }catch (Exception e){
 	            logger.error("Error while retrieving SSH Job Submission...", e);
 	            throw new AppCatalogException(e);
 	        }

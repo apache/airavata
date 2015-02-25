@@ -75,8 +75,11 @@ public class GSISSHDirectorySetupHandler extends AbstractRecoverableHandler {
 
             String workingDirectory = jobExecutionContext.getWorkingDir();
             cluster.makeDirectory(workingDirectory);
-            cluster.makeDirectory(jobExecutionContext.getInputDir());
-            cluster.makeDirectory(jobExecutionContext.getOutputDir());
+            if(!jobExecutionContext.getInputDir().equals(workingDirectory))
+                cluster.makeDirectory(jobExecutionContext.getInputDir());
+            if(!jobExecutionContext.getOutputDir().equals(workingDirectory))
+            	cluster.makeDirectory(jobExecutionContext.getOutputDir());
+            
             DataTransferDetails detail = new DataTransferDetails();
             TransferStatus status = new TransferStatus();
             status.setTransferState(TransferState.DIRECTORY_SETUP);

@@ -29,8 +29,8 @@ import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xsul.wsif.WSIFMessage;
-import xsul.xwsif_runtime.WSIFClient;
+//import xsul.wsif.WSIFMessage;
+//import xsul.xwsif_runtime.WSIFClient;
 
 public class SystemComponentInvoker implements Invoker {
 
@@ -66,52 +66,52 @@ public class SystemComponentInvoker implements Invoker {
     /**
      * @see org.apache.airavata.workflow.engine.invoker.Invoker#getOutputs()
      */
-    @Override
-    public WSIFMessage getOutputs() {
-        return null;
-    }
-
-    /**
-     * @see org.apache.airavata.workflow.engine.invoker.Invoker#invoke()
-     */
+//    @Override
+//    public WSIFMessage getOutputs() {
+//        return null;
+//    }
+//
+//    /**
+//     * @see org.apache.airavata.workflow.engine.invoker.Invoker#invoke()
+//     */
     @Override
     public boolean invoke() {
         return true;
     }
-
-    /**
-     * @see org.apache.airavata.workflow.engine.invoker.Invoker#setInput(java.lang.String, java.lang.Object)
-     */
-    @Override
-    public void setInput(String name, Object value) {
-    }
-
-    /**
-     * @see org.apache.airavata.xbaya.wXPath Operatorsorkflow.Invoker#setOperation(java.lang.String)
-     */
-    @Override
-    public void setOperation(String operationName) {
-    }
-
-    /**
-     * @see org.apache.airavata.workflow.engine.invoker.Invoker#setup()
-     */
+//
+//    /**
+//     * @see org.apache.airavata.workflow.engine.invoker.Invoker#setInput(java.lang.String, java.lang.Object)
+//     */
+//    @Override
+//    public void setInput(String name, Object value) {
+//    }
+//
+//    /**
+//     * @see org.apache.airavata.xbaya.wXPath Operatorsorkflow.Invoker#setOperation(java.lang.String)
+//     */
+//    @Override
+//    public void setOperation(String operationName) {
+//    }
+//
+//    /**
+//     * @see org.apache.airavata.workflow.engine.invoker.Invoker#setup()
+//     */
     @Override
     public void setup() {
     }
-
-    @Override
-    public WSIFClient getClient() {
-        return null;
-    }
-
-    @Override
-    public WSIFMessage getInputs() throws WorkflowException {
-        return null;
-    }
-
-    @Override
-    public WSIFMessage getFault() throws WorkflowException {
-        return null;
-    }
+//
+//    @Override
+//    public WSIFClient getClient() {
+//        return null;
+//    }
+//
+//    @Override
+//    public WSIFMessage getInputs() throws WorkflowException {
+//        return null;
+//    }
+//
+//    @Override
+//    public WSIFMessage getFault() throws WorkflowException {
+//        return null;
+//    }
 }

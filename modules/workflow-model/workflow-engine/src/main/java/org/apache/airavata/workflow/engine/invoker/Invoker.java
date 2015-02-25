@@ -23,8 +23,8 @@ package org.apache.airavata.workflow.engine.invoker;
 
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 
-import xsul.wsif.WSIFMessage;
-import xsul.xwsif_runtime.WSIFClient;
+//import xsul.wsif.WSIFMessage;
+//import xsul.xwsif_runtime.WSIFClient;
 
 public interface Invoker {
 
@@ -38,7 +38,7 @@ public interface Invoker {
     /**
      * @return The WSIFClient.
      */
-    public WSIFClient getClient();
+//    public WSIFClient getClient();
 
     /**
      * Sets the operation name to invoke.
@@ -47,27 +47,27 @@ public interface Invoker {
      *            The name of the operation
      * @throws WorkflowException
      */
-    public void setOperation(String operationName) throws WorkflowException;
-
-    /**
-     * Sets an input parameter
-     * 
-     * @param name
-     *            The name of the input parameter
-     * @param value
-     *            The value of the input parameter
-     * @throws WorkflowException
-     */
-    public void setInput(String name, Object value) throws WorkflowException;
-
-    /**
-     * Returns the all input parameters
-     * 
-     * @return The input parameters
-     * @throws WorkflowException
-     */
-    public WSIFMessage getInputs() throws WorkflowException;
-
+//    public void setOperation(String operationName) throws WorkflowException;
+//
+//    /**
+//     * Sets an input parameter
+//     * 
+//     * @param name
+//     *            The name of the input parameter
+//     * @param value
+//     *            The value of the input parameter
+//     * @throws WorkflowException
+//     */
+//    public void setInput(String name, Object value) throws WorkflowException;
+//
+//    /**
+//     * Returns the all input parameters
+//     * 
+//     * @return The input parameters
+//     * @throws WorkflowException
+//     */
+////    public WSIFMessage getInputs() throws WorkflowException;
+//
     /**
      * Invokes the service.
      * 
@@ -75,23 +75,23 @@ public interface Invoker {
      * @throws WorkflowException
      */
     public boolean invoke() throws WorkflowException;
-
-    /**
-     * Returns the all output parameters
-     * 
-     * @return The output parameters
-     * @throws WorkflowException
-     */
-    public WSIFMessage getOutputs() throws WorkflowException;
-
-    /**
-     * Returns the output of a specified name.
-     * 
-     * @param name
-     *            The name of the output parameter
-     * @return The value of the output
-     * @throws WorkflowException
-     */
+//
+//    /**
+//     * Returns the all output parameters
+//     * 
+//     * @return The output parameters
+//     * @throws WorkflowException
+//     */
+////    public WSIFMessage getOutputs() throws WorkflowException;
+//
+//    /**
+//     * Returns the output of a specified name.
+//     * 
+//     * @param name
+//     *            The name of the output parameter
+//     * @return The value of the output
+//     * @throws WorkflowException
+//     */
     public Object getOutput(String name) throws WorkflowException;
 
     /**
@@ -100,6 +100,6 @@ public interface Invoker {
      * @return The fault message
      * @throws WorkflowException
      */
-    public WSIFMessage getFault() throws WorkflowException;
+//    public WSIFMessage getFault() throws WorkflowException;
 
 }

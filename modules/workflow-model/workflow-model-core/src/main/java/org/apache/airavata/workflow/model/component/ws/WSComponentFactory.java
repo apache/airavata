@@ -61,10 +61,10 @@ public class WSComponentFactory {
         }
     }
 
-	public static List<WSComponent> createComponents(
-			xsul5.wsdl.WsdlDefinitions wsdlDefinitions3ToWsdlDefintions5) {
-		return null;
-	}
+//	public static List<WSComponent> createComponents(
+//			xsul5.wsdl.WsdlDefinitions wsdlDefinitions3ToWsdlDefintions5) {
+//		return null;
+//	}
 
 	public static List<WSComponent> createComponents(String compString) {
 		// TODO Auto-generated method stub
