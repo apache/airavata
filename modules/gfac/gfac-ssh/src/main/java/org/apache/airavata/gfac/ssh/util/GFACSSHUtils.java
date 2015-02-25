@@ -38,6 +38,7 @@ import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.ServerInfo;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
+import org.apache.airavata.gsi.ssh.api.job.JobManagerConfiguration;
 import org.apache.airavata.gsi.ssh.impl.GSISSHAbstractCluster;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
@@ -62,6 +63,9 @@ public class GFACSSHUtils {
 
     public static Map<String, List<Cluster>> clusters = new HashMap<String, List<Cluster>>();
 
+    public static final String PBS_JOB_MANAGER = "pbs";
+    public static final String SLURM_JOB_MANAGER = "slurm";
+    public static final String SUN_GRID_ENGINE_JOB_MANAGER = "UGE";
     public static int maxClusterCount = 5;
 
     /**
@@ -129,8 +133,21 @@ public class GFACSSHUtils {
                                 recreate = true;
                             }
                             if (recreate) {
-                                pbsCluster = new PBSCluster(serverInfo, tokenizedSSHAuthInfo,
-                                        CommonUtils.getPBSJobManager(installedParentPath));
+                            	 JobManagerConfiguration jConfig = null;
+                                 String jobManager = sshJobSubmission.getResourceJobManager().getResourceJobManagerType().toString();
+                                 if (jobManager == null) {
+                                     logger.error("No Job Manager is configured, so we are picking pbs as the default job manager");
+                                     jConfig = CommonUtils.getPBSJobManager(installedParentPath);
+                                 } else {
+                                     if (PBS_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
+                                         jConfig = CommonUtils.getPBSJobManager(installedParentPath);
+                                     } else if (SLURM_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
+                                         jConfig = CommonUtils.getSLURMJobManager(installedParentPath);
+                                     } else if (SUN_GRID_ENGINE_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
+                                         jConfig = CommonUtils.getSGEJobManager(installedParentPath);
+                                     }
+                                 }
+                                pbsCluster = new PBSCluster(serverInfo, tokenizedSSHAuthInfo,jConfig);
                                 List<Cluster> pbsClusters = null;
                                 if (!(clusters.containsKey(key))) {
                                     pbsClusters = new ArrayList<Cluster>();
@@ -166,6 +183,10 @@ public class GFACSSHUtils {
                 throw new GFacException("Error adding security Context, because sshAuthWrapper is null");
             }
             SSHSecurityContext sshSecurityContext = new SSHSecurityContext();
+            AppCatalog appCatalog = jobExecutionContext.getAppCatalog();
+            JobSubmissionInterface preferredJobSubmissionInterface = jobExecutionContext.getPreferredJobSubmissionInterface();
+            SSHJobSubmission sshJobSubmission = appCatalog.getComputeResource().getSSHJobSubmission(preferredJobSubmissionInterface.getJobSubmissionInterfaceId());
+            
             Cluster pbsCluster = null;
             String key=sshAuth.getKey();
             boolean recreate = false;
@@ -195,7 +216,25 @@ public class GFACSSHUtils {
                     recreate = true;
                 }
                 if (recreate) {
-                    pbsCluster = new PBSCluster(sshAuth.getServerInfo(), sshAuth.getAuthenticationInfo(),null);
+               	 JobManagerConfiguration jConfig = null;
+                 String installedParentPath = jobExecutionContext.getResourceJobManager().getJobManagerBinPath();
+                 if (installedParentPath == null) {
+                     installedParentPath = "/";
+                 }
+                 String jobManager = sshJobSubmission.getResourceJobManager().getResourceJobManagerType().toString();
+                 if (jobManager == null) {
+                     logger.error("No Job Manager is configured, so we are picking pbs as the default job manager");
+                     jConfig = CommonUtils.getPBSJobManager(installedParentPath);
+                 } else {
+                     if (PBS_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
+                         jConfig = CommonUtils.getPBSJobManager(installedParentPath);
+                     } else if (SLURM_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
+                         jConfig = CommonUtils.getSLURMJobManager(installedParentPath);
+                     } else if (SUN_GRID_ENGINE_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
+                         jConfig = CommonUtils.getSGEJobManager(installedParentPath);
+                     }
+                 }
+                    pbsCluster = new PBSCluster(sshAuth.getServerInfo(), sshAuth.getAuthenticationInfo(),jConfig);
                     key = sshAuth.getKey();
                     List<Cluster> pbsClusters = null;
                     if (!(clusters.containsKey(key))) {

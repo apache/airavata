@@ -33,8 +33,8 @@ import org.apache.airavata.workflow.model.component.ComponentRegistryException;
 import org.apache.airavata.workflow.model.component.ws.WSComponent;
 import org.apache.airavata.workflow.model.component.ws.WSComponentFactory;
 
-import xsul.wsdl.WsdlDefinitions;
-import xsul.wsdl.WsdlResolver;
+//import xsul.wsdl.WsdlDefinitions;
+//import xsul.wsdl.WsdlResolver;
 
 public class URLComponentRegistry extends ComponentRegistry {
 
@@ -78,10 +78,10 @@ public class URLComponentRegistry extends ComponentRegistry {
     private void loadComponents(List<ComponentReference> tree) throws ComponentException {
         // XXX need to use wsdlResolver from xsul, not xsul5, to handle
         // security.
-        WsdlResolver wsdlResolver = WsdlResolver.getInstance();
-        WsdlDefinitions definitions = wsdlResolver.loadWsdl(this.url);
-        List<WSComponent> components = WSComponentFactory.createComponents(WSDLUtil
-                .wsdlDefinitions3ToWsdlDefintions5(definitions));
+//        WsdlResolver wsdlResolver = WsdlResolver.getInstance();
+//        WsdlDefinitions definitions = wsdlResolver.loadWsdl(this.url);
+        //FIXME: to load WSDL
+        List<WSComponent> components = null; //WSComponentFactory.createComponents(WSDLUtil.wsdlDefinitions3ToWsdlDefintions5(definitions));
         String urlString = this.url.toString();
         String name = urlString.substring(urlString.lastIndexOf('/') + 1);
         URLComponentReference componentReference = new URLComponentReference(name, components);

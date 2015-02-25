@@ -25,8 +25,6 @@ import javax.xml.namespace.QName;
 
 import org.xmlpull.infoset.XmlNamespace;
 
-import xsul5.XmlConstants;
-
 public interface WSConstants {
 
     /**
@@ -44,10 +42,10 @@ public interface WSConstants {
      */
     public static final String XSD_NS_URI = "http://www.w3.org/2001/XMLSchema";
 
-    /**
-     * XML Schema Namespace
-     */
-    public static final XmlNamespace XSD_NS = XmlConstants.BUILDER.newNamespace(XSD_NS_PREFIX, XSD_NS_URI);
+//    /**
+//     * XML Schema Namespace
+//     */
+//    public static final XmlNamespace XSD_NS = XmlConstants.BUILDER.newNamespace(XSD_NS_PREFIX, XSD_NS_URI);
 
     /**
      * The any type.

@@ -64,23 +64,23 @@ import org.apache.airavata.workflow.model.graph.util.GraphUtil;
 import org.apache.airavata.workflow.model.graph.ws.WSGraph;
 import org.apache.airavata.workflow.model.graph.ws.WSGraphFactory;
 import org.apache.airavata.workflow.model.graph.ws.WSNode;
-import org.apache.airavata.workflow.model.ode.ODEBPELTransformer;
-import org.apache.airavata.workflow.model.ode.ODEDeploymentDescriptor;
-import org.apache.airavata.workflow.model.ode.ODEWSDLTransformer;
-import org.apache.airavata.workflow.model.ode.WSDLCleaner;
+//import org.apache.airavata.workflow.model.ode.ODEBPELTransformer;
+//import org.apache.airavata.workflow.model.ode.ODEDeploymentDescriptor;
+//import org.apache.airavata.workflow.model.ode.ODEWSDLTransformer;
+//import org.apache.airavata.workflow.model.ode.WSDLCleaner;
 import org.apache.airavata.workflow.model.utils.ApplicationVersion;
 import org.apache.airavata.workflow.model.utils.WorkflowConstants;
 import org.apache.commons.codec.binary.Base64;
-import org.gpel.GpelConstants;
-import org.gpel.model.GpelProcess;
+//import org.gpel.GpelConstants;
+//import org.gpel.model.GpelProcess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.infoset.XmlInfosetBuilder;
 import org.xmlpull.infoset.XmlNamespace;
 
-import xsul5.XmlConstants;
-import xsul5.wsdl.WsdlDefinitions;
+//import xsul5.XmlConstants;
+//import xsul5.wsdl.WsdlDefinitions;
 
 public class Workflow implements Cloneable {
 
@@ -128,35 +128,35 @@ public class Workflow implements Cloneable {
 
     private URI gpelInstanceID;
 
-    private GpelProcess gpelProcess;
-
-    private WsdlDefinitions workflowWSDL;
-
-    private WsdlDefinitions odeInvokableWSDL;
-
-    private WsdlDefinitions odeWorkflowWSDL;
-
-    private GpelProcess odeProcess;
-
-    private Map<String, WsdlDefinitions> odeWsdlMap;
+//    private GpelProcess gpelProcess;
+//
+//    private WsdlDefinitions workflowWSDL;
+//
+//    private WsdlDefinitions odeInvokableWSDL;
+//
+//    private WsdlDefinitions odeWorkflowWSDL;
+//
+//    private GpelProcess odeProcess;
+//
+//    private Map<String, WsdlDefinitions> odeWsdlMap;
 
     private boolean editable=true;
     /**
      * used only during the parsing xwf or loading from GPEL.
      */
-    private Map<String, WsdlDefinitions> wsdlMap;
+//    private Map<String, WsdlDefinitions> wsdlMap;
 
     private XmlElement odeDeploymentDiscriptor;
 
     private volatile WorkflowExecutionState executionState = WorkflowExecutionState.NONE;
 
-    private WsdlDefinitions tridentWSDL;
+//    private WsdlDefinitions tridentWSDL;
 
     /**
      * Constructs a Workflow.
      */
     public Workflow() {
-        this.wsdlMap = new HashMap<String, WsdlDefinitions>();
+//        this.wsdlMap = new HashMap<String, WsdlDefinitions>();
 
         // Create a empty graph here to avoid null checks.
         this.graph = WSGraphFactory.createGraph();
@@ -335,84 +335,84 @@ public class Workflow implements Cloneable {
         this.image = image;
     }
 
-    /**
-     * Returns the gpelProcess.
-     * 
-     * @return The gpelProcess
-     */
-    public GpelProcess getGpelProcess() {
-        return this.gpelProcess;
-    }
-
-    /**
-     * Sets gpelProcess.
-     * 
-     * @param gpelProcess
-     *            The gpelProcess to set.
-     */
-    public void setGpelProcess(GpelProcess gpelProcess) {
-        this.gpelProcess = gpelProcess;
-    }
-
-    /**
-     * Returns the workflowWSDL.
-     * 
-     * @return The workflowWSDL
-     */
-    public WsdlDefinitions getWorkflowWSDL() {
-        return this.workflowWSDL;
-    }
-
-    /**
-     * Sets workflowWSDL.
-     * 
-     * @param workflowWSDL
-     *            The workflowWSDL to set.
-     */
-    public void setWorkflowWSDL(WsdlDefinitions workflowWSDL) {
-        this.workflowWSDL = workflowWSDL;
-    }
-
-    /**
-     * @return The set of WSDLs
-     */
-    public Map<String, WsdlDefinitions> getWSDLs() {
-
-        Map<String, WsdlDefinitions> wsdls = new LinkedHashMap<String, WsdlDefinitions>();
-//        Map<WsdlDefinitions, String> ids = new HashMap<WsdlDefinitions, String>();
-//        // Use LinkedHashMap to preserve the order of WSDLs, which is useful for
-//        // some unit tests.
+//    /**
+//     * Returns the gpelProcess.
+//     * 
+//     * @return The gpelProcess
+//     */
+//    public GpelProcess getGpelProcess() {
+//        return this.gpelProcess;
+//    }
 //
-//        for (WSNode node : GraphUtil.getNodes(this.graph, WSNode.class)) {
-//            WsdlDefinitions wsdl = node.getComponent().getWSDL();
-//            if (wsdls.containsValue(wsdl)) {
-//                String id = ids.get(wsdl);
-//                node.setWSDLID(id);
-//            } else {
-//                // Assign unique key
-//                String name = WSDLUtil.getWSDLName(wsdl);
-//                String id = StringUtil.convertToJavaIdentifier(name);
-//                while (wsdls.containsKey(id)) {
-//                    id = StringUtil.incrementName(id);
-//                }
-//                wsdls.put(id, wsdl);
-//                ids.put(wsdl, id);
-//                node.setWSDLID(id);
-//            }
-//        }
-        return wsdls;
-    }
-
-    /**
-     * This method is called by GPELClient during loading a workflow.
-     * 
-     * @param id
-     * @param wsdl
-     */
-    public void addWSDL(String id, WsdlDefinitions wsdl) {
-        logger.debug("id: " + id);
-        this.wsdlMap.put(id, wsdl);
-    }
+//    /**
+//     * Sets gpelProcess.
+//     * 
+//     * @param gpelProcess
+//     *            The gpelProcess to set.
+//     */
+//    public void setGpelProcess(GpelProcess gpelProcess) {
+//        this.gpelProcess = gpelProcess;
+//    }
+//
+//    /**
+//     * Returns the workflowWSDL.
+//     * 
+//     * @return The workflowWSDL
+//     */
+//    public WsdlDefinitions getWorkflowWSDL() {
+//        return this.workflowWSDL;
+//    }
+//
+//    /**
+//     * Sets workflowWSDL.
+//     * 
+//     * @param workflowWSDL
+//     *            The workflowWSDL to set.
+//     */
+//    public void setWorkflowWSDL(WsdlDefinitions workflowWSDL) {
+//        this.workflowWSDL = workflowWSDL;
+//    }
+//
+//    /**
+//     * @return The set of WSDLs
+//     */
+//    public Map<String, WsdlDefinitions> getWSDLs() {
+//
+//        Map<String, WsdlDefinitions> wsdls = new LinkedHashMap<String, WsdlDefinitions>();
+////        Map<WsdlDefinitions, String> ids = new HashMap<WsdlDefinitions, String>();
+////        // Use LinkedHashMap to preserve the order of WSDLs, which is useful for
+////        // some unit tests.
+////
+////        for (WSNode node : GraphUtil.getNodes(this.graph, WSNode.class)) {
+////            WsdlDefinitions wsdl = node.getComponent().getWSDL();
+////            if (wsdls.containsValue(wsdl)) {
+////                String id = ids.get(wsdl);
+////                node.setWSDLID(id);
+////            } else {
+////                // Assign unique key
+////                String name = WSDLUtil.getWSDLName(wsdl);
+////                String id = StringUtil.convertToJavaIdentifier(name);
+////                while (wsdls.containsKey(id)) {
+////                    id = StringUtil.incrementName(id);
+////                }
+////                wsdls.put(id, wsdl);
+////                ids.put(wsdl, id);
+////                node.setWSDLID(id);
+////            }
+////        }
+//        return wsdls;
+//    }
+//
+//    /**
+//     * This method is called by GPELClient during loading a workflow.
+//     * 
+//     * @param id
+//     * @param wsdl
+//     */
+//    public void addWSDL(String id, WsdlDefinitions wsdl) {
+//        logger.debug("id: " + id);
+//        this.wsdlMap.put(id, wsdl);
+//    }
 
     /**
      * Creates a node from a specified component and adds it to the graph.
@@ -551,16 +551,16 @@ public class Workflow implements Cloneable {
         }
 
         // BPEL
-        if (this.gpelProcess != null) {
-            XmlElement bpelElement = workflowElement.addElement(NS_XWF, BPEL_TAG);
-            bpelElement.setText(this.gpelProcess.xmlStringPretty());
-        }
-
-        // Workflow WSDL
-        if (this.workflowWSDL != null) {
-            XmlElement workflowWSDLElement = workflowElement.addElement(NS_XWF, WORKFLOW_WSDL_TAG);
-            workflowWSDLElement.setText(this.workflowWSDL.xmlStringPretty());
-        }
+//        if (this.gpelProcess != null) {
+//            XmlElement bpelElement = workflowElement.addElement(NS_XWF, BPEL_TAG);
+//            bpelElement.setText(this.gpelProcess.xmlStringPretty());
+//        }
+//
+//        // Workflow WSDL
+//        if (this.workflowWSDL != null) {
+//            XmlElement workflowWSDLElement = workflowElement.addElement(NS_XWF, WORKFLOW_WSDL_TAG);
+//            workflowWSDLElement.setText(this.workflowWSDL.xmlStringPretty());
+//        }
 
         return workflowElement;
     }
@@ -603,22 +603,22 @@ public class Workflow implements Cloneable {
         for (WSNode node : GraphUtil.getWSNodes(this.graph)) {
             String id = node.getWSDLID();
             logger.debug("id: " + id);
-            WsdlDefinitions wsdl = this.wsdlMap.get(id);
-
-            if (wsdl == null) {
-                // XXX This happens while loading a workflow that is created by
-                // the version 2.2.6_2 or below from GPEL.
-                // Need to look for wsdl manually.
-                // id should be look like
-                // {http://www.extreme.indiana.edu/math/}Adder
-                for (WsdlDefinitions w : this.wsdlMap.values()) {
-                    QName name = WSDLUtil.getWSDLQName(w);
-                    if (name.toString().equals(id)) {
-                        wsdl = w;
-                        break;
-                    }
-                }
-            }
+//            WsdlDefinitions wsdl = this.wsdlMap.get(id);
+//
+//            if (wsdl == null) {
+//                // XXX This happens while loading a workflow that is created by
+//                // the version 2.2.6_2 or below from GPEL.
+//                // Need to look for wsdl manually.
+//                // id should be look like
+//                // {http://www.extreme.indiana.edu/math/}Adder
+//                for (WsdlDefinitions w : this.wsdlMap.values()) {
+//                    QName name = WSDLUtil.getWSDLQName(w);
+//                    if (name.toString().equals(id)) {
+//                        wsdl = w;
+//                        break;
+//                    }
+//                }
+//            }
 //            if (wsdl == null) {
 //                continue;
 //            }
@@ -699,22 +699,22 @@ public class Workflow implements Cloneable {
         // Graph
         XmlElement graphElement = workflowElement.element(GraphSchema.GRAPH_TAG);
         this.graph = WSGraphFactory.createGraph(graphElement);
-        WsdlDefinitions wsdl = null;
-        XmlElement wsdlsElement = workflowElement.element(WSDLS_TAG);
-        for (XmlElement wsdlElement : wsdlsElement.elements(null, WSDL_TAG)) {
-            String wsdlText = wsdlElement.requiredText();
-            try {
-                wsdl = WSDLUtil.stringToWSDL(wsdlText);
-            } catch (UtilsException e) {
-                logger.error(e.getMessage(), e);
-            }
-            String id = wsdlElement.attributeValue(NS_XWF, ID_ATTRIBUTE);
-            if (id == null || id.length() == 0) {
-                // xwf up to 2.2.6_2 doesn't have ID.
-                id = WSDLUtil.getWSDLQName(wsdl).toString();
-            }
-            addWSDL(id, wsdl);
-        }
+//        WsdlDefinitions wsdl = null;
+//        XmlElement wsdlsElement = workflowElement.element(WSDLS_TAG);
+//        for (XmlElement wsdlElement : wsdlsElement.elements(null, WSDL_TAG)) {
+//            String wsdlText = wsdlElement.requiredText();
+//            try {
+//                wsdl = WSDLUtil.stringToWSDL(wsdlText);
+//            } catch (UtilsException e) {
+//                logger.error(e.getMessage(), e);
+//            }
+//            String id = wsdlElement.attributeValue(NS_XWF, ID_ATTRIBUTE);
+//            if (id == null || id.length() == 0) {
+//                // xwf up to 2.2.6_2 doesn't have ID.
+//                id = WSDLUtil.getWSDLQName(wsdl).toString();
+//            }
+//            addWSDL(id, wsdl);
+//        }
 
         bindComponents();
 
@@ -737,8 +737,8 @@ public class Workflow implements Cloneable {
             try {
                 String bpelString = bpelElement.requiredText();
                 XmlNamespace gpelNS = XmlInfosetBuilder.newInstance().newNamespace(BPELScript.GPEL, BPELScript.GPELNS);
-                GpelConstants.GPEL_NS = gpelNS;
-                this.gpelProcess = new GpelProcess(XMLUtil.stringToXmlElement(bpelString));
+//                GpelConstants.GPEL_NS = gpelNS;
+//                this.gpelProcess = new GpelProcess(XMLUtil.stringToXmlElement(bpelString));
             } catch (RuntimeException e) {
                 String error = "Failed to parse the BPEL document.";
                 throw new GraphException(error, e);
@@ -749,7 +749,7 @@ public class Workflow implements Cloneable {
         if (workflowWSDLElement != null) {
             try {
                 String wsdlText = workflowWSDLElement.requiredText();
-                this.workflowWSDL = new WsdlDefinitions(XMLUtil.stringToXmlElement(wsdlText));
+//                this.workflowWSDL = new WsdlDefinitions(XMLUtil.stringToXmlElement(wsdlText));
             } catch (RuntimeException e) {
                 String error = "Failed to parse the workflow WSDL.";
                 throw new GraphException(error, e);
@@ -784,134 +784,134 @@ public class Workflow implements Cloneable {
 
     public XmlElement getODEDeploymentDescriptor(URI dscUrl, String odeEprEndingWithPort) throws GraphException,
             ComponentException {
-        if (this.odeDeploymentDiscriptor == null) {
-            this.odeDeploymentDiscriptor = new ODEDeploymentDescriptor().generate(this.getName(),
-                    getOdeWorkflowWSDL(dscUrl, odeEprEndingWithPort), getOdeProcess(dscUrl, odeEprEndingWithPort),
-                    getOdeServiceWSDLs(dscUrl, odeEprEndingWithPort));
-        }
+//        if (this.odeDeploymentDiscriptor == null) {
+//            this.odeDeploymentDiscriptor = new ODEDeploymentDescriptor().generate(this.getName(),
+//                    getOdeWorkflowWSDL(dscUrl, odeEprEndingWithPort), getOdeProcess(dscUrl, odeEprEndingWithPort),
+//                    getOdeServiceWSDLs(dscUrl, odeEprEndingWithPort));
+//        }
         return this.odeDeploymentDiscriptor;
 
     }
 
-    /**
-     * Returns the odeWorkflowWSDL.
-     * 
-     * @return The odeWorkflowWSDL
-     * @throws GraphException
-     * @throws ComponentException
-     */
-    public WsdlDefinitions getOdeInvokableWSDL(URI dscUrl, String odeEprEndingWithPort) throws GraphException,
-            ComponentException {
-        if (this.odeInvokableWSDL == null) {
-            generateODEScripts(dscUrl, odeEprEndingWithPort);
-        }
-        return this.odeInvokableWSDL;
-    }
-
-    /**
-     * Returns the odeProcess.
-     * 
-     * @return The odeProcess
-     * @throws ComponentException
-     * @throws GraphException
-     */
-    public GpelProcess getOdeProcess(URI dscUrl, String odeEprEndingWithPort) throws GraphException, ComponentException {
-        if (this.odeProcess == null) {
-            generateODEScripts(dscUrl, odeEprEndingWithPort);
-        }
-        return this.odeProcess;
-    }
-
-    /**
-     * Returns the odeWsdlMap.
-     * 
-     * @return The odeWsdlMap
-     * @throws ComponentException
-     * @throws GraphException
-     */
-    public Map<String, WsdlDefinitions> getOdeServiceWSDLs(URI dscUrl, String odeEprEndingWithPort)
-            throws GraphException, ComponentException {
-        if (this.odeWsdlMap == null) {
-            generateODEScripts(dscUrl, odeEprEndingWithPort);
-        }
-
-        return this.odeWsdlMap;
-    }
-
-    /**
-     * Returns the odeWorkflowWSDL.
-     * 
-     * @return The odeWorkflowWSDL
-     * @throws ComponentException
-     * @throws GraphException
-     */
-    public WsdlDefinitions getOdeWorkflowWSDL(URI dscUrl, String odeEprEndingWithPort) throws GraphException,
-            ComponentException {
-        if (this.odeWorkflowWSDL == null) {
-            generateODEScripts(dscUrl, odeEprEndingWithPort);
-        }
-
-        return this.odeWorkflowWSDL;
-    }
-
-    public WsdlDefinitions getTridentWorkflowWSDL(URI dscUrl, String odeEprEndingWithPort) throws GraphException,
-            ComponentException {
-        if (this.tridentWSDL == null) {
-            generateODEScripts(dscUrl, odeEprEndingWithPort);
-        }
-
-        return this.tridentWSDL;
-    }
-
-    private void generateODEScripts(URI dscUrl, String odeEprEndingWithPort) throws GraphException, ComponentException {
-        this.getGraph().setID(this.getName());
-
-        BPELScript script = null;
-
-        script = new BPELScript(this);
-        ODEWSDLTransformer wsdlTransformer = new ODEWSDLTransformer();
-        script.create(BPELScriptType.BPEL2);
-        this.odeProcess = script.getGpelProcess();
-        this.odeProcess.setTargetNamespace(WorkflowConstants.LEAD_NS);
-
-        WsdlDefinitions abstractWorkflowWsdl = script.getWorkflowWSDL().getWsdlDefinitions();
-        this.odeWorkflowWSDL = abstractWorkflowWsdl;
-        try {
-            this.odeInvokableWSDL = WSDLUtil.stringToWSDL(abstractWorkflowWsdl.xmlString());
-            wsdlTransformer.makeWorkflowWSDLConcrete(this.odeInvokableWSDL, this.getName(), dscUrl);
-            wsdlTransformer.setOdeLocation(odeEprEndingWithPort, this.getName(), this.odeInvokableWSDL);
-
-            this.odeWsdlMap = new HashMap<String, WsdlDefinitions>();
-            Collection<XmlElement> itr = script.getWSDLs();
-            for (XmlElement xmlElement : itr) {
-                WsdlDefinitions wsdl = WSDLUtil.stringToWSDL(XmlConstants.BUILDER.serializeToString(xmlElement));
-                String id = xmlElement.attributeValue(NS_XWF, ID_ATTRIBUTE);
-                if (id == null || id.length() == 0) {
-                    // xwf up to 2.2.6_2 doesn't have ID.
-                    id = WSDLUtil.getWSDLQName(wsdl).toString();
-                    if (null == id || "".equals(id) || (id.startsWith("{") && id.endsWith("}"))) {
-                        QName wsdlQname = new QName(NS_XWF.getName(), WSDLUtil.getFirstOperationName(wsdl,
-                                WSDLUtil.getFirstPortTypeQName(wsdl)));
-                        id = wsdlQname.toString();
-                        wsdl.xml().setAttributeValue("name", wsdlQname.getLocalPart());
-                    }
-                }
-                WSDLCleaner.cleanWSDL(wsdl);
-                this.odeWsdlMap.put(id, wsdl);
-            }
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-        new ODEBPELTransformer()
-                .generateODEBPEL(this.odeProcess, this.getName(), this.odeWorkflowWSDL, this.odeWsdlMap);
-
-        wsdlTransformer.trasnformToODEWsdls(this.getName(), dscUrl, this.odeWorkflowWSDL, this.odeWsdlMap);
-
-        String wsdlString = XMLUtil.xmlElementToString(this.odeWorkflowWSDL.xml());
-        this.tridentWSDL = new WsdlDefinitions(XMLUtil.stringToXmlElement(wsdlString));
-        new TridentTransformer().process(this.tridentWSDL);
-
-    }
+//    /**
+//     * Returns the odeWorkflowWSDL.
+//     * 
+//     * @return The odeWorkflowWSDL
+//     * @throws GraphException
+//     * @throws ComponentException
+//     */
+//    public WsdlDefinitions getOdeInvokableWSDL(URI dscUrl, String odeEprEndingWithPort) throws GraphException,
+//            ComponentException {
+//        if (this.odeInvokableWSDL == null) {
+//            generateODEScripts(dscUrl, odeEprEndingWithPort);
+//        }
+//        return this.odeInvokableWSDL;
+//    }
+//
+//    /**
+//     * Returns the odeProcess.
+//     * 
+//     * @return The odeProcess
+//     * @throws ComponentException
+//     * @throws GraphException
+//     */
+//    public GpelProcess getOdeProcess(URI dscUrl, String odeEprEndingWithPort) throws GraphException, ComponentException {
+//        if (this.odeProcess == null) {
+//            generateODEScripts(dscUrl, odeEprEndingWithPort);
+//        }
+//        return this.odeProcess;
+//    }
+//
+//    /**
+//     * Returns the odeWsdlMap.
+//     * 
+//     * @return The odeWsdlMap
+//     * @throws ComponentException
+//     * @throws GraphException
+//     */
+//    public Map<String, WsdlDefinitions> getOdeServiceWSDLs(URI dscUrl, String odeEprEndingWithPort)
+//            throws GraphException, ComponentException {
+//        if (this.odeWsdlMap == null) {
+//            generateODEScripts(dscUrl, odeEprEndingWithPort);
+//        }
+//
+//        return this.odeWsdlMap;
+//    }
+//
+//    /**
+//     * Returns the odeWorkflowWSDL.
+//     * 
+//     * @return The odeWorkflowWSDL
+//     * @throws ComponentException
+//     * @throws GraphException
+//     */
+//    public WsdlDefinitions getOdeWorkflowWSDL(URI dscUrl, String odeEprEndingWithPort) throws GraphException,
+//            ComponentException {
+//        if (this.odeWorkflowWSDL == null) {
+//            generateODEScripts(dscUrl, odeEprEndingWithPort);
+//        }
+//
+//        return this.odeWorkflowWSDL;
+//    }
+//
+//    public WsdlDefinitions getTridentWorkflowWSDL(URI dscUrl, String odeEprEndingWithPort) throws GraphException,
+//            ComponentException {
+//        if (this.tridentWSDL == null) {
+//            generateODEScripts(dscUrl, odeEprEndingWithPort);
+//        }
+//
+//        return this.tridentWSDL;
+//    }
+//
+//    private void generateODEScripts(URI dscUrl, String odeEprEndingWithPort) throws GraphException, ComponentException {
+//        this.getGraph().setID(this.getName());
+//
+//        BPELScript script = null;
+//
+//        script = new BPELScript(this);
+//        ODEWSDLTransformer wsdlTransformer = new ODEWSDLTransformer();
+//        script.create(BPELScriptType.BPEL2);
+//        this.odeProcess = script.getGpelProcess();
+//        this.odeProcess.setTargetNamespace(WorkflowConstants.LEAD_NS);
+//
+//        WsdlDefinitions abstractWorkflowWsdl = script.getWorkflowWSDL().getWsdlDefinitions();
+//        this.odeWorkflowWSDL = abstractWorkflowWsdl;
+//        try {
+//            this.odeInvokableWSDL = WSDLUtil.stringToWSDL(abstractWorkflowWsdl.xmlString());
+//            wsdlTransformer.makeWorkflowWSDLConcrete(this.odeInvokableWSDL, this.getName(), dscUrl);
+//            wsdlTransformer.setOdeLocation(odeEprEndingWithPort, this.getName(), this.odeInvokableWSDL);
+//
+//            this.odeWsdlMap = new HashMap<String, WsdlDefinitions>();
+//            Collection<XmlElement> itr = script.getWSDLs();
+//            for (XmlElement xmlElement : itr) {
+//                WsdlDefinitions wsdl = WSDLUtil.stringToWSDL(XmlConstants.BUILDER.serializeToString(xmlElement));
+//                String id = xmlElement.attributeValue(NS_XWF, ID_ATTRIBUTE);
+//                if (id == null || id.length() == 0) {
+//                    // xwf up to 2.2.6_2 doesn't have ID.
+//                    id = WSDLUtil.getWSDLQName(wsdl).toString();
+//                    if (null == id || "".equals(id) || (id.startsWith("{") && id.endsWith("}"))) {
+//                        QName wsdlQname = new QName(NS_XWF.getName(), WSDLUtil.getFirstOperationName(wsdl,
+//                                WSDLUtil.getFirstPortTypeQName(wsdl)));
+//                        id = wsdlQname.toString();
+//                        wsdl.xml().setAttributeValue("name", wsdlQname.getLocalPart());
+//                    }
+//                }
+//                WSDLCleaner.cleanWSDL(wsdl);
+//                this.odeWsdlMap.put(id, wsdl);
+//            }
+//        } catch (Exception e) {
+//            logger.error(e.getMessage(), e);
+//        }
+//        new ODEBPELTransformer()
+//                .generateODEBPEL(this.odeProcess, this.getName(), this.odeWorkflowWSDL, this.odeWsdlMap);
+//
+//        wsdlTransformer.trasnformToODEWsdls(this.getName(), dscUrl, this.odeWorkflowWSDL, this.odeWsdlMap);
+//
+//        String wsdlString = XMLUtil.xmlElementToString(this.odeWorkflowWSDL.xml());
+//        this.tridentWSDL = new WsdlDefinitions(XMLUtil.stringToXmlElement(wsdlString));
+//        new TridentTransformer().process(this.tridentWSDL);
+//
+//    }
 
     /**
      * @return
@@ -975,9 +975,9 @@ public class Workflow implements Cloneable {
 	public void createScript() throws GraphException {
         // Generate a BPEL process.
         BPELScript script = new BPELScript(this);
-        script.create(BPELScriptType.GPEL);
-        this.setGpelProcess(script.getGpelProcess());
-        this.setWorkflowWSDL(script.getWorkflowWSDL().getWsdlDefinitions());
+//        script.create(BPELScriptType.GPEL);
+//        this.setGpelProcess(script.getGpelProcess());
+//        this.setWorkflowWSDL(script.getWorkflowWSDL().getWsdlDefinitions());
     }
 
     public List<String> getWorkflowServiceNodeIDs() {

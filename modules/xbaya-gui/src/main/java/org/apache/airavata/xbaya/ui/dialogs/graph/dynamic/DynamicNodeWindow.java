@@ -338,42 +338,42 @@ public class DynamicNodeWindow {
                 WSNode fromWsNode = (WSNode) fromNode;
                 if (null != fromPort && fromPort instanceof DataPort) {
                     DataPort fromDataPort = (DataPort) fromPort;
-                    WsdlDefinitions wsdl = engine.getGUI().getWorkflow().getWSDLs().get(fromWsNode.getWSDLID());
-                    Iterator<XmlNamespace> itr = wsdl.xml().namespaces().iterator();
-                    try {
-                        XmlElement schema = wsdl.getTypes().element("schema").clone();
-                        // do not change the following ordering of setting
-                        // namespaces.
-                        schema.setNamespace(xsul5.XmlConstants.BUILDER.newNamespace("http://www.w3.org/2001/XMLSchema"));
-                        while (itr.hasNext()) {
-                            XmlNamespace next = itr.next();
-                            if (!"".equals(next.getPrefix()) && null != next.getPrefix()) {
-                                schema.setAttributeValue("xmlns:" + next.getPrefix(), next.getName());
-                            }
-
-                        }
-
-                        try {
-                            xsul5.XmlConstants.BUILDER
-                                    .serializeToOutputStream(schema, new FileOutputStream(rootDir.getCanonicalPath()
-                                            + File.separatorChar + "types.xsd"));
-                        } catch (Exception e) {
-                            log.error(e.getMessage(), e);
-                        }
-
-                        typesPath = rootDir.getCanonicalPath() + File.separatorChar + "mytype.jar";
-                        String[] args = new String[] { "-d", classesDir.getCanonicalPath(), "-src",
-                                srcDir.getCanonicalPath(), "-out", typesPath,
-                                rootDir.getCanonicalPath() + File.separatorChar + "types.xsd" };
-                        SchemaCompilerUtil.compile(args);
-
-                    } catch (XmlBuilderException e) {
-                        this.engine.getGUI().getErrorWindow().error(e);
-                    } catch (CloneNotSupportedException e) {
-                        this.engine.getGUI().getErrorWindow().error(e);
-                    } catch (IOException e) {
-                        log.error(e.getMessage(), e);
-                    }
+//                    WsdlDefinitions wsdl = engine.getGUI().getWorkflow().getWSDLs().get(fromWsNode.getWSDLID());
+//                    Iterator<XmlNamespace> itr = wsdl.xml().namespaces().iterator();
+//                    try {
+//                        XmlElement schema = wsdl.getTypes().element("schema").clone();
+//                        // do not change the following ordering of setting
+//                        // namespaces.
+//                        schema.setNamespace(xsul5.XmlConstants.BUILDER.newNamespace("http://www.w3.org/2001/XMLSchema"));
+//                        while (itr.hasNext()) {
+//                            XmlNamespace next = itr.next();
+//                            if (!"".equals(next.getPrefix()) && null != next.getPrefix()) {
+//                                schema.setAttributeValue("xmlns:" + next.getPrefix(), next.getName());
+//                            }
+//
+//                        }
+//
+//                        try {
+//                            xsul5.XmlConstants.BUILDER
+//                                    .serializeToOutputStream(schema, new FileOutputStream(rootDir.getCanonicalPath()
+//                                            + File.separatorChar + "types.xsd"));
+//                        } catch (Exception e) {
+//                            log.error(e.getMessage(), e);
+//                        }
+//
+//                        typesPath = rootDir.getCanonicalPath() + File.separatorChar + "mytype.jar";
+//                        String[] args = new String[] { "-d", classesDir.getCanonicalPath(), "-src",
+//                                srcDir.getCanonicalPath(), "-out", typesPath,
+//                                rootDir.getCanonicalPath() + File.separatorChar + "types.xsd" };
+//                        SchemaCompilerUtil.compile(args);
+//
+//                    } catch (XmlBuilderException e) {
+//                        this.engine.getGUI().getErrorWindow().error(e);
+//                    } catch (CloneNotSupportedException e) {
+//                        this.engine.getGUI().getErrorWindow().error(e);
+//                    } catch (IOException e) {
+//                        log.error(e.getMessage(), e);
+//                    }
 
                 } else {
                     throw new WorkflowRuntimeException("Unknown port for code generation" + fromPort);

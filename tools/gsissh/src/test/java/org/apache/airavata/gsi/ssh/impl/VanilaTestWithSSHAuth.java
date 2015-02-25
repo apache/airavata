@@ -47,21 +47,45 @@ public class VanilaTestWithSSHAuth {
     private String workingDirectory;
     private String privateKeyPath;
     private String publicKeyPath;
+    private String path;
 
     @BeforeTest
     public void setUp() throws Exception {
         System.out.println("Test case name " + this.getClass().getName());
-        this.hostName = "bigred2.uits.iu.edu";        //default ssh host
-//        System.setProperty("ssh.user", "lginnali");
-//        System.setProperty("ssh.private.key.path", "/Users/lahirugunathilake/.ssh/id_dsa");
-//        System.setProperty("ssh.public.key.path", "/Users/lahirugunathilake/.ssh/id_dsa.pub");
-//        System.setProperty("ssh.working.directory", "/tmp");
+        //Trestles
+        this.hostName = "trestles.sdsc.xsede.org";      
+        this.userName = "ogce";
+        this.path="/opt/torque/bin/";
+        //Stampede:
+//        this.hostName = "stampede.tacc.xsede.org";        
+//        this.userName = "ogce";
+//        this.path="/usr/bin";
+        //Lonestar:
+//         this.hostName = "lonestar.tacc.utexas.edu";        
+//         this.userName = "us3";
+//        this.path="/opt/sge6.2/bin/lx24-amd64";
+        //Alamo:
+//        this.hostName = "alamo.uthscsa.edu";        
+//        this.userName = "raminder";
+//        this.path="/opt/torque/bin/";
+        //Bigred:
+//        this.hostName = "bigred2.uits.iu.edu";        
+//        this.userName = "cgateway";
+//        this.path="/opt/torque/torque-5.0.1/bin/";
+        
+        System.setProperty("ssh.host",hostName);
+        System.setProperty("ssh.username", userName);
+        System.setProperty("private.ssh.key", "/home/user/.ssh/id_dsa");
+        System.setProperty("public.ssh.key", "/home/user/.ssh/id_dsa.pub");
+        System.setProperty("ssh.working.directory", "/tmp");
 
         this.hostName = System.getProperty("ssh.host");
         this.userName = System.getProperty("ssh.username");
         this.password = System.getProperty("ssh.password");
         this.privateKeyPath = System.getProperty("private.ssh.key");
         this.publicKeyPath = System.getProperty("public.ssh.key");
+        
+        System.setProperty("ssh.keypass", "");
         this.passPhrase = System.getProperty("ssh.keypass");
         this.workingDirectory = System.getProperty("ssh.working.directory");
 
@@ -87,13 +111,13 @@ public class VanilaTestWithSSHAuth {
         }
         // Server info
         ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
-        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
+        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager(path));
 
         String date = new Date().toString();
         date = date.replaceAll(" ", "_");
         date = date.replaceAll(":", "_");
 
-        String pomFile = System.getProperty("basedir") + File.separator + "pom.xml";
+        String pomFile =  new File("").getAbsolutePath() + File.separator + "pom.xml";
 
         workingDirectory = workingDirectory + File.separator
                 + date + "_" + UUID.randomUUID();
@@ -124,12 +148,13 @@ public class VanilaTestWithSSHAuth {
         jobDescriptor.setProcessesPerNode(1);
         jobDescriptor.setQueueName("normal");
         jobDescriptor.setMaxWallTime("5");
-        jobDescriptor.setJobSubmitter("aprun -n 1");
+        //jobDescriptor.setJobSubmitter("aprun -n 1");
         List<String> inputs = new ArrayList<String>();
         inputs.add(remoteLocation + File.separator + fileName);
         jobDescriptor.setInputValues(inputs);
         //finished construction of job object
         System.out.println(jobDescriptor.toXML());
+        if(hostName.contains("trestles")){
         String jobID = pbsCluster.submitBatchJob(jobDescriptor);
         System.out.println("JobID returned : " + jobID);
 
@@ -156,6 +181,7 @@ public class VanilaTestWithSSHAuth {
         System.out.println(jobById.getUsedCPUTime());
         System.out.println(jobById.getUsedMemory());
         System.out.println(jobById.getVariableList());
+        }
     }
 
     @Test
@@ -170,7 +196,7 @@ public class VanilaTestWithSSHAuth {
         }
         // Server info
         ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
-        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/torque-4.2.3.1/bin/"));
+        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager(path));
 
         String date = new Date().toString();
         date = date.replaceAll(" ", "_");
@@ -190,6 +216,4 @@ public class VanilaTestWithSSHAuth {
         Thread.sleep(1000);
         pbsCluster.scpFrom(workingDirectory + File.separator + "pom.xml", (new File(".")).getAbsolutePath());
     }
-
-
 }

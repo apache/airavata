@@ -820,18 +820,18 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 								}
 
 							}
-							if (!(node2 instanceof OutputNode)) {
-								listOfValues.removeAll(listOfValues);
-								String output = (String) systemInvoker.getOutput(node1.getOutputPort(0).getName());
-								XmlElement xmlElement = XMLUtil.stringToXmlElement("<result>" + output + "</result>");
-								Iterator iterator1 = xmlElement.children().iterator();
-								while (iterator1.hasNext()) {
-									Object next1 = iterator1.next();
-									if (next1 instanceof XmlElement) {
-										listOfValues.add((String) ((XmlElement) next1).children().iterator().next());
-									}
-								}
-							}
+//							if (!(node2 instanceof OutputNode)) {
+//								listOfValues.removeAll(listOfValues);
+//								String output = (String) systemInvoker.getOutput(node1.getOutputPort(0).getName());
+//								XmlElement xmlElement = XMLUtil.stringToXmlElement("<result>" + output + "</result>");
+//								Iterator iterator1 = xmlElement.children().iterator();
+//								while (iterator1.hasNext()) {
+//									Object next1 = iterator1.next();
+//									if (next1 instanceof XmlElement) {
+//										listOfValues.add((String) ((XmlElement) next1).children().iterator().next());
+//									}
+//								}
+//							}
 						}
 					}
 				}
