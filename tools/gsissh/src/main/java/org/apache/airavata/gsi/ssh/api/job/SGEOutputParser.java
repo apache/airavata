@@ -31,7 +31,7 @@ import java.util.Map;
 public class SGEOutputParser implements OutputParser{
     private static final Logger log = LoggerFactory.getLogger(PBSOutputParser.class);
 
-    public void parse(JobDescriptor jobDescriptor, String rawOutput) {
+    public void parseSingleJob(JobDescriptor jobDescriptor, String rawOutput) {
         log.debug(rawOutput);
         String[] info = rawOutput.split("\n");
         String[] line;
@@ -117,7 +117,7 @@ public class SGEOutputParser implements OutputParser{
         }
     }
 
-	public String parse(String rawOutput) {
+	public String parseJobSubmission(String rawOutput) {
 		log.debug(rawOutput);
 		if (rawOutput != null && !rawOutput.isEmpty()) {
 			String[] info = rawOutput.split("\n");
@@ -128,12 +128,12 @@ public class SGEOutputParser implements OutputParser{
 		}
 	}
 
-    public JobStatus parse(String jobID, String rawOutput) {
+    public JobStatus parseJobStatus(String jobID, String rawOutput) {
        // not implemented to sun grid engine
         return JobStatus.U;
     }
 
-    public void parse(String userName, Map<String, JobStatus> statusMap, String rawOutput) {
+    public void parseJobStatuses(String userName, Map<String, JobStatus> statusMap, String rawOutput) {
         log.debug(rawOutput);
         String[] info = rawOutput.split("\n");
         int lastStop = 0;

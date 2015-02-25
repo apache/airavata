@@ -36,6 +36,10 @@ import org.slf4j.LoggerFactory;
 public class PBSCluster extends GSISSHAbstractCluster {
     private static final Logger log = LoggerFactory.getLogger(PBSCluster.class);
 
+
+    public PBSCluster(JobManagerConfiguration jobManagerConfiguration) {
+        super(jobManagerConfiguration);
+    }
     public PBSCluster(ServerInfo serverInfo, AuthenticationInfo authenticationInfo, JobManagerConfiguration config) throws SSHApiException {
         super(serverInfo, authenticationInfo,config);
     }

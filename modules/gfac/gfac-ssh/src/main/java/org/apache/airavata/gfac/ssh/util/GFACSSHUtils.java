@@ -66,6 +66,8 @@ public class GFACSSHUtils {
     public static final String PBS_JOB_MANAGER = "pbs";
     public static final String SLURM_JOB_MANAGER = "slurm";
     public static final String SUN_GRID_ENGINE_JOB_MANAGER = "UGE";
+    public static final String LSF_JOB_MANAGER = "LSF";
+
     public static int maxClusterCount = 5;
 
     /**
@@ -232,6 +234,8 @@ public class GFACSSHUtils {
                          jConfig = CommonUtils.getSLURMJobManager(installedParentPath);
                      } else if (SUN_GRID_ENGINE_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
                          jConfig = CommonUtils.getSGEJobManager(installedParentPath);
+                     } else if(LSF_JOB_MANAGER.equals(jobManager)) {
+                         jConfig = CommonUtils.getLSFJobManager(installedParentPath);
                      }
                  }
                     pbsCluster = new PBSCluster(sshAuth.getServerInfo(), sshAuth.getAuthenticationInfo(),jConfig);
