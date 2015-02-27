@@ -57,10 +57,10 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_GATEWAY = "default.registry.gateway";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_2e539083-665d-40fd-aaa2-4a751028326b";
+    private static String echoAppId = "Echo_f828a575-7f17-4149-9d45-abe2aa9c6109";
     private static String mpiAppId = "HelloMPI_720e159f-198f-4daa-96ca-9f5eafee92c9";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
-    private static String amberAppId = "Amber_9e4f28b6-7a5d-4fe1-b07f-2053f8f0deb3";
+    private static String amberAppId = "Amber_98ac2eec-b253-4c43-81dc-54d845f64337";
     private static String gromacsAppId = "GROMACS_05622038-9edd-4cb1-824e-0b7cb993364b";
     private static String espressoAppId = "ESPRESSO_10cc2820-5d0b-4c63-9546-8a8b595593c1";
     private static String lammpsAppId = "LAMMPS_10893eb5-3840-438c-8446-d26c7ecb001f";
@@ -82,8 +82,8 @@ public class CreateLaunchExperiment {
     public static void main(String[] args) throws Exception {
                 airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
                 System.out.println("API version is " + airavataClient.getAPIVersion());
-                registerApplications(); // run this only the first time
-//                createAndLaunchExp();
+//                registerApplications(); // run this only the first time
+                createAndLaunchExp();
     }
     
     private static String fsdResourceId;
@@ -115,7 +115,7 @@ public class CreateLaunchExperiment {
                 System.out.println("Experiment ID : " + expId);
 //                updateExperiment(airavata, expId);
 
-                launchExperiment(airavataClient, expId);
+//                launchExperiment(airavataClient, expId);
             }
         } catch (Exception e) {
             logger.error("Error while connecting with server", e.getMessage());

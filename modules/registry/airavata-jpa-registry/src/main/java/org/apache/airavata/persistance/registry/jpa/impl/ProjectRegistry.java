@@ -40,15 +40,15 @@ public class ProjectRegistry {
     private final static Logger logger = LoggerFactory.getLogger(ProjectRegistry.class);
 
     public ProjectRegistry(GatewayResource gatewayResource, UserResource user) throws RegistryException {
-        if (!ResourceUtils.isGatewayExist(gatewayResource.getGatewayName())){
+        if (!ResourceUtils.isGatewayExist(gatewayResource.getGatewayId())){
             this.gatewayResource = gatewayResource;
         }else {
-            this.gatewayResource = (GatewayResource)ResourceUtils.getGateway(gatewayResource.getGatewayName());
+            this.gatewayResource = (GatewayResource)ResourceUtils.getGateway(gatewayResource.getGatewayId());
         }
         if (!gatewayResource.isExists(ResourceType.GATEWAY_WORKER, user.getUserName())){
             workerResource = ResourceUtils.addGatewayWorker(gatewayResource, user);
         }else {
-            workerResource = (WorkerResource)ResourceUtils.getWorker(gatewayResource.getGatewayName(), user.getUserName());
+            workerResource = (WorkerResource)ResourceUtils.getWorker(gatewayResource.getGatewayId(), user.getUserName());
         }
     }
 

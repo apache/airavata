@@ -253,7 +253,7 @@ public class ProjectResource extends AbstractResource {
             Project project = new Project();
             project.setProject_id(id);
             project.setProject_name(name);
-            Gateway modelGateway = em.find(Gateway.class, gateway.getGatewayName());
+            Gateway modelGateway = em.find(Gateway.class, gateway.getGatewayId());
             project.setGateway(modelGateway);
             Users user = em.find(Users.class, worker.getUser());
             project.setUsers(user);

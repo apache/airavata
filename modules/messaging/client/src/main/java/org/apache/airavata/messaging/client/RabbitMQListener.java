@@ -30,7 +30,6 @@ import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.messaging.core.MessagingConstants;
 import org.apache.airavata.messaging.core.impl.RabbitMQConsumer;
 import org.apache.airavata.model.messaging.event.*;
-import org.apache.airavata.model.workspace.experiment.ExperimentState;
 import org.apache.commons.cli.*;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
@@ -38,17 +37,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 
-public class RabbitMQListner {
+public class RabbitMQListener {
     public static final String RABBITMQ_BROKER_URL = "rabbitmq.broker.url";
     public static final String RABBITMQ_EXCHANGE_NAME = "rabbitmq.exchange.name";
-    private final static Logger logger = LoggerFactory.getLogger(RabbitMQListner.class);
+    private final static Logger logger = LoggerFactory.getLogger(RabbitMQListener.class);
     private static String gatewayId = "*";
     private static boolean gatewayLevelMessages = false;
     private static boolean experimentLevelMessages = false;

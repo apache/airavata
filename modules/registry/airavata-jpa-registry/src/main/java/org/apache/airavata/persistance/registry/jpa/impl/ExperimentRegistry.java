@@ -51,7 +51,7 @@ public class ExperimentRegistry {
         if (!gatewayResource.isExists(ResourceType.GATEWAY_WORKER, user.getUserName())) {
             workerResource = ResourceUtils.addGatewayWorker(gateway, user);
         } else {
-            workerResource = (WorkerResource) ResourceUtils.getWorker(gateway.getGatewayName(), user.getUserName());
+            workerResource = (WorkerResource) ResourceUtils.getWorker(gateway.getGatewayId(), user.getUserName());
         }
 
     }
