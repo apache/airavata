@@ -61,6 +61,11 @@ public class ServerSettings extends ApplicationSettings {
     public static final String GFAC_PASSIVE = "gfac.passive"; // by default this is desabled
 
 
+//    Workflow Enactment Service component configuration.
+    private static final String ENACTMENT_THREAD_POOL_SIZE = "enactment.thread.pool.size";
+    private static final int DEFAULT_ENACTMENT_THREAD_POOL_SIZE = 10;
+
+
     private static boolean stopAllThreads = false;
 
     public static String getDefaultUser() throws ApplicationSettingsException {
@@ -186,5 +191,15 @@ public class ServerSettings extends ApplicationSettings {
             }
         }
         return null;
+    }
+
+    public static int getEnactmentThreadPoolSize() {
+        String threadPoolSize = null;
+        try {
+            threadPoolSize = getSetting(ENACTMENT_THREAD_POOL_SIZE);
+        } catch (ApplicationSettingsException e) {
+            return DEFAULT_ENACTMENT_THREAD_POOL_SIZE;
+        }
+        return Integer.valueOf(threadPoolSize);
     }
 }

@@ -66,6 +66,7 @@ import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.TaskDetai
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants;
 import org.apache.airavata.orchestrator.util.DataModelUtils;
 import org.apache.airavata.simple.workflow.engine.SimpleWorkflowInterpreter;
+import org.apache.airavata.simple.workflow.engine.WorkflowEnactmentService;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 import org.apache.zookeeper.*;
@@ -652,19 +653,9 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
     }
 
     private void launchWorkflowExperiment(String experimentId, String airavataCredStoreToken) throws TException {
-//    	try {
-//			WorkflowEngine workflowEngine = WorkflowEngineFactory.getWorkflowEngine();
-//			workflowEngine.launchExperiment(experimentId, airavataCredStoreToken);
-//		} catch (WorkflowEngineException e) {
-//            log.errorId(experimentId, "Error while launching experiment.", e);
-//        }
         try {
-            SimpleWorkflowInterpreter simpleWorkflowInterpreter = new SimpleWorkflowInterpreter(
-                    experimentId, airavataCredStoreToken,getGatewayName(), getRabbitMQProcessPublisher());
-
-            Thread thread = new Thread(simpleWorkflowInterpreter);
-            thread.start();
-//            simpleWorkflowInterpreter.run();
+            WorkflowEnactmentService.getInstance().
+                    submitWorkflow(experimentId, airavataCredStoreToken, getGatewayName(), getRabbitMQProcessPublisher());
         } catch (RegistryException e) {
             log.error("Error while launching workflow", e);
         } catch (Exception e) {
