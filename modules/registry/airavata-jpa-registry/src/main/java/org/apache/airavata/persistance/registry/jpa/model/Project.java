@@ -47,7 +47,7 @@ public class Project implements Serializable {
     private Timestamp creationTime;
 
     @ManyToOne(cascade=CascadeType.MERGE)
-    @JoinColumn(name = "GATEWAY_NAME")
+    @JoinColumn(name = "GATEWAY_ID")
     private Gateway gateway;
 
     @ManyToOne(cascade=CascadeType.MERGE)

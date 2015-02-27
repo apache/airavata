@@ -34,8 +34,8 @@ public class Experiment implements Serializable {
     @Id
     @Column(name = "EXPERIMENT_ID")
     private String expId;
-    @Column(name = "GATEWAY_NAME")
-    private String gatewayName;
+    @Column(name = "GATEWAY_ID")
+    private String gatewayId;
     @Column(name = "EXECUTION_USER")
     private String executionUser;
     @Column(name = "PROJECT_ID")
@@ -60,7 +60,7 @@ public class Experiment implements Serializable {
     private boolean allowNotification;
 
     @ManyToOne(cascade=CascadeType.MERGE)
-    @JoinColumn(name = "gateway_name")
+    @JoinColumn(name = "GATEWAY_ID")
     private Gateway gateway;
 
     @ManyToOne(cascade=CascadeType.MERGE)
@@ -79,12 +79,12 @@ public class Experiment implements Serializable {
         this.expId = expId;
     }
 
-    public String getGatewayName() {
-        return gatewayName;
+    public String getGatewayId() {
+        return gatewayId;
     }
 
-    public void setGatewayName(String gatewayName) {
-        this.gatewayName = gatewayName;
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
     }
 
     public String getExecutionUser() {

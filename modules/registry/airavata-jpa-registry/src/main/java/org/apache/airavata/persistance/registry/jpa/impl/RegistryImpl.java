@@ -48,6 +48,7 @@ public class RegistryImpl implements Registry {
         try {
             if (!ResourceUtils.isGatewayExist(ServerSettings.getDefaultUserGateway())){
                 gatewayResource = (GatewayResource) ResourceUtils.createGateway(ServerSettings.getDefaultUserGateway());
+                gatewayResource.setGatewayName(ServerSettings.getDefaultUserGateway());
                 gatewayResource.save();
             }else {
                 gatewayResource = (GatewayResource)ResourceUtils.getGateway(ServerSettings.getDefaultUserGateway());
