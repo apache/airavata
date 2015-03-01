@@ -33,18 +33,22 @@ const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
  * PBS:
  *  Job manager supporting the Portal Batch System (PBS) protocol. Some examples include TORQUE, PBSPro, Grid Engine.
  *
- * UGE:
- *  Univa Grid Engine, a variation of PBS implementation.
- *
  * SLURM:
  *  The Simple Linux Utility for Resource Management is a open source workload manager.
+  *
+  * UGE:
+  *  Univa Grid Engine, a variation of PBS implementation.
+  *
+  * LSF:
+  *  IBM Platform Load Sharing Facility is dominantly installed on IBM clusters.
  *
 */
 enum ResourceJobManagerType {
     FORK,
     PBS,
-    UGE,
-    SLURM
+    SLURM,
+    LSF,
+    UGE
 }
 
 /**

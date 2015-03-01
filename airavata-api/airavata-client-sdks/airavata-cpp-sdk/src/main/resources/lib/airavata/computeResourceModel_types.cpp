@@ -30,16 +30,18 @@ namespace apache { namespace airavata { namespace model { namespace appcatalog {
 int _kResourceJobManagerTypeValues[] = {
   ResourceJobManagerType::FORK,
   ResourceJobManagerType::PBS,
-  ResourceJobManagerType::UGE,
-  ResourceJobManagerType::SLURM
+  ResourceJobManagerType::SLURM,
+  ResourceJobManagerType::LSF,
+  ResourceJobManagerType::UGE
 };
 const char* _kResourceJobManagerTypeNames[] = {
   "FORK",
   "PBS",
-  "UGE",
-  "SLURM"
+  "SLURM",
+  "LSF",
+  "UGE"
 };
-const std::map<int, const char*> _ResourceJobManagerType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(4, _kResourceJobManagerTypeValues, _kResourceJobManagerTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+const std::map<int, const char*> _ResourceJobManagerType_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(5, _kResourceJobManagerTypeValues, _kResourceJobManagerTypeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
 int _kJobManagerCommandValues[] = {
   JobManagerCommand::SUBMISSION,
