@@ -353,6 +353,22 @@ public class WorkflowInterpreterLaunchWindow {
         }else {
             throw new RuntimeException("Resource scheduling failed, target computer resource host name is not defined");
         }
+/*
+// code snippet for load test.
+        for (int i = 0; i < 20; i++) {
+            experiment.setName(instanceName + "_" + i);
+
+            experiment.setExperimentID(airavataClient.createExperiment(experiment));
+
+            try {
+                this.engine.getMonitor().subscribe(experiment.getExperimentID());
+                this.engine.getMonitor().fireStartMonitoring(workflow.getName());
+            } catch (MonitorException e) {
+                logger.error("Error while subscribing with experiment Id : " + experiment.getExperimentID(), e);
+            }
+            airavataClient.launchExperiment(experiment.getExperimentID(), "testToken");
+
+        }*/
 
         experiment.setExperimentID(airavataClient.createExperiment(experiment));
 
