@@ -64,6 +64,7 @@ public class ServerSettings extends ApplicationSettings {
 //    Workflow Enactment Service component configuration.
     private static final String ENACTMENT_THREAD_POOL_SIZE = "enactment.thread.pool.size";
     private static final int DEFAULT_ENACTMENT_THREAD_POOL_SIZE = 10;
+    private static final String WORKFLOW_PARSER = "workflow.parser";
 
 
     private static boolean stopAllThreads = false;
@@ -201,5 +202,9 @@ public class ServerSettings extends ApplicationSettings {
             return DEFAULT_ENACTMENT_THREAD_POOL_SIZE;
         }
         return Integer.valueOf(threadPoolSize);
+    }
+
+    public static String getWorkflowParser() throws ApplicationSettingsException {
+        return getSetting(WORKFLOW_PARSER);
     }
 }
