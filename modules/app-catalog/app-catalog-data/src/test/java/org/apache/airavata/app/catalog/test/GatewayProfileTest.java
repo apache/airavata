@@ -71,8 +71,6 @@ public class GatewayProfileTest {
     public void gatewayProfileTest() throws Exception {
         GwyResourceProfile gatewayProfile = appcatalog.getGatewayProfile();
         GatewayResourceProfile gf = new GatewayResourceProfile();
-        gf.setGatewayName("test");
-        gf.setGatewayDescription("test gateway");
         ComputeResource computeRs = appcatalog.getComputeResource();
         ComputeResourceDescription cm1 = new ComputeResourceDescription();
         cm1.setHostName("localhost");
@@ -106,12 +104,13 @@ public class GatewayProfileTest {
         list.add(preference1);
         list.add(preference2);
         gf.setComputeResourcePreferences(list);
+        gf.setGatewayID("testGateway");
 
         String gwId = gatewayProfile.addGatewayResourceProfile(gf);
         GatewayResourceProfile retrievedProfile = null;
         if (gatewayProfile.isGatewayResourceProfileExists(gwId)){
             retrievedProfile = gatewayProfile.getGatewayProfile(gwId);
-            System.out.println("************ gateway name ************** :" + retrievedProfile.getGatewayName());
+            System.out.println("************ gateway id ************** :" + retrievedProfile.getGatewayID());
         }
         List<ComputeResourcePreference> preferences = gatewayProfile.getAllComputeResourcePreferences(gwId);
         System.out.println("compute preferences size : " + preferences.size());

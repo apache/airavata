@@ -1213,7 +1213,6 @@ public class RegisterSampleApplications {
             
             GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
             gatewayResourceProfile.setGatewayID(DEFAULT_GATEWAY);
-            gatewayResourceProfile.setGatewayName(DEFAULT_GATEWAY);
             gatewayResourceProfile.addToComputeResourcePreferences(stampedeResourcePreferences);
             gatewayResourceProfile.addToComputeResourcePreferences(trestlesResourcePreferences);
             gatewayResourceProfile.addToComputeResourcePreferences(bigRedResourcePreferences);

@@ -261,7 +261,6 @@ public abstract class AbstractResource implements Resource {
 
     public final class GatewayProfileConstants {
         public static final String GATEWAY_ID = "gatewayID";
-        public static final String GATEWAY_NAME = "gatewayName";
         public static final String GATEWAY_DESC = "gatewayDesc";
     }
 

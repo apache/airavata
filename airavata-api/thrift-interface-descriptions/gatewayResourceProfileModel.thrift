@@ -23,8 +23,6 @@ namespace php Airavata.Model.AppCatalog.GatewayProfile
 namespace cpp apache.airavata.model.appcatalog.gatewayprofile
 include "computeResourceModel.thrift"
 
-const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
-
 /**
  * Gateway specific preferences for a Computer Resource
  *
@@ -80,8 +78,6 @@ struct ComputeResourcePreference {
  *
 */
 struct GatewayResourceProfile {
-    1: required string gatewayID = DEFAULT_ID,
-    2: required string gatewayName,
-    3: optional string gatewayDescription,
-    4: optional list<ComputeResourcePreference> computeResourcePreferences
+    1: required string gatewayID,
+    2: optional list<ComputeResourcePreference> computeResourcePreferences
 }

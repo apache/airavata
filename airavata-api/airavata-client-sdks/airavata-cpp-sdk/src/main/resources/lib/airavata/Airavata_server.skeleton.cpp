@@ -44,6 +44,36 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getAPIVersion\n");
   }
 
+  void addGateway(std::string& _return, const  ::apache::airavata::model::workspace::Gateway& gateway) {
+    // Your implementation goes here
+    printf("addGateway\n");
+  }
+
+  void updateGateway(const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway) {
+    // Your implementation goes here
+    printf("updateGateway\n");
+  }
+
+  void getGateway( ::apache::airavata::model::workspace::Gateway& _return, const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("getGateway\n");
+  }
+
+  bool deleteGateway(const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("deleteGateway\n");
+  }
+
+  void getAllGateways(std::vector< ::apache::airavata::model::workspace::Gateway> & _return) {
+    // Your implementation goes here
+    printf("getAllGateways\n");
+  }
+
+  bool isGatewayExist(const std::string& gatewayId) {
+    // Your implementation goes here
+    printf("isGatewayExist\n");
+  }
+
   void createProject(std::string& _return, const  ::apache::airavata::model::workspace::Project& project) {
     // Your implementation goes here
     printf("createProject\n");

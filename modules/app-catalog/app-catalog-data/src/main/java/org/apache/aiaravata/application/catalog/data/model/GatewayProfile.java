@@ -34,10 +34,6 @@ public class GatewayProfile implements Serializable {
     @Id
     @Column(name = "GATEWAY_ID")
     private String gatewayID;
-    @Column(name = "GATEWAY_NAME")
-    private String gatewayName;
-    @Column(name = "GATEWAY_DESC")
-    private String gatewayDesc;
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
 
@@ -69,19 +65,4 @@ public class GatewayProfile implements Serializable {
         this.gatewayID = gatewayID;
     }
 
-    public String getGatewayName() {
-        return gatewayName;
-    }
-
-    public void setGatewayName(String gatewayName) {
-        this.gatewayName = gatewayName;
-    }
-
-    public String getGatewayDesc() {
-        return gatewayDesc;
-    }
-
-    public void setGatewayDesc(String gatewayDesc) {
-        this.gatewayDesc = gatewayDesc;
-    }
 }

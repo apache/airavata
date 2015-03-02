@@ -33,6 +33,12 @@ class AiravataIf {
  public:
   virtual ~AiravataIf() {}
   virtual void getAPIVersion(std::string& _return) = 0;
+  virtual void addGateway(std::string& _return, const  ::apache::airavata::model::workspace::Gateway& gateway) = 0;
+  virtual void updateGateway(const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway) = 0;
+  virtual void getGateway( ::apache::airavata::model::workspace::Gateway& _return, const std::string& gatewayId) = 0;
+  virtual bool deleteGateway(const std::string& gatewayId) = 0;
+  virtual void getAllGateways(std::vector< ::apache::airavata::model::workspace::Gateway> & _return) = 0;
+  virtual bool isGatewayExist(const std::string& gatewayId) = 0;
   virtual void createProject(std::string& _return, const  ::apache::airavata::model::workspace::Project& project) = 0;
   virtual void updateProject(const std::string& projectId, const  ::apache::airavata::model::workspace::Project& updatedProject) = 0;
   virtual void getProject( ::apache::airavata::model::workspace::Project& _return, const std::string& projectId) = 0;
@@ -168,6 +174,26 @@ class AiravataNull : virtual public AiravataIf {
   virtual ~AiravataNull() {}
   void getAPIVersion(std::string& /* _return */) {
     return;
+  }
+  void addGateway(std::string& /* _return */, const  ::apache::airavata::model::workspace::Gateway& /* gateway */) {
+    return;
+  }
+  void updateGateway(const std::string& /* gatewayId */, const  ::apache::airavata::model::workspace::Gateway& /* updatedGateway */) {
+    return;
+  }
+  void getGateway( ::apache::airavata::model::workspace::Gateway& /* _return */, const std::string& /* gatewayId */) {
+    return;
+  }
+  bool deleteGateway(const std::string& /* gatewayId */) {
+    bool _return = false;
+    return _return;
+  }
+  void getAllGateways(std::vector< ::apache::airavata::model::workspace::Gateway> & /* _return */) {
+    return;
+  }
+  bool isGatewayExist(const std::string& /* gatewayId */) {
+    bool _return = false;
+    return _return;
   }
   void createProject(std::string& /* _return */, const  ::apache::airavata::model::workspace::Project& /* project */) {
     return;
@@ -634,6 +660,788 @@ class Airavata_getAPIVersion_presult {
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getAPIVersion_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_addGateway_args {
+ public:
+
+  Airavata_addGateway_args() {
+  }
+
+  virtual ~Airavata_addGateway_args() throw() {}
+
+   ::apache::airavata::model::workspace::Gateway gateway;
+
+  void __set_gateway(const  ::apache::airavata::model::workspace::Gateway& val) {
+    gateway = val;
+  }
+
+  bool operator == (const Airavata_addGateway_args & rhs) const
+  {
+    if (!(gateway == rhs.gateway))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_addGateway_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_addGateway_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_addGateway_pargs {
+ public:
+
+
+  virtual ~Airavata_addGateway_pargs() throw() {}
+
+  const  ::apache::airavata::model::workspace::Gateway* gateway;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_addGateway_result__isset {
+  _Airavata_addGateway_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_addGateway_result__isset;
+
+class Airavata_addGateway_result {
+ public:
+
+  Airavata_addGateway_result() : success() {
+  }
+
+  virtual ~Airavata_addGateway_result() throw() {}
+
+  std::string success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_addGateway_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_addGateway_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_addGateway_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_addGateway_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_addGateway_presult__isset {
+  _Airavata_addGateway_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_addGateway_presult__isset;
+
+class Airavata_addGateway_presult {
+ public:
+
+
+  virtual ~Airavata_addGateway_presult() throw() {}
+
+  std::string* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_addGateway_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_updateGateway_args {
+ public:
+
+  Airavata_updateGateway_args() : gatewayId() {
+  }
+
+  virtual ~Airavata_updateGateway_args() throw() {}
+
+  std::string gatewayId;
+   ::apache::airavata::model::workspace::Gateway updatedGateway;
+
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
+
+  void __set_updatedGateway(const  ::apache::airavata::model::workspace::Gateway& val) {
+    updatedGateway = val;
+  }
+
+  bool operator == (const Airavata_updateGateway_args & rhs) const
+  {
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
+    if (!(updatedGateway == rhs.updatedGateway))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_updateGateway_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_updateGateway_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_updateGateway_pargs {
+ public:
+
+
+  virtual ~Airavata_updateGateway_pargs() throw() {}
+
+  const std::string* gatewayId;
+  const  ::apache::airavata::model::workspace::Gateway* updatedGateway;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_updateGateway_result__isset {
+  _Airavata_updateGateway_result__isset() : ire(false), ace(false), ase(false) {}
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_updateGateway_result__isset;
+
+class Airavata_updateGateway_result {
+ public:
+
+  Airavata_updateGateway_result() {
+  }
+
+  virtual ~Airavata_updateGateway_result() throw() {}
+
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_updateGateway_result__isset __isset;
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_updateGateway_result & rhs) const
+  {
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_updateGateway_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_updateGateway_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_updateGateway_presult__isset {
+  _Airavata_updateGateway_presult__isset() : ire(false), ace(false), ase(false) {}
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_updateGateway_presult__isset;
+
+class Airavata_updateGateway_presult {
+ public:
+
+
+  virtual ~Airavata_updateGateway_presult() throw() {}
+
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_updateGateway_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getGateway_args {
+ public:
+
+  Airavata_getGateway_args() : gatewayId() {
+  }
+
+  virtual ~Airavata_getGateway_args() throw() {}
+
+  std::string gatewayId;
+
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
+
+  bool operator == (const Airavata_getGateway_args & rhs) const
+  {
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getGateway_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getGateway_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getGateway_pargs {
+ public:
+
+
+  virtual ~Airavata_getGateway_pargs() throw() {}
+
+  const std::string* gatewayId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getGateway_result__isset {
+  _Airavata_getGateway_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getGateway_result__isset;
+
+class Airavata_getGateway_result {
+ public:
+
+  Airavata_getGateway_result() {
+  }
+
+  virtual ~Airavata_getGateway_result() throw() {}
+
+   ::apache::airavata::model::workspace::Gateway success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getGateway_result__isset __isset;
+
+  void __set_success(const  ::apache::airavata::model::workspace::Gateway& val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_getGateway_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getGateway_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getGateway_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getGateway_presult__isset {
+  _Airavata_getGateway_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getGateway_presult__isset;
+
+class Airavata_getGateway_presult {
+ public:
+
+
+  virtual ~Airavata_getGateway_presult() throw() {}
+
+   ::apache::airavata::model::workspace::Gateway* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getGateway_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_deleteGateway_args {
+ public:
+
+  Airavata_deleteGateway_args() : gatewayId() {
+  }
+
+  virtual ~Airavata_deleteGateway_args() throw() {}
+
+  std::string gatewayId;
+
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
+
+  bool operator == (const Airavata_deleteGateway_args & rhs) const
+  {
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_deleteGateway_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_deleteGateway_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_deleteGateway_pargs {
+ public:
+
+
+  virtual ~Airavata_deleteGateway_pargs() throw() {}
+
+  const std::string* gatewayId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_deleteGateway_result__isset {
+  _Airavata_deleteGateway_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_deleteGateway_result__isset;
+
+class Airavata_deleteGateway_result {
+ public:
+
+  Airavata_deleteGateway_result() : success(0) {
+  }
+
+  virtual ~Airavata_deleteGateway_result() throw() {}
+
+  bool success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_deleteGateway_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_deleteGateway_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_deleteGateway_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_deleteGateway_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_deleteGateway_presult__isset {
+  _Airavata_deleteGateway_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_deleteGateway_presult__isset;
+
+class Airavata_deleteGateway_presult {
+ public:
+
+
+  virtual ~Airavata_deleteGateway_presult() throw() {}
+
+  bool* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_deleteGateway_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getAllGateways_args {
+ public:
+
+  Airavata_getAllGateways_args() {
+  }
+
+  virtual ~Airavata_getAllGateways_args() throw() {}
+
+
+  bool operator == (const Airavata_getAllGateways_args & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const Airavata_getAllGateways_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAllGateways_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getAllGateways_pargs {
+ public:
+
+
+  virtual ~Airavata_getAllGateways_pargs() throw() {}
+
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getAllGateways_result__isset {
+  _Airavata_getAllGateways_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getAllGateways_result__isset;
+
+class Airavata_getAllGateways_result {
+ public:
+
+  Airavata_getAllGateways_result() {
+  }
+
+  virtual ~Airavata_getAllGateways_result() throw() {}
+
+  std::vector< ::apache::airavata::model::workspace::Gateway>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getAllGateways_result__isset __isset;
+
+  void __set_success(const std::vector< ::apache::airavata::model::workspace::Gateway> & val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_getAllGateways_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getAllGateways_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAllGateways_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getAllGateways_presult__isset {
+  _Airavata_getAllGateways_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getAllGateways_presult__isset;
+
+class Airavata_getAllGateways_presult {
+ public:
+
+
+  virtual ~Airavata_getAllGateways_presult() throw() {}
+
+  std::vector< ::apache::airavata::model::workspace::Gateway> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getAllGateways_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_isGatewayExist_args {
+ public:
+
+  Airavata_isGatewayExist_args() : gatewayId() {
+  }
+
+  virtual ~Airavata_isGatewayExist_args() throw() {}
+
+  std::string gatewayId;
+
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
+
+  bool operator == (const Airavata_isGatewayExist_args & rhs) const
+  {
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_isGatewayExist_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_isGatewayExist_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_isGatewayExist_pargs {
+ public:
+
+
+  virtual ~Airavata_isGatewayExist_pargs() throw() {}
+
+  const std::string* gatewayId;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_isGatewayExist_result__isset {
+  _Airavata_isGatewayExist_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_isGatewayExist_result__isset;
+
+class Airavata_isGatewayExist_result {
+ public:
+
+  Airavata_isGatewayExist_result() : success(0) {
+  }
+
+  virtual ~Airavata_isGatewayExist_result() throw() {}
+
+  bool success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_isGatewayExist_result__isset __isset;
+
+  void __set_success(const bool val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_isGatewayExist_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_isGatewayExist_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_isGatewayExist_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_isGatewayExist_presult__isset {
+  _Airavata_isGatewayExist_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_isGatewayExist_presult__isset;
+
+class Airavata_isGatewayExist_presult {
+ public:
+
+
+  virtual ~Airavata_isGatewayExist_presult() throw() {}
+
+  bool* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_isGatewayExist_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -14785,6 +15593,24 @@ class AiravataClient : virtual public AiravataIf {
   void getAPIVersion(std::string& _return);
   void send_getAPIVersion();
   void recv_getAPIVersion(std::string& _return);
+  void addGateway(std::string& _return, const  ::apache::airavata::model::workspace::Gateway& gateway);
+  void send_addGateway(const  ::apache::airavata::model::workspace::Gateway& gateway);
+  void recv_addGateway(std::string& _return);
+  void updateGateway(const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway);
+  void send_updateGateway(const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway);
+  void recv_updateGateway();
+  void getGateway( ::apache::airavata::model::workspace::Gateway& _return, const std::string& gatewayId);
+  void send_getGateway(const std::string& gatewayId);
+  void recv_getGateway( ::apache::airavata::model::workspace::Gateway& _return);
+  bool deleteGateway(const std::string& gatewayId);
+  void send_deleteGateway(const std::string& gatewayId);
+  bool recv_deleteGateway();
+  void getAllGateways(std::vector< ::apache::airavata::model::workspace::Gateway> & _return);
+  void send_getAllGateways();
+  void recv_getAllGateways(std::vector< ::apache::airavata::model::workspace::Gateway> & _return);
+  bool isGatewayExist(const std::string& gatewayId);
+  void send_isGatewayExist(const std::string& gatewayId);
+  bool recv_isGatewayExist();
   void createProject(std::string& _return, const  ::apache::airavata::model::workspace::Project& project);
   void send_createProject(const  ::apache::airavata::model::workspace::Project& project);
   void recv_createProject(std::string& _return);
@@ -15113,6 +15939,12 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   typedef std::map<std::string, ProcessFunction> ProcessMap;
   ProcessMap processMap_;
   void process_getAPIVersion(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_addGateway(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_updateGateway(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getGateway(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_deleteGateway(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getAllGateways(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_isGatewayExist(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_createProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -15221,6 +16053,12 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   AiravataProcessor(boost::shared_ptr<AiravataIf> iface) :
     iface_(iface) {
     processMap_["getAPIVersion"] = &AiravataProcessor::process_getAPIVersion;
+    processMap_["addGateway"] = &AiravataProcessor::process_addGateway;
+    processMap_["updateGateway"] = &AiravataProcessor::process_updateGateway;
+    processMap_["getGateway"] = &AiravataProcessor::process_getGateway;
+    processMap_["deleteGateway"] = &AiravataProcessor::process_deleteGateway;
+    processMap_["getAllGateways"] = &AiravataProcessor::process_getAllGateways;
+    processMap_["isGatewayExist"] = &AiravataProcessor::process_isGatewayExist;
     processMap_["createProject"] = &AiravataProcessor::process_createProject;
     processMap_["updateProject"] = &AiravataProcessor::process_updateProject;
     processMap_["getProject"] = &AiravataProcessor::process_getProject;
@@ -15361,6 +16199,63 @@ class AiravataMultiface : virtual public AiravataIf {
     }
     ifaces_[i]->getAPIVersion(_return);
     return;
+  }
+
+  void addGateway(std::string& _return, const  ::apache::airavata::model::workspace::Gateway& gateway) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->addGateway(_return, gateway);
+    }
+    ifaces_[i]->addGateway(_return, gateway);
+    return;
+  }
+
+  void updateGateway(const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->updateGateway(gatewayId, updatedGateway);
+    }
+    ifaces_[i]->updateGateway(gatewayId, updatedGateway);
+  }
+
+  void getGateway( ::apache::airavata::model::workspace::Gateway& _return, const std::string& gatewayId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getGateway(_return, gatewayId);
+    }
+    ifaces_[i]->getGateway(_return, gatewayId);
+    return;
+  }
+
+  bool deleteGateway(const std::string& gatewayId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->deleteGateway(gatewayId);
+    }
+    return ifaces_[i]->deleteGateway(gatewayId);
+  }
+
+  void getAllGateways(std::vector< ::apache::airavata::model::workspace::Gateway> & _return) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getAllGateways(_return);
+    }
+    ifaces_[i]->getAllGateways(_return);
+    return;
+  }
+
+  bool isGatewayExist(const std::string& gatewayId) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->isGatewayExist(gatewayId);
+    }
+    return ifaces_[i]->isGatewayExist(gatewayId);
   }
 
   void createProject(std::string& _return, const  ::apache::airavata::model::workspace::Project& project) {

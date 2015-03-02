@@ -70,9 +70,7 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("GatewayResourceProfile");
 
   private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayID", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField GATEWAY_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayName", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField GATEWAY_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayDescription", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField COMPUTE_RESOURCE_PREFERENCES_FIELD_DESC = new org.apache.thrift.protocol.TField("computeResourcePreferences", org.apache.thrift.protocol.TType.LIST, (short)4);
+  private static final org.apache.thrift.protocol.TField COMPUTE_RESOURCE_PREFERENCES_FIELD_DESC = new org.apache.thrift.protocol.TField("computeResourcePreferences", org.apache.thrift.protocol.TType.LIST, (short)2);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -81,16 +79,12 @@ import org.slf4j.LoggerFactory;
   }
 
   private String gatewayID; // required
-  private String gatewayName; // required
-  private String gatewayDescription; // optional
   private List<ComputeResourcePreference> computeResourcePreferences; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     GATEWAY_ID((short)1, "gatewayID"),
-    GATEWAY_NAME((short)2, "gatewayName"),
-    GATEWAY_DESCRIPTION((short)3, "gatewayDescription"),
-    COMPUTE_RESOURCE_PREFERENCES((short)4, "computeResourcePreferences");
+    COMPUTE_RESOURCE_PREFERENCES((short)2, "computeResourcePreferences");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -107,11 +101,7 @@ import org.slf4j.LoggerFactory;
       switch(fieldId) {
         case 1: // GATEWAY_ID
           return GATEWAY_ID;
-        case 2: // GATEWAY_NAME
-          return GATEWAY_NAME;
-        case 3: // GATEWAY_DESCRIPTION
-          return GATEWAY_DESCRIPTION;
-        case 4: // COMPUTE_RESOURCE_PREFERENCES
+        case 2: // COMPUTE_RESOURCE_PREFERENCES
           return COMPUTE_RESOURCE_PREFERENCES;
         default:
           return null;
@@ -153,15 +143,11 @@ import org.slf4j.LoggerFactory;
   }
 
   // isset id assignments
-  private _Fields optionals[] = {_Fields.GATEWAY_DESCRIPTION,_Fields.COMPUTE_RESOURCE_PREFERENCES};
+  private _Fields optionals[] = {_Fields.COMPUTE_RESOURCE_PREFERENCES};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayID", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.GATEWAY_NAME, new org.apache.thrift.meta_data.FieldMetaData("gatewayName", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.GATEWAY_DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("gatewayDescription", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.COMPUTE_RESOURCE_PREFERENCES, new org.apache.thrift.meta_data.FieldMetaData("computeResourcePreferences", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
@@ -171,17 +157,13 @@ import org.slf4j.LoggerFactory;
   }
 
   public GatewayResourceProfile() {
-    this.gatewayID = "DO_NOT_SET_AT_CLIENTS";
-
   }
 
   public GatewayResourceProfile(
-    String gatewayID,
-    String gatewayName)
+    String gatewayID)
   {
     this();
     this.gatewayID = gatewayID;
-    this.gatewayName = gatewayName;
   }
 
   /**
@@ -190,12 +172,6 @@ import org.slf4j.LoggerFactory;
   public GatewayResourceProfile(GatewayResourceProfile other) {
     if (other.isSetGatewayID()) {
       this.gatewayID = other.gatewayID;
-    }
-    if (other.isSetGatewayName()) {
-      this.gatewayName = other.gatewayName;
-    }
-    if (other.isSetGatewayDescription()) {
-      this.gatewayDescription = other.gatewayDescription;
     }
     if (other.isSetComputeResourcePreferences()) {
       List<ComputeResourcePreference> __this__computeResourcePreferences = new ArrayList<ComputeResourcePreference>(other.computeResourcePreferences.size());
@@ -212,10 +188,7 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public void clear() {
-    this.gatewayID = "DO_NOT_SET_AT_CLIENTS";
-
-    this.gatewayName = null;
-    this.gatewayDescription = null;
+    this.gatewayID = null;
     this.computeResourcePreferences = null;
   }
 
@@ -239,52 +212,6 @@ import org.slf4j.LoggerFactory;
   public void setGatewayIDIsSet(boolean value) {
     if (!value) {
       this.gatewayID = null;
-    }
-  }
-
-  public String getGatewayName() {
-    return this.gatewayName;
-  }
-
-  public void setGatewayName(String gatewayName) {
-    this.gatewayName = gatewayName;
-  }
-
-  public void unsetGatewayName() {
-    this.gatewayName = null;
-  }
-
-  /** Returns true if field gatewayName is set (has been assigned a value) and false otherwise */
-  public boolean isSetGatewayName() {
-    return this.gatewayName != null;
-  }
-
-  public void setGatewayNameIsSet(boolean value) {
-    if (!value) {
-      this.gatewayName = null;
-    }
-  }
-
-  public String getGatewayDescription() {
-    return this.gatewayDescription;
-  }
-
-  public void setGatewayDescription(String gatewayDescription) {
-    this.gatewayDescription = gatewayDescription;
-  }
-
-  public void unsetGatewayDescription() {
-    this.gatewayDescription = null;
-  }
-
-  /** Returns true if field gatewayDescription is set (has been assigned a value) and false otherwise */
-  public boolean isSetGatewayDescription() {
-    return this.gatewayDescription != null;
-  }
-
-  public void setGatewayDescriptionIsSet(boolean value) {
-    if (!value) {
-      this.gatewayDescription = null;
     }
   }
 
@@ -336,22 +263,6 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
-    case GATEWAY_NAME:
-      if (value == null) {
-        unsetGatewayName();
-      } else {
-        setGatewayName((String)value);
-      }
-      break;
-
-    case GATEWAY_DESCRIPTION:
-      if (value == null) {
-        unsetGatewayDescription();
-      } else {
-        setGatewayDescription((String)value);
-      }
-      break;
-
     case COMPUTE_RESOURCE_PREFERENCES:
       if (value == null) {
         unsetComputeResourcePreferences();
@@ -367,12 +278,6 @@ import org.slf4j.LoggerFactory;
     switch (field) {
     case GATEWAY_ID:
       return getGatewayID();
-
-    case GATEWAY_NAME:
-      return getGatewayName();
-
-    case GATEWAY_DESCRIPTION:
-      return getGatewayDescription();
 
     case COMPUTE_RESOURCE_PREFERENCES:
       return getComputeResourcePreferences();
@@ -390,10 +295,6 @@ import org.slf4j.LoggerFactory;
     switch (field) {
     case GATEWAY_ID:
       return isSetGatewayID();
-    case GATEWAY_NAME:
-      return isSetGatewayName();
-    case GATEWAY_DESCRIPTION:
-      return isSetGatewayDescription();
     case COMPUTE_RESOURCE_PREFERENCES:
       return isSetComputeResourcePreferences();
     }
@@ -419,24 +320,6 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_gatewayID && that_present_gatewayID))
         return false;
       if (!this.gatewayID.equals(that.gatewayID))
-        return false;
-    }
-
-    boolean this_present_gatewayName = true && this.isSetGatewayName();
-    boolean that_present_gatewayName = true && that.isSetGatewayName();
-    if (this_present_gatewayName || that_present_gatewayName) {
-      if (!(this_present_gatewayName && that_present_gatewayName))
-        return false;
-      if (!this.gatewayName.equals(that.gatewayName))
-        return false;
-    }
-
-    boolean this_present_gatewayDescription = true && this.isSetGatewayDescription();
-    boolean that_present_gatewayDescription = true && that.isSetGatewayDescription();
-    if (this_present_gatewayDescription || that_present_gatewayDescription) {
-      if (!(this_present_gatewayDescription && that_present_gatewayDescription))
-        return false;
-      if (!this.gatewayDescription.equals(that.gatewayDescription))
         return false;
     }
 
@@ -471,26 +354,6 @@ import org.slf4j.LoggerFactory;
     }
     if (isSetGatewayID()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayID, other.gatewayID);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetGatewayName()).compareTo(other.isSetGatewayName());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetGatewayName()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayName, other.gatewayName);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetGatewayDescription()).compareTo(other.isSetGatewayDescription());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetGatewayDescription()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayDescription, other.gatewayDescription);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -532,24 +395,6 @@ import org.slf4j.LoggerFactory;
       sb.append(this.gatewayID);
     }
     first = false;
-    if (!first) sb.append(", ");
-    sb.append("gatewayName:");
-    if (this.gatewayName == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.gatewayName);
-    }
-    first = false;
-    if (isSetGatewayDescription()) {
-      if (!first) sb.append(", ");
-      sb.append("gatewayDescription:");
-      if (this.gatewayDescription == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.gatewayDescription);
-      }
-      first = false;
-    }
     if (isSetComputeResourcePreferences()) {
       if (!first) sb.append(", ");
       sb.append("computeResourcePreferences:");
@@ -568,10 +413,6 @@ import org.slf4j.LoggerFactory;
     // check for required fields
     if (!isSetGatewayID()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayID' is unset! Struct:" + toString());
-    }
-
-    if (!isSetGatewayName()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayName' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -619,23 +460,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // GATEWAY_NAME
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.gatewayName = iprot.readString();
-              struct.setGatewayNameIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 3: // GATEWAY_DESCRIPTION
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.gatewayDescription = iprot.readString();
-              struct.setGatewayDescriptionIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 4: // COMPUTE_RESOURCE_PREFERENCES
+          case 2: // COMPUTE_RESOURCE_PREFERENCES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
@@ -672,18 +497,6 @@ import org.slf4j.LoggerFactory;
         oprot.writeString(struct.gatewayID);
         oprot.writeFieldEnd();
       }
-      if (struct.gatewayName != null) {
-        oprot.writeFieldBegin(GATEWAY_NAME_FIELD_DESC);
-        oprot.writeString(struct.gatewayName);
-        oprot.writeFieldEnd();
-      }
-      if (struct.gatewayDescription != null) {
-        if (struct.isSetGatewayDescription()) {
-          oprot.writeFieldBegin(GATEWAY_DESCRIPTION_FIELD_DESC);
-          oprot.writeString(struct.gatewayDescription);
-          oprot.writeFieldEnd();
-        }
-      }
       if (struct.computeResourcePreferences != null) {
         if (struct.isSetComputeResourcePreferences()) {
           oprot.writeFieldBegin(COMPUTE_RESOURCE_PREFERENCES_FIELD_DESC);
@@ -716,18 +529,11 @@ import org.slf4j.LoggerFactory;
     public void write(org.apache.thrift.protocol.TProtocol prot, GatewayResourceProfile struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeString(struct.gatewayID);
-      oprot.writeString(struct.gatewayName);
       BitSet optionals = new BitSet();
-      if (struct.isSetGatewayDescription()) {
+      if (struct.isSetComputeResourcePreferences()) {
         optionals.set(0);
       }
-      if (struct.isSetComputeResourcePreferences()) {
-        optionals.set(1);
-      }
-      oprot.writeBitSet(optionals, 2);
-      if (struct.isSetGatewayDescription()) {
-        oprot.writeString(struct.gatewayDescription);
-      }
+      oprot.writeBitSet(optionals, 1);
       if (struct.isSetComputeResourcePreferences()) {
         {
           oprot.writeI32(struct.computeResourcePreferences.size());
@@ -744,14 +550,8 @@ import org.slf4j.LoggerFactory;
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.gatewayID = iprot.readString();
       struct.setGatewayIDIsSet(true);
-      struct.gatewayName = iprot.readString();
-      struct.setGatewayNameIsSet(true);
-      BitSet incoming = iprot.readBitSet(2);
+      BitSet incoming = iprot.readBitSet(1);
       if (incoming.get(0)) {
-        struct.gatewayDescription = iprot.readString();
-        struct.setGatewayDescriptionIsSet(true);
-      }
-      if (incoming.get(1)) {
         {
           org.apache.thrift.protocol.TList _list5 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
           struct.computeResourcePreferences = new ArrayList<ComputeResourcePreference>(_list5.size);
