@@ -77,6 +77,6 @@ public class CommonUtils {
     }
 
     public static JobManagerConfiguration getLSFJobManager(String installedPath) {
-        return new LSFJobConfiguration("LSFTemplate.xslt", ".lsf", installedPath, new SGEOutputParser());
+        return new LSFJobConfiguration("LSFTemplate.xslt", ".lsf", installedPath, new LSFOutputParser());
     }
 }
