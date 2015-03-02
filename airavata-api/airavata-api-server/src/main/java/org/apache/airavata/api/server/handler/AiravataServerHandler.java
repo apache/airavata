@@ -59,6 +59,7 @@ import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.model.error.ProjectNotFoundException;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
 import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
@@ -117,7 +118,119 @@ public class AiravataServerHandler implements Airavata.Iface {
         return airavataAPIConstants.AIRAVATA_API_VERSION;
     }
 
-    /**
+    @Override
+    public String addGateway(Gateway gateway) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            registry = RegistryFactory.getDefaultRegistry();
+            if (!validateString(gateway.getGatewayId())){
+                logger.error("Gateway id cannot be empty...");
+                throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            }
+            return (String)registry.add(ParentDataType.GATEWAY, gateway);
+        } catch (RegistryException e) {
+            logger.error("Error while adding gateway", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while adding gateway. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public void updateGateway(String gatewayId, Gateway updatedGateway) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            registry = RegistryFactory.getDefaultRegistry();
+            if (!registry.isExist(RegistryModelType.GATEWAY, gatewayId)){
+                logger.error("Gateway does not exist in the system. Please provide a valid gateway ID...");
+                AiravataSystemException exception = new AiravataSystemException();
+                exception.setMessage("Gateway does not exist in the system. Please provide a valid gateway ID...");
+                throw exception;
+            }
+            registry.update(RegistryModelType.GATEWAY, updatedGateway, gatewayId);
+        } catch (RegistryException e) {
+            logger.error("Error while updating the gateway", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while updating the gateway. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public Gateway getGateway(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            registry = RegistryFactory.getDefaultRegistry();
+            if (!registry.isExist(RegistryModelType.GATEWAY, gatewayId)){
+                logger.error("Gateway does not exist in the system. Please provide a valid gateway ID...");
+                AiravataSystemException exception = new AiravataSystemException();
+                exception.setMessage("Gateway does not exist in the system. Please provide a valid gateway ID...");
+                throw exception;
+            }
+            return (Gateway)registry.get(RegistryModelType.GATEWAY, gatewayId);
+        } catch (RegistryException e) {
+            logger.error("Error while getting the gateway", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while getting the gateway. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public boolean deleteGateway(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            registry = RegistryFactory.getDefaultRegistry();
+            if (!registry.isExist(RegistryModelType.GATEWAY, gatewayId)){
+                logger.error("Gateway does not exist in the system. Please provide a valid gateway ID...");
+                AiravataSystemException exception = new AiravataSystemException();
+                exception.setMessage("Gateway does not exist in the system. Please provide a valid gateway ID...");
+                throw exception;
+            }
+            registry.remove(RegistryModelType.GATEWAY, gatewayId);
+            return true;
+        } catch (RegistryException e) {
+            logger.error("Error while deleting the gateway", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while deleting the gateway. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public List<Gateway> getAllGateways() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            List<Gateway> gateways = new ArrayList<Gateway>();
+            registry = RegistryFactory.getDefaultRegistry();
+            List<Object> list = registry.get(RegistryModelType.GATEWAY, null, null);
+            for (Object gateway : list){
+                gateways.add((Gateway)gateway);
+            }
+            return gateways;
+        } catch (RegistryException e) {
+            logger.error("Error while getting all the gateways", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while getting all the gateways. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    @Override
+    public boolean isGatewayExist(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            registry = RegistryFactory.getDefaultRegistry();
+            return registry.isExist(RegistryModelType.GATEWAY, gatewayId);
+        } catch (RegistryException e) {
+            logger.error("Error while getting gateway", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while getting gateway. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+        /**
      * Create a Project
      *
      * @param project

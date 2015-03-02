@@ -850,8 +850,6 @@ public class AppCatalogJPAUtils {
         GatewayProfileResource resource = new GatewayProfileResource();
         if (o != null) {
             resource.setGatewayID(o.getGatewayID());
-            resource.setGatewayName(o.getGatewayName());
-            resource.setGatewayDesc(o.getGatewayDesc());
             resource.setCreatedTime(o.getCreationTime());
             if (o.getUpdateTime() != null){
                 resource.setUpdatedTime(o.getUpdateTime());

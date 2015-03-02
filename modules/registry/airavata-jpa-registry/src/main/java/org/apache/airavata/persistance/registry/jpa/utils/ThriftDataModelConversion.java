@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.model.appcatalog.appinterface.*;
+import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.ActionableGroup;
 import org.apache.airavata.model.workspace.experiment.AdvancedInputDataHandling;
@@ -54,6 +55,7 @@ import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeState;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeStatus;
+import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
 import org.apache.airavata.registry.cpi.RegistryException;
@@ -84,6 +86,23 @@ public class ThriftDataModelConversion {
             return project;
         }
         return null;
+    }
+
+    public static Gateway getGateway (GatewayResource resource){
+        Gateway gateway = new Gateway();
+        gateway.setGatewayId(resource.getGatewayId());
+        gateway.setGatewayName(resource.getGatewayName());
+        gateway.setDomain(resource.getDomain());
+        gateway.setEmailAddress(resource.getEmailAddress());
+        return gateway;
+    }
+
+    public static List<Gateway> getAllGateways (List<Resource> gatewayList){
+        List<Gateway> gateways = new ArrayList<Gateway>();
+        for (Resource resource : gatewayList){
+            gateways.add(getGateway((GatewayResource)resource));
+        }
+        return gateways;
     }
 
 

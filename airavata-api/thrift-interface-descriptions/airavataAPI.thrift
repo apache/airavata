@@ -70,7 +70,37 @@ service Airavata {
         throws (1: airavataErrors.InvalidRequestException ire,
                 2: airavataErrors.AiravataClientException ace,
                 3: airavataErrors.AiravataSystemException ase)
-  
+
+  string addGateway(1: required workspaceModel.Gateway gateway)
+         throws (1: airavataErrors.InvalidRequestException ire,
+                 2: airavataErrors.AiravataClientException ace,
+                 3: airavataErrors.AiravataSystemException ase)
+
+  void updateGateway(1: required string gatewayId, 2: required workspaceModel.Gateway updatedGateway)
+         throws (1: airavataErrors.InvalidRequestException ire,
+                 2: airavataErrors.AiravataClientException ace,
+                 3: airavataErrors.AiravataSystemException ase)
+
+  workspaceModel.Gateway getGateway(1: required string gatewayId)
+           throws (1: airavataErrors.InvalidRequestException ire,
+                   2: airavataErrors.AiravataClientException ace,
+                   3: airavataErrors.AiravataSystemException ase)
+
+  bool deleteGateway(1: required string gatewayId)
+             throws (1: airavataErrors.InvalidRequestException ire,
+                     2: airavataErrors.AiravataClientException ace,
+                     3: airavataErrors.AiravataSystemException ase)
+
+  list<workspaceModel.Gateway> getAllGateways()
+             throws (1: airavataErrors.InvalidRequestException ire,
+                     2: airavataErrors.AiravataClientException ace,
+                     3: airavataErrors.AiravataSystemException ase)
+
+  bool isGatewayExist(1: required string gatewayId)
+           throws (1: airavataErrors.InvalidRequestException ire,
+                   2: airavataErrors.AiravataClientException ace,
+                   3: airavataErrors.AiravataSystemException ase)
+
   /**
    * Create a Project
    *

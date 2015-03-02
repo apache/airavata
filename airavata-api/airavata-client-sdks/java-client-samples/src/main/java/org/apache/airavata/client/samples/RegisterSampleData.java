@@ -89,7 +89,6 @@ public class RegisterSampleData {
                 createComputeResourcePreference(localhostId, "Sample", false, null, null, null, sampleScriptDir + "/..");
         GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
         gatewayResourceProfile.setGatewayID(DEFAULT_GATEWAY);
-        gatewayResourceProfile.setGatewayName(DEFAULT_GATEWAY);
         gatewayResourceProfile.addToComputeResourcePreferences(localhostResourcePreference);
         airavataClient.registerGatewayResourceProfile(gatewayResourceProfile);
     }

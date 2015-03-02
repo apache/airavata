@@ -248,7 +248,7 @@ public class RegisterOGCEUS3Application {
 //                            "/mnt/glusterfs/work/");
 
             GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
-            gatewayResourceProfile.setGatewayName(DEFAULT_GATEWAY);
+            gatewayResourceProfile.setGatewayID(DEFAULT_GATEWAY);
             gatewayResourceProfile.addToComputeResourcePreferences(stampedeResourcePreferences);
             gatewayResourceProfile.addToComputeResourcePreferences(trestlesResourcePreferences);
   //          gatewayResourceProfile.addToComputeResourcePreferences(lonestarResourcePreferences);

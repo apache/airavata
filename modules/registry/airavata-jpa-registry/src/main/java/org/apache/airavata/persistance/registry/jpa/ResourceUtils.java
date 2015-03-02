@@ -235,6 +235,39 @@ public class ResourceUtils {
 
     }
 
+    public static List<Resource> getAllGateways() throws RegistryException{
+        List<Resource> resourceList = new ArrayList<Resource>();
+        EntityManager em = null;
+        try {
+            em = getEntityManager();
+            em.getTransaction().begin();
+            QueryGenerator generator = new QueryGenerator(AbstractResource.GATEWAY);
+            Query q = generator.selectQuery(em);
+            List results = q.getResultList();
+            if (results.size() != 0) {
+                for (Object result : results) {
+                    Gateway gateway = (Gateway) result;
+                    GatewayResource gatewayResource =
+                            (GatewayResource) Utils.getResource(ResourceType.GATEWAY, gateway);
+                    resourceList.add(gatewayResource);
+                }
+            }
+            em.getTransaction().commit();
+            em.close();
+        }catch (Exception e){
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        }finally {
+            if (em != null && em.isOpen()){
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+        return resourceList;
+    }
+
     /**
      * @param gatewayId
      * @return

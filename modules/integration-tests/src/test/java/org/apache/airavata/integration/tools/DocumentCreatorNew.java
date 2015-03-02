@@ -114,7 +114,7 @@ public class DocumentCreatorNew {
                 null, null);
         gatewayResourceProfile = new GatewayResourceProfile();
 //		gatewayResourceProfile.setGatewayID("default");
-        gatewayResourceProfile.setGatewayName(ClientSettings.getSetting("default.registry.gateway", "php_reference_gateway"));
+        gatewayResourceProfile.setGatewayID(ClientSettings.getSetting("default.registry.gateway", "php_reference_gateway"));
         gatewayResourceProfile.addToComputeResourcePreferences(computeResourcePreference);
         String gatewayId = client.registerGatewayResourceProfile(gatewayResourceProfile);
         gatewayResourceProfile.setGatewayID(gatewayId);
@@ -132,7 +132,7 @@ public class DocumentCreatorNew {
         if (gatewayResourceProfile == null) {
             gatewayResourceProfile = new GatewayResourceProfile();
 //				gatewayResourceProfile.setGatewayID("default");
-            gatewayResourceProfile.setGatewayName("default");
+            gatewayResourceProfile.setGatewayID("default");
             gatewayResourceProfile.setGatewayID(client.registerGatewayResourceProfile(gatewayResourceProfile));
         }
 //    	}

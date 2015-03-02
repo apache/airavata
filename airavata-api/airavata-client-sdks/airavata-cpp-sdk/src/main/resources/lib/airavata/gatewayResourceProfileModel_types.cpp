@@ -182,8 +182,8 @@ void swap(ComputeResourcePreference &a, ComputeResourcePreference &b) {
   swap(a.__isset, b.__isset);
 }
 
-const char* GatewayResourceProfile::ascii_fingerprint = "42DA2625493A482A59D0742432A025BD";
-const uint8_t GatewayResourceProfile::binary_fingerprint[16] = {0x42,0xDA,0x26,0x25,0x49,0x3A,0x48,0x2A,0x59,0xD0,0x74,0x24,0x32,0xA0,0x25,0xBD};
+const char* GatewayResourceProfile::ascii_fingerprint = "2C13C97D8E01026228E6E378E58505CC";
+const uint8_t GatewayResourceProfile::binary_fingerprint[16] = {0x2C,0x13,0xC9,0x7D,0x8E,0x01,0x02,0x62,0x28,0xE6,0xE3,0x78,0xE5,0x85,0x05,0xCC};
 
 uint32_t GatewayResourceProfile::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -197,7 +197,6 @@ uint32_t GatewayResourceProfile::read(::apache::thrift::protocol::TProtocol* ipr
   using ::apache::thrift::protocol::TProtocolException;
 
   bool isset_gatewayID = false;
-  bool isset_gatewayName = false;
 
   while (true)
   {
@@ -216,22 +215,6 @@ uint32_t GatewayResourceProfile::read(::apache::thrift::protocol::TProtocol* ipr
         }
         break;
       case 2:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->gatewayName);
-          isset_gatewayName = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 3:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->gatewayDescription);
-          this->__isset.gatewayDescription = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 4:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->computeResourcePreferences.clear();
@@ -262,8 +245,6 @@ uint32_t GatewayResourceProfile::read(::apache::thrift::protocol::TProtocol* ipr
 
   if (!isset_gatewayID)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_gatewayName)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
 
@@ -275,17 +256,8 @@ uint32_t GatewayResourceProfile::write(::apache::thrift::protocol::TProtocol* op
   xfer += oprot->writeString(this->gatewayID);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("gatewayName", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString(this->gatewayName);
-  xfer += oprot->writeFieldEnd();
-
-  if (this->__isset.gatewayDescription) {
-    xfer += oprot->writeFieldBegin("gatewayDescription", ::apache::thrift::protocol::T_STRING, 3);
-    xfer += oprot->writeString(this->gatewayDescription);
-    xfer += oprot->writeFieldEnd();
-  }
   if (this->__isset.computeResourcePreferences) {
-    xfer += oprot->writeFieldBegin("computeResourcePreferences", ::apache::thrift::protocol::T_LIST, 4);
+    xfer += oprot->writeFieldBegin("computeResourcePreferences", ::apache::thrift::protocol::T_LIST, 2);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->computeResourcePreferences.size()));
       std::vector<ComputeResourcePreference> ::const_iterator _iter7;
@@ -305,8 +277,6 @@ uint32_t GatewayResourceProfile::write(::apache::thrift::protocol::TProtocol* op
 void swap(GatewayResourceProfile &a, GatewayResourceProfile &b) {
   using ::std::swap;
   swap(a.gatewayID, b.gatewayID);
-  swap(a.gatewayName, b.gatewayName);
-  swap(a.gatewayDescription, b.gatewayDescription);
   swap(a.computeResourcePreferences, b.computeResourcePreferences);
   swap(a.__isset, b.__isset);
 }

@@ -32,7 +32,6 @@ class gatewayResourceProfileModelConstants {
  public:
   gatewayResourceProfileModelConstants();
 
-  std::string DEFAULT_ID;
 };
 
 extern const gatewayResourceProfileModelConstants g_gatewayResourceProfileModel_constants;

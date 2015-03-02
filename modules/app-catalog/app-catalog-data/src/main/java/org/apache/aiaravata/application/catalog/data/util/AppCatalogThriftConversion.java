@@ -765,8 +765,6 @@ public class AppCatalogThriftConversion {
     public static GatewayResourceProfile getGatewayResourceProfile(GatewayProfileResource gw, List<ComputeResourcePreference> preferences){
         GatewayResourceProfile gatewayProfile = new GatewayResourceProfile();
         gatewayProfile.setGatewayID(gw.getGatewayID());
-        gatewayProfile.setGatewayDescription(gw.getGatewayDesc());
-        gatewayProfile.setGatewayName(gw.getGatewayName());
         gatewayProfile.setComputeResourcePreferences(preferences);
         return gatewayProfile;
     }

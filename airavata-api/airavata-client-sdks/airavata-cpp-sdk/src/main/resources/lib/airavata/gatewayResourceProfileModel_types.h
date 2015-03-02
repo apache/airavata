@@ -140,40 +140,28 @@ class ComputeResourcePreference {
 void swap(ComputeResourcePreference &a, ComputeResourcePreference &b);
 
 typedef struct _GatewayResourceProfile__isset {
-  _GatewayResourceProfile__isset() : gatewayDescription(false), computeResourcePreferences(false) {}
-  bool gatewayDescription;
+  _GatewayResourceProfile__isset() : computeResourcePreferences(false) {}
   bool computeResourcePreferences;
 } _GatewayResourceProfile__isset;
 
 class GatewayResourceProfile {
  public:
 
-  static const char* ascii_fingerprint; // = "42DA2625493A482A59D0742432A025BD";
-  static const uint8_t binary_fingerprint[16]; // = {0x42,0xDA,0x26,0x25,0x49,0x3A,0x48,0x2A,0x59,0xD0,0x74,0x24,0x32,0xA0,0x25,0xBD};
+  static const char* ascii_fingerprint; // = "2C13C97D8E01026228E6E378E58505CC";
+  static const uint8_t binary_fingerprint[16]; // = {0x2C,0x13,0xC9,0x7D,0x8E,0x01,0x02,0x62,0x28,0xE6,0xE3,0x78,0xE5,0x85,0x05,0xCC};
 
-  GatewayResourceProfile() : gatewayID("DO_NOT_SET_AT_CLIENTS"), gatewayName(), gatewayDescription() {
+  GatewayResourceProfile() : gatewayID() {
   }
 
   virtual ~GatewayResourceProfile() throw() {}
 
   std::string gatewayID;
-  std::string gatewayName;
-  std::string gatewayDescription;
   std::vector<ComputeResourcePreference>  computeResourcePreferences;
 
   _GatewayResourceProfile__isset __isset;
 
   void __set_gatewayID(const std::string& val) {
     gatewayID = val;
-  }
-
-  void __set_gatewayName(const std::string& val) {
-    gatewayName = val;
-  }
-
-  void __set_gatewayDescription(const std::string& val) {
-    gatewayDescription = val;
-    __isset.gatewayDescription = true;
   }
 
   void __set_computeResourcePreferences(const std::vector<ComputeResourcePreference> & val) {
@@ -184,12 +172,6 @@ class GatewayResourceProfile {
   bool operator == (const GatewayResourceProfile & rhs) const
   {
     if (!(gatewayID == rhs.gatewayID))
-      return false;
-    if (!(gatewayName == rhs.gatewayName))
-      return false;
-    if (__isset.gatewayDescription != rhs.__isset.gatewayDescription)
-      return false;
-    else if (__isset.gatewayDescription && !(gatewayDescription == rhs.gatewayDescription))
       return false;
     if (__isset.computeResourcePreferences != rhs.__isset.computeResourcePreferences)
       return false;

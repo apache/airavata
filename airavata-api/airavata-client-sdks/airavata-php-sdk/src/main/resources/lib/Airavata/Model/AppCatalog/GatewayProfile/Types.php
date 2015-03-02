@@ -212,9 +212,7 @@ class ComputeResourcePreference {
 class GatewayResourceProfile {
   static $_TSPEC;
 
-  public $gatewayID = "DO_NOT_SET_AT_CLIENTS";
-  public $gatewayName = null;
-  public $gatewayDescription = null;
+  public $gatewayID = null;
   public $computeResourcePreferences = null;
 
   public function __construct($vals=null) {
@@ -225,14 +223,6 @@ class GatewayResourceProfile {
           'type' => TType::STRING,
           ),
         2 => array(
-          'var' => 'gatewayName',
-          'type' => TType::STRING,
-          ),
-        3 => array(
-          'var' => 'gatewayDescription',
-          'type' => TType::STRING,
-          ),
-        4 => array(
           'var' => 'computeResourcePreferences',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -246,12 +236,6 @@ class GatewayResourceProfile {
     if (is_array($vals)) {
       if (isset($vals['gatewayID'])) {
         $this->gatewayID = $vals['gatewayID'];
-      }
-      if (isset($vals['gatewayName'])) {
-        $this->gatewayName = $vals['gatewayName'];
-      }
-      if (isset($vals['gatewayDescription'])) {
-        $this->gatewayDescription = $vals['gatewayDescription'];
       }
       if (isset($vals['computeResourcePreferences'])) {
         $this->computeResourcePreferences = $vals['computeResourcePreferences'];
@@ -286,20 +270,6 @@ class GatewayResourceProfile {
           }
           break;
         case 2:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->gatewayName);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 3:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->gatewayDescription);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 4:
           if ($ftype == TType::LST) {
             $this->computeResourcePreferences = array();
             $_size0 = 0;
@@ -335,21 +305,11 @@ class GatewayResourceProfile {
       $xfer += $output->writeString($this->gatewayID);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->gatewayName !== null) {
-      $xfer += $output->writeFieldBegin('gatewayName', TType::STRING, 2);
-      $xfer += $output->writeString($this->gatewayName);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->gatewayDescription !== null) {
-      $xfer += $output->writeFieldBegin('gatewayDescription', TType::STRING, 3);
-      $xfer += $output->writeString($this->gatewayDescription);
-      $xfer += $output->writeFieldEnd();
-    }
     if ($this->computeResourcePreferences !== null) {
       if (!is_array($this->computeResourcePreferences)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('computeResourcePreferences', TType::LST, 4);
+      $xfer += $output->writeFieldBegin('computeResourcePreferences', TType::LST, 2);
       {
         $output->writeListBegin(TType::STRUCT, count($this->computeResourcePreferences));
         {
@@ -368,7 +328,5 @@ class GatewayResourceProfile {
   }
 
 }
-
-$GLOBALS['gatewayResourceProfileModel_CONSTANTS']['DEFAULT_ID'] = "DO_NOT_SET_AT_CLIENTS";
 
 
