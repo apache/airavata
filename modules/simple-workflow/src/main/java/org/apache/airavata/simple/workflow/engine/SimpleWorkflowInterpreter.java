@@ -104,13 +104,12 @@ public class SimpleWorkflowInterpreter implements Runnable{
 
 
     public void launchWorkflow() throws Exception {
-        // process workflow input nodes
-//        WorkflowFactoryImpl wfFactory = WorkflowFactoryImpl.getInstance();
-//        WorkflowParser workflowParser = wfFactory.getWorkflowParser(experiment.getExperimentID(), credentialToken);
-        WorkflowParser workflowParser = new AiravataWorkflowParser(experiment, credentialToken);
+        WorkflowFactoryImpl wfFactory = WorkflowFactoryImpl.getInstance();
+        WorkflowParser workflowParser = wfFactory.getWorkflowParser(experiment.getExperimentID(), credentialToken);
         log.debug("Initialized workflow parser");
         setWorkflowInputNodes(workflowParser.parse());
         log.debug("Parsed the workflow and got the workflow input nodes");
+        // process workflow input nodes
         processWorkflowInputNodes(getWorkflowInputNodes());
 
 
@@ -295,7 +294,7 @@ public class SimpleWorkflowInterpreter implements Runnable{
             statusConsumer.stopListen(consumerId);
             log.info("Successfully un-bind status consumer for experiment " + getExperiment().getExperimentID());
         } catch (Exception e) {
-           //TODO - handle this.
+            log.error("Error launching workflow", e);
         }
     }
 

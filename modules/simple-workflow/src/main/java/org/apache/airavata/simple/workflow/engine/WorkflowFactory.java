@@ -26,6 +26,6 @@ package org.apache.airavata.simple.workflow.engine;
  */
 public interface WorkflowFactory {
 
-    public WorkflowParser getWorkflowParser(String experimentId, String credentialToken);
+    public WorkflowParser getWorkflowParser(String experimentId, String credentialToken) throws Exception;
 
 }

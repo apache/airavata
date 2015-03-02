@@ -21,17 +21,24 @@
 
 package org.apache.airavata.simple.workflow.engine;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.simple.workflow.engine.parser.AiravataWorkflowParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Singleton class, only one instance can exist in runtime.
  */
 public class WorkflowFactoryImpl implements WorkflowFactory {
 
-    private static WorkflowFactoryImpl workflowFactoryImpl;
+    private static final Logger log = LoggerFactory.getLogger(WorkflowFactoryImpl.class);
 
-    private WorkflowParser workflowParser;
+    private static WorkflowFactoryImpl workflowFactoryImpl;
 
     private WorkflowFactoryImpl(){
 
@@ -50,13 +57,18 @@ public class WorkflowFactoryImpl implements WorkflowFactory {
 
 
     @Override
-    public WorkflowParser getWorkflowParser(String experimentId, String credentialToken) {
+    public WorkflowParser getWorkflowParser(String experimentId, String credentialToken) throws Exception {
+        WorkflowParser workflowParser = null;
+        try {
+            String wfParserClassName = ServerSettings.getWorkflowParser();
+            Class<?> aClass = Class.forName(wfParserClassName);
+            Constructor<?> constructor = aClass.getConstructor(String.class, String.class);
+            workflowParser = (WorkflowParser) constructor.newInstance(experimentId, credentialToken);
+        } catch (ApplicationSettingsException e) {
+            log.info("A custom workflow parser is not defined, Use default Airavata workflow parser");
+        }
         if (workflowParser == null) {
-            try {
-                workflowParser = new AiravataWorkflowParser(experimentId, credentialToken);
-            } catch (RegistryException e) {
-                // TODO : handle this scenario
-            }
+            workflowParser = new AiravataWorkflowParser(experimentId, credentialToken);
         }
         return workflowParser;
     }
