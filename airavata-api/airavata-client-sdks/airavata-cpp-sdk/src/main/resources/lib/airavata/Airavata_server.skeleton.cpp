@@ -184,6 +184,11 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getExperimentOutputs\n");
   }
 
+  void getIntermediateOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& airavataExperimentId) {
+    // Your implementation goes here
+    printf("getIntermediateOutputs\n");
+  }
+
   void getJobStatuses(std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & _return, const std::string& airavataExperimentId) {
     // Your implementation goes here
     printf("getJobStatuses\n");
