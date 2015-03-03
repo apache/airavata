@@ -41,6 +41,8 @@ public class ApplicationDeployment implements Serializable {
     private String applicationDesc;
     @Column(name = "PARALLELISM")
     private String parallelism;
+    @Column(name = "GATEWAY_ID")
+    private String gatewayId;
     
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "APP_MODULE_ID")
@@ -55,6 +57,14 @@ public class ApplicationDeployment implements Serializable {
 
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
+
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
 
     public Timestamp getCreationTime() {
         return creationTime;
