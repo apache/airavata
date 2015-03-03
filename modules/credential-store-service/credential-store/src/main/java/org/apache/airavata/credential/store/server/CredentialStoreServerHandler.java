@@ -45,6 +45,7 @@ import sun.security.provider.X509Factory;
 import java.io.ByteArrayInputStream;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.UUID;
 
 public class CredentialStoreServerHandler implements CredentialStoreService.Iface {
     protected static Logger log = LoggerFactory.getLogger(CredentialStoreServerHandler.class);
@@ -80,7 +81,7 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
             // only username and gateway id will be sent by client.
             String token = TokenGenerator.generateToken(sshCredential.getGatewayId(), null);
             credential.setToken(token);
-            credential.setPassphrase(sshCredential.getPassphrase());
+            credential.setPassphrase(String.valueOf(UUID.randomUUID()));
             if (sshCredential.getPrivateKey() != null) {
                 credential.setPrivateKey(sshCredential.getPrivateKey().getBytes());
             }
