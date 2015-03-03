@@ -40,9 +40,19 @@ public class ApplicationInterface implements Serializable {
     private String appDescription;
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
+    @Column(name = "GATEWAY_ID")
+    private String gatewayId;
 
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
+
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
 
     public Timestamp getCreationTime() {
         return creationTime;
