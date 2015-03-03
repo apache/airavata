@@ -101,6 +101,43 @@ service Airavata {
                    2: airavataErrors.AiravataClientException ace,
                    3: airavataErrors.AiravataSystemException ase)
 
+
+  /**
+    * Airavata Adminstrative Funcationality
+  **/
+
+
+  /**
+   * Generate and Register SSH Key Pair with Airavata Credential Store.
+   *
+   * @param gatewayId
+   *    The identifier for the requested experiment. This is returned during the create experiment step.
+   *
+   * @param userName
+   *    The User for which the credential should be registered. For community accounts, this user is the name of the
+   *    community user name. For computational resources, this user name need not be the same user name on resoruces.
+   *
+   * @return airavataCredStoreToken
+   *   An SSH Key pair is generated and stored in the credential store and associated with users or community account
+   *   belonging to a gateway.
+   *
+   **/
+
+   string generateAndRegisterSSHKeys (1: required string gatewayId, 2: required string userName)
+           throws (1: airavataErrors.InvalidRequestException ire,
+                   2: airavataErrors.AiravataClientException ace,
+                   3: airavataErrors.AiravataSystemException ase)
+
+   string getSSHPubKey (1: required string airavataCredStoreToken)
+           throws (1: airavataErrors.InvalidRequestException ire,
+                   2: airavataErrors.AiravataClientException ace,
+                   3: airavataErrors.AiravataSystemException ase)
+
+   map<string, string> getAllUserSSHPubKeys (1: required string userName)
+           throws (1: airavataErrors.InvalidRequestException ire,
+                   2: airavataErrors.AiravataClientException ace,
+                   3: airavataErrors.AiravataSystemException ase)
+
   /**
    * Create a Project
    *
