@@ -340,7 +340,6 @@ struct UnicoreJobSubmission {
     3: required string unicoreEndPointURL
 }
 
-
 /**
 * Provider name
 **/
@@ -363,10 +362,6 @@ struct CloudJobSubmission {
     5: required ProviderName providerName,
     6: required string userAccountName
 }
-
-
-
-
 
 /**
  * Job Submission Interfaces
