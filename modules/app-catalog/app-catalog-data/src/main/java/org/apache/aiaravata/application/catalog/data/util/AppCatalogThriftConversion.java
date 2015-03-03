@@ -725,6 +725,7 @@ public class AppCatalogThriftConversion {
         preference.setPreferredBatchQueue(resource.getBatchQueue());
         preference.setScratchLocation(resource.getScratchLocation());
         preference.setAllocationProjectNumber(resource.getProjectNumber());
+        preference.setLoginUserName(resource.getLoginUserName());
         return preference;
     }
 
