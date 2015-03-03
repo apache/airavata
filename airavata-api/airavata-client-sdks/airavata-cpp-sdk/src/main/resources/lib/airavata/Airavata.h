@@ -39,6 +39,9 @@ class AiravataIf {
   virtual bool deleteGateway(const std::string& gatewayId) = 0;
   virtual void getAllGateways(std::vector< ::apache::airavata::model::workspace::Gateway> & _return) = 0;
   virtual bool isGatewayExist(const std::string& gatewayId) = 0;
+  virtual void generateAndRegisterSSHKeys(std::string& _return, const std::string& gatewayId, const std::string& userName) = 0;
+  virtual void getSSHPubKey(std::string& _return, const std::string& airavataCredStoreToken) = 0;
+  virtual void getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const std::string& userName) = 0;
   virtual void createProject(std::string& _return, const  ::apache::airavata::model::workspace::Project& project) = 0;
   virtual void updateProject(const std::string& projectId, const  ::apache::airavata::model::workspace::Project& updatedProject) = 0;
   virtual void getProject( ::apache::airavata::model::workspace::Project& _return, const std::string& projectId) = 0;
@@ -195,6 +198,15 @@ class AiravataNull : virtual public AiravataIf {
   bool isGatewayExist(const std::string& /* gatewayId */) {
     bool _return = false;
     return _return;
+  }
+  void generateAndRegisterSSHKeys(std::string& /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */) {
+    return;
+  }
+  void getSSHPubKey(std::string& /* _return */, const std::string& /* airavataCredStoreToken */) {
+    return;
+  }
+  void getAllUserSSHPubKeys(std::map<std::string, std::string> & /* _return */, const std::string& /* userName */) {
+    return;
   }
   void createProject(std::string& /* _return */, const  ::apache::airavata::model::workspace::Project& /* project */) {
     return;
@@ -1446,6 +1458,410 @@ class Airavata_isGatewayExist_presult {
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_isGatewayExist_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_generateAndRegisterSSHKeys_args {
+ public:
+
+  Airavata_generateAndRegisterSSHKeys_args() : gatewayId(), userName() {
+  }
+
+  virtual ~Airavata_generateAndRegisterSSHKeys_args() throw() {}
+
+  std::string gatewayId;
+  std::string userName;
+
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
+
+  void __set_userName(const std::string& val) {
+    userName = val;
+  }
+
+  bool operator == (const Airavata_generateAndRegisterSSHKeys_args & rhs) const
+  {
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
+    if (!(userName == rhs.userName))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_generateAndRegisterSSHKeys_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_generateAndRegisterSSHKeys_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_generateAndRegisterSSHKeys_pargs {
+ public:
+
+
+  virtual ~Airavata_generateAndRegisterSSHKeys_pargs() throw() {}
+
+  const std::string* gatewayId;
+  const std::string* userName;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_generateAndRegisterSSHKeys_result__isset {
+  _Airavata_generateAndRegisterSSHKeys_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_generateAndRegisterSSHKeys_result__isset;
+
+class Airavata_generateAndRegisterSSHKeys_result {
+ public:
+
+  Airavata_generateAndRegisterSSHKeys_result() : success() {
+  }
+
+  virtual ~Airavata_generateAndRegisterSSHKeys_result() throw() {}
+
+  std::string success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_generateAndRegisterSSHKeys_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_generateAndRegisterSSHKeys_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_generateAndRegisterSSHKeys_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_generateAndRegisterSSHKeys_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_generateAndRegisterSSHKeys_presult__isset {
+  _Airavata_generateAndRegisterSSHKeys_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_generateAndRegisterSSHKeys_presult__isset;
+
+class Airavata_generateAndRegisterSSHKeys_presult {
+ public:
+
+
+  virtual ~Airavata_generateAndRegisterSSHKeys_presult() throw() {}
+
+  std::string* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_generateAndRegisterSSHKeys_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getSSHPubKey_args {
+ public:
+
+  Airavata_getSSHPubKey_args() : airavataCredStoreToken() {
+  }
+
+  virtual ~Airavata_getSSHPubKey_args() throw() {}
+
+  std::string airavataCredStoreToken;
+
+  void __set_airavataCredStoreToken(const std::string& val) {
+    airavataCredStoreToken = val;
+  }
+
+  bool operator == (const Airavata_getSSHPubKey_args & rhs) const
+  {
+    if (!(airavataCredStoreToken == rhs.airavataCredStoreToken))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getSSHPubKey_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getSSHPubKey_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getSSHPubKey_pargs {
+ public:
+
+
+  virtual ~Airavata_getSSHPubKey_pargs() throw() {}
+
+  const std::string* airavataCredStoreToken;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getSSHPubKey_result__isset {
+  _Airavata_getSSHPubKey_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getSSHPubKey_result__isset;
+
+class Airavata_getSSHPubKey_result {
+ public:
+
+  Airavata_getSSHPubKey_result() : success() {
+  }
+
+  virtual ~Airavata_getSSHPubKey_result() throw() {}
+
+  std::string success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getSSHPubKey_result__isset __isset;
+
+  void __set_success(const std::string& val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_getSSHPubKey_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getSSHPubKey_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getSSHPubKey_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getSSHPubKey_presult__isset {
+  _Airavata_getSSHPubKey_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getSSHPubKey_presult__isset;
+
+class Airavata_getSSHPubKey_presult {
+ public:
+
+
+  virtual ~Airavata_getSSHPubKey_presult() throw() {}
+
+  std::string* success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getSSHPubKey_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+};
+
+
+class Airavata_getAllUserSSHPubKeys_args {
+ public:
+
+  Airavata_getAllUserSSHPubKeys_args() : userName() {
+  }
+
+  virtual ~Airavata_getAllUserSSHPubKeys_args() throw() {}
+
+  std::string userName;
+
+  void __set_userName(const std::string& val) {
+    userName = val;
+  }
+
+  bool operator == (const Airavata_getAllUserSSHPubKeys_args & rhs) const
+  {
+    if (!(userName == rhs.userName))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getAllUserSSHPubKeys_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAllUserSSHPubKeys_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+
+class Airavata_getAllUserSSHPubKeys_pargs {
+ public:
+
+
+  virtual ~Airavata_getAllUserSSHPubKeys_pargs() throw() {}
+
+  const std::string* userName;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getAllUserSSHPubKeys_result__isset {
+  _Airavata_getAllUserSSHPubKeys_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getAllUserSSHPubKeys_result__isset;
+
+class Airavata_getAllUserSSHPubKeys_result {
+ public:
+
+  Airavata_getAllUserSSHPubKeys_result() {
+  }
+
+  virtual ~Airavata_getAllUserSSHPubKeys_result() throw() {}
+
+  std::map<std::string, std::string>  success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getAllUserSSHPubKeys_result__isset __isset;
+
+  void __set_success(const std::map<std::string, std::string> & val) {
+    success = val;
+  }
+
+  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val) {
+    ire = val;
+  }
+
+  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val) {
+    ace = val;
+  }
+
+  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val) {
+    ase = val;
+  }
+
+  bool operator == (const Airavata_getAllUserSSHPubKeys_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    if (!(ire == rhs.ire))
+      return false;
+    if (!(ace == rhs.ace))
+      return false;
+    if (!(ase == rhs.ase))
+      return false;
+    return true;
+  }
+  bool operator != (const Airavata_getAllUserSSHPubKeys_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const Airavata_getAllUserSSHPubKeys_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+typedef struct _Airavata_getAllUserSSHPubKeys_presult__isset {
+  _Airavata_getAllUserSSHPubKeys_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  bool success;
+  bool ire;
+  bool ace;
+  bool ase;
+} _Airavata_getAllUserSSHPubKeys_presult__isset;
+
+class Airavata_getAllUserSSHPubKeys_presult {
+ public:
+
+
+  virtual ~Airavata_getAllUserSSHPubKeys_presult() throw() {}
+
+  std::map<std::string, std::string> * success;
+   ::apache::airavata::api::error::InvalidRequestException ire;
+   ::apache::airavata::api::error::AiravataClientException ace;
+   ::apache::airavata::api::error::AiravataSystemException ase;
+
+  _Airavata_getAllUserSSHPubKeys_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -15757,6 +16173,15 @@ class AiravataClient : virtual public AiravataIf {
   bool isGatewayExist(const std::string& gatewayId);
   void send_isGatewayExist(const std::string& gatewayId);
   bool recv_isGatewayExist();
+  void generateAndRegisterSSHKeys(std::string& _return, const std::string& gatewayId, const std::string& userName);
+  void send_generateAndRegisterSSHKeys(const std::string& gatewayId, const std::string& userName);
+  void recv_generateAndRegisterSSHKeys(std::string& _return);
+  void getSSHPubKey(std::string& _return, const std::string& airavataCredStoreToken);
+  void send_getSSHPubKey(const std::string& airavataCredStoreToken);
+  void recv_getSSHPubKey(std::string& _return);
+  void getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const std::string& userName);
+  void send_getAllUserSSHPubKeys(const std::string& userName);
+  void recv_getAllUserSSHPubKeys(std::map<std::string, std::string> & _return);
   void createProject(std::string& _return, const  ::apache::airavata::model::workspace::Project& project);
   void send_createProject(const  ::apache::airavata::model::workspace::Project& project);
   void recv_createProject(std::string& _return);
@@ -16094,6 +16519,9 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_deleteGateway(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getAllGateways(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_isGatewayExist(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_generateAndRegisterSSHKeys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getSSHPubKey(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_getAllUserSSHPubKeys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_createProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_updateProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -16209,6 +16637,9 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["deleteGateway"] = &AiravataProcessor::process_deleteGateway;
     processMap_["getAllGateways"] = &AiravataProcessor::process_getAllGateways;
     processMap_["isGatewayExist"] = &AiravataProcessor::process_isGatewayExist;
+    processMap_["generateAndRegisterSSHKeys"] = &AiravataProcessor::process_generateAndRegisterSSHKeys;
+    processMap_["getSSHPubKey"] = &AiravataProcessor::process_getSSHPubKey;
+    processMap_["getAllUserSSHPubKeys"] = &AiravataProcessor::process_getAllUserSSHPubKeys;
     processMap_["createProject"] = &AiravataProcessor::process_createProject;
     processMap_["updateProject"] = &AiravataProcessor::process_updateProject;
     processMap_["getProject"] = &AiravataProcessor::process_getProject;
@@ -16407,6 +16838,36 @@ class AiravataMultiface : virtual public AiravataIf {
       ifaces_[i]->isGatewayExist(gatewayId);
     }
     return ifaces_[i]->isGatewayExist(gatewayId);
+  }
+
+  void generateAndRegisterSSHKeys(std::string& _return, const std::string& gatewayId, const std::string& userName) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->generateAndRegisterSSHKeys(_return, gatewayId, userName);
+    }
+    ifaces_[i]->generateAndRegisterSSHKeys(_return, gatewayId, userName);
+    return;
+  }
+
+  void getSSHPubKey(std::string& _return, const std::string& airavataCredStoreToken) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getSSHPubKey(_return, airavataCredStoreToken);
+    }
+    ifaces_[i]->getSSHPubKey(_return, airavataCredStoreToken);
+    return;
+  }
+
+  void getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const std::string& userName) {
+    size_t sz = ifaces_.size();
+    size_t i = 0;
+    for (; i < (sz - 1); ++i) {
+      ifaces_[i]->getAllUserSSHPubKeys(_return, userName);
+    }
+    ifaces_[i]->getAllUserSSHPubKeys(_return, userName);
+    return;
   }
 
   void createProject(std::string& _return, const  ::apache::airavata::model::workspace::Project& project) {
