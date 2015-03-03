@@ -89,7 +89,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getAllUserSSHPubKeys\n");
   }
 
-  void createProject(std::string& _return, const  ::apache::airavata::model::workspace::Project& project) {
+  void createProject(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project) {
     // Your implementation goes here
     printf("createProject\n");
   }
@@ -104,42 +104,42 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getProject\n");
   }
 
-  void getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& userName) {
+  void getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName) {
     // Your implementation goes here
     printf("getAllUserProjects\n");
   }
 
-  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& userName, const std::string& projectName) {
+  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& projectName) {
     // Your implementation goes here
     printf("searchProjectsByProjectName\n");
   }
 
-  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& userName, const std::string& description) {
+  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description) {
     // Your implementation goes here
     printf("searchProjectsByProjectDesc\n");
   }
 
-  void searchExperimentsByName(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const std::string& expName) {
+  void searchExperimentsByName(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& expName) {
     // Your implementation goes here
     printf("searchExperimentsByName\n");
   }
 
-  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const std::string& description) {
+  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description) {
     // Your implementation goes here
     printf("searchExperimentsByDesc\n");
   }
 
-  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const std::string& applicationId) {
+  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& applicationId) {
     // Your implementation goes here
     printf("searchExperimentsByApplication\n");
   }
 
-  void searchExperimentsByStatus(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState) {
+  void searchExperimentsByStatus(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState) {
     // Your implementation goes here
     printf("searchExperimentsByStatus\n");
   }
 
-  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const int64_t fromTime, const int64_t toTime) {
+  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime) {
     // Your implementation goes here
     printf("searchExperimentsByCreationTime\n");
   }
@@ -149,12 +149,12 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getAllExperimentsInProject\n");
   }
 
-  void getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& userName) {
+  void getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& gatewayId, const std::string& userName) {
     // Your implementation goes here
     printf("getAllUserExperiments\n");
   }
 
-  void createExperiment(std::string& _return, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment) {
+  void createExperiment(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment) {
     // Your implementation goes here
     printf("createExperiment\n");
   }
@@ -229,7 +229,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("terminateExperiment\n");
   }
 
-  void registerApplicationModule(std::string& _return, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) {
+  void registerApplicationModule(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) {
     // Your implementation goes here
     printf("registerApplicationModule\n");
   }
@@ -244,7 +244,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("updateApplicationModule\n");
   }
 
-  void getAllAppModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return) {
+  void getAllAppModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getAllAppModules\n");
   }
@@ -254,7 +254,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("deleteApplicationModule\n");
   }
 
-  void registerApplicationDeployment(std::string& _return, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment) {
+  void registerApplicationDeployment(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment) {
     // Your implementation goes here
     printf("registerApplicationDeployment\n");
   }
@@ -274,7 +274,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("deleteApplicationDeployment\n");
   }
 
-  void getAllApplicationDeployments(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> & _return) {
+  void getAllApplicationDeployments(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> & _return, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getAllApplicationDeployments\n");
   }
@@ -284,7 +284,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getAppModuleDeployedResources\n");
   }
 
-  void registerApplicationInterface(std::string& _return, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface) {
+  void registerApplicationInterface(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface) {
     // Your implementation goes here
     printf("registerApplicationInterface\n");
   }
@@ -304,12 +304,12 @@ class AiravataHandler : virtual public AiravataIf {
     printf("deleteApplicationInterface\n");
   }
 
-  void getAllApplicationInterfaceNames(std::map<std::string, std::string> & _return) {
+  void getAllApplicationInterfaceNames(std::map<std::string, std::string> & _return, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getAllApplicationInterfaceNames\n");
   }
 
-  void getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & _return) {
+  void getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & _return, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getAllApplicationInterfaces\n");
   }
@@ -579,7 +579,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("deleteGatewayComputeResourcePreference\n");
   }
 
-  void getAllWorkflows(std::vector<std::string> & _return) {
+  void getAllWorkflows(std::vector<std::string> & _return, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getAllWorkflows\n");
   }
@@ -594,7 +594,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("deleteWorkflow\n");
   }
 
-  void registerWorkflow(std::string& _return, const  ::Workflow& workflow) {
+  void registerWorkflow(std::string& _return, const std::string& gatewayId, const  ::Workflow& workflow) {
     // Your implementation goes here
     printf("registerWorkflow\n");
   }
