@@ -270,7 +270,8 @@ public class WorkflowInterpreterLaunchWindow {
 		org.apache.airavata.model.Workflow w = new org.apache.airavata.model.Workflow();
 		w.setName(workflowClone.getName());
         w.setGraph(JSONUtil.jsonElementToString(workflowClone.toJSON()));
-		w.setTemplateId(airavataClient.registerWorkflow(w));
+		//FIXME:: use gatewayId from UI
+        w.setTemplateId(airavataClient.registerWorkflow("default", w));
         String instanceName = this.instanceNameTextField.getText();
         if (instanceName.trim().equals("")){
         	JOptionPane.showMessageDialog(engine.getGUI().getFrame(),
@@ -291,7 +292,8 @@ public class WorkflowInterpreterLaunchWindow {
         Project project = new Project();
         project.setName("project1");
         project.setOwner(thriftClientData.getUsername());
-        project.setProjectID(airavataClient.createProject(project));
+        //FIXME:: use gatewayId from UI
+        project.setProjectID(airavataClient.createProject("default", project));
         final List<InputNode> inputNodes = GraphUtil.getInputNodes(this.workflow.getGraph());
         final Experiment experiment = new Experiment();
         experiment.setApplicationId(w.getTemplateId());
@@ -354,7 +356,8 @@ public class WorkflowInterpreterLaunchWindow {
             throw new RuntimeException("Resource scheduling failed, target computer resource host name is not defined");
         }
 
-        experiment.setExperimentID(airavataClient.createExperiment(experiment));
+        //FIXME:: use gatewayId from UI
+        experiment.setExperimentID(airavataClient.createExperiment("default", experiment));
 
         try {
             this.engine.getMonitor().subscribe(experiment.getExperimentID());

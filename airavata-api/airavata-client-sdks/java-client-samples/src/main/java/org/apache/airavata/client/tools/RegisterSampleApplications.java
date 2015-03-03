@@ -238,81 +238,81 @@ public class RegisterSampleApplications {
             System.out.println("\n #### Registering Application Modules #### \n");
 
             //Register Echo
-            echoModuleId = airavataClient.registerApplicationModule(
+            echoModuleId = airavataClient.registerApplicationModule(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(
                             echoName, "1.0", echoDescription));
             System.out.println("Echo Module Id " + echoModuleId);
             
-            mpiModuleId = airavataClient.registerApplicationModule(
+            mpiModuleId = airavataClient.registerApplicationModule(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(
                             mpiName, "1.0", mpiDescription));
             System.out.println("MPI Module Id " + mpiModuleId);
             
 
             //Register Amber
-            amberModuleId = airavataClient.registerApplicationModule(
+            amberModuleId = airavataClient.registerApplicationModule(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(
                             amberName, "12.0", amberDescription));
             System.out.println("Amber Module Id " + amberModuleId);
 
             //Register AutoDock
-            autoDockModuleId = airavataClient.registerApplicationModule(
+            autoDockModuleId = airavataClient.registerApplicationModule(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(
                             autoDockName, "4.2", autoDockDescription));
             System.out.println("AutoDock Module Id " + autoDockModuleId);
 
             //Register ESPRESSO
-            espressoModuleId = airavataClient.registerApplicationModule(
+            espressoModuleId = airavataClient.registerApplicationModule(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(
                             espressoName, "5.0.3", espressoDescription));
             System.out.println("ESPRESSO Module Id " + espressoModuleId);
 
             //Register GROMACS
-            gromacsModuleId = airavataClient.registerApplicationModule(
+            gromacsModuleId = airavataClient.registerApplicationModule(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(
                             gromacsName, "4.6.5", gromacsDescription));
             System.out.println("GROMACS Module Id " + gromacsModuleId);
 
             //Register LAMMPS
-            lammpsModuleId = airavataClient.registerApplicationModule(
+            lammpsModuleId = airavataClient.registerApplicationModule(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(
                             lammpsName, "20Mar14", lammpsDescription));
             System.out.println("LAMMPS Module Id " + lammpsModuleId);
 
             //Register NWChem
-            nwChemModuleId = airavataClient.registerApplicationModule(
+            nwChemModuleId = airavataClient.registerApplicationModule(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(
                             nwChemName, "6.3", nwChemDescription));
             System.out.println("NWChem Module Id " + nwChemModuleId);
 
             //Register Trinity
-            trinityModuleId = airavataClient.registerApplicationModule(
+            trinityModuleId = airavataClient.registerApplicationModule(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(
                             trinityName, "r20130225", trinityDescription));
             System.out.println("Trinity Module Id " + trinityModuleId);
 
             //Register WRF
-            wrfModuleId = airavataClient.registerApplicationModule(
+            wrfModuleId = airavataClient.registerApplicationModule(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(
                             wrfName, "3.5.1", wrfDescription));
             System.out.println("WRF Module Id " + wrfModuleId);
 
             //Register PHASTA
-            phastaModuleId = airavataClient.registerApplicationModule(
+            phastaModuleId = airavataClient.registerApplicationModule(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(
                             phastaName, "1.0", phastaDescription));
             System.out.println("phasta Module Id " + phastaModuleId);
 
-            monteXModuleId = airavataClient.registerApplicationModule(
+            monteXModuleId = airavataClient.registerApplicationModule(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(
                             monteXName, "1.0", monteXDescription));
             System.out.println("Tinker Monte Module Id " + monteXModuleId);
 
-            gaussianModuleId = airavataClient.registerApplicationModule(
+            gaussianModuleId = airavataClient.registerApplicationModule(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(
                             gaussianName, "1.0", gaussianDescription));
             //Register GAMESS
-            gamessModuleId = airavataClient.registerApplicationModule(
+            gamessModuleId = airavataClient.registerApplicationModule(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(
                             gamessName, "17May13", gamessDescription));
             System.out.println("Gamess Module Id " + gamessModuleId);
@@ -415,7 +415,7 @@ public class RegisterSampleApplications {
                     "", DataType.URI, false, true));
 
 
-            gamessInterfaceId = airavataClient.registerApplicationInterface(
+            gamessInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("gamess", "gamess",
                             appModules, applicationInputs, applicationOutputs));
 
@@ -445,7 +445,7 @@ public class RegisterSampleApplications {
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
 
-            echoLocalInterfaceId = airavataClient.registerApplicationInterface(
+            echoLocalInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(echoName, echoDescription,
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("Local Echo Application Interface Id " + echoLocalInterfaceId);
@@ -484,7 +484,7 @@ public class RegisterSampleApplications {
             applicationOutputs.add(output1);
             
 
-            echoInterfaceId = airavataClient.registerApplicationInterface(
+            echoInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(echoName, echoDescription,
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("Echo Application Interface Id " + echoInterfaceId);
@@ -515,7 +515,7 @@ public class RegisterSampleApplications {
             applicationOutputs.add(output1);
  
             
-            mpiInterfaceId = airavataClient.registerApplicationInterface(
+            mpiInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(mpiName, mpiDescription,
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("MPI Application Interface Id " + mpiInterfaceId);
@@ -561,7 +561,7 @@ public class RegisterSampleApplications {
             applicationOutputs.add(output5);
             applicationOutputs.add(output6);
             
-            amberInterfaceId = airavataClient.registerApplicationInterface(
+            amberInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(amberName, amberDescription,
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("Amber Application Interface Id " + amberInterfaceId);
@@ -598,7 +598,7 @@ public class RegisterSampleApplications {
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
 
-            autoDockInterfaceId = airavataClient.registerApplicationInterface(
+            autoDockInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(autoDockName, autoDockDescription,
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("AutoDock Application Interface Id " + autoDockInterfaceId);
@@ -636,7 +636,7 @@ public class RegisterSampleApplications {
             applicationOutputs.add(output3);
             applicationOutputs.add(output4);
 
-            espressoInterfaceId = airavataClient.registerApplicationInterface(
+            espressoInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(espressoName, espressoDescription,
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("Espresso Application Interface Id " + espressoInterfaceId);
@@ -676,7 +676,7 @@ public class RegisterSampleApplications {
             applicationOutputs.add(output4);
             applicationOutputs.add(output5);
 
-            gromacsInterfaceId = airavataClient.registerApplicationInterface(
+            gromacsInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(gromacsName, gromacsDescription,
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("Gromacs Application Interface Id " + gromacsInterfaceId);
@@ -704,7 +704,7 @@ public class RegisterSampleApplications {
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
 
-            lammpsInterfaceId = airavataClient.registerApplicationInterface(
+            lammpsInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(lammpsName, lammpsDescription,
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("LAMMPS Application Interface Id " + lammpsInterfaceId);
@@ -733,7 +733,7 @@ public class RegisterSampleApplications {
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
 
-            nwChemInterfaceId = airavataClient.registerApplicationInterface(
+            nwChemInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(nwChemName, nwChemDescription,
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("NWChem Application Interface Id " + nwChemInterfaceId);
@@ -768,7 +768,7 @@ public class RegisterSampleApplications {
             applicationOutputs.add(output1);
             applicationOutputs.add(output2);
 
-            trinityInterfaceId = airavataClient.registerApplicationInterface(
+            trinityInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(trinityName, trinityDescription,
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("Trinity Application Interface Id " + trinityInterfaceId);
@@ -810,7 +810,7 @@ public class RegisterSampleApplications {
             applicationOutputs.add(output1);
             applicationOutputs.add(output2);
 
-            wrfInterfaceId = airavataClient.registerApplicationInterface(
+            wrfInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(wrfName, wrfDescription,
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("WRF Application Interface Id " + wrfInterfaceId);
@@ -848,7 +848,7 @@ public class RegisterSampleApplications {
             applicationOutputs.add(output1);
             applicationOutputs.add(output2);
 
-            amberInterfaceId = airavataClient.registerApplicationInterface(
+            amberInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(phastaName, phastaDescription,
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("phasta Application Interface Id " + phastaInterfaceId);
@@ -862,7 +862,7 @@ public class RegisterSampleApplications {
         try {
             System.out.println("#### Registering Application Deployments on Localhost #### \n");
             //Register Echo
-            String echoAppDeployId = airavataClient.registerApplicationDeployment(
+            String echoAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(echoModuleId, localhostId,
                             "/bin/echo", ApplicationParallelismType.SERIAL, echoDescription, null, null, null));
 
@@ -892,7 +892,7 @@ public class RegisterSampleApplications {
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
 
-            String addApplicationInterfaceId = airavataClient.registerApplicationInterface(
+            String addApplicationInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("Gaussian", "Gaussian application",
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("Gaussian Application Interface Id " + addApplicationInterfaceId);
@@ -939,7 +939,7 @@ public class RegisterSampleApplications {
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
 
-            String addApplicationInterfaceId = airavataClient.registerApplicationInterface(
+            String addApplicationInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("Tinker_Monte", "Monte application",
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("Monte Application Interface Id " + addApplicationInterfaceId);
@@ -955,28 +955,28 @@ public class RegisterSampleApplications {
             System.out.println("#### Registering Application Deployments on Stampede #### \n");
 
             //Register Echo
-            String echoAppDeployId = airavataClient.registerApplicationDeployment(
+            String echoAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(echoModuleId, stampedeResourceId,
                             "/home1/01437/ogce/production/app_wrappers/echo_wrapper.sh", ApplicationParallelismType.SERIAL,
                             echoDescription, null, null,null));
             System.out.println("Echo on stampede deployment Id " + echoAppDeployId);
 
             //Register Amber
-            String amberAppDeployId = airavataClient.registerApplicationDeployment(
+            String amberAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(amberModuleId, stampedeResourceId,
                             "/home1/01437/ogce/production/app_wrappers/amber_wrapper.sh", ApplicationParallelismType.MPI,
                             amberDescription, null, null, null));
             System.out.println("Amber on stampede deployment Id " + amberAppDeployId);
 
             //Register ESPRESSO
-            String espressoAppDeployId = airavataClient.registerApplicationDeployment(
+            String espressoAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(espressoModuleId, stampedeResourceId,
                             "/home1/01437/ogce/production/app_wrappers/espresso_wrapper.sh", ApplicationParallelismType.MPI,
                             espressoDescription, null, null, null));
             System.out.println("ESPRESSO on stampede deployment Id " + espressoAppDeployId);
 
             //Register GROMACS
-            String gromacsAppDeployId = airavataClient.registerApplicationDeployment(
+            String gromacsAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(gromacsModuleId, stampedeResourceId,
                             "/home1/01437/ogce/production/app_wrappers/gromacs_wrapper.sh", ApplicationParallelismType.MPI,
                             gromacsDescription, null, null ,null));
@@ -985,7 +985,7 @@ public class RegisterSampleApplications {
             //Register LAMMPS
             List<String> preJobCommands = new ArrayList<String>();
             preJobCommands.add("cp /home1/00421/ccguser/apps/ds_lammps/data/* $workingDir");
-            String lammpsAppDeployId = airavataClient.registerApplicationDeployment(
+            String lammpsAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(lammpsModuleId, stampedeResourceId,
                             "~/apps/ds_lammps/bin/lmp_stampede", ApplicationParallelismType.MPI,
                             lammpsDescription,null, preJobCommands, null));
@@ -994,21 +994,21 @@ public class RegisterSampleApplications {
             //Register NWChem
             List<String> nwChemModuleCmds = new ArrayList<String>();
             nwChemModuleCmds.add("module load nwchem");
-            String nwChemAppDeployId = airavataClient.registerApplicationDeployment(
+            String nwChemAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(nwChemModuleId, stampedeResourceId,
                             "nwchem", ApplicationParallelismType.MPI,
                             nwChemDescription, nwChemModuleCmds, null, null));
             System.out.println("NWChem on stampede deployment Id " + nwChemAppDeployId);
 
             //Register Trinity
-            String trinityAppDeployId = airavataClient.registerApplicationDeployment(
+            String trinityAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(trinityModuleId, stampedeResourceId,
                             "/home1/01437/ogce/production/app_wrappers/trinity_wrapper.sh", ApplicationParallelismType.MPI,
                             trinityDescription, null, null, null));
             System.out.println("Trinity on stampede deployment Id " + trinityAppDeployId);
 
             //Register WRF
-            String wrfAppDeployId = airavataClient.registerApplicationDeployment(
+            String wrfAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(wrfModuleId, stampedeResourceId,
                             "/home1/01437/ogce/production/app_wrappers/wrf_wrapper.sh", ApplicationParallelismType.MPI,
                             wrfDescription, null, null , null));
@@ -1020,7 +1020,7 @@ public class RegisterSampleApplications {
 //            monteXModuleCmds.add("module load uberftp");
             monteXModuleCmds.add("module load fftw3");
 
-            String monteXAppDeployId = airavataClient.registerApplicationDeployment(
+            String monteXAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(monteXModuleId, stampedeResourceId,
                             "/home1/00421/ccguser/apps/tinker/tinker/bin/monte.x", ApplicationParallelismType.OPENMP,
                             monteXDescription, monteXModuleCmds, null, null));
@@ -1035,28 +1035,28 @@ public class RegisterSampleApplications {
             System.out.println("#### Registering Application Deployments on Trestles #### \n");
 
             //Register Echo
-            String echoAppDeployId = airavataClient.registerApplicationDeployment(
+            String echoAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(echoModuleId, trestlesResourceId,
                             "/home/ogce/production/app_wrappers/echo_wrapper.sh", ApplicationParallelismType.SERIAL,
                             echoDescription, null, null, null));
             System.out.println("Echo on trestles deployment Id " + echoAppDeployId);
 
             //Register Amber
-            String amberAppDeployId = airavataClient.registerApplicationDeployment(
+            String amberAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(amberModuleId, trestlesResourceId,
                             "/home/ogce/production/app_wrappers/amber_wrapper.sh", ApplicationParallelismType.MPI,
                             amberDescription, null, null, null));
             System.out.println("Amber on trestles deployment Id " + amberAppDeployId);
 
             //Register GROMACS
-            String gromacsAppDeployId = airavataClient.registerApplicationDeployment(
+            String gromacsAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(gromacsModuleId, trestlesResourceId,
                             "/home/ogce/production/app_wrappers/gromacs_wrapper.sh", ApplicationParallelismType.MPI,
                             gromacsDescription, null, null, null));
             System.out.println("GROMACS on trestles deployment Id " + gromacsAppDeployId);
 
             //Register LAMMPS
-            String lammpsAppDeployId = airavataClient.registerApplicationDeployment(
+            String lammpsAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(lammpsModuleId, trestlesResourceId,
                             "/home/ogce/production/app_wrappers/lammps_wrapper.sh", ApplicationParallelismType.MPI,
                             lammpsDescription, null, null , null));
@@ -1065,7 +1065,7 @@ public class RegisterSampleApplications {
             //Register GAMESS
             List<String> moduleLoadCmd = new ArrayList<String>();
             moduleLoadCmd.add("module load gamess");
-            String gamessAppDeployId = airavataClient.registerApplicationDeployment(
+            String gamessAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(gamessModuleId, trestlesResourceId,
                             "/opt/gamess/rungms", ApplicationParallelismType.MPI,
                             gamessDescription, moduleLoadCmd, null,null));
@@ -1074,7 +1074,7 @@ public class RegisterSampleApplications {
 
             List<String> gaussianMouldes = new ArrayList<String>();
             gaussianMouldes.add("module load gaussian");
-            String gaussianAppDeployId = airavataClient.registerApplicationDeployment(
+            String gaussianAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(gaussianModuleId, trestlesResourceId,
                             "g09", ApplicationParallelismType.OPENMP, gaussianDescription, gaussianMouldes , null, null));
             System.out.println("Gaussian on trestles deployment Id " + gaussianAppDeployId);
@@ -1089,21 +1089,21 @@ public class RegisterSampleApplications {
             System.out.println("#### Registering Application Deployments on BigRed II #### \n");
 
             //Register Echo
-            String echoAppDeployId = airavataClient.registerApplicationDeployment(
+            String echoAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(echoModuleId, bigredResourceId,
                             "/N/u/cgateway/BigRed2/production/app_wrappers/echo_wrapper.sh",
                             ApplicationParallelismType.SERIAL, echoDescription, null, null, null));
             System.out.println("Echo on bigredII deployment Id " + echoAppDeployId);
 
             //Register Amber
-            String amberAppDeployId = airavataClient.registerApplicationDeployment(
+            String amberAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(amberModuleId, bigredResourceId,
                             "/N/u/cgateway/BigRed2/production/app_wrappers/amber_wrapper.sh", ApplicationParallelismType.MPI,
                             amberDescription, null, null, null));
             System.out.println("Amber on bigredII deployment Id " + amberAppDeployId);
 
             //Register AutoDock
-            String autoDockDeployId = airavataClient.registerApplicationDeployment(
+            String autoDockDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(autoDockModuleId, bigredResourceId,
                             "/N/u/cgateway/BigRed2/production/app_wrappers/auto_dock_wrapper.sh", ApplicationParallelismType.MPI,
                             autoDockDescription, null, null, null));
@@ -1133,13 +1133,13 @@ public class RegisterSampleApplications {
             System.out.println("#### Registering Application Deployments on FSD #### \n");
 
             //Register Echo
-            String echoAppDeployId = airavataClient.registerApplicationDeployment(
+            String echoAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(echoModuleId, fsdResourceId,
                             "/bin/echo", ApplicationParallelismType.SERIAL, echoDescription, null, null, null));
             System.out.println("Echo on FSD deployment Id: " + echoAppDeployId);
 
             //Register MPI
-            String mpiAppDeployId = airavataClient.registerApplicationDeployment(
+            String mpiAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(mpiModuleId, fsdResourceId,
                             "/home/bes/hellompi", ApplicationParallelismType.OPENMP_MPI, mpiDescription, null, null, null));
             System.out.println("MPI on FSD deployment Id: " + mpiAppDeployId);
