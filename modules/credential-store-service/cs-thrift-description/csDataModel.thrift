@@ -37,7 +37,7 @@ struct SSHCredential {
 }
 
 struct CommunityUser {
-    1: required string gatewayNmae,
+    1: required string gatewayName,
     2: required string username,
     3: required string userEmail
 }
