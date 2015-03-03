@@ -74,6 +74,21 @@ class AiravataHandler : virtual public AiravataIf {
     printf("isGatewayExist\n");
   }
 
+  void generateAndRegisterSSHKeys(std::string& _return, const std::string& gatewayId, const std::string& userName) {
+    // Your implementation goes here
+    printf("generateAndRegisterSSHKeys\n");
+  }
+
+  void getSSHPubKey(std::string& _return, const std::string& airavataCredStoreToken) {
+    // Your implementation goes here
+    printf("getSSHPubKey\n");
+  }
+
+  void getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const std::string& userName) {
+    // Your implementation goes here
+    printf("getAllUserSSHPubKeys\n");
+  }
+
   void createProject(std::string& _return, const  ::apache::airavata::model::workspace::Project& project) {
     // Your implementation goes here
     printf("createProject\n");

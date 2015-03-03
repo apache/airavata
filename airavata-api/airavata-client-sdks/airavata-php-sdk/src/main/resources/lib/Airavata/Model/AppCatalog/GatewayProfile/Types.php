@@ -22,6 +22,7 @@ class ComputeResourcePreference {
 
   public $computeResourceId = null;
   public $overridebyAiravata = true;
+  public $loginUserName = null;
   public $preferredJobSubmissionProtocol = null;
   public $preferredDataMovementProtocol = null;
   public $preferredBatchQueue = null;
@@ -40,22 +41,26 @@ class ComputeResourcePreference {
           'type' => TType::BOOL,
           ),
         3 => array(
+          'var' => 'loginUserName',
+          'type' => TType::STRING,
+          ),
+        4 => array(
           'var' => 'preferredJobSubmissionProtocol',
           'type' => TType::I32,
           ),
-        4 => array(
+        5 => array(
           'var' => 'preferredDataMovementProtocol',
           'type' => TType::I32,
           ),
-        5 => array(
+        6 => array(
           'var' => 'preferredBatchQueue',
           'type' => TType::STRING,
           ),
-        6 => array(
+        7 => array(
           'var' => 'scratchLocation',
           'type' => TType::STRING,
           ),
-        7 => array(
+        8 => array(
           'var' => 'allocationProjectNumber',
           'type' => TType::STRING,
           ),
@@ -67,6 +72,9 @@ class ComputeResourcePreference {
       }
       if (isset($vals['overridebyAiravata'])) {
         $this->overridebyAiravata = $vals['overridebyAiravata'];
+      }
+      if (isset($vals['loginUserName'])) {
+        $this->loginUserName = $vals['loginUserName'];
       }
       if (isset($vals['preferredJobSubmissionProtocol'])) {
         $this->preferredJobSubmissionProtocol = $vals['preferredJobSubmissionProtocol'];
@@ -120,34 +128,41 @@ class ComputeResourcePreference {
           }
           break;
         case 3:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->preferredJobSubmissionProtocol);
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->loginUserName);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 4:
           if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->preferredDataMovementProtocol);
+            $xfer += $input->readI32($this->preferredJobSubmissionProtocol);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 5:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->preferredBatchQueue);
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->preferredDataMovementProtocol);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 6:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->scratchLocation);
+            $xfer += $input->readString($this->preferredBatchQueue);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 7:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->scratchLocation);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 8:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->allocationProjectNumber);
           } else {
@@ -177,28 +192,33 @@ class ComputeResourcePreference {
       $xfer += $output->writeBool($this->overridebyAiravata);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->loginUserName !== null) {
+      $xfer += $output->writeFieldBegin('loginUserName', TType::STRING, 3);
+      $xfer += $output->writeString($this->loginUserName);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->preferredJobSubmissionProtocol !== null) {
-      $xfer += $output->writeFieldBegin('preferredJobSubmissionProtocol', TType::I32, 3);
+      $xfer += $output->writeFieldBegin('preferredJobSubmissionProtocol', TType::I32, 4);
       $xfer += $output->writeI32($this->preferredJobSubmissionProtocol);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->preferredDataMovementProtocol !== null) {
-      $xfer += $output->writeFieldBegin('preferredDataMovementProtocol', TType::I32, 4);
+      $xfer += $output->writeFieldBegin('preferredDataMovementProtocol', TType::I32, 5);
       $xfer += $output->writeI32($this->preferredDataMovementProtocol);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->preferredBatchQueue !== null) {
-      $xfer += $output->writeFieldBegin('preferredBatchQueue', TType::STRING, 5);
+      $xfer += $output->writeFieldBegin('preferredBatchQueue', TType::STRING, 6);
       $xfer += $output->writeString($this->preferredBatchQueue);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->scratchLocation !== null) {
-      $xfer += $output->writeFieldBegin('scratchLocation', TType::STRING, 6);
+      $xfer += $output->writeFieldBegin('scratchLocation', TType::STRING, 7);
       $xfer += $output->writeString($this->scratchLocation);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->allocationProjectNumber !== null) {
-      $xfer += $output->writeFieldBegin('allocationProjectNumber', TType::STRING, 7);
+      $xfer += $output->writeFieldBegin('allocationProjectNumber', TType::STRING, 8);
       $xfer += $output->writeString($this->allocationProjectNumber);
       $xfer += $output->writeFieldEnd();
     }

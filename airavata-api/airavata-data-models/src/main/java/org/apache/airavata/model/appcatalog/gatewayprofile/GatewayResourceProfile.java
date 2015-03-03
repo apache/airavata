@@ -55,12 +55,6 @@ import org.slf4j.LoggerFactory;
  * gatewayID:
  *   Unique identifier for the gateway assigned by Airavata. Corelate this to Airavata Admin API Gateway Registration.
  * 
- * gatewayName:
- *   Name of the Gateway.
- * 
- * gatewayDescription:
- *  A user friendly description of the gateway.
- * 
  * computeResourcePreferences:
  *  List of resource preferences for each of the registered compute resources.
  * 
