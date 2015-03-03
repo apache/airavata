@@ -1047,6 +1047,11 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    @Override
+    public List<OutputDataObjectType> getIntermediateOutputs(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+        return null;
+    }
+
     public Map<String, JobStatus> getJobStatuses(String airavataExperimentId) throws TException {
         Map<String, JobStatus> jobStatus = new HashMap<String, JobStatus>();
         try {
