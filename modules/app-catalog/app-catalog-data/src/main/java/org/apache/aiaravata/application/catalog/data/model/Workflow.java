@@ -56,6 +56,16 @@ public class Workflow implements Serializable {
     @Column(name = "IMAGE")
     private byte[] image;
 
+    @Column(name = "GATEWAY_ID")
+    private String gatewayId;
+
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
 
     public Timestamp getCreationTime() {
         return creationTime;

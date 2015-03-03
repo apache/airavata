@@ -58,6 +58,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
                     resource.setComputeHostResource((ComputeResourceResource)computeHostResource.get(preference.getComputeResourceId()));
                     resource.setGatewayId(profileResource.getGatewayID());
                     resource.setOverrideByAiravata(preference.isOverridebyAiravata());
+                    resource.setLoginUserName(preference.getLoginUserName());
                     if (preference.getPreferredJobSubmissionProtocol() != null){
                         resource.setPreferredJobProtocol(preference.getPreferredJobSubmissionProtocol().toString());
                     }
@@ -95,6 +96,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
                     ComputeResourceResource computeHostResource = new ComputeResourceResource();
                     resource.setComputeHostResource((ComputeResourceResource)computeHostResource.get(preference.getComputeResourceId()));
                     resource.setGatewayId(gatewayId);
+                    resource.setLoginUserName(preference.getLoginUserName());
                     resource.setOverrideByAiravata(preference.isOverridebyAiravata());
                     if (preference.getPreferredJobSubmissionProtocol() != null){
                         resource.setPreferredJobProtocol(preference.getPreferredJobSubmissionProtocol().toString());

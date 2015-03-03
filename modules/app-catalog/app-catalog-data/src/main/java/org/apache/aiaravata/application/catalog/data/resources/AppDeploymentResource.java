@@ -47,10 +47,19 @@ public class AppDeploymentResource extends AbstractResource {
     private String executablePath;
     private String parallelism;
     private String appDes;
+    private String gatewayId;
     private ComputeResourceResource hostResource;
     private AppModuleResource moduleResource;
     private Timestamp createdTime;
     private Timestamp updatedTime;
+
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
 
     public Timestamp getCreatedTime() {
         return createdTime;
@@ -372,6 +381,7 @@ public class AppDeploymentResource extends AbstractResource {
                 existingDeployment.setHostID(hostId);
                 existingDeployment.setExecutablePath(executablePath);
                 existingDeployment.setParallelism(parallelism);
+                existingDeployment.setGatewayId(gatewayId);
                 existingDeployment.setUpdateTime(AiravataUtils.getCurrentTimestamp());
                 em.merge(existingDeployment);
             }else {
@@ -384,6 +394,7 @@ public class AppDeploymentResource extends AbstractResource {
                 deployment.setComputeResource(computeHost);
                 deployment.setExecutablePath(executablePath);
                 deployment.setParallelism(parallelism);
+                deployment.setGatewayId(gatewayId);
                 deployment.setCreationTime(AiravataUtils.getCurrentTimestamp());
                 em.persist(deployment);
             }
