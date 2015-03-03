@@ -42,20 +42,20 @@ class AiravataIf {
   virtual void generateAndRegisterSSHKeys(std::string& _return, const std::string& gatewayId, const std::string& userName) = 0;
   virtual void getSSHPubKey(std::string& _return, const std::string& airavataCredStoreToken) = 0;
   virtual void getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const std::string& userName) = 0;
-  virtual void createProject(std::string& _return, const  ::apache::airavata::model::workspace::Project& project) = 0;
+  virtual void createProject(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project) = 0;
   virtual void updateProject(const std::string& projectId, const  ::apache::airavata::model::workspace::Project& updatedProject) = 0;
   virtual void getProject( ::apache::airavata::model::workspace::Project& _return, const std::string& projectId) = 0;
-  virtual void getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& userName) = 0;
-  virtual void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& userName, const std::string& projectName) = 0;
-  virtual void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& userName, const std::string& description) = 0;
-  virtual void searchExperimentsByName(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const std::string& expName) = 0;
-  virtual void searchExperimentsByDesc(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const std::string& description) = 0;
-  virtual void searchExperimentsByApplication(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const std::string& applicationId) = 0;
-  virtual void searchExperimentsByStatus(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState) = 0;
-  virtual void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const int64_t fromTime, const int64_t toTime) = 0;
+  virtual void getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName) = 0;
+  virtual void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& projectName) = 0;
+  virtual void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description) = 0;
+  virtual void searchExperimentsByName(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& expName) = 0;
+  virtual void searchExperimentsByDesc(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description) = 0;
+  virtual void searchExperimentsByApplication(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& applicationId) = 0;
+  virtual void searchExperimentsByStatus(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState) = 0;
+  virtual void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime) = 0;
   virtual void getAllExperimentsInProject(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& projectId) = 0;
-  virtual void getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& userName) = 0;
-  virtual void createExperiment(std::string& _return, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment) = 0;
+  virtual void getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& gatewayId, const std::string& userName) = 0;
+  virtual void createExperiment(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment) = 0;
   virtual void getExperiment( ::apache::airavata::model::workspace::experiment::Experiment& _return, const std::string& airavataExperimentId) = 0;
   virtual void updateExperiment(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment) = 0;
   virtual void updateExperimentConfiguration(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::UserConfigurationData& userConfiguration) = 0;
@@ -70,23 +70,23 @@ class AiravataIf {
   virtual void getDataTransferDetails(std::vector< ::apache::airavata::model::workspace::experiment::DataTransferDetails> & _return, const std::string& airavataExperimentId) = 0;
   virtual void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const std::string& newExperimentName) = 0;
   virtual void terminateExperiment(const std::string& airavataExperimentId) = 0;
-  virtual void registerApplicationModule(std::string& _return, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) = 0;
+  virtual void registerApplicationModule(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) = 0;
   virtual void getApplicationModule( ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& _return, const std::string& appModuleId) = 0;
   virtual bool updateApplicationModule(const std::string& appModuleId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) = 0;
-  virtual void getAllAppModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return) = 0;
+  virtual void getAllAppModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return, const std::string& gatewayId) = 0;
   virtual bool deleteApplicationModule(const std::string& appModuleId) = 0;
-  virtual void registerApplicationDeployment(std::string& _return, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment) = 0;
+  virtual void registerApplicationDeployment(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment) = 0;
   virtual void getApplicationDeployment( ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& _return, const std::string& appDeploymentId) = 0;
   virtual bool updateApplicationDeployment(const std::string& appDeploymentId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment) = 0;
   virtual bool deleteApplicationDeployment(const std::string& appDeploymentId) = 0;
-  virtual void getAllApplicationDeployments(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> & _return) = 0;
+  virtual void getAllApplicationDeployments(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> & _return, const std::string& gatewayId) = 0;
   virtual void getAppModuleDeployedResources(std::vector<std::string> & _return, const std::string& appModuleId) = 0;
-  virtual void registerApplicationInterface(std::string& _return, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface) = 0;
+  virtual void registerApplicationInterface(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface) = 0;
   virtual void getApplicationInterface( ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& _return, const std::string& appInterfaceId) = 0;
   virtual bool updateApplicationInterface(const std::string& appInterfaceId, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface) = 0;
   virtual bool deleteApplicationInterface(const std::string& appInterfaceId) = 0;
-  virtual void getAllApplicationInterfaceNames(std::map<std::string, std::string> & _return) = 0;
-  virtual void getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & _return) = 0;
+  virtual void getAllApplicationInterfaceNames(std::map<std::string, std::string> & _return, const std::string& gatewayId) = 0;
+  virtual void getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & _return, const std::string& gatewayId) = 0;
   virtual void getApplicationInputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> & _return, const std::string& appInterfaceId) = 0;
   virtual void getApplicationOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& appInterfaceId) = 0;
   virtual void getAvailableAppInterfaceComputeResources(std::map<std::string, std::string> & _return, const std::string& appInterfaceId) = 0;
@@ -140,10 +140,10 @@ class AiravataIf {
   virtual void getAllGatewayComputeResources(std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile> & _return) = 0;
   virtual bool updateGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& computeResourcePreference) = 0;
   virtual bool deleteGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId) = 0;
-  virtual void getAllWorkflows(std::vector<std::string> & _return) = 0;
+  virtual void getAllWorkflows(std::vector<std::string> & _return, const std::string& gatewayId) = 0;
   virtual void getWorkflow( ::Workflow& _return, const std::string& workflowTemplateId) = 0;
   virtual void deleteWorkflow(const std::string& workflowTemplateId) = 0;
-  virtual void registerWorkflow(std::string& _return, const  ::Workflow& workflow) = 0;
+  virtual void registerWorkflow(std::string& _return, const std::string& gatewayId, const  ::Workflow& workflow) = 0;
   virtual void updateWorkflow(const std::string& workflowTemplateId, const  ::Workflow& workflow) = 0;
   virtual void getWorkflowTemplateId(std::string& _return, const std::string& workflowName) = 0;
   virtual bool isWorkflowExistWithName(const std::string& workflowName) = 0;
@@ -208,7 +208,7 @@ class AiravataNull : virtual public AiravataIf {
   void getAllUserSSHPubKeys(std::map<std::string, std::string> & /* _return */, const std::string& /* userName */) {
     return;
   }
-  void createProject(std::string& /* _return */, const  ::apache::airavata::model::workspace::Project& /* project */) {
+  void createProject(std::string& /* _return */, const std::string& /* gatewayId */, const  ::apache::airavata::model::workspace::Project& /* project */) {
     return;
   }
   void updateProject(const std::string& /* projectId */, const  ::apache::airavata::model::workspace::Project& /* updatedProject */) {
@@ -217,37 +217,37 @@ class AiravataNull : virtual public AiravataIf {
   void getProject( ::apache::airavata::model::workspace::Project& /* _return */, const std::string& /* projectId */) {
     return;
   }
-  void getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & /* _return */, const std::string& /* userName */) {
+  void getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */) {
     return;
   }
-  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & /* _return */, const std::string& /* userName */, const std::string& /* projectName */) {
+  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* projectName */) {
     return;
   }
-  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & /* _return */, const std::string& /* userName */, const std::string& /* description */) {
+  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* description */) {
     return;
   }
-  void searchExperimentsByName(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & /* _return */, const std::string& /* userName */, const std::string& /* expName */) {
+  void searchExperimentsByName(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* expName */) {
     return;
   }
-  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & /* _return */, const std::string& /* userName */, const std::string& /* description */) {
+  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* description */) {
     return;
   }
-  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & /* _return */, const std::string& /* userName */, const std::string& /* applicationId */) {
+  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* applicationId */) {
     return;
   }
-  void searchExperimentsByStatus(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & /* _return */, const std::string& /* userName */, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type /* experimentState */) {
+  void searchExperimentsByStatus(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type /* experimentState */) {
     return;
   }
-  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & /* _return */, const std::string& /* userName */, const int64_t /* fromTime */, const int64_t /* toTime */) {
+  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const int64_t /* fromTime */, const int64_t /* toTime */) {
     return;
   }
   void getAllExperimentsInProject(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & /* _return */, const std::string& /* projectId */) {
     return;
   }
-  void getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & /* _return */, const std::string& /* userName */) {
+  void getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */) {
     return;
   }
-  void createExperiment(std::string& /* _return */, const  ::apache::airavata::model::workspace::experiment::Experiment& /* experiment */) {
+  void createExperiment(std::string& /* _return */, const std::string& /* gatewayId */, const  ::apache::airavata::model::workspace::experiment::Experiment& /* experiment */) {
     return;
   }
   void getExperiment( ::apache::airavata::model::workspace::experiment::Experiment& /* _return */, const std::string& /* airavataExperimentId */) {
@@ -293,7 +293,7 @@ class AiravataNull : virtual public AiravataIf {
   void terminateExperiment(const std::string& /* airavataExperimentId */) {
     return;
   }
-  void registerApplicationModule(std::string& /* _return */, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& /* applicationModule */) {
+  void registerApplicationModule(std::string& /* _return */, const std::string& /* gatewayId */, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& /* applicationModule */) {
     return;
   }
   void getApplicationModule( ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& /* _return */, const std::string& /* appModuleId */) {
@@ -303,14 +303,14 @@ class AiravataNull : virtual public AiravataIf {
     bool _return = false;
     return _return;
   }
-  void getAllAppModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & /* _return */) {
+  void getAllAppModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & /* _return */, const std::string& /* gatewayId */) {
     return;
   }
   bool deleteApplicationModule(const std::string& /* appModuleId */) {
     bool _return = false;
     return _return;
   }
-  void registerApplicationDeployment(std::string& /* _return */, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& /* applicationDeployment */) {
+  void registerApplicationDeployment(std::string& /* _return */, const std::string& /* gatewayId */, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& /* applicationDeployment */) {
     return;
   }
   void getApplicationDeployment( ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& /* _return */, const std::string& /* appDeploymentId */) {
@@ -324,13 +324,13 @@ class AiravataNull : virtual public AiravataIf {
     bool _return = false;
     return _return;
   }
-  void getAllApplicationDeployments(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> & /* _return */) {
+  void getAllApplicationDeployments(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> & /* _return */, const std::string& /* gatewayId */) {
     return;
   }
   void getAppModuleDeployedResources(std::vector<std::string> & /* _return */, const std::string& /* appModuleId */) {
     return;
   }
-  void registerApplicationInterface(std::string& /* _return */, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& /* applicationInterface */) {
+  void registerApplicationInterface(std::string& /* _return */, const std::string& /* gatewayId */, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& /* applicationInterface */) {
     return;
   }
   void getApplicationInterface( ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& /* _return */, const std::string& /* appInterfaceId */) {
@@ -344,10 +344,10 @@ class AiravataNull : virtual public AiravataIf {
     bool _return = false;
     return _return;
   }
-  void getAllApplicationInterfaceNames(std::map<std::string, std::string> & /* _return */) {
+  void getAllApplicationInterfaceNames(std::map<std::string, std::string> & /* _return */, const std::string& /* gatewayId */) {
     return;
   }
-  void getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & /* _return */) {
+  void getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & /* _return */, const std::string& /* gatewayId */) {
     return;
   }
   void getApplicationInputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> & /* _return */, const std::string& /* appInterfaceId */) {
@@ -533,7 +533,7 @@ class AiravataNull : virtual public AiravataIf {
     bool _return = false;
     return _return;
   }
-  void getAllWorkflows(std::vector<std::string> & /* _return */) {
+  void getAllWorkflows(std::vector<std::string> & /* _return */, const std::string& /* gatewayId */) {
     return;
   }
   void getWorkflow( ::Workflow& /* _return */, const std::string& /* workflowTemplateId */) {
@@ -542,7 +542,7 @@ class AiravataNull : virtual public AiravataIf {
   void deleteWorkflow(const std::string& /* workflowTemplateId */) {
     return;
   }
-  void registerWorkflow(std::string& /* _return */, const  ::Workflow& /* workflow */) {
+  void registerWorkflow(std::string& /* _return */, const std::string& /* gatewayId */, const  ::Workflow& /* workflow */) {
     return;
   }
   void updateWorkflow(const std::string& /* workflowTemplateId */, const  ::Workflow& /* workflow */) {
@@ -1871,12 +1871,17 @@ class Airavata_getAllUserSSHPubKeys_presult {
 class Airavata_createProject_args {
  public:
 
-  Airavata_createProject_args() {
+  Airavata_createProject_args() : gatewayId() {
   }
 
   virtual ~Airavata_createProject_args() throw() {}
 
+  std::string gatewayId;
    ::apache::airavata::model::workspace::Project project;
+
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
 
   void __set_project(const  ::apache::airavata::model::workspace::Project& val) {
     project = val;
@@ -1884,6 +1889,8 @@ class Airavata_createProject_args {
 
   bool operator == (const Airavata_createProject_args & rhs) const
   {
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
     if (!(project == rhs.project))
       return false;
     return true;
@@ -1906,6 +1913,7 @@ class Airavata_createProject_pargs {
 
   virtual ~Airavata_createProject_pargs() throw() {}
 
+  const std::string* gatewayId;
   const  ::apache::airavata::model::workspace::Project* project;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -2285,12 +2293,17 @@ class Airavata_getProject_presult {
 class Airavata_getAllUserProjects_args {
  public:
 
-  Airavata_getAllUserProjects_args() : userName() {
+  Airavata_getAllUserProjects_args() : gatewayId(), userName() {
   }
 
   virtual ~Airavata_getAllUserProjects_args() throw() {}
 
+  std::string gatewayId;
   std::string userName;
+
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
 
   void __set_userName(const std::string& val) {
     userName = val;
@@ -2298,6 +2311,8 @@ class Airavata_getAllUserProjects_args {
 
   bool operator == (const Airavata_getAllUserProjects_args & rhs) const
   {
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
     if (!(userName == rhs.userName))
       return false;
     return true;
@@ -2320,6 +2335,7 @@ class Airavata_getAllUserProjects_pargs {
 
   virtual ~Airavata_getAllUserProjects_pargs() throw() {}
 
+  const std::string* gatewayId;
   const std::string* userName;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -2417,13 +2433,18 @@ class Airavata_getAllUserProjects_presult {
 class Airavata_searchProjectsByProjectName_args {
  public:
 
-  Airavata_searchProjectsByProjectName_args() : userName(), projectName() {
+  Airavata_searchProjectsByProjectName_args() : gatewayId(), userName(), projectName() {
   }
 
   virtual ~Airavata_searchProjectsByProjectName_args() throw() {}
 
+  std::string gatewayId;
   std::string userName;
   std::string projectName;
+
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
 
   void __set_userName(const std::string& val) {
     userName = val;
@@ -2435,6 +2456,8 @@ class Airavata_searchProjectsByProjectName_args {
 
   bool operator == (const Airavata_searchProjectsByProjectName_args & rhs) const
   {
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
     if (!(userName == rhs.userName))
       return false;
     if (!(projectName == rhs.projectName))
@@ -2459,6 +2482,7 @@ class Airavata_searchProjectsByProjectName_pargs {
 
   virtual ~Airavata_searchProjectsByProjectName_pargs() throw() {}
 
+  const std::string* gatewayId;
   const std::string* userName;
   const std::string* projectName;
 
@@ -2557,13 +2581,18 @@ class Airavata_searchProjectsByProjectName_presult {
 class Airavata_searchProjectsByProjectDesc_args {
  public:
 
-  Airavata_searchProjectsByProjectDesc_args() : userName(), description() {
+  Airavata_searchProjectsByProjectDesc_args() : gatewayId(), userName(), description() {
   }
 
   virtual ~Airavata_searchProjectsByProjectDesc_args() throw() {}
 
+  std::string gatewayId;
   std::string userName;
   std::string description;
+
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
 
   void __set_userName(const std::string& val) {
     userName = val;
@@ -2575,6 +2604,8 @@ class Airavata_searchProjectsByProjectDesc_args {
 
   bool operator == (const Airavata_searchProjectsByProjectDesc_args & rhs) const
   {
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
     if (!(userName == rhs.userName))
       return false;
     if (!(description == rhs.description))
@@ -2599,6 +2630,7 @@ class Airavata_searchProjectsByProjectDesc_pargs {
 
   virtual ~Airavata_searchProjectsByProjectDesc_pargs() throw() {}
 
+  const std::string* gatewayId;
   const std::string* userName;
   const std::string* description;
 
@@ -2697,13 +2729,18 @@ class Airavata_searchProjectsByProjectDesc_presult {
 class Airavata_searchExperimentsByName_args {
  public:
 
-  Airavata_searchExperimentsByName_args() : userName(), expName() {
+  Airavata_searchExperimentsByName_args() : gatewayId(), userName(), expName() {
   }
 
   virtual ~Airavata_searchExperimentsByName_args() throw() {}
 
+  std::string gatewayId;
   std::string userName;
   std::string expName;
+
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
 
   void __set_userName(const std::string& val) {
     userName = val;
@@ -2715,6 +2752,8 @@ class Airavata_searchExperimentsByName_args {
 
   bool operator == (const Airavata_searchExperimentsByName_args & rhs) const
   {
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
     if (!(userName == rhs.userName))
       return false;
     if (!(expName == rhs.expName))
@@ -2739,6 +2778,7 @@ class Airavata_searchExperimentsByName_pargs {
 
   virtual ~Airavata_searchExperimentsByName_pargs() throw() {}
 
+  const std::string* gatewayId;
   const std::string* userName;
   const std::string* expName;
 
@@ -2837,13 +2877,18 @@ class Airavata_searchExperimentsByName_presult {
 class Airavata_searchExperimentsByDesc_args {
  public:
 
-  Airavata_searchExperimentsByDesc_args() : userName(), description() {
+  Airavata_searchExperimentsByDesc_args() : gatewayId(), userName(), description() {
   }
 
   virtual ~Airavata_searchExperimentsByDesc_args() throw() {}
 
+  std::string gatewayId;
   std::string userName;
   std::string description;
+
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
 
   void __set_userName(const std::string& val) {
     userName = val;
@@ -2855,6 +2900,8 @@ class Airavata_searchExperimentsByDesc_args {
 
   bool operator == (const Airavata_searchExperimentsByDesc_args & rhs) const
   {
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
     if (!(userName == rhs.userName))
       return false;
     if (!(description == rhs.description))
@@ -2879,6 +2926,7 @@ class Airavata_searchExperimentsByDesc_pargs {
 
   virtual ~Airavata_searchExperimentsByDesc_pargs() throw() {}
 
+  const std::string* gatewayId;
   const std::string* userName;
   const std::string* description;
 
@@ -2977,13 +3025,18 @@ class Airavata_searchExperimentsByDesc_presult {
 class Airavata_searchExperimentsByApplication_args {
  public:
 
-  Airavata_searchExperimentsByApplication_args() : userName(), applicationId() {
+  Airavata_searchExperimentsByApplication_args() : gatewayId(), userName(), applicationId() {
   }
 
   virtual ~Airavata_searchExperimentsByApplication_args() throw() {}
 
+  std::string gatewayId;
   std::string userName;
   std::string applicationId;
+
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
 
   void __set_userName(const std::string& val) {
     userName = val;
@@ -2995,6 +3048,8 @@ class Airavata_searchExperimentsByApplication_args {
 
   bool operator == (const Airavata_searchExperimentsByApplication_args & rhs) const
   {
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
     if (!(userName == rhs.userName))
       return false;
     if (!(applicationId == rhs.applicationId))
@@ -3019,6 +3074,7 @@ class Airavata_searchExperimentsByApplication_pargs {
 
   virtual ~Airavata_searchExperimentsByApplication_pargs() throw() {}
 
+  const std::string* gatewayId;
   const std::string* userName;
   const std::string* applicationId;
 
@@ -3117,13 +3173,18 @@ class Airavata_searchExperimentsByApplication_presult {
 class Airavata_searchExperimentsByStatus_args {
  public:
 
-  Airavata_searchExperimentsByStatus_args() : userName(), experimentState(( ::apache::airavata::model::workspace::experiment::ExperimentState::type)0) {
+  Airavata_searchExperimentsByStatus_args() : gatewayId(), userName(), experimentState(( ::apache::airavata::model::workspace::experiment::ExperimentState::type)0) {
   }
 
   virtual ~Airavata_searchExperimentsByStatus_args() throw() {}
 
+  std::string gatewayId;
   std::string userName;
    ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState;
+
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
 
   void __set_userName(const std::string& val) {
     userName = val;
@@ -3135,6 +3196,8 @@ class Airavata_searchExperimentsByStatus_args {
 
   bool operator == (const Airavata_searchExperimentsByStatus_args & rhs) const
   {
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
     if (!(userName == rhs.userName))
       return false;
     if (!(experimentState == rhs.experimentState))
@@ -3159,6 +3222,7 @@ class Airavata_searchExperimentsByStatus_pargs {
 
   virtual ~Airavata_searchExperimentsByStatus_pargs() throw() {}
 
+  const std::string* gatewayId;
   const std::string* userName;
   const  ::apache::airavata::model::workspace::experiment::ExperimentState::type* experimentState;
 
@@ -3257,14 +3321,19 @@ class Airavata_searchExperimentsByStatus_presult {
 class Airavata_searchExperimentsByCreationTime_args {
  public:
 
-  Airavata_searchExperimentsByCreationTime_args() : userName(), fromTime(0), toTime(0) {
+  Airavata_searchExperimentsByCreationTime_args() : gatewayId(), userName(), fromTime(0), toTime(0) {
   }
 
   virtual ~Airavata_searchExperimentsByCreationTime_args() throw() {}
 
+  std::string gatewayId;
   std::string userName;
   int64_t fromTime;
   int64_t toTime;
+
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
 
   void __set_userName(const std::string& val) {
     userName = val;
@@ -3280,6 +3349,8 @@ class Airavata_searchExperimentsByCreationTime_args {
 
   bool operator == (const Airavata_searchExperimentsByCreationTime_args & rhs) const
   {
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
     if (!(userName == rhs.userName))
       return false;
     if (!(fromTime == rhs.fromTime))
@@ -3306,6 +3377,7 @@ class Airavata_searchExperimentsByCreationTime_pargs {
 
   virtual ~Airavata_searchExperimentsByCreationTime_pargs() throw() {}
 
+  const std::string* gatewayId;
   const std::string* userName;
   const int64_t* fromTime;
   const int64_t* toTime;
@@ -3547,12 +3619,17 @@ class Airavata_getAllExperimentsInProject_presult {
 class Airavata_getAllUserExperiments_args {
  public:
 
-  Airavata_getAllUserExperiments_args() : userName() {
+  Airavata_getAllUserExperiments_args() : gatewayId(), userName() {
   }
 
   virtual ~Airavata_getAllUserExperiments_args() throw() {}
 
+  std::string gatewayId;
   std::string userName;
+
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
 
   void __set_userName(const std::string& val) {
     userName = val;
@@ -3560,6 +3637,8 @@ class Airavata_getAllUserExperiments_args {
 
   bool operator == (const Airavata_getAllUserExperiments_args & rhs) const
   {
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
     if (!(userName == rhs.userName))
       return false;
     return true;
@@ -3582,6 +3661,7 @@ class Airavata_getAllUserExperiments_pargs {
 
   virtual ~Airavata_getAllUserExperiments_pargs() throw() {}
 
+  const std::string* gatewayId;
   const std::string* userName;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -3679,12 +3759,17 @@ class Airavata_getAllUserExperiments_presult {
 class Airavata_createExperiment_args {
  public:
 
-  Airavata_createExperiment_args() {
+  Airavata_createExperiment_args() : gatewayId() {
   }
 
   virtual ~Airavata_createExperiment_args() throw() {}
 
+  std::string gatewayId;
    ::apache::airavata::model::workspace::experiment::Experiment experiment;
+
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
 
   void __set_experiment(const  ::apache::airavata::model::workspace::experiment::Experiment& val) {
     experiment = val;
@@ -3692,6 +3777,8 @@ class Airavata_createExperiment_args {
 
   bool operator == (const Airavata_createExperiment_args & rhs) const
   {
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
     if (!(experiment == rhs.experiment))
       return false;
     return true;
@@ -3714,6 +3801,7 @@ class Airavata_createExperiment_pargs {
 
   virtual ~Airavata_createExperiment_pargs() throw() {}
 
+  const std::string* gatewayId;
   const  ::apache::airavata::model::workspace::experiment::Experiment* experiment;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -5712,12 +5800,17 @@ class Airavata_terminateExperiment_presult {
 class Airavata_registerApplicationModule_args {
  public:
 
-  Airavata_registerApplicationModule_args() {
+  Airavata_registerApplicationModule_args() : gatewayId() {
   }
 
   virtual ~Airavata_registerApplicationModule_args() throw() {}
 
+  std::string gatewayId;
    ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule applicationModule;
+
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
 
   void __set_applicationModule(const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& val) {
     applicationModule = val;
@@ -5725,6 +5818,8 @@ class Airavata_registerApplicationModule_args {
 
   bool operator == (const Airavata_registerApplicationModule_args & rhs) const
   {
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
     if (!(applicationModule == rhs.applicationModule))
       return false;
     return true;
@@ -5747,6 +5842,7 @@ class Airavata_registerApplicationModule_pargs {
 
   virtual ~Airavata_registerApplicationModule_pargs() throw() {}
 
+  const std::string* gatewayId;
   const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule* applicationModule;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -6116,14 +6212,21 @@ class Airavata_updateApplicationModule_presult {
 class Airavata_getAllAppModules_args {
  public:
 
-  Airavata_getAllAppModules_args() {
+  Airavata_getAllAppModules_args() : gatewayId() {
   }
 
   virtual ~Airavata_getAllAppModules_args() throw() {}
 
+  std::string gatewayId;
 
-  bool operator == (const Airavata_getAllAppModules_args & /* rhs */) const
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
+
+  bool operator == (const Airavata_getAllAppModules_args & rhs) const
   {
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
     return true;
   }
   bool operator != (const Airavata_getAllAppModules_args &rhs) const {
@@ -6144,6 +6247,7 @@ class Airavata_getAllAppModules_pargs {
 
   virtual ~Airavata_getAllAppModules_pargs() throw() {}
 
+  const std::string* gatewayId;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -6372,12 +6476,17 @@ class Airavata_deleteApplicationModule_presult {
 class Airavata_registerApplicationDeployment_args {
  public:
 
-  Airavata_registerApplicationDeployment_args() {
+  Airavata_registerApplicationDeployment_args() : gatewayId() {
   }
 
   virtual ~Airavata_registerApplicationDeployment_args() throw() {}
 
+  std::string gatewayId;
    ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription applicationDeployment;
+
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
 
   void __set_applicationDeployment(const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& val) {
     applicationDeployment = val;
@@ -6385,6 +6494,8 @@ class Airavata_registerApplicationDeployment_args {
 
   bool operator == (const Airavata_registerApplicationDeployment_args & rhs) const
   {
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
     if (!(applicationDeployment == rhs.applicationDeployment))
       return false;
     return true;
@@ -6407,6 +6518,7 @@ class Airavata_registerApplicationDeployment_pargs {
 
   virtual ~Airavata_registerApplicationDeployment_pargs() throw() {}
 
+  const std::string* gatewayId;
   const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription* applicationDeployment;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -6908,14 +7020,21 @@ class Airavata_deleteApplicationDeployment_presult {
 class Airavata_getAllApplicationDeployments_args {
  public:
 
-  Airavata_getAllApplicationDeployments_args() {
+  Airavata_getAllApplicationDeployments_args() : gatewayId() {
   }
 
   virtual ~Airavata_getAllApplicationDeployments_args() throw() {}
 
+  std::string gatewayId;
 
-  bool operator == (const Airavata_getAllApplicationDeployments_args & /* rhs */) const
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
+
+  bool operator == (const Airavata_getAllApplicationDeployments_args & rhs) const
   {
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
     return true;
   }
   bool operator != (const Airavata_getAllApplicationDeployments_args &rhs) const {
@@ -6936,6 +7055,7 @@ class Airavata_getAllApplicationDeployments_pargs {
 
   virtual ~Airavata_getAllApplicationDeployments_pargs() throw() {}
 
+  const std::string* gatewayId;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -7164,12 +7284,17 @@ class Airavata_getAppModuleDeployedResources_presult {
 class Airavata_registerApplicationInterface_args {
  public:
 
-  Airavata_registerApplicationInterface_args() {
+  Airavata_registerApplicationInterface_args() : gatewayId() {
   }
 
   virtual ~Airavata_registerApplicationInterface_args() throw() {}
 
+  std::string gatewayId;
    ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription applicationInterface;
+
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
 
   void __set_applicationInterface(const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& val) {
     applicationInterface = val;
@@ -7177,6 +7302,8 @@ class Airavata_registerApplicationInterface_args {
 
   bool operator == (const Airavata_registerApplicationInterface_args & rhs) const
   {
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
     if (!(applicationInterface == rhs.applicationInterface))
       return false;
     return true;
@@ -7199,6 +7326,7 @@ class Airavata_registerApplicationInterface_pargs {
 
   virtual ~Airavata_registerApplicationInterface_pargs() throw() {}
 
+  const std::string* gatewayId;
   const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription* applicationInterface;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -7700,14 +7828,21 @@ class Airavata_deleteApplicationInterface_presult {
 class Airavata_getAllApplicationInterfaceNames_args {
  public:
 
-  Airavata_getAllApplicationInterfaceNames_args() {
+  Airavata_getAllApplicationInterfaceNames_args() : gatewayId() {
   }
 
   virtual ~Airavata_getAllApplicationInterfaceNames_args() throw() {}
 
+  std::string gatewayId;
 
-  bool operator == (const Airavata_getAllApplicationInterfaceNames_args & /* rhs */) const
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
+
+  bool operator == (const Airavata_getAllApplicationInterfaceNames_args & rhs) const
   {
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
     return true;
   }
   bool operator != (const Airavata_getAllApplicationInterfaceNames_args &rhs) const {
@@ -7728,6 +7863,7 @@ class Airavata_getAllApplicationInterfaceNames_pargs {
 
   virtual ~Airavata_getAllApplicationInterfaceNames_pargs() throw() {}
 
+  const std::string* gatewayId;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -7824,14 +7960,21 @@ class Airavata_getAllApplicationInterfaceNames_presult {
 class Airavata_getAllApplicationInterfaces_args {
  public:
 
-  Airavata_getAllApplicationInterfaces_args() {
+  Airavata_getAllApplicationInterfaces_args() : gatewayId() {
   }
 
   virtual ~Airavata_getAllApplicationInterfaces_args() throw() {}
 
+  std::string gatewayId;
 
-  bool operator == (const Airavata_getAllApplicationInterfaces_args & /* rhs */) const
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
+
+  bool operator == (const Airavata_getAllApplicationInterfaces_args & rhs) const
   {
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
     return true;
   }
   bool operator != (const Airavata_getAllApplicationInterfaces_args &rhs) const {
@@ -7852,6 +7995,7 @@ class Airavata_getAllApplicationInterfaces_pargs {
 
   virtual ~Airavata_getAllApplicationInterfaces_pargs() throw() {}
 
+  const std::string* gatewayId;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -15232,14 +15376,21 @@ class Airavata_deleteGatewayComputeResourcePreference_presult {
 class Airavata_getAllWorkflows_args {
  public:
 
-  Airavata_getAllWorkflows_args() {
+  Airavata_getAllWorkflows_args() : gatewayId() {
   }
 
   virtual ~Airavata_getAllWorkflows_args() throw() {}
 
+  std::string gatewayId;
 
-  bool operator == (const Airavata_getAllWorkflows_args & /* rhs */) const
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
+
+  bool operator == (const Airavata_getAllWorkflows_args & rhs) const
   {
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
     return true;
   }
   bool operator != (const Airavata_getAllWorkflows_args &rhs) const {
@@ -15260,6 +15411,7 @@ class Airavata_getAllWorkflows_pargs {
 
   virtual ~Airavata_getAllWorkflows_pargs() throw() {}
 
+  const std::string* gatewayId;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -15610,12 +15762,17 @@ class Airavata_deleteWorkflow_presult {
 class Airavata_registerWorkflow_args {
  public:
 
-  Airavata_registerWorkflow_args() {
+  Airavata_registerWorkflow_args() : gatewayId() {
   }
 
   virtual ~Airavata_registerWorkflow_args() throw() {}
 
+  std::string gatewayId;
    ::Workflow workflow;
+
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
 
   void __set_workflow(const  ::Workflow& val) {
     workflow = val;
@@ -15623,6 +15780,8 @@ class Airavata_registerWorkflow_args {
 
   bool operator == (const Airavata_registerWorkflow_args & rhs) const
   {
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
     if (!(workflow == rhs.workflow))
       return false;
     return true;
@@ -15645,6 +15804,7 @@ class Airavata_registerWorkflow_pargs {
 
   virtual ~Airavata_registerWorkflow_pargs() throw() {}
 
+  const std::string* gatewayId;
   const  ::Workflow* workflow;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -16182,8 +16342,8 @@ class AiravataClient : virtual public AiravataIf {
   void getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const std::string& userName);
   void send_getAllUserSSHPubKeys(const std::string& userName);
   void recv_getAllUserSSHPubKeys(std::map<std::string, std::string> & _return);
-  void createProject(std::string& _return, const  ::apache::airavata::model::workspace::Project& project);
-  void send_createProject(const  ::apache::airavata::model::workspace::Project& project);
+  void createProject(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project);
+  void send_createProject(const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project);
   void recv_createProject(std::string& _return);
   void updateProject(const std::string& projectId, const  ::apache::airavata::model::workspace::Project& updatedProject);
   void send_updateProject(const std::string& projectId, const  ::apache::airavata::model::workspace::Project& updatedProject);
@@ -16191,38 +16351,38 @@ class AiravataClient : virtual public AiravataIf {
   void getProject( ::apache::airavata::model::workspace::Project& _return, const std::string& projectId);
   void send_getProject(const std::string& projectId);
   void recv_getProject( ::apache::airavata::model::workspace::Project& _return);
-  void getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& userName);
-  void send_getAllUserProjects(const std::string& userName);
+  void getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName);
+  void send_getAllUserProjects(const std::string& gatewayId, const std::string& userName);
   void recv_getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return);
-  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& userName, const std::string& projectName);
-  void send_searchProjectsByProjectName(const std::string& userName, const std::string& projectName);
+  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& projectName);
+  void send_searchProjectsByProjectName(const std::string& gatewayId, const std::string& userName, const std::string& projectName);
   void recv_searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return);
-  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& userName, const std::string& description);
-  void send_searchProjectsByProjectDesc(const std::string& userName, const std::string& description);
+  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description);
+  void send_searchProjectsByProjectDesc(const std::string& gatewayId, const std::string& userName, const std::string& description);
   void recv_searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return);
-  void searchExperimentsByName(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const std::string& expName);
-  void send_searchExperimentsByName(const std::string& userName, const std::string& expName);
+  void searchExperimentsByName(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& expName);
+  void send_searchExperimentsByName(const std::string& gatewayId, const std::string& userName, const std::string& expName);
   void recv_searchExperimentsByName(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return);
-  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const std::string& description);
-  void send_searchExperimentsByDesc(const std::string& userName, const std::string& description);
+  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description);
+  void send_searchExperimentsByDesc(const std::string& gatewayId, const std::string& userName, const std::string& description);
   void recv_searchExperimentsByDesc(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return);
-  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const std::string& applicationId);
-  void send_searchExperimentsByApplication(const std::string& userName, const std::string& applicationId);
+  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& applicationId);
+  void send_searchExperimentsByApplication(const std::string& gatewayId, const std::string& userName, const std::string& applicationId);
   void recv_searchExperimentsByApplication(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return);
-  void searchExperimentsByStatus(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState);
-  void send_searchExperimentsByStatus(const std::string& userName, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState);
+  void searchExperimentsByStatus(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState);
+  void send_searchExperimentsByStatus(const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState);
   void recv_searchExperimentsByStatus(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return);
-  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const int64_t fromTime, const int64_t toTime);
-  void send_searchExperimentsByCreationTime(const std::string& userName, const int64_t fromTime, const int64_t toTime);
+  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime);
+  void send_searchExperimentsByCreationTime(const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime);
   void recv_searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return);
   void getAllExperimentsInProject(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& projectId);
   void send_getAllExperimentsInProject(const std::string& projectId);
   void recv_getAllExperimentsInProject(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return);
-  void getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& userName);
-  void send_getAllUserExperiments(const std::string& userName);
+  void getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& gatewayId, const std::string& userName);
+  void send_getAllUserExperiments(const std::string& gatewayId, const std::string& userName);
   void recv_getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return);
-  void createExperiment(std::string& _return, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment);
-  void send_createExperiment(const  ::apache::airavata::model::workspace::experiment::Experiment& experiment);
+  void createExperiment(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment);
+  void send_createExperiment(const std::string& gatewayId, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment);
   void recv_createExperiment(std::string& _return);
   void getExperiment( ::apache::airavata::model::workspace::experiment::Experiment& _return, const std::string& airavataExperimentId);
   void send_getExperiment(const std::string& airavataExperimentId);
@@ -16266,8 +16426,8 @@ class AiravataClient : virtual public AiravataIf {
   void terminateExperiment(const std::string& airavataExperimentId);
   void send_terminateExperiment(const std::string& airavataExperimentId);
   void recv_terminateExperiment();
-  void registerApplicationModule(std::string& _return, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule);
-  void send_registerApplicationModule(const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule);
+  void registerApplicationModule(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule);
+  void send_registerApplicationModule(const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule);
   void recv_registerApplicationModule(std::string& _return);
   void getApplicationModule( ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& _return, const std::string& appModuleId);
   void send_getApplicationModule(const std::string& appModuleId);
@@ -16275,14 +16435,14 @@ class AiravataClient : virtual public AiravataIf {
   bool updateApplicationModule(const std::string& appModuleId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule);
   void send_updateApplicationModule(const std::string& appModuleId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule);
   bool recv_updateApplicationModule();
-  void getAllAppModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return);
-  void send_getAllAppModules();
+  void getAllAppModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return, const std::string& gatewayId);
+  void send_getAllAppModules(const std::string& gatewayId);
   void recv_getAllAppModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return);
   bool deleteApplicationModule(const std::string& appModuleId);
   void send_deleteApplicationModule(const std::string& appModuleId);
   bool recv_deleteApplicationModule();
-  void registerApplicationDeployment(std::string& _return, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment);
-  void send_registerApplicationDeployment(const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment);
+  void registerApplicationDeployment(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment);
+  void send_registerApplicationDeployment(const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment);
   void recv_registerApplicationDeployment(std::string& _return);
   void getApplicationDeployment( ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& _return, const std::string& appDeploymentId);
   void send_getApplicationDeployment(const std::string& appDeploymentId);
@@ -16293,14 +16453,14 @@ class AiravataClient : virtual public AiravataIf {
   bool deleteApplicationDeployment(const std::string& appDeploymentId);
   void send_deleteApplicationDeployment(const std::string& appDeploymentId);
   bool recv_deleteApplicationDeployment();
-  void getAllApplicationDeployments(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> & _return);
-  void send_getAllApplicationDeployments();
+  void getAllApplicationDeployments(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> & _return, const std::string& gatewayId);
+  void send_getAllApplicationDeployments(const std::string& gatewayId);
   void recv_getAllApplicationDeployments(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> & _return);
   void getAppModuleDeployedResources(std::vector<std::string> & _return, const std::string& appModuleId);
   void send_getAppModuleDeployedResources(const std::string& appModuleId);
   void recv_getAppModuleDeployedResources(std::vector<std::string> & _return);
-  void registerApplicationInterface(std::string& _return, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface);
-  void send_registerApplicationInterface(const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface);
+  void registerApplicationInterface(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface);
+  void send_registerApplicationInterface(const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface);
   void recv_registerApplicationInterface(std::string& _return);
   void getApplicationInterface( ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& _return, const std::string& appInterfaceId);
   void send_getApplicationInterface(const std::string& appInterfaceId);
@@ -16311,11 +16471,11 @@ class AiravataClient : virtual public AiravataIf {
   bool deleteApplicationInterface(const std::string& appInterfaceId);
   void send_deleteApplicationInterface(const std::string& appInterfaceId);
   bool recv_deleteApplicationInterface();
-  void getAllApplicationInterfaceNames(std::map<std::string, std::string> & _return);
-  void send_getAllApplicationInterfaceNames();
+  void getAllApplicationInterfaceNames(std::map<std::string, std::string> & _return, const std::string& gatewayId);
+  void send_getAllApplicationInterfaceNames(const std::string& gatewayId);
   void recv_getAllApplicationInterfaceNames(std::map<std::string, std::string> & _return);
-  void getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & _return);
-  void send_getAllApplicationInterfaces();
+  void getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & _return, const std::string& gatewayId);
+  void send_getAllApplicationInterfaces(const std::string& gatewayId);
   void recv_getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & _return);
   void getApplicationInputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> & _return, const std::string& appInterfaceId);
   void send_getApplicationInputs(const std::string& appInterfaceId);
@@ -16476,8 +16636,8 @@ class AiravataClient : virtual public AiravataIf {
   bool deleteGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId);
   void send_deleteGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId);
   bool recv_deleteGatewayComputeResourcePreference();
-  void getAllWorkflows(std::vector<std::string> & _return);
-  void send_getAllWorkflows();
+  void getAllWorkflows(std::vector<std::string> & _return, const std::string& gatewayId);
+  void send_getAllWorkflows(const std::string& gatewayId);
   void recv_getAllWorkflows(std::vector<std::string> & _return);
   void getWorkflow( ::Workflow& _return, const std::string& workflowTemplateId);
   void send_getWorkflow(const std::string& workflowTemplateId);
@@ -16485,8 +16645,8 @@ class AiravataClient : virtual public AiravataIf {
   void deleteWorkflow(const std::string& workflowTemplateId);
   void send_deleteWorkflow(const std::string& workflowTemplateId);
   void recv_deleteWorkflow();
-  void registerWorkflow(std::string& _return, const  ::Workflow& workflow);
-  void send_registerWorkflow(const  ::Workflow& workflow);
+  void registerWorkflow(std::string& _return, const std::string& gatewayId, const  ::Workflow& workflow);
+  void send_registerWorkflow(const std::string& gatewayId, const  ::Workflow& workflow);
   void recv_registerWorkflow(std::string& _return);
   void updateWorkflow(const std::string& workflowTemplateId, const  ::Workflow& workflow);
   void send_updateWorkflow(const std::string& workflowTemplateId, const  ::Workflow& workflow);
@@ -16870,13 +17030,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void createProject(std::string& _return, const  ::apache::airavata::model::workspace::Project& project) {
+  void createProject(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->createProject(_return, project);
+      ifaces_[i]->createProject(_return, gatewayId, project);
     }
-    ifaces_[i]->createProject(_return, project);
+    ifaces_[i]->createProject(_return, gatewayId, project);
     return;
   }
 
@@ -16899,83 +17059,83 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& userName) {
+  void getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getAllUserProjects(_return, userName);
+      ifaces_[i]->getAllUserProjects(_return, gatewayId, userName);
     }
-    ifaces_[i]->getAllUserProjects(_return, userName);
+    ifaces_[i]->getAllUserProjects(_return, gatewayId, userName);
     return;
   }
 
-  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& userName, const std::string& projectName) {
+  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& projectName) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchProjectsByProjectName(_return, userName, projectName);
+      ifaces_[i]->searchProjectsByProjectName(_return, gatewayId, userName, projectName);
     }
-    ifaces_[i]->searchProjectsByProjectName(_return, userName, projectName);
+    ifaces_[i]->searchProjectsByProjectName(_return, gatewayId, userName, projectName);
     return;
   }
 
-  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& userName, const std::string& description) {
+  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchProjectsByProjectDesc(_return, userName, description);
+      ifaces_[i]->searchProjectsByProjectDesc(_return, gatewayId, userName, description);
     }
-    ifaces_[i]->searchProjectsByProjectDesc(_return, userName, description);
+    ifaces_[i]->searchProjectsByProjectDesc(_return, gatewayId, userName, description);
     return;
   }
 
-  void searchExperimentsByName(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const std::string& expName) {
+  void searchExperimentsByName(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& expName) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchExperimentsByName(_return, userName, expName);
+      ifaces_[i]->searchExperimentsByName(_return, gatewayId, userName, expName);
     }
-    ifaces_[i]->searchExperimentsByName(_return, userName, expName);
+    ifaces_[i]->searchExperimentsByName(_return, gatewayId, userName, expName);
     return;
   }
 
-  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const std::string& description) {
+  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchExperimentsByDesc(_return, userName, description);
+      ifaces_[i]->searchExperimentsByDesc(_return, gatewayId, userName, description);
     }
-    ifaces_[i]->searchExperimentsByDesc(_return, userName, description);
+    ifaces_[i]->searchExperimentsByDesc(_return, gatewayId, userName, description);
     return;
   }
 
-  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const std::string& applicationId) {
+  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& applicationId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchExperimentsByApplication(_return, userName, applicationId);
+      ifaces_[i]->searchExperimentsByApplication(_return, gatewayId, userName, applicationId);
     }
-    ifaces_[i]->searchExperimentsByApplication(_return, userName, applicationId);
+    ifaces_[i]->searchExperimentsByApplication(_return, gatewayId, userName, applicationId);
     return;
   }
 
-  void searchExperimentsByStatus(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState) {
+  void searchExperimentsByStatus(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchExperimentsByStatus(_return, userName, experimentState);
+      ifaces_[i]->searchExperimentsByStatus(_return, gatewayId, userName, experimentState);
     }
-    ifaces_[i]->searchExperimentsByStatus(_return, userName, experimentState);
+    ifaces_[i]->searchExperimentsByStatus(_return, gatewayId, userName, experimentState);
     return;
   }
 
-  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const int64_t fromTime, const int64_t toTime) {
+  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->searchExperimentsByCreationTime(_return, userName, fromTime, toTime);
+      ifaces_[i]->searchExperimentsByCreationTime(_return, gatewayId, userName, fromTime, toTime);
     }
-    ifaces_[i]->searchExperimentsByCreationTime(_return, userName, fromTime, toTime);
+    ifaces_[i]->searchExperimentsByCreationTime(_return, gatewayId, userName, fromTime, toTime);
     return;
   }
 
@@ -16989,23 +17149,23 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& userName) {
+  void getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& gatewayId, const std::string& userName) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getAllUserExperiments(_return, userName);
+      ifaces_[i]->getAllUserExperiments(_return, gatewayId, userName);
     }
-    ifaces_[i]->getAllUserExperiments(_return, userName);
+    ifaces_[i]->getAllUserExperiments(_return, gatewayId, userName);
     return;
   }
 
-  void createExperiment(std::string& _return, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment) {
+  void createExperiment(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->createExperiment(_return, experiment);
+      ifaces_[i]->createExperiment(_return, gatewayId, experiment);
     }
-    ifaces_[i]->createExperiment(_return, experiment);
+    ifaces_[i]->createExperiment(_return, gatewayId, experiment);
     return;
   }
 
@@ -17143,13 +17303,13 @@ class AiravataMultiface : virtual public AiravataIf {
     ifaces_[i]->terminateExperiment(airavataExperimentId);
   }
 
-  void registerApplicationModule(std::string& _return, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) {
+  void registerApplicationModule(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->registerApplicationModule(_return, applicationModule);
+      ifaces_[i]->registerApplicationModule(_return, gatewayId, applicationModule);
     }
-    ifaces_[i]->registerApplicationModule(_return, applicationModule);
+    ifaces_[i]->registerApplicationModule(_return, gatewayId, applicationModule);
     return;
   }
 
@@ -17172,13 +17332,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->updateApplicationModule(appModuleId, applicationModule);
   }
 
-  void getAllAppModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return) {
+  void getAllAppModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return, const std::string& gatewayId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getAllAppModules(_return);
+      ifaces_[i]->getAllAppModules(_return, gatewayId);
     }
-    ifaces_[i]->getAllAppModules(_return);
+    ifaces_[i]->getAllAppModules(_return, gatewayId);
     return;
   }
 
@@ -17191,13 +17351,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->deleteApplicationModule(appModuleId);
   }
 
-  void registerApplicationDeployment(std::string& _return, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment) {
+  void registerApplicationDeployment(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->registerApplicationDeployment(_return, applicationDeployment);
+      ifaces_[i]->registerApplicationDeployment(_return, gatewayId, applicationDeployment);
     }
-    ifaces_[i]->registerApplicationDeployment(_return, applicationDeployment);
+    ifaces_[i]->registerApplicationDeployment(_return, gatewayId, applicationDeployment);
     return;
   }
 
@@ -17229,13 +17389,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->deleteApplicationDeployment(appDeploymentId);
   }
 
-  void getAllApplicationDeployments(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> & _return) {
+  void getAllApplicationDeployments(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> & _return, const std::string& gatewayId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getAllApplicationDeployments(_return);
+      ifaces_[i]->getAllApplicationDeployments(_return, gatewayId);
     }
-    ifaces_[i]->getAllApplicationDeployments(_return);
+    ifaces_[i]->getAllApplicationDeployments(_return, gatewayId);
     return;
   }
 
@@ -17249,13 +17409,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void registerApplicationInterface(std::string& _return, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface) {
+  void registerApplicationInterface(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->registerApplicationInterface(_return, applicationInterface);
+      ifaces_[i]->registerApplicationInterface(_return, gatewayId, applicationInterface);
     }
-    ifaces_[i]->registerApplicationInterface(_return, applicationInterface);
+    ifaces_[i]->registerApplicationInterface(_return, gatewayId, applicationInterface);
     return;
   }
 
@@ -17287,23 +17447,23 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->deleteApplicationInterface(appInterfaceId);
   }
 
-  void getAllApplicationInterfaceNames(std::map<std::string, std::string> & _return) {
+  void getAllApplicationInterfaceNames(std::map<std::string, std::string> & _return, const std::string& gatewayId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getAllApplicationInterfaceNames(_return);
+      ifaces_[i]->getAllApplicationInterfaceNames(_return, gatewayId);
     }
-    ifaces_[i]->getAllApplicationInterfaceNames(_return);
+    ifaces_[i]->getAllApplicationInterfaceNames(_return, gatewayId);
     return;
   }
 
-  void getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & _return) {
+  void getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & _return, const std::string& gatewayId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getAllApplicationInterfaces(_return);
+      ifaces_[i]->getAllApplicationInterfaces(_return, gatewayId);
     }
-    ifaces_[i]->getAllApplicationInterfaces(_return);
+    ifaces_[i]->getAllApplicationInterfaces(_return, gatewayId);
     return;
   }
 
@@ -17813,13 +17973,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return ifaces_[i]->deleteGatewayComputeResourcePreference(gatewayID, computeResourceId);
   }
 
-  void getAllWorkflows(std::vector<std::string> & _return) {
+  void getAllWorkflows(std::vector<std::string> & _return, const std::string& gatewayId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getAllWorkflows(_return);
+      ifaces_[i]->getAllWorkflows(_return, gatewayId);
     }
-    ifaces_[i]->getAllWorkflows(_return);
+    ifaces_[i]->getAllWorkflows(_return, gatewayId);
     return;
   }
 
@@ -17842,13 +18002,13 @@ class AiravataMultiface : virtual public AiravataIf {
     ifaces_[i]->deleteWorkflow(workflowTemplateId);
   }
 
-  void registerWorkflow(std::string& _return, const  ::Workflow& workflow) {
+  void registerWorkflow(std::string& _return, const std::string& gatewayId, const  ::Workflow& workflow) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->registerWorkflow(_return, workflow);
+      ifaces_[i]->registerWorkflow(_return, gatewayId, workflow);
     }
-    ifaces_[i]->registerWorkflow(_return, workflow);
+    ifaces_[i]->registerWorkflow(_return, gatewayId, workflow);
     return;
   }
 
