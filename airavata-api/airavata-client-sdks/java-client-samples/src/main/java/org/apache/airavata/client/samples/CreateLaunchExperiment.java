@@ -179,7 +179,7 @@ public class CreateLaunchExperiment {
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
-            String projectId = client.createProject(project);
+            String projectId = client.createProject(DEFAULT_GATEWAY, project);
 
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho3", echoAppId, exInputs);
@@ -196,7 +196,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(simpleExperiment);
+                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -272,7 +272,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setAdvanceOutputDataHandling(dataHandling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
                         
-                        return client.createExperiment(simpleExperiment);
+                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -333,7 +333,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setAdvanceOutputDataHandling(dataHandling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
                         
-                        return client.createExperiment(simpleExperiment);
+                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -410,7 +410,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(simpleExperiment);
+                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -497,7 +497,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(simpleExperiment);
+                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -595,7 +595,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(simpleExperiment);
+                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -668,7 +668,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(simpleExperiment);
+                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -727,7 +727,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(simpleExperiment);
+                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -780,7 +780,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(simpleExperiment);
+                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -905,7 +905,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(simpleExperiment);
+                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -979,7 +979,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(simpleExperiment);
+                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -1038,7 +1038,7 @@ public class CreateLaunchExperiment {
             exOut.add(output);
 
             Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
-            String projectId = client.createProject(project);
+            String projectId = client.createProject(DEFAULT_GATEWAY, project);
 
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "Echo Test", echoAppId, exInputs);
@@ -1055,7 +1055,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(simpleExperiment);
+                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -1132,7 +1132,7 @@ public class CreateLaunchExperiment {
 			List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
-            String projectId = client.createProject(project);
+            String projectId = client.createProject(DEFAULT_GATEWAY, project);
 
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho3", echoAppId, exInputs);
@@ -1149,7 +1149,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(simpleExperiment);
+                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -1256,7 +1256,7 @@ public class CreateLaunchExperiment {
             exOut.add(output);
 
             Project project = ProjectModelUtil.createProject("default", "lahiru", "test project");
-            String projectId = client.createProject(project);
+            String projectId = client.createProject(DEFAULT_GATEWAY, project);
 
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment(projectId, "lahiru", "sshEchoExperiment", "SimpleEchoBR", echoAppId, exInputs);
@@ -1273,7 +1273,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(simpleExperiment);
+                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -1319,7 +1319,7 @@ public class CreateLaunchExperiment {
 			List<OutputDataObjectType> exOut = client.getApplicationOutputs(amberAppId);
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
-            String projectId = client.createProject(project);
+            String projectId = client.createProject(DEFAULT_GATEWAY, project);
 
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "sshEchoExperiment", "SimpleEchoBR", amberAppId, exInputs);
@@ -1337,7 +1337,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(simpleExperiment);
+                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -1384,7 +1384,7 @@ public class CreateLaunchExperiment {
 
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
-            String projectId = client.createProject(project);
+            String projectId = client.createProject(DEFAULT_GATEWAY, project);
 
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "sshEchoExperiment", "SimpleEchoBR", amberAppId, exInputs);
@@ -1401,7 +1401,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(simpleExperiment);
+                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -1447,7 +1447,7 @@ public class CreateLaunchExperiment {
 			List<OutputDataObjectType> exOut = client.getApplicationOutputs(amberAppId);
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
-            String projectId = client.createProject(project);
+            String projectId = client.createProject(DEFAULT_GATEWAY, project);
 
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "sshEchoExperiment", "SimpleEchoBR", amberAppId, exInputs);
@@ -1465,7 +1465,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(simpleExperiment);
+                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -1511,7 +1511,7 @@ public class CreateLaunchExperiment {
 
     public static List<Experiment> getExperimentsForUser(Airavata.Client client, String user) {
         try {
-            return client.getAllUserExperiments(user);
+            return client.getAllUserExperiments(DEFAULT_GATEWAY, user);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
         } catch (InvalidRequestException e) {
@@ -1526,7 +1526,7 @@ public class CreateLaunchExperiment {
 
     public static List<Project> getAllUserProject(Airavata.Client client, String user) {
         try {
-            return client.getAllUserProjects(user);
+            return client.getAllUserProjects(DEFAULT_GATEWAY, user);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
         } catch (InvalidRequestException e) {
@@ -1541,7 +1541,7 @@ public class CreateLaunchExperiment {
 
     public static List<Project> searchProjectsByProjectName(Airavata.Client client, String user, String projectName) {
         try {
-            return client.searchProjectsByProjectName(user, projectName);
+            return client.searchProjectsByProjectName(DEFAULT_GATEWAY, user, projectName);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
         } catch (InvalidRequestException e) {
@@ -1556,7 +1556,7 @@ public class CreateLaunchExperiment {
 
     public static List<Project> searchProjectsByProjectDesc(Airavata.Client client, String user, String desc) {
         try {
-            return client.searchProjectsByProjectDesc(user, desc);
+            return client.searchProjectsByProjectDesc(DEFAULT_GATEWAY, user, desc);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
         } catch (InvalidRequestException e) {
@@ -1572,7 +1572,7 @@ public class CreateLaunchExperiment {
 
     public static List<ExperimentSummary> searchExperimentsByName(Airavata.Client client, String user, String expName) {
         try {
-            return client.searchExperimentsByName(user, expName);
+            return client.searchExperimentsByName(DEFAULT_GATEWAY, user, expName);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
         } catch (InvalidRequestException e) {
@@ -1587,7 +1587,7 @@ public class CreateLaunchExperiment {
 
     public static List<ExperimentSummary> searchExperimentsByDesc(Airavata.Client client, String user, String desc) {
         try {
-            return client.searchExperimentsByDesc(user, desc);
+            return client.searchExperimentsByDesc(DEFAULT_GATEWAY, user, desc);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
         } catch (InvalidRequestException e) {
@@ -1602,7 +1602,7 @@ public class CreateLaunchExperiment {
 
     public static List<ExperimentSummary> searchExperimentsByApplication(Airavata.Client client, String user, String app) {
         try {
-            return client.searchExperimentsByApplication(user, app);
+            return client.searchExperimentsByApplication(DEFAULT_GATEWAY, user, app);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
         } catch (InvalidRequestException e) {

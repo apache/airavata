@@ -110,7 +110,8 @@ public class WorkflowImportWindow {
                     SwingUtilities.invokeLater(new Runnable() {
                         public void run() {
                             try {
-								List<String> resultList = getClient().getAllWorkflows();
+								//FIXME: Update the gateway id fetched from UI
+                                List<String> resultList = getClient().getAllWorkflows("default");
 								if (resultList == null || resultList.size() == 0) {
 								    /*
 								     * OGCEXRegistryLoaderWindow.this.list.getList(). setListData( new

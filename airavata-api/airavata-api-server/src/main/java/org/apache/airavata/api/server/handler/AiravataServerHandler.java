@@ -251,7 +251,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      * @param project
      */
     @Override
-    public String createProject(Project project) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public String createProject(String gatewayId, Project project) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             registry = RegistryFactory.getDefaultRegistry();
             if (!validateString(project.getName()) || !validateString(project.getOwner())){
@@ -341,7 +341,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      * @param userName
      */
     @Override
-    public List<Project> getAllUserProjects(String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public List<Project> getAllUserProjects(String gatewayId, String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -375,7 +375,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
-    public List<Project> searchProjectsByProjectName(String userName, String projectName) throws InvalidRequestException,
+    public List<Project> searchProjectsByProjectName(String gatewayId, String userName, String projectName) throws InvalidRequestException,
                                                                                                  AiravataClientException,
                                                                                                  AiravataSystemException,
                                                                                                  TException {
@@ -413,7 +413,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
-    public List<Project> searchProjectsByProjectDesc(String userName, String description) throws InvalidRequestException,
+    public List<Project> searchProjectsByProjectDesc(String gatewayId, String userName, String description) throws InvalidRequestException,
                                                                                                  AiravataClientException,
                                                                                                  AiravataSystemException,
                                                                                                  TException {
@@ -451,7 +451,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
-    public List<ExperimentSummary> searchExperimentsByName(String userName, String expName) throws InvalidRequestException,
+    public List<ExperimentSummary> searchExperimentsByName(String gatewayId, String userName, String expName) throws InvalidRequestException,
                                                                                                    AiravataClientException,
                                                                                                    AiravataSystemException,
                                                                                                    TException {
@@ -489,7 +489,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
-    public List<ExperimentSummary> searchExperimentsByDesc(String userName, String description) throws InvalidRequestException,
+    public List<ExperimentSummary> searchExperimentsByDesc(String gatewayId, String userName, String description) throws InvalidRequestException,
                                                                                                        AiravataClientException,
                                                                                                        AiravataSystemException,
                                                                                                        TException {
@@ -527,7 +527,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
-    public List<ExperimentSummary> searchExperimentsByApplication(String userName, String applicationId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public List<ExperimentSummary> searchExperimentsByApplication(String gatewayId, String userName, String applicationId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -563,7 +563,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public List<ExperimentSummary> searchExperimentsByStatus(String userName, ExperimentState experimentState) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public List<ExperimentSummary> searchExperimentsByStatus(String gatewayId, String userName, ExperimentState experimentState) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -599,7 +599,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public List<ExperimentSummary> searchExperimentsByCreationTime(String userName, long fromTime, long toTime) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public List<ExperimentSummary> searchExperimentsByCreationTime(String gatewayId, String userName, long fromTime, long toTime) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -684,7 +684,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      * @param userName
      */
     @Override
-    public List<Experiment> getAllUserExperiments(String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public List<Experiment> getAllUserExperiments(String gatewayId, String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -741,7 +741,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      *                                                               rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
-    public String createExperiment(Experiment experiment) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public String createExperiment(String gatewayId, Experiment experiment) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             registry = RegistryFactory.getDefaultRegistry();
             if (!validateString(experiment.getName())){
@@ -753,7 +753,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
             String experimentId = (String)registry.add(ParentDataType.EXPERIMENT, experiment);
             if (ServerSettings.isRabbitMqPublishEnabled()){
-                String gatewayId = ServerSettings.getDefaultUserGateway();
+                gatewayId = ServerSettings.getDefaultUserGateway();
                 ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.CREATED,
                         experimentId,
                         gatewayId);
@@ -1354,7 +1354,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a server-side generated airavata appModule globally unique identifier.
      */
     @Override
-    public String registerApplicationModule(ApplicationModule applicationModule) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public String registerApplicationModule(String gatewayId, ApplicationModule applicationModule) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             appCatalog = AppCatalogFactory.getAppCatalog();
             return appCatalog.getApplicationInterface().addApplicationModule(applicationModule);
@@ -1412,7 +1412,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public List<ApplicationModule> getAllAppModules() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public List<ApplicationModule> getAllAppModules(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             appCatalog = AppCatalogFactory.getAppCatalog();
             return appCatalog.getApplicationInterface().getAllApplicationModules();
@@ -1453,7 +1453,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      *                                     Returns a server-side generated airavata appModule globally unique identifier.
      */
     @Override
-    public String registerApplicationDeployment(ApplicationDeploymentDescription applicationDeployment) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public String registerApplicationDeployment(String gatewayId, ApplicationDeploymentDescription applicationDeployment) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             appCatalog = AppCatalogFactory.getAppCatalog();
             return appCatalog.getApplicationDeployment().addApplicationDeployment(applicationDeployment);
@@ -1539,7 +1539,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns the list of all application Deployment Objects.
      */
     @Override
-    public List<ApplicationDeploymentDescription> getAllApplicationDeployments() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public List<ApplicationDeploymentDescription> getAllApplicationDeployments(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             appCatalog = AppCatalogFactory.getAppCatalog();
             return appCatalog.getApplicationDeployment().getAllApplicationDeployements();
@@ -1587,7 +1587,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      *                                    Returns a server-side generated airavata application interface globally unique identifier.
      */
     @Override
-    public String registerApplicationInterface(ApplicationInterfaceDescription applicationInterface) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public String registerApplicationInterface(String gatewayId, ApplicationInterfaceDescription applicationInterface) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             appCatalog = AppCatalogFactory.getAppCatalog();
             return appCatalog.getApplicationInterface().addApplicationInterface(applicationInterface);
@@ -1672,7 +1672,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a list of application interfaces with corresponsing id's
      */
     @Override
-    public Map<String, String> getAllApplicationInterfaceNames() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public Map<String, String> getAllApplicationInterfaceNames(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             appCatalog = AppCatalogFactory.getAppCatalog();
             List<ApplicationInterfaceDescription> allApplicationInterfaces = appCatalog.getApplicationInterface().getAllApplicationInterfaces();
@@ -1699,7 +1699,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a list of application interfaces documents
      */
     @Override
-    public List<ApplicationInterfaceDescription> getAllApplicationInterfaces() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public List<ApplicationInterfaceDescription> getAllApplicationInterfaces(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             appCatalog = AppCatalogFactory.getAppCatalog();
             return appCatalog.getApplicationInterface().getAllApplicationInterfaces();
@@ -2841,7 +2841,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-	public List<String> getAllWorkflows() throws InvalidRequestException,
+	public List<String> getAllWorkflows(String gatewayId) throws InvalidRequestException,
 			AiravataClientException, AiravataSystemException, TException {
 		try {
 			return getWorkflowCatalog().getAllWorkflows();
@@ -2885,7 +2885,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 	}
 
 	@Override
-	public String registerWorkflow(Workflow workflow)
+	public String registerWorkflow(String gatewayId, Workflow workflow)
 			throws InvalidRequestException, AiravataClientException,
 			AiravataSystemException, TException {
 		try {

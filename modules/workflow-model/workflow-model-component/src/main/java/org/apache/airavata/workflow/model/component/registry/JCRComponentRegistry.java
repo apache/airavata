@@ -48,7 +48,8 @@ public class JCRComponentRegistry extends ComponentRegistry {
     public List<ComponentReference> getComponentReferenceList() {
         List<ComponentReference> tree = new ArrayList<ComponentReference>();
         try {
-        	List<ApplicationInterfaceDescription> allApplicationInterfaces = client.getAllApplicationInterfaces();
+        	//FIXME: Pass Gateway ID to the UI and use it to fetch the applications
+            List<ApplicationInterfaceDescription> allApplicationInterfaces = client.getAllApplicationInterfaces("default");
         	for (ApplicationInterfaceDescription interfaceDescription : allApplicationInterfaces) {
         		JCRComponentReference jcr = new JCRComponentReference(interfaceDescription.getApplicationName(),interfaceDescription);
                 tree.add(jcr);

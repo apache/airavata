@@ -109,7 +109,7 @@ public class TestCreateLaunchExperiment {
 
     public static List<Experiment> getExperimentsForUser (Airavata.Client client, String user){
         try {
-            return client.getAllUserExperiments(user);
+            return client.getAllUserExperiments(DEFAULT_GATEWAY, user);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
         } catch (InvalidRequestException e) {
@@ -154,7 +154,7 @@ public class TestCreateLaunchExperiment {
 
     public static List<ExperimentSummary> getExperimentsForApplication (Airavata.Client client, String user, String application){
         try {
-            return client.searchExperimentsByApplication(user, application);
+            return client.searchExperimentsByApplication(DEFAULT_GATEWAY, user, application);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
         } catch (InvalidRequestException e) {
@@ -169,7 +169,7 @@ public class TestCreateLaunchExperiment {
 
     public static List<ExperimentSummary> searchExperimentsByStatus (Airavata.Client client, String user, ExperimentState experimentState){
         try {
-            return client.searchExperimentsByStatus(user, experimentState);
+            return client.searchExperimentsByStatus(DEFAULT_GATEWAY, user, experimentState);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
         } catch (InvalidRequestException e) {
@@ -184,7 +184,7 @@ public class TestCreateLaunchExperiment {
 
     public static List<ExperimentSummary> searchExperimentsByDate (Airavata.Client client, String user, Long from, Long to){
         try {
-            return client.searchExperimentsByCreationTime(user, from, to);
+            return client.searchExperimentsByCreationTime(DEFAULT_GATEWAY, user, from, to);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
         } catch (InvalidRequestException e) {
@@ -218,7 +218,7 @@ public class TestCreateLaunchExperiment {
 
     public static void getAllAppInterfaces (Airavata.Client client){
         try {
-            Map<String, String> allApps = client.getAllApplicationInterfaceNames();
+            Map<String, String> allApps = client.getAllApplicationInterfaceNames(DEFAULT_GATEWAY);
             for (String id : allApps.keySet()){
                 System.out.println("app id : " + id);
                 System.out.println("app name : " + allApps.get(id));
