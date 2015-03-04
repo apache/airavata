@@ -50,7 +50,7 @@ import java.util.*;
 
 public class DocumentCreatorNew {
 
-    private static final String DEFAULT_GATEWAY = "default.registry.gateway";
+    private static final String DEFAULT_GATEWAY = "php_reference_gateway";
     private AppCatalog appcatalog = null;
     private String trestleshpcHostAddress = "trestles.sdsc.edu";
     private String lonestarHostAddress = "lonestar.tacc.utexas.edu";
@@ -133,7 +133,7 @@ public class DocumentCreatorNew {
         if (gatewayResourceProfile == null) {
             gatewayResourceProfile = new GatewayResourceProfile();
 //				gatewayResourceProfile.setGatewayID("default");
-            gatewayResourceProfile.setGatewayID("default");
+            gatewayResourceProfile.setGatewayID("php_reference_gateway");
             gatewayResourceProfile.setGatewayID(client.registerGatewayResourceProfile(gatewayResourceProfile));
         }
 //    	}
@@ -163,7 +163,6 @@ public class DocumentCreatorNew {
 
         ApplicationModule module = DocumentCreatorUtils.createApplicationModule("echo", "1.1", null);
         module.setAppModuleId(client.registerApplicationModule(DEFAULT_GATEWAY, module));
-        ;
 
         ApplicationDeploymentDescription deployment = DocumentCreatorUtils.createApplicationDeployment(host.getComputeResourceId(), module.getAppModuleId(), "/bin/echo", ApplicationParallelismType.SERIAL, "SSHEchoApplication");
         client.registerApplicationDeployment(DEFAULT_GATEWAY, deployment);

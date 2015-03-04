@@ -56,7 +56,7 @@ public class ExperimentRegistry {
 
     }
 
-    public String addExperiment(Experiment experiment) throws RegistryException {
+    public String addExperiment(Experiment experiment, String gatewayId) throws RegistryException {
         String experimentID;
         try {
             if (!ResourceUtils.isUserExist(experiment.getUserName())) {
@@ -68,7 +68,8 @@ public class ExperimentRegistry {
             experimentResource.setExpID(experimentID);
             experimentResource.setExpName(experiment.getName());
             experimentResource.setExecutionUser(experiment.getUserName());
-            experimentResource.setGateway(gatewayResource);
+            GatewayResource gateway = (GatewayResource)ResourceUtils.getGateway(gatewayId);
+            experimentResource.setGateway(gateway);
             experimentResource.setEnableEmailNotifications(experiment.isEnableEmailNotification());
             if (!workerResource.isProjectExists(experiment.getProjectID())) {
                 logger.error("Project does not exist in the system..");

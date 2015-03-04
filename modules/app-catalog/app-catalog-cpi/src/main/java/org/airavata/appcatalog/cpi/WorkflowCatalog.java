@@ -25,13 +25,13 @@ import java.util.List;
 
 public interface WorkflowCatalog {
 
-    public List<String> getAllWorkflows() throws AppCatalogException;
+    public List<String> getAllWorkflows(String gatewayId) throws AppCatalogException;
 
     public org.apache.airavata.model.Workflow getWorkflow(String workflowTemplateId) throws AppCatalogException;
 
     public void deleteWorkflow(String workflowTemplateId) throws AppCatalogException;
 
-    public String registerWorkflow(org.apache.airavata.model.Workflow workflow) throws AppCatalogException;
+    public String registerWorkflow(org.apache.airavata.model.Workflow workflow, String gatewayId) throws AppCatalogException;
 
     public void updateWorkflow(String workflowTemplateId, org.apache.airavata.model.Workflow workflow) throws AppCatalogException;
 
