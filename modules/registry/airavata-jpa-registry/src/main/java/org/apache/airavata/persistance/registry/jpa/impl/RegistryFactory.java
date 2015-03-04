@@ -21,6 +21,8 @@
 
 package org.apache.airavata.persistance.registry.jpa.impl;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
@@ -36,6 +38,21 @@ public class RegistryFactory {
                 registry = new RegistryImpl(gateway, username, password);
             }
         } catch (RegistryException e) {
+            logger.error("Unable to create registry instance", e);
+            throw new RegistryException(e);
+        }
+        return registry;
+    }
+
+    public static Registry getRegistry(String gateway) throws RegistryException {
+        try {
+            if (registry == null) {
+                registry = new RegistryImpl(gateway, ServerSettings.getDefaultUser(), ServerSettings.getDefaultUserPassword());
+            }
+        } catch (RegistryException e) {
+            logger.error("Unable to create registry instance", e);
+            throw new RegistryException(e);
+        } catch (ApplicationSettingsException e) {
             logger.error("Unable to create registry instance", e);
             throw new RegistryException(e);
         }

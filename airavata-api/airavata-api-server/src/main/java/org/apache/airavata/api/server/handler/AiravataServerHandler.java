@@ -139,7 +139,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public void updateGateway(String gatewayId, Gateway updatedGateway) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
-            registry = RegistryFactory.getDefaultRegistry();
+            registry = RegistryFactory.getRegistry(gatewayId);
             if (!registry.isExist(RegistryModelType.GATEWAY, gatewayId)){
                 logger.error("Gateway does not exist in the system. Please provide a valid gateway ID...");
                 AiravataSystemException exception = new AiravataSystemException();
@@ -159,7 +159,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public Gateway getGateway(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
-            registry = RegistryFactory.getDefaultRegistry();
+            registry = RegistryFactory.getRegistry(gatewayId);
             if (!registry.isExist(RegistryModelType.GATEWAY, gatewayId)){
                 logger.error("Gateway does not exist in the system. Please provide a valid gateway ID...");
                 AiravataSystemException exception = new AiravataSystemException();
@@ -179,7 +179,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public boolean deleteGateway(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
-            registry = RegistryFactory.getDefaultRegistry();
+            registry = RegistryFactory.getRegistry(gatewayId);
             if (!registry.isExist(RegistryModelType.GATEWAY, gatewayId)){
                 logger.error("Gateway does not exist in the system. Please provide a valid gateway ID...");
                 AiravataSystemException exception = new AiravataSystemException();
@@ -219,7 +219,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public boolean isGatewayExist(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
-            registry = RegistryFactory.getDefaultRegistry();
+            registry = RegistryFactory.getRegistry(gatewayId);
             return registry.isExist(RegistryModelType.GATEWAY, gatewayId);
         } catch (RegistryException e) {
             logger.error("Error while getting gateway", e);
@@ -253,7 +253,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public String createProject(String gatewayId, Project project) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
-            registry = RegistryFactory.getDefaultRegistry();
+            registry = RegistryFactory.getRegistry(gatewayId);
             if (!validateString(project.getName()) || !validateString(project.getOwner())){
                 logger.error("Project name and owner cannot be empty...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -370,7 +370,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 exception.setMessage("User does not exist in the system. Please provide a valid user..");
                 throw exception;
             }
-            registry = RegistryFactory.getDefaultRegistry();
+            registry = RegistryFactory.getRegistry(gatewayId);
             List<Object> list = registry.get(RegistryModelType.PROJECT, Constants.FieldConstants.ProjectConstants.OWNER, userName);
             if (list != null && !list.isEmpty()){
                 for (Object o : list){
@@ -411,9 +411,10 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw exception;
             }
             List<Project> projects = new ArrayList<Project>();
-            registry = RegistryFactory.getDefaultRegistry();
+            registry = RegistryFactory.getRegistry(gatewayId);
             Map<String, String> filters = new HashMap<String, String>();
             filters.put(Constants.FieldConstants.ProjectConstants.OWNER, userName);
+            filters.put(Constants.FieldConstants.ProjectConstants.GATEWAY_ID, gatewayId);
             filters.put(Constants.FieldConstants.ProjectConstants.PROJECT_NAME, projectName);
             List<Object> results = registry.search(RegistryModelType.PROJECT, filters);
             for (Object object : results) {
@@ -453,9 +454,10 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw exception;
             }
             List<Project> projects = new ArrayList<Project>();
-            registry = RegistryFactory.getDefaultRegistry();
+            registry = RegistryFactory.getRegistry(gatewayId);
             Map<String, String> filters = new HashMap<String, String>();
             filters.put(Constants.FieldConstants.ProjectConstants.OWNER, userName);
+            filters.put(Constants.FieldConstants.ProjectConstants.GATEWAY_ID, gatewayId);
             filters.put(Constants.FieldConstants.ProjectConstants.DESCRIPTION, description);
             List<Object> results = registry.search(RegistryModelType.PROJECT, filters);
             for (Object object : results) {
@@ -495,9 +497,10 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw exception;
             }
             List<ExperimentSummary> summaries = new ArrayList<ExperimentSummary>();
-            registry = RegistryFactory.getDefaultRegistry();
+            registry = RegistryFactory.getRegistry(gatewayId);
             Map<String, String> filters = new HashMap<String, String>();
             filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
+            filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);
             filters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME, expName);
             List<Object> results = registry.search(RegistryModelType.EXPERIMENT, filters);
             for (Object object : results) {
@@ -537,9 +540,10 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw exception;
             }
             List<ExperimentSummary> summaries = new ArrayList<ExperimentSummary>();
-            registry = RegistryFactory.getDefaultRegistry();
+            registry = RegistryFactory.getRegistry(gatewayId);
             Map<String, String> filters = new HashMap<String, String>();
             filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
+            filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);
             filters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_DESC, description);
             List<Object> results = registry.search(RegistryModelType.EXPERIMENT, filters);
             for (Object object : results) {
@@ -576,10 +580,11 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw exception;
             }
             List<ExperimentSummary> summaries = new ArrayList<ExperimentSummary>();
-            registry = RegistryFactory.getDefaultRegistry();
+            registry = RegistryFactory.getRegistry(gatewayId);
             Map<String, String> filters = new HashMap<String, String>();
             filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
             filters.put(Constants.FieldConstants.ExperimentConstants.APPLICATION_ID, applicationId);
+            filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);
             List<Object> results = registry.search(RegistryModelType.EXPERIMENT, filters);
             for (Object object : results) {
                 summaries.add((ExperimentSummary) object);
@@ -616,7 +621,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw exception;
             }
             List<ExperimentSummary> summaries = new ArrayList<ExperimentSummary>();
-            registry = RegistryFactory.getDefaultRegistry();
+            registry = RegistryFactory.getRegistry(gatewayId);
             Map<String, String> filters = new HashMap<String, String>();
             filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
             filters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_STATUS, experimentState.toString());
@@ -656,7 +661,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw exception;
             }
             List<ExperimentSummary> summaries = new ArrayList<ExperimentSummary>();
-            registry = RegistryFactory.getDefaultRegistry();
+            registry = RegistryFactory.getRegistry(gatewayId);
             Map<String, String> filters = new HashMap<String, String>();
             filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
             filters.put(Constants.FieldConstants.ExperimentConstants.FROM_DATE, String.valueOf(fromTime));
@@ -745,7 +750,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw exception;
             }
             List<Experiment> experiments = new ArrayList<Experiment>();
-            registry = RegistryFactory.getDefaultRegistry();
+            registry = RegistryFactory.getRegistry(gatewayId);
             List<Object> list = registry.get(RegistryModelType.EXPERIMENT, Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
             if (list != null && !list.isEmpty()){
                 for (Object o : list){
@@ -787,7 +792,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public String createExperiment(String gatewayId, Experiment experiment) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
-            registry = RegistryFactory.getDefaultRegistry();
+            registry = RegistryFactory.getRegistry(gatewayId);
             if (!validateString(experiment.getName())){
                 logger.error("Cannot create experiments with empty experiment name");
                 AiravataSystemException exception = new AiravataSystemException();
@@ -1595,7 +1600,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     /**
      * Fetch all Application Deployment Descriptions.
      *
-     * @return list<applicationDeployment.
+     * @return list applicationDeployment.
      * Returns the list of all application Deployment Objects.
      */
     @Override
