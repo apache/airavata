@@ -101,7 +101,7 @@ public class AiravataWorkflowParser implements WorkflowParser {
         }
         for (Node gNode : gNodes) {
             wfInputNode = new WorkflowInputNodeImpl(gNode.getID(), gNode.getName());
-            wfInputNode.setInputObject(inputDataMap.get(wfInputNode.getName()));
+            wfInputNode.setInputObject(inputDataMap.get(wfInputNode.getId()));
             if (wfInputNode.getInputObject() == null) {
                 // TODO: throw an error and exit.
             }
