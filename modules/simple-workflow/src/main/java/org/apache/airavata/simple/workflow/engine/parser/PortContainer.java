@@ -21,8 +21,8 @@
 
 package org.apache.airavata.simple.workflow.engine.parser;
 
-import org.apache.airavata.workflow.model.graph.DataPort;
 import org.apache.airavata.simple.workflow.engine.dag.port.InPort;
+import org.apache.airavata.workflow.model.graph.DataPort;
 
 
 public class PortContainer {

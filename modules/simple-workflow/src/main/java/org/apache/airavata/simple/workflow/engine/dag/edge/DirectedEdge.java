@@ -21,8 +21,8 @@
 
 package org.apache.airavata.simple.workflow.engine.dag.edge;
 
-import org.apache.airavata.simple.workflow.engine.dag.port.OutPort;
 import org.apache.airavata.simple.workflow.engine.dag.port.InPort;
+import org.apache.airavata.simple.workflow.engine.dag.port.OutPort;
 
 
 public class DirectedEdge implements Edge {

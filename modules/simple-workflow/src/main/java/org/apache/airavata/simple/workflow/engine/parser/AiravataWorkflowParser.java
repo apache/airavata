@@ -31,9 +31,19 @@ import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.RegistryModelType;
+import org.apache.airavata.simple.workflow.engine.WorkflowParser;
+import org.apache.airavata.simple.workflow.engine.dag.edge.DirectedEdge;
+import org.apache.airavata.simple.workflow.engine.dag.edge.Edge;
+import org.apache.airavata.simple.workflow.engine.dag.nodes.ApplicationNode;
 import org.apache.airavata.simple.workflow.engine.dag.nodes.ApplicationNodeImpl;
 import org.apache.airavata.simple.workflow.engine.dag.nodes.WorkflowInputNode;
 import org.apache.airavata.simple.workflow.engine.dag.nodes.WorkflowInputNodeImpl;
+import org.apache.airavata.simple.workflow.engine.dag.nodes.WorkflowNode;
+import org.apache.airavata.simple.workflow.engine.dag.nodes.WorkflowOutputNode;
+import org.apache.airavata.simple.workflow.engine.dag.nodes.WorkflowOutputNodeImpl;
+import org.apache.airavata.simple.workflow.engine.dag.port.InPort;
+import org.apache.airavata.simple.workflow.engine.dag.port.InputPortIml;
+import org.apache.airavata.simple.workflow.engine.dag.port.OutPort;
 import org.apache.airavata.simple.workflow.engine.dag.port.OutPortImpl;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.component.system.ConstantComponent;
@@ -49,16 +59,6 @@ import org.apache.airavata.workflow.model.graph.system.SystemDataPort;
 import org.apache.airavata.workflow.model.graph.ws.WSNode;
 import org.apache.airavata.workflow.model.graph.ws.WSPort;
 import org.apache.airavata.workflow.model.wf.Workflow;
-import org.apache.airavata.simple.workflow.engine.WorkflowParser;
-import org.apache.airavata.simple.workflow.engine.dag.edge.DirectedEdge;
-import org.apache.airavata.simple.workflow.engine.dag.edge.Edge;
-import org.apache.airavata.simple.workflow.engine.dag.nodes.ApplicationNode;
-import org.apache.airavata.simple.workflow.engine.dag.nodes.WorkflowNode;
-import org.apache.airavata.simple.workflow.engine.dag.nodes.WorkflowOutputNode;
-import org.apache.airavata.simple.workflow.engine.dag.nodes.WorkflowOutputNodeImpl;
-import org.apache.airavata.simple.workflow.engine.dag.port.InPort;
-import org.apache.airavata.simple.workflow.engine.dag.port.InputPortIml;
-import org.apache.airavata.simple.workflow.engine.dag.port.OutPort;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -103,7 +103,7 @@ public class AiravataWorkflowParser implements WorkflowParser {
             wfInputNode = new WorkflowInputNodeImpl(gNode.getID(), gNode.getName());
             wfInputNode.setInputObject(inputDataMap.get(wfInputNode.getId()));
             if (wfInputNode.getInputObject() == null) {
-                // TODO: throw an error and exit.
+                throw new RuntimeException("Workflow Input object is not set, workflow node id: " + wfInputNode.getId());
             }
             portContainers.addAll(processOutPorts(gNode, wfInputNode));
             wfInputNodes.add(wfInputNode);
@@ -139,7 +139,7 @@ public class AiravataWorkflowParser implements WorkflowParser {
                 } else if (wfNode instanceof ApplicationNode) {
                     wfApplicationNode = (ApplicationNode) wfNode;
                 } else {
-                    // TODO : handle this scenario
+                    throw new IllegalArgumentException("Only support for ApplicationNode implementation, but found other type for node implementation");
                 }
                 inPort.setNode(wfApplicationNode);
                 wfApplicationNode.addInPort(inPort);

@@ -63,8 +63,11 @@ public class WorkflowOutputNodeImpl implements WorkflowOutputNode {
 
     @Override
     public void setState(NodeState newState) {
-        // TODO: node state can't be reversed , correct order WAITING --> READY --> EXECUTING --> EXECUTED --> COMPLETE
-        myState = newState;
+        if (newState.getLevel() > myState.getLevel()) {
+            myState = newState;
+        } else {
+            throw new IllegalStateException("Node state can't be reversed. currentState : " + myState.toString() + " , newState " + newState.toString());
+        }
     }
 
     @Override
