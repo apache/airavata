@@ -22,13 +22,23 @@
 package org.apache.airavata.simple.workflow.engine.dag.nodes;
 
 public enum NodeState {
-    WAITING, // waiting on inputs
-    READY, // all inputs are available and ready to execute
-    QUEUED, //
-    PRE_PROCESSING, //
-    EXECUTING, // task has been submitted , not yet finish
-    EXECUTED, // task executed
-    POST_PROCESSING, //
-    FAILED,
-    COMPLETE // all works done
+    WAITING(0), // waiting on inputs
+    READY(1), // all inputs are available and ready to execute
+    QUEUED(2), //
+    PRE_PROCESSING(3), //
+    EXECUTING(4), // task has been submitted , not yet finish
+    EXECUTED(5), // task executed
+    POST_PROCESSING(6), //
+    FAILED(7),
+    COMPLETE(8); // all works done
+
+    private int level;
+
+    NodeState(int level) {
+        this.level = level;
+    }
+
+    public int getLevel() {
+        return level;
+    }
 }

@@ -23,13 +23,11 @@ package org.apache.airavata.simple.workflow.engine;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.simple.workflow.engine.parser.AiravataWorkflowParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * Singleton class, only one instance can exist in runtime.
