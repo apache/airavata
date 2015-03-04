@@ -41,7 +41,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
     private final static Logger logger = LoggerFactory.getLogger(ApplicationDeploymentImpl.class);
 
     @Override
-    public String addApplicationDeployment(ApplicationDeploymentDescription deploymentDescription) throws AppCatalogException {
+    public String addApplicationDeployment(ApplicationDeploymentDescription deploymentDescription, String gatewayId) throws AppCatalogException {
         try {
             AppDeploymentResource deploymentResource = new AppDeploymentResource();
             ComputeResourceResource computeHostResource = new ComputeResourceResource();
@@ -360,7 +360,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
     }
 
     @Override
-    public List<ApplicationDeploymentDescription> getAllApplicationDeployements() throws AppCatalogException {
+    public List<ApplicationDeploymentDescription> getAllApplicationDeployements(String gatewayId) throws AppCatalogException {
         List<ApplicationDeploymentDescription> deploymentDescriptions = new ArrayList<ApplicationDeploymentDescription>();
         try {
             AppDeploymentResource resource = new AppDeploymentResource();

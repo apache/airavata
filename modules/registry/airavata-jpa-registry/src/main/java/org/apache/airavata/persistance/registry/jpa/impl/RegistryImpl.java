@@ -100,13 +100,13 @@ public class RegistryImpl implements Registry {
      * @return return the identifier to identify the object
      */
     @Override
-    public Object add(ParentDataType dataType, Object newObjectToAdd) throws RegistryException {
+    public Object add(ParentDataType dataType, Object newObjectToAdd, String gatewayId) throws RegistryException {
         try {
             switch (dataType) {
                 case PROJECT:
-                    return projectRegistry.addProject((Project)newObjectToAdd);
+                    return projectRegistry.addProject((Project)newObjectToAdd, gatewayId);
                 case EXPERIMENT:
-                    return experimentRegistry.addExperiment((Experiment) newObjectToAdd);
+                    return experimentRegistry.addExperiment((Experiment) newObjectToAdd, gatewayId);
                 case GATEWAY:
                     return gatewayRegistry.addGateway((Gateway)newObjectToAdd);
                 default:

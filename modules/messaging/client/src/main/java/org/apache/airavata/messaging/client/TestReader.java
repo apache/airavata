@@ -5,9 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-/**
- * Created by chathuri on 2/20/15.
- */
 public class TestReader {
     public static void main(String[] args) throws IOException {
         String fileName = "/Users/chathuri/dev/airavata/docs/messaging_framework/gw111/results_350";

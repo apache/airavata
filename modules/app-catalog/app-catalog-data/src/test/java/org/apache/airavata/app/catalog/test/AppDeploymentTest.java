@@ -22,14 +22,11 @@
 package org.apache.airavata.app.catalog.test;
 
 import org.airavata.appcatalog.cpi.*;
-import org.airavata.appcatalog.cpi.ApplicationDeployment;
-import org.airavata.appcatalog.cpi.ApplicationInterface;
-import org.airavata.appcatalog.cpi.ComputeResource;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
-import org.apache.aiaravata.application.catalog.data.model.*;
 import org.apache.aiaravata.application.catalog.data.resources.AbstractResource;
 import org.apache.airavata.app.catalog.test.util.Initialize;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
@@ -83,7 +80,7 @@ public class AppDeploymentTest {
         ApplicationModule module = new ApplicationModule();
         module.setAppModuleName("WRF");
         module.setAppModuleVersion("1.0.0");
-        String wrfModuleId = appInt.addApplicationModule(module);
+        String wrfModuleId = appInt.addApplicationModule(module, ServerSettings.getDefaultUserGateway());
 
         ApplicationDeploymentDescription description = new ApplicationDeploymentDescription();
         description.setAppModuleId(wrfModuleId);
@@ -106,7 +103,7 @@ public class AppDeploymentTest {
         appEvns.add(createSetEnvPath("name6", "val6"));
         description.setSetEnvironment(appEvns);
 
-        String appDepId = appDep.addApplicationDeployment(description);
+        String appDepId = appDep.addApplicationDeployment(description, ServerSettings.getDefaultUserGateway());
         ApplicationDeploymentDescription app = null;
         if (appDep.isAppDeploymentExists(appDepId)){
             app = appDep.getApplicationDeployement(appDepId);
@@ -134,7 +131,7 @@ public class AppDeploymentTest {
         List<String> allApplicationDeployementIds = appDep.getAllApplicationDeployementIds();
         System.out.println("******** Size of all App deployments ids *********** : " + allApplicationDeployementIds.size());
 
-        List<ApplicationDeploymentDescription> allApplicationDeployements = appDep.getAllApplicationDeployements();
+        List<ApplicationDeploymentDescription> allApplicationDeployements = appDep.getAllApplicationDeployements(ServerSettings.getDefaultUserGateway());
         System.out.println("******** Size of all App deployments *********** : " + allApplicationDeployements.size());
 
         assertTrue("App interface saved successfully", app != null);

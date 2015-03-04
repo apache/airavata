@@ -41,7 +41,7 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
     private final static Logger logger = LoggerFactory.getLogger(WorkflowCatalogImpl.class);
 
     @Override
-    public List<String> getAllWorkflows() throws AppCatalogException {
+    public List<String> getAllWorkflows(String gatewayId) throws AppCatalogException {
         List<String> workflowIds = new ArrayList<String>();
         try {
             WorkflowResource resource = new WorkflowResource();
@@ -77,7 +77,7 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
     }
 
     @Override
-    public String registerWorkflow(Workflow workflow) throws AppCatalogException {
+    public String registerWorkflow(Workflow workflow, String gatewayId) throws AppCatalogException {
         try {
             WorkflowResource resource = new WorkflowResource();
             resource.setWfTemplateId(AppCatalogUtils.getID(workflow.getName()));

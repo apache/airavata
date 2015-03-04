@@ -43,7 +43,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
     private final static Logger logger = LoggerFactory.getLogger(ApplicationInterfaceImpl.class);
 
     @Override
-    public String addApplicationModule(ApplicationModule applicationModule) throws AppCatalogException {
+    public String addApplicationModule(ApplicationModule applicationModule, String gatewayId) throws AppCatalogException {
         try {
             AppModuleResource moduleResource = new AppModuleResource();
             moduleResource.setModuleName(applicationModule.getAppModuleName());
@@ -64,7 +64,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
     }
 
     @Override
-    public String addApplicationInterface(ApplicationInterfaceDescription applicationInterfaceDescription) throws AppCatalogException {
+    public String addApplicationInterface(ApplicationInterfaceDescription applicationInterfaceDescription, String gatewayId) throws AppCatalogException {
         try {
             AppInterfaceResource resource = new AppInterfaceResource();
             resource.setAppName(applicationInterfaceDescription.getApplicationName());
@@ -315,7 +315,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
     }
 
     @Override
-    public List<ApplicationModule> getAllApplicationModules() throws AppCatalogException {
+    public List<ApplicationModule> getAllApplicationModules(String gatewayId) throws AppCatalogException {
         List<ApplicationModule> applicationModules = new ArrayList<ApplicationModule>();
         try {
             AppModuleResource resource = new AppModuleResource();
@@ -352,7 +352,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
     }
 
     @Override
-    public List<ApplicationInterfaceDescription> getAllApplicationInterfaces() throws AppCatalogException {
+    public List<ApplicationInterfaceDescription> getAllApplicationInterfaces(String gatewayId) throws AppCatalogException {
         try {
             AppInterfaceResource resource = new AppInterfaceResource();
             List<Resource> resources = resource.getAll();
