@@ -602,7 +602,6 @@
 				<module>airavata-api</module>
 				<module>modules/commons</module>
 				<module>modules/gfac</module>
-				<!--<module>modules/ws-messenger</module>-->
 				<module>modules/workflow-model</module>
 				<module>modules/registry</module>
 				<module>modules/security</module>
@@ -610,7 +609,6 @@
 				<module>modules/orchestrator</module>
 				<module>tools</module>
 				<module>modules/server</module>
-				<!--<module>modules/test-suite</module>-->
 				<module>modules/distribution</module>
 				<module>modules/integration-tests</module>
 			</modules>
