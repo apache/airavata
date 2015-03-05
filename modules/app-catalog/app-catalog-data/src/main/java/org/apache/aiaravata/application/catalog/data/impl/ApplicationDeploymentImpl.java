@@ -62,6 +62,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             deploymentResource.setHostResource((ComputeResourceResource)computeHostResource.get(deploymentDescription.getComputeHostId()));
             deploymentResource.setAppDes(deploymentDescription.getAppDeploymentDescription());
             deploymentResource.setExecutablePath(deploymentDescription.getExecutablePath());
+            deploymentResource.setGatewayId(gatewayId);
             ApplicationParallelismType parallelism = deploymentDescription.getParallelism();
             if (parallelism != null){
                 deploymentResource.setParallelism(parallelism.toString());
@@ -364,6 +365,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
         List<ApplicationDeploymentDescription> deploymentDescriptions = new ArrayList<ApplicationDeploymentDescription>();
         try {
             AppDeploymentResource resource = new AppDeploymentResource();
+            resource.setGatewayId(gatewayId);
             List<Resource> resources = resource.getAll();
             if (resources != null && !resources.isEmpty()){
                 deploymentDescriptions = AppCatalogThriftConversion.getAppDepDescList(resources);

@@ -190,6 +190,8 @@ public class ProjectRegistry {
                         fil.put(AbstractResource.ProjectConstants.USERNAME, filters.get(field));
                     }else if (field.equals(Constants.FieldConstants.ProjectConstants.DESCRIPTION)){
                         fil.put(AbstractResource.ProjectConstants.DESCRIPTION, filters.get(field));
+                    }else if (field.equals(Constants.FieldConstants.ProjectConstants.GATEWAY_ID)){
+                        fil.put(AbstractResource.ProjectConstants.GATEWAY_ID, filters.get(field));
                     }
                 }
                 List<ProjectResource> projectResources = workerResource.searchProjects(fil);

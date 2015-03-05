@@ -180,6 +180,7 @@ public abstract class AbstractResource implements Resource {
 
     public final class ApplicationModuleConstants {
         public static final String MODULE_ID = "moduleID";
+        public static final String GATEWAY_ID = "gatewayId";
         public static final String MODULE_NAME = "moduleName";
         public static final String MODULE_VERSION = "moduleVersion";
         public static final String MODULE_DESC = "moduleDesc";
@@ -189,6 +190,7 @@ public abstract class AbstractResource implements Resource {
         public static final String APP_MODULE_ID = "appModuleID";
         public static final String DEPLOYMENT_ID = "deploymentID";
         public static final String COMPUTE_HOST_ID = "hostID";
+        public static final String GATEWAY_ID = "gatewayId";
         public static final String EXECUTABLE_PATH = "executablePath";
         public static final String APPLICATION_DESC = "applicationDesc";
         public static final String ENV_MODULE_LOAD_CMD = "envModuleLoaString";
@@ -216,6 +218,7 @@ public abstract class AbstractResource implements Resource {
     public final class ApplicationInterfaceConstants {
         public static final String INTERFACE_ID = "interfaceID";
         public static final String APPLICATION_NAME = "appName";
+        public static final String GATEWAY_ID = "gatewayId";
     }
 
     public final class AppModuleMappingConstants {
@@ -368,5 +371,6 @@ public abstract class AbstractResource implements Resource {
         public static final String CREATED_USER = "createdUser";
         public static final String GRAPH = "graph";
         public static final String WF_TEMPLATE_ID = "wfTemplateId";
+        public static final String GATEWAY_ID = "gatewayId";
     }
 }

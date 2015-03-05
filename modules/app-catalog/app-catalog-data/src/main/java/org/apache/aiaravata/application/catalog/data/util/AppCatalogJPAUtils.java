@@ -684,6 +684,7 @@ public class AppCatalogJPAUtils {
         if (o != null){
             moduleResource.setModuleId(o.getModuleID());
             moduleResource.setModuleDesc(o.getModuleDesc());
+            moduleResource.setGatewayId(o.getGatewayId());
             moduleResource.setModuleName(o.getModuleName());
             moduleResource.setModuleVersion(o.getModuleVersion());
             moduleResource.setCreatedTime(o.getCreationTime());

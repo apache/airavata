@@ -250,6 +250,7 @@ public class AppDeploymentResource extends AbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(APPLICATION_DEPLOYMENT);
+            generator.setParameter(ApplicationDeploymentConstants.GATEWAY_ID, gatewayId);
             Query q = generator.selectQuery(em);
             List results = q.getResultList();
                 if (results.size() != 0) {
