@@ -45,6 +45,15 @@ public class AppModuleResource extends AbstractResource {
     private String moduleDesc;
     private Timestamp createdTime;
     private Timestamp updatedTime;
+    private String gatewayId;
+
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
 
     public Timestamp getCreatedTime() {
         return createdTime;
@@ -199,6 +208,7 @@ public class AppModuleResource extends AbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(APPLICATION_MODULE);
+            generator.setParameter(ApplicationModuleConstants.GATEWAY_ID, gatewayId);
             Query q = generator.selectQuery(em);
             List<?> results = q.getResultList();
             for (Object result : results) {
@@ -283,6 +293,7 @@ public class AppModuleResource extends AbstractResource {
                 existingModule.setModuleName(moduleName);
                 existingModule.setModuleVersion(moduleVersion);
                 existingModule.setModuleDesc(moduleDesc);
+                existingModule.setGatewayId(gatewayId);
                 existingModule.setUpdateTime(AiravataUtils.getCurrentTimestamp());
                 em.merge(existingModule);
             }else {
@@ -291,6 +302,7 @@ public class AppModuleResource extends AbstractResource {
                 applicationModule.setModuleName(moduleName);
                 applicationModule.setModuleVersion(moduleVersion);
                 applicationModule.setModuleDesc(moduleDesc);
+                applicationModule.setGatewayId(gatewayId);
                 applicationModule.setCreationTime(AiravataUtils.getCurrentTimestamp());
                 em.persist(applicationModule);
             }

@@ -85,6 +85,7 @@ import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.airavata.workflow.catalog.WorkflowCatalogFactory;
 import org.apache.thrift.TException;
+import org.python.antlr.ast.Str;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -371,7 +372,10 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw exception;
             }
             registry = RegistryFactory.getRegistry(gatewayId);
-            List<Object> list = registry.get(RegistryModelType.PROJECT, Constants.FieldConstants.ProjectConstants.OWNER, userName);
+            Map<String, String> filters = new HashMap<String, String>();
+            filters.put(Constants.FieldConstants.ProjectConstants.OWNER, userName);
+            filters.put(Constants.FieldConstants.ProjectConstants.GATEWAY_ID, gatewayId);
+            List<Object> list = registry.search(RegistryModelType.PROJECT,filters);
             if (list != null && !list.isEmpty()){
                 for (Object o : list){
                     projects.add((Project) o);
@@ -625,6 +629,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             Map<String, String> filters = new HashMap<String, String>();
             filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
             filters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_STATUS, experimentState.toString());
+            filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);
             List<Object> results = registry.search(RegistryModelType.EXPERIMENT, filters);
             for (Object object : results) {
                 summaries.add((ExperimentSummary) object);
@@ -666,6 +671,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
             filters.put(Constants.FieldConstants.ExperimentConstants.FROM_DATE, String.valueOf(fromTime));
             filters.put(Constants.FieldConstants.ExperimentConstants.TO_DATE, String.valueOf(toTime));
+            filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);
             List<Object> results = registry.search(RegistryModelType.EXPERIMENT, filters);
             for (Object object : results) {
                 summaries.add((ExperimentSummary) object);
@@ -751,7 +757,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
             List<Experiment> experiments = new ArrayList<Experiment>();
             registry = RegistryFactory.getRegistry(gatewayId);
-            List<Object> list = registry.get(RegistryModelType.EXPERIMENT, Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
+            Map<String, String> filters = new HashMap<String, String>();
+            filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
+            filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);
+            List<Object> list = registry.search(RegistryModelType.EXPERIMENT, filters);
             if (list != null && !list.isEmpty()){
                 for (Object o : list){
                     experiments.add((Experiment)o);
@@ -806,7 +815,6 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
             String experimentId = (String)registry.add(ParentDataType.EXPERIMENT, experiment, gatewayId);
             if (ServerSettings.isRabbitMqPublishEnabled()){
-                gatewayId = ServerSettings.getDefaultUserGateway();
                 ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.CREATED,
                         experimentId,
                         gatewayId);

@@ -199,6 +199,7 @@ public class AppInterfaceResource extends AbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(APPLICATION_INTERFACE);
+            generator.setParameter(ApplicationInterfaceConstants.GATEWAY_ID, gatewayId);
             Query   q = generator.selectQuery(em);
             List results = q.getResultList();
                 if (results.size() != 0) {

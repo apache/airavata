@@ -180,6 +180,7 @@ public class WorkflowResource extends AbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(WORKFLOW);
+            generator.setParameter(WorkflowConstants.GATEWAY_ID, gatewayId);
             Query q = generator.selectQuery(em);
             List results = q.getResultList();
             if (results.size() != 0) {
@@ -214,6 +215,7 @@ public class WorkflowResource extends AbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(WORKFLOW);
+            generator.setParameter(WorkflowConstants.GATEWAY_ID, gatewayId);
             Query q = generator.selectQuery(em);
             List results = q.getResultList();
             if (results.size() != 0) {

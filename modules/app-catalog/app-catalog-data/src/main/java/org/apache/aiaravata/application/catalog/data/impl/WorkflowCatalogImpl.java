@@ -45,6 +45,7 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
         List<String> workflowIds = new ArrayList<String>();
         try {
             WorkflowResource resource = new WorkflowResource();
+            resource.setGatewayId(gatewayId);
             workflowIds = resource.getAllIds();
         } catch (Exception e) {
             logger.error("Error while retrieving all the workflow template ids...", e);
@@ -83,6 +84,7 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
             resource.setWfTemplateId(AppCatalogUtils.getID(workflow.getName()));
             resource.setWfName(workflow.getName());
             resource.setGraph(workflow.getGraph());
+            resource.setGatewayId(gatewayId);
             if (workflow.getImage() != null){
                 resource.setImage(new String(workflow.getImage()));
             }
