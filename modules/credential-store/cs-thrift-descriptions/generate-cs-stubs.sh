@@ -21,7 +21,7 @@
 # Global Constants used across the script
 REQUIRED_THRIFT_VERSION='0.9.1'
 BASE_TARGET_DIR='target'
-CS_SERVICE_DIR='../credential-store/src/main/java'
+CS_SERVICE_DIR='../credential-store-stubs/src/main/java'
 
 # The Function fail prints error messages on failure and quits the script.
 fail() {
@@ -117,8 +117,8 @@ rm -rf ${JAVA_GEN_DIR}
 
 # Using thrift Java generator, generate the java classes based on Airavata API. This
 #   The airavataAPI.thrift includes rest of data models.
-thrift ${THRIFT_ARGS} --gen java cs.cpi.service.thrift || fail unable to generate java thrift classes
-thrift ${THRIFT_ARGS} --gen java csDataModel.thrift || fail unable to generate java thrift classes
+thrift ${THRIFT_ARGS} --gen java credentialStoreCPI.thrift || fail unable to generate java thrift classes
+thrift ${THRIFT_ARGS} --gen java credentialStoreDataModel.thrift || fail unable to generate java thrift classes
 
 
 # For the generated java classes add the ASF V2 License header
