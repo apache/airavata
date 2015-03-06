@@ -6,4 +6,4 @@
 3. Copy db-migrate.sh file to <AIRAVATA_HOME>/bin
 4. Make sure previous version of airavata database is up and running
 5. Run db-migrate.sh script file
-        ./db-migrate.sh -url jdbc:mysql://localhost:3306/persistent_data -user airavata -pwd airavata -v 0.7
+        ./db-migrate.sh -url jdbc:mysql://localhost:3306/experiment_catalog -user airavata -pwd airavata -v 0.7
