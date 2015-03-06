@@ -204,6 +204,7 @@ public class RegistryImpl implements Registry {
                     break;
                 case GATEWAY:
                     gatewayRegistry.updateGateway((String)identifier, (Gateway)newObjectToUpdate);
+                    break;
                 case EXPERIMENT:
                     experimentRegistry.updateExperiment((Experiment) newObjectToUpdate, (String) identifier);
                     break;
