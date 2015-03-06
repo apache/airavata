@@ -719,8 +719,8 @@ void swap(ApplicationStatus &a, ApplicationStatus &b) {
   swap(a.__isset, b.__isset);
 }
 
-const char* ComputationalResourceScheduling::ascii_fingerprint = "32AC7AC41AD3753A7224A32FD6EB4B5D";
-const uint8_t ComputationalResourceScheduling::binary_fingerprint[16] = {0x32,0xAC,0x7A,0xC4,0x1A,0xD3,0x75,0x3A,0x72,0x24,0xA3,0x2F,0xD6,0xEB,0x4B,0x5D};
+const char* ComputationalResourceScheduling::ascii_fingerprint = "F43E914A611D39345BCC729678C1C696";
+const uint8_t ComputationalResourceScheduling::binary_fingerprint[16] = {0xF4,0x3E,0x91,0x4A,0x61,0x1D,0x39,0x34,0x5B,0xCC,0x72,0x96,0x78,0xC1,0xC6,0x96};
 
 uint32_t ComputationalResourceScheduling::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -814,6 +814,14 @@ uint32_t ComputationalResourceScheduling::read(::apache::thrift::protocol::TProt
           xfer += iprot->skip(ftype);
         }
         break;
+      case 10:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->chassisName);
+          this->__isset.chassisName = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -875,6 +883,11 @@ uint32_t ComputationalResourceScheduling::write(::apache::thrift::protocol::TPro
     xfer += oprot->writeString(this->computationalProjectAccount);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.chassisName) {
+    xfer += oprot->writeFieldBegin("chassisName", ::apache::thrift::protocol::T_STRING, 10);
+    xfer += oprot->writeString(this->chassisName);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -891,6 +904,7 @@ void swap(ComputationalResourceScheduling &a, ComputationalResourceScheduling &b
   swap(a.jobStartTime, b.jobStartTime);
   swap(a.totalPhysicalMemory, b.totalPhysicalMemory);
   swap(a.computationalProjectAccount, b.computationalProjectAccount);
+  swap(a.chassisName, b.chassisName);
   swap(a.__isset, b.__isset);
 }
 
@@ -1181,8 +1195,8 @@ void swap(QualityOfServiceParams &a, QualityOfServiceParams &b) {
   swap(a.__isset, b.__isset);
 }
 
-const char* UserConfigurationData::ascii_fingerprint = "4E5EF84AE34A2F52BCD6617A229780E0";
-const uint8_t UserConfigurationData::binary_fingerprint[16] = {0x4E,0x5E,0xF8,0x4A,0xE3,0x4A,0x2F,0x52,0xBC,0xD6,0x61,0x7A,0x22,0x97,0x80,0xE0};
+const char* UserConfigurationData::ascii_fingerprint = "A39B8E6345C677771D939D170C65720F";
+const uint8_t UserConfigurationData::binary_fingerprint[16] = {0xA3,0x9B,0x8E,0x63,0x45,0xC6,0x77,0x77,0x1D,0x93,0x9D,0x17,0x0C,0x65,0x72,0x0F};
 
 uint32_t UserConfigurationData::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -1843,8 +1857,8 @@ void swap(DataTransferDetails &a, DataTransferDetails &b) {
   swap(a.__isset, b.__isset);
 }
 
-const char* TaskDetails::ascii_fingerprint = "6EAEEB62655ECD5CA7A24BFDE46F678C";
-const uint8_t TaskDetails::binary_fingerprint[16] = {0x6E,0xAE,0xEB,0x62,0x65,0x5E,0xCD,0x5C,0xA7,0xA2,0x4B,0xFD,0xE4,0x6F,0x67,0x8C};
+const char* TaskDetails::ascii_fingerprint = "88276CFCC9B30CA0B93A5931F93CACC4";
+const uint8_t TaskDetails::binary_fingerprint[16] = {0x88,0x27,0x6C,0xFC,0xC9,0xB3,0x0C,0xA0,0xB9,0x3A,0x59,0x31,0xF9,0x3C,0xAC,0xC4};
 
 uint32_t TaskDetails::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -2238,8 +2252,8 @@ void swap(TaskDetails &a, TaskDetails &b) {
   swap(a.__isset, b.__isset);
 }
 
-const char* WorkflowNodeDetails::ascii_fingerprint = "CDDA44A784FD60829B4F4EAA67D71C72";
-const uint8_t WorkflowNodeDetails::binary_fingerprint[16] = {0xCD,0xDA,0x44,0xA7,0x84,0xFD,0x60,0x82,0x9B,0x4F,0x4E,0xAA,0x67,0xD7,0x1C,0x72};
+const char* WorkflowNodeDetails::ascii_fingerprint = "940AB958A2909A83261C2016BD466838";
+const uint8_t WorkflowNodeDetails::binary_fingerprint[16] = {0x94,0x0A,0xB9,0x58,0xA2,0x90,0x9A,0x83,0x26,0x1C,0x20,0x16,0xBD,0x46,0x68,0x38};
 
 uint32_t WorkflowNodeDetails::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -2694,8 +2708,8 @@ void swap(ValidationResults &a, ValidationResults &b) {
   swap(a.validationResultList, b.validationResultList);
 }
 
-const char* Experiment::ascii_fingerprint = "145D3134FA7C46D3D99051850C4984FF";
-const uint8_t Experiment::binary_fingerprint[16] = {0x14,0x5D,0x31,0x34,0xFA,0x7C,0x46,0xD3,0xD9,0x90,0x51,0x85,0x0C,0x49,0x84,0xFF};
+const char* Experiment::ascii_fingerprint = "C610216A34DE0B4389362B3D5236F6F6";
+const uint8_t Experiment::binary_fingerprint[16] = {0xC6,0x10,0x21,0x6A,0x34,0xDE,0x0B,0x43,0x89,0x36,0x2B,0x3D,0x52,0x36,0xF6,0xF6};
 
 uint32_t Experiment::read(::apache::thrift::protocol::TProtocol* iprot) {
 
