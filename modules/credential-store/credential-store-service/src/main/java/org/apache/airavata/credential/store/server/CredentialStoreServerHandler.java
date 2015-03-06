@@ -24,7 +24,7 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.cpi.CredentialStoreService;
-import org.apache.airavata.credential.store.cpi.cs_cpi_serviceConstants;
+import org.apache.airavata.credential.store.cpi.credentialStoreCPIConstants;
 import org.apache.airavata.credential.store.credential.CommunityUser;
 import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.datamodel.CertificateCredential;
@@ -69,7 +69,7 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
 
     @Override
     public String getCSServiceVersion() throws TException {
-        return cs_cpi_serviceConstants.CS_CPI_VERSION;
+        return credentialStoreCPIConstants.CS_CPI_VERSION;
     }
 
     @Override
@@ -107,9 +107,9 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
         try {
             org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential credential = new org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential();
             credential.setPortalUserName(certificateCredential.getCommunityUser().getUsername());
-            credential.setCommunityUser(new CommunityUser(certificateCredential.getCommunityUser().getGatewayNmae(),
+            credential.setCommunityUser(new CommunityUser(certificateCredential.getCommunityUser().getGatewayName(),
                     certificateCredential.getCommunityUser().getUsername(), certificateCredential.getCommunityUser().getUserEmail()));
-            String token = TokenGenerator.generateToken(certificateCredential.getCommunityUser().getGatewayNmae(), null);
+            String token = TokenGenerator.generateToken(certificateCredential.getCommunityUser().getGatewayName(), null);
             credential.setToken(token);
             Base64 encoder = new Base64(64);
             byte [] decoded = encoder.decode(certificateCredential.getX509Cert().replaceAll(X509Factory.BEGIN_CERT, "").replaceAll(X509Factory.END_CERT, ""));
@@ -168,7 +168,7 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
                 org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential credential1 = (org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential) credential;
                 CertificateCredential certificateCredential = new CertificateCredential();
                 org.apache.airavata.credential.store.datamodel.CommunityUser communityUser = new org.apache.airavata.credential.store.datamodel.CommunityUser();
-                communityUser.setGatewayNmae(credential1.getCommunityUser().getGatewayName());
+                communityUser.setGatewayName(credential1.getCommunityUser().getGatewayName());
                 communityUser.setUsername(credential1.getCommunityUser().getUserName());
                 communityUser.setUserEmail(credential1.getCommunityUser().getUserEmail());
                 certificateCredential.setCommunityUser(communityUser);
