@@ -57,6 +57,8 @@ public class Computational_Resource_Scheduling implements Serializable {
     private int totalPhysicalmemory;
     @Column(name = "COMPUTATIONAL_PROJECT_ACCOUNT")
     private String projectName;
+    @Column(name = "CHESSIS_NAME")
+    private String chessisName;
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "EXPERIMENT_ID")
@@ -65,6 +67,14 @@ public class Computational_Resource_Scheduling implements Serializable {
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "TASK_ID")
     private TaskDetail task;
+
+    public String getChessisName() {
+        return chessisName;
+    }
+
+    public void setChessisName(String chessisName) {
+        this.chessisName = chessisName;
+    }
 
     public int getSchedulingId() {
         return schedulingId;

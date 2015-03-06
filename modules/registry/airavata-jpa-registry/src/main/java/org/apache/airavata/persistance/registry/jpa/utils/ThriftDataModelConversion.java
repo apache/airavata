@@ -664,6 +664,7 @@ public class ThriftDataModelConversion {
             scheduling.setJobStartTime((int)csr.getJobStartTime().getTime());
             scheduling.setTotalPhysicalMemory(csr.getPhysicalMemory());
             scheduling.setComputationalProjectAccount(csr.getProjectName());
+            scheduling.setChassisName(csr.getChessisName());
             return scheduling;
         }
         return null;
