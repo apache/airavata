@@ -56,8 +56,8 @@ public class TestSSLClient {
             String keystorePath = ServerSettings.getCredentialStoreThriftServerKeyStorePath();
             String keystorePWD = ServerSettings.getCredentialStoreThriftServerKeyStorePassword();
             params.setTrustStore(keystorePath, keystorePWD);
-            final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.CREDNETIAL_SERVER_PORT, "8960"));
-            final String serverHost = ServerSettings.getSetting(Constants.CREDNETIAL_SERVER_HOST, null);
+            final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.CREDENTIAL_SERVER_PORT, "8960"));
+            final String serverHost = ServerSettings.getSetting(Constants.CREDENTIAL_SERVER_HOST, null);
 
             transport = TSSLTransportFactory.getClientSocket(serverHost, serverPort, 10000, params);
             TProtocol protocol = new TBinaryProtocol(transport);
@@ -98,7 +98,7 @@ public class TestSSLClient {
             certificateCredential.setCommunityUser(communityUser);
             X509Certificate[] x509Certificates = new X509Certificate[1];
             KeyStore ks = KeyStore.getInstance("JKS");
-            File keyStoreFile = new File("/Users/chathuri/dev/airavata/credential-store/oa4mp/airavata.jks");
+            File keyStoreFile = new File("/Users/smarru/code/airavata-master/modules/configuration/server/src/main/resources/airavata.jks");
             FileInputStream fis = new FileInputStream(keyStoreFile);
             char[] password = "airavata".toCharArray();
             ks.load(fis,password);
@@ -114,7 +114,7 @@ public class TestSSLClient {
             System.out.println("Certificate Token :" + token);
             CertificateCredential credential = client.getCertificateCredential(token, "testGateway");
             System.out.println("certificate : " + credential.getX509Cert());
-            System.out.println("gateway name  : " + credential.getCommunityUser().getGatewayNmae());
+            System.out.println("gateway name  : " + credential.getCommunityUser().getGatewayName());
         }catch (TTransportException e) {
             e.printStackTrace();
         } catch (TException e) {
