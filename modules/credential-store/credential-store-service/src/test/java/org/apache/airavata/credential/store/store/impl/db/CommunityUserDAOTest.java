@@ -45,11 +45,11 @@ public class CommunityUserDAOTest extends DatabaseTestCases {
         waitTillServerStarts();
 
         String createTable = "CREATE TABLE COMMUNITY_USER\n" + "                (\n"
-                + "                        GATEWAY_NAME VARCHAR(256) NOT NULL,\n"
+                + "                        GATEWAY_ID VARCHAR(256) NOT NULL,\n"
                 + "                        COMMUNITY_USER_NAME VARCHAR(256) NOT NULL,\n"
                 + "                        TOKEN_ID VARCHAR(256) NOT NULL,\n"
                 + "                        COMMUNITY_USER_EMAIL VARCHAR(256) NOT NULL,\n"
-                + "                        PRIMARY KEY (GATEWAY_NAME, COMMUNITY_USER_NAME, TOKEN_ID)\n"
+                + "                        PRIMARY KEY (GATEWAY_ID, COMMUNITY_USER_NAME, TOKEN_ID)\n"
                 + "                )";
 
         String dropTable = "drop table COMMUNITY_USER";

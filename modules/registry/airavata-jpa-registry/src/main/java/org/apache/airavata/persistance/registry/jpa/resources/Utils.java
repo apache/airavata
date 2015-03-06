@@ -746,6 +746,7 @@ public class Utils {
             schedulingResource.setJobStartTime(o.getJobStartTime());
             schedulingResource.setPhysicalMemory(o.getTotalPhysicalmemory());
             schedulingResource.setProjectName(o.getProjectName());
+            schedulingResource.setChessisName(o.getChessisName());
         }
 
         return schedulingResource;
