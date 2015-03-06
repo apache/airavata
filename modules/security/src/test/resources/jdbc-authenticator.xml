@@ -26,7 +26,7 @@
         <specificConfigurations>
             <database>
                 <!--jdbcUrl>jdbc:h2:modules/commons/airavata-registry-rest/src/test/resources/testdb/test</jdbcUrl-->
-                <jdbcUrl>jdbc:derby://localhost:20000/persistent_data;create=true</jdbcUrl>
+                <jdbcUrl>jdbc:derby://localhost:20000/experiment_catalog;create=true</jdbcUrl>
                 <userName>admin</userName>
                 <password>admin</password>
                 <databaseDriver>org.apache.derby.jdbc.ClientDriver</databaseDriver>

@@ -62,7 +62,7 @@ public class DatabaseTestCases {
 
     public static String getJDBCUrl() {
         return new StringBuilder().append("jdbc:derby://").append(getHostAddress()).append(":").append(getPort())
-                .append("/persistent_data;create=true;user=").append(getUserName()).append(";password=")
+                .append("/experiment_catalog;create=true;user=").append(getUserName()).append(";password=")
                 .append(getPassword()).toString();
     }
 
