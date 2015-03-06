@@ -36,6 +36,7 @@ import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
+import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.thrift.TException;
@@ -60,7 +61,7 @@ public class CreateLaunchExperiment {
     private static String echoAppId = "Echo_f828a575-7f17-4149-9d45-abe2aa9c6109";
     private static String mpiAppId = "HelloMPI_720e159f-198f-4daa-96ca-9f5eafee92c9";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
-    private static String amberAppId = "Amber_6321b79f-3891-4421-b6c0-e294043a302e";
+    private static String amberAppId = "Amber_a56d457c-f239-4c0b-ba00-66bda936f7bc";
     private static String gromacsAppId = "GROMACS_05622038-9edd-4cb1-824e-0b7cb993364b";
     private static String espressoAppId = "ESPRESSO_10cc2820-5d0b-4c63-9546-8a8b595593c1";
     private static String lammpsAppId = "LAMMPS_10893eb5-3840-438c-8446-d26c7ecb001f";
@@ -74,19 +75,68 @@ public class CreateLaunchExperiment {
     private static String unicoreHostName = "fsd-cloud15.zam.kfa-juelich.de";
     private static String stampedeHostName = "stampede.tacc.xsede.org";
     private static String br2HostName = "bigred2.uits.iu.edu";
+
+    private static String gatewayId;
     
  // unicore service endpoint url
     private static final String unicoreEndPointURL = "https://fsd-cloud15.zam.kfa-juelich.de:7000/INTEROP1/services/BESFactory?res=default_bes_factory";
     
     
     public static void main(String[] args) throws Exception {
-                airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
-                System.out.println("API version is " + airavataClient.getAPIVersion());
-//                registerApplications(); // run this only the first time
-                createAndLaunchExp();
+        airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
+        System.out.println("API version is " + airavataClient.getAPIVersion());
+//        createGateway();
+//        getGateway("testGatewayId");
+//      registerApplications(); // run this only the first time
+      createAndLaunchExp();
     }
     
     private static String fsdResourceId;
+
+
+    public static void createGateway(){
+        try {
+            Gateway gateway = new Gateway();
+            gateway.setGatewayId("testGatewayId2");
+            gateway.setGatewayName("testGateway2");
+            gatewayId = airavataClient.addGateway(gateway);
+            System.out.println(gatewayId);
+        } catch (AiravataSystemException e) {
+            e.printStackTrace();
+        } catch (InvalidRequestException e) {
+            e.printStackTrace();
+        } catch (AiravataClientException e) {
+            e.printStackTrace();
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static void getGateway(String gatewayId){
+        try {
+            Gateway gateway = airavataClient.getGateway(gatewayId);
+            gateway.setDomain("testDomain");
+            airavataClient.updateGateway(gatewayId, gateway);
+            List<Gateway> allGateways = airavataClient.getAllGateways();
+            System.out.println(allGateways.size());
+            if (airavataClient.isGatewayExist(gatewayId)){
+                Gateway gateway1 = airavataClient.getGateway(gatewayId);
+                System.out.println(gateway1.getGatewayName());
+            }
+            boolean b = airavataClient.deleteGateway("testGatewayId2");
+            System.out.println(b);
+        } catch (AiravataSystemException e) {
+            e.printStackTrace();
+        } catch (InvalidRequestException e) {
+            e.printStackTrace();
+        } catch (AiravataClientException e) {
+            e.printStackTrace();
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 
     public static void createAndLaunchExp() throws TException {
@@ -115,7 +165,7 @@ public class CreateLaunchExperiment {
                 System.out.println("Experiment ID : " + expId);
 //                updateExperiment(airavata, expId);
 
-//                launchExperiment(airavataClient, expId);
+                launchExperiment(airavataClient, expId);
             }
         } catch (Exception e) {
             logger.error("Error while connecting with server", e.getMessage());
@@ -1437,11 +1487,11 @@ public class CreateLaunchExperiment {
 //			}
 			for (InputDataObjectType inputDataObjectType : exInputs) {
 					if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
-						inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/02_Heat.rst");
+						inputDataObjectType.setValue("/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/02_Heat.rst");
 					} else if (inputDataObjectType.getName().equalsIgnoreCase("Production_Control_File")) {
-						inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/03_Prod.in");
+						inputDataObjectType.setValue("/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/03_Prod.in");
 					} else if (inputDataObjectType.getName().equalsIgnoreCase("Parameter_Topology_File")) {
-						inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/prmtop");
+						inputDataObjectType.setValue("/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/prmtop");
 					}
 			}
 			List<OutputDataObjectType> exOut = client.getApplicationOutputs(amberAppId);

@@ -65,6 +65,6 @@ import org.slf4j.LoggerFactory;
    *              in a change to major/minor version numbers.
    * 
    */
-  public static final String AIRAVATA_API_VERSION = "0.14.0";
+  public static final String AIRAVATA_API_VERSION = "0.15.0";
 
 }

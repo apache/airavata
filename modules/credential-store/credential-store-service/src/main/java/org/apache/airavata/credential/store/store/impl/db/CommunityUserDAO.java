@@ -78,7 +78,7 @@ public class CommunityUserDAO extends ParentDAO {
 
     public void deleteCommunityUser(CommunityUser user, Connection connection) throws CredentialStoreException {
 
-        String sql = "DELETE FROM COMMUNITY_USER WHERE GATEWAY_NAME=? AND COMMUNITY_USER_NAME=?";
+        String sql = "DELETE FROM COMMUNITY_USER WHERE GATEWAY_ID=? AND COMMUNITY_USER_NAME=?";
 
         PreparedStatement preparedStatement = null;
 
@@ -108,7 +108,7 @@ public class CommunityUserDAO extends ParentDAO {
     public void deleteCommunityUserByToken(CommunityUser user, String token, Connection connection)
             throws CredentialStoreException {
 
-        String sql = "DELETE FROM COMMUNITY_USER WHERE GATEWAY_NAME=? AND COMMUNITY_USER_NAME=? AND TOKEN_ID=?";
+        String sql = "DELETE FROM COMMUNITY_USER WHERE GATEWAY_ID=? AND COMMUNITY_USER_NAME=? AND TOKEN_ID=?";
 
         PreparedStatement preparedStatement = null;
 
@@ -144,7 +144,7 @@ public class CommunityUserDAO extends ParentDAO {
     public CommunityUser getCommunityUser(String gatewayName, String communityUserName, Connection connection)
             throws CredentialStoreException {
 
-        String sql = "SELECT * FROM COMMUNITY_USER WHERE GATEWAY_NAME=? AND COMMUNITY_USER_NAME=?";
+        String sql = "SELECT * FROM COMMUNITY_USER WHERE GATEWAY_ID=? AND COMMUNITY_USER_NAME=?";
 
         PreparedStatement preparedStatement = null;
 
@@ -181,7 +181,7 @@ public class CommunityUserDAO extends ParentDAO {
     public CommunityUser getCommunityUserByToken(String gatewayName, String tokenId, Connection connection)
             throws CredentialStoreException {
 
-        String sql = "SELECT * FROM COMMUNITY_USER WHERE GATEWAY_NAME=? AND TOKEN_ID=?";
+        String sql = "SELECT * FROM COMMUNITY_USER WHERE GATEWAY_ID=? AND TOKEN_ID=?";
 
         PreparedStatement preparedStatement = null;
 
@@ -221,7 +221,7 @@ public class CommunityUserDAO extends ParentDAO {
 
         List<CommunityUser> userList = new ArrayList<CommunityUser>();
 
-        String sql = "SELECT * FROM COMMUNITY_USER WHERE GATEWAY_NAME=?";
+        String sql = "SELECT * FROM COMMUNITY_USER WHERE GATEWAY_ID=?";
 
         PreparedStatement preparedStatement = null;
 
