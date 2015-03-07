@@ -58,7 +58,7 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_GATEWAY = "php_reference_gateway";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_f828a575-7f17-4149-9d45-abe2aa9c6109";
+    private static String echoAppId = "Echo_802454e5-6358-4371-9a04-3d5d59cecbc7";
     private static String mpiAppId = "HelloMPI_720e159f-198f-4daa-96ca-9f5eafee92c9";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
     private static String amberAppId = "Amber_a56d457c-f239-4c0b-ba00-66bda936f7bc";
@@ -69,15 +69,15 @@ public class CreateLaunchExperiment {
     private static String trinityAppId = "Trinity_e894acf5-9bca-46e8-a1bd-7e2d5155191a";
     private static String autodockAppId = "AutoDock_43d9fdd0-c404-49f4-b913-3abf9080a8c9";
 
-
     private static String localHost = "localhost";
     private static String trestlesHostName = "trestles.sdsc.xsede.org";
     private static String unicoreHostName = "fsd-cloud15.zam.kfa-juelich.de";
     private static String stampedeHostName = "stampede.tacc.xsede.org";
     private static String br2HostName = "bigred2.uits.iu.edu";
+    private static String umassrcHostName = "ghpcc06.umassrc.org";
 
     private static String gatewayId;
-    
+
  // unicore service endpoint url
     private static final String unicoreEndPointURL = "https://fsd-cloud15.zam.kfa-juelich.de:7000/INTEROP1/services/BESFactory?res=default_bes_factory";
     
@@ -88,7 +88,7 @@ public class CreateLaunchExperiment {
 //        createGateway();
 //        getGateway("testGatewayId");
 //      registerApplications(); // run this only the first time
-      createAndLaunchExp();
+        createAndLaunchExp();
     }
     
     private static String fsdResourceId;
@@ -154,13 +154,14 @@ public class CreateLaunchExperiment {
 //                final String expId = createExperimentForBR2Amber(airavataClient);
 //                final String expId = createExperimentWRFStampede(airavataClient);
 //                final String expId = createExperimentForStampedeAmber(airavataClient);
-                final String expId = createExperimentForTrestlesAmber(airavataClient);
+//                final String expId = createExperimentForTrestlesAmber(airavataClient);
 //                final String expId = createExperimentGROMACSStampede(airavataClient);
 //                final String expId = createExperimentESPRESSOStampede(airavataClient);
 //                final String expId = createExperimentLAMMPSStampede(airavataClient);
 //                final String expId = createExperimentNWCHEMStampede(airavataClient);
 //                final String expId = createExperimentTRINITYStampede(airavataClient);
 //                final String expId = createExperimentAUTODOCKStampede(airavataClient); // this is not working , we need to register AutoDock app on stampede
+                final String expId = createExperimentForLSF(airavataClient);
 //            	  final String expId = "Ultrascan_ln_eb029947-391a-4ccf-8ace-9bafebe07cc0";
                 System.out.println("Experiment ID : " + expId);
 //                updateExperiment(airavata, expId);
@@ -184,6 +185,8 @@ public class CreateLaunchExperiment {
 
         //Register all compute hosts
         registerSampleApplications.registerXSEDEHosts();
+
+        registerSampleApplications.registerNonXSEDEHosts();
 
         //Register Gateway Resource Preferences
         registerSampleApplications.registerGatewayResourceProfile();
@@ -1343,6 +1346,63 @@ public class CreateLaunchExperiment {
         return null;
     }
 
+    public static String createExperimentForLSF(Airavata.Client client) throws TException {
+        try {
+            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            InputDataObjectType input = new InputDataObjectType();
+            input.setName("Input_to_Echo");
+            input.setType(DataType.STRING);
+            input.setValue("Echoed_Output=Hello World");
+            input.setRequiredToAddedToCommandLine(true);
+            exInputs.add(input);
+
+            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
+            OutputDataObjectType output = new OutputDataObjectType();
+            output.setName("output_file");
+            output.setType(DataType.URI);
+            output.setValue("");
+            exOut.add(output);
+
+            Project project = ProjectModelUtil.createProject("default", "lg11w", "test project");
+            String projectId = client.createProject(DEFAULT_GATEWAY, project);
+
+            Experiment simpleExperiment =
+                    ExperimentModelUtil.createSimpleExperiment(projectId, "lg11w", "sshEchoExperiment", "StressMem", echoAppId, exInputs);
+            simpleExperiment.setExperimentOutputs(exOut);
+
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(echoAppId);
+            if (computeResources != null && computeResources.size() != 0) {
+                for (String id : computeResources.keySet()) {
+                    String resourceName = computeResources.get(id);
+                    if (resourceName.equals(umassrcHostName)) {
+                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 10, 1, 1, "long", 60, 0, 1000, "airavata");
+                        UserConfigurationData userConfigurationData = new UserConfigurationData();
+                        userConfigurationData.setAiravataAutoSchedule(false);
+                        userConfigurationData.setOverrideManualScheduledParams(false);
+                        userConfigurationData.setComputationalResourceScheduling(scheduling);
+                        simpleExperiment.setUserConfigurationData(userConfigurationData);
+                        simpleExperiment.setEmailAddresses(Arrays.asList(new String[]{"test@umassmed.edu"}));
+                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+                    }
+                }
+            }
+        } catch (AiravataSystemException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataSystemException(e);
+        } catch (InvalidRequestException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new InvalidRequestException(e);
+        } catch (AiravataClientException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataClientException(e);
+        } catch (TException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new TException(e);
+        }
+        return null;
+    }
+
+
     public static String createExperimentForBR2Amber(Airavata.Client client) throws TException {
         try {
 			List<InputDataObjectType> exInputs = client.getApplicationInputs(amberAppId);
@@ -1538,8 +1598,7 @@ public class CreateLaunchExperiment {
     public static void launchExperiment(Airavata.Client client, String expId)
             throws TException {
         try {
-//        	String tokenId = "5f116091-0ad3-4ab6-9df7-6ac909f21f8b";
-        	String tokenId ="aaaaaa";
+        	String tokenId ="aa-dcdb-48e3-9cd5-ac90b710d55e";
             client.launchExperiment(expId, tokenId);
         } catch (ExperimentNotFoundException e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());

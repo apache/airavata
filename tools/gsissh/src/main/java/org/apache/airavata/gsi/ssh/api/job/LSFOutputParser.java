@@ -57,6 +57,7 @@ public class LSFOutputParser implements OutputParser {
     @Override
     public void parseJobStatuses(String userName, Map<String, JobStatus> statusMap, String rawOutput) throws SSHApiException {
         logger.debug(rawOutput);
+
         String[]    info = rawOutput.split("\n");
 //        int lastStop = 0;
         for (String jobID : statusMap.keySet()) {

@@ -80,7 +80,7 @@ public class LSFJobConfiguration implements JobManagerConfiguration {
 
     @Override
     public RawCommandInfo getSubmitCommand(String workingDirectory, String pbsFilePath) {
-        return new RawCommandInfo(this.installedPath + "bsub <" +
+        return new RawCommandInfo(this.installedPath + "bsub < " +
                 workingDirectory + File.separator + FilenameUtils.getName(pbsFilePath));
     }
 
@@ -96,5 +96,21 @@ public class LSFJobConfiguration implements JobManagerConfiguration {
     @Override
     public String getInstalledPath() {
         return installedPath;
+    }
+
+
+    @Override
+    public String getBaseCancelCommand() {
+        return "bkill";
+    }
+
+    @Override
+    public String getBaseMonitorCommand() {
+        return "bjobs";
+    }
+
+    @Override
+    public String getBaseSubmitCommand() {
+        return "bsub";
     }
 }

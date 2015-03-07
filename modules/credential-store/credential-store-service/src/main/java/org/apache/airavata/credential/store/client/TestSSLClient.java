@@ -63,7 +63,7 @@ public class TestSSLClient {
             TProtocol protocol = new TBinaryProtocol(transport);
 
             CredentialStoreService.Client client = new CredentialStoreService.Client(protocol);
-//            testSSHCredential(client);
+            testSSHCredential(client);
             testCertificateCredential(client);
             transport.close();
         } catch (TTransportException e) {

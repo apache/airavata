@@ -26,6 +26,7 @@ import org.apache.airavata.gsi.ssh.api.*;
 import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.config.ConfigReader;
+import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.slf4j.Logger;
@@ -49,17 +50,13 @@ public class DefaultSSHApiTestWithMyProxyAuth {
 
 
     public static void main(String[]ars){
-         String myProxyUserName = "ogce";
-         String myProxyPassword = "OGCE@xsede14";
-         String certificateLocation = "/Users/raminder/.globus/certificates";
+         String myProxyUserName = "lg11w";
 
-
-        GSIAuthenticationInfo authenticationInfo
-                = new MyProxyAuthenticationInfo(myProxyUserName, myProxyPassword, "myproxy.teragrid.org",
-                7512, 17280000, certificateLocation);
+        DefaultPasswordAuthenticationInfo authenticationInfo
+                = new DefaultPasswordAuthenticationInfo("");
 
         // Create command
-        CommandInfo commandInfo = new RawCommandInfo("/bin/ls");
+        CommandInfo commandInfo = new RawCommandInfo("source /etc/bashrc; bsub </home/lg11w/mywork/sshEchoExperiment_9d267072-ca65-4ca8-847a-cd3d130f6050/366787899.lsf");
 
         // Server info
         //Stampede
@@ -68,7 +65,7 @@ public class DefaultSSHApiTestWithMyProxyAuth {
 //        ServerInfo serverInfo = new ServerInfo(myProxyUserName, "trestles.sdsc.xsede.org", 22);
         
         //Lonestar
-         ServerInfo serverInfo = new ServerInfo(myProxyUserName, "lonestar.tacc.utexas.edu", 22);
+         ServerInfo serverInfo = new ServerInfo(myProxyUserName, "ghpcc06.umassrc.org", 22);
         // Output
         CommandOutput commandOutput = new SystemCommandOutput();
 
