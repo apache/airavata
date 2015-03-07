@@ -325,9 +325,7 @@ public class GFACSSHUtils {
         if (computationalProjectAccount != null) {
             jobDescriptor.setAcountString(computationalProjectAccount);
         }
-        Random random = new Random();
-        int i = random.nextInt(Integer.MAX_VALUE);
-        jobDescriptor.setJobName(String.valueOf(i + 99999999));
+        jobDescriptor.setJobName(String.valueOf(generateJobName()));
         jobDescriptor.setWorkingDirectory(jobExecutionContext.getWorkingDir());
 
         List<String> inputValues = new ArrayList<String>();
@@ -453,6 +451,16 @@ public class GFACSSHUtils {
             }
         }
         return jobDescriptor;
+    }
+
+    private static int generateJobName() {
+        Random random = new Random();
+        int i = random.nextInt(Integer.MAX_VALUE);
+        i = i + 99999999;
+        if(i<0) {
+            i = i * (-1);
+        }
+        return i;
     }
 
     private static String parseCommand(String value, JobExecutionContext jobExecutionContext) {

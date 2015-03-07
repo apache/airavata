@@ -94,16 +94,17 @@ public class LSFOutputParser implements OutputParser {
         String test = "Job <2477982> is submitted to queue <short>.";
         System.out.println(test.substring(test.indexOf("<")+1, test.indexOf(">")));
         String test1 = "JOBID   USER    STAT  QUEUE      FROM_HOST   EXEC_HOST   JOB_NAME   SUBMIT_TIME\n" +
-                "2477983 cjh     RUN   short      ghpcc05     c17b06      *sleep_300 Feb 25 10:25";
+                "2636607 lg11w   RUN   long       ghpcc06     c11b02      *069656647 Mar  7 00:58\n" +
+                "2636582 lg11w   RUN   long       ghpcc06     c02b01      2134490944 Mar  7 00:48";
         Map<String, JobStatus> statusMap = new HashMap<String, JobStatus>();
-        statusMap.put("2477983,*sleep_300", JobStatus.U);
+        statusMap.put("2477983,2134490944", JobStatus.U);
         LSFOutputParser lsfOutputParser = new LSFOutputParser();
         try {
             lsfOutputParser.parseJobStatuses("cjh", statusMap, test1);
         } catch (SSHApiException e) {
             logger.error(e.getMessage(), e);
         }
-        System.out.println(statusMap.get("2477983,*sleep_300"));
+        System.out.println(statusMap.get("2477983,2134490944"));
 
     }
 }
