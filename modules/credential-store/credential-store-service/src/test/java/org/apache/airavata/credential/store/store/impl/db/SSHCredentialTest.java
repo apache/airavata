@@ -38,7 +38,7 @@ import java.io.IOException;
 public class SSHCredentialTest {
 
     public static void main(String[] args) {
-        String jdbcURL = "jdbc:derby://localhost:1527/persistent_data;create=true;user=airavata;password=airavata";
+        String jdbcURL = "jdbc:derby://localhost:1527/experiment_catalog;create=true;user=airavata;password=airavata";
         String jdbcDriver = "org.apache.derby.jdbc.ClientDriver";
         String userName = "airavata";
         String password = "airavata";
