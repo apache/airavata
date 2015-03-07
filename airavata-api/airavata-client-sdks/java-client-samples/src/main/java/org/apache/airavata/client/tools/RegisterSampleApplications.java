@@ -54,6 +54,8 @@ public class RegisterSampleApplications {
     private static String stampedeResourceId = "stampede.tacc.xsede.org_92ac5ed6-35a5-4910-82ef-48f128f9245a";
     private static String trestlesResourceId = "trestles.sdsc.xsede.org_db29986e-5a27-4949-ae7f-04a6012d0d35";
     private static String bigredResourceId = "bigred2.uits.iu.edu_3eae6e9d-a1a7-44ec-ac85-3796ef726ef1";
+    private static String lsfResourceId = "lsf_3eae6e9d-a1a7-44ec-ac85-3796ef726ef1";
+
     private static String fsdResourceId;
  // unicore service endpoint url
     private static final String unicoreEndPointURL = "https://fsd-cloud15.zam.kfa-juelich.de:7000/INTEROP1/services/BESFactory?res=default_bes_factory";
@@ -73,6 +75,7 @@ public class RegisterSampleApplications {
     private static final String monteXName = "TinkerMonte";
     private static final String gaussianName = "Gaussian";
     private static final String gamessName = "Gamess";
+    private static final String stressMemName = "StressMem";
 
     //Appplication Descriptions
     private static final String echoDescription = "A Simple Echo Application";
@@ -89,6 +92,7 @@ public class RegisterSampleApplications {
     private static final String monteXDescription = "Grid Chem Tinker Monte Application";
     private static final String gaussianDescription = "Grid Chem Gaussian Application";
     private static final String gamessDescription = "A Gamess Application";
+
 
     //App Module Id's
     private static String echoModuleId;
@@ -136,6 +140,7 @@ public class RegisterSampleApplications {
             //Register all compute hosts
             registerSampleApplications.registerXSEDEHosts();
 
+            registerSampleApplications.registerNonXSEDEHosts();
 
             //Register Gateway Resource Preferences
             registerSampleApplications.registerGatewayResourceProfile();
@@ -200,10 +205,24 @@ public class RegisterSampleApplications {
             bigredResourceId = registerComputeHost("bigred2.uits.iu.edu", "IU BigRed II Cluster",
                     ResourceJobManagerType.PBS, "push", "/opt/torque/torque-4.2.3.1/bin/", SecurityProtocol.SSH_KEYS, 22, "aprun -n");
             System.out.println("BigredII Resource Id is " + bigredResourceId);
-            
+
             fsdResourceId = registerUnicoreEndpoint("fsd-cloud15.zam.kfa-juelich.de", "interop host", JobSubmissionProtocol.UNICORE, SecurityProtocol.GSI);
             System.out.println("FSd Resource Id: "+fsdResourceId);
-            
+
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void registerNonXSEDEHosts() {
+        try {
+            System.out.println("\n #### Registering Non-XSEDE Computational Resources #### \n");
+
+            //Register LSF resource
+            lsfResourceId = registerComputeHost("ghpcc06.umassrc.org", "LSF Cluster",
+                    ResourceJobManagerType.LSF, "push", "source /etc/bashrc;/lsf/9.1/linux2.6-glibc2.3-x86_64/bin", SecurityProtocol.SSH_KEYS, 22, null);
+            System.out.println("LSF Resource Id is " + lsfResourceId);
 
         } catch (TException e) {
             e.printStackTrace();
@@ -317,7 +336,6 @@ public class RegisterSampleApplications {
                             gamessName, "17May13", gamessDescription));
             System.out.println("Gamess Module Id " + gamessModuleId);
 
-
         } catch (TException e) {
             e.printStackTrace();
         }
@@ -341,6 +359,7 @@ public class RegisterSampleApplications {
         //Registering FSD Apps
         registerFSDApps();
 
+        registerLSFApps();
 
     }
 
@@ -493,8 +512,8 @@ public class RegisterSampleApplications {
             e.printStackTrace();
         }
     }
-    
-    
+
+
     public void registerMPIInterface() {
         try {
             System.out.println("#### Registering MPI Interface #### \n");
@@ -1084,6 +1103,22 @@ public class RegisterSampleApplications {
         }
     }
 
+    public void registerLSFApps() {
+        try {
+            System.out.println("#### Registering Application Deployments on Trestles #### \n");
+
+            //Register Echo
+            String echoAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
+                    RegisterSampleApplicationsUtils.createApplicationDeployment(echoModuleId, lsfResourceId,
+                            "/home/lg11w/executables/echo.sh", ApplicationParallelismType.SERIAL,
+                            echoDescription, null, null, null));
+            System.out.println("Echo on trestles deployment Id " + echoAppDeployId);
+
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void registerBigRedApps() {
         try {
             System.out.println("#### Registering Application Deployments on BigRed II #### \n");
@@ -1127,7 +1162,7 @@ public class RegisterSampleApplications {
             e.printStackTrace();
         }
     }
-    
+
     public void registerFSDApps() {
         try {
             System.out.println("#### Registering Application Deployments on FSD #### \n");
@@ -1207,6 +1242,10 @@ public class RegisterSampleApplications {
             ComputeResourcePreference bigRedResourcePreferences = RegisterSampleApplicationsUtils.
                     createComputeResourcePreference(bigredResourceId, "TG-STA110014S", false, null, null, null,
                             "/N/dc2/scratch/cgateway/gta-work-dirs");
+
+            ComputeResourcePreference lsfResourcePreferences = RegisterSampleApplicationsUtils.
+                    createComputeResourcePreference(lsfResourceId, "airavata", false, null, null, null,
+                            "/home/lg11w/mywork");
             
             ComputeResourcePreference fsdResourcePreferences = RegisterSampleApplicationsUtils.
                     createComputeResourcePreference(fsdResourceId, null, false, null, JobSubmissionProtocol.UNICORE, DataMovementProtocol.UNICORE_STORAGE_SERVICE,null);
@@ -1217,6 +1256,7 @@ public class RegisterSampleApplications {
             gatewayResourceProfile.addToComputeResourcePreferences(trestlesResourcePreferences);
             gatewayResourceProfile.addToComputeResourcePreferences(bigRedResourcePreferences);
             gatewayResourceProfile.addToComputeResourcePreferences(fsdResourcePreferences);
+            gatewayResourceProfile.addToComputeResourcePreferences(lsfResourcePreferences);
 
             String gatewayProfile = airavataClient.registerGatewayResourceProfile(gatewayResourceProfile);
             System.out.println("Gateway Profile is registered with Id " + gatewayProfile);
@@ -1232,6 +1272,7 @@ public class RegisterSampleApplications {
             properties.setProperty("stampedeResourceId", stampedeResourceId);
             properties.setProperty("trestlesResourceId", trestlesResourceId);
             properties.setProperty("bigredResourceId", bigredResourceId);
+            properties.setProperty("lsfResourceId", lsfResourceId);
 
             properties.setProperty("echoInterfaceId", echoInterfaceId);
             properties.setProperty("amberInterfaceId", amberInterfaceId);

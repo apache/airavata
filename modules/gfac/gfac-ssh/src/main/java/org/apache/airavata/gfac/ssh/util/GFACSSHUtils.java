@@ -25,6 +25,7 @@ import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
+import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.RequestData;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
@@ -41,6 +42,7 @@ import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.api.job.JobManagerConfiguration;
 import org.apache.airavata.gsi.ssh.impl.GSISSHAbstractCluster;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
+import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
@@ -96,15 +98,21 @@ public class GFACSSHUtils {
 
                     Cluster pbsCluster = null;
                     try {
-                        TokenizedSSHAuthInfo tokenizedSSHAuthInfo = new TokenizedSSHAuthInfo(requestData);
+                        AuthenticationInfo tokenizedSSHAuthInfo = new TokenizedSSHAuthInfo(requestData);
                         String installedParentPath = jobExecutionContext.getResourceJobManager().getJobManagerBinPath();
                         if (installedParentPath == null) {
                             installedParentPath = "/";
                         }
 
-                        SSHCredential credentials = tokenizedSSHAuthInfo.getCredentials();// this is just a call to get and set credentials in to this object,data will be used
+                        SSHCredential credentials =((TokenizedSSHAuthInfo)tokenizedSSHAuthInfo).getCredentials();// this is just a call to get and set credentials in to this object,data will be used
+                        if(credentials.getPrivateKey()==null || credentials.getPublicKey()==null){
+                            // now we fall back to username password authentication
+                            Properties configurationProperties = ServerSettings.getProperties();
+                            tokenizedSSHAuthInfo = new DefaultPasswordAuthenticationInfo(configurationProperties.getProperty(Constants.SSH_PASSWORD));
+                        }
                         serverInfo.setUserName(credentials.getPortalUserName());
                         jobExecutionContext.getExperiment().setUserName(credentials.getPortalUserName());
+
                         // inside the pbsCluser object
 
                         String key = credentials.getPortalUserName() + jobExecutionContext.getHostName() + serverInfo.getPort();
@@ -147,8 +155,11 @@ public class GFACSSHUtils {
                                          jConfig = CommonUtils.getSLURMJobManager(installedParentPath);
                                      } else if (SUN_GRID_ENGINE_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
                                          jConfig = CommonUtils.getSGEJobManager(installedParentPath);
+                                     } else if (LSF_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
+                                         jConfig = CommonUtils.getLSFJobManager(installedParentPath);
                                      }
                                  }
+
                                 pbsCluster = new PBSCluster(serverInfo, tokenizedSSHAuthInfo,jConfig);
                                 List<Cluster> pbsClusters = null;
                                 if (!(clusters.containsKey(key))) {
@@ -322,7 +333,7 @@ public class GFACSSHUtils {
         List<String> inputValues = new ArrayList<String>();
         MessageContext input = jobExecutionContext.getInMessageContext();
 
-        // sort the inputs first and then build the command List
+        // sort the inputs first and then build the command ListR
         Comparator<InputDataObjectType> inputOrderComparator = new Comparator<InputDataObjectType>() {
             @Override
             public int compare(InputDataObjectType inputDataObjectType, InputDataObjectType t1) {
@@ -411,6 +422,12 @@ public class GFACSSHUtils {
             }
             if (taskScheduling.getWallTimeLimit() > 0) {
                 jobDescriptor.setMaxWallTime(String.valueOf(taskScheduling.getWallTimeLimit()));
+                if(resourceJobManager.getResourceJobManagerType().equals(ResourceJobManagerType.LSF)){
+                    jobDescriptor.setMaxWallTimeForLSF(String.valueOf(taskScheduling.getWallTimeLimit()));
+                }
+            }
+            if (taskScheduling.getTotalPhysicalMemory() > 0) {
+                jobDescriptor.setUsedMemory(taskScheduling.getTotalPhysicalMemory() + "");
             }
         } else {
             logger.error("Task scheduling cannot be null at this point..");

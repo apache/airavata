@@ -43,8 +43,8 @@ public class SSHCredentialTest {
         String userName = "airavata";
         String password = "airavata";
         String gatewayId = "default";
-        String privateKeyPath = "/Users/chathuri/.ssh/id_dsa";
-        String pubKeyPath = "/Users/chathuri/.ssh/id_dsa.pub";
+        String privateKeyPath = "/Users/lginnali/.ssh/id_dsa";
+        String pubKeyPath = "/Users/lginnali/.ssh/id_dsa.pub";
 
         try {
             AiravataUtils.setExecutionAsServer();
@@ -67,7 +67,7 @@ public class SSHCredentialTest {
             pubKeyStream.close();
             sshCredential.setPrivateKey(bFilePub);
             sshCredential.setPublicKey(bFilePub);
-            sshCredential.setPassphrase("test");
+            sshCredential.setPassphrase("gjtlmiJdas7wph");
             writer.writeCredentials(sshCredential);
             System.out.println(token);
         } catch (ClassNotFoundException e) {

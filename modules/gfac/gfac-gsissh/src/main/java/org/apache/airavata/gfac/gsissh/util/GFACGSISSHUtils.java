@@ -60,6 +60,8 @@ public class GFACGSISSHUtils {
     public static final String PBS_JOB_MANAGER = "pbs";
     public static final String SLURM_JOB_MANAGER = "slurm";
     public static final String SUN_GRID_ENGINE_JOB_MANAGER = "UGE";
+    public static final String LSF_JOB_MANAGER = "lsf";
+
     public static int maxClusterCount = 5;
     public static Map<String, List<Cluster>> clusters = new HashMap<String, List<Cluster>>();
 
@@ -138,6 +140,8 @@ public class GFACGSISSHUtils {
                                 jConfig = CommonUtils.getSLURMJobManager(installedParentPath);
                             } else if (SUN_GRID_ENGINE_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
                                 jConfig = CommonUtils.getSGEJobManager(installedParentPath);
+                            }else if(LSF_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
+                                jConfig = CommonUtils.getLSFJobManager(installedParentPath);
                             }
                         }
                         pbsCluster = new PBSCluster(serverInfo, tokenizedMyProxyAuthInfo, jConfig);
@@ -177,7 +181,7 @@ public class GFACGSISSHUtils {
 			if(ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_ENABLE).equalsIgnoreCase("true")){
 				jobDescriptor.setMailOptions(ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_FLAGS));
 				String emailids = ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_EMAILIDS);
-			
+
 				if(jobExecutionContext.getTaskData().isSetEmailAddresses()){
 					List<String> emailList = jobExecutionContext.getTaskData().getEmailAddresses();
 					String elist = GFacUtils.listToCsv(emailList, ',');
@@ -204,6 +208,7 @@ public class GFACGSISSHUtils {
         jobDescriptor.setStandardOutFile(jobExecutionContext.getStandardOutput());
         jobDescriptor.setStandardErrorFile(jobExecutionContext.getStandardError());
         String computationalProjectAccount = taskData.getTaskScheduling().getComputationalProjectAccount();
+        taskData.getEmailAddresses();
         if (computationalProjectAccount == null){
             ComputeResourcePreference computeResourcePreference = jobExecutionContext.getApplicationContext().getComputeResourcePreference();
             if (computeResourcePreference != null) {
@@ -311,6 +316,9 @@ public class GFACGSISSHUtils {
             }
             if (taskScheduling.getWallTimeLimit() > 0) {
                 jobDescriptor.setMaxWallTime(String.valueOf(taskScheduling.getWallTimeLimit()));
+                if(resourceJobManager.getResourceJobManagerType().equals(ResourceJobManagerType.LSF)){
+                    jobDescriptor.setMaxWallTimeForLSF(String.valueOf(taskScheduling.getWallTimeLimit()));
+                }
             }
 
             if (taskScheduling.getTotalPhysicalMemory() > 0) {

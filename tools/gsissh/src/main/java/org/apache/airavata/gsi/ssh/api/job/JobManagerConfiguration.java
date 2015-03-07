@@ -37,6 +37,13 @@ public interface JobManagerConfiguration {
 	public RawCommandInfo getSubmitCommand(String workingDirectory, String pbsFilePath);
 
 	public OutputParser getParser();
-	
+
 	public String getInstalledPath();
+
+	public String getBaseCancelCommand();
+
+	public String getBaseMonitorCommand();
+
+	public String getBaseSubmitCommand();
+
 }
