@@ -302,26 +302,26 @@ public class AiravataAPIServer implements IServer, Watcher{
         synchronized (mutex) {
             Event.KeeperState state = watchedEvent.getState();
             logger.info(state.name());
-            if (state == Event.KeeperState.SyncConnected) {
-                mutex.notify();
-            } else if(state == Event.KeeperState.Expired ||
-                    state == Event.KeeperState.Disconnected){
-                try {
-                    mutex = -1;
-                    zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), 6000, this);
-                    synchronized (mutex) {
-                        mutex.wait();  // waiting for the syncConnected event
+            switch(state){
+                case SyncConnected:
+                    mutex.notify();
+                case Expired:case Disconnected:
+                    try {
+                        mutex = -1;
+                        zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), 6000, this);
+                        synchronized (mutex) {
+                            mutex.wait();  // waiting for the syncConnected event
+                        }
+                        storeServerConfig();
+                    } catch (IOException e) {
+                        logger.error("Error while synchronizing with zookeeper", e);
+                    } catch (ApplicationSettingsException e) {
+                        logger.error("Error while synchronizing with zookeeper", e);
+                    } catch (InterruptedException e) {
+                        logger.error("Error while synchronizing with zookeeper", e);
+                    } catch (AiravataSystemException e) {
+                        logger.error("Error while synchronizing with zookeeper", e);
                     }
-                    storeServerConfig();
-                } catch (IOException e) {
-                    logger.error("Error while synchronizing with zookeeper", e);
-                } catch (ApplicationSettingsException e) {
-                    logger.error("Error while synchronizing with zookeeper", e);
-                } catch (InterruptedException e) {
-                    logger.error("Error while synchronizing with zookeeper", e);
-                } catch (AiravataSystemException e) {
-                    logger.error("Error while synchronizing with zookeeper", e);
-                }
             }
         }
     }

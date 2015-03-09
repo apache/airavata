@@ -67,7 +67,7 @@ public class SSHCredentialTest {
             pubKeyStream.close();
             sshCredential.setPrivateKey(bFilePub);
             sshCredential.setPublicKey(bFilePub);
-            sshCredential.setPassphrase("gjtlmiJdas7wph");
+            sshCredential.setPassphrase("ljclqowueqllad_lqlj");
             writer.writeCredentials(sshCredential);
             System.out.println(token);
         } catch (ClassNotFoundException e) {

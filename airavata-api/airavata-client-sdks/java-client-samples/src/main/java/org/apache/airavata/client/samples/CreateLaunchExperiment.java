@@ -58,7 +58,7 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_GATEWAY = "php_reference_gateway";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_802454e5-6358-4371-9a04-3d5d59cecbc7";
+    private static String echoAppId = "Echo_8506337e-ab7a-46b6-9b71-4a461b6c5e35";
     private static String mpiAppId = "HelloMPI_720e159f-198f-4daa-96ca-9f5eafee92c9";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
     private static String amberAppId = "Amber_a56d457c-f239-4c0b-ba00-66bda936f7bc";
@@ -1348,27 +1348,37 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentForLSF(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(echoAppId);
+
+            for (InputDataObjectType inputDataObjectType : exInputs) {
+                inputDataObjectType.setValue("Hello World");
+            }
+            /*List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
             InputDataObjectType input = new InputDataObjectType();
             input.setName("Input_to_Echo");
             input.setType(DataType.STRING);
             input.setValue("Echoed_Output=Hello World");
             input.setRequiredToAddedToCommandLine(true);
-            exInputs.add(input);
+            exInputs.add(input);*/
 
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
+            /*
             List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
             OutputDataObjectType output = new OutputDataObjectType();
             output.setName("output_file");
             output.setType(DataType.URI);
             output.setValue("");
-            exOut.add(output);
+
+            exOut.add(output);*/
 
             Project project = ProjectModelUtil.createProject("default", "lg11w", "test project");
             String projectId = client.createProject(DEFAULT_GATEWAY, project);
 
+
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment(projectId, "lg11w", "sshEchoExperiment", "StressMem", echoAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
+            simpleExperiment.setExperimentInputs(exInputs);
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(echoAppId);
             if (computeResources != null && computeResources.size() != 0) {
@@ -1598,7 +1608,7 @@ public class CreateLaunchExperiment {
     public static void launchExperiment(Airavata.Client client, String expId)
             throws TException {
         try {
-        	String tokenId ="aa-dcdb-48e3-9cd5-ac90b710d55e";
+        	String tokenId ="-0bbb-403b-a88a-42b6dbe198e9";
             client.launchExperiment(expId, tokenId);
         } catch (ExperimentNotFoundException e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());

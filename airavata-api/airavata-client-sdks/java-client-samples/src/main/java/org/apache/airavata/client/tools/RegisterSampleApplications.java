@@ -497,11 +497,15 @@ public class RegisterSampleApplications {
 //            applicationInputs.add(input2); applicationInputs.add(input3);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Output",
-                    "", DataType.STRING, false, false);
-            
+                    "", DataType.STDOUT, false, false);
+
+            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Error",
+                    "", DataType.STDERR, false, false);
+
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
-            
+            applicationOutputs.add(output2);
+
 
             echoInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(echoName, echoDescription,
