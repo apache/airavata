@@ -44,11 +44,14 @@ import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.thrift.TException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.*;
 
 public class DocumentCreatorNew {
+    private final static Logger log = LoggerFactory.getLogger(DocumentCreatorNew.class);
 
     private static final String DEFAULT_GATEWAY = "php_reference_gateway";
     private AppCatalog appcatalog = null;
@@ -115,7 +118,7 @@ public class DocumentCreatorNew {
                 null, null);
         gatewayResourceProfile = new GatewayResourceProfile();
 //		gatewayResourceProfile.setGatewayID("default");
-        gatewayResourceProfile.setGatewayID(ClientSettings.getSetting("default.registry.gateway", "php_reference_gateway"));
+        gatewayResourceProfile.setGatewayID(DEFAULT_GATEWAY);
         gatewayResourceProfile.addToComputeResourcePreferences(computeResourcePreference);
         String gatewayId = client.registerGatewayResourceProfile(gatewayResourceProfile);
         gatewayResourceProfile.setGatewayID(gatewayId);
@@ -133,7 +136,7 @@ public class DocumentCreatorNew {
         if (gatewayResourceProfile == null) {
             gatewayResourceProfile = new GatewayResourceProfile();
 //				gatewayResourceProfile.setGatewayID("default");
-            gatewayResourceProfile.setGatewayID("php_reference_gateway");
+            gatewayResourceProfile.setGatewayID(DEFAULT_GATEWAY);
             gatewayResourceProfile.setGatewayID(client.registerGatewayResourceProfile(gatewayResourceProfile));
         }
 //    	}

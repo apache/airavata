@@ -2680,6 +2680,17 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public String registerGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
     	try {
+            if (!validateString(gatewayResourceProfile.getGatewayID())){
+                logger.error("Cannot create gateway profile with empty gateway id");
+                AiravataSystemException exception = new AiravataSystemException();
+                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                exception.setMessage("Cannot create gateway profile with empty gateway id");
+                throw exception;
+            }
+            if (!isGatewayExist(gatewayResourceProfile.getGatewayID())){
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            }
             appCatalog = AppCatalogFactory.getAppCatalog();
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
             return gatewayProfile.addGatewayResourceProfile(gatewayResourceProfile);
@@ -2702,6 +2713,10 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public GatewayResourceProfile getGatewayResourceProfile(String gatewayID) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
+            if (!isGatewayExist(gatewayID)){
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            }
             appCatalog = AppCatalogFactory.getAppCatalog();
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
             return gatewayProfile.getGatewayProfile(gatewayID);
@@ -2725,6 +2740,10 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public boolean updateGatewayResourceProfile(String gatewayID, GatewayResourceProfile gatewayResourceProfile) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
+            if (!isGatewayExist(gatewayID)){
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            }
             appCatalog = AppCatalogFactory.getAppCatalog();
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
             gatewayProfile.updateGatewayResourceProfile(gatewayID, gatewayResourceProfile);
@@ -2748,6 +2767,10 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public boolean deleteGatewayResourceProfile(String gatewayID) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
+            if (!isGatewayExist(gatewayID)){
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            }
             appCatalog = AppCatalogFactory.getAppCatalog();
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
             gatewayProfile.removeGatewayResourceProfile(gatewayID);
@@ -2774,6 +2797,10 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public boolean addGatewayComputeResourcePreference(String gatewayID, String computeResourceId, ComputeResourcePreference computeResourcePreference) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
     	try {
+            if (!isGatewayExist(gatewayID)){
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            }
             appCatalog = AppCatalogFactory.getAppCatalog();
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
             if (!gatewayProfile.isGatewayResourceProfileExists(gatewayID)){
@@ -2804,6 +2831,10 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public ComputeResourcePreference getGatewayComputeResourcePreference(String gatewayID, String computeResourceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
     	try {
+            if (!isGatewayExist(gatewayID)){
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            }
             appCatalog = AppCatalogFactory.getAppCatalog();
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
             ComputeResource computeResource = appCatalog.getComputeResource();
@@ -2841,6 +2872,10 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public List<ComputeResourcePreference> getAllGatewayComputeResourcePreferences(String gatewayID) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
     	try {
+            if (!isGatewayExist(gatewayID)){
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            }
             appCatalog = AppCatalogFactory.getAppCatalog();
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
             return gatewayProfile.getGatewayProfile(gatewayID).getComputeResourcePreferences();
@@ -2879,6 +2914,10 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public boolean updateGatewayComputeResourcePreference(String gatewayID, String computeResourceId, ComputeResourcePreference computeResourcePreference) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
     	try {
+            if (!isGatewayExist(gatewayID)){
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            }
             appCatalog = AppCatalogFactory.getAppCatalog();
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
             GatewayResourceProfile profile = gatewayProfile.getGatewayProfile(gatewayID);
@@ -2917,6 +2956,10 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public boolean deleteGatewayComputeResourcePreference(String gatewayID, String computeResourceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
     	try {
+            if (!isGatewayExist(gatewayID)){
+                logger.error("Gateway does not exist.Please provide a valid gateway id...");
+                throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            }
             appCatalog = AppCatalogFactory.getAppCatalog();
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
             return gatewayProfile.removeComputeResourcePreferenceFromGateway(gatewayID, computeResourceId);
