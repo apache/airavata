@@ -156,27 +156,26 @@ public class GfacServerHandler implements GfacService.Iface, Watcher{
         synchronized (mutex) {
             Event.KeeperState state = watchedEvent.getState();
             logger.info(state.name());
-            if (state == Event.KeeperState.SyncConnected) {
-                mutex.notify();
-                connected = true;
-            } else if(state == Event.KeeperState.Expired ||
-                    state == Event.KeeperState.Disconnected){
-                try {
-                    mutex = -1;
-                    zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), 6000, this);
-                    synchronized (mutex) {
-                        mutex.wait();  // waiting for the syncConnected event
+            switch (state){
+                case SyncConnected:
+                    mutex.notify();
+                    break;
+                case Expired:case Disconnected:
+                    try {
+                        zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), 6000, this);
+                        synchronized (mutex) {
+                            mutex.wait();  // waiting for the syncConnected event
+                        }
+                        storeServerConfig();
+                    } catch (IOException e) {
+                        logger.error(e.getMessage(), e);
+                    } catch (ApplicationSettingsException e) {
+                        logger.error(e.getMessage(), e);
+                    } catch (InterruptedException e) {
+                        logger.error(e.getMessage(), e);
+                    } catch (KeeperException e) {
+                        logger.error(e.getMessage(), e);
                     }
-                    storeServerConfig();
-                } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
-                } catch (ApplicationSettingsException e) {
-                    logger.error(e.getMessage(), e);
-                } catch (InterruptedException e) {
-                    logger.error(e.getMessage(), e);
-                } catch (KeeperException e) {
-                    logger.error(e.getMessage(), e);
-                }
             }
         }
     }

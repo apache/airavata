@@ -75,8 +75,8 @@ public class VanilaTestWithSSHAuth {
         
         System.setProperty("ssh.host",hostName);
         System.setProperty("ssh.username", userName);
-        System.setProperty("private.ssh.key", "/home/user/.ssh/id_dsa");
-        System.setProperty("public.ssh.key", "/home/user/.ssh/id_dsa.pub");
+        System.setProperty("private.ssh.key", "/home/lginnali/.ssh/id_dsa");
+        System.setProperty("public.ssh.key", "/home/lginnali/.ssh/id_dsa.pub");
         System.setProperty("ssh.working.directory", "/tmp");
 
         this.hostName = System.getProperty("ssh.host");
