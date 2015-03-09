@@ -46,7 +46,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
             if (!gatewayProfile.getGatewayID().equals("") && !gatewayProfile.getGatewayID().equals(gatewayResourceProfileModelConstants.DEFAULT_ID)){
                 profileResource.setGatewayID(gatewayProfile.getGatewayID());
             }
-            profileResource.setGatewayID(gatewayProfile.getGatewayID());
+//            profileResource.setGatewayID(gatewayProfile.getGatewayID());
             profileResource.save();
             List<ComputeResourcePreference> computeResourcePreferences = gatewayProfile.getComputeResourcePreferences();
             if (computeResourcePreferences != null && !computeResourcePreferences.isEmpty()){
