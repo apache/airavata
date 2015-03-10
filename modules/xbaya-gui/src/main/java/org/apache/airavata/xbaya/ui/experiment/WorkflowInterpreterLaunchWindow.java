@@ -151,6 +151,13 @@ public class WorkflowInterpreterLaunchWindow {
 
         try {
             hosts = airavataClient.getAllComputeResourceNames();
+            if (hosts.isEmpty()) {
+                JOptionPane.showMessageDialog(engine.getGUI().getFrame(),
+                        "No Compute Resources found",
+                        "Compute Resources",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
         } catch (InvalidRequestException e2) {
             // TODO Auto-generated catch block
             e2.printStackTrace();
