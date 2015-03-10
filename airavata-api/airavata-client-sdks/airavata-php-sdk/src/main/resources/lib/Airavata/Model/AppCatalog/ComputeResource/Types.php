@@ -120,6 +120,15 @@ final class DataMovementProtocol {
   );
 }
 
+final class AuthenticationMode {
+  const SERVER_ISSUED = 0;
+  const MYPROXY_ISSUED = 1;
+  static public $__names = array(
+    0 => 'SERVER_ISSUED',
+    1 => 'MYPROXY_ISSUED',
+  );
+}
+
 final class ProviderName {
   const EC2 = 0;
   const AWSEC2 = 1;
@@ -1381,6 +1390,8 @@ class UnicoreJobSubmission {
   public $jobSubmissionInterfaceId = "DO_NOT_SET_AT_CLIENTS";
   public $securityProtocol = null;
   public $unicoreEndPointURL = null;
+  public $authenticationMode = null;
+  public $userDN = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -1397,6 +1408,14 @@ class UnicoreJobSubmission {
           'var' => 'unicoreEndPointURL',
           'type' => TType::STRING,
           ),
+        4 => array(
+          'var' => 'authenticationMode',
+          'type' => TType::I32,
+          ),
+        5 => array(
+          'var' => 'userDN',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -1408,6 +1427,12 @@ class UnicoreJobSubmission {
       }
       if (isset($vals['unicoreEndPointURL'])) {
         $this->unicoreEndPointURL = $vals['unicoreEndPointURL'];
+      }
+      if (isset($vals['authenticationMode'])) {
+        $this->authenticationMode = $vals['authenticationMode'];
+      }
+      if (isset($vals['userDN'])) {
+        $this->userDN = $vals['userDN'];
       }
     }
   }
@@ -1452,6 +1477,20 @@ class UnicoreJobSubmission {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 4:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->authenticationMode);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->userDN);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -1478,6 +1517,16 @@ class UnicoreJobSubmission {
     if ($this->unicoreEndPointURL !== null) {
       $xfer += $output->writeFieldBegin('unicoreEndPointURL', TType::STRING, 3);
       $xfer += $output->writeString($this->unicoreEndPointURL);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->authenticationMode !== null) {
+      $xfer += $output->writeFieldBegin('authenticationMode', TType::I32, 4);
+      $xfer += $output->writeI32($this->authenticationMode);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->userDN !== null) {
+      $xfer += $output->writeFieldBegin('userDN', TType::STRING, 5);
+      $xfer += $output->writeString($this->userDN);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
