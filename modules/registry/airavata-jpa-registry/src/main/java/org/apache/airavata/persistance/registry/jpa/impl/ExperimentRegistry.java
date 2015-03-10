@@ -62,6 +62,7 @@ public class ExperimentRegistry {
             if (!ResourceUtils.isUserExist(experiment.getUserName())) {
                 ResourceUtils.addUser(experiment.getUserName(), null);
             }
+
             experimentID = getExperimentID(experiment.getName());
             experiment.setExperimentID(experimentID);
             ExperimentResource experimentResource = new ExperimentResource();
@@ -2002,6 +2003,8 @@ public class ExperimentRegistry {
                 return ThriftDataModelConversion.getExperiment(resource);
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
                 return resource.getExecutionUser();
+            }else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY)) {
+                return resource.getGateway().getGatewayId();
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME)) {
                 return resource.getExpName();
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_DESC)) {

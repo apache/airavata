@@ -85,7 +85,6 @@ import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.airavata.workflow.catalog.WorkflowCatalogFactory;
 import org.apache.thrift.TException;
-import org.python.antlr.ast.Str;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -1360,6 +1359,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw new ExperimentNotFoundException("Requested experiment id " + existingExperimentID + " does not exist in the system..");
             }
             Experiment existingExperiment = (Experiment)registry.get(RegistryModelType.EXPERIMENT, existingExperimentID);
+            String gatewayId = (String)registry.getValue(RegistryModelType.EXPERIMENT, existingExperimentID, Constants.FieldConstants.ExperimentConstants.GATEWAY);
             existingExperiment.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
             if (validateString(newExperiementName)){
                 existingExperiment.setName(newExperiementName);
@@ -1370,7 +1370,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             if (existingExperiment.getErrors() != null ){
                 existingExperiment.getErrors().clear();
             }
-            return (String)registry.add(ParentDataType.EXPERIMENT, existingExperiment, null);
+            return (String)registry.add(ParentDataType.EXPERIMENT, existingExperiment, gatewayId);
         } catch (Exception e) {
             logger.errorId(existingExperimentID, "Error while cloning the experiment with existing configuration...", e);
             AiravataSystemException exception = new AiravataSystemException();
