@@ -24,7 +24,6 @@ package org.apache.aiaravata.application.catalog.data.resources;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -46,8 +45,9 @@ public class UnicoreJobSubmissionResource extends AbstractResource {
 	private String jobSubmissionInterfaceId;
 	private String securityProtocol;
 	private String unicoreEndpointUrl;
+	private String authenticationMode;
 
-	 public void remove(Object identifier) throws AppCatalogException {
+	public void remove(Object identifier) throws AppCatalogException {
 	        EntityManager em = null;
 	        try {
 	            em = AppCatalogJPAUtils.getEntityManager();
@@ -72,21 +72,13 @@ public class UnicoreJobSubmissionResource extends AbstractResource {
 	    }
 
 	 public Resource get(Object identifier) throws AppCatalogException {
-		 // TODO: what? there is no sense to pass string and expect hashmap.. :(
 		 HashMap<String, String> ids;
-//	        if (identifier instanceof Map) {
-//	            ids = (HashMap) identifier;
-//	        } else {
-//	            logger.error("Identifier should be a map with the field name and it's value");
-//	            throw new AppCatalogException("Identifier should be a map with the field name and it's value");
-//	        }   
 		 EntityManager em = null;
 	        try {
 	            em = AppCatalogJPAUtils.getEntityManager();
 	            em.getTransaction().begin();
 	            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(UNICORE_JOB_SUBMISSION);
 	            generator.setParameter(UnicoreJobSubmissionConstants.SUBMISSION_ID, identifier);
-//	            generator.setParameter(UnicoreJobSubmissionConstants.UNICORE_ENDPOINT_URL, ids.get(UnicoreJobSubmissionConstants.UNICORE_ENDPOINT_URL));
 	            Query q = generator.selectQuery(em);
 	            UnicoreJobSubmission unicoreJobSubmission = (UnicoreJobSubmission) q.getSingleResult();
 	            UnicoreJobSubmissionResource unicoreSubmissionResource =
@@ -145,7 +137,21 @@ public class UnicoreJobSubmissionResource extends AbstractResource {
 	                        unicoreSubmissionResourceList.add(unicoreJobSubmissionResource);
 	                    }
 	                }
-	            } else {
+	            } else if (fieldName.equals(UnicoreJobSubmissionConstants.AUTHENTICATION_MODE)) {
+	                generator.setParameter(UnicoreJobSubmissionConstants.AUTHENTICATION_MODE, value);
+	                q = generator.selectQuery(em);
+	                results = q.getResultList();
+	                if (results.size() != 0) {
+	                    for (Object result : results) {
+	                        UnicoreJobSubmission unicoreJobSubmission = (UnicoreJobSubmission) result;
+	                        UnicoreJobSubmissionResource unicoreJobSubmissionResource =
+	                                (UnicoreJobSubmissionResource) AppCatalogJPAUtils.getResource(
+	                                        AppCatalogResourceType.UNICORE_JOB_SUBMISSION, unicoreJobSubmission);
+	                        unicoreSubmissionResourceList.add(unicoreJobSubmissionResource);
+	                    }
+	                }
+	            }        
+	            else {
 	                em.getTransaction().commit();
 	                em.close();
 	                logger.error("Unsupported field name for Unicore submission resource.", new IllegalArgumentException());
@@ -264,12 +270,14 @@ public class UnicoreJobSubmissionResource extends AbstractResource {
                 existingUnicoreSubmission.setSubmissionID(jobSubmissionInterfaceId);;
                 existingUnicoreSubmission.setUnicoreEndpointUrl(unicoreEndpointUrl);
                 existingUnicoreSubmission.setSecurityProtocol(securityProtocol);
+                existingUnicoreSubmission.setAuthenticationMode(authenticationMode);
                 em.merge(existingUnicoreSubmission);
             } else {
             	UnicoreJobSubmission unicoreJobSubmission = new UnicoreJobSubmission();
                 unicoreJobSubmission.setSubmissionID(jobSubmissionInterfaceId);
                 unicoreJobSubmission.setUnicoreEndpointUrl(unicoreEndpointUrl);
                 unicoreJobSubmission.setSecurityProtocol(securityProtocol);
+                unicoreJobSubmission.setAuthenticationMode(authenticationMode);
                 em.persist(unicoreJobSubmission);
             }
             em.getTransaction().commit();
@@ -331,6 +339,15 @@ public class UnicoreJobSubmissionResource extends AbstractResource {
 	public void setUnicoreEndpointUrl(String unicoreEndpointUrl) {
 		this.unicoreEndpointUrl = unicoreEndpointUrl;
 	}
+
 	
+     public String getAuthenticationMode() {
+		return authenticationMode;
+	}
+
+	public void setAuthenticationMode(String authenticationMode) {
+		this.authenticationMode = authenticationMode;
+	}
+
 	
 }
