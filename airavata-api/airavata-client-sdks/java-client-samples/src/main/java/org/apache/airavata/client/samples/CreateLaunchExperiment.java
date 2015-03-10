@@ -61,7 +61,7 @@ public class CreateLaunchExperiment {
     private static String echoAppId = "Echo_8506337e-ab7a-46b6-9b71-4a461b6c5e35";
     private static String mpiAppId = "HelloMPI_720e159f-198f-4daa-96ca-9f5eafee92c9";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
-    private static String amberAppId = "Amber_a56d457c-f239-4c0b-ba00-66bda936f7bc";
+    private static String amberAppId = "Amber_aa083c86-4680-4002-b3ef-fad93c181926";
     private static String gromacsAppId = "GROMACS_05622038-9edd-4cb1-824e-0b7cb993364b";
     private static String espressoAppId = "ESPRESSO_10cc2820-5d0b-4c63-9546-8a8b595593c1";
     private static String lammpsAppId = "LAMMPS_10893eb5-3840-438c-8446-d26c7ecb001f";
@@ -85,13 +85,34 @@ public class CreateLaunchExperiment {
     public static void main(String[] args) throws Exception {
         airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
         System.out.println("API version is " + airavataClient.getAPIVersion());
+        getAvailableAppInterfaceComputeResources("Echo_4fb76cb3-6bf6-409e-aa17-7cc7ee6e41af");
 //        createGateway();
 //        getGateway("testGatewayId");
-//      registerApplications(); // run this only the first time
-        createAndLaunchExp();
+//        registerApplications(); // run this only the first time
+//        createAndLaunchExp();
     }
     
     private static String fsdResourceId;
+
+
+    public static void getAvailableAppInterfaceComputeResources(String appInterfaceId) {
+        try {
+            Map<String, String> availableAppInterfaceComputeResources = airavataClient.getAvailableAppInterfaceComputeResources(appInterfaceId);
+            for (String key : availableAppInterfaceComputeResources.keySet()){
+                System.out.println("id : " + key);
+                System.out.println("name : " + availableAppInterfaceComputeResources.get(key));
+            }
+        } catch (AiravataSystemException e) {
+            e.printStackTrace();
+        } catch (InvalidRequestException e) {
+            e.printStackTrace();
+        } catch (AiravataClientException e) {
+            e.printStackTrace();
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 
     public static void createGateway(){
@@ -154,14 +175,14 @@ public class CreateLaunchExperiment {
 //                final String expId = createExperimentForBR2Amber(airavataClient);
 //                final String expId = createExperimentWRFStampede(airavataClient);
 //                final String expId = createExperimentForStampedeAmber(airavataClient);
-//                final String expId = createExperimentForTrestlesAmber(airavataClient);
+                final String expId = createExperimentForTrestlesAmber(airavataClient);
 //                final String expId = createExperimentGROMACSStampede(airavataClient);
 //                final String expId = createExperimentESPRESSOStampede(airavataClient);
 //                final String expId = createExperimentLAMMPSStampede(airavataClient);
 //                final String expId = createExperimentNWCHEMStampede(airavataClient);
 //                final String expId = createExperimentTRINITYStampede(airavataClient);
 //                final String expId = createExperimentAUTODOCKStampede(airavataClient); // this is not working , we need to register AutoDock app on stampede
-                final String expId = createExperimentForLSF(airavataClient);
+//                final String expId = createExperimentForLSF(airavataClient);
 //            	  final String expId = "Ultrascan_ln_eb029947-391a-4ccf-8ace-9bafebe07cc0";
                 System.out.println("Experiment ID : " + expId);
 //                updateExperiment(airavata, expId);
