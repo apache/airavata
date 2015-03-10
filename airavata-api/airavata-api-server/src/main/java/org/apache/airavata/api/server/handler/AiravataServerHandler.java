@@ -337,9 +337,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
             return (Project)registry.get(RegistryModelType.PROJECT, projectId);
         } catch (RegistryException e) {
-            logger.error("Error while updating the project", e);
+            logger.error("Error while retrieving the project", e);
             ProjectNotFoundException exception = new ProjectNotFoundException();
-            exception.setMessage("Error while updating the project. More info : " + e.getMessage());
+            exception.setMessage("Error while retrieving the project. More info : " + e.getMessage());
             throw exception;
         }
     }
@@ -1868,8 +1868,10 @@ public class AiravataServerHandler implements Airavata.Iface {
                     List<ApplicationDeploymentDescription> applicationDeployments =
                             applicationDeployment.getApplicationDeployements(filters);
                     for (ApplicationDeploymentDescription deploymentDescription : applicationDeployments) {
-                        availableComputeResources.put(deploymentDescription.getComputeHostId(),
-                                allComputeResources.get(deploymentDescription.getComputeHostId()));
+                        if (allComputeResources.get(deploymentDescription.getComputeHostId()) != null){
+                            availableComputeResources.put(deploymentDescription.getComputeHostId(),
+                                    allComputeResources.get(deploymentDescription.getComputeHostId()));
+                        }
                     }
                 }
             }
@@ -3095,5 +3097,25 @@ public class AiravataServerHandler implements Airavata.Iface {
 		}
 		return workflowCatalog;
 	}
+
+    @Override
+    public boolean deleteProject(String projectId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, ProjectNotFoundException, TException {
+        try {
+            registry = RegistryFactory.getDefaultRegistry();
+            if (!registry.isExist(RegistryModelType.PROJECT, projectId)){
+                logger.error("Project does not exist in the system. Please provide a valid project ID...");
+                ProjectNotFoundException exception = new ProjectNotFoundException();
+                exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
+                throw exception;
+            }
+            registry.remove(RegistryModelType.PROJECT, projectId);
+            return true;
+        } catch (RegistryException e) {
+            logger.error("Error while removing the project", e);
+            ProjectNotFoundException exception = new ProjectNotFoundException();
+            exception.setMessage("Error while removing the project. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
 
 }

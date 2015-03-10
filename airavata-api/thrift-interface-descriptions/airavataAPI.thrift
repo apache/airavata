@@ -176,6 +176,12 @@ service Airavata {
                 3: airavataErrors.AiravataSystemException ase,
                 4: airavataErrors.ProjectNotFoundException pnfe)
 
+  bool deleteProject (1: required string projectId)
+          throws (1: airavataErrors.InvalidRequestException ire,
+                  2: airavataErrors.AiravataClientException ace,
+                  3: airavataErrors.AiravataSystemException ase,
+                  4: airavataErrors.ProjectNotFoundException pnfe)
+
  /**
    * Get all Project by user
    *
