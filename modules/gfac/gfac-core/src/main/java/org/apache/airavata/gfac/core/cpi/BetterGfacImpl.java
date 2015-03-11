@@ -353,6 +353,10 @@ public class BetterGfacImpl implements GFac,Watcher {
                 }
             }
 
+            if(gatewayResourcePreferences.getLoginUserName() != null){
+                jobExecutionContext.setLoginUserName(gatewayResourcePreferences.getLoginUserName());
+            }
+
             // set gatewayUserPreferred data movement protocol and interface
             jobExecutionContext.setPreferredDataMovementProtocol(gatewayResourcePreferences.getPreferredDataMovementProtocol());
             if (gatewayResourcePreferences.getPreferredJobSubmissionProtocol() == null) {
