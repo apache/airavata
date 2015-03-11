@@ -293,36 +293,18 @@ public class CreateLaunchExperiment {
     
     public static String createEchoExperimentForFSD(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
-            InputDataObjectType input = new InputDataObjectType();
-            input.setName("Input_to_Echo");
-            input.setType(DataType.STRING);
-            input.setValue("Hello World");
-            
-            
-            InputDataObjectType i2 = new InputDataObjectType();
-            i2.setName("Input_to_Echo2");
-            i2.setType(DataType.URI);
-            i2.setValue("http://www.textfiles.com/100/ad.txt");
-            
-            InputDataObjectType i3 = new InputDataObjectType();
-            i3.setName("Input_to_Echo3");
-            i3.setType(DataType.URI);
-            i3.setValue("file:///tmp/test.txt");
-            
-            exInputs.add(input);
-            exInputs.add(i2);
-            exInputs.add(i3);
+        	List<InputDataObjectType> exInputs = client.getApplicationInputs(echoAppId);
+            for (InputDataObjectType inputDataObjectType : exInputs) {
+            	if (inputDataObjectType.getName().equalsIgnoreCase("Input_to_Echo")) {
+                      inputDataObjectType.setValue("Hello World");
+                 }else if (inputDataObjectType.getName().equalsIgnoreCase("Input_to_Echo2")) {
+                    inputDataObjectType.setValue("http://www.textfiles.com/100/ad.txt");
+                }else if (inputDataObjectType.getName().equalsIgnoreCase("Input_to_Echo3")) {
+                    inputDataObjectType.setValue("file:///tmp/test.txt");
+                 }
+            }
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
 
-            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
-            
-            OutputDataObjectType output = new OutputDataObjectType();
-            output.setName("Echoed_Output");
-            output.setType(DataType.STRING);
-            output.setValue("test.txt");
-            exOut.add(output);
-            
-            
             Experiment simpleExperiment = 
                     ExperimentModelUtil.createSimpleExperiment("default", "admin", "echoExperiment", "SimpleEcho2", echoAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
@@ -369,24 +351,18 @@ public class CreateLaunchExperiment {
     
     public static String createMPIExperimentForFSD(Airavata.Client client) throws TException {
         try {
-           
-        	List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
-            InputDataObjectType input = new InputDataObjectType();
-            input.setName("Sample_Input");
-            input.setType(DataType.STRING);
-            input.setValue("");
-        	exInputs.add(input);
-            
-            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
-            OutputDataObjectType output = new OutputDataObjectType();
-            output.setName("Sample_Output");
-            output.setType(DataType.STRING);
-            output.setValue("");
-            exOut.add(output);
-            
+        	List<InputDataObjectType> exInputs = client.getApplicationInputs(mpiAppId);
+            for (InputDataObjectType inputDataObjectType : exInputs) {
+            	if (inputDataObjectType.getName().equalsIgnoreCase("Sample_Input")) {
+                      inputDataObjectType.setValue("");
+                 }
+            }
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(mpiAppId);
+
+        	  
             Experiment simpleExperiment = 
                     ExperimentModelUtil.createSimpleExperiment("default", "admin", "mpiExperiment", "HelloMPI", mpiAppId, null);
-//          simpleExperiment.setExperimentOutputs(exOut);
+          simpleExperiment.setExperimentOutputs(exOut);
             
             
             
@@ -432,43 +408,10 @@ public class CreateLaunchExperiment {
     
     public static String createExperimentWRFStampede(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
-            InputDataObjectType input = new InputDataObjectType();
-            input.setName("Config_Namelist_File");
-            input.setType(DataType.URI);
-            input.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/WRF_FILES/namelist.input");
-
-            InputDataObjectType input1 = new InputDataObjectType();
-            input1.setName("WRF_Initial_Conditions");
-            input1.setType(DataType.URI);
-            input1.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/WRF_FILES/wrfinput_d01");
-
-            InputDataObjectType input2 = new InputDataObjectType();
-            input2.setName("WRF_Boundary_File");
-            input2.setType(DataType.URI);
-            input2.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/WRF_FILES/wrfbdy_d01");
-
-            exInputs.add(input);
-            exInputs.add(input1);
-            exInputs.add(input2);
-
-
-            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
-            OutputDataObjectType output = new OutputDataObjectType();
-            output.setName("WRF_Output");
-            output.setType(DataType.URI);
-            output.setValue("");
-
-            OutputDataObjectType output1 = new OutputDataObjectType();
-            output1.setName("WRF_Execution_Log");
-            output1.setType(DataType.URI);
-            output1.setValue("");
-
-
-            exOut.add(output);
-            exOut.add(output1);
-
-
+        	List<InputDataObjectType> exInputs = client.getApplicationInputs(wrfAppId);
+            setWRFInputs(exInputs);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(wrfAppId);
+       
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment("default", "admin", "WRFExperiment", "Testing", wrfAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
@@ -505,57 +448,26 @@ public class CreateLaunchExperiment {
     }
 
 
+	private static void setWRFInputs(List<InputDataObjectType> exInputs) {
+		for (InputDataObjectType inputDataObjectType : exInputs) {
+			if (inputDataObjectType.getName().equalsIgnoreCase("Config_Namelist_File")) {
+		          inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/WRF_FILES/namelist.input");
+		     }else if (inputDataObjectType.getName().equalsIgnoreCase("WRF_Initial_Conditions")) {
+		        inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/WRF_FILES/wrfinput_d01");
+		    }else if (inputDataObjectType.getName().equalsIgnoreCase("WRF_Boundary_File")) {
+		        inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/WRF_FILES/wrfbdy_d01");
+		     }
+		}
+	}
+
+
     public static String createExperimentGROMACSStampede(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
-            InputDataObjectType input = new InputDataObjectType();
-            input.setName("GROMOS_Coordinate_File");
-            input.setType(DataType.URI);
-            input.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/GROMMACS_FILES/pdb1y6l-EM-vacuum.gro");
-
-            InputDataObjectType input1 = new InputDataObjectType();
-            input1.setName("Portable_Input_Binary_File");
-            input1.setType(DataType.URI);
-            input1.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/GROMMACS_FILES/pdb1y6l-EM-vacuum.tpr");
-
-            exInputs.add(input);
-            exInputs.add(input1);
-
-
-            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
-            OutputDataObjectType output = new OutputDataObjectType();
-            output.setName("pdb1y6l-EM-vacuum.tpr.trr");
-            output.setType(DataType.URI);
-            output.setValue("");
-
-            OutputDataObjectType output1 = new OutputDataObjectType();
-            output1.setName("pdb1y6l-EM-vacuum.tpr.edr");
-            output1.setType(DataType.URI);
-            output1.setValue("");
-
-            OutputDataObjectType output2 = new OutputDataObjectType();
-            output2.setName("pdb1y6l-EM-vacuum.tpr.log");
-            output2.setType(DataType.URI);
-            output2.setValue("");
-
-            OutputDataObjectType output3 = new OutputDataObjectType();
-            output3.setName("pdb1y6l-EM-vacuum.gro");
-            output3.setType(DataType.URI);
-            output3.setValue("");
-
-            OutputDataObjectType output4 = new OutputDataObjectType();
-            output4.setName("GROMACS.oJobID");
-            output4.setType(DataType.URI);
-            output4.setValue("");
-
-
-            exOut.add(output);
-            exOut.add(output1);
-            exOut.add(output2);
-            exOut.add(output3);
-            exOut.add(output4);
-
-
+        	
+        	List<InputDataObjectType> exInputs = client.getApplicationInputs(gromacsAppId);
+        	setGROMACSInputs(exInputs);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(gromacsAppId);
+       
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment("default", "admin", "GromacsExperiment", "Testing", gromacsAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
@@ -591,69 +503,21 @@ public class CreateLaunchExperiment {
         return null;
     }
 
+    private static void setGROMACSInputs(List<InputDataObjectType> exInputs) {
+    		for (InputDataObjectType inputDataObjectType : exInputs) {
+			if (inputDataObjectType.getName().equalsIgnoreCase("GROMOS_Coordinate_File")) {
+		          inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/GROMMACS_FILES/pdb1y6l-EM-vacuum.gro");
+		     }else if (inputDataObjectType.getName().equalsIgnoreCase("Portable_Input_Binary_File")) {
+		        inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/GROMMACS_FILES/pdb1y6l-EM-vacuum.tpr");
+		    }
+		}
+	}
     public static String createExperimentESPRESSOStampede(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
-            InputDataObjectType input = new InputDataObjectType();
-            input.setName("AI_Pseudopotential_File");
-            input.setType(DataType.URI);
-            input.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/ESPRESSO_FILES/Al.sample.in");
-
-            InputDataObjectType input1 = new InputDataObjectType();
-            input1.setName("AI_Primitive_Cell");
-            input1.setType(DataType.URI);
-            input1.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/ESPRESSO_FILES/Al.pz-vbc.UPF");
-
-            exInputs.add(input);
-            exInputs.add(input1);
-
-
-            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
-            OutputDataObjectType output = new OutputDataObjectType();
-            output.setName("ESPRESSO_Execution_Log");
-            output.setType(DataType.URI);
-            output.setValue("");
-
-            OutputDataObjectType output1 = new OutputDataObjectType();
-            output1.setName("ESPRESSO_WFC_Binary_file");
-            output1.setType(DataType.URI);
-            output1.setValue("");
-
-            OutputDataObjectType output2 = new OutputDataObjectType();
-            output2.setName("Al_exc3.wfc1");
-            output2.setType(DataType.URI);
-            output2.setValue("");
-
-            OutputDataObjectType output3 = new OutputDataObjectType();
-            output3.setName("Al_exc3.wfc2");
-            output3.setType(DataType.URI);
-            output3.setValue("");
-
-            OutputDataObjectType output4 = new OutputDataObjectType();
-            output4.setName("Al_exc3.wfc3");
-            output4.setType(DataType.URI);
-            output4.setValue("");
-
-            OutputDataObjectType output5 = new OutputDataObjectType();
-            output5.setName("Al_exc3.wfc4");
-            output5.setType(DataType.URI);
-            output5.setValue("");
-
-            OutputDataObjectType output6 = new OutputDataObjectType();
-            output6.setName("ESPRESSO.oJobID");
-            output6.setType(DataType.URI);
-            output6.setValue("");
-
-
-            exOut.add(output);
-            exOut.add(output1);
-            exOut.add(output2);
-            exOut.add(output3);
-            exOut.add(output4);
-            exOut.add(output5);
-            exOut.add(output6);
-
-
+         	List<InputDataObjectType> exInputs = client.getApplicationInputs(espressoAppId);
+        	setESPRESSOInputs(exInputs);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(espressoAppId);
+        
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment("default", "admin", "EspressoExperiment", "Testing", espressoAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
@@ -688,45 +552,22 @@ public class CreateLaunchExperiment {
         }
         return null;
     }
+    private static void setESPRESSOInputs(List<InputDataObjectType> exInputs) {
+    	for (InputDataObjectType inputDataObjectType : exInputs) {
+		if (inputDataObjectType.getName().equalsIgnoreCase("AI_Pseudopotential_File")) {
+	          inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/ESPRESSO_FILES/Al.sample.in");
+	     }else if (inputDataObjectType.getName().equalsIgnoreCase("AI_Primitive_Cell")) {
+	        inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/ESPRESSO_FILES/Al.pz-vbc.UPF");
+	    }
+	}
+}
 
     public static String createExperimentTRINITYStampede(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
-            InputDataObjectType input = new InputDataObjectType();
-            input.setName("RNA_Seq_Left_Input");
-            input.setType(DataType.URI);
-            input.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/TRINITY_FILES/reads.left.fq");
-
-            InputDataObjectType input1 = new InputDataObjectType();
-            input1.setName("RNA_Seq_Right_Input");
-            input1.setType(DataType.URI);
-            input1.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/TRINITY_FILES/reads.right.fq");
-
-            exInputs.add(input);
-            exInputs.add(input1);
-
-
-            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
-            OutputDataObjectType output = new OutputDataObjectType();
-            output.setName("Trinity_Execution_Log");
-            output.setType(DataType.URI);
-            output.setValue("");
-
-            OutputDataObjectType output1 = new OutputDataObjectType();
-            output1.setName("Trinity_FASTA_File");
-            output1.setType(DataType.URI);
-            output1.setValue("");
-
-            OutputDataObjectType output2 = new OutputDataObjectType();
-            output2.setName("Trinity.oJobID");
-            output2.setType(DataType.URI);
-            output2.setValue("");
-
-
-            exOut.add(output);
-            exOut.add(output1);
-            exOut.add(output2);
-
+        	List<InputDataObjectType> exInputs = client.getApplicationInputs(trinityAppId);
+        	setTRINITYInputs(exInputs);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(trinityAppId);
+            
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment("default", "admin", "TrinityExperiment", "Testing", trinityAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
@@ -761,31 +602,21 @@ public class CreateLaunchExperiment {
         }
         return null;
     }
-
+    private static void setTRINITYInputs(List<InputDataObjectType> exInputs) {
+    	for (InputDataObjectType inputDataObjectType : exInputs) {
+    		if (inputDataObjectType.getName().equalsIgnoreCase("RNA_Seq_Left_Input")) {
+	          inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/TRINITY_FILES/reads.left.fq");
+    		}else if (inputDataObjectType.getName().equalsIgnoreCase("RNA_Seq_Right_Input")) {
+	        inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/TRINITY_FILES/reads.right.fq");
+    		}
+    	}
+    }
     public static String createExperimentLAMMPSStampede(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
-            InputDataObjectType input = new InputDataObjectType();
-            input.setName("Friction_Simulation_Input");
-            input.setType(DataType.URI);
-            input.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/LAMMPS_FILES/in.friction");
-
-            exInputs.add(input);
-
-            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
-            OutputDataObjectType output = new OutputDataObjectType();
-            output.setName("LAMMPS_Simulation_Log");
-            output.setType(DataType.URI);
-            output.setValue("");
-
-            OutputDataObjectType output1 = new OutputDataObjectType();
-            output1.setName("LAMMPS.oJobID");
-            output1.setType(DataType.URI);
-            output1.setValue("");
-
-            exOut.add(output);
-            exOut.add(output1);
-
+         	List<InputDataObjectType> exInputs = client.getApplicationInputs(lammpsAppId);
+        	setLAMMPSInputs(exInputs);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(lammpsAppId);
+            
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment("default", "admin", "LAMMPSExperiment", "Testing", lammpsAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
@@ -820,24 +651,18 @@ public class CreateLaunchExperiment {
         }
         return null;
     }
-
+    private static void setLAMMPSInputs(List<InputDataObjectType> exInputs) {
+    	for (InputDataObjectType inputDataObjectType : exInputs) {
+    		if (inputDataObjectType.getName().equalsIgnoreCase("Friction_Simulation_Input")) {
+	          inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/LAMMPS_FILES/in.friction");
+    		}
+    	}
+    }
     public static String createExperimentNWCHEMStampede(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
-            InputDataObjectType input = new InputDataObjectType();
-            input.setName("Water_Molecule_Input");
-            input.setType(DataType.URI);
-            input.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/NWCHEM_FILES/water.nw");
-
-            exInputs.add(input);
-
-            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
-            OutputDataObjectType output = new OutputDataObjectType();
-            output.setName("NWChem_Execution_Log");
-            output.setType(DataType.URI);
-            output.setValue("");
-
-            exOut.add(output);
+         	List<InputDataObjectType> exInputs = client.getApplicationInputs(nwchemAppId);
+        	setNWCHEMInputs(exInputs);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(nwchemAppId);
 
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment("default", "admin", "NWchemExperiment", "Testing", nwchemAppId, exInputs);
@@ -873,96 +698,18 @@ public class CreateLaunchExperiment {
         }
         return null;
     }
+    private static void setNWCHEMInputs(List<InputDataObjectType> exInputs) {
+    	for (InputDataObjectType inputDataObjectType : exInputs) {
+    		if (inputDataObjectType.getName().equalsIgnoreCase("Water_Molecule_Input")) {
+	          inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/NWCHEM_FILES/water.nw");
+    		}
+    	}
+    }
     public static String createExperimentAUTODOCKStampede(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
-            InputDataObjectType input = new InputDataObjectType();
-            input.setName("AD4_parameters.dat");
-            input.setType(DataType.URI);
-            input.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/AD4_parameters.dat");
-
-            InputDataObjectType input1 = new InputDataObjectType();
-            input1.setName("hsg1.A.map");
-            input1.setType(DataType.URI);
-            input1.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.A.map");
-
-            InputDataObjectType input2 = new InputDataObjectType();
-            input2.setName("hsg1.C.map");
-            input2.setType(DataType.URI);
-            input2.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.C.map");
-
-            InputDataObjectType input3 = new InputDataObjectType();
-            input3.setName("hsg1.d.map");
-            input3.setType(DataType.URI);
-            input3.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.d.map");
-
-            InputDataObjectType input4 = new InputDataObjectType();
-            input4.setName("hsg1.e.map");
-            input4.setType(DataType.URI);
-            input4.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.e.map");
-
-            InputDataObjectType input5 = new InputDataObjectType();
-            input5.setName("hsg1.HD.map");
-            input5.setType(DataType.URI);
-            input5.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.HD.map");
-
-            InputDataObjectType input6 = new InputDataObjectType();
-            input6.setName("hsg1.maps.fld");
-            input6.setType(DataType.URI);
-            input6.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.maps.fld");
-
-            InputDataObjectType input7 = new InputDataObjectType();
-            input7.setName("hsg1.NA.map");
-            input7.setType(DataType.URI);
-            input7.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.NA.map");
-
-            InputDataObjectType input8 = new InputDataObjectType();
-            input8.setName("hsg1.N.map");
-            input8.setType(DataType.URI);
-            input8.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.N.map");
-
-            InputDataObjectType input9 = new InputDataObjectType();
-            input9.setName("hsg1.OA.map");
-            input9.setType(DataType.URI);
-            input9.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.OA.map");
-
-            InputDataObjectType input10 = new InputDataObjectType();
-            input10.setName("ind.dpf");
-            input10.setType(DataType.URI);
-            input10.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/ind.dpf");
-
-            InputDataObjectType input11 = new InputDataObjectType();
-            input11.setName("ind.pdbqt");
-            input11.setType(DataType.URI);
-            input11.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/ind.pdbqt");
-
-
-            exInputs.add(input);
-            exInputs.add(input1);
-            exInputs.add(input2);
-            exInputs.add(input3);
-            exInputs.add(input4);
-            exInputs.add(input5);
-            exInputs.add(input6);
-            exInputs.add(input7);
-            exInputs.add(input8);
-            exInputs.add(input9);
-            exInputs.add(input10);
-            exInputs.add(input11);
-
-            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
-            OutputDataObjectType output = new OutputDataObjectType();
-            output.setName("ind.dlg");
-            output.setType(DataType.URI);
-            output.setValue("");
-
-            OutputDataObjectType output1 = new OutputDataObjectType();
-            output1.setName("Autodock.oJobID");
-            output1.setType(DataType.URI);
-            output1.setValue("");
-
-            exOut.add(output);
-            exOut.add(output1);
+        	List<InputDataObjectType> exInputs = client.getApplicationInputs(nwchemAppId);
+        	setAUTODOCKInputs(exInputs);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(nwchemAppId);
 
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment("default", "admin", "AutoDockExperiment", "Testing", autodockAppId, exInputs);
@@ -998,47 +745,43 @@ public class CreateLaunchExperiment {
         }
         return null;
     }
+    private static void setAUTODOCKInputs(List<InputDataObjectType> exInputs) {
 
+    	for (InputDataObjectType inputDataObjectType : exInputs) {
+			if (inputDataObjectType.getName().equalsIgnoreCase("AD4_parameters.dat")) {
+				inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/AD4_parameters.dat");
+			} else if (inputDataObjectType.getName().equalsIgnoreCase("hsg1.A.map")) {
+				inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.A.map");
+			} else if (inputDataObjectType.getName().equalsIgnoreCase("hsg1.C.map")) {
+				inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.C.map");
+			} else if (inputDataObjectType.getName().equalsIgnoreCase("hsg1.d.map")) {
+				inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.d.map");
+			} else if (inputDataObjectType.getName().equalsIgnoreCase("hsg1.e.map")) {
+				inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.e.map");
+			} else if (inputDataObjectType.getName().equalsIgnoreCase("hsg1.HD.map")) {
+				inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.HD.map");
+			} else if (inputDataObjectType.getName().equalsIgnoreCase("hsg1.maps.fld")) {
+				inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.maps.fld");
+			} else if (inputDataObjectType.getName().equalsIgnoreCase("hsg1.NA.map")) {
+				inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.NA.map");
+			} else if (inputDataObjectType.getName().equalsIgnoreCase("hsg1.N.map")) {
+				inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.N.map");
+			} else if (inputDataObjectType.getName().equalsIgnoreCase("hsg1.OA.map")) {
+				inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.OA.map");
+			} else if (inputDataObjectType.getName().equalsIgnoreCase("ind.dpf")) {
+				inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/ind.dpf");
+			} else if (inputDataObjectType.getName().equalsIgnoreCase("ind.pdbqt")) {
+				inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/ind.pdbqt");
+			}
+		}
+    }
     public static String createExperimentWRFTrestles(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
-            InputDataObjectType input = new InputDataObjectType();
-            input.setName("WRF_Namelist");
-            input.setType(DataType.URI);
-            input.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/WRF_FILES/namelist.input");
-
-            InputDataObjectType input1 = new InputDataObjectType();
-            input1.setName("WRF_Input_File");
-            input1.setType(DataType.URI);
-            input1.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/WRF_FILES/wrfinput_d01");
-
-            InputDataObjectType input2 = new InputDataObjectType();
-            input2.setName("WRF_Boundary_File");
-            input2.setType(DataType.URI);
-            input2.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/WRF_FILES/wrfbdy_d01");
-
-            exInputs.add(input);
-            exInputs.add(input1);
-            exInputs.add(input2);
-
-
-            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
-            OutputDataObjectType output = new OutputDataObjectType();
-            output.setName("WRF_Output");
-            output.setType(DataType.URI);
-            output.setValue("");
-
-            OutputDataObjectType output1 = new OutputDataObjectType();
-            output1.setName("WRF_Execution_Log");
-            output1.setType(DataType.URI);
-            output1.setValue("");
-
-
-            exOut.add(output);
-            exOut.add(output1);
-
-
-            Experiment simpleExperiment =
+        	List<InputDataObjectType> exInputs = client.getApplicationInputs(wrfAppId);
+            setWRFInputs(exInputs);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(wrfAppId);
+       
+                    Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment("default", "admin", "WRFExperiment", "Testing", wrfAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
@@ -1315,19 +1058,14 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentForBR2(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
-            InputDataObjectType input = new InputDataObjectType();
-            input.setName("Input_to_Echo");
-            input.setType(DataType.STRING);
-            input.setValue("Echoed_Output=Hello World");
-            exInputs.add(input);
+        	  List<InputDataObjectType> exInputs = client.getApplicationInputs(echoAppId);
+              for (InputDataObjectType inputDataObjectType : exInputs) {
+  				if (inputDataObjectType.getName().equalsIgnoreCase("Input_to_Echo")) {
+  					inputDataObjectType.setValue("Hello World");
+  				} 
+  			}
+  			List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
 
-            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
-            OutputDataObjectType output = new OutputDataObjectType();
-            output.setName("Echoed_Output");
-            output.setType(DataType.STRING);
-            output.setValue("");
-            exOut.add(output);
 
             Project project = ProjectModelUtil.createProject("default", "lahiru", "test project");
             String projectId = client.createProject(DEFAULT_GATEWAY, project);
@@ -1374,24 +1112,9 @@ public class CreateLaunchExperiment {
             for (InputDataObjectType inputDataObjectType : exInputs) {
                 inputDataObjectType.setValue("Hello World");
             }
-            /*List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
-            InputDataObjectType input = new InputDataObjectType();
-            input.setName("Input_to_Echo");
-            input.setType(DataType.STRING);
-            input.setValue("Echoed_Output=Hello World");
-            input.setRequiredToAddedToCommandLine(true);
-            exInputs.add(input);*/
-
+        
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
-            /*
-            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
-            OutputDataObjectType output = new OutputDataObjectType();
-            output.setName("output_file");
-            output.setType(DataType.URI);
-            output.setValue("");
-
-            exOut.add(output);*/
-
+          
             Project project = ProjectModelUtil.createProject("default", "lg11w", "test project");
             String projectId = client.createProject(DEFAULT_GATEWAY, project);
 
