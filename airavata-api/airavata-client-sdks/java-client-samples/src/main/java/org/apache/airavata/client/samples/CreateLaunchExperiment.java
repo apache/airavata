@@ -58,13 +58,13 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_GATEWAY = "php_reference_gateway";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_8506337e-ab7a-46b6-9b71-4a461b6c5e35";
+    private static String echoAppId = "Echo_61988d1f-7ca9-47ba-9212-a0ac2e973cf1";
     private static String mpiAppId = "HelloMPI_720e159f-198f-4daa-96ca-9f5eafee92c9";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
     private static String amberAppId = "Amber_a56d457c-f239-4c0b-ba00-66bda936f7bc";
     private static String gromacsAppId = "GROMACS_05622038-9edd-4cb1-824e-0b7cb993364b";
     private static String espressoAppId = "ESPRESSO_10cc2820-5d0b-4c63-9546-8a8b595593c1";
-    private static String lammpsAppId = "LAMMPS_10893eb5-3840-438c-8446-d26c7ecb001f";
+    private static String lammpsAppId = "LAMMPS_2472685b-8acf-497e-aafe-cc66fe5f4cb6";
     private static String nwchemAppId = "NWChem_2c8fee64-acf9-4a89-b6d3-91eb53c7640c";
     private static String trinityAppId = "Trinity_e894acf5-9bca-46e8-a1bd-7e2d5155191a";
     private static String autodockAppId = "AutoDock_43d9fdd0-c404-49f4-b913-3abf9080a8c9";
@@ -161,7 +161,8 @@ public class CreateLaunchExperiment {
 //                final String expId = createExperimentNWCHEMStampede(airavataClient);
 //                final String expId = createExperimentTRINITYStampede(airavataClient);
 //                final String expId = createExperimentAUTODOCKStampede(airavataClient); // this is not working , we need to register AutoDock app on stampede
-                final String expId = createExperimentForLSF(airavataClient);
+//                final String expId = createExperimentForLSF(airavataClient);
+                final String expId = createExperimentLAMMPSForLSF(airavataClient);
 //            	  final String expId = "Ultrascan_ln_eb029947-391a-4ccf-8ace-9bafebe07cc0";
                 System.out.println("Experiment ID : " + expId);
 //                updateExperiment(airavata, expId);
@@ -740,6 +741,8 @@ public class CreateLaunchExperiment {
         }
         return null;
     }
+
+
 
     public static String createExperimentLAMMPSStampede(Airavata.Client client) throws TException {
         try {
@@ -1353,23 +1356,7 @@ public class CreateLaunchExperiment {
             for (InputDataObjectType inputDataObjectType : exInputs) {
                 inputDataObjectType.setValue("Hello World");
             }
-            /*List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
-            InputDataObjectType input = new InputDataObjectType();
-            input.setName("Input_to_Echo");
-            input.setType(DataType.STRING);
-            input.setValue("Echoed_Output=Hello World");
-            input.setRequiredToAddedToCommandLine(true);
-            exInputs.add(input);*/
-
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
-            /*
-            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
-            OutputDataObjectType output = new OutputDataObjectType();
-            output.setName("output_file");
-            output.setType(DataType.URI);
-            output.setValue("");
-
-            exOut.add(output);*/
 
             Project project = ProjectModelUtil.createProject("default", "lg11w", "test project");
             String projectId = client.createProject(DEFAULT_GATEWAY, project);
@@ -1392,6 +1379,64 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
                         simpleExperiment.setEmailAddresses(Arrays.asList(new String[]{"test@umassmed.edu"}));
+                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+                    }
+                }
+            }
+        } catch (AiravataSystemException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataSystemException(e);
+        } catch (InvalidRequestException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new InvalidRequestException(e);
+        } catch (AiravataClientException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new AiravataClientException(e);
+        } catch (TException e) {
+            logger.error("Error occured while creating the experiment...", e.getMessage());
+            throw new TException(e);
+        }
+        return null;
+    }
+    public static String createExperimentLAMMPSForLSF(Airavata.Client client) throws TException {
+        try {
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(lammpsAppId);
+
+            for (InputDataObjectType inputDataObjectType : exInputs) {
+                inputDataObjectType.setName("Friction_Simulation_Input");
+                inputDataObjectType.setValue("/Users/lginnali/Downloads/data/in.friction");
+                inputDataObjectType.setType(DataType.URI);
+            }
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
+
+            /*OutputDataObjectType outputDataObjectType = exOut.get(0);
+            outputDataObjectType.setName("LAMMPS_Simulation_Log");
+            outputDataObjectType.setType(DataType.URI);
+            outputDataObjectType.setValue("");
+
+            OutputDataObjectType output1 = exOut.get(1);
+            output1.setName("LAMMPS.oJobID");
+            output1.setType(DataType.URI);
+            output1.setValue("");
+
+            exOut.add(outputDataObjectType);
+            exOut.add(output1);*/
+
+            Experiment simpleExperiment =
+                    ExperimentModelUtil.createSimpleExperiment("default", "lg11w", "LAMMPSExperiment", "Testing", lammpsAppId, exInputs);
+            simpleExperiment.setExperimentOutputs(exOut);
+
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(lammpsAppId);
+            if (computeResources != null && computeResources.size() != 0) {
+                for (String id : computeResources.keySet()) {
+                    String resourceName = computeResources.get(id);
+                    if (resourceName.equals(umassrcHostName)) {
+                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 10, 16, 1, "long", 60, 0, 1000, "airavata");
+                        UserConfigurationData userConfigurationData = new UserConfigurationData();
+                        userConfigurationData.setAiravataAutoSchedule(false);
+                        userConfigurationData.setOverrideManualScheduledParams(false);
+                        userConfigurationData.setComputationalResourceScheduling(scheduling);
+                        simpleExperiment.setUserConfigurationData(userConfigurationData);
                         return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
