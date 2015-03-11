@@ -101,6 +101,7 @@ public class RegisterSampleApplications {
     private static String espressoModuleId = "ESPRESSO_54dc94da-5e2b-4add-b054-41ad88891fdc";
     private static String gromacsModuleId = "GROMACS_417271fd-7ac1-4f40-b2a5-ed0908a743eb";
     private static String lammpsModuleId;
+    private static String lammpsModuleId1;
     private static String nwChemModuleId = "NWChem_edbc318d-4c41-46a7-b216-32bad71eabdd";
     private static String trinityModuleId = "Trinity_8af45ca0-b628-4614-9087-c7b73f5f2fb6";
     private static String wrfModuleId;
@@ -221,7 +222,7 @@ public class RegisterSampleApplications {
 
             //Register LSF resource
             lsfResourceId = registerComputeHost("ghpcc06.umassrc.org", "LSF Cluster",
-                    ResourceJobManagerType.LSF, "push", "source /etc/bashrc;/lsf/9.1/linux2.6-glibc2.3-x86_64/bin", SecurityProtocol.SSH_KEYS, 22, null);
+                    ResourceJobManagerType.LSF, "push", "source /etc/bashrc;/lsf/9.1/linux2.6-glibc2.3-x86_64/bin", SecurityProtocol.SSH_KEYS, 22, "mpiexec");
             System.out.println("LSF Resource Id is " + lsfResourceId);
 
         } catch (TException e) {
@@ -296,7 +297,14 @@ public class RegisterSampleApplications {
             lammpsModuleId = airavataClient.registerApplicationModule(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(
                             lammpsName, "20Mar14", lammpsDescription));
+
+            lammpsModuleId1 = airavataClient.registerApplicationModule(DEFAULT_GATEWAY,
+                    RegisterSampleApplicationsUtils.createApplicationModule(
+                            lammpsName, "28Jun14-base", lammpsDescription));
+
             System.out.println("LAMMPS Module Id " + lammpsModuleId);
+
+            System.out.println("LAMMPS Module Id for LSF " + lammpsModuleId1);
 
             //Register NWChem
             nwChemModuleId = airavataClient.registerApplicationModule(DEFAULT_GATEWAY,
@@ -715,6 +723,7 @@ public class RegisterSampleApplications {
 
             List<String> appModules = new ArrayList<String>();
             appModules.add(lammpsModuleId);
+            appModules.add(lammpsModuleId1);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Friction_Simulation_Input", null,
                     DataType.URI, "<", 1,true, true, false, "Friction Simulation Input - in.friction", null);
@@ -1116,8 +1125,17 @@ public class RegisterSampleApplications {
                     RegisterSampleApplicationsUtils.createApplicationDeployment(echoModuleId, lsfResourceId,
                             "/home/lg11w/executables/echo.sh", ApplicationParallelismType.SERIAL,
                             echoDescription, null, null, null));
-            System.out.println("Echo on trestles deployment Id " + echoAppDeployId);
 
+            List<String> moduleLoadCmd = new ArrayList<String>();
+            moduleLoadCmd.add("module load LAMMPS/28Jun14-base");
+            //Register Echo
+
+            String lammpsDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
+                    RegisterSampleApplicationsUtils.createApplicationDeployment(lammpsModuleId, lsfResourceId,
+                            "lmp_ghpcc", ApplicationParallelismType.MPI,
+                            echoDescription, moduleLoadCmd, null, null));
+            System.out.println("Echo on LSF deployment Id " + echoAppDeployId);
+            System.out.println("LAMMPS on LSF deployment Id " + lammpsDeployId);
         } catch (TException e) {
             e.printStackTrace();
         }
