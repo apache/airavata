@@ -329,16 +329,39 @@ struct GlobusJobSubmission {
 }
 
 /**
+ * AuthenticationMode
+ *
+ * SERVER_ISSUED: use CA credentials to generate a certificate based on user name. 
+ * server properties. 
+ * MYPROXY_ISSUED: rely on GSI method implementation already provided 
+ * by Airavata security libs. 
+*/
+enum AuthenticationMode {
+    SERVER_ISSUED,
+    MYPROXY_ISSUED
+}
+
+
+/**
  * Unicore Job Submission
  *
  * unicoreEndPointURL:
  *  unicoreGateway End Point. The provider will query this service to fetch required service end points.
+ * authenticationMode
+ *  The authenticationMode defines the way certificate is fetched. 
+ * userDN
+ *  This attribute captures the userDN used for launching jobs and create temporary storages. The attribute should be 
+ *  provided if the authentication mode is set as SERVER_ISSUED.
 */
 struct UnicoreJobSubmission {
     1: required string jobSubmissionInterfaceId = DEFAULT_ID,
     2: required SecurityProtocol securityProtocol,
-    3: required string unicoreEndPointURL
+    3: required string unicoreEndPointURL,
+    4: required AuthenticationMode authenticationMode,
+    5: optional string userDN
 }
+
+
 
 /**
 * Provider name

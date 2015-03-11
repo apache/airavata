@@ -137,6 +137,16 @@ const char* _kDataMovementProtocolNames[] = {
 };
 const std::map<int, const char*> _DataMovementProtocol_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(5, _kDataMovementProtocolValues, _kDataMovementProtocolNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
+int _kAuthenticationModeValues[] = {
+  AuthenticationMode::SERVER_ISSUED,
+  AuthenticationMode::MYPROXY_ISSUED
+};
+const char* _kAuthenticationModeNames[] = {
+  "SERVER_ISSUED",
+  "MYPROXY_ISSUED"
+};
+const std::map<int, const char*> _AuthenticationMode_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(2, _kAuthenticationModeValues, _kAuthenticationModeNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
 int _kProviderNameValues[] = {
   ProviderName::EC2,
   ProviderName::AWSEC2,
@@ -1180,8 +1190,8 @@ void swap(GlobusJobSubmission &a, GlobusJobSubmission &b) {
   swap(a.__isset, b.__isset);
 }
 
-const char* UnicoreJobSubmission::ascii_fingerprint = "D9F4CFE2F293A8B1052FD3031DD2C847";
-const uint8_t UnicoreJobSubmission::binary_fingerprint[16] = {0xD9,0xF4,0xCF,0xE2,0xF2,0x93,0xA8,0xB1,0x05,0x2F,0xD3,0x03,0x1D,0xD2,0xC8,0x47};
+const char* UnicoreJobSubmission::ascii_fingerprint = "06B870319715692996F28828C4AF836C";
+const uint8_t UnicoreJobSubmission::binary_fingerprint[16] = {0x06,0xB8,0x70,0x31,0x97,0x15,0x69,0x29,0x96,0xF2,0x88,0x28,0xC4,0xAF,0x83,0x6C};
 
 uint32_t UnicoreJobSubmission::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -1197,6 +1207,7 @@ uint32_t UnicoreJobSubmission::read(::apache::thrift::protocol::TProtocol* iprot
   bool isset_jobSubmissionInterfaceId = false;
   bool isset_securityProtocol = false;
   bool isset_unicoreEndPointURL = false;
+  bool isset_authenticationMode = false;
 
   while (true)
   {
@@ -1232,6 +1243,24 @@ uint32_t UnicoreJobSubmission::read(::apache::thrift::protocol::TProtocol* iprot
           xfer += iprot->skip(ftype);
         }
         break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          int32_t ecast29;
+          xfer += iprot->readI32(ecast29);
+          this->authenticationMode = (AuthenticationMode::type)ecast29;
+          isset_authenticationMode = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 5:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->userDN);
+          this->__isset.userDN = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -1246,6 +1275,8 @@ uint32_t UnicoreJobSubmission::read(::apache::thrift::protocol::TProtocol* iprot
   if (!isset_securityProtocol)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_unicoreEndPointURL)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_authenticationMode)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
@@ -1266,6 +1297,15 @@ uint32_t UnicoreJobSubmission::write(::apache::thrift::protocol::TProtocol* opro
   xfer += oprot->writeString(this->unicoreEndPointURL);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("authenticationMode", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeI32((int32_t)this->authenticationMode);
+  xfer += oprot->writeFieldEnd();
+
+  if (this->__isset.userDN) {
+    xfer += oprot->writeFieldBegin("userDN", ::apache::thrift::protocol::T_STRING, 5);
+    xfer += oprot->writeString(this->userDN);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -1276,6 +1316,9 @@ void swap(UnicoreJobSubmission &a, UnicoreJobSubmission &b) {
   swap(a.jobSubmissionInterfaceId, b.jobSubmissionInterfaceId);
   swap(a.securityProtocol, b.securityProtocol);
   swap(a.unicoreEndPointURL, b.unicoreEndPointURL);
+  swap(a.authenticationMode, b.authenticationMode);
+  swap(a.userDN, b.userDN);
+  swap(a.__isset, b.__isset);
 }
 
 const char* CloudJobSubmission::ascii_fingerprint = "F98AE2E6E51F2426504F2566EB71B5CC";
@@ -1317,9 +1360,9 @@ uint32_t CloudJobSubmission::read(::apache::thrift::protocol::TProtocol* iprot) 
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast29;
-          xfer += iprot->readI32(ecast29);
-          this->securityProtocol = (SecurityProtocol::type)ecast29;
+          int32_t ecast30;
+          xfer += iprot->readI32(ecast30);
+          this->securityProtocol = (SecurityProtocol::type)ecast30;
           isset_securityProtocol = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -1343,9 +1386,9 @@ uint32_t CloudJobSubmission::read(::apache::thrift::protocol::TProtocol* iprot) 
         break;
       case 5:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast30;
-          xfer += iprot->readI32(ecast30);
-          this->providerName = (ProviderName::type)ecast30;
+          int32_t ecast31;
+          xfer += iprot->readI32(ecast31);
+          this->providerName = (ProviderName::type)ecast31;
           isset_providerName = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -1462,9 +1505,9 @@ uint32_t JobSubmissionInterface::read(::apache::thrift::protocol::TProtocol* ipr
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast31;
-          xfer += iprot->readI32(ecast31);
-          this->jobSubmissionProtocol = (JobSubmissionProtocol::type)ecast31;
+          int32_t ecast32;
+          xfer += iprot->readI32(ecast32);
+          this->jobSubmissionProtocol = (JobSubmissionProtocol::type)ecast32;
           isset_jobSubmissionProtocol = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -1560,9 +1603,9 @@ uint32_t DataMovementInterface::read(::apache::thrift::protocol::TProtocol* ipro
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast32;
-          xfer += iprot->readI32(ecast32);
-          this->dataMovementProtocol = (DataMovementProtocol::type)ecast32;
+          int32_t ecast33;
+          xfer += iprot->readI32(ecast33);
+          this->dataMovementProtocol = (DataMovementProtocol::type)ecast33;
           isset_dataMovementProtocol = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -1667,14 +1710,14 @@ uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol*
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->hostAliases.clear();
-            uint32_t _size33;
-            ::apache::thrift::protocol::TType _etype36;
-            xfer += iprot->readListBegin(_etype36, _size33);
-            this->hostAliases.resize(_size33);
-            uint32_t _i37;
-            for (_i37 = 0; _i37 < _size33; ++_i37)
+            uint32_t _size34;
+            ::apache::thrift::protocol::TType _etype37;
+            xfer += iprot->readListBegin(_etype37, _size34);
+            this->hostAliases.resize(_size34);
+            uint32_t _i38;
+            for (_i38 = 0; _i38 < _size34; ++_i38)
             {
-              xfer += iprot->readString(this->hostAliases[_i37]);
+              xfer += iprot->readString(this->hostAliases[_i38]);
             }
             xfer += iprot->readListEnd();
           }
@@ -1687,14 +1730,14 @@ uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol*
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->ipAddresses.clear();
-            uint32_t _size38;
-            ::apache::thrift::protocol::TType _etype41;
-            xfer += iprot->readListBegin(_etype41, _size38);
-            this->ipAddresses.resize(_size38);
-            uint32_t _i42;
-            for (_i42 = 0; _i42 < _size38; ++_i42)
+            uint32_t _size39;
+            ::apache::thrift::protocol::TType _etype42;
+            xfer += iprot->readListBegin(_etype42, _size39);
+            this->ipAddresses.resize(_size39);
+            uint32_t _i43;
+            for (_i43 = 0; _i43 < _size39; ++_i43)
             {
-              xfer += iprot->readString(this->ipAddresses[_i42]);
+              xfer += iprot->readString(this->ipAddresses[_i43]);
             }
             xfer += iprot->readListEnd();
           }
@@ -1715,14 +1758,14 @@ uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol*
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->batchQueues.clear();
-            uint32_t _size43;
-            ::apache::thrift::protocol::TType _etype46;
-            xfer += iprot->readListBegin(_etype46, _size43);
-            this->batchQueues.resize(_size43);
-            uint32_t _i47;
-            for (_i47 = 0; _i47 < _size43; ++_i47)
+            uint32_t _size44;
+            ::apache::thrift::protocol::TType _etype47;
+            xfer += iprot->readListBegin(_etype47, _size44);
+            this->batchQueues.resize(_size44);
+            uint32_t _i48;
+            for (_i48 = 0; _i48 < _size44; ++_i48)
             {
-              xfer += this->batchQueues[_i47].read(iprot);
+              xfer += this->batchQueues[_i48].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -1735,19 +1778,19 @@ uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol*
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->fileSystems.clear();
-            uint32_t _size48;
-            ::apache::thrift::protocol::TType _ktype49;
-            ::apache::thrift::protocol::TType _vtype50;
-            xfer += iprot->readMapBegin(_ktype49, _vtype50, _size48);
-            uint32_t _i52;
-            for (_i52 = 0; _i52 < _size48; ++_i52)
+            uint32_t _size49;
+            ::apache::thrift::protocol::TType _ktype50;
+            ::apache::thrift::protocol::TType _vtype51;
+            xfer += iprot->readMapBegin(_ktype50, _vtype51, _size49);
+            uint32_t _i53;
+            for (_i53 = 0; _i53 < _size49; ++_i53)
             {
-              FileSystems::type _key53;
-              int32_t ecast55;
-              xfer += iprot->readI32(ecast55);
-              _key53 = (FileSystems::type)ecast55;
-              std::string& _val54 = this->fileSystems[_key53];
-              xfer += iprot->readString(_val54);
+              FileSystems::type _key54;
+              int32_t ecast56;
+              xfer += iprot->readI32(ecast56);
+              _key54 = (FileSystems::type)ecast56;
+              std::string& _val55 = this->fileSystems[_key54];
+              xfer += iprot->readString(_val55);
             }
             xfer += iprot->readMapEnd();
           }
@@ -1760,14 +1803,14 @@ uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol*
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->jobSubmissionInterfaces.clear();
-            uint32_t _size56;
-            ::apache::thrift::protocol::TType _etype59;
-            xfer += iprot->readListBegin(_etype59, _size56);
-            this->jobSubmissionInterfaces.resize(_size56);
-            uint32_t _i60;
-            for (_i60 = 0; _i60 < _size56; ++_i60)
+            uint32_t _size57;
+            ::apache::thrift::protocol::TType _etype60;
+            xfer += iprot->readListBegin(_etype60, _size57);
+            this->jobSubmissionInterfaces.resize(_size57);
+            uint32_t _i61;
+            for (_i61 = 0; _i61 < _size57; ++_i61)
             {
-              xfer += this->jobSubmissionInterfaces[_i60].read(iprot);
+              xfer += this->jobSubmissionInterfaces[_i61].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -1780,14 +1823,14 @@ uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol*
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->dataMovementInterfaces.clear();
-            uint32_t _size61;
-            ::apache::thrift::protocol::TType _etype64;
-            xfer += iprot->readListBegin(_etype64, _size61);
-            this->dataMovementInterfaces.resize(_size61);
-            uint32_t _i65;
-            for (_i65 = 0; _i65 < _size61; ++_i65)
+            uint32_t _size62;
+            ::apache::thrift::protocol::TType _etype65;
+            xfer += iprot->readListBegin(_etype65, _size62);
+            this->dataMovementInterfaces.resize(_size62);
+            uint32_t _i66;
+            for (_i66 = 0; _i66 < _size62; ++_i66)
             {
-              xfer += this->dataMovementInterfaces[_i65].read(iprot);
+              xfer += this->dataMovementInterfaces[_i66].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -1836,10 +1879,10 @@ uint32_t ComputeResourceDescription::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeFieldBegin("hostAliases", ::apache::thrift::protocol::T_LIST, 3);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->hostAliases.size()));
-      std::vector<std::string> ::const_iterator _iter66;
-      for (_iter66 = this->hostAliases.begin(); _iter66 != this->hostAliases.end(); ++_iter66)
+      std::vector<std::string> ::const_iterator _iter67;
+      for (_iter67 = this->hostAliases.begin(); _iter67 != this->hostAliases.end(); ++_iter67)
       {
-        xfer += oprot->writeString((*_iter66));
+        xfer += oprot->writeString((*_iter67));
       }
       xfer += oprot->writeListEnd();
     }
@@ -1849,10 +1892,10 @@ uint32_t ComputeResourceDescription::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeFieldBegin("ipAddresses", ::apache::thrift::protocol::T_LIST, 4);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->ipAddresses.size()));
-      std::vector<std::string> ::const_iterator _iter67;
-      for (_iter67 = this->ipAddresses.begin(); _iter67 != this->ipAddresses.end(); ++_iter67)
+      std::vector<std::string> ::const_iterator _iter68;
+      for (_iter68 = this->ipAddresses.begin(); _iter68 != this->ipAddresses.end(); ++_iter68)
       {
-        xfer += oprot->writeString((*_iter67));
+        xfer += oprot->writeString((*_iter68));
       }
       xfer += oprot->writeListEnd();
     }
@@ -1867,10 +1910,10 @@ uint32_t ComputeResourceDescription::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeFieldBegin("batchQueues", ::apache::thrift::protocol::T_LIST, 6);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->batchQueues.size()));
-      std::vector<BatchQueue> ::const_iterator _iter68;
-      for (_iter68 = this->batchQueues.begin(); _iter68 != this->batchQueues.end(); ++_iter68)
+      std::vector<BatchQueue> ::const_iterator _iter69;
+      for (_iter69 = this->batchQueues.begin(); _iter69 != this->batchQueues.end(); ++_iter69)
       {
-        xfer += (*_iter68).write(oprot);
+        xfer += (*_iter69).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -1880,11 +1923,11 @@ uint32_t ComputeResourceDescription::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeFieldBegin("fileSystems", ::apache::thrift::protocol::T_MAP, 7);
     {
       xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_I32, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->fileSystems.size()));
-      std::map<FileSystems::type, std::string> ::const_iterator _iter69;
-      for (_iter69 = this->fileSystems.begin(); _iter69 != this->fileSystems.end(); ++_iter69)
+      std::map<FileSystems::type, std::string> ::const_iterator _iter70;
+      for (_iter70 = this->fileSystems.begin(); _iter70 != this->fileSystems.end(); ++_iter70)
       {
-        xfer += oprot->writeI32((int32_t)_iter69->first);
-        xfer += oprot->writeString(_iter69->second);
+        xfer += oprot->writeI32((int32_t)_iter70->first);
+        xfer += oprot->writeString(_iter70->second);
       }
       xfer += oprot->writeMapEnd();
     }
@@ -1894,10 +1937,10 @@ uint32_t ComputeResourceDescription::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeFieldBegin("jobSubmissionInterfaces", ::apache::thrift::protocol::T_LIST, 8);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->jobSubmissionInterfaces.size()));
-      std::vector<JobSubmissionInterface> ::const_iterator _iter70;
-      for (_iter70 = this->jobSubmissionInterfaces.begin(); _iter70 != this->jobSubmissionInterfaces.end(); ++_iter70)
+      std::vector<JobSubmissionInterface> ::const_iterator _iter71;
+      for (_iter71 = this->jobSubmissionInterfaces.begin(); _iter71 != this->jobSubmissionInterfaces.end(); ++_iter71)
       {
-        xfer += (*_iter70).write(oprot);
+        xfer += (*_iter71).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -1907,10 +1950,10 @@ uint32_t ComputeResourceDescription::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeFieldBegin("dataMovementInterfaces", ::apache::thrift::protocol::T_LIST, 9);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->dataMovementInterfaces.size()));
-      std::vector<DataMovementInterface> ::const_iterator _iter71;
-      for (_iter71 = this->dataMovementInterfaces.begin(); _iter71 != this->dataMovementInterfaces.end(); ++_iter71)
+      std::vector<DataMovementInterface> ::const_iterator _iter72;
+      for (_iter72 = this->dataMovementInterfaces.begin(); _iter72 != this->dataMovementInterfaces.end(); ++_iter72)
       {
-        xfer += (*_iter71).write(oprot);
+        xfer += (*_iter72).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }

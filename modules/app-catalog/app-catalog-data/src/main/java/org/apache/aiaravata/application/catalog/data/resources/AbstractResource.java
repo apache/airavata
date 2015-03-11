@@ -125,6 +125,7 @@ public abstract class AbstractResource implements Resource {
         public static final String SUBMISSION_ID = "submissionID";
         public static final String SECURITY_PROTOCAL = "securityProtocol";
         public static final String UNICORE_ENDPOINT_URL = "unicoreEndpointUrl";
+        public static final String AUTHENTICATION_MODE = "authenticationMode";
     }
 
     public final class UnicoreDataMovementConstants {

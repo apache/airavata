@@ -104,6 +104,11 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getProject\n");
   }
 
+  bool deleteProject(const std::string& projectId) {
+    // Your implementation goes here
+    printf("deleteProject\n");
+  }
+
   void getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName) {
     // Your implementation goes here
     printf("getAllUserProjects\n");
