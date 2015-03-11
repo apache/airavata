@@ -78,6 +78,7 @@ public class JobExecutionContext extends AbstractContext implements Serializable
      * User defined scratch/temp directory
      */
     private String scratchLocation;
+    private String loginUserName;
     /**
      * User defined working directory.
      */
@@ -499,5 +500,13 @@ public class JobExecutionContext extends AbstractContext implements Serializable
         } else {
             return applicationContext.getApplicationDeploymentDescription().getExecutablePath();
         }
+    }
+
+    public String getLoginUserName() {
+        return loginUserName;
+    }
+
+    public void setLoginUserName(String loginUserName) {
+        this.loginUserName = loginUserName;
     }
 }

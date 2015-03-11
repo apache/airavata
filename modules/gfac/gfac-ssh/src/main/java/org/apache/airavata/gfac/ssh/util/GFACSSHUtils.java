@@ -110,12 +110,18 @@ public class GFACSSHUtils {
                             Properties configurationProperties = ServerSettings.getProperties();
                             tokenizedSSHAuthInfo = new DefaultPasswordAuthenticationInfo(configurationProperties.getProperty(Constants.SSH_PASSWORD));
                         }
-                        serverInfo.setUserName(credentials.getPortalUserName());
-                        jobExecutionContext.getExperiment().setUserName(credentials.getPortalUserName());
+                        // This should be the login user name from compute resource preference
+                        String loginUser = jobExecutionContext.getLoginUserName();
+                        if (loginUser == null) {
+                            loginUser = credentials.getPortalUserName();
+                        }
+                        serverInfo.setUserName(loginUser);
+                        jobExecutionContext.getExperiment().setUserName(loginUser);
+
 
                         // inside the pbsCluser object
 
-                        String key = credentials.getPortalUserName() + jobExecutionContext.getHostName() + serverInfo.getPort();
+                        String key = loginUser + jobExecutionContext.getHostName() + serverInfo.getPort();
                         boolean recreate = false;
                         synchronized (clusters) {
                             if (clusters.containsKey(key) && clusters.get(key).size() < maxClusterCount) {
