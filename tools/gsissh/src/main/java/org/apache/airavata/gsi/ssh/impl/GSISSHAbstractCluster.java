@@ -109,7 +109,7 @@ public class GSISSHAbstractCluster implements Cluster {
         this.authenticationInfo = authenticationInfo;
 
         if (authenticationInfo instanceof GSIAuthenticationInfo) {
-        	JSch.setConfig("gssapi-with-mic.x509", "org.apache.airavata.gsi.ssh.GSSContextX509");
+            JSch.setConfig("gssapi-with-mic.x509", "org.apache.airavata.gsi.ssh.GSSContextX509");
             JSch.setConfig("userauth.gssapi-with-mic", "com.jcraft.jsch.UserAuthGSSAPIWithMICGSSCredentials");
             System.setProperty(X509_CERT_DIR, (String) ((GSIAuthenticationInfo) authenticationInfo).getProperties().
                     get("X509_CERT_DIR"));
