@@ -123,7 +123,7 @@ class SimpleWorkflowInterpreter{
                 sb.append("=");
                 sb.append(workflowInputNode.getInputObject().getValue());
             }
-            throw new AiravataException("No workflow application node in ready state to run with experiment inputs" + sb.toString());
+            throw new AiravataException("No workflow application node is in ready state to run with experiment inputs" + sb.toString());
         }
         processReadyList();
     }
@@ -136,7 +136,7 @@ class SimpleWorkflowInterpreter{
      */
     void processReadyList() throws RegistryException, AiravataException {
         if (readyList.isEmpty() && processingQueue.isEmpty() && !waitingList.isEmpty()) {
-            throw new AiravataException("No workflow application node in ready state to run");
+            throw new AiravataException("No workflow application node is in ready state to run");
         }
         for (WorkflowNode readyNode : readyList.values()) {
             if (readyNode instanceof WorkflowOutputNode) {
