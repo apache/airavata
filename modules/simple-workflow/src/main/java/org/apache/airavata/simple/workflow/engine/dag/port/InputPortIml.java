@@ -69,7 +69,8 @@ public class InputPortIml implements InPort {
 
     @Override
     public boolean isReady() {
-        return getInputObject() != null && inputDataObjectType.getValue() != null && !inputDataObjectType.getValue().equals("");
+        return getInputObject() != null && (!inputDataObjectType.isIsRequired() ||
+                (inputDataObjectType.getValue() != null && !inputDataObjectType.getValue().equals("")));
     }
 
     @Override

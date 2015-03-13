@@ -115,6 +115,16 @@ class SimpleWorkflowInterpreter{
         log.debug("Parsed the workflow and got the workflow input nodes");
         // process workflow input nodes
         processWorkflowInputNodes(getWorkflowInputNodes());
+        if (readyList.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (WorkflowInputNode workflowInputNode : workflowInputNodes) {
+                sb.append(", ");
+                sb.append(workflowInputNode.getInputObject().getName());
+                sb.append("=");
+                sb.append(workflowInputNode.getInputObject().getValue());
+            }
+            throw new AiravataException("No workflow application node in ready state to run with experiment inputs" + sb.toString());
+        }
         processReadyList();
     }
 
@@ -125,6 +135,9 @@ class SimpleWorkflowInterpreter{
      * @throws AiravataException
      */
     void processReadyList() throws RegistryException, AiravataException {
+        if (readyList.isEmpty() && processingQueue.isEmpty() && !waitingList.isEmpty()) {
+            throw new AiravataException("No workflow application node in ready state to run");
+        }
         for (WorkflowNode readyNode : readyList.values()) {
             if (readyNode instanceof WorkflowOutputNode) {
                 WorkflowOutputNode wfOutputNode = (WorkflowOutputNode) readyNode;
@@ -272,7 +285,7 @@ class SimpleWorkflowInterpreter{
     }
 
     boolean isAllDone() {
-        return !continueWorkflow || (waitingList.isEmpty() && readyList.isEmpty());
+        return !continueWorkflow || (waitingList.isEmpty() && readyList.isEmpty() && processingQueue.isEmpty());
     }
 
     private void setExperiment(String experimentId) throws RegistryException {
