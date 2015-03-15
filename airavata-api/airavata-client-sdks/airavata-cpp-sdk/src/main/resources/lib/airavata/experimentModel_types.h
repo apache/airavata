@@ -855,22 +855,24 @@ class QualityOfServiceParams {
 void swap(QualityOfServiceParams &a, QualityOfServiceParams &b);
 
 typedef struct _UserConfigurationData__isset {
-  _UserConfigurationData__isset() : shareExperimentPublicly(true), computationalResourceScheduling(false), advanceInputDataHandling(false), advanceOutputDataHandling(false), qosParams(false), throttleResources(true) {}
+  _UserConfigurationData__isset() : shareExperimentPublicly(true), computationalResourceScheduling(false), advanceInputDataHandling(false), advanceOutputDataHandling(false), qosParams(false), throttleResources(true), userDN(false), generateCert(true) {}
   bool shareExperimentPublicly;
   bool computationalResourceScheduling;
   bool advanceInputDataHandling;
   bool advanceOutputDataHandling;
   bool qosParams;
   bool throttleResources;
+  bool userDN;
+  bool generateCert;
 } _UserConfigurationData__isset;
 
 class UserConfigurationData {
  public:
 
-  static const char* ascii_fingerprint; // = "A39B8E6345C677771D939D170C65720F";
-  static const uint8_t binary_fingerprint[16]; // = {0xA3,0x9B,0x8E,0x63,0x45,0xC6,0x77,0x77,0x1D,0x93,0x9D,0x17,0x0C,0x65,0x72,0x0F};
+  static const char* ascii_fingerprint; // = "0EA9FCA690C445780E02BCAC89B1D820";
+  static const uint8_t binary_fingerprint[16]; // = {0x0E,0xA9,0xFC,0xA6,0x90,0xC4,0x45,0x78,0x0E,0x02,0xBC,0xAC,0x89,0xB1,0xD8,0x20};
 
-  UserConfigurationData() : airavataAutoSchedule(false), overrideManualScheduledParams(false), shareExperimentPublicly(false), throttleResources(false) {
+  UserConfigurationData() : airavataAutoSchedule(false), overrideManualScheduledParams(false), shareExperimentPublicly(false), throttleResources(false), userDN(), generateCert(false) {
   }
 
   virtual ~UserConfigurationData() throw() {}
@@ -883,6 +885,8 @@ class UserConfigurationData {
   AdvancedOutputDataHandling advanceOutputDataHandling;
   QualityOfServiceParams qosParams;
   bool throttleResources;
+  std::string userDN;
+  bool generateCert;
 
   _UserConfigurationData__isset __isset;
 
@@ -924,6 +928,16 @@ class UserConfigurationData {
     __isset.throttleResources = true;
   }
 
+  void __set_userDN(const std::string& val) {
+    userDN = val;
+    __isset.userDN = true;
+  }
+
+  void __set_generateCert(const bool val) {
+    generateCert = val;
+    __isset.generateCert = true;
+  }
+
   bool operator == (const UserConfigurationData & rhs) const
   {
     if (!(airavataAutoSchedule == rhs.airavataAutoSchedule))
@@ -953,6 +967,14 @@ class UserConfigurationData {
     if (__isset.throttleResources != rhs.__isset.throttleResources)
       return false;
     else if (__isset.throttleResources && !(throttleResources == rhs.throttleResources))
+      return false;
+    if (__isset.userDN != rhs.__isset.userDN)
+      return false;
+    else if (__isset.userDN && !(userDN == rhs.userDN))
+      return false;
+    if (__isset.generateCert != rhs.__isset.generateCert)
+      return false;
+    else if (__isset.generateCert && !(generateCert == rhs.generateCert))
       return false;
     return true;
   }
@@ -1747,8 +1769,8 @@ typedef struct _Experiment__isset {
 class Experiment {
  public:
 
-  static const char* ascii_fingerprint; // = "C610216A34DE0B4389362B3D5236F6F6";
-  static const uint8_t binary_fingerprint[16]; // = {0xC6,0x10,0x21,0x6A,0x34,0xDE,0x0B,0x43,0x89,0x36,0x2B,0x3D,0x52,0x36,0xF6,0xF6};
+  static const char* ascii_fingerprint; // = "AAB7BCD0F1CB7A0198FEF5DB532788A8";
+  static const uint8_t binary_fingerprint[16]; // = {0xAA,0xB7,0xBC,0xD0,0xF1,0xCB,0x7A,0x01,0x98,0xFE,0xF5,0xDB,0x53,0x27,0x88,0xA8};
 
   Experiment() : experimentID("DO_NOT_SET_AT_CLIENTS"), projectID("DEFAULT"), creationTime(0), userName(), name(), description(), applicationId(), applicationVersion(), workflowTemplateId(), workflowTemplateVersion(), enableEmailNotification(0), workflowExecutionInstanceId() {
   }

@@ -38,19 +38,6 @@ public class UnicoreJobSubmission {
     @Column(name = "UNICORE_ENDPOINT_URL")
     private String unicoreEndpointUrl;
     
-    @Column(name = "AUTHENTICATION_MODE")
-    private String authenticationMode;
-
-
-    public String getAuthenticationMode() {
-		return authenticationMode;
-	}
-
-    public void setAuthenticationMode(String authenticationMode) {
-		this.authenticationMode = authenticationMode;
-	}
-
-    
     public String getUnicoreEndpointUrl() {
 		return unicoreEndpointUrl;
 	}

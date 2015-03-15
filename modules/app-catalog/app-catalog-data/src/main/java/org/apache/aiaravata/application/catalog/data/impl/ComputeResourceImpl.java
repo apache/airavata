@@ -209,7 +209,6 @@ public class ComputeResourceImpl implements ComputeResource {
              unicoreJobSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("UNICORE"));
              UnicoreJobSubmissionResource resource = AppCatalogThriftConversion.getUnicoreJobSubmission(unicoreJobSubmission);
              resource.setUnicoreEndpointUrl(unicoreJobSubmission.getUnicoreEndPointURL());
-             resource.setAuthenticationMode(unicoreJobSubmission.getAuthenticationMode().toString());
              if (unicoreJobSubmission.getSecurityProtocol() !=  null){
                  resource.setSecurityProtocol(unicoreJobSubmission.getSecurityProtocol().toString());
              }
