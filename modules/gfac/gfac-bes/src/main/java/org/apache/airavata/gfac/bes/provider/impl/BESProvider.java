@@ -190,10 +190,17 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
                         + activityStatus.getFault().getFaultstring()
                         + "\n EXITCODE: " + activityStatus.getExitCode();
                 log.info(error);
-                
+  
+                JobState applicationJobStatus = JobState.FAILED;
+                String jobStatusMessage = "Status of job " + jobId + "is "
+                        + applicationJobStatus;
+                jobExecutionContext.getNotifier().publish(
+                        new StatusChangeEvent(jobStatusMessage));
+                GFacUtils.updateJobStatus(jobExecutionContext, jobDetails, applicationJobStatus);
                 try {Thread.sleep(5000);} catch (InterruptedException e) {}
                 
                 //What if job is failed before execution and there are not stdouts generated yet?
+                log.debug("Downloading any standard output and error files, if they were produced.");
                 dt.downloadStdOuts();
                 
             } else if (activityStatus.getState() == ActivityStateEnumeration.CANCELLED) {
@@ -236,6 +243,7 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
         }
 
     }
+	
 
 	private JobState getApplicationJobStatus(ActivityStatusType activityStatus) {
 		if (activityStatus == null) {

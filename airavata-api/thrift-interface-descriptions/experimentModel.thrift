@@ -232,6 +232,8 @@ struct QualityOfServiceParams {
     3: optional i32 numberofRetries
 }
 
+
+
 /**
  * A structure holding the experiment configuration.
  *
@@ -244,8 +246,10 @@ struct UserConfigurationData {
     4: optional ComputationalResourceScheduling computationalResourceScheduling,
     5: optional AdvancedInputDataHandling advanceInputDataHandling,
     6: optional AdvancedOutputDataHandling advanceOutputDataHandling,
-    7: optional QualityOfServiceParams qosParams
-    8: optional bool throttleResources = 0
+    7: optional QualityOfServiceParams qosParams,
+    8: optional bool throttleResources = 0,
+    9: optional string userDN,
+    10: optional bool generateCert = 0 
 }
 
 struct ErrorDetails {

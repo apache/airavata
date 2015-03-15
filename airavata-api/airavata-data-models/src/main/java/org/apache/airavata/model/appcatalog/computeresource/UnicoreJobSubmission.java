@@ -56,9 +56,6 @@ import org.slf4j.LoggerFactory;
  *  unicoreGateway End Point. The provider will query this service to fetch required service end points.
  * authenticationMode
  *  The authenticationMode defines the way certificate is fetched.
- * userDN
- *  This attribute captures the userDN used for launching jobs and create temporary storages. The attribute should be
- *  provided if the authentication mode is set as SERVER_ISSUED.
  */
 @SuppressWarnings("all") public class UnicoreJobSubmission implements org.apache.thrift.TBase<UnicoreJobSubmission, UnicoreJobSubmission._Fields>, java.io.Serializable, Cloneable, Comparable<UnicoreJobSubmission> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("UnicoreJobSubmission");
@@ -66,8 +63,6 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField JOB_SUBMISSION_INTERFACE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("jobSubmissionInterfaceId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField SECURITY_PROTOCOL_FIELD_DESC = new org.apache.thrift.protocol.TField("securityProtocol", org.apache.thrift.protocol.TType.I32, (short)2);
   private static final org.apache.thrift.protocol.TField UNICORE_END_POINT_URL_FIELD_DESC = new org.apache.thrift.protocol.TField("unicoreEndPointURL", org.apache.thrift.protocol.TType.STRING, (short)3);
-  private static final org.apache.thrift.protocol.TField AUTHENTICATION_MODE_FIELD_DESC = new org.apache.thrift.protocol.TField("authenticationMode", org.apache.thrift.protocol.TType.I32, (short)4);
-  private static final org.apache.thrift.protocol.TField USER_DN_FIELD_DESC = new org.apache.thrift.protocol.TField("userDN", org.apache.thrift.protocol.TType.STRING, (short)5);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -78,8 +73,6 @@ import org.slf4j.LoggerFactory;
   private String jobSubmissionInterfaceId; // required
   private SecurityProtocol securityProtocol; // required
   private String unicoreEndPointURL; // required
-  private AuthenticationMode authenticationMode; // required
-  private String userDN; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -89,13 +82,7 @@ import org.slf4j.LoggerFactory;
      * @see SecurityProtocol
      */
     SECURITY_PROTOCOL((short)2, "securityProtocol"),
-    UNICORE_END_POINT_URL((short)3, "unicoreEndPointURL"),
-    /**
-     * 
-     * @see AuthenticationMode
-     */
-    AUTHENTICATION_MODE((short)4, "authenticationMode"),
-    USER_DN((short)5, "userDN");
+    UNICORE_END_POINT_URL((short)3, "unicoreEndPointURL");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -116,10 +103,6 @@ import org.slf4j.LoggerFactory;
           return SECURITY_PROTOCOL;
         case 3: // UNICORE_END_POINT_URL
           return UNICORE_END_POINT_URL;
-        case 4: // AUTHENTICATION_MODE
-          return AUTHENTICATION_MODE;
-        case 5: // USER_DN
-          return USER_DN;
         default:
           return null;
       }
@@ -160,7 +143,6 @@ import org.slf4j.LoggerFactory;
   }
 
   // isset id assignments
-  private _Fields optionals[] = {_Fields.USER_DN};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -169,10 +151,6 @@ import org.slf4j.LoggerFactory;
     tmpMap.put(_Fields.SECURITY_PROTOCOL, new org.apache.thrift.meta_data.FieldMetaData("securityProtocol", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, SecurityProtocol.class)));
     tmpMap.put(_Fields.UNICORE_END_POINT_URL, new org.apache.thrift.meta_data.FieldMetaData("unicoreEndPointURL", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.AUTHENTICATION_MODE, new org.apache.thrift.meta_data.FieldMetaData("authenticationMode", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, AuthenticationMode.class)));
-    tmpMap.put(_Fields.USER_DN, new org.apache.thrift.meta_data.FieldMetaData("userDN", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(UnicoreJobSubmission.class, metaDataMap);
@@ -186,14 +164,12 @@ import org.slf4j.LoggerFactory;
   public UnicoreJobSubmission(
     String jobSubmissionInterfaceId,
     SecurityProtocol securityProtocol,
-    String unicoreEndPointURL,
-    AuthenticationMode authenticationMode)
+    String unicoreEndPointURL)
   {
     this();
     this.jobSubmissionInterfaceId = jobSubmissionInterfaceId;
     this.securityProtocol = securityProtocol;
     this.unicoreEndPointURL = unicoreEndPointURL;
-    this.authenticationMode = authenticationMode;
   }
 
   /**
@@ -209,12 +185,6 @@ import org.slf4j.LoggerFactory;
     if (other.isSetUnicoreEndPointURL()) {
       this.unicoreEndPointURL = other.unicoreEndPointURL;
     }
-    if (other.isSetAuthenticationMode()) {
-      this.authenticationMode = other.authenticationMode;
-    }
-    if (other.isSetUserDN()) {
-      this.userDN = other.userDN;
-    }
   }
 
   public UnicoreJobSubmission deepCopy() {
@@ -227,8 +197,6 @@ import org.slf4j.LoggerFactory;
 
     this.securityProtocol = null;
     this.unicoreEndPointURL = null;
-    this.authenticationMode = null;
-    this.userDN = null;
   }
 
   public String getJobSubmissionInterfaceId() {
@@ -308,60 +276,6 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  /**
-   * 
-   * @see AuthenticationMode
-   */
-  public AuthenticationMode getAuthenticationMode() {
-    return this.authenticationMode;
-  }
-
-  /**
-   * 
-   * @see AuthenticationMode
-   */
-  public void setAuthenticationMode(AuthenticationMode authenticationMode) {
-    this.authenticationMode = authenticationMode;
-  }
-
-  public void unsetAuthenticationMode() {
-    this.authenticationMode = null;
-  }
-
-  /** Returns true if field authenticationMode is set (has been assigned a value) and false otherwise */
-  public boolean isSetAuthenticationMode() {
-    return this.authenticationMode != null;
-  }
-
-  public void setAuthenticationModeIsSet(boolean value) {
-    if (!value) {
-      this.authenticationMode = null;
-    }
-  }
-
-  public String getUserDN() {
-    return this.userDN;
-  }
-
-  public void setUserDN(String userDN) {
-    this.userDN = userDN;
-  }
-
-  public void unsetUserDN() {
-    this.userDN = null;
-  }
-
-  /** Returns true if field userDN is set (has been assigned a value) and false otherwise */
-  public boolean isSetUserDN() {
-    return this.userDN != null;
-  }
-
-  public void setUserDNIsSet(boolean value) {
-    if (!value) {
-      this.userDN = null;
-    }
-  }
-
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case JOB_SUBMISSION_INTERFACE_ID:
@@ -388,22 +302,6 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
-    case AUTHENTICATION_MODE:
-      if (value == null) {
-        unsetAuthenticationMode();
-      } else {
-        setAuthenticationMode((AuthenticationMode)value);
-      }
-      break;
-
-    case USER_DN:
-      if (value == null) {
-        unsetUserDN();
-      } else {
-        setUserDN((String)value);
-      }
-      break;
-
     }
   }
 
@@ -417,12 +315,6 @@ import org.slf4j.LoggerFactory;
 
     case UNICORE_END_POINT_URL:
       return getUnicoreEndPointURL();
-
-    case AUTHENTICATION_MODE:
-      return getAuthenticationMode();
-
-    case USER_DN:
-      return getUserDN();
 
     }
     throw new IllegalStateException();
@@ -441,10 +333,6 @@ import org.slf4j.LoggerFactory;
       return isSetSecurityProtocol();
     case UNICORE_END_POINT_URL:
       return isSetUnicoreEndPointURL();
-    case AUTHENTICATION_MODE:
-      return isSetAuthenticationMode();
-    case USER_DN:
-      return isSetUserDN();
     }
     throw new IllegalStateException();
   }
@@ -486,24 +374,6 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_unicoreEndPointURL && that_present_unicoreEndPointURL))
         return false;
       if (!this.unicoreEndPointURL.equals(that.unicoreEndPointURL))
-        return false;
-    }
-
-    boolean this_present_authenticationMode = true && this.isSetAuthenticationMode();
-    boolean that_present_authenticationMode = true && that.isSetAuthenticationMode();
-    if (this_present_authenticationMode || that_present_authenticationMode) {
-      if (!(this_present_authenticationMode && that_present_authenticationMode))
-        return false;
-      if (!this.authenticationMode.equals(that.authenticationMode))
-        return false;
-    }
-
-    boolean this_present_userDN = true && this.isSetUserDN();
-    boolean that_present_userDN = true && that.isSetUserDN();
-    if (this_present_userDN || that_present_userDN) {
-      if (!(this_present_userDN && that_present_userDN))
-        return false;
-      if (!this.userDN.equals(that.userDN))
         return false;
     }
 
@@ -553,26 +423,6 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetAuthenticationMode()).compareTo(other.isSetAuthenticationMode());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetAuthenticationMode()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.authenticationMode, other.authenticationMode);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
-    lastComparison = Boolean.valueOf(isSetUserDN()).compareTo(other.isSetUserDN());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetUserDN()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userDN, other.userDN);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     return 0;
   }
 
@@ -616,24 +466,6 @@ import org.slf4j.LoggerFactory;
       sb.append(this.unicoreEndPointURL);
     }
     first = false;
-    if (!first) sb.append(", ");
-    sb.append("authenticationMode:");
-    if (this.authenticationMode == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.authenticationMode);
-    }
-    first = false;
-    if (isSetUserDN()) {
-      if (!first) sb.append(", ");
-      sb.append("userDN:");
-      if (this.userDN == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.userDN);
-      }
-      first = false;
-    }
     sb.append(")");
     return sb.toString();
   }
@@ -650,10 +482,6 @@ import org.slf4j.LoggerFactory;
 
     if (!isSetUnicoreEndPointURL()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'unicoreEndPointURL' is unset! Struct:" + toString());
-    }
-
-    if (!isSetAuthenticationMode()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'authenticationMode' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -717,22 +545,6 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // AUTHENTICATION_MODE
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.authenticationMode = AuthenticationMode.findByValue(iprot.readI32());
-              struct.setAuthenticationModeIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 5: // USER_DN
-            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.userDN = iprot.readString();
-              struct.setUserDNIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -761,18 +573,6 @@ import org.slf4j.LoggerFactory;
         oprot.writeString(struct.unicoreEndPointURL);
         oprot.writeFieldEnd();
       }
-      if (struct.authenticationMode != null) {
-        oprot.writeFieldBegin(AUTHENTICATION_MODE_FIELD_DESC);
-        oprot.writeI32(struct.authenticationMode.getValue());
-        oprot.writeFieldEnd();
-      }
-      if (struct.userDN != null) {
-        if (struct.isSetUserDN()) {
-          oprot.writeFieldBegin(USER_DN_FIELD_DESC);
-          oprot.writeString(struct.userDN);
-          oprot.writeFieldEnd();
-        }
-      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -793,15 +593,6 @@ import org.slf4j.LoggerFactory;
       oprot.writeString(struct.jobSubmissionInterfaceId);
       oprot.writeI32(struct.securityProtocol.getValue());
       oprot.writeString(struct.unicoreEndPointURL);
-      oprot.writeI32(struct.authenticationMode.getValue());
-      BitSet optionals = new BitSet();
-      if (struct.isSetUserDN()) {
-        optionals.set(0);
-      }
-      oprot.writeBitSet(optionals, 1);
-      if (struct.isSetUserDN()) {
-        oprot.writeString(struct.userDN);
-      }
     }
 
     @Override
@@ -813,13 +604,6 @@ import org.slf4j.LoggerFactory;
       struct.setSecurityProtocolIsSet(true);
       struct.unicoreEndPointURL = iprot.readString();
       struct.setUnicoreEndPointURLIsSet(true);
-      struct.authenticationMode = AuthenticationMode.findByValue(iprot.readI32());
-      struct.setAuthenticationModeIsSet(true);
-      BitSet incoming = iprot.readBitSet(1);
-      if (incoming.get(0)) {
-        struct.userDN = iprot.readString();
-        struct.setUserDNIsSet(true);
-      }
     }
   }
 

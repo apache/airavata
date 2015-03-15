@@ -117,15 +117,6 @@ struct DataMovementProtocol {
 
 extern const std::map<int, const char*> _DataMovementProtocol_VALUES_TO_NAMES;
 
-struct AuthenticationMode {
-  enum type {
-    SERVER_ISSUED = 0,
-    MYPROXY_ISSUED = 1
-  };
-};
-
-extern const std::map<int, const char*> _AuthenticationMode_VALUES_TO_NAMES;
-
 struct ProviderName {
   enum type {
     EC2 = 0,
@@ -729,18 +720,14 @@ class GlobusJobSubmission {
 
 void swap(GlobusJobSubmission &a, GlobusJobSubmission &b);
 
-typedef struct _UnicoreJobSubmission__isset {
-  _UnicoreJobSubmission__isset() : userDN(false) {}
-  bool userDN;
-} _UnicoreJobSubmission__isset;
 
 class UnicoreJobSubmission {
  public:
 
-  static const char* ascii_fingerprint; // = "06B870319715692996F28828C4AF836C";
-  static const uint8_t binary_fingerprint[16]; // = {0x06,0xB8,0x70,0x31,0x97,0x15,0x69,0x29,0x96,0xF2,0x88,0x28,0xC4,0xAF,0x83,0x6C};
+  static const char* ascii_fingerprint; // = "D9F4CFE2F293A8B1052FD3031DD2C847";
+  static const uint8_t binary_fingerprint[16]; // = {0xD9,0xF4,0xCF,0xE2,0xF2,0x93,0xA8,0xB1,0x05,0x2F,0xD3,0x03,0x1D,0xD2,0xC8,0x47};
 
-  UnicoreJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), unicoreEndPointURL(), authenticationMode((AuthenticationMode::type)0), userDN() {
+  UnicoreJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), unicoreEndPointURL() {
   }
 
   virtual ~UnicoreJobSubmission() throw() {}
@@ -748,10 +735,6 @@ class UnicoreJobSubmission {
   std::string jobSubmissionInterfaceId;
   SecurityProtocol::type securityProtocol;
   std::string unicoreEndPointURL;
-  AuthenticationMode::type authenticationMode;
-  std::string userDN;
-
-  _UnicoreJobSubmission__isset __isset;
 
   void __set_jobSubmissionInterfaceId(const std::string& val) {
     jobSubmissionInterfaceId = val;
@@ -765,15 +748,6 @@ class UnicoreJobSubmission {
     unicoreEndPointURL = val;
   }
 
-  void __set_authenticationMode(const AuthenticationMode::type val) {
-    authenticationMode = val;
-  }
-
-  void __set_userDN(const std::string& val) {
-    userDN = val;
-    __isset.userDN = true;
-  }
-
   bool operator == (const UnicoreJobSubmission & rhs) const
   {
     if (!(jobSubmissionInterfaceId == rhs.jobSubmissionInterfaceId))
@@ -781,12 +755,6 @@ class UnicoreJobSubmission {
     if (!(securityProtocol == rhs.securityProtocol))
       return false;
     if (!(unicoreEndPointURL == rhs.unicoreEndPointURL))
-      return false;
-    if (!(authenticationMode == rhs.authenticationMode))
-      return false;
-    if (__isset.userDN != rhs.__isset.userDN)
-      return false;
-    else if (__isset.userDN && !(userDN == rhs.userDN))
       return false;
     return true;
   }

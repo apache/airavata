@@ -533,7 +533,6 @@ public class AppCatalogJPAUtils {
             submissionResource.setjobSubmissionInterfaceId(o.getSubmissionID());
             submissionResource.setUnicoreEndpointUrl(o.getUnicoreEndpointUrl());
             submissionResource.setSecurityProtocol(o.getSecurityProtocol());
-            submissionResource.setAuthenticationMode(o.getAuthenticationMode());
         }
         return submissionResource;
     }

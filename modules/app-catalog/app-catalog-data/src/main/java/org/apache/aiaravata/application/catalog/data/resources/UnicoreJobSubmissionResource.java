@@ -45,7 +45,6 @@ public class UnicoreJobSubmissionResource extends AbstractResource {
 	private String jobSubmissionInterfaceId;
 	private String securityProtocol;
 	private String unicoreEndpointUrl;
-	private String authenticationMode;
 
 	public void remove(Object identifier) throws AppCatalogException {
 	        EntityManager em = null;
@@ -126,19 +125,6 @@ public class UnicoreJobSubmissionResource extends AbstractResource {
 	                }
 	            } else if (fieldName.equals(UnicoreJobSubmissionConstants.SECURITY_PROTOCAL)) {
 	                generator.setParameter(UnicoreJobSubmissionConstants.SECURITY_PROTOCAL, value);
-	                q = generator.selectQuery(em);
-	                results = q.getResultList();
-	                if (results.size() != 0) {
-	                    for (Object result : results) {
-	                        UnicoreJobSubmission unicoreJobSubmission = (UnicoreJobSubmission) result;
-	                        UnicoreJobSubmissionResource unicoreJobSubmissionResource =
-	                                (UnicoreJobSubmissionResource) AppCatalogJPAUtils.getResource(
-	                                        AppCatalogResourceType.UNICORE_JOB_SUBMISSION, unicoreJobSubmission);
-	                        unicoreSubmissionResourceList.add(unicoreJobSubmissionResource);
-	                    }
-	                }
-	            } else if (fieldName.equals(UnicoreJobSubmissionConstants.AUTHENTICATION_MODE)) {
-	                generator.setParameter(UnicoreJobSubmissionConstants.AUTHENTICATION_MODE, value);
 	                q = generator.selectQuery(em);
 	                results = q.getResultList();
 	                if (results.size() != 0) {
@@ -270,14 +256,13 @@ public class UnicoreJobSubmissionResource extends AbstractResource {
                 existingUnicoreSubmission.setSubmissionID(jobSubmissionInterfaceId);;
                 existingUnicoreSubmission.setUnicoreEndpointUrl(unicoreEndpointUrl);
                 existingUnicoreSubmission.setSecurityProtocol(securityProtocol);
-                existingUnicoreSubmission.setAuthenticationMode(authenticationMode);
+
                 em.merge(existingUnicoreSubmission);
             } else {
             	UnicoreJobSubmission unicoreJobSubmission = new UnicoreJobSubmission();
                 unicoreJobSubmission.setSubmissionID(jobSubmissionInterfaceId);
                 unicoreJobSubmission.setUnicoreEndpointUrl(unicoreEndpointUrl);
                 unicoreJobSubmission.setSecurityProtocol(securityProtocol);
-                unicoreJobSubmission.setAuthenticationMode(authenticationMode);
                 em.persist(unicoreJobSubmission);
             }
             em.getTransaction().commit();
@@ -339,15 +324,5 @@ public class UnicoreJobSubmissionResource extends AbstractResource {
 	public void setUnicoreEndpointUrl(String unicoreEndpointUrl) {
 		this.unicoreEndpointUrl = unicoreEndpointUrl;
 	}
-
-	
-     public String getAuthenticationMode() {
-		return authenticationMode;
-	}
-
-	public void setAuthenticationMode(String authenticationMode) {
-		this.authenticationMode = authenticationMode;
-	}
-
 	
 }

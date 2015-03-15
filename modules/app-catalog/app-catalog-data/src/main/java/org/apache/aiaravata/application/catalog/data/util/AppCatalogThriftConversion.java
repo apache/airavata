@@ -237,7 +237,6 @@ public class AppCatalogThriftConversion {
             resource.setSecurityProtocol(submission.getSecurityProtocol().toString());
         }
         resource.setUnicoreEndpointUrl(submission.getUnicoreEndPointURL());
-        resource.setAuthenticationMode(submission.getAuthenticationMode().toString());
         return resource;
     }
 
@@ -338,7 +337,6 @@ public class AppCatalogThriftConversion {
     	UnicoreJobSubmission unicoreJobSubmission = new UnicoreJobSubmission();
     	unicoreJobSubmission.setUnicoreEndPointURL(submission.getUnicoreEndpointUrl());
     	unicoreJobSubmission.setJobSubmissionInterfaceId(submission.getjobSubmissionInterfaceId());
-    	unicoreJobSubmission.setAuthenticationMode(AuthenticationMode.valueOf(submission.getAuthenticationMode()));
         if (submission.getSecurityProtocol() != null){
             unicoreJobSubmission.setSecurityProtocol(SecurityProtocol.valueOf(submission.getSecurityProtocol()));
         }
