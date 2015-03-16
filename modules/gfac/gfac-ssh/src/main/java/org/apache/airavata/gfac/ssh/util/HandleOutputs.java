@@ -37,12 +37,9 @@ public class HandleOutputs {
 					String outputFile = output.getValue();
 					String fileName = outputFile.substring(outputFile.lastIndexOf(File.separatorChar) + 1, outputFile.length());
 
-					if (!outputList.contains(fileName) && output.isIsRequired()) {
+					if (output.getLocation() == null && !outputList.contains(fileName) && output.isIsRequired()) {
 						missingOutput = true;
 					} else {
-						if (output.getLocation() != null && !output.getLocation().isEmpty()) {
-							outputFile = output.getLocation()+ fileName;
-						}
 						cluster.scpFrom(outputFile, outputDataDir);
 						String localFile = outputDataDir + File.separator + fileName;
 						jobExecutionContext.addOutputFile(localFile);
