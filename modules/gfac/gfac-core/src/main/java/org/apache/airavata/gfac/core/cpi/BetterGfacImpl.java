@@ -395,7 +395,7 @@ public class BetterGfacImpl implements GFac,Watcher {
                 	if(objectType.getLocation().startsWith(File.separator)){
                 		filePath = objectType.getLocation() + File.separator + filePath;
                     }else{
-                    	filePath = jobExecutionContext.getOutputDir() + File.separator + objectType.getLocation()+ filePath;
+                    	filePath = jobExecutionContext.getOutputDir() + File.separator + objectType.getLocation() + File.separator + filePath;
                     }
                 }
                 objectType.setValue(filePath);
