@@ -10,57 +10,57 @@
 <xsl:template match="/ns:JobDescriptor">
     <xsl:param name="quote">"</xsl:param>
     <xsl:choose>
-<xsl:when test="ns:shellName">
+<xsl:when test="ns:shellName != ''">
 #!<xsl:value-of select="ns:shellName"/>
     </xsl:when>
     </xsl:choose>
 <xsl:choose>
-    <xsl:when test="ns:queueName">
+    <xsl:when test="ns:queueName != ''">
 #SBATCH -p <xsl:value-of select="ns:queueName"/>
     </xsl:when>
     </xsl:choose>
 <xsl:choose>
-    <xsl:when test="ns:nodes">
+    <xsl:when test="ns:nodes != ''">
 #SBATCH -N <xsl:value-of select="ns:nodes"/>
     </xsl:when>
     </xsl:choose>
     <xsl:choose>
-    <xsl:when test="ns:cpuCount">
+    <xsl:when test="ns:cpuCount != ''">
 #SBATCH -n <xsl:value-of select="ns:cpuCount"/>
         </xsl:when>
         </xsl:choose>
     <xsl:choose>
-    <xsl:when test="ns:mailAddress">
+    <xsl:when test="ns:mailAddress != ''">
 #SBATCH -mail-user=<xsl:value-of select="ns:mailAddress"/>
     </xsl:when>
     </xsl:choose>
     <xsl:choose>
-    <xsl:when test="ns:mailType">
+    <xsl:when test="ns:mailType != ''">
 #SBATCH -mail-type=<xsl:value-of select="ns:mailType"/>
     </xsl:when>
     </xsl:choose>
     <xsl:choose>
-<xsl:when test="ns:acountString">
+<xsl:when test="ns:acountString != ''">
 #SBATCH -A <xsl:value-of select="ns:acountString"/>
     </xsl:when>
     </xsl:choose>
     <xsl:choose>
-    <xsl:when test="ns:maxWallTime">
+    <xsl:when test="ns:maxWallTime != ''">
 #SBATCH -t <xsl:value-of select="ns:maxWallTime"/>
     </xsl:when>
     </xsl:choose>
     <xsl:choose>
-    <xsl:when test="ns:jobName">
+    <xsl:when test="ns:jobName != ''">
 #SBATCH -J <xsl:value-of select="ns:jobName"/>
     </xsl:when>
     </xsl:choose>
     <xsl:choose>
-    <xsl:when test="ns:standardOutFile">
+    <xsl:when test="ns:standardOutFile != ''">
 #SBATCH -o <xsl:value-of select="ns:standardOutFile"/>
     </xsl:when>
     </xsl:choose>
     <xsl:choose>
-    <xsl:when test="ns:standardOutFile">
+    <xsl:when test="ns:standardOutFile != ''">
 #SBATCH -e <xsl:value-of select="ns:standardErrorFile"/>
     </xsl:when>
     </xsl:choose>
