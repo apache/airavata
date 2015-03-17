@@ -1361,6 +1361,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             Experiment existingExperiment = (Experiment)registry.get(RegistryModelType.EXPERIMENT, existingExperimentID);
             String gatewayId = (String)registry.getValue(RegistryModelType.EXPERIMENT, existingExperimentID, Constants.FieldConstants.ExperimentConstants.GATEWAY);
             existingExperiment.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
+            if (existingExperiment.getApplicationId() != null){
+                List<OutputDataObjectType> applicationOutputs = getApplicationOutputs(existingExperiment.getApplicationId());
+                existingExperiment.setExperimentOutputs(applicationOutputs);
+            }
             if (validateString(newExperiementName)){
                 existingExperiment.setName(newExperiementName);
             }

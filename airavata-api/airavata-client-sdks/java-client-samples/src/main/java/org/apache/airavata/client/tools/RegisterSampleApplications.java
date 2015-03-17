@@ -257,7 +257,7 @@ public class RegisterSampleApplications {
 		UnicoreJobSubmission ucrJobSubmission = new UnicoreJobSubmission();
 		ucrJobSubmission.setSecurityProtocol(securityProtocol);
 		ucrJobSubmission.setUnicoreEndPointURL(unicoreEndPointURL);
-		ucrJobSubmission.setAuthenticationMode(AuthenticationMode.MYPROXY_ISSUED);
+//		ucrJobSubmission.setAuthenticationMode(AuthenticationMode.MYPROXY_ISSUED);
 		jobSubmission.setJobSubmissionProtocol(JobSubmissionProtocol.UNICORE);
 		
 		airavataClient.addUNICOREJobSubmissionDetails(fsdResourceId, 0, ucrJobSubmission);
