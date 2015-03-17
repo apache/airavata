@@ -385,18 +385,16 @@ public class BetterGfacImpl implements GFac,Watcher {
 
         for (OutputDataObjectType objectType : taskOutputs){
             if (objectType.getType() == DataType.URI && objectType.getValue() != null){
-                // this should be also the relative path : in case of clone, this will contain full path
                 String filePath = objectType.getValue();
-                if(objectType.getLocation() == null && objectType.getLocation().isEmpty() && filePath.contains(File.separator)){
-                filePath = jobExecutionContext.getOutputDir() + File.separator + filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
-                }
-                //output is not in working folder
+                // if output is not in working folder
                 if (objectType.getLocation() != null && !objectType.getLocation().isEmpty()) {
                 	if(objectType.getLocation().startsWith(File.separator)){
                 		filePath = objectType.getLocation() + File.separator + filePath;
                     }else{
                     	filePath = jobExecutionContext.getOutputDir() + File.separator + objectType.getLocation() + File.separator + filePath;
                     }
+                }else{
+                	filePath = jobExecutionContext.getOutputDir() + File.separator + filePath;
                 }
                 objectType.setValue(filePath);
                 
