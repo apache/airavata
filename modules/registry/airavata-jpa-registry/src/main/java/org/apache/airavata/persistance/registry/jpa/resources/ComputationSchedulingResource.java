@@ -49,6 +49,15 @@ public class ComputationSchedulingResource extends AbstractResource {
     private Timestamp jobStartTime;
     private int physicalMemory;
     private String projectName;
+    private String chessisName;
+
+    public String getChessisName() {
+        return chessisName;
+    }
+
+    public void setChessisName(String chessisName) {
+        this.chessisName = chessisName;
+    }
 
     public int getSchedulingId() {
         return schedulingId;
@@ -200,6 +209,7 @@ public class ComputationSchedulingResource extends AbstractResource {
             scheduling.setJobStartTime(jobStartTime);
             scheduling.setTotalPhysicalmemory(physicalMemory);
             scheduling.setProjectName(projectName);
+            scheduling.setChessisName(chessisName);
             em.persist(scheduling);
             schedulingId = scheduling.getSchedulingId();
             em.getTransaction().commit();

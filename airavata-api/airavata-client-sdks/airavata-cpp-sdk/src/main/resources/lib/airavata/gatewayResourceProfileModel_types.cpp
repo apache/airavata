@@ -27,8 +27,8 @@
 
 namespace apache { namespace airavata { namespace model { namespace appcatalog { namespace gatewayprofile {
 
-const char* ComputeResourcePreference::ascii_fingerprint = "365108C84A2E160D53CD17C2A7F06F5C";
-const uint8_t ComputeResourcePreference::binary_fingerprint[16] = {0x36,0x51,0x08,0xC8,0x4A,0x2E,0x16,0x0D,0x53,0xCD,0x17,0xC2,0xA7,0xF0,0x6F,0x5C};
+const char* ComputeResourcePreference::ascii_fingerprint = "D89E0E13D04B60B99B78496AC9B85D52";
+const uint8_t ComputeResourcePreference::binary_fingerprint[16] = {0xD8,0x9E,0x0E,0x13,0xD0,0x4B,0x60,0xB9,0x9B,0x78,0x49,0x6A,0xC9,0xB8,0x5D,0x52};
 
 uint32_t ComputeResourcePreference::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -69,6 +69,14 @@ uint32_t ComputeResourcePreference::read(::apache::thrift::protocol::TProtocol* 
         }
         break;
       case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->loginUserName);
+          this->__isset.loginUserName = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast0;
           xfer += iprot->readI32(ecast0);
@@ -78,7 +86,7 @@ uint32_t ComputeResourcePreference::read(::apache::thrift::protocol::TProtocol* 
           xfer += iprot->skip(ftype);
         }
         break;
-      case 4:
+      case 5:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           int32_t ecast1;
           xfer += iprot->readI32(ecast1);
@@ -88,7 +96,7 @@ uint32_t ComputeResourcePreference::read(::apache::thrift::protocol::TProtocol* 
           xfer += iprot->skip(ftype);
         }
         break;
-      case 5:
+      case 6:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->preferredBatchQueue);
           this->__isset.preferredBatchQueue = true;
@@ -96,7 +104,7 @@ uint32_t ComputeResourcePreference::read(::apache::thrift::protocol::TProtocol* 
           xfer += iprot->skip(ftype);
         }
         break;
-      case 6:
+      case 7:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->scratchLocation);
           this->__isset.scratchLocation = true;
@@ -104,7 +112,7 @@ uint32_t ComputeResourcePreference::read(::apache::thrift::protocol::TProtocol* 
           xfer += iprot->skip(ftype);
         }
         break;
-      case 7:
+      case 8:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->allocationProjectNumber);
           this->__isset.allocationProjectNumber = true;
@@ -140,28 +148,33 @@ uint32_t ComputeResourcePreference::write(::apache::thrift::protocol::TProtocol*
   xfer += oprot->writeBool(this->overridebyAiravata);
   xfer += oprot->writeFieldEnd();
 
+  if (this->__isset.loginUserName) {
+    xfer += oprot->writeFieldBegin("loginUserName", ::apache::thrift::protocol::T_STRING, 3);
+    xfer += oprot->writeString(this->loginUserName);
+    xfer += oprot->writeFieldEnd();
+  }
   if (this->__isset.preferredJobSubmissionProtocol) {
-    xfer += oprot->writeFieldBegin("preferredJobSubmissionProtocol", ::apache::thrift::protocol::T_I32, 3);
+    xfer += oprot->writeFieldBegin("preferredJobSubmissionProtocol", ::apache::thrift::protocol::T_I32, 4);
     xfer += oprot->writeI32((int32_t)this->preferredJobSubmissionProtocol);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.preferredDataMovementProtocol) {
-    xfer += oprot->writeFieldBegin("preferredDataMovementProtocol", ::apache::thrift::protocol::T_I32, 4);
+    xfer += oprot->writeFieldBegin("preferredDataMovementProtocol", ::apache::thrift::protocol::T_I32, 5);
     xfer += oprot->writeI32((int32_t)this->preferredDataMovementProtocol);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.preferredBatchQueue) {
-    xfer += oprot->writeFieldBegin("preferredBatchQueue", ::apache::thrift::protocol::T_STRING, 5);
+    xfer += oprot->writeFieldBegin("preferredBatchQueue", ::apache::thrift::protocol::T_STRING, 6);
     xfer += oprot->writeString(this->preferredBatchQueue);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.scratchLocation) {
-    xfer += oprot->writeFieldBegin("scratchLocation", ::apache::thrift::protocol::T_STRING, 6);
+    xfer += oprot->writeFieldBegin("scratchLocation", ::apache::thrift::protocol::T_STRING, 7);
     xfer += oprot->writeString(this->scratchLocation);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.allocationProjectNumber) {
-    xfer += oprot->writeFieldBegin("allocationProjectNumber", ::apache::thrift::protocol::T_STRING, 7);
+    xfer += oprot->writeFieldBegin("allocationProjectNumber", ::apache::thrift::protocol::T_STRING, 8);
     xfer += oprot->writeString(this->allocationProjectNumber);
     xfer += oprot->writeFieldEnd();
   }
@@ -174,6 +187,7 @@ void swap(ComputeResourcePreference &a, ComputeResourcePreference &b) {
   using ::std::swap;
   swap(a.computeResourceId, b.computeResourceId);
   swap(a.overridebyAiravata, b.overridebyAiravata);
+  swap(a.loginUserName, b.loginUserName);
   swap(a.preferredJobSubmissionProtocol, b.preferredJobSubmissionProtocol);
   swap(a.preferredDataMovementProtocol, b.preferredDataMovementProtocol);
   swap(a.preferredBatchQueue, b.preferredBatchQueue);
@@ -182,8 +196,8 @@ void swap(ComputeResourcePreference &a, ComputeResourcePreference &b) {
   swap(a.__isset, b.__isset);
 }
 
-const char* GatewayResourceProfile::ascii_fingerprint = "42DA2625493A482A59D0742432A025BD";
-const uint8_t GatewayResourceProfile::binary_fingerprint[16] = {0x42,0xDA,0x26,0x25,0x49,0x3A,0x48,0x2A,0x59,0xD0,0x74,0x24,0x32,0xA0,0x25,0xBD};
+const char* GatewayResourceProfile::ascii_fingerprint = "106DE1CD0F7026F6471DE8DAF360BE03";
+const uint8_t GatewayResourceProfile::binary_fingerprint[16] = {0x10,0x6D,0xE1,0xCD,0x0F,0x70,0x26,0xF6,0x47,0x1D,0xE8,0xDA,0xF3,0x60,0xBE,0x03};
 
 uint32_t GatewayResourceProfile::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -197,7 +211,6 @@ uint32_t GatewayResourceProfile::read(::apache::thrift::protocol::TProtocol* ipr
   using ::apache::thrift::protocol::TProtocolException;
 
   bool isset_gatewayID = false;
-  bool isset_gatewayName = false;
 
   while (true)
   {
@@ -216,22 +229,6 @@ uint32_t GatewayResourceProfile::read(::apache::thrift::protocol::TProtocol* ipr
         }
         break;
       case 2:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->gatewayName);
-          isset_gatewayName = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 3:
-        if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->gatewayDescription);
-          this->__isset.gatewayDescription = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 4:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->computeResourcePreferences.clear();
@@ -262,8 +259,6 @@ uint32_t GatewayResourceProfile::read(::apache::thrift::protocol::TProtocol* ipr
 
   if (!isset_gatewayID)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_gatewayName)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
 
@@ -275,17 +270,8 @@ uint32_t GatewayResourceProfile::write(::apache::thrift::protocol::TProtocol* op
   xfer += oprot->writeString(this->gatewayID);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("gatewayName", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString(this->gatewayName);
-  xfer += oprot->writeFieldEnd();
-
-  if (this->__isset.gatewayDescription) {
-    xfer += oprot->writeFieldBegin("gatewayDescription", ::apache::thrift::protocol::T_STRING, 3);
-    xfer += oprot->writeString(this->gatewayDescription);
-    xfer += oprot->writeFieldEnd();
-  }
   if (this->__isset.computeResourcePreferences) {
-    xfer += oprot->writeFieldBegin("computeResourcePreferences", ::apache::thrift::protocol::T_LIST, 4);
+    xfer += oprot->writeFieldBegin("computeResourcePreferences", ::apache::thrift::protocol::T_LIST, 2);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->computeResourcePreferences.size()));
       std::vector<ComputeResourcePreference> ::const_iterator _iter7;
@@ -305,8 +291,6 @@ uint32_t GatewayResourceProfile::write(::apache::thrift::protocol::TProtocol* op
 void swap(GatewayResourceProfile &a, GatewayResourceProfile &b) {
   using ::std::swap;
   swap(a.gatewayID, b.gatewayID);
-  swap(a.gatewayName, b.gatewayName);
-  swap(a.gatewayDescription, b.gatewayDescription);
   swap(a.computeResourcePreferences, b.computeResourcePreferences);
   swap(a.__isset, b.__isset);
 }

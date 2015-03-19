@@ -566,14 +566,14 @@ public class ExperimentResource extends AbstractResource {
             Project projectmodel = em.find(Project.class, project.getId());
             experiment.setProject(projectmodel);
             experiment.setProjectId(projectmodel.getProject_id());
-            Gateway gateway = em.find(Gateway.class, getGateway().getGatewayName());
+            Gateway gateway = em.find(Gateway.class, getGateway().getGatewayId());
             experiment.setExpId(expID);
             experiment.setExecutionUser(executionUser);
             Users userModel = em.find(Users.class, executionUser);
             experiment.setUser(userModel);
             experiment.setExecutionUser(userModel.getUser_name());
             experiment.setGateway(gateway);
-            experiment.setGatewayName(gateway.getGateway_name());
+            experiment.setGatewayId(gateway.getGateway_id());
             experiment.setCreationTime(creationTime);
             experiment.setExpName(expName);
             experiment.setExpDesc(description);
@@ -585,7 +585,7 @@ public class ExperimentResource extends AbstractResource {
             experiment.setAllowNotification(enableEmailNotifications);
             if (existingExp != null) {
                 existingExp.setGateway(gateway);
-                existingExp.setGatewayName(gateway.getGateway_name());
+                existingExp.setGatewayId(gateway.getGateway_id());
                 existingExp.setProject(projectmodel);
                 existingExp.setExecutionUser(executionUser);
                 existingExp.setUser(userModel);

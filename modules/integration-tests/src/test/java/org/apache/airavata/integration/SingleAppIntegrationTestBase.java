@@ -22,6 +22,8 @@ package org.apache.airavata.integration;
 
 import java.util.Date;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.ExperimentNotFoundException;
 import org.apache.airavata.model.error.InvalidRequestException;
@@ -36,8 +38,8 @@ import org.junit.Assert;
  */
 public class SingleAppIntegrationTestBase extends AbstractIntegrationTest {
 
-    protected String createExperiment(Experiment experiment) throws AiravataSystemException, InvalidRequestException, TException {
-        return getClient().createExperiment(experiment);
+    protected String createExperiment(Experiment experiment) throws AiravataSystemException, InvalidRequestException, TException, ApplicationSettingsException {
+        return getClient().createExperiment("php_reference_gateway", experiment);
     }
 
     protected void launchExperiment(String expId) throws ExperimentNotFoundException, AiravataSystemException, InvalidRequestException, TException {

@@ -25,6 +25,7 @@ import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
+import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.RequestData;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
@@ -41,6 +42,7 @@ import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.api.job.JobManagerConfiguration;
 import org.apache.airavata.gsi.ssh.impl.GSISSHAbstractCluster;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
+import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
@@ -66,6 +68,8 @@ public class GFACSSHUtils {
     public static final String PBS_JOB_MANAGER = "pbs";
     public static final String SLURM_JOB_MANAGER = "slurm";
     public static final String SUN_GRID_ENGINE_JOB_MANAGER = "UGE";
+    public static final String LSF_JOB_MANAGER = "LSF";
+
     public static int maxClusterCount = 5;
 
     /**
@@ -94,18 +98,30 @@ public class GFACSSHUtils {
 
                     Cluster pbsCluster = null;
                     try {
-                        TokenizedSSHAuthInfo tokenizedSSHAuthInfo = new TokenizedSSHAuthInfo(requestData);
+                        AuthenticationInfo tokenizedSSHAuthInfo = new TokenizedSSHAuthInfo(requestData);
                         String installedParentPath = jobExecutionContext.getResourceJobManager().getJobManagerBinPath();
                         if (installedParentPath == null) {
                             installedParentPath = "/";
                         }
 
-                        SSHCredential credentials = tokenizedSSHAuthInfo.getCredentials();// this is just a call to get and set credentials in to this object,data will be used
-                        serverInfo.setUserName(credentials.getPortalUserName());
-                        jobExecutionContext.getExperiment().setUserName(credentials.getPortalUserName());
+                        SSHCredential credentials =((TokenizedSSHAuthInfo)tokenizedSSHAuthInfo).getCredentials();// this is just a call to get and set credentials in to this object,data will be used
+                        if(credentials.getPrivateKey()==null || credentials.getPublicKey()==null){
+                            // now we fall back to username password authentication
+                            Properties configurationProperties = ServerSettings.getProperties();
+                            tokenizedSSHAuthInfo = new DefaultPasswordAuthenticationInfo(configurationProperties.getProperty(Constants.SSH_PASSWORD));
+                        }
+                        // This should be the login user name from compute resource preference
+                        String loginUser = jobExecutionContext.getLoginUserName();
+                        if (loginUser == null) {
+                            loginUser = credentials.getPortalUserName();
+                        }
+                        serverInfo.setUserName(loginUser);
+                        jobExecutionContext.getExperiment().setUserName(loginUser);
+
+
                         // inside the pbsCluser object
 
-                        String key = credentials.getPortalUserName() + jobExecutionContext.getHostName() + serverInfo.getPort();
+                        String key = loginUser + jobExecutionContext.getHostName() + serverInfo.getPort();
                         boolean recreate = false;
                         synchronized (clusters) {
                             if (clusters.containsKey(key) && clusters.get(key).size() < maxClusterCount) {
@@ -145,8 +161,11 @@ public class GFACSSHUtils {
                                          jConfig = CommonUtils.getSLURMJobManager(installedParentPath);
                                      } else if (SUN_GRID_ENGINE_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
                                          jConfig = CommonUtils.getSGEJobManager(installedParentPath);
+                                     } else if (LSF_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
+                                         jConfig = CommonUtils.getLSFJobManager(installedParentPath);
                                      }
                                  }
+
                                 pbsCluster = new PBSCluster(serverInfo, tokenizedSSHAuthInfo,jConfig);
                                 List<Cluster> pbsClusters = null;
                                 if (!(clusters.containsKey(key))) {
@@ -232,6 +251,8 @@ public class GFACSSHUtils {
                          jConfig = CommonUtils.getSLURMJobManager(installedParentPath);
                      } else if (SUN_GRID_ENGINE_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
                          jConfig = CommonUtils.getSGEJobManager(installedParentPath);
+                     } else if(LSF_JOB_MANAGER.equals(jobManager)) {
+                         jConfig = CommonUtils.getLSFJobManager(installedParentPath);
                      }
                  }
                     pbsCluster = new PBSCluster(sshAuth.getServerInfo(), sshAuth.getAuthenticationInfo(),jConfig);
@@ -310,15 +331,13 @@ public class GFACSSHUtils {
         if (computationalProjectAccount != null) {
             jobDescriptor.setAcountString(computationalProjectAccount);
         }
-        Random random = new Random();
-        int i = random.nextInt(Integer.MAX_VALUE);
-        jobDescriptor.setJobName(String.valueOf(i + 99999999));
+        jobDescriptor.setJobName(String.valueOf(generateJobName()));
         jobDescriptor.setWorkingDirectory(jobExecutionContext.getWorkingDir());
 
         List<String> inputValues = new ArrayList<String>();
         MessageContext input = jobExecutionContext.getInMessageContext();
 
-        // sort the inputs first and then build the command List
+        // sort the inputs first and then build the command ListR
         Comparator<InputDataObjectType> inputOrderComparator = new Comparator<InputDataObjectType>() {
             @Override
             public int compare(InputDataObjectType inputDataObjectType, InputDataObjectType t1) {
@@ -407,6 +426,12 @@ public class GFACSSHUtils {
             }
             if (taskScheduling.getWallTimeLimit() > 0) {
                 jobDescriptor.setMaxWallTime(String.valueOf(taskScheduling.getWallTimeLimit()));
+                if(resourceJobManager.getResourceJobManagerType().equals(ResourceJobManagerType.LSF)){
+                    jobDescriptor.setMaxWallTimeForLSF(String.valueOf(taskScheduling.getWallTimeLimit()));
+                }
+            }
+            if (taskScheduling.getTotalPhysicalMemory() > 0) {
+                jobDescriptor.setUsedMemory(taskScheduling.getTotalPhysicalMemory() + "");
             }
         } else {
             logger.error("Task scheduling cannot be null at this point..");
@@ -432,6 +457,16 @@ public class GFACSSHUtils {
             }
         }
         return jobDescriptor;
+    }
+
+    private static int generateJobName() {
+        Random random = new Random();
+        int i = random.nextInt(Integer.MAX_VALUE);
+        i = i + 99999999;
+        if(i<0) {
+            i = i * (-1);
+        }
+        return i;
     }
 
     private static String parseCommand(String value, JobExecutionContext jobExecutionContext) {

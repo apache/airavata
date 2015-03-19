@@ -24,7 +24,6 @@ package org.apache.aiaravata.application.catalog.data.resources;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -47,7 +46,7 @@ public class UnicoreJobSubmissionResource extends AbstractResource {
 	private String securityProtocol;
 	private String unicoreEndpointUrl;
 
-	 public void remove(Object identifier) throws AppCatalogException {
+	public void remove(Object identifier) throws AppCatalogException {
 	        EntityManager em = null;
 	        try {
 	            em = AppCatalogJPAUtils.getEntityManager();
@@ -72,21 +71,13 @@ public class UnicoreJobSubmissionResource extends AbstractResource {
 	    }
 
 	 public Resource get(Object identifier) throws AppCatalogException {
-		 // TODO: what? there is no sense to pass string and expect hashmap.. :(
 		 HashMap<String, String> ids;
-//	        if (identifier instanceof Map) {
-//	            ids = (HashMap) identifier;
-//	        } else {
-//	            logger.error("Identifier should be a map with the field name and it's value");
-//	            throw new AppCatalogException("Identifier should be a map with the field name and it's value");
-//	        }   
 		 EntityManager em = null;
 	        try {
 	            em = AppCatalogJPAUtils.getEntityManager();
 	            em.getTransaction().begin();
 	            AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(UNICORE_JOB_SUBMISSION);
 	            generator.setParameter(UnicoreJobSubmissionConstants.SUBMISSION_ID, identifier);
-//	            generator.setParameter(UnicoreJobSubmissionConstants.UNICORE_ENDPOINT_URL, ids.get(UnicoreJobSubmissionConstants.UNICORE_ENDPOINT_URL));
 	            Query q = generator.selectQuery(em);
 	            UnicoreJobSubmission unicoreJobSubmission = (UnicoreJobSubmission) q.getSingleResult();
 	            UnicoreJobSubmissionResource unicoreSubmissionResource =
@@ -145,7 +136,8 @@ public class UnicoreJobSubmissionResource extends AbstractResource {
 	                        unicoreSubmissionResourceList.add(unicoreJobSubmissionResource);
 	                    }
 	                }
-	            } else {
+	            }        
+	            else {
 	                em.getTransaction().commit();
 	                em.close();
 	                logger.error("Unsupported field name for Unicore submission resource.", new IllegalArgumentException());
@@ -264,6 +256,7 @@ public class UnicoreJobSubmissionResource extends AbstractResource {
                 existingUnicoreSubmission.setSubmissionID(jobSubmissionInterfaceId);;
                 existingUnicoreSubmission.setUnicoreEndpointUrl(unicoreEndpointUrl);
                 existingUnicoreSubmission.setSecurityProtocol(securityProtocol);
+
                 em.merge(existingUnicoreSubmission);
             } else {
             	UnicoreJobSubmission unicoreJobSubmission = new UnicoreJobSubmission();
@@ -331,6 +324,5 @@ public class UnicoreJobSubmissionResource extends AbstractResource {
 	public void setUnicoreEndpointUrl(String unicoreEndpointUrl) {
 		this.unicoreEndpointUrl = unicoreEndpointUrl;
 	}
-	
 	
 }

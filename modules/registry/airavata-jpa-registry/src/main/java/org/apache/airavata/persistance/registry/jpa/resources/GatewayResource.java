@@ -37,15 +37,34 @@ import org.slf4j.LoggerFactory;
 
 public class GatewayResource extends AbstractResource {
     private final static Logger logger = LoggerFactory.getLogger(GatewayResource.class);
+
+    private String gatewayId;
     private String gatewayName;
-    private String owner;
+    private String domain;
+    private String emailAddress;
+
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
+
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
+    }
 
     /**
      *
-     * @param gatewayName gateway name
+     * @param gatewayId gateway name
      */
-    public GatewayResource(String gatewayName) {
-    	setGatewayName(gatewayName);
+    public GatewayResource(String gatewayId) {
+    	setGatewayId(gatewayId);
 	}
 
     /**
@@ -72,19 +91,20 @@ public class GatewayResource extends AbstractResource {
 
     /**
      *
-     * @return owner of the gateway
+     * @return domain of the gateway
      */
-    public String getOwner() {
-        return owner;
+    public String getDomain() {
+        return domain;
     }
 
     /**
      *
-     * @param owner owner of the gateway
+     * @param domain domain of the gateway
      */
-    public void setOwner(String owner) {
-        this.owner = owner;
+    public void setDomain(String domain) {
+        this.domain = domain;
     }
+
 
     /**
      * Gateway is at the root level.  So it can populate his child resources.
@@ -100,14 +120,6 @@ public class GatewayResource extends AbstractResource {
                 ProjectResource projectResource = new ProjectResource();
                 projectResource.setGateway(this);
                 return projectResource;
-            case PUBLISHED_WORKFLOW:
-                PublishWorkflowResource publishWorkflowResource = new PublishWorkflowResource();
-                publishWorkflowResource.setGateway(this);
-                return publishWorkflowResource;
-            case USER_WORKFLOW:
-                UserWorkflowResource userWorkflowResource = new UserWorkflowResource();
-                userWorkflowResource.setGateway(this);
-                return userWorkflowResource;
             case EXPERIMENT:
                 ExperimentResource experimentResource =new ExperimentResource();
                 experimentResource.setGateway(this);
@@ -138,13 +150,6 @@ public class GatewayResource extends AbstractResource {
                 case USER:
                     generator = new QueryGenerator(USERS);
                     generator.setParameter(UserConstants.USERNAME, name);
-                    q = generator.deleteQuery(em);
-                    q.executeUpdate();
-                    break;
-                case PUBLISHED_WORKFLOW:
-                    generator = new QueryGenerator(PUBLISHED_WORKFLOW);
-                    generator.setParameter(PublishedWorkflowConstants.PUBLISH_WORKFLOW_NAME, name);
-                    generator.setParameter(PublishedWorkflowConstants.GATEWAY_NAME, gatewayName);
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
@@ -190,7 +195,7 @@ public class GatewayResource extends AbstractResource {
                 case GATEWAY_WORKER:
                     generator = new QueryGenerator(GATEWAY_WORKER);
                     generator.setParameter(GatewayWorkerConstants.USERNAME, name);
-                    generator.setParameter(GatewayWorkerConstants.GATEWAY_NAME, gatewayName);
+                    generator.setParameter(GatewayWorkerConstants.GATEWAY_ID, gatewayId);
                     q = generator.selectQuery(em);
                     Gateway_Worker worker = (Gateway_Worker) q.getSingleResult();
                     WorkerResource workerResource =
@@ -208,17 +213,6 @@ public class GatewayResource extends AbstractResource {
                     em.getTransaction().commit();
                     em.close();
                     return userResource;
-                case PUBLISHED_WORKFLOW:
-                    generator = new QueryGenerator(PUBLISHED_WORKFLOW);
-                    generator.setParameter(PublishedWorkflowConstants.PUBLISH_WORKFLOW_NAME, name);
-                    generator.setParameter(PublishedWorkflowConstants.GATEWAY_NAME, gatewayName);
-                    q = generator.selectQuery(em);
-                    Published_Workflow ePub_workflow = (Published_Workflow) q.getSingleResult();
-                    PublishWorkflowResource publishWorkflowResource =
-                            (PublishWorkflowResource) Utils.getResource(ResourceType.PUBLISHED_WORKFLOW, ePub_workflow);
-                    em.getTransaction().commit();
-                    em.close();
-                    return publishWorkflowResource;
                 case EXPERIMENT:
                     generator = new QueryGenerator(EXPERIMENT);
                     generator.setParameter(ExperimentConstants.EXPERIMENT_ID, name);
@@ -265,7 +259,7 @@ public class GatewayResource extends AbstractResource {
             switch (type) {
                 case PROJECT:
                     generator = new QueryGenerator(PROJECT);
-                    Gateway gatewayModel = em.find(Gateway.class, gatewayName);
+                    Gateway gatewayModel = em.find(Gateway.class, gatewayId);
                     generator.setParameter("gateway", gatewayModel);
                     q = generator.selectQuery(em);
                     results = q.getResultList();
@@ -280,7 +274,7 @@ public class GatewayResource extends AbstractResource {
                     break;
                 case GATEWAY_WORKER:
                     generator = new QueryGenerator(GATEWAY_WORKER);
-                    generator.setParameter(GatewayWorkerConstants.GATEWAY_NAME, gatewayName);
+                    generator.setParameter(GatewayWorkerConstants.GATEWAY_ID, gatewayId);
                     q = generator.selectQuery(em);
                     results = q.getResultList();
                     if (results.size() != 0) {
@@ -292,23 +286,9 @@ public class GatewayResource extends AbstractResource {
                         }
                     }
                     break;
-                case PUBLISHED_WORKFLOW:
-                    generator = new QueryGenerator(PUBLISHED_WORKFLOW);
-                    generator.setParameter(PublishedWorkflowConstants.GATEWAY_NAME, gatewayName);
-                    q = generator.selectQuery(em);
-                    results = q.getResultList();
-                    if (results.size() != 0) {
-                        for (Object result : results) {
-                            Published_Workflow publishedWorkflow = (Published_Workflow) result;
-                            PublishWorkflowResource publishWorkflowResource =
-                                    (PublishWorkflowResource) Utils.getResource(ResourceType.PUBLISHED_WORKFLOW, publishedWorkflow);
-                            resourceList.add(publishWorkflowResource);
-                        }
-                    }
-                    break;
                 case EXPERIMENT:
                     generator = new QueryGenerator(EXPERIMENT);
-                    generator.setParameter(ExperimentConstants.GATEWAY_NAME, gatewayName);
+                    generator.setParameter(ExperimentConstants.GATEWAY_ID, gatewayId);
                     q = generator.selectQuery(em);
                     results = q.getResultList();
                     if (results.size() != 0) {
@@ -359,16 +339,20 @@ public class GatewayResource extends AbstractResource {
         EntityManager em = null;
         try {
             em = ResourceUtils.getEntityManager();
-            Gateway existingGateway = em.find(Gateway.class, gatewayName);
+            Gateway existingGateway = em.find(Gateway.class, gatewayId);
             em.close();
 
             em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
             Gateway gateway = new Gateway();
             gateway.setGateway_name(gatewayName);
-            gateway.setOwner(owner);
+            gateway.setGateway_id(gatewayId);
+            gateway.setDomain(domain);
+            gateway.setEmailAddress(emailAddress);
             if (existingGateway != null) {
-                existingGateway.setOwner(owner);
+                existingGateway.setDomain(domain);
+                existingGateway.setGateway_name(gatewayName);
+                existingGateway.setEmailAddress(emailAddress);
                 gateway = em.merge(existingGateway);
             } else {
                 em.persist(gateway);
@@ -401,7 +385,7 @@ public class GatewayResource extends AbstractResource {
             switch (type) {
                 case GATEWAY_WORKER:
                     em = ResourceUtils.getEntityManager();
-                    Gateway_Worker existingWorker = em.find(Gateway_Worker.class, new Gateway_Worker_PK(gatewayName, name.toString()));
+                    Gateway_Worker existingWorker = em.find(Gateway_Worker.class, new Gateway_Worker_PK(gatewayId, name.toString()));
                     em.close();
                     return existingWorker != null;
                 case USER:
@@ -409,12 +393,6 @@ public class GatewayResource extends AbstractResource {
                     Users existingUser = em.find(Users.class, name);
                     em.close();
                     return existingUser != null;
-                case PUBLISHED_WORKFLOW:
-                    em = ResourceUtils.getEntityManager();
-                    Published_Workflow existingWf = em.find(Published_Workflow.class, new Published_Workflow_PK(gatewayName, name.toString()));
-                    em.close();
-                    boolean a = existingWf != null;
-                    return existingWf != null;
                 case EXPERIMENT:
                     em = ResourceUtils.getEntityManager();
                     Experiment existingExp = em.find(Experiment.class, name.toString());
@@ -437,59 +415,6 @@ public class GatewayResource extends AbstractResource {
         }
     }
 
-    /**
-     *
-     * @param workflowTemplateName published workflow template name
-     * @return boolean - whether workflow with the same name exists
-     */
-    public boolean isPublishedWorkflowExists(String workflowTemplateName) throws RegistryException{
-    	return isExists(ResourceType.PUBLISHED_WORKFLOW, workflowTemplateName);
-    }
-
-    /**
-     *
-     * @param workflowTemplateName published workflow template name
-     * @return publish workflow resource
-     */
-    public PublishWorkflowResource createPublishedWorkflow(String workflowTemplateName) throws RegistryException{
-    	PublishWorkflowResource publishedWorkflowResource =
-                (PublishWorkflowResource)create(ResourceType.PUBLISHED_WORKFLOW);
-    	publishedWorkflowResource.setName(workflowTemplateName);
-    	publishedWorkflowResource.setPath("/");
-    	publishedWorkflowResource.setVersion("1.0");
-    	return publishedWorkflowResource;
-    }
-
-    /**
-     *
-     * @param workflowTemplateName published workflow template name
-     * @return publish workflow resource
-     */
-    public PublishWorkflowResource getPublishedWorkflow(String workflowTemplateName) throws RegistryException{
-    	return (PublishWorkflowResource)get(ResourceType.PUBLISHED_WORKFLOW,workflowTemplateName);
-    }
-
-    /**
-     *
-     * @return list of publish workflows for the gateway
-     */
-    public List<PublishWorkflowResource> getPublishedWorkflows() throws RegistryException{
-    	List<PublishWorkflowResource> result=new ArrayList<PublishWorkflowResource>();
-    	List<Resource> list = get(ResourceType.PUBLISHED_WORKFLOW);
-    	for (Resource resource : list) {
-			result.add((PublishWorkflowResource) resource);
-		}
-    	return result;
-    }
-
-    /**
-     *
-     * @param workflowTemplateName published workflow template name
-     */
-    public void removePublishedWorkflow(String workflowTemplateName) throws RegistryException{
-    	remove(ResourceType.PUBLISHED_WORKFLOW, workflowTemplateName);
-    }
-    
     public ExperimentResource createExperiment (String experimentID) throws RegistryException{
         ExperimentResource metadataResource = (ExperimentResource)create(ResourceType.EXPERIMENT);
         metadataResource.setExpID(experimentID);

@@ -146,6 +146,12 @@ public class JobDescriptor {
 
     }
 
+
+    public void setMaxWallTimeForLSF(String minutes) {
+        this.getJobDescriptorDocument().getJobDescriptor().setMaxWallTime(
+                CommonUtils.maxWallTimeCalculatorForLSF(Integer.parseInt(minutes)));
+
+    }
     public void setAcountString(String name) {
         this.getJobDescriptorDocument().getJobDescriptor().setAcountString(name);
     }
@@ -452,6 +458,14 @@ public class JobDescriptor {
 
     public String getMailAddress() {
         return this.getJobDescriptorDocument().getJobDescriptor().getMailAddress();
+    }
+
+    public String getChassisName() {
+        return this.getJobDescriptorDocument().getJobDescriptor().getChassisName();
+    }
+
+    public void setChassisName(String chassisName){
+        this.getJobDescriptorDocument().getJobDescriptor().setChassisName(chassisName);
     }
     
 

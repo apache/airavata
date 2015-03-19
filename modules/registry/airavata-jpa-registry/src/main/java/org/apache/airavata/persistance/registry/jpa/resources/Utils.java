@@ -191,20 +191,6 @@ public class Utils {
                     logger.error("Object should be a User.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a User.");
                 }
-            case PUBLISHED_WORKFLOW:
-                if (o instanceof Published_Workflow){
-                    return createPublishWorkflow((Published_Workflow) o);
-                }else {
-                    logger.error("Object should be a Publish Workflow.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a Publish Workflow.");
-                }
-            case USER_WORKFLOW:
-                if (o instanceof User_Workflow){
-                    return createUserWorkflow((User_Workflow) o);
-                }else {
-                    logger.error("Object should be a User Workflow.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a User Workflow.");
-                }
             case GATEWAY_WORKER:
                 if (o instanceof Gateway_Worker){
                     return createGatewayWorker((Gateway_Worker)o);
@@ -359,6 +345,9 @@ public class Utils {
     private static Resource createGateway(Gateway o) {
         GatewayResource gatewayResource = new GatewayResource();
         gatewayResource.setGatewayName(o.getGateway_name());
+        gatewayResource.setGatewayId(o.getGateway_id());
+        gatewayResource.setDomain(o.getDomain());
+        gatewayResource.setEmailAddress(o.getEmailAddress());
         return gatewayResource;
     }
 
@@ -420,56 +409,13 @@ public class Utils {
      */
     private static Resource createGatewayWorker(Gateway_Worker o) {
         if (o != null){
-            GatewayResource gatewayResource = new GatewayResource(o.getGateway().getGateway_name());
-            gatewayResource.setOwner(o.getGateway().getOwner());
+            GatewayResource gatewayResource = new GatewayResource(o.getGateway().getGateway_id());
+            gatewayResource.setDomain(o.getGateway().getGateway_name());
+            gatewayResource.setDomain(o.getGateway().getDomain());
+            gatewayResource.setEmailAddress(o.getGateway().getEmailAddress());
             return new WorkerResource(o.getUser_name(), gatewayResource);
         }
         return null;
-    }
-
-    /**
-     *
-     * @param o  Published_Workflow model object
-     * @return  Published Workflow resource object
-     */
-    private static Resource createPublishWorkflow(Published_Workflow o) {
-        PublishWorkflowResource publishWorkflowResource = new PublishWorkflowResource();
-        if (o != null){
-            GatewayResource gatewayResource = (GatewayResource)createGateway(o.getGateway());
-            publishWorkflowResource.setGateway(gatewayResource);
-            publishWorkflowResource.setCreatedUser(o.getUser().getUser_name());
-            publishWorkflowResource.setName(o.getPublish_workflow_name());
-            publishWorkflowResource.setContent(new String(o.getWorkflow_content()));
-            publishWorkflowResource.setPublishedDate(o.getPublished_date());
-            publishWorkflowResource.setVersion(o.getVersion());
-            publishWorkflowResource.setPath(o.getPath());
-        }
-
-        return publishWorkflowResource;
-    }
-
-    /**
-     *
-     * @param o User_Workflow model object
-     * @return User_Workflow resource object
-     */
-    private static Resource createUserWorkflow(User_Workflow o) {
-        UserWorkflowResource userWorkflowResource = new UserWorkflowResource();
-        if (o != null){
-            userWorkflowResource.setName(o.getTemplate_name());
-            GatewayResource gatewayResource = (GatewayResource)createGateway(o.getGateway());
-            userWorkflowResource.setGateway(gatewayResource);
-            Gateway_Worker gateway_worker = new Gateway_Worker();
-            gateway_worker.setGateway(o.getGateway());
-            gateway_worker.setUser(o.getUser());
-            WorkerResource workerResource = (WorkerResource) createGatewayWorker(gateway_worker);
-            userWorkflowResource.setWorker(workerResource);
-            userWorkflowResource.setLastUpdateDate(o.getLast_updated_date());
-            userWorkflowResource.setContent(new String(o.getWorkflow_graph()));
-            userWorkflowResource.setPath(o.getPath());
-        }
-
-        return userWorkflowResource;
     }
 
     /**
@@ -776,8 +722,9 @@ public class Utils {
             configDataResource.setAiravataAutoSchedule(o.isAiravataAutoSchedule());
             configDataResource.setOverrideManualParams(o.isOverrideManualParams());
             configDataResource.setShareExp(o.isShareExp());
+            configDataResource.setUserDn(o.getUserDn());
+            configDataResource.setGenerateCert(o.isGenerateCert());
         }
-
         return configDataResource;
     }
 
@@ -800,6 +747,7 @@ public class Utils {
             schedulingResource.setJobStartTime(o.getJobStartTime());
             schedulingResource.setPhysicalMemory(o.getTotalPhysicalmemory());
             schedulingResource.setProjectName(o.getProjectName());
+            schedulingResource.setChessisName(o.getChessisName());
         }
 
         return schedulingResource;

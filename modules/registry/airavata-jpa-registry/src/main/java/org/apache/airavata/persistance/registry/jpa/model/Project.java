@@ -34,6 +34,9 @@ public class Project implements Serializable {
     @Column(name = "PROJECT_ID")
     private String project_id;
 
+    @Column(name = "GATEWAY_ID")
+    private String gateway_id;
+
     @Column(name = "PROJECT_NAME")
     private String project_name;
 
@@ -47,7 +50,7 @@ public class Project implements Serializable {
     private Timestamp creationTime;
 
     @ManyToOne(cascade=CascadeType.MERGE)
-    @JoinColumn(name = "GATEWAY_NAME")
+    @JoinColumn(name = "GATEWAY_ID")
     private Gateway gateway;
 
     @ManyToOne(cascade=CascadeType.MERGE)
@@ -109,6 +112,14 @@ public class Project implements Serializable {
 
     public void setUser_name(String user_name) {
         this.user_name = user_name;
+    }
+
+    public String getGateway_id() {
+        return gateway_id;
+    }
+
+    public void setGateway_id(String gateway_id) {
+        this.gateway_id = gateway_id;
     }
 }
 

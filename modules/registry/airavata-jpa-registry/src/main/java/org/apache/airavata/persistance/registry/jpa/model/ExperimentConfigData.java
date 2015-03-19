@@ -39,6 +39,10 @@ public class ExperimentConfigData implements Serializable {
     private boolean overrideManualParams;
     @Column(name = "SHARE_EXPERIMENT")
     private boolean shareExp;
+    @Column(name = "USER_DN")
+    private String userDn;
+    @Column(name = "GENERATE_CERT")
+    private boolean generateCert;
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "EXPERIMENT_ID")
@@ -82,5 +86,21 @@ public class ExperimentConfigData implements Serializable {
 
     public void setExperiment(Experiment experiment) {
         this.experiment = experiment;
+    }
+
+    public String getUserDn() {
+        return userDn;
+    }
+
+    public void setUserDn(String userDn) {
+        this.userDn = userDn;
+    }
+
+    public boolean isGenerateCert() {
+        return generateCert;
+    }
+
+    public void setGenerateCert(boolean generateCert) {
+        this.generateCert = generateCert;
     }
 }

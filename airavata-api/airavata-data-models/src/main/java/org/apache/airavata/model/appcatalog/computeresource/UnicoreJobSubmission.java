@@ -54,6 +54,8 @@ import org.slf4j.LoggerFactory;
  * 
  * unicoreEndPointURL:
  *  unicoreGateway End Point. The provider will query this service to fetch required service end points.
+ * authenticationMode
+ *  The authenticationMode defines the way certificate is fetched.
  */
 @SuppressWarnings("all") public class UnicoreJobSubmission implements org.apache.thrift.TBase<UnicoreJobSubmission, UnicoreJobSubmission._Fields>, java.io.Serializable, Cloneable, Comparable<UnicoreJobSubmission> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("UnicoreJobSubmission");

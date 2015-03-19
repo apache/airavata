@@ -24,7 +24,7 @@
 
  /**
   * This will contains all the PBS specific job statuses.
-  * C -     Job is completed after having run/
+  * C -  Job is completed after having run/
   * E -  Job is exiting after having run.
   * H -  Job is held.
   * Q -  job is queued, eligible to run or routed.
@@ -35,7 +35,7 @@
   * S -  (Unicos only) job is suspend.
   */
  public enum JobStatus {
-     C, E, H, Q, R, T, W, S,U,F,CA,CD,CF,CG,NF,PD,PR,TO,qw,t,r,h,Er,Eqw;
+     C, E, H, Q, R, T, W, S,U,F,CA,CD,CF,CG,NF,PD,PR,TO,qw,t,r,h,Er,Eqw,PEND,RUN,PSUSP,USUSP,SSUSP,DONE,EXIT,UNKWN,ZOMBI;
 
      public static JobStatus fromString(String status){
         if(status != null){
@@ -89,6 +89,22 @@
                 return JobStatus.Er;
             }else if("Eqw".equals(status)){
                 return JobStatus.Er;
+            }else if("RUN".equals(status)){      // LSF starts here
+                return JobStatus.RUN;
+            }else if("PEND".equals(status)){
+                return JobStatus.PEND;
+            }else if("DONE".equals(status)){
+                return JobStatus.DONE;
+            }else if("PSUSP".equals(status)){
+                return JobStatus.PSUSP;
+            }else if("USUSP".equals(status)){
+                return JobStatus.USUSP;
+            }else if("SSUSP".equals(status)){
+                return JobStatus.SSUSP;
+            }else if("EXIT".equals(status)){
+                return JobStatus.EXIT;
+            }else if("ZOMBI".equals(status)){
+                return JobStatus.ZOMBI;
             }
         }
          return JobStatus.U;

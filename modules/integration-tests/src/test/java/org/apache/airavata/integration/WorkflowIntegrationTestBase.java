@@ -184,7 +184,7 @@ public abstract class WorkflowIntegrationTestBase {
 //    }
 
     protected String createExperiment (Experiment experiment) throws AiravataSystemException, InvalidRequestException, AiravataClientException, TException, AiravataClientConnectException {
-        return getClient().createExperiment(experiment);
+        return getClient().createExperiment("default", experiment);
     }
 
     protected void launchExperiment (String expId) throws ExperimentNotFoundException, AiravataSystemException, InvalidRequestException, AiravataClientException, TException, AiravataClientConnectException {

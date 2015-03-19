@@ -143,8 +143,10 @@ public class Initialize {
 
         try{
             GatewayResource gatewayResource = new GatewayResource();
+            gatewayResource.setGatewayId(RegistrySettings.getSetting("default.registry.gateway"));
             gatewayResource.setGatewayName(RegistrySettings.getSetting("default.registry.gateway"));
-            gatewayResource.setOwner(RegistrySettings.getSetting("default.registry.gateway"));
+            gatewayResource.setDomain("test-domain");
+            gatewayResource.setEmailAddress("test-email");
             gatewayResource.save();
             
             UserResource userResource = new UserResource();

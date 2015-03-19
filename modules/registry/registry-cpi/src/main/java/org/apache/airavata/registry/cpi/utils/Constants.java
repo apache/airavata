@@ -25,6 +25,7 @@ public class Constants {
     public final class FieldConstants {
         public final class ProjectConstants {
             public static final String PROJECT_ID = "projectID";
+            public static final String GATEWAY_ID = "gateway_id";
             public static final String OWNER = "owner";
             public static final String PROJECT_NAME = "name";
             public static final String DESCRIPTION = "description";
@@ -33,7 +34,7 @@ public class Constants {
         public final class ExperimentConstants {
             public static final String EXPERIMENT_NAME = "experimentName";
             public static final String USER_NAME = "userName";
-            public static final String GATEWAY = "gateway";
+            public static final String GATEWAY = "gatewayId";
             public static final String EXPERIMENT_DESC = "experimentDescription";
             public static final String PROJECT_ID = "projectId";
             public static final String CREATION_TIME = "creationTime";

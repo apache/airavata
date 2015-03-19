@@ -26,16 +26,18 @@ import org.apache.airavata.gsi.ssh.api.*;
 import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.config.ConfigReader;
+import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
+import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPublicKeyAuthentication;
 import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.AssertJUnit;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,18 +50,17 @@ public class DefaultSSHApiTestWithMyProxyAuth {
     }
 
 
-    public static void main(String[]ars){
-         String myProxyUserName = "ogce";
-         String myProxyPassword = "OGCE@xsede14";
-         String certificateLocation = "/Users/raminder/.globus/certificates";
+    public static void main(String[]ars) throws IOException {
+         String myProxyUserName = "lg11w";
 
-
-        GSIAuthenticationInfo authenticationInfo
-                = new MyProxyAuthenticationInfo(myProxyUserName, myProxyPassword, "myproxy.teragrid.org",
-                7512, 17280000, certificateLocation);
+//        DefaultPasswordAuthenticationInfo authenticationInfo
+//                = new DefaultPasswordAuthenticationInfo("");
+        byte[] privateKey = IOUtils.toByteArray(new BufferedInputStream(new FileInputStream("/Users/lginnali/.ssh/id_dsa")));
+        byte[] publicKey = IOUtils.toByteArray(new BufferedInputStream(new FileInputStream("/Users/lginnali/.ssh/id_dsa.pub")));
+        DefaultPublicKeyAuthentication authenticationInfo = new DefaultPublicKeyAuthentication(privateKey,publicKey,"");
 
         // Create command
-        CommandInfo commandInfo = new RawCommandInfo("/bin/ls");
+        CommandInfo commandInfo = new RawCommandInfo("source /etc/bashrc; bsub </home/lg11w/mywork/sshEchoExperiment_9d267072-ca65-4ca8-847a-cd3d130f6050/366787899.lsf");
 
         // Server info
         //Stampede
@@ -68,7 +69,7 @@ public class DefaultSSHApiTestWithMyProxyAuth {
 //        ServerInfo serverInfo = new ServerInfo(myProxyUserName, "trestles.sdsc.xsede.org", 22);
         
         //Lonestar
-         ServerInfo serverInfo = new ServerInfo(myProxyUserName, "lonestar.tacc.utexas.edu", 22);
+         ServerInfo serverInfo = new ServerInfo(myProxyUserName, "ghpcc06.umassrc.org", 22);
         // Output
         CommandOutput commandOutput = new SystemCommandOutput();
 

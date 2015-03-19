@@ -25,6 +25,7 @@ import java.util.*;
 
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
@@ -40,19 +41,19 @@ public class ProjectRegistry {
     private final static Logger logger = LoggerFactory.getLogger(ProjectRegistry.class);
 
     public ProjectRegistry(GatewayResource gatewayResource, UserResource user) throws RegistryException {
-        if (!ResourceUtils.isGatewayExist(gatewayResource.getGatewayName())){
+        if (!ResourceUtils.isGatewayExist(gatewayResource.getGatewayId())){
             this.gatewayResource = gatewayResource;
         }else {
-            this.gatewayResource = (GatewayResource)ResourceUtils.getGateway(gatewayResource.getGatewayName());
+            this.gatewayResource = (GatewayResource)ResourceUtils.getGateway(gatewayResource.getGatewayId());
         }
         if (!gatewayResource.isExists(ResourceType.GATEWAY_WORKER, user.getUserName())){
             workerResource = ResourceUtils.addGatewayWorker(gatewayResource, user);
         }else {
-            workerResource = (WorkerResource)ResourceUtils.getWorker(gatewayResource.getGatewayName(), user.getUserName());
+            workerResource = (WorkerResource)ResourceUtils.getWorker(gatewayResource.getGatewayId(), user.getUserName());
         }
     }
 
-    public String addProject (Project project) throws RegistryException{
+    public String addProject (Project project, String gatewayId) throws RegistryException{
         String projectId;
         try {
             if (!ResourceUtils.isUserExist(project.getOwner())){
@@ -65,7 +66,8 @@ public class ProjectRegistry {
             projectResource.setName(project.getName());
             projectResource.setDescription(project.getDescription());
             projectResource.setCreationTime(AiravataUtils.getTime(project.getCreationTime()));
-            projectResource.setGateway(workerResource.getGateway());
+            GatewayResource gateway = (GatewayResource)ResourceUtils.getGateway(gatewayId);
+            projectResource.setGateway(gateway);
             WorkerResource worker = new WorkerResource(project.getOwner(), workerResource.getGateway());
             projectResource.setWorker(worker);
             projectResource.save();
@@ -107,7 +109,7 @@ public class ProjectRegistry {
             existingProject.setDescription(project.getDescription());
             existingProject.setName(project.getName());
             existingProject.setCreationTime(AiravataUtils.getTime(project.getCreationTime()));
-            existingProject.setGateway(gatewayResource);
+//            existingProject.setGateway(gatewayResource);
             UserResource user = (UserResource)ResourceUtils.getUser(project.getOwner());
             if (!gatewayResource.isExists(ResourceType.GATEWAY_WORKER, user.getUserName())){
                 workerResource = ResourceUtils.addGatewayWorker(gatewayResource, user);
@@ -188,6 +190,8 @@ public class ProjectRegistry {
                         fil.put(AbstractResource.ProjectConstants.USERNAME, filters.get(field));
                     }else if (field.equals(Constants.FieldConstants.ProjectConstants.DESCRIPTION)){
                         fil.put(AbstractResource.ProjectConstants.DESCRIPTION, filters.get(field));
+                    }else if (field.equals(Constants.FieldConstants.ProjectConstants.GATEWAY_ID)){
+                        fil.put(AbstractResource.ProjectConstants.GATEWAY_ID, filters.get(field));
                     }
                 }
                 List<ProjectResource> projectResources = workerResource.searchProjects(fil);

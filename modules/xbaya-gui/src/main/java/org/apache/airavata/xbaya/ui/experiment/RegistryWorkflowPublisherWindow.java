@@ -102,7 +102,8 @@ public class RegistryWorkflowPublisherWindow {
     			org.apache.airavata.model.Workflow workflowData = new org.apache.airavata.model.Workflow();
     			workflowData.setName(workflowTemplateName);
     			workflowData.setGraph(workflowAsString);
-    			client.registerWorkflow(workflowData);
+                //FIXME: Use the gatewayId from the UI
+    			client.registerWorkflow("default", workflowData);
     			hide();
         	}
 		} catch (Exception e) {

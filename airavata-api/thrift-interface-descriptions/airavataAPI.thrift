@@ -55,7 +55,7 @@ namespace js ApacheAiravataAPI
  *              in a change to major/minor version numbers.
  *
 */
-const string AIRAVATA_API_VERSION = "0.14.0"
+const string AIRAVATA_API_VERSION = "0.15.0"
 
 service Airavata {
 
@@ -70,15 +70,90 @@ service Airavata {
         throws (1: airavataErrors.InvalidRequestException ire,
                 2: airavataErrors.AiravataClientException ace,
                 3: airavataErrors.AiravataSystemException ase)
-  
+
+  string addGateway(1: required workspaceModel.Gateway gateway)
+         throws (1: airavataErrors.InvalidRequestException ire,
+                 2: airavataErrors.AiravataClientException ace,
+                 3: airavataErrors.AiravataSystemException ase)
+
+  void updateGateway(1: required string gatewayId, 2: required workspaceModel.Gateway updatedGateway)
+         throws (1: airavataErrors.InvalidRequestException ire,
+                 2: airavataErrors.AiravataClientException ace,
+                 3: airavataErrors.AiravataSystemException ase)
+
+  workspaceModel.Gateway getGateway(1: required string gatewayId)
+           throws (1: airavataErrors.InvalidRequestException ire,
+                   2: airavataErrors.AiravataClientException ace,
+                   3: airavataErrors.AiravataSystemException ase)
+
+  bool deleteGateway(1: required string gatewayId)
+             throws (1: airavataErrors.InvalidRequestException ire,
+                     2: airavataErrors.AiravataClientException ace,
+                     3: airavataErrors.AiravataSystemException ase)
+
+  list<workspaceModel.Gateway> getAllGateways()
+             throws (1: airavataErrors.InvalidRequestException ire,
+                     2: airavataErrors.AiravataClientException ace,
+                     3: airavataErrors.AiravataSystemException ase)
+
+  bool isGatewayExist(1: required string gatewayId)
+           throws (1: airavataErrors.InvalidRequestException ire,
+                   2: airavataErrors.AiravataClientException ace,
+                   3: airavataErrors.AiravataSystemException ase)
+
+
   /**
-   * Create a Project
+    * Airavata Adminstrative Funcationality
+  **/
+
+
+  /**
+   * Generate and Register SSH Key Pair with Airavata Credential Store.
+   *
+   * @param gatewayId
+   *    The identifier for the requested gateway.
+   *
+   * @param userName
+   *    The User for which the credential should be registered. For community accounts, this user is the name of the
+   *    community user name. For computational resources, this user name need not be the same user name on resoruces.
+   *
+   * @return airavataCredStoreToken
+   *   An SSH Key pair is generated and stored in the credential store and associated with users or community account
+   *   belonging to a gateway.
+   *
+   **/
+
+   string generateAndRegisterSSHKeys (1: required string gatewayId, 2: required string userName)
+           throws (1: airavataErrors.InvalidRequestException ire,
+                   2: airavataErrors.AiravataClientException ace,
+                   3: airavataErrors.AiravataSystemException ase)
+
+   string getSSHPubKey (1: required string airavataCredStoreToken)
+           throws (1: airavataErrors.InvalidRequestException ire,
+                   2: airavataErrors.AiravataClientException ace,
+                   3: airavataErrors.AiravataSystemException ase)
+
+   map<string, string> getAllUserSSHPubKeys (1: required string userName)
+           throws (1: airavataErrors.InvalidRequestException ire,
+                   2: airavataErrors.AiravataClientException ace,
+                   3: airavataErrors.AiravataSystemException ase)
+
+  /**
+   * Creates a Project with basic metadata.
+   *    A Project is a container of experiments.
+   *
+   * @param gatewayId
+   *    The identifier for the requested gateway.
+   *
+   * @param Project
+   *    The Project Object described in the workspaceModel
    *
   */
-  string createProject (1: required workspaceModel.Project project)
-      throws (1: airavataErrors.InvalidRequestException ire,
-              2: airavataErrors.AiravataClientException ace,
-              3: airavataErrors.AiravataSystemException ase)
+  string createProject (1: required string gatewayId,
+                        2: required workspaceModel.Project project)
+          throws (1: airavataErrors.InvalidRequestException ire,
+                  2: airavataErrors.AiravataClientException ace,
+                  3: airavataErrors.AiravataSystemException ase)
 
   /**
    * Update a Project
@@ -101,11 +176,24 @@ service Airavata {
                 3: airavataErrors.AiravataSystemException ase,
                 4: airavataErrors.ProjectNotFoundException pnfe)
 
-/**
+  bool deleteProject (1: required string projectId)
+          throws (1: airavataErrors.InvalidRequestException ire,
+                  2: airavataErrors.AiravataClientException ace,
+                  3: airavataErrors.AiravataSystemException ase,
+                  4: airavataErrors.ProjectNotFoundException pnfe)
+
+ /**
    * Get all Project by user
    *
-  */
-  list<workspaceModel.Project> getAllUserProjects (1: required string userName)
+   * @param gatewayId
+   *    The identifier for the requested gateway.
+   *
+   * @param userName
+   *    The Project Object described in the workspaceModel
+   *
+ **/
+  list<workspaceModel.Project> getAllUserProjects (1: required string gatewayId,
+                                                   2: required string userName)
         throws (1: airavataErrors.InvalidRequestException ire,
                 2: airavataErrors.AiravataClientException ace,
                 3: airavataErrors.AiravataSystemException ase)
@@ -114,7 +202,8 @@ service Airavata {
      * Get all Project for user by project name
      *
     */
-  list<workspaceModel.Project> searchProjectsByProjectName (1: required string userName, 2: required string projectName)
+  list<workspaceModel.Project> searchProjectsByProjectName (1: required string gatewayId,
+                        2: required string userName, 3: required string projectName)
           throws (1: airavataErrors.InvalidRequestException ire,
                   2: airavataErrors.AiravataClientException ace,
                   3: airavataErrors.AiravataSystemException ase)
@@ -123,7 +212,8 @@ service Airavata {
     * Get all Project for user by project description
     *
   */
-  list<workspaceModel.Project> searchProjectsByProjectDesc (1: required string userName, 2: required string description)
+  list<workspaceModel.Project> searchProjectsByProjectDesc (1: required string gatewayId,
+                        2: required string userName, 3: required string description)
             throws (1: airavataErrors.InvalidRequestException ire,
                     2: airavataErrors.AiravataClientException ace,
                     3: airavataErrors.AiravataSystemException ase)
@@ -133,7 +223,8 @@ service Airavata {
        * Search Experiments by experiment name
        *
     */
-  list<experimentModel.ExperimentSummary> searchExperimentsByName (1: required string userName, 2: required string expName)
+  list<experimentModel.ExperimentSummary> searchExperimentsByName (1: required string gatewayId,
+                          2: required string userName, 3: required string expName)
             throws (1: airavataErrors.InvalidRequestException ire,
                     2: airavataErrors.AiravataClientException ace,
                     3: airavataErrors.AiravataSystemException ase)
@@ -142,7 +233,8 @@ service Airavata {
        * Search Experiments by experiment name
        *
   */
-  list<experimentModel.ExperimentSummary> searchExperimentsByDesc (1: required string userName, 2: required string description)
+  list<experimentModel.ExperimentSummary> searchExperimentsByDesc (1: required string gatewayId,
+                            2: required string userName, 3: required string description)
               throws (1: airavataErrors.InvalidRequestException ire,
                       2: airavataErrors.AiravataClientException ace,
                       3: airavataErrors.AiravataSystemException ase)
@@ -151,7 +243,8 @@ service Airavata {
        * Search Experiments by application id
        *
   */
-  list<experimentModel.ExperimentSummary> searchExperimentsByApplication (1: required string userName, 2: required string applicationId)
+  list<experimentModel.ExperimentSummary> searchExperimentsByApplication (1: required string gatewayId,
+                             2: required string userName, 3: required string applicationId)
               throws (1: airavataErrors.InvalidRequestException ire,
                       2: airavataErrors.AiravataClientException ace,
                       3: airavataErrors.AiravataSystemException ase)
@@ -160,7 +253,8 @@ service Airavata {
          * Search Experiments by experiment status
          *
     */
-    list<experimentModel.ExperimentSummary> searchExperimentsByStatus (1: required string userName, 2: required experimentModel.ExperimentState experimentState)
+    list<experimentModel.ExperimentSummary> searchExperimentsByStatus (1: required string gatewayId,
+                            2: required string userName, 3: required experimentModel.ExperimentState experimentState)
                 throws (1: airavataErrors.InvalidRequestException ire,
                         2: airavataErrors.AiravataClientException ace,
                         3: airavataErrors.AiravataSystemException ase)
@@ -169,7 +263,8 @@ service Airavata {
          * Search Experiments by experiment status
          *
     */
-    list<experimentModel.ExperimentSummary> searchExperimentsByCreationTime (1: required string userName, 2: required i64 fromTime, 3: required i64 toTime)
+    list<experimentModel.ExperimentSummary> searchExperimentsByCreationTime (1: required string gatewayId,
+                            2: required string userName, 3: required i64 fromTime, 4: required i64 toTime)
                 throws (1: airavataErrors.InvalidRequestException ire,
                         2: airavataErrors.AiravataClientException ace,
                         3: airavataErrors.AiravataSystemException ase)
@@ -188,7 +283,8 @@ service Airavata {
      * Get all Experiments by user
      *
   */
-  list<experimentModel.Experiment> getAllUserExperiments(1: required string userName)
+  list<experimentModel.Experiment> getAllUserExperiments(1: required string gatewayId,
+                        2: required string userName)
             throws (1: airavataErrors.InvalidRequestException ire,
                     2: airavataErrors.AiravataClientException ace,
                     3: airavataErrors.AiravataSystemException ase)
@@ -229,7 +325,8 @@ service Airavata {
      *
     */
 
-  string createExperiment(1: required experimentModel.Experiment experiment)
+  string createExperiment(1: required string gatewayId,
+                          2: required experimentModel.Experiment experiment)
     throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
@@ -320,7 +417,7 @@ service Airavata {
             4: airavataErrors.AiravataSystemException ase)
 
   void updateExperimentConfiguration(1: required string airavataExperimentId,
-                                       2: required experimentModel.UserConfigurationData userConfiguration)
+                                     2: required experimentModel.UserConfigurationData userConfiguration)
 
   void updateResourceScheduleing(1: required string airavataExperimentId,
                                  2: required experimentModel.ComputationalResourceScheduling resourceScheduling)
@@ -403,6 +500,12 @@ service Airavata {
               3: airavataErrors.AiravataClientException ace,
               4: airavataErrors.AiravataSystemException ase)
 
+   list<applicationInterfaceModel.OutputDataObjectType> getIntermediateOutputs (1: required string airavataExperimentId)
+        throws (1: airavataErrors.InvalidRequestException ire,
+                2: airavataErrors.ExperimentNotFoundException enf,
+                3: airavataErrors.AiravataClientException ace,
+                4: airavataErrors.AiravataSystemException ase)
+
 
   map<string, experimentModel.JobStatus> getJobStatuses(1: required string airavataExperimentId)
               throws (1: airavataErrors.InvalidRequestException ire,
@@ -421,9 +524,6 @@ service Airavata {
                         2: airavataErrors.ExperimentNotFoundException enf,
                         3: airavataErrors.AiravataClientException ace,
                         4: airavataErrors.AiravataSystemException ase)
-
-
-
 
   /**
    * Clone an specified experiment with a new name. A copy of the experiment configuration is made and is persisted with new metadata.
@@ -534,7 +634,8 @@ service Airavata {
    *   Returns a server-side generated airavata appModule globally unique identifier.
    *
   */
-  string registerApplicationModule(1: required applicationDeploymentModel.ApplicationModule applicationModule)
+  string registerApplicationModule(1: required string gatewayId,
+                        2: required applicationDeploymentModel.ApplicationModule applicationModule)
     	throws (1: airavataErrors.InvalidRequestException ire,
               2: airavataErrors.AiravataClientException ace,
               3: airavataErrors.AiravataSystemException ase)
@@ -574,7 +675,7 @@ service Airavata {
                 3: airavataErrors.AiravataSystemException ase)
 
 
-  list<applicationDeploymentModel.ApplicationModule> getAllAppModules ()
+  list<applicationDeploymentModel.ApplicationModule> getAllAppModules (1: required string gatewayId)
         throws (1: airavataErrors.InvalidRequestException ire,
                 2: airavataErrors.AiravataClientException ace,
                 3: airavataErrors.AiravataSystemException ase)
@@ -609,7 +710,8 @@ service Airavata {
    *   Returns a server-side generated airavata appDeployment globally unique identifier.
    *
   */
-  string registerApplicationDeployment(1: required applicationDeploymentModel.ApplicationDeploymentDescription applicationDeployment)
+  string registerApplicationDeployment(1: required string gatewayId,
+                2: required applicationDeploymentModel.ApplicationDeploymentDescription applicationDeployment)
     	throws (1: airavataErrors.InvalidRequestException ire,
               2: airavataErrors.AiravataClientException ace,
               3: airavataErrors.AiravataSystemException ase)
@@ -670,7 +772,7 @@ service Airavata {
    *   Returns the list of all application Deployment Objects.
    *
   */
-  list<applicationDeploymentModel.ApplicationDeploymentDescription> getAllApplicationDeployments()
+  list<applicationDeploymentModel.ApplicationDeploymentDescription> getAllApplicationDeployments(1: required string gatewayId)
       	throws (1: airavataErrors.InvalidRequestException ire,
                 2: airavataErrors.AiravataClientException ace,
                 3: airavataErrors.AiravataSystemException ase)
@@ -705,8 +807,8 @@ service Airavata {
    *   Returns a server-side generated airavata application interface globally unique identifier.
    *
   */
-  string registerApplicationInterface(1: required applicationInterfaceModel.ApplicationInterfaceDescription
-                                            applicationInterface)
+  string registerApplicationInterface(1: required string gatewayId,
+                2: required applicationInterfaceModel.ApplicationInterfaceDescription applicationInterface)
     	throws (1: airavataErrors.InvalidRequestException ire,
               2: airavataErrors.AiravataClientException ace,
               3: airavataErrors.AiravataSystemException ase)
@@ -771,7 +873,7 @@ service Airavata {
    *   Returns a list of application interfaces with corresponsing id's
    *
   */
-  map<string, string> getAllApplicationInterfaceNames ()
+  map<string, string> getAllApplicationInterfaceNames (1: required string gatewayId)
       	throws (1: airavataErrors.InvalidRequestException ire,
                 2: airavataErrors.AiravataClientException ace,
                 3: airavataErrors.AiravataSystemException ase)
@@ -784,7 +886,7 @@ service Airavata {
    *   Returns a list of application interfaces documents
    *
   */
-  list<applicationInterfaceModel.ApplicationInterfaceDescription> getAllApplicationInterfaces ()
+  list<applicationInterfaceModel.ApplicationInterfaceDescription> getAllApplicationInterfaces (1: required string gatewayId)
       	throws (1: airavataErrors.InvalidRequestException ire,
                 2: airavataErrors.AiravataClientException ace,
                 3: airavataErrors.AiravataSystemException ase)
@@ -1617,7 +1719,7 @@ service Airavata {
             2: airavataErrors.AiravataClientException ace,
             3: airavataErrors.AiravataSystemException ase)
 
-  list<string> getAllWorkflows()
+  list<string> getAllWorkflows(1: required string gatewayId)
           throws (1: airavataErrors.InvalidRequestException ire,
                   2: airavataErrors.AiravataClientException ace,
                   3: airavataErrors.AiravataSystemException ase)
@@ -1632,7 +1734,8 @@ service Airavata {
                 2: airavataErrors.AiravataClientException ace,
                 3: airavataErrors.AiravataSystemException ase)
 
-  string registerWorkflow(1: required workflowDataModel.Workflow workflow)
+  string registerWorkflow(1: required string gatewayId,
+                          2: required workflowDataModel.Workflow workflow)
           throws (1: airavataErrors.InvalidRequestException ire,
                   2: airavataErrors.AiravataClientException ace,
                   3: airavataErrors.AiravataSystemException ase)

@@ -33,18 +33,22 @@ const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
  * PBS:
  *  Job manager supporting the Portal Batch System (PBS) protocol. Some examples include TORQUE, PBSPro, Grid Engine.
  *
- * UGE:
- *  Univa Grid Engine, a variation of PBS implementation.
- *
  * SLURM:
  *  The Simple Linux Utility for Resource Management is a open source workload manager.
+  *
+  * UGE:
+  *  Univa Grid Engine, a variation of PBS implementation.
+  *
+  * LSF:
+  *  IBM Platform Load Sharing Facility is dominantly installed on IBM clusters.
  *
 */
 enum ResourceJobManagerType {
     FORK,
     PBS,
-    UGE,
-    SLURM
+    SLURM,
+    LSF,
+    UGE
 }
 
 /**
@@ -329,12 +333,15 @@ struct GlobusJobSubmission {
  *
  * unicoreEndPointURL:
  *  unicoreGateway End Point. The provider will query this service to fetch required service end points.
+ * authenticationMode
+ *  The authenticationMode defines the way certificate is fetched. 
 */
 struct UnicoreJobSubmission {
     1: required string jobSubmissionInterfaceId = DEFAULT_ID,
     2: required SecurityProtocol securityProtocol,
-    3: required string unicoreEndPointURL
+    3: required string unicoreEndPointURL,
 }
+
 
 
 /**
@@ -359,10 +366,6 @@ struct CloudJobSubmission {
     5: required ProviderName providerName,
     6: required string userAccountName
 }
-
-
-
-
 
 /**
  * Job Submission Interfaces
