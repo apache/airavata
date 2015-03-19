@@ -461,7 +461,9 @@ public class WorkerResource extends AbstractResource {
                     String filterVal = filters.get(field);
                     if (field.equals(ProjectConstants.USERNAME)) {
                         query += "p." + field + "= '" + filterVal + "' AND ";
-                    } else {
+                    }else if (field.equals(ProjectConstants.GATEWAY_ID)) {
+                        query += "p." + field + "= '" + filterVal + "' AND ";
+                    }else {
                         if (filterVal.contains("*")){
                             filterVal = filterVal.replaceAll("\\*", "");
                         }
@@ -504,6 +506,8 @@ public class WorkerResource extends AbstractResource {
                 for (String field : filters.keySet()) {
                     String filterVal = filters.get(field);
                     if (field.equals(ExperimentConstants.EXECUTION_USER)) {
+                        query += "e." + field + "= '" + filterVal + "' AND ";
+                    }else if (field.equals(ExperimentConstants.GATEWAY_ID)) {
                         query += "e." + field + "= '" + filterVal + "' AND ";
                     } else {
                         if (filterVal.contains("*")){

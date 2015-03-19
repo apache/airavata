@@ -152,6 +152,8 @@ public class ExperimentRegistry {
             configData.setAiravataAutoSchedule(configurationData.isAiravataAutoSchedule());
             configData.setOverrideManualParams(configurationData.isOverrideManualScheduledParams());
             configData.setShareExp(configurationData.isShareExperimentPublicly());
+            configData.setUserDn(configurationData.getUserDN());
+            configData.setGenerateCert(configurationData.isGenerateCert());
             configData.save();
             ComputationalResourceScheduling resourceScheduling = configurationData.getComputationalResourceScheduling();
             if (resourceScheduling != null) {
@@ -1687,6 +1689,8 @@ public class ExperimentRegistry {
             resource.setAiravataAutoSchedule(configData.isAiravataAutoSchedule());
             resource.setOverrideManualParams(configData.isOverrideManualScheduledParams());
             resource.setShareExp(configData.isShareExperimentPublicly());
+            resource.setUserDn(configData.getUserDN());
+            resource.setGenerateCert(configData.isGenerateCert());
             resource.save();
             ComputationalResourceScheduling resourceScheduling = configData.getComputationalResourceScheduling();
             if (resourceScheduling != null) {

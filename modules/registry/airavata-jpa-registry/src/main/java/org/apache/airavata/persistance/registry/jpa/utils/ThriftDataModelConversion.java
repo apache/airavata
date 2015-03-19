@@ -625,6 +625,8 @@ public class ThriftDataModelConversion {
             data.setAiravataAutoSchedule(resource.isAiravataAutoSchedule());
             data.setOverrideManualScheduledParams(resource.isOverrideManualParams());
             data.setShareExperimentPublicly(resource.isShareExp());
+            data.setUserDN(resource.getUserDn());
+            data.setGenerateCert(resource.isGenerateCert());
             ExperimentResource experimentResource = resource.getExperimentResource();
             String expID = experimentResource.getExpID();
             if (experimentResource.isExists(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING, expID)){
