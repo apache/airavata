@@ -24,6 +24,7 @@ package org.apache.airavata.persistance.registry.jpa.impl;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
@@ -43,11 +44,13 @@ public class RegistryImpl implements Registry {
     private final static Logger logger = LoggerFactory.getLogger(RegistryImpl.class);
     private ExperimentRegistry experimentRegistry = null;
     private ProjectRegistry projectRegistry = null;
+    private GatewayRegistry gatewayRegistry = null;
 
     public RegistryImpl() throws RegistryException{
         try {
             if (!ResourceUtils.isGatewayExist(ServerSettings.getDefaultUserGateway())){
                 gatewayResource = (GatewayResource) ResourceUtils.createGateway(ServerSettings.getDefaultUserGateway());
+                gatewayResource.setGatewayName(ServerSettings.getDefaultUserGateway());
                 gatewayResource.save();
             }else {
                 gatewayResource = (GatewayResource)ResourceUtils.getGateway(ServerSettings.getDefaultUserGateway());
@@ -61,6 +64,7 @@ public class RegistryImpl implements Registry {
             }
             experimentRegistry = new ExperimentRegistry(gatewayResource, user);
             projectRegistry = new ProjectRegistry(gatewayResource, user);
+            gatewayRegistry = new GatewayRegistry();
         } catch (ApplicationSettingsException e) {
             logger.error("Unable to read airavata server properties..", e);
             throw new RegistryException("Unable to read airavata server properties..", e);
@@ -96,13 +100,15 @@ public class RegistryImpl implements Registry {
      * @return return the identifier to identify the object
      */
     @Override
-    public Object add(ParentDataType dataType, Object newObjectToAdd) throws RegistryException {
+    public Object add(ParentDataType dataType, Object newObjectToAdd, String gatewayId) throws RegistryException {
         try {
             switch (dataType) {
                 case PROJECT:
-                    return projectRegistry.addProject((Project)newObjectToAdd);
+                    return projectRegistry.addProject((Project)newObjectToAdd, gatewayId);
                 case EXPERIMENT:
-                    return experimentRegistry.addExperiment((Experiment) newObjectToAdd);
+                    return experimentRegistry.addExperiment((Experiment) newObjectToAdd, gatewayId);
+                case GATEWAY:
+                    return gatewayRegistry.addGateway((Gateway)newObjectToAdd);
                 default:
                     logger.error("Unsupported top level type..", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
@@ -195,6 +201,9 @@ public class RegistryImpl implements Registry {
             switch (dataType) {
                 case PROJECT:
                     projectRegistry.updateProject((Project)newObjectToUpdate, (String)identifier);
+                    break;
+                case GATEWAY:
+                    gatewayRegistry.updateGateway((String)identifier, (Gateway)newObjectToUpdate);
                     break;
                 case EXPERIMENT:
                     experimentRegistry.updateExperiment((Experiment) newObjectToUpdate, (String) identifier);
@@ -314,6 +323,8 @@ public class RegistryImpl implements Registry {
             switch (dataType) {
                 case PROJECT:
                     return projectRegistry.getProject((String)identifier);
+                case GATEWAY:
+                    return gatewayRegistry.getGateway((String)identifier);
                 case EXPERIMENT:
                     return experimentRegistry.getExperiment((String) identifier, null);
                 case EXPERIMENT_CONFIGURATION_DATA:
@@ -381,6 +392,12 @@ public class RegistryImpl implements Registry {
                     List<Project> projectList = projectRegistry.getProjectList(fieldName, value);
                     for (Project project : projectList ){
                         result.add(project);
+                    }
+                    return result;
+                case GATEWAY:
+                    List<Gateway> allGateways = gatewayRegistry.getAllGateways();
+                    for (Gateway gateway : allGateways){
+                        result.add(gateway);
                     }
                     return result;
                 case EXPERIMENT:
@@ -549,6 +566,9 @@ public class RegistryImpl implements Registry {
                 case PROJECT:
                     projectRegistry.removeProject((String)identifier);
                     break;
+                case GATEWAY:
+                    gatewayRegistry.removeGateway((String)identifier);
+                    break;
                 case EXPERIMENT:
                     experimentRegistry.removeExperiment((String) identifier);
                     break;
@@ -605,6 +625,8 @@ public class RegistryImpl implements Registry {
             switch (dataType) {
                 case PROJECT:
                     return projectRegistry.isProjectExist((String)identifier);
+                case GATEWAY:
+                    return gatewayRegistry.isGatewayExist((String)identifier);
                 case EXPERIMENT:
                     return experimentRegistry.isExperimentExist((String) identifier);
                 case EXPERIMENT_CONFIGURATION_DATA:

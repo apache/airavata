@@ -398,8 +398,8 @@ void swap(User &a, User &b) {
   swap(a.__isset, b.__isset);
 }
 
-const char* Gateway::ascii_fingerprint = "07A9615F837F7D0A952B595DD3020972";
-const uint8_t Gateway::binary_fingerprint[16] = {0x07,0xA9,0x61,0x5F,0x83,0x7F,0x7D,0x0A,0x95,0x2B,0x59,0x5D,0xD3,0x02,0x09,0x72};
+const char* Gateway::ascii_fingerprint = "6BA700CA2E5FC52A8DA5ADCF811DC8DA";
+const uint8_t Gateway::binary_fingerprint[16] = {0x6B,0xA7,0x00,0xCA,0x2E,0x5F,0xC5,0x2A,0x8D,0xA5,0xAD,0xCF,0x81,0x1D,0xC8,0xDA};
 
 uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -413,7 +413,6 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
   using ::apache::thrift::protocol::TProtocolException;
 
   bool isset_gatewayId = false;
-  bool isset_name = false;
 
   while (true)
   {
@@ -433,8 +432,24 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->name);
-          isset_name = true;
+          xfer += iprot->readString(this->gatewayName);
+          this->__isset.gatewayName = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->domain);
+          this->__isset.domain = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->emailAddress);
+          this->__isset.emailAddress = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -450,8 +465,6 @@ uint32_t Gateway::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   if (!isset_gatewayId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_name)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
 
@@ -463,10 +476,21 @@ uint32_t Gateway::write(::apache::thrift::protocol::TProtocol* oprot) const {
   xfer += oprot->writeString(this->gatewayId);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("name", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString(this->name);
-  xfer += oprot->writeFieldEnd();
-
+  if (this->__isset.gatewayName) {
+    xfer += oprot->writeFieldBegin("gatewayName", ::apache::thrift::protocol::T_STRING, 2);
+    xfer += oprot->writeString(this->gatewayName);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.domain) {
+    xfer += oprot->writeFieldBegin("domain", ::apache::thrift::protocol::T_STRING, 3);
+    xfer += oprot->writeString(this->domain);
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.emailAddress) {
+    xfer += oprot->writeFieldBegin("emailAddress", ::apache::thrift::protocol::T_STRING, 4);
+    xfer += oprot->writeString(this->emailAddress);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -475,7 +499,10 @@ uint32_t Gateway::write(::apache::thrift::protocol::TProtocol* oprot) const {
 void swap(Gateway &a, Gateway &b) {
   using ::std::swap;
   swap(a.gatewayId, b.gatewayId);
-  swap(a.name, b.name);
+  swap(a.gatewayName, b.gatewayName);
+  swap(a.domain, b.domain);
+  swap(a.emailAddress, b.emailAddress);
+  swap(a.__isset, b.__isset);
 }
 
 }}}} // namespace

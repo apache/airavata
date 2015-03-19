@@ -210,6 +210,7 @@ public class BetterGfacImpl implements GFac,Watcher {
             return submitJob(jobExecutionContext);
         } catch (Exception e) {
             log.error("Error inovoking the job with experiment ID: " + experimentID);
+            GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
             throw new GFacException(e);
         }
     }
@@ -353,6 +354,10 @@ public class BetterGfacImpl implements GFac,Watcher {
                 }
             }
 
+            if(gatewayResourcePreferences.getLoginUserName() != null){
+                jobExecutionContext.setLoginUserName(gatewayResourcePreferences.getLoginUserName());
+            }
+
             // set gatewayUserPreferred data movement protocol and interface
             jobExecutionContext.setPreferredDataMovementProtocol(gatewayResourcePreferences.getPreferredDataMovementProtocol());
             if (gatewayResourcePreferences.getPreferredJobSubmissionProtocol() == null) {
@@ -380,10 +385,19 @@ public class BetterGfacImpl implements GFac,Watcher {
 
         for (OutputDataObjectType objectType : taskOutputs){
             if (objectType.getType() == DataType.URI && objectType.getValue() != null){
-                // this should be also the relatvie path : in case of clone, this will contain full path
                 String filePath = objectType.getValue();
-                filePath = filePath.substring(filePath.lastIndexOf(File.separatorChar) + 1, filePath.length());
-                objectType.setValue(jobExecutionContext.getOutputDir() + File.separator + filePath);
+                // if output is not in working folder
+                if (objectType.getLocation() != null && !objectType.getLocation().isEmpty()) {
+                	if(objectType.getLocation().startsWith(File.separator)){
+                		filePath = objectType.getLocation() + File.separator + filePath;
+                    }else{
+                    	filePath = jobExecutionContext.getOutputDir() + File.separator + objectType.getLocation() + File.separator + filePath;
+                    }
+                }else{
+                	filePath = jobExecutionContext.getOutputDir() + File.separator + filePath;
+                }
+                objectType.setValue(filePath);
+                
             }
             if (objectType.getType() == DataType.STDOUT){
                 objectType.setValue(jobExecutionContext.getOutputDir() + File.separator + jobExecutionContext.getApplicationName() + ".stdout");
@@ -491,10 +505,13 @@ public class BetterGfacImpl implements GFac,Watcher {
             }
             return true;
         } catch (ApplicationSettingsException e) {
+            GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
             throw new GFacException("Error launching the Job",e);
         } catch (KeeperException e) {
+            GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
             throw new GFacException("Error launching the Job",e);
         } catch (InterruptedException e) {
+            GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
             throw new GFacException("Error launching the Job",e);
         }
     }
@@ -505,6 +522,7 @@ public class BetterGfacImpl implements GFac,Watcher {
             jobExecutionContext = createJEC(experimentID, taskID, gatewayID);
             return cancel(jobExecutionContext);
         } catch (Exception e) {
+            GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
             log.error("Error inovoking the job with experiment ID: " + experimentID);
             throw new GFacException(e);
         }
@@ -656,6 +674,7 @@ public class BetterGfacImpl implements GFac,Watcher {
                         jobExecutionContext.getExperimentID(),
                         jobExecutionContext.getGatewayID());
 				monitorPublisher.publish(new JobStatusChangeEvent(JobState.FAILED, jobIdentity));
+                GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
 			} catch (NullPointerException e1) {
 				log.error("Error occured during updating the statuses of Experiments,tasks or Job statuses to failed, "
 						+ "NullPointerException occurred because at this point there might not have Job Created", e1, e);
@@ -667,6 +686,7 @@ public class BetterGfacImpl implements GFac,Watcher {
                         jobExecutionContext.getExperimentID(),
                         jobExecutionContext.getGatewayID());
 				monitorPublisher.publish(new TaskStatusChangeEvent(TaskState.FAILED, taskIdentity));
+                GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
 
 			}
 			jobExecutionContext.setProperty(ERROR_SENT, "true");

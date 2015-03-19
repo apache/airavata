@@ -684,6 +684,7 @@ public class AppCatalogJPAUtils {
         if (o != null){
             moduleResource.setModuleId(o.getModuleID());
             moduleResource.setModuleDesc(o.getModuleDesc());
+            moduleResource.setGatewayId(o.getGatewayId());
             moduleResource.setModuleName(o.getModuleName());
             moduleResource.setModuleVersion(o.getModuleVersion());
             moduleResource.setCreatedTime(o.getCreationTime());
@@ -702,6 +703,7 @@ public class AppCatalogJPAUtils {
             resource.setAppModuleId(o.getAppModuleID());
             resource.setHostId(o.getHostID());
             resource.setExecutablePath(o.getExecutablePath());
+            resource.setGatewayId(o.getGatewayId());
             resource.setParallelism(o.getParallelism());
             resource.setModuleResource((AppModuleResource) createApplicationModule(o.getApplicationModule()));
             resource.setHostResource((ComputeResourceResource) createComputeResource(o.getComputeResource()));
@@ -753,6 +755,7 @@ public class AppCatalogJPAUtils {
             resource.setAppName(o.getAppName());
             resource.setAppDescription(o.getAppDescription());
             resource.setCreatedTime(o.getCreationTime());
+            resource.setGatewayId(o.getGatewayId());
             if (o.getUpdateTime() != null){
                 resource.setUpdatedTime(o.getUpdateTime());
             }
@@ -850,8 +853,6 @@ public class AppCatalogJPAUtils {
         GatewayProfileResource resource = new GatewayProfileResource();
         if (o != null) {
             resource.setGatewayID(o.getGatewayID());
-            resource.setGatewayName(o.getGatewayName());
-            resource.setGatewayDesc(o.getGatewayDesc());
             resource.setCreatedTime(o.getCreationTime());
             if (o.getUpdateTime() != null){
                 resource.setUpdatedTime(o.getUpdateTime());
@@ -871,6 +872,7 @@ public class AppCatalogJPAUtils {
             resource.setBatchQueue(o.getBatchQueue());
             resource.setScratchLocation(o.getScratchLocation());
             resource.setProjectNumber(o.getProjectNumber());
+            resource.setLoginUserName(o.getLoginUserName());
             resource.setComputeHostResource((ComputeResourceResource) createComputeResource(o.getComputeHostResource()));
             resource.setGatewayProfile((GatewayProfileResource) createGatewayProfile(o.getGatewayProfile()));
         }
@@ -902,6 +904,7 @@ public class AppCatalogJPAUtils {
             workflowResource.setUpdatedTime(o.getUpdateTime());
         }
         workflowResource.setWfTemplateId(o.getWfTemplateId());
+        workflowResource.setGatewayId(o.getGatewayId());
         return workflowResource;
     }
 }

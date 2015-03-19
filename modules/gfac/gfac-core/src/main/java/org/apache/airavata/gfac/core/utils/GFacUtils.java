@@ -794,7 +794,7 @@ public class GFacUtils {
 			CorrectiveAction action, ErrorCategory errorCatogory)
 			throws GFacException {
 		try {
-			Registry registry = RegistryFactory.getDefaultRegistry();
+			Registry registry = jobExecutionContext.getRegistry();
 			ErrorDetails details = new ErrorDetails();
 			details.setActualErrorMessage(errorMessage);
 			details.setCorrectiveAction(action);

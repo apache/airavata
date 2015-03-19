@@ -41,8 +41,8 @@ public final class Constants {
     public static final String ORCHESTRATOR_SERVER_PORT = "orchestrator.server.port";
     public static final String GFAC_SERVER_HOST = "gfac.server.host";
     public static final String GFAC_SERVER_PORT = "gfac.server.port";
-    public static final String CREDNETIAL_SERVER_HOST = "credential.store.server.host";
-    public static final String CREDNETIAL_SERVER_PORT = "credential.store.server.port";
+    public static final String CREDENTIAL_SERVER_HOST = "credential.store.server.host";
+    public static final String CREDENTIAL_SERVER_PORT = "credential.store.server.port";
     public static final String ZOOKEEPER_EXPERIMENT_CATALOG = "experiment-catalog";
     public static final String ZOOKEEPER_APPCATALOG = "app-catalog";
     public static final String ZOOKEEPER_RABBITMQ = "rabbit-mq";

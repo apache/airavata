@@ -340,7 +340,6 @@ public class AppCatalogThriftConversion {
         if (submission.getSecurityProtocol() != null){
             unicoreJobSubmission.setSecurityProtocol(SecurityProtocol.valueOf(submission.getSecurityProtocol()));
         }
-
         return unicoreJobSubmission;
     }
 
@@ -725,6 +724,7 @@ public class AppCatalogThriftConversion {
         preference.setPreferredBatchQueue(resource.getBatchQueue());
         preference.setScratchLocation(resource.getScratchLocation());
         preference.setAllocationProjectNumber(resource.getProjectNumber());
+        preference.setLoginUserName(resource.getLoginUserName());
         return preference;
     }
 
@@ -765,8 +765,6 @@ public class AppCatalogThriftConversion {
     public static GatewayResourceProfile getGatewayResourceProfile(GatewayProfileResource gw, List<ComputeResourcePreference> preferences){
         GatewayResourceProfile gatewayProfile = new GatewayResourceProfile();
         gatewayProfile.setGatewayID(gw.getGatewayID());
-        gatewayProfile.setGatewayDescription(gw.getGatewayDesc());
-        gatewayProfile.setGatewayName(gw.getGatewayName());
         gatewayProfile.setComputeResourcePreferences(preferences);
         return gatewayProfile;
     }

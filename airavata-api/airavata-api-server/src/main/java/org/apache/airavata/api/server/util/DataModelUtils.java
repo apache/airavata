@@ -21,17 +21,17 @@
 
 package org.apache.airavata.api.server.util;
 
-import java.sql.SQLException;
-import java.util.List;
-
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.airavata.appcatalog.cpi.ApplicationInterface;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.util.ExecutionType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.workflow.catalog.WorkflowCatalogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 public class DataModelUtils {
     private static final Logger logger = LoggerFactory.getLogger(DataModelUtils.class);
@@ -43,7 +43,7 @@ public class DataModelUtils {
 			if (allApplicationInterfaceIds.contains(applicationId)){
 				return ExecutionType.SINGLE_APP;
 			} else {
-				List<String> allWorkflows = WorkflowCatalogFactory.getWorkflowCatalog().getAllWorkflows();
+				List<String> allWorkflows = WorkflowCatalogFactory.getWorkflowCatalog().getAllWorkflows(ServerSettings.getDefaultUserGateway());
 				if (allWorkflows.contains(applicationId)){
 					return ExecutionType.WORKFLOW;
 				}

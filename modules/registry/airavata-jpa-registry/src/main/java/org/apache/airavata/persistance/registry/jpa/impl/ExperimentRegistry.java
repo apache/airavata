@@ -51,24 +51,26 @@ public class ExperimentRegistry {
         if (!gatewayResource.isExists(ResourceType.GATEWAY_WORKER, user.getUserName())) {
             workerResource = ResourceUtils.addGatewayWorker(gateway, user);
         } else {
-            workerResource = (WorkerResource) ResourceUtils.getWorker(gateway.getGatewayName(), user.getUserName());
+            workerResource = (WorkerResource) ResourceUtils.getWorker(gateway.getGatewayId(), user.getUserName());
         }
 
     }
 
-    public String addExperiment(Experiment experiment) throws RegistryException {
+    public String addExperiment(Experiment experiment, String gatewayId) throws RegistryException {
         String experimentID;
         try {
             if (!ResourceUtils.isUserExist(experiment.getUserName())) {
                 ResourceUtils.addUser(experiment.getUserName(), null);
             }
+
             experimentID = getExperimentID(experiment.getName());
             experiment.setExperimentID(experimentID);
             ExperimentResource experimentResource = new ExperimentResource();
             experimentResource.setExpID(experimentID);
             experimentResource.setExpName(experiment.getName());
             experimentResource.setExecutionUser(experiment.getUserName());
-            experimentResource.setGateway(gatewayResource);
+            GatewayResource gateway = (GatewayResource)ResourceUtils.getGateway(gatewayId);
+            experimentResource.setGateway(gateway);
             experimentResource.setEnableEmailNotifications(experiment.isEnableEmailNotification());
             if (!workerResource.isProjectExists(experiment.getProjectID())) {
                 logger.error("Project does not exist in the system..");
@@ -150,6 +152,8 @@ public class ExperimentRegistry {
             configData.setAiravataAutoSchedule(configurationData.isAiravataAutoSchedule());
             configData.setOverrideManualParams(configurationData.isOverrideManualScheduledParams());
             configData.setShareExp(configurationData.isShareExperimentPublicly());
+            configData.setUserDn(configurationData.getUserDN());
+            configData.setGenerateCert(configurationData.isGenerateCert());
             configData.save();
             ComputationalResourceScheduling resourceScheduling = configurationData.getComputationalResourceScheduling();
             if (resourceScheduling != null) {
@@ -1685,6 +1689,8 @@ public class ExperimentRegistry {
             resource.setAiravataAutoSchedule(configData.isAiravataAutoSchedule());
             resource.setOverrideManualParams(configData.isOverrideManualScheduledParams());
             resource.setShareExp(configData.isShareExperimentPublicly());
+            resource.setUserDn(configData.getUserDN());
+            resource.setGenerateCert(configData.isGenerateCert());
             resource.save();
             ComputationalResourceScheduling resourceScheduling = configData.getComputationalResourceScheduling();
             if (resourceScheduling != null) {
@@ -2001,6 +2007,8 @@ public class ExperimentRegistry {
                 return ThriftDataModelConversion.getExperiment(resource);
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
                 return resource.getExecutionUser();
+            }else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY)) {
+                return resource.getGateway().getGatewayId();
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME)) {
                 return resource.getExpName();
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_DESC)) {
@@ -2795,6 +2803,8 @@ public class ExperimentRegistry {
                         fil.put(AbstractResource.ExperimentConstants.EXPERIMENT_NAME, filters.get(field));
                     } else if (field.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
                         fil.put(AbstractResource.ExperimentConstants.EXECUTION_USER, filters.get(field));
+                    }else if (field.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY)) {
+                        fil.put(AbstractResource.ExperimentConstants.GATEWAY_ID, filters.get(field));
                     } else if (field.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_DESC)) {
                         fil.put(AbstractResource.ExperimentConstants.DESCRIPTION, filters.get(field));
                     } else if (field.equals(Constants.FieldConstants.ExperimentConstants.APPLICATION_ID)) {

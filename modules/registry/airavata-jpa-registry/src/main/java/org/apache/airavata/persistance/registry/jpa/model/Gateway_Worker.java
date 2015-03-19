@@ -31,15 +31,15 @@ import java.io.Serializable;
 @IdClass(Gateway_Worker_PK.class)
 public class Gateway_Worker implements Serializable {
     @Id
-    @Column(name = "GATEWAY_NAME")
-    private String gateway_name;
+    @Column(name = "GATEWAY_ID")
+    private String gateway_id;
 
     @Id
     @Column(name = "USER_NAME")
     private String user_name;
 
     @ManyToOne(cascade=CascadeType.MERGE)
-    @JoinColumn(name = "GATEWAY_NAME")
+    @JoinColumn(name = "GATEWAY_ID")
     private Gateway gateway;
 
 
@@ -71,12 +71,12 @@ public class Gateway_Worker implements Serializable {
         this.user = user;
     }
 
-    public String getGateway_name() {
-        return gateway_name;
+    public String getGateway_id() {
+        return gateway_id;
     }
 
-    public void setGateway_name(String gateway_name) {
-        this.gateway_name = gateway_name;
+    public void setGateway_id(String gateway_id) {
+        this.gateway_id = gateway_id;
     }
 }
 

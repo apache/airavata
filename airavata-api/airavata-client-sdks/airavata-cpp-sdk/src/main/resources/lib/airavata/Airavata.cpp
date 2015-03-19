@@ -226,6 +226,2096 @@ uint32_t Airavata_getAPIVersion_presult::read(::apache::thrift::protocol::TProto
   return xfer;
 }
 
+uint32_t Airavata_addGateway_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_gateway = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->gateway.read(iprot);
+          isset_gateway = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_gateway)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t Airavata_addGateway_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_addGateway_args");
+
+  xfer += oprot->writeFieldBegin("gateway", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += this->gateway.write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_addGateway_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_addGateway_pargs");
+
+  xfer += oprot->writeFieldBegin("gateway", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += (*(this->gateway)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_addGateway_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_addGateway_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("Airavata_addGateway_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
+    xfer += oprot->writeString(this->success);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
+    xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->ire.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ace) {
+    xfer += oprot->writeFieldBegin("ace", ::apache::thrift::protocol::T_STRUCT, 2);
+    xfer += this->ace.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ase) {
+    xfer += oprot->writeFieldBegin("ase", ::apache::thrift::protocol::T_STRUCT, 3);
+    xfer += this->ase.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_addGateway_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_updateGateway_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_gatewayId = false;
+  bool isset_updatedGateway = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->updatedGateway.read(iprot);
+          isset_updatedGateway = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_updatedGateway)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t Airavata_updateGateway_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_updateGateway_args");
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("updatedGateway", ::apache::thrift::protocol::T_STRUCT, 2);
+  xfer += this->updatedGateway.write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_updateGateway_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_updateGateway_pargs");
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->gatewayId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("updatedGateway", ::apache::thrift::protocol::T_STRUCT, 2);
+  xfer += (*(this->updatedGateway)).write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_updateGateway_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_updateGateway_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("Airavata_updateGateway_result");
+
+  if (this->__isset.ire) {
+    xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->ire.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ace) {
+    xfer += oprot->writeFieldBegin("ace", ::apache::thrift::protocol::T_STRUCT, 2);
+    xfer += this->ace.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ase) {
+    xfer += oprot->writeFieldBegin("ase", ::apache::thrift::protocol::T_STRUCT, 3);
+    xfer += this->ase.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_updateGateway_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_getGateway_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_gatewayId = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t Airavata_getGateway_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_getGateway_args");
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_getGateway_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_getGateway_pargs");
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->gatewayId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_getGateway_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->success.read(iprot);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_getGateway_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("Airavata_getGateway_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRUCT, 0);
+    xfer += this->success.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
+    xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->ire.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ace) {
+    xfer += oprot->writeFieldBegin("ace", ::apache::thrift::protocol::T_STRUCT, 2);
+    xfer += this->ace.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ase) {
+    xfer += oprot->writeFieldBegin("ase", ::apache::thrift::protocol::T_STRUCT, 3);
+    xfer += this->ase.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_getGateway_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += (*(this->success)).read(iprot);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_deleteGateway_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_gatewayId = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t Airavata_deleteGateway_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_deleteGateway_args");
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_deleteGateway_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_deleteGateway_pargs");
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->gatewayId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_deleteGateway_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_deleteGateway_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("Airavata_deleteGateway_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_BOOL, 0);
+    xfer += oprot->writeBool(this->success);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
+    xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->ire.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ace) {
+    xfer += oprot->writeFieldBegin("ace", ::apache::thrift::protocol::T_STRUCT, 2);
+    xfer += this->ace.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ase) {
+    xfer += oprot->writeFieldBegin("ase", ::apache::thrift::protocol::T_STRUCT, 3);
+    xfer += this->ase.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_deleteGateway_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_getAllGateways_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    xfer += iprot->skip(ftype);
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_getAllGateways_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_getAllGateways_args");
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_getAllGateways_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_getAllGateways_pargs");
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_getAllGateways_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->success.clear();
+            uint32_t _size0;
+            ::apache::thrift::protocol::TType _etype3;
+            xfer += iprot->readListBegin(_etype3, _size0);
+            this->success.resize(_size0);
+            uint32_t _i4;
+            for (_i4 = 0; _i4 < _size0; ++_i4)
+            {
+              xfer += this->success[_i4].read(iprot);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_getAllGateways_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("Airavata_getAllGateways_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
+    {
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
+      std::vector< ::apache::airavata::model::workspace::Gateway> ::const_iterator _iter5;
+      for (_iter5 = this->success.begin(); _iter5 != this->success.end(); ++_iter5)
+      {
+        xfer += (*_iter5).write(oprot);
+      }
+      xfer += oprot->writeListEnd();
+    }
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
+    xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->ire.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ace) {
+    xfer += oprot->writeFieldBegin("ace", ::apache::thrift::protocol::T_STRUCT, 2);
+    xfer += this->ace.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ase) {
+    xfer += oprot->writeFieldBegin("ase", ::apache::thrift::protocol::T_STRUCT, 3);
+    xfer += this->ase.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_getAllGateways_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            (*(this->success)).clear();
+            uint32_t _size6;
+            ::apache::thrift::protocol::TType _etype9;
+            xfer += iprot->readListBegin(_etype9, _size6);
+            (*(this->success)).resize(_size6);
+            uint32_t _i10;
+            for (_i10 = 0; _i10 < _size6; ++_i10)
+            {
+              xfer += (*(this->success))[_i10].read(iprot);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_isGatewayExist_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_gatewayId = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t Airavata_isGatewayExist_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_isGatewayExist_args");
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_isGatewayExist_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_isGatewayExist_pargs");
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->gatewayId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_isGatewayExist_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_isGatewayExist_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("Airavata_isGatewayExist_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_BOOL, 0);
+    xfer += oprot->writeBool(this->success);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
+    xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->ire.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ace) {
+    xfer += oprot->writeFieldBegin("ace", ::apache::thrift::protocol::T_STRUCT, 2);
+    xfer += this->ace.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ase) {
+    xfer += oprot->writeFieldBegin("ase", ::apache::thrift::protocol::T_STRUCT, 3);
+    xfer += this->ase.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_isGatewayExist_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_generateAndRegisterSSHKeys_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_gatewayId = false;
+  bool isset_userName = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->userName);
+          isset_userName = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_userName)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t Airavata_generateAndRegisterSSHKeys_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_generateAndRegisterSSHKeys_args");
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->userName);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_generateAndRegisterSSHKeys_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_generateAndRegisterSSHKeys_pargs");
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->gatewayId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString((*(this->userName)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_generateAndRegisterSSHKeys_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_generateAndRegisterSSHKeys_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("Airavata_generateAndRegisterSSHKeys_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
+    xfer += oprot->writeString(this->success);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
+    xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->ire.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ace) {
+    xfer += oprot->writeFieldBegin("ace", ::apache::thrift::protocol::T_STRUCT, 2);
+    xfer += this->ace.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ase) {
+    xfer += oprot->writeFieldBegin("ase", ::apache::thrift::protocol::T_STRUCT, 3);
+    xfer += this->ase.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_generateAndRegisterSSHKeys_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_getSSHPubKey_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_airavataCredStoreToken = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->airavataCredStoreToken);
+          isset_airavataCredStoreToken = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_airavataCredStoreToken)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t Airavata_getSSHPubKey_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_getSSHPubKey_args");
+
+  xfer += oprot->writeFieldBegin("airavataCredStoreToken", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->airavataCredStoreToken);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_getSSHPubKey_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_getSSHPubKey_pargs");
+
+  xfer += oprot->writeFieldBegin("airavataCredStoreToken", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->airavataCredStoreToken)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_getSSHPubKey_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_getSSHPubKey_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("Airavata_getSSHPubKey_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_STRING, 0);
+    xfer += oprot->writeString(this->success);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
+    xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->ire.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ace) {
+    xfer += oprot->writeFieldBegin("ace", ::apache::thrift::protocol::T_STRUCT, 2);
+    xfer += this->ace.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ase) {
+    xfer += oprot->writeFieldBegin("ase", ::apache::thrift::protocol::T_STRUCT, 3);
+    xfer += this->ase.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_getSSHPubKey_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_getAllUserSSHPubKeys_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_userName = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->userName);
+          isset_userName = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_userName)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t Airavata_getAllUserSSHPubKeys_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_getAllUserSSHPubKeys_args");
+
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->userName);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_getAllUserSSHPubKeys_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_getAllUserSSHPubKeys_pargs");
+
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->userName)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_getAllUserSSHPubKeys_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_MAP) {
+          {
+            this->success.clear();
+            uint32_t _size11;
+            ::apache::thrift::protocol::TType _ktype12;
+            ::apache::thrift::protocol::TType _vtype13;
+            xfer += iprot->readMapBegin(_ktype12, _vtype13, _size11);
+            uint32_t _i15;
+            for (_i15 = 0; _i15 < _size11; ++_i15)
+            {
+              std::string _key16;
+              xfer += iprot->readString(_key16);
+              std::string& _val17 = this->success[_key16];
+              xfer += iprot->readString(_val17);
+            }
+            xfer += iprot->readMapEnd();
+          }
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_getAllUserSSHPubKeys_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("Airavata_getAllUserSSHPubKeys_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_MAP, 0);
+    {
+      xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->success.size()));
+      std::map<std::string, std::string> ::const_iterator _iter18;
+      for (_iter18 = this->success.begin(); _iter18 != this->success.end(); ++_iter18)
+      {
+        xfer += oprot->writeString(_iter18->first);
+        xfer += oprot->writeString(_iter18->second);
+      }
+      xfer += oprot->writeMapEnd();
+    }
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
+    xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->ire.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ace) {
+    xfer += oprot->writeFieldBegin("ace", ::apache::thrift::protocol::T_STRUCT, 2);
+    xfer += this->ace.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ase) {
+    xfer += oprot->writeFieldBegin("ase", ::apache::thrift::protocol::T_STRUCT, 3);
+    xfer += this->ase.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_getAllUserSSHPubKeys_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_MAP) {
+          {
+            (*(this->success)).clear();
+            uint32_t _size19;
+            ::apache::thrift::protocol::TType _ktype20;
+            ::apache::thrift::protocol::TType _vtype21;
+            xfer += iprot->readMapBegin(_ktype20, _vtype21, _size19);
+            uint32_t _i23;
+            for (_i23 = 0; _i23 < _size19; ++_i23)
+            {
+              std::string _key24;
+              xfer += iprot->readString(_key24);
+              std::string& _val25 = (*(this->success))[_key24];
+              xfer += iprot->readString(_val25);
+            }
+            xfer += iprot->readMapEnd();
+          }
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
 uint32_t Airavata_createProject_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
@@ -237,6 +2327,7 @@ uint32_t Airavata_createProject_args::read(::apache::thrift::protocol::TProtocol
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_gatewayId = false;
   bool isset_project = false;
 
   while (true)
@@ -248,6 +2339,14 @@ uint32_t Airavata_createProject_args::read(::apache::thrift::protocol::TProtocol
     switch (fid)
     {
       case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->project.read(iprot);
           isset_project = true;
@@ -264,6 +2363,8 @@ uint32_t Airavata_createProject_args::read(::apache::thrift::protocol::TProtocol
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_project)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
@@ -273,7 +2374,11 @@ uint32_t Airavata_createProject_args::write(::apache::thrift::protocol::TProtoco
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_createProject_args");
 
-  xfer += oprot->writeFieldBegin("project", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("project", ::apache::thrift::protocol::T_STRUCT, 2);
   xfer += this->project.write(oprot);
   xfer += oprot->writeFieldEnd();
 
@@ -286,7 +2391,11 @@ uint32_t Airavata_createProject_pargs::write(::apache::thrift::protocol::TProtoc
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_createProject_pargs");
 
-  xfer += oprot->writeFieldBegin("project", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->gatewayId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("project", ::apache::thrift::protocol::T_STRUCT, 2);
   xfer += (*(this->project)).write(oprot);
   xfer += oprot->writeFieldEnd();
 
@@ -940,6 +3049,251 @@ uint32_t Airavata_getProject_presult::read(::apache::thrift::protocol::TProtocol
   return xfer;
 }
 
+uint32_t Airavata_deleteProject_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_projectId = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->projectId);
+          isset_projectId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_projectId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t Airavata_deleteProject_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_deleteProject_args");
+
+  xfer += oprot->writeFieldBegin("projectId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->projectId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_deleteProject_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_deleteProject_pargs");
+
+  xfer += oprot->writeFieldBegin("projectId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->projectId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_deleteProject_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->success);
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->pnfe.read(iprot);
+          this->__isset.pnfe = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_deleteProject_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("Airavata_deleteProject_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_BOOL, 0);
+    xfer += oprot->writeBool(this->success);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
+    xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->ire.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ace) {
+    xfer += oprot->writeFieldBegin("ace", ::apache::thrift::protocol::T_STRUCT, 2);
+    xfer += this->ace.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ase) {
+    xfer += oprot->writeFieldBegin("ase", ::apache::thrift::protocol::T_STRUCT, 3);
+    xfer += this->ase.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.pnfe) {
+    xfer += oprot->writeFieldBegin("pnfe", ::apache::thrift::protocol::T_STRUCT, 4);
+    xfer += this->pnfe.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_deleteProject_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool((*(this->success)));
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->pnfe.read(iprot);
+          this->__isset.pnfe = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
 uint32_t Airavata_getAllUserProjects_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
@@ -951,6 +3305,7 @@ uint32_t Airavata_getAllUserProjects_args::read(::apache::thrift::protocol::TPro
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_gatewayId = false;
   bool isset_userName = false;
 
   while (true)
@@ -962,6 +3317,14 @@ uint32_t Airavata_getAllUserProjects_args::read(::apache::thrift::protocol::TPro
     switch (fid)
     {
       case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->userName);
           isset_userName = true;
@@ -978,6 +3341,8 @@ uint32_t Airavata_getAllUserProjects_args::read(::apache::thrift::protocol::TPro
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_userName)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
@@ -987,7 +3352,11 @@ uint32_t Airavata_getAllUserProjects_args::write(::apache::thrift::protocol::TPr
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_getAllUserProjects_args");
 
-  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString(this->userName);
   xfer += oprot->writeFieldEnd();
 
@@ -1000,7 +3369,11 @@ uint32_t Airavata_getAllUserProjects_pargs::write(::apache::thrift::protocol::TP
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_getAllUserProjects_pargs");
 
-  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->gatewayId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString((*(this->userName)));
   xfer += oprot->writeFieldEnd();
 
@@ -1033,14 +3406,14 @@ uint32_t Airavata_getAllUserProjects_result::read(::apache::thrift::protocol::TP
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size0;
-            ::apache::thrift::protocol::TType _etype3;
-            xfer += iprot->readListBegin(_etype3, _size0);
-            this->success.resize(_size0);
-            uint32_t _i4;
-            for (_i4 = 0; _i4 < _size0; ++_i4)
+            uint32_t _size26;
+            ::apache::thrift::protocol::TType _etype29;
+            xfer += iprot->readListBegin(_etype29, _size26);
+            this->success.resize(_size26);
+            uint32_t _i30;
+            for (_i30 = 0; _i30 < _size26; ++_i30)
             {
-              xfer += this->success[_i4].read(iprot);
+              xfer += this->success[_i30].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -1095,10 +3468,10 @@ uint32_t Airavata_getAllUserProjects_result::write(::apache::thrift::protocol::T
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::apache::airavata::model::workspace::Project> ::const_iterator _iter5;
-      for (_iter5 = this->success.begin(); _iter5 != this->success.end(); ++_iter5)
+      std::vector< ::apache::airavata::model::workspace::Project> ::const_iterator _iter31;
+      for (_iter31 = this->success.begin(); _iter31 != this->success.end(); ++_iter31)
       {
-        xfer += (*_iter5).write(oprot);
+        xfer += (*_iter31).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -1145,14 +3518,14 @@ uint32_t Airavata_getAllUserProjects_presult::read(::apache::thrift::protocol::T
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size6;
-            ::apache::thrift::protocol::TType _etype9;
-            xfer += iprot->readListBegin(_etype9, _size6);
-            (*(this->success)).resize(_size6);
-            uint32_t _i10;
-            for (_i10 = 0; _i10 < _size6; ++_i10)
+            uint32_t _size32;
+            ::apache::thrift::protocol::TType _etype35;
+            xfer += iprot->readListBegin(_etype35, _size32);
+            (*(this->success)).resize(_size32);
+            uint32_t _i36;
+            for (_i36 = 0; _i36 < _size32; ++_i36)
             {
-              xfer += (*(this->success))[_i10].read(iprot);
+              xfer += (*(this->success))[_i36].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -1208,6 +3581,7 @@ uint32_t Airavata_searchProjectsByProjectName_args::read(::apache::thrift::proto
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_gatewayId = false;
   bool isset_userName = false;
   bool isset_projectName = false;
 
@@ -1221,13 +3595,21 @@ uint32_t Airavata_searchProjectsByProjectName_args::read(::apache::thrift::proto
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->userName);
           isset_userName = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 2:
+      case 3:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->projectName);
           isset_projectName = true;
@@ -1244,6 +3626,8 @@ uint32_t Airavata_searchProjectsByProjectName_args::read(::apache::thrift::proto
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_userName)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_projectName)
@@ -1255,11 +3639,15 @@ uint32_t Airavata_searchProjectsByProjectName_args::write(::apache::thrift::prot
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_searchProjectsByProjectName_args");
 
-  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString(this->userName);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("projectName", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeFieldBegin("projectName", ::apache::thrift::protocol::T_STRING, 3);
   xfer += oprot->writeString(this->projectName);
   xfer += oprot->writeFieldEnd();
 
@@ -1272,11 +3660,15 @@ uint32_t Airavata_searchProjectsByProjectName_pargs::write(::apache::thrift::pro
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_searchProjectsByProjectName_pargs");
 
-  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->gatewayId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString((*(this->userName)));
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("projectName", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeFieldBegin("projectName", ::apache::thrift::protocol::T_STRING, 3);
   xfer += oprot->writeString((*(this->projectName)));
   xfer += oprot->writeFieldEnd();
 
@@ -1309,14 +3701,14 @@ uint32_t Airavata_searchProjectsByProjectName_result::read(::apache::thrift::pro
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size11;
-            ::apache::thrift::protocol::TType _etype14;
-            xfer += iprot->readListBegin(_etype14, _size11);
-            this->success.resize(_size11);
-            uint32_t _i15;
-            for (_i15 = 0; _i15 < _size11; ++_i15)
+            uint32_t _size37;
+            ::apache::thrift::protocol::TType _etype40;
+            xfer += iprot->readListBegin(_etype40, _size37);
+            this->success.resize(_size37);
+            uint32_t _i41;
+            for (_i41 = 0; _i41 < _size37; ++_i41)
             {
-              xfer += this->success[_i15].read(iprot);
+              xfer += this->success[_i41].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -1371,10 +3763,10 @@ uint32_t Airavata_searchProjectsByProjectName_result::write(::apache::thrift::pr
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::apache::airavata::model::workspace::Project> ::const_iterator _iter16;
-      for (_iter16 = this->success.begin(); _iter16 != this->success.end(); ++_iter16)
+      std::vector< ::apache::airavata::model::workspace::Project> ::const_iterator _iter42;
+      for (_iter42 = this->success.begin(); _iter42 != this->success.end(); ++_iter42)
       {
-        xfer += (*_iter16).write(oprot);
+        xfer += (*_iter42).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -1421,14 +3813,14 @@ uint32_t Airavata_searchProjectsByProjectName_presult::read(::apache::thrift::pr
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size17;
-            ::apache::thrift::protocol::TType _etype20;
-            xfer += iprot->readListBegin(_etype20, _size17);
-            (*(this->success)).resize(_size17);
-            uint32_t _i21;
-            for (_i21 = 0; _i21 < _size17; ++_i21)
+            uint32_t _size43;
+            ::apache::thrift::protocol::TType _etype46;
+            xfer += iprot->readListBegin(_etype46, _size43);
+            (*(this->success)).resize(_size43);
+            uint32_t _i47;
+            for (_i47 = 0; _i47 < _size43; ++_i47)
             {
-              xfer += (*(this->success))[_i21].read(iprot);
+              xfer += (*(this->success))[_i47].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -1484,6 +3876,7 @@ uint32_t Airavata_searchProjectsByProjectDesc_args::read(::apache::thrift::proto
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_gatewayId = false;
   bool isset_userName = false;
   bool isset_description = false;
 
@@ -1497,13 +3890,21 @@ uint32_t Airavata_searchProjectsByProjectDesc_args::read(::apache::thrift::proto
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->userName);
           isset_userName = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 2:
+      case 3:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->description);
           isset_description = true;
@@ -1520,6 +3921,8 @@ uint32_t Airavata_searchProjectsByProjectDesc_args::read(::apache::thrift::proto
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_userName)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_description)
@@ -1531,11 +3934,15 @@ uint32_t Airavata_searchProjectsByProjectDesc_args::write(::apache::thrift::prot
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_searchProjectsByProjectDesc_args");
 
-  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString(this->userName);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("description", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeFieldBegin("description", ::apache::thrift::protocol::T_STRING, 3);
   xfer += oprot->writeString(this->description);
   xfer += oprot->writeFieldEnd();
 
@@ -1548,11 +3955,15 @@ uint32_t Airavata_searchProjectsByProjectDesc_pargs::write(::apache::thrift::pro
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_searchProjectsByProjectDesc_pargs");
 
-  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->gatewayId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString((*(this->userName)));
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("description", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeFieldBegin("description", ::apache::thrift::protocol::T_STRING, 3);
   xfer += oprot->writeString((*(this->description)));
   xfer += oprot->writeFieldEnd();
 
@@ -1585,14 +3996,14 @@ uint32_t Airavata_searchProjectsByProjectDesc_result::read(::apache::thrift::pro
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size22;
-            ::apache::thrift::protocol::TType _etype25;
-            xfer += iprot->readListBegin(_etype25, _size22);
-            this->success.resize(_size22);
-            uint32_t _i26;
-            for (_i26 = 0; _i26 < _size22; ++_i26)
+            uint32_t _size48;
+            ::apache::thrift::protocol::TType _etype51;
+            xfer += iprot->readListBegin(_etype51, _size48);
+            this->success.resize(_size48);
+            uint32_t _i52;
+            for (_i52 = 0; _i52 < _size48; ++_i52)
             {
-              xfer += this->success[_i26].read(iprot);
+              xfer += this->success[_i52].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -1647,10 +4058,10 @@ uint32_t Airavata_searchProjectsByProjectDesc_result::write(::apache::thrift::pr
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::apache::airavata::model::workspace::Project> ::const_iterator _iter27;
-      for (_iter27 = this->success.begin(); _iter27 != this->success.end(); ++_iter27)
+      std::vector< ::apache::airavata::model::workspace::Project> ::const_iterator _iter53;
+      for (_iter53 = this->success.begin(); _iter53 != this->success.end(); ++_iter53)
       {
-        xfer += (*_iter27).write(oprot);
+        xfer += (*_iter53).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -1697,14 +4108,14 @@ uint32_t Airavata_searchProjectsByProjectDesc_presult::read(::apache::thrift::pr
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size28;
-            ::apache::thrift::protocol::TType _etype31;
-            xfer += iprot->readListBegin(_etype31, _size28);
-            (*(this->success)).resize(_size28);
-            uint32_t _i32;
-            for (_i32 = 0; _i32 < _size28; ++_i32)
+            uint32_t _size54;
+            ::apache::thrift::protocol::TType _etype57;
+            xfer += iprot->readListBegin(_etype57, _size54);
+            (*(this->success)).resize(_size54);
+            uint32_t _i58;
+            for (_i58 = 0; _i58 < _size54; ++_i58)
             {
-              xfer += (*(this->success))[_i32].read(iprot);
+              xfer += (*(this->success))[_i58].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -1760,6 +4171,7 @@ uint32_t Airavata_searchExperimentsByName_args::read(::apache::thrift::protocol:
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_gatewayId = false;
   bool isset_userName = false;
   bool isset_expName = false;
 
@@ -1773,13 +4185,21 @@ uint32_t Airavata_searchExperimentsByName_args::read(::apache::thrift::protocol:
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->userName);
           isset_userName = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 2:
+      case 3:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->expName);
           isset_expName = true;
@@ -1796,6 +4216,8 @@ uint32_t Airavata_searchExperimentsByName_args::read(::apache::thrift::protocol:
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_userName)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_expName)
@@ -1807,11 +4229,15 @@ uint32_t Airavata_searchExperimentsByName_args::write(::apache::thrift::protocol
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_searchExperimentsByName_args");
 
-  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString(this->userName);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("expName", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeFieldBegin("expName", ::apache::thrift::protocol::T_STRING, 3);
   xfer += oprot->writeString(this->expName);
   xfer += oprot->writeFieldEnd();
 
@@ -1824,11 +4250,15 @@ uint32_t Airavata_searchExperimentsByName_pargs::write(::apache::thrift::protoco
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_searchExperimentsByName_pargs");
 
-  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->gatewayId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString((*(this->userName)));
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("expName", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeFieldBegin("expName", ::apache::thrift::protocol::T_STRING, 3);
   xfer += oprot->writeString((*(this->expName)));
   xfer += oprot->writeFieldEnd();
 
@@ -1861,14 +4291,14 @@ uint32_t Airavata_searchExperimentsByName_result::read(::apache::thrift::protoco
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size33;
-            ::apache::thrift::protocol::TType _etype36;
-            xfer += iprot->readListBegin(_etype36, _size33);
-            this->success.resize(_size33);
-            uint32_t _i37;
-            for (_i37 = 0; _i37 < _size33; ++_i37)
+            uint32_t _size59;
+            ::apache::thrift::protocol::TType _etype62;
+            xfer += iprot->readListBegin(_etype62, _size59);
+            this->success.resize(_size59);
+            uint32_t _i63;
+            for (_i63 = 0; _i63 < _size59; ++_i63)
             {
-              xfer += this->success[_i37].read(iprot);
+              xfer += this->success[_i63].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -1923,10 +4353,10 @@ uint32_t Airavata_searchExperimentsByName_result::write(::apache::thrift::protoc
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> ::const_iterator _iter38;
-      for (_iter38 = this->success.begin(); _iter38 != this->success.end(); ++_iter38)
+      std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> ::const_iterator _iter64;
+      for (_iter64 = this->success.begin(); _iter64 != this->success.end(); ++_iter64)
       {
-        xfer += (*_iter38).write(oprot);
+        xfer += (*_iter64).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -1973,14 +4403,14 @@ uint32_t Airavata_searchExperimentsByName_presult::read(::apache::thrift::protoc
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size39;
-            ::apache::thrift::protocol::TType _etype42;
-            xfer += iprot->readListBegin(_etype42, _size39);
-            (*(this->success)).resize(_size39);
-            uint32_t _i43;
-            for (_i43 = 0; _i43 < _size39; ++_i43)
+            uint32_t _size65;
+            ::apache::thrift::protocol::TType _etype68;
+            xfer += iprot->readListBegin(_etype68, _size65);
+            (*(this->success)).resize(_size65);
+            uint32_t _i69;
+            for (_i69 = 0; _i69 < _size65; ++_i69)
             {
-              xfer += (*(this->success))[_i43].read(iprot);
+              xfer += (*(this->success))[_i69].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2036,6 +4466,7 @@ uint32_t Airavata_searchExperimentsByDesc_args::read(::apache::thrift::protocol:
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_gatewayId = false;
   bool isset_userName = false;
   bool isset_description = false;
 
@@ -2049,13 +4480,21 @@ uint32_t Airavata_searchExperimentsByDesc_args::read(::apache::thrift::protocol:
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->userName);
           isset_userName = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 2:
+      case 3:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->description);
           isset_description = true;
@@ -2072,6 +4511,8 @@ uint32_t Airavata_searchExperimentsByDesc_args::read(::apache::thrift::protocol:
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_userName)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_description)
@@ -2083,11 +4524,15 @@ uint32_t Airavata_searchExperimentsByDesc_args::write(::apache::thrift::protocol
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_searchExperimentsByDesc_args");
 
-  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString(this->userName);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("description", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeFieldBegin("description", ::apache::thrift::protocol::T_STRING, 3);
   xfer += oprot->writeString(this->description);
   xfer += oprot->writeFieldEnd();
 
@@ -2100,11 +4545,15 @@ uint32_t Airavata_searchExperimentsByDesc_pargs::write(::apache::thrift::protoco
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_searchExperimentsByDesc_pargs");
 
-  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->gatewayId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString((*(this->userName)));
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("description", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeFieldBegin("description", ::apache::thrift::protocol::T_STRING, 3);
   xfer += oprot->writeString((*(this->description)));
   xfer += oprot->writeFieldEnd();
 
@@ -2137,14 +4586,14 @@ uint32_t Airavata_searchExperimentsByDesc_result::read(::apache::thrift::protoco
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size44;
-            ::apache::thrift::protocol::TType _etype47;
-            xfer += iprot->readListBegin(_etype47, _size44);
-            this->success.resize(_size44);
-            uint32_t _i48;
-            for (_i48 = 0; _i48 < _size44; ++_i48)
+            uint32_t _size70;
+            ::apache::thrift::protocol::TType _etype73;
+            xfer += iprot->readListBegin(_etype73, _size70);
+            this->success.resize(_size70);
+            uint32_t _i74;
+            for (_i74 = 0; _i74 < _size70; ++_i74)
             {
-              xfer += this->success[_i48].read(iprot);
+              xfer += this->success[_i74].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2199,10 +4648,10 @@ uint32_t Airavata_searchExperimentsByDesc_result::write(::apache::thrift::protoc
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> ::const_iterator _iter49;
-      for (_iter49 = this->success.begin(); _iter49 != this->success.end(); ++_iter49)
+      std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> ::const_iterator _iter75;
+      for (_iter75 = this->success.begin(); _iter75 != this->success.end(); ++_iter75)
       {
-        xfer += (*_iter49).write(oprot);
+        xfer += (*_iter75).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -2249,14 +4698,14 @@ uint32_t Airavata_searchExperimentsByDesc_presult::read(::apache::thrift::protoc
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size50;
-            ::apache::thrift::protocol::TType _etype53;
-            xfer += iprot->readListBegin(_etype53, _size50);
-            (*(this->success)).resize(_size50);
-            uint32_t _i54;
-            for (_i54 = 0; _i54 < _size50; ++_i54)
+            uint32_t _size76;
+            ::apache::thrift::protocol::TType _etype79;
+            xfer += iprot->readListBegin(_etype79, _size76);
+            (*(this->success)).resize(_size76);
+            uint32_t _i80;
+            for (_i80 = 0; _i80 < _size76; ++_i80)
             {
-              xfer += (*(this->success))[_i54].read(iprot);
+              xfer += (*(this->success))[_i80].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2312,6 +4761,7 @@ uint32_t Airavata_searchExperimentsByApplication_args::read(::apache::thrift::pr
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_gatewayId = false;
   bool isset_userName = false;
   bool isset_applicationId = false;
 
@@ -2325,13 +4775,21 @@ uint32_t Airavata_searchExperimentsByApplication_args::read(::apache::thrift::pr
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->userName);
           isset_userName = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 2:
+      case 3:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->applicationId);
           isset_applicationId = true;
@@ -2348,6 +4806,8 @@ uint32_t Airavata_searchExperimentsByApplication_args::read(::apache::thrift::pr
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_userName)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_applicationId)
@@ -2359,11 +4819,15 @@ uint32_t Airavata_searchExperimentsByApplication_args::write(::apache::thrift::p
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_searchExperimentsByApplication_args");
 
-  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString(this->userName);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("applicationId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeFieldBegin("applicationId", ::apache::thrift::protocol::T_STRING, 3);
   xfer += oprot->writeString(this->applicationId);
   xfer += oprot->writeFieldEnd();
 
@@ -2376,11 +4840,15 @@ uint32_t Airavata_searchExperimentsByApplication_pargs::write(::apache::thrift::
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_searchExperimentsByApplication_pargs");
 
-  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->gatewayId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString((*(this->userName)));
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("applicationId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeFieldBegin("applicationId", ::apache::thrift::protocol::T_STRING, 3);
   xfer += oprot->writeString((*(this->applicationId)));
   xfer += oprot->writeFieldEnd();
 
@@ -2413,14 +4881,14 @@ uint32_t Airavata_searchExperimentsByApplication_result::read(::apache::thrift::
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size55;
-            ::apache::thrift::protocol::TType _etype58;
-            xfer += iprot->readListBegin(_etype58, _size55);
-            this->success.resize(_size55);
-            uint32_t _i59;
-            for (_i59 = 0; _i59 < _size55; ++_i59)
+            uint32_t _size81;
+            ::apache::thrift::protocol::TType _etype84;
+            xfer += iprot->readListBegin(_etype84, _size81);
+            this->success.resize(_size81);
+            uint32_t _i85;
+            for (_i85 = 0; _i85 < _size81; ++_i85)
             {
-              xfer += this->success[_i59].read(iprot);
+              xfer += this->success[_i85].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2475,10 +4943,10 @@ uint32_t Airavata_searchExperimentsByApplication_result::write(::apache::thrift:
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> ::const_iterator _iter60;
-      for (_iter60 = this->success.begin(); _iter60 != this->success.end(); ++_iter60)
+      std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> ::const_iterator _iter86;
+      for (_iter86 = this->success.begin(); _iter86 != this->success.end(); ++_iter86)
       {
-        xfer += (*_iter60).write(oprot);
+        xfer += (*_iter86).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -2525,14 +4993,14 @@ uint32_t Airavata_searchExperimentsByApplication_presult::read(::apache::thrift:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size61;
-            ::apache::thrift::protocol::TType _etype64;
-            xfer += iprot->readListBegin(_etype64, _size61);
-            (*(this->success)).resize(_size61);
-            uint32_t _i65;
-            for (_i65 = 0; _i65 < _size61; ++_i65)
+            uint32_t _size87;
+            ::apache::thrift::protocol::TType _etype90;
+            xfer += iprot->readListBegin(_etype90, _size87);
+            (*(this->success)).resize(_size87);
+            uint32_t _i91;
+            for (_i91 = 0; _i91 < _size87; ++_i91)
             {
-              xfer += (*(this->success))[_i65].read(iprot);
+              xfer += (*(this->success))[_i91].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2588,6 +5056,7 @@ uint32_t Airavata_searchExperimentsByStatus_args::read(::apache::thrift::protoco
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_gatewayId = false;
   bool isset_userName = false;
   bool isset_experimentState = false;
 
@@ -2601,17 +5070,25 @@ uint32_t Airavata_searchExperimentsByStatus_args::read(::apache::thrift::protoco
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->userName);
           isset_userName = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 2:
+      case 3:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          int32_t ecast66;
-          xfer += iprot->readI32(ecast66);
-          this->experimentState = ( ::apache::airavata::model::workspace::experiment::ExperimentState::type)ecast66;
+          int32_t ecast92;
+          xfer += iprot->readI32(ecast92);
+          this->experimentState = ( ::apache::airavata::model::workspace::experiment::ExperimentState::type)ecast92;
           isset_experimentState = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -2626,6 +5103,8 @@ uint32_t Airavata_searchExperimentsByStatus_args::read(::apache::thrift::protoco
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_userName)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_experimentState)
@@ -2637,11 +5116,15 @@ uint32_t Airavata_searchExperimentsByStatus_args::write(::apache::thrift::protoc
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_searchExperimentsByStatus_args");
 
-  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString(this->userName);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("experimentState", ::apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeFieldBegin("experimentState", ::apache::thrift::protocol::T_I32, 3);
   xfer += oprot->writeI32((int32_t)this->experimentState);
   xfer += oprot->writeFieldEnd();
 
@@ -2654,11 +5137,15 @@ uint32_t Airavata_searchExperimentsByStatus_pargs::write(::apache::thrift::proto
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_searchExperimentsByStatus_pargs");
 
-  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->gatewayId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString((*(this->userName)));
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("experimentState", ::apache::thrift::protocol::T_I32, 2);
+  xfer += oprot->writeFieldBegin("experimentState", ::apache::thrift::protocol::T_I32, 3);
   xfer += oprot->writeI32((int32_t)(*(this->experimentState)));
   xfer += oprot->writeFieldEnd();
 
@@ -2691,14 +5178,14 @@ uint32_t Airavata_searchExperimentsByStatus_result::read(::apache::thrift::proto
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size67;
-            ::apache::thrift::protocol::TType _etype70;
-            xfer += iprot->readListBegin(_etype70, _size67);
-            this->success.resize(_size67);
-            uint32_t _i71;
-            for (_i71 = 0; _i71 < _size67; ++_i71)
+            uint32_t _size93;
+            ::apache::thrift::protocol::TType _etype96;
+            xfer += iprot->readListBegin(_etype96, _size93);
+            this->success.resize(_size93);
+            uint32_t _i97;
+            for (_i97 = 0; _i97 < _size93; ++_i97)
             {
-              xfer += this->success[_i71].read(iprot);
+              xfer += this->success[_i97].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2753,10 +5240,10 @@ uint32_t Airavata_searchExperimentsByStatus_result::write(::apache::thrift::prot
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> ::const_iterator _iter72;
-      for (_iter72 = this->success.begin(); _iter72 != this->success.end(); ++_iter72)
+      std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> ::const_iterator _iter98;
+      for (_iter98 = this->success.begin(); _iter98 != this->success.end(); ++_iter98)
       {
-        xfer += (*_iter72).write(oprot);
+        xfer += (*_iter98).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -2803,14 +5290,14 @@ uint32_t Airavata_searchExperimentsByStatus_presult::read(::apache::thrift::prot
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size73;
-            ::apache::thrift::protocol::TType _etype76;
-            xfer += iprot->readListBegin(_etype76, _size73);
-            (*(this->success)).resize(_size73);
-            uint32_t _i77;
-            for (_i77 = 0; _i77 < _size73; ++_i77)
+            uint32_t _size99;
+            ::apache::thrift::protocol::TType _etype102;
+            xfer += iprot->readListBegin(_etype102, _size99);
+            (*(this->success)).resize(_size99);
+            uint32_t _i103;
+            for (_i103 = 0; _i103 < _size99; ++_i103)
             {
-              xfer += (*(this->success))[_i77].read(iprot);
+              xfer += (*(this->success))[_i103].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -2866,6 +5353,7 @@ uint32_t Airavata_searchExperimentsByCreationTime_args::read(::apache::thrift::p
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_gatewayId = false;
   bool isset_userName = false;
   bool isset_fromTime = false;
   bool isset_toTime = false;
@@ -2880,13 +5368,21 @@ uint32_t Airavata_searchExperimentsByCreationTime_args::read(::apache::thrift::p
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->userName);
           isset_userName = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 2:
+      case 3:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->fromTime);
           isset_fromTime = true;
@@ -2894,7 +5390,7 @@ uint32_t Airavata_searchExperimentsByCreationTime_args::read(::apache::thrift::p
           xfer += iprot->skip(ftype);
         }
         break;
-      case 3:
+      case 4:
         if (ftype == ::apache::thrift::protocol::T_I64) {
           xfer += iprot->readI64(this->toTime);
           isset_toTime = true;
@@ -2911,6 +5407,8 @@ uint32_t Airavata_searchExperimentsByCreationTime_args::read(::apache::thrift::p
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_userName)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_fromTime)
@@ -2924,15 +5422,19 @@ uint32_t Airavata_searchExperimentsByCreationTime_args::write(::apache::thrift::
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_searchExperimentsByCreationTime_args");
 
-  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString(this->userName);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("fromTime", ::apache::thrift::protocol::T_I64, 2);
+  xfer += oprot->writeFieldBegin("fromTime", ::apache::thrift::protocol::T_I64, 3);
   xfer += oprot->writeI64(this->fromTime);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("toTime", ::apache::thrift::protocol::T_I64, 3);
+  xfer += oprot->writeFieldBegin("toTime", ::apache::thrift::protocol::T_I64, 4);
   xfer += oprot->writeI64(this->toTime);
   xfer += oprot->writeFieldEnd();
 
@@ -2945,15 +5447,19 @@ uint32_t Airavata_searchExperimentsByCreationTime_pargs::write(::apache::thrift:
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_searchExperimentsByCreationTime_pargs");
 
-  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->gatewayId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString((*(this->userName)));
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("fromTime", ::apache::thrift::protocol::T_I64, 2);
+  xfer += oprot->writeFieldBegin("fromTime", ::apache::thrift::protocol::T_I64, 3);
   xfer += oprot->writeI64((*(this->fromTime)));
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("toTime", ::apache::thrift::protocol::T_I64, 3);
+  xfer += oprot->writeFieldBegin("toTime", ::apache::thrift::protocol::T_I64, 4);
   xfer += oprot->writeI64((*(this->toTime)));
   xfer += oprot->writeFieldEnd();
 
@@ -2986,14 +5492,14 @@ uint32_t Airavata_searchExperimentsByCreationTime_result::read(::apache::thrift:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size78;
-            ::apache::thrift::protocol::TType _etype81;
-            xfer += iprot->readListBegin(_etype81, _size78);
-            this->success.resize(_size78);
-            uint32_t _i82;
-            for (_i82 = 0; _i82 < _size78; ++_i82)
+            uint32_t _size104;
+            ::apache::thrift::protocol::TType _etype107;
+            xfer += iprot->readListBegin(_etype107, _size104);
+            this->success.resize(_size104);
+            uint32_t _i108;
+            for (_i108 = 0; _i108 < _size104; ++_i108)
             {
-              xfer += this->success[_i82].read(iprot);
+              xfer += this->success[_i108].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -3048,10 +5554,10 @@ uint32_t Airavata_searchExperimentsByCreationTime_result::write(::apache::thrift
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> ::const_iterator _iter83;
-      for (_iter83 = this->success.begin(); _iter83 != this->success.end(); ++_iter83)
+      std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> ::const_iterator _iter109;
+      for (_iter109 = this->success.begin(); _iter109 != this->success.end(); ++_iter109)
       {
-        xfer += (*_iter83).write(oprot);
+        xfer += (*_iter109).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -3098,14 +5604,14 @@ uint32_t Airavata_searchExperimentsByCreationTime_presult::read(::apache::thrift
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size84;
-            ::apache::thrift::protocol::TType _etype87;
-            xfer += iprot->readListBegin(_etype87, _size84);
-            (*(this->success)).resize(_size84);
-            uint32_t _i88;
-            for (_i88 = 0; _i88 < _size84; ++_i88)
+            uint32_t _size110;
+            ::apache::thrift::protocol::TType _etype113;
+            xfer += iprot->readListBegin(_etype113, _size110);
+            (*(this->success)).resize(_size110);
+            uint32_t _i114;
+            for (_i114 = 0; _i114 < _size110; ++_i114)
             {
-              xfer += (*(this->success))[_i88].read(iprot);
+              xfer += (*(this->success))[_i114].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -3243,14 +5749,14 @@ uint32_t Airavata_getAllExperimentsInProject_result::read(::apache::thrift::prot
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size89;
-            ::apache::thrift::protocol::TType _etype92;
-            xfer += iprot->readListBegin(_etype92, _size89);
-            this->success.resize(_size89);
-            uint32_t _i93;
-            for (_i93 = 0; _i93 < _size89; ++_i93)
+            uint32_t _size115;
+            ::apache::thrift::protocol::TType _etype118;
+            xfer += iprot->readListBegin(_etype118, _size115);
+            this->success.resize(_size115);
+            uint32_t _i119;
+            for (_i119 = 0; _i119 < _size115; ++_i119)
             {
-              xfer += this->success[_i93].read(iprot);
+              xfer += this->success[_i119].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -3313,10 +5819,10 @@ uint32_t Airavata_getAllExperimentsInProject_result::write(::apache::thrift::pro
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::apache::airavata::model::workspace::experiment::Experiment> ::const_iterator _iter94;
-      for (_iter94 = this->success.begin(); _iter94 != this->success.end(); ++_iter94)
+      std::vector< ::apache::airavata::model::workspace::experiment::Experiment> ::const_iterator _iter120;
+      for (_iter120 = this->success.begin(); _iter120 != this->success.end(); ++_iter120)
       {
-        xfer += (*_iter94).write(oprot);
+        xfer += (*_iter120).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -3367,14 +5873,14 @@ uint32_t Airavata_getAllExperimentsInProject_presult::read(::apache::thrift::pro
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size95;
-            ::apache::thrift::protocol::TType _etype98;
-            xfer += iprot->readListBegin(_etype98, _size95);
-            (*(this->success)).resize(_size95);
-            uint32_t _i99;
-            for (_i99 = 0; _i99 < _size95; ++_i99)
+            uint32_t _size121;
+            ::apache::thrift::protocol::TType _etype124;
+            xfer += iprot->readListBegin(_etype124, _size121);
+            (*(this->success)).resize(_size121);
+            uint32_t _i125;
+            for (_i125 = 0; _i125 < _size121; ++_i125)
             {
-              xfer += (*(this->success))[_i99].read(iprot);
+              xfer += (*(this->success))[_i125].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -3438,6 +5944,7 @@ uint32_t Airavata_getAllUserExperiments_args::read(::apache::thrift::protocol::T
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_gatewayId = false;
   bool isset_userName = false;
 
   while (true)
@@ -3449,6 +5956,14 @@ uint32_t Airavata_getAllUserExperiments_args::read(::apache::thrift::protocol::T
     switch (fid)
     {
       case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->userName);
           isset_userName = true;
@@ -3465,6 +5980,8 @@ uint32_t Airavata_getAllUserExperiments_args::read(::apache::thrift::protocol::T
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_userName)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
@@ -3474,7 +5991,11 @@ uint32_t Airavata_getAllUserExperiments_args::write(::apache::thrift::protocol::
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_getAllUserExperiments_args");
 
-  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString(this->userName);
   xfer += oprot->writeFieldEnd();
 
@@ -3487,7 +6008,11 @@ uint32_t Airavata_getAllUserExperiments_pargs::write(::apache::thrift::protocol:
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_getAllUserExperiments_pargs");
 
-  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->gatewayId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("userName", ::apache::thrift::protocol::T_STRING, 2);
   xfer += oprot->writeString((*(this->userName)));
   xfer += oprot->writeFieldEnd();
 
@@ -3520,14 +6045,14 @@ uint32_t Airavata_getAllUserExperiments_result::read(::apache::thrift::protocol:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size100;
-            ::apache::thrift::protocol::TType _etype103;
-            xfer += iprot->readListBegin(_etype103, _size100);
-            this->success.resize(_size100);
-            uint32_t _i104;
-            for (_i104 = 0; _i104 < _size100; ++_i104)
+            uint32_t _size126;
+            ::apache::thrift::protocol::TType _etype129;
+            xfer += iprot->readListBegin(_etype129, _size126);
+            this->success.resize(_size126);
+            uint32_t _i130;
+            for (_i130 = 0; _i130 < _size126; ++_i130)
             {
-              xfer += this->success[_i104].read(iprot);
+              xfer += this->success[_i130].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -3582,10 +6107,10 @@ uint32_t Airavata_getAllUserExperiments_result::write(::apache::thrift::protocol
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::apache::airavata::model::workspace::experiment::Experiment> ::const_iterator _iter105;
-      for (_iter105 = this->success.begin(); _iter105 != this->success.end(); ++_iter105)
+      std::vector< ::apache::airavata::model::workspace::experiment::Experiment> ::const_iterator _iter131;
+      for (_iter131 = this->success.begin(); _iter131 != this->success.end(); ++_iter131)
       {
-        xfer += (*_iter105).write(oprot);
+        xfer += (*_iter131).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -3632,14 +6157,14 @@ uint32_t Airavata_getAllUserExperiments_presult::read(::apache::thrift::protocol
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size106;
-            ::apache::thrift::protocol::TType _etype109;
-            xfer += iprot->readListBegin(_etype109, _size106);
-            (*(this->success)).resize(_size106);
-            uint32_t _i110;
-            for (_i110 = 0; _i110 < _size106; ++_i110)
+            uint32_t _size132;
+            ::apache::thrift::protocol::TType _etype135;
+            xfer += iprot->readListBegin(_etype135, _size132);
+            (*(this->success)).resize(_size132);
+            uint32_t _i136;
+            for (_i136 = 0; _i136 < _size132; ++_i136)
             {
-              xfer += (*(this->success))[_i110].read(iprot);
+              xfer += (*(this->success))[_i136].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -3695,6 +6220,7 @@ uint32_t Airavata_createExperiment_args::read(::apache::thrift::protocol::TProto
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_gatewayId = false;
   bool isset_experiment = false;
 
   while (true)
@@ -3706,6 +6232,14 @@ uint32_t Airavata_createExperiment_args::read(::apache::thrift::protocol::TProto
     switch (fid)
     {
       case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->experiment.read(iprot);
           isset_experiment = true;
@@ -3722,6 +6256,8 @@ uint32_t Airavata_createExperiment_args::read(::apache::thrift::protocol::TProto
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_experiment)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
@@ -3731,7 +6267,11 @@ uint32_t Airavata_createExperiment_args::write(::apache::thrift::protocol::TProt
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_createExperiment_args");
 
-  xfer += oprot->writeFieldBegin("experiment", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("experiment", ::apache::thrift::protocol::T_STRUCT, 2);
   xfer += this->experiment.write(oprot);
   xfer += oprot->writeFieldEnd();
 
@@ -3744,7 +6284,11 @@ uint32_t Airavata_createExperiment_pargs::write(::apache::thrift::protocol::TPro
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_createExperiment_pargs");
 
-  xfer += oprot->writeFieldBegin("experiment", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->gatewayId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("experiment", ::apache::thrift::protocol::T_STRUCT, 2);
   xfer += (*(this->experiment)).write(oprot);
   xfer += oprot->writeFieldEnd();
 
@@ -5551,14 +8095,14 @@ uint32_t Airavata_getExperimentOutputs_result::read(::apache::thrift::protocol::
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size111;
-            ::apache::thrift::protocol::TType _etype114;
-            xfer += iprot->readListBegin(_etype114, _size111);
-            this->success.resize(_size111);
-            uint32_t _i115;
-            for (_i115 = 0; _i115 < _size111; ++_i115)
+            uint32_t _size137;
+            ::apache::thrift::protocol::TType _etype140;
+            xfer += iprot->readListBegin(_etype140, _size137);
+            this->success.resize(_size137);
+            uint32_t _i141;
+            for (_i141 = 0; _i141 < _size137; ++_i141)
             {
-              xfer += this->success[_i115].read(iprot);
+              xfer += this->success[_i141].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -5621,10 +8165,10 @@ uint32_t Airavata_getExperimentOutputs_result::write(::apache::thrift::protocol:
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> ::const_iterator _iter116;
-      for (_iter116 = this->success.begin(); _iter116 != this->success.end(); ++_iter116)
+      std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> ::const_iterator _iter142;
+      for (_iter142 = this->success.begin(); _iter142 != this->success.end(); ++_iter142)
       {
-        xfer += (*_iter116).write(oprot);
+        xfer += (*_iter142).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -5675,14 +8219,291 @@ uint32_t Airavata_getExperimentOutputs_presult::read(::apache::thrift::protocol:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size117;
-            ::apache::thrift::protocol::TType _etype120;
-            xfer += iprot->readListBegin(_etype120, _size117);
-            (*(this->success)).resize(_size117);
-            uint32_t _i121;
-            for (_i121 = 0; _i121 < _size117; ++_i121)
+            uint32_t _size143;
+            ::apache::thrift::protocol::TType _etype146;
+            xfer += iprot->readListBegin(_etype146, _size143);
+            (*(this->success)).resize(_size143);
+            uint32_t _i147;
+            for (_i147 = 0; _i147 < _size143; ++_i147)
             {
-              xfer += (*(this->success))[_i121].read(iprot);
+              xfer += (*(this->success))[_i147].read(iprot);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->enf.read(iprot);
+          this->__isset.enf = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_getIntermediateOutputs_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset_airavataExperimentId = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->airavataExperimentId);
+          isset_airavataExperimentId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset_airavataExperimentId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t Airavata_getIntermediateOutputs_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_getIntermediateOutputs_args");
+
+  xfer += oprot->writeFieldBegin("airavataExperimentId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->airavataExperimentId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_getIntermediateOutputs_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("Airavata_getIntermediateOutputs_pargs");
+
+  xfer += oprot->writeFieldBegin("airavataExperimentId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->airavataExperimentId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_getIntermediateOutputs_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->success.clear();
+            uint32_t _size148;
+            ::apache::thrift::protocol::TType _etype151;
+            xfer += iprot->readListBegin(_etype151, _size148);
+            this->success.resize(_size148);
+            uint32_t _i152;
+            for (_i152 = 0; _i152 < _size148; ++_i152)
+            {
+              xfer += this->success[_i152].read(iprot);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.success = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ire.read(iprot);
+          this->__isset.ire = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->enf.read(iprot);
+          this->__isset.enf = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ace.read(iprot);
+          this->__isset.ace = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ase.read(iprot);
+          this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  return xfer;
+}
+
+uint32_t Airavata_getIntermediateOutputs_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+
+  uint32_t xfer = 0;
+
+  xfer += oprot->writeStructBegin("Airavata_getIntermediateOutputs_result");
+
+  if (this->__isset.success) {
+    xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
+    {
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
+      std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> ::const_iterator _iter153;
+      for (_iter153 = this->success.begin(); _iter153 != this->success.end(); ++_iter153)
+      {
+        xfer += (*_iter153).write(oprot);
+      }
+      xfer += oprot->writeListEnd();
+    }
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ire) {
+    xfer += oprot->writeFieldBegin("ire", ::apache::thrift::protocol::T_STRUCT, 1);
+    xfer += this->ire.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.enf) {
+    xfer += oprot->writeFieldBegin("enf", ::apache::thrift::protocol::T_STRUCT, 2);
+    xfer += this->enf.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ace) {
+    xfer += oprot->writeFieldBegin("ace", ::apache::thrift::protocol::T_STRUCT, 3);
+    xfer += this->ace.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ase) {
+    xfer += oprot->writeFieldBegin("ase", ::apache::thrift::protocol::T_STRUCT, 4);
+    xfer += this->ase.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  }
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+uint32_t Airavata_getIntermediateOutputs_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            (*(this->success)).clear();
+            uint32_t _size154;
+            ::apache::thrift::protocol::TType _etype157;
+            xfer += iprot->readListBegin(_etype157, _size154);
+            (*(this->success)).resize(_size154);
+            uint32_t _i158;
+            for (_i158 = 0; _i158 < _size154; ++_i158)
+            {
+              xfer += (*(this->success))[_i158].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -5828,17 +8649,17 @@ uint32_t Airavata_getJobStatuses_result::read(::apache::thrift::protocol::TProto
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->success.clear();
-            uint32_t _size122;
-            ::apache::thrift::protocol::TType _ktype123;
-            ::apache::thrift::protocol::TType _vtype124;
-            xfer += iprot->readMapBegin(_ktype123, _vtype124, _size122);
-            uint32_t _i126;
-            for (_i126 = 0; _i126 < _size122; ++_i126)
+            uint32_t _size159;
+            ::apache::thrift::protocol::TType _ktype160;
+            ::apache::thrift::protocol::TType _vtype161;
+            xfer += iprot->readMapBegin(_ktype160, _vtype161, _size159);
+            uint32_t _i163;
+            for (_i163 = 0; _i163 < _size159; ++_i163)
             {
-              std::string _key127;
-              xfer += iprot->readString(_key127);
-               ::apache::airavata::model::workspace::experiment::JobStatus& _val128 = this->success[_key127];
-              xfer += _val128.read(iprot);
+              std::string _key164;
+              xfer += iprot->readString(_key164);
+               ::apache::airavata::model::workspace::experiment::JobStatus& _val165 = this->success[_key164];
+              xfer += _val165.read(iprot);
             }
             xfer += iprot->readMapEnd();
           }
@@ -5901,11 +8722,11 @@ uint32_t Airavata_getJobStatuses_result::write(::apache::thrift::protocol::TProt
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_MAP, 0);
     {
       xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> ::const_iterator _iter129;
-      for (_iter129 = this->success.begin(); _iter129 != this->success.end(); ++_iter129)
+      std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> ::const_iterator _iter166;
+      for (_iter166 = this->success.begin(); _iter166 != this->success.end(); ++_iter166)
       {
-        xfer += oprot->writeString(_iter129->first);
-        xfer += _iter129->second.write(oprot);
+        xfer += oprot->writeString(_iter166->first);
+        xfer += _iter166->second.write(oprot);
       }
       xfer += oprot->writeMapEnd();
     }
@@ -5956,17 +8777,17 @@ uint32_t Airavata_getJobStatuses_presult::read(::apache::thrift::protocol::TProt
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             (*(this->success)).clear();
-            uint32_t _size130;
-            ::apache::thrift::protocol::TType _ktype131;
-            ::apache::thrift::protocol::TType _vtype132;
-            xfer += iprot->readMapBegin(_ktype131, _vtype132, _size130);
-            uint32_t _i134;
-            for (_i134 = 0; _i134 < _size130; ++_i134)
+            uint32_t _size167;
+            ::apache::thrift::protocol::TType _ktype168;
+            ::apache::thrift::protocol::TType _vtype169;
+            xfer += iprot->readMapBegin(_ktype168, _vtype169, _size167);
+            uint32_t _i171;
+            for (_i171 = 0; _i171 < _size167; ++_i171)
             {
-              std::string _key135;
-              xfer += iprot->readString(_key135);
-               ::apache::airavata::model::workspace::experiment::JobStatus& _val136 = (*(this->success))[_key135];
-              xfer += _val136.read(iprot);
+              std::string _key172;
+              xfer += iprot->readString(_key172);
+               ::apache::airavata::model::workspace::experiment::JobStatus& _val173 = (*(this->success))[_key172];
+              xfer += _val173.read(iprot);
             }
             xfer += iprot->readMapEnd();
           }
@@ -6112,14 +8933,14 @@ uint32_t Airavata_getJobDetails_result::read(::apache::thrift::protocol::TProtoc
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size137;
-            ::apache::thrift::protocol::TType _etype140;
-            xfer += iprot->readListBegin(_etype140, _size137);
-            this->success.resize(_size137);
-            uint32_t _i141;
-            for (_i141 = 0; _i141 < _size137; ++_i141)
+            uint32_t _size174;
+            ::apache::thrift::protocol::TType _etype177;
+            xfer += iprot->readListBegin(_etype177, _size174);
+            this->success.resize(_size174);
+            uint32_t _i178;
+            for (_i178 = 0; _i178 < _size174; ++_i178)
             {
-              xfer += this->success[_i141].read(iprot);
+              xfer += this->success[_i178].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -6182,10 +9003,10 @@ uint32_t Airavata_getJobDetails_result::write(::apache::thrift::protocol::TProto
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::apache::airavata::model::workspace::experiment::JobDetails> ::const_iterator _iter142;
-      for (_iter142 = this->success.begin(); _iter142 != this->success.end(); ++_iter142)
+      std::vector< ::apache::airavata::model::workspace::experiment::JobDetails> ::const_iterator _iter179;
+      for (_iter179 = this->success.begin(); _iter179 != this->success.end(); ++_iter179)
       {
-        xfer += (*_iter142).write(oprot);
+        xfer += (*_iter179).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -6236,14 +9057,14 @@ uint32_t Airavata_getJobDetails_presult::read(::apache::thrift::protocol::TProto
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size143;
-            ::apache::thrift::protocol::TType _etype146;
-            xfer += iprot->readListBegin(_etype146, _size143);
-            (*(this->success)).resize(_size143);
-            uint32_t _i147;
-            for (_i147 = 0; _i147 < _size143; ++_i147)
+            uint32_t _size180;
+            ::apache::thrift::protocol::TType _etype183;
+            xfer += iprot->readListBegin(_etype183, _size180);
+            (*(this->success)).resize(_size180);
+            uint32_t _i184;
+            for (_i184 = 0; _i184 < _size180; ++_i184)
             {
-              xfer += (*(this->success))[_i147].read(iprot);
+              xfer += (*(this->success))[_i184].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -6389,14 +9210,14 @@ uint32_t Airavata_getDataTransferDetails_result::read(::apache::thrift::protocol
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size148;
-            ::apache::thrift::protocol::TType _etype151;
-            xfer += iprot->readListBegin(_etype151, _size148);
-            this->success.resize(_size148);
-            uint32_t _i152;
-            for (_i152 = 0; _i152 < _size148; ++_i152)
+            uint32_t _size185;
+            ::apache::thrift::protocol::TType _etype188;
+            xfer += iprot->readListBegin(_etype188, _size185);
+            this->success.resize(_size185);
+            uint32_t _i189;
+            for (_i189 = 0; _i189 < _size185; ++_i189)
             {
-              xfer += this->success[_i152].read(iprot);
+              xfer += this->success[_i189].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -6459,10 +9280,10 @@ uint32_t Airavata_getDataTransferDetails_result::write(::apache::thrift::protoco
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::apache::airavata::model::workspace::experiment::DataTransferDetails> ::const_iterator _iter153;
-      for (_iter153 = this->success.begin(); _iter153 != this->success.end(); ++_iter153)
+      std::vector< ::apache::airavata::model::workspace::experiment::DataTransferDetails> ::const_iterator _iter190;
+      for (_iter190 = this->success.begin(); _iter190 != this->success.end(); ++_iter190)
       {
-        xfer += (*_iter153).write(oprot);
+        xfer += (*_iter190).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -6513,14 +9334,14 @@ uint32_t Airavata_getDataTransferDetails_presult::read(::apache::thrift::protoco
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size154;
-            ::apache::thrift::protocol::TType _etype157;
-            xfer += iprot->readListBegin(_etype157, _size154);
-            (*(this->success)).resize(_size154);
-            uint32_t _i158;
-            for (_i158 = 0; _i158 < _size154; ++_i158)
+            uint32_t _size191;
+            ::apache::thrift::protocol::TType _etype194;
+            xfer += iprot->readListBegin(_etype194, _size191);
+            (*(this->success)).resize(_size191);
+            uint32_t _i195;
+            for (_i195 = 0; _i195 < _size191; ++_i195)
             {
-              xfer += (*(this->success))[_i158].read(iprot);
+              xfer += (*(this->success))[_i195].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -7064,6 +9885,7 @@ uint32_t Airavata_registerApplicationModule_args::read(::apache::thrift::protoco
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_gatewayId = false;
   bool isset_applicationModule = false;
 
   while (true)
@@ -7075,6 +9897,14 @@ uint32_t Airavata_registerApplicationModule_args::read(::apache::thrift::protoco
     switch (fid)
     {
       case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->applicationModule.read(iprot);
           isset_applicationModule = true;
@@ -7091,6 +9921,8 @@ uint32_t Airavata_registerApplicationModule_args::read(::apache::thrift::protoco
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_applicationModule)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
@@ -7100,7 +9932,11 @@ uint32_t Airavata_registerApplicationModule_args::write(::apache::thrift::protoc
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_registerApplicationModule_args");
 
-  xfer += oprot->writeFieldBegin("applicationModule", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("applicationModule", ::apache::thrift::protocol::T_STRUCT, 2);
   xfer += this->applicationModule.write(oprot);
   xfer += oprot->writeFieldEnd();
 
@@ -7113,7 +9949,11 @@ uint32_t Airavata_registerApplicationModule_pargs::write(::apache::thrift::proto
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_registerApplicationModule_pargs");
 
-  xfer += oprot->writeFieldBegin("applicationModule", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->gatewayId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("applicationModule", ::apache::thrift::protocol::T_STRUCT, 2);
   xfer += (*(this->applicationModule)).write(oprot);
   xfer += oprot->writeFieldEnd();
 
@@ -7758,6 +10598,7 @@ uint32_t Airavata_getAllAppModules_args::read(::apache::thrift::protocol::TProto
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_gatewayId = false;
 
   while (true)
   {
@@ -7765,18 +10606,37 @@ uint32_t Airavata_getAllAppModules_args::read(::apache::thrift::protocol::TProto
     if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
-    xfer += iprot->skip(ftype);
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
     xfer += iprot->readFieldEnd();
   }
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
 
 uint32_t Airavata_getAllAppModules_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_getAllAppModules_args");
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -7786,6 +10646,10 @@ uint32_t Airavata_getAllAppModules_args::write(::apache::thrift::protocol::TProt
 uint32_t Airavata_getAllAppModules_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_getAllAppModules_pargs");
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->gatewayId)));
+  xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -7816,14 +10680,14 @@ uint32_t Airavata_getAllAppModules_result::read(::apache::thrift::protocol::TPro
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size159;
-            ::apache::thrift::protocol::TType _etype162;
-            xfer += iprot->readListBegin(_etype162, _size159);
-            this->success.resize(_size159);
-            uint32_t _i163;
-            for (_i163 = 0; _i163 < _size159; ++_i163)
+            uint32_t _size196;
+            ::apache::thrift::protocol::TType _etype199;
+            xfer += iprot->readListBegin(_etype199, _size196);
+            this->success.resize(_size196);
+            uint32_t _i200;
+            for (_i200 = 0; _i200 < _size196; ++_i200)
             {
-              xfer += this->success[_i163].read(iprot);
+              xfer += this->success[_i200].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -7878,10 +10742,10 @@ uint32_t Airavata_getAllAppModules_result::write(::apache::thrift::protocol::TPr
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> ::const_iterator _iter164;
-      for (_iter164 = this->success.begin(); _iter164 != this->success.end(); ++_iter164)
+      std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> ::const_iterator _iter201;
+      for (_iter201 = this->success.begin(); _iter201 != this->success.end(); ++_iter201)
       {
-        xfer += (*_iter164).write(oprot);
+        xfer += (*_iter201).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -7928,14 +10792,14 @@ uint32_t Airavata_getAllAppModules_presult::read(::apache::thrift::protocol::TPr
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size165;
-            ::apache::thrift::protocol::TType _etype168;
-            xfer += iprot->readListBegin(_etype168, _size165);
-            (*(this->success)).resize(_size165);
-            uint32_t _i169;
-            for (_i169 = 0; _i169 < _size165; ++_i169)
+            uint32_t _size202;
+            ::apache::thrift::protocol::TType _etype205;
+            xfer += iprot->readListBegin(_etype205, _size202);
+            (*(this->success)).resize(_size202);
+            uint32_t _i206;
+            for (_i206 = 0; _i206 < _size202; ++_i206)
             {
-              xfer += (*(this->success))[_i169].read(iprot);
+              xfer += (*(this->success))[_i206].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -8216,6 +11080,7 @@ uint32_t Airavata_registerApplicationDeployment_args::read(::apache::thrift::pro
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_gatewayId = false;
   bool isset_applicationDeployment = false;
 
   while (true)
@@ -8227,6 +11092,14 @@ uint32_t Airavata_registerApplicationDeployment_args::read(::apache::thrift::pro
     switch (fid)
     {
       case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->applicationDeployment.read(iprot);
           isset_applicationDeployment = true;
@@ -8243,6 +11116,8 @@ uint32_t Airavata_registerApplicationDeployment_args::read(::apache::thrift::pro
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_applicationDeployment)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
@@ -8252,7 +11127,11 @@ uint32_t Airavata_registerApplicationDeployment_args::write(::apache::thrift::pr
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_registerApplicationDeployment_args");
 
-  xfer += oprot->writeFieldBegin("applicationDeployment", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("applicationDeployment", ::apache::thrift::protocol::T_STRUCT, 2);
   xfer += this->applicationDeployment.write(oprot);
   xfer += oprot->writeFieldEnd();
 
@@ -8265,7 +11144,11 @@ uint32_t Airavata_registerApplicationDeployment_pargs::write(::apache::thrift::p
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_registerApplicationDeployment_pargs");
 
-  xfer += oprot->writeFieldBegin("applicationDeployment", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->gatewayId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("applicationDeployment", ::apache::thrift::protocol::T_STRUCT, 2);
   xfer += (*(this->applicationDeployment)).write(oprot);
   xfer += oprot->writeFieldEnd();
 
@@ -9135,6 +12018,7 @@ uint32_t Airavata_getAllApplicationDeployments_args::read(::apache::thrift::prot
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_gatewayId = false;
 
   while (true)
   {
@@ -9142,18 +12026,37 @@ uint32_t Airavata_getAllApplicationDeployments_args::read(::apache::thrift::prot
     if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
-    xfer += iprot->skip(ftype);
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
     xfer += iprot->readFieldEnd();
   }
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
 
 uint32_t Airavata_getAllApplicationDeployments_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_getAllApplicationDeployments_args");
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -9163,6 +12066,10 @@ uint32_t Airavata_getAllApplicationDeployments_args::write(::apache::thrift::pro
 uint32_t Airavata_getAllApplicationDeployments_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_getAllApplicationDeployments_pargs");
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->gatewayId)));
+  xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -9193,14 +12100,14 @@ uint32_t Airavata_getAllApplicationDeployments_result::read(::apache::thrift::pr
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size170;
-            ::apache::thrift::protocol::TType _etype173;
-            xfer += iprot->readListBegin(_etype173, _size170);
-            this->success.resize(_size170);
-            uint32_t _i174;
-            for (_i174 = 0; _i174 < _size170; ++_i174)
+            uint32_t _size207;
+            ::apache::thrift::protocol::TType _etype210;
+            xfer += iprot->readListBegin(_etype210, _size207);
+            this->success.resize(_size207);
+            uint32_t _i211;
+            for (_i211 = 0; _i211 < _size207; ++_i211)
             {
-              xfer += this->success[_i174].read(iprot);
+              xfer += this->success[_i211].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -9255,10 +12162,10 @@ uint32_t Airavata_getAllApplicationDeployments_result::write(::apache::thrift::p
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> ::const_iterator _iter175;
-      for (_iter175 = this->success.begin(); _iter175 != this->success.end(); ++_iter175)
+      std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> ::const_iterator _iter212;
+      for (_iter212 = this->success.begin(); _iter212 != this->success.end(); ++_iter212)
       {
-        xfer += (*_iter175).write(oprot);
+        xfer += (*_iter212).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -9305,14 +12212,14 @@ uint32_t Airavata_getAllApplicationDeployments_presult::read(::apache::thrift::p
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size176;
-            ::apache::thrift::protocol::TType _etype179;
-            xfer += iprot->readListBegin(_etype179, _size176);
-            (*(this->success)).resize(_size176);
-            uint32_t _i180;
-            for (_i180 = 0; _i180 < _size176; ++_i180)
+            uint32_t _size213;
+            ::apache::thrift::protocol::TType _etype216;
+            xfer += iprot->readListBegin(_etype216, _size213);
+            (*(this->success)).resize(_size213);
+            uint32_t _i217;
+            for (_i217 = 0; _i217 < _size213; ++_i217)
             {
-              xfer += (*(this->success))[_i180].read(iprot);
+              xfer += (*(this->success))[_i217].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -9450,14 +12357,14 @@ uint32_t Airavata_getAppModuleDeployedResources_result::read(::apache::thrift::p
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size181;
-            ::apache::thrift::protocol::TType _etype184;
-            xfer += iprot->readListBegin(_etype184, _size181);
-            this->success.resize(_size181);
-            uint32_t _i185;
-            for (_i185 = 0; _i185 < _size181; ++_i185)
+            uint32_t _size218;
+            ::apache::thrift::protocol::TType _etype221;
+            xfer += iprot->readListBegin(_etype221, _size218);
+            this->success.resize(_size218);
+            uint32_t _i222;
+            for (_i222 = 0; _i222 < _size218; ++_i222)
             {
-              xfer += iprot->readString(this->success[_i185]);
+              xfer += iprot->readString(this->success[_i222]);
             }
             xfer += iprot->readListEnd();
           }
@@ -9512,10 +12419,10 @@ uint32_t Airavata_getAppModuleDeployedResources_result::write(::apache::thrift::
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->success.size()));
-      std::vector<std::string> ::const_iterator _iter186;
-      for (_iter186 = this->success.begin(); _iter186 != this->success.end(); ++_iter186)
+      std::vector<std::string> ::const_iterator _iter223;
+      for (_iter223 = this->success.begin(); _iter223 != this->success.end(); ++_iter223)
       {
-        xfer += oprot->writeString((*_iter186));
+        xfer += oprot->writeString((*_iter223));
       }
       xfer += oprot->writeListEnd();
     }
@@ -9562,14 +12469,14 @@ uint32_t Airavata_getAppModuleDeployedResources_presult::read(::apache::thrift::
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size187;
-            ::apache::thrift::protocol::TType _etype190;
-            xfer += iprot->readListBegin(_etype190, _size187);
-            (*(this->success)).resize(_size187);
-            uint32_t _i191;
-            for (_i191 = 0; _i191 < _size187; ++_i191)
+            uint32_t _size224;
+            ::apache::thrift::protocol::TType _etype227;
+            xfer += iprot->readListBegin(_etype227, _size224);
+            (*(this->success)).resize(_size224);
+            uint32_t _i228;
+            for (_i228 = 0; _i228 < _size224; ++_i228)
             {
-              xfer += iprot->readString((*(this->success))[_i191]);
+              xfer += iprot->readString((*(this->success))[_i228]);
             }
             xfer += iprot->readListEnd();
           }
@@ -9625,6 +12532,7 @@ uint32_t Airavata_registerApplicationInterface_args::read(::apache::thrift::prot
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_gatewayId = false;
   bool isset_applicationInterface = false;
 
   while (true)
@@ -9636,6 +12544,14 @@ uint32_t Airavata_registerApplicationInterface_args::read(::apache::thrift::prot
     switch (fid)
     {
       case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->applicationInterface.read(iprot);
           isset_applicationInterface = true;
@@ -9652,6 +12568,8 @@ uint32_t Airavata_registerApplicationInterface_args::read(::apache::thrift::prot
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_applicationInterface)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
@@ -9661,7 +12579,11 @@ uint32_t Airavata_registerApplicationInterface_args::write(::apache::thrift::pro
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_registerApplicationInterface_args");
 
-  xfer += oprot->writeFieldBegin("applicationInterface", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("applicationInterface", ::apache::thrift::protocol::T_STRUCT, 2);
   xfer += this->applicationInterface.write(oprot);
   xfer += oprot->writeFieldEnd();
 
@@ -9674,7 +12596,11 @@ uint32_t Airavata_registerApplicationInterface_pargs::write(::apache::thrift::pr
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_registerApplicationInterface_pargs");
 
-  xfer += oprot->writeFieldBegin("applicationInterface", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->gatewayId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("applicationInterface", ::apache::thrift::protocol::T_STRUCT, 2);
   xfer += (*(this->applicationInterface)).write(oprot);
   xfer += oprot->writeFieldEnd();
 
@@ -10544,6 +13470,7 @@ uint32_t Airavata_getAllApplicationInterfaceNames_args::read(::apache::thrift::p
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_gatewayId = false;
 
   while (true)
   {
@@ -10551,18 +13478,37 @@ uint32_t Airavata_getAllApplicationInterfaceNames_args::read(::apache::thrift::p
     if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
-    xfer += iprot->skip(ftype);
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
     xfer += iprot->readFieldEnd();
   }
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
 
 uint32_t Airavata_getAllApplicationInterfaceNames_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_getAllApplicationInterfaceNames_args");
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -10572,6 +13518,10 @@ uint32_t Airavata_getAllApplicationInterfaceNames_args::write(::apache::thrift::
 uint32_t Airavata_getAllApplicationInterfaceNames_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_getAllApplicationInterfaceNames_pargs");
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->gatewayId)));
+  xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -10602,17 +13552,17 @@ uint32_t Airavata_getAllApplicationInterfaceNames_result::read(::apache::thrift:
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->success.clear();
-            uint32_t _size192;
-            ::apache::thrift::protocol::TType _ktype193;
-            ::apache::thrift::protocol::TType _vtype194;
-            xfer += iprot->readMapBegin(_ktype193, _vtype194, _size192);
-            uint32_t _i196;
-            for (_i196 = 0; _i196 < _size192; ++_i196)
+            uint32_t _size229;
+            ::apache::thrift::protocol::TType _ktype230;
+            ::apache::thrift::protocol::TType _vtype231;
+            xfer += iprot->readMapBegin(_ktype230, _vtype231, _size229);
+            uint32_t _i233;
+            for (_i233 = 0; _i233 < _size229; ++_i233)
             {
-              std::string _key197;
-              xfer += iprot->readString(_key197);
-              std::string& _val198 = this->success[_key197];
-              xfer += iprot->readString(_val198);
+              std::string _key234;
+              xfer += iprot->readString(_key234);
+              std::string& _val235 = this->success[_key234];
+              xfer += iprot->readString(_val235);
             }
             xfer += iprot->readMapEnd();
           }
@@ -10667,11 +13617,11 @@ uint32_t Airavata_getAllApplicationInterfaceNames_result::write(::apache::thrift
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_MAP, 0);
     {
       xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->success.size()));
-      std::map<std::string, std::string> ::const_iterator _iter199;
-      for (_iter199 = this->success.begin(); _iter199 != this->success.end(); ++_iter199)
+      std::map<std::string, std::string> ::const_iterator _iter236;
+      for (_iter236 = this->success.begin(); _iter236 != this->success.end(); ++_iter236)
       {
-        xfer += oprot->writeString(_iter199->first);
-        xfer += oprot->writeString(_iter199->second);
+        xfer += oprot->writeString(_iter236->first);
+        xfer += oprot->writeString(_iter236->second);
       }
       xfer += oprot->writeMapEnd();
     }
@@ -10718,17 +13668,17 @@ uint32_t Airavata_getAllApplicationInterfaceNames_presult::read(::apache::thrift
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             (*(this->success)).clear();
-            uint32_t _size200;
-            ::apache::thrift::protocol::TType _ktype201;
-            ::apache::thrift::protocol::TType _vtype202;
-            xfer += iprot->readMapBegin(_ktype201, _vtype202, _size200);
-            uint32_t _i204;
-            for (_i204 = 0; _i204 < _size200; ++_i204)
+            uint32_t _size237;
+            ::apache::thrift::protocol::TType _ktype238;
+            ::apache::thrift::protocol::TType _vtype239;
+            xfer += iprot->readMapBegin(_ktype238, _vtype239, _size237);
+            uint32_t _i241;
+            for (_i241 = 0; _i241 < _size237; ++_i241)
             {
-              std::string _key205;
-              xfer += iprot->readString(_key205);
-              std::string& _val206 = (*(this->success))[_key205];
-              xfer += iprot->readString(_val206);
+              std::string _key242;
+              xfer += iprot->readString(_key242);
+              std::string& _val243 = (*(this->success))[_key242];
+              xfer += iprot->readString(_val243);
             }
             xfer += iprot->readMapEnd();
           }
@@ -10784,6 +13734,7 @@ uint32_t Airavata_getAllApplicationInterfaces_args::read(::apache::thrift::proto
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_gatewayId = false;
 
   while (true)
   {
@@ -10791,18 +13742,37 @@ uint32_t Airavata_getAllApplicationInterfaces_args::read(::apache::thrift::proto
     if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
-    xfer += iprot->skip(ftype);
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
     xfer += iprot->readFieldEnd();
   }
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
 
 uint32_t Airavata_getAllApplicationInterfaces_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_getAllApplicationInterfaces_args");
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -10812,6 +13782,10 @@ uint32_t Airavata_getAllApplicationInterfaces_args::write(::apache::thrift::prot
 uint32_t Airavata_getAllApplicationInterfaces_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_getAllApplicationInterfaces_pargs");
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->gatewayId)));
+  xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -10842,14 +13816,14 @@ uint32_t Airavata_getAllApplicationInterfaces_result::read(::apache::thrift::pro
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size207;
-            ::apache::thrift::protocol::TType _etype210;
-            xfer += iprot->readListBegin(_etype210, _size207);
-            this->success.resize(_size207);
-            uint32_t _i211;
-            for (_i211 = 0; _i211 < _size207; ++_i211)
+            uint32_t _size244;
+            ::apache::thrift::protocol::TType _etype247;
+            xfer += iprot->readListBegin(_etype247, _size244);
+            this->success.resize(_size244);
+            uint32_t _i248;
+            for (_i248 = 0; _i248 < _size244; ++_i248)
             {
-              xfer += this->success[_i211].read(iprot);
+              xfer += this->success[_i248].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -10904,10 +13878,10 @@ uint32_t Airavata_getAllApplicationInterfaces_result::write(::apache::thrift::pr
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> ::const_iterator _iter212;
-      for (_iter212 = this->success.begin(); _iter212 != this->success.end(); ++_iter212)
+      std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> ::const_iterator _iter249;
+      for (_iter249 = this->success.begin(); _iter249 != this->success.end(); ++_iter249)
       {
-        xfer += (*_iter212).write(oprot);
+        xfer += (*_iter249).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -10954,14 +13928,14 @@ uint32_t Airavata_getAllApplicationInterfaces_presult::read(::apache::thrift::pr
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size213;
-            ::apache::thrift::protocol::TType _etype216;
-            xfer += iprot->readListBegin(_etype216, _size213);
-            (*(this->success)).resize(_size213);
-            uint32_t _i217;
-            for (_i217 = 0; _i217 < _size213; ++_i217)
+            uint32_t _size250;
+            ::apache::thrift::protocol::TType _etype253;
+            xfer += iprot->readListBegin(_etype253, _size250);
+            (*(this->success)).resize(_size250);
+            uint32_t _i254;
+            for (_i254 = 0; _i254 < _size250; ++_i254)
             {
-              xfer += (*(this->success))[_i217].read(iprot);
+              xfer += (*(this->success))[_i254].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -11099,14 +14073,14 @@ uint32_t Airavata_getApplicationInputs_result::read(::apache::thrift::protocol::
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size218;
-            ::apache::thrift::protocol::TType _etype221;
-            xfer += iprot->readListBegin(_etype221, _size218);
-            this->success.resize(_size218);
-            uint32_t _i222;
-            for (_i222 = 0; _i222 < _size218; ++_i222)
+            uint32_t _size255;
+            ::apache::thrift::protocol::TType _etype258;
+            xfer += iprot->readListBegin(_etype258, _size255);
+            this->success.resize(_size255);
+            uint32_t _i259;
+            for (_i259 = 0; _i259 < _size255; ++_i259)
             {
-              xfer += this->success[_i222].read(iprot);
+              xfer += this->success[_i259].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -11161,10 +14135,10 @@ uint32_t Airavata_getApplicationInputs_result::write(::apache::thrift::protocol:
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> ::const_iterator _iter223;
-      for (_iter223 = this->success.begin(); _iter223 != this->success.end(); ++_iter223)
+      std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> ::const_iterator _iter260;
+      for (_iter260 = this->success.begin(); _iter260 != this->success.end(); ++_iter260)
       {
-        xfer += (*_iter223).write(oprot);
+        xfer += (*_iter260).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -11211,14 +14185,14 @@ uint32_t Airavata_getApplicationInputs_presult::read(::apache::thrift::protocol:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size224;
-            ::apache::thrift::protocol::TType _etype227;
-            xfer += iprot->readListBegin(_etype227, _size224);
-            (*(this->success)).resize(_size224);
-            uint32_t _i228;
-            for (_i228 = 0; _i228 < _size224; ++_i228)
+            uint32_t _size261;
+            ::apache::thrift::protocol::TType _etype264;
+            xfer += iprot->readListBegin(_etype264, _size261);
+            (*(this->success)).resize(_size261);
+            uint32_t _i265;
+            for (_i265 = 0; _i265 < _size261; ++_i265)
             {
-              xfer += (*(this->success))[_i228].read(iprot);
+              xfer += (*(this->success))[_i265].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -11356,14 +14330,14 @@ uint32_t Airavata_getApplicationOutputs_result::read(::apache::thrift::protocol:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size229;
-            ::apache::thrift::protocol::TType _etype232;
-            xfer += iprot->readListBegin(_etype232, _size229);
-            this->success.resize(_size229);
-            uint32_t _i233;
-            for (_i233 = 0; _i233 < _size229; ++_i233)
+            uint32_t _size266;
+            ::apache::thrift::protocol::TType _etype269;
+            xfer += iprot->readListBegin(_etype269, _size266);
+            this->success.resize(_size266);
+            uint32_t _i270;
+            for (_i270 = 0; _i270 < _size266; ++_i270)
             {
-              xfer += this->success[_i233].read(iprot);
+              xfer += this->success[_i270].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -11418,10 +14392,10 @@ uint32_t Airavata_getApplicationOutputs_result::write(::apache::thrift::protocol
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> ::const_iterator _iter234;
-      for (_iter234 = this->success.begin(); _iter234 != this->success.end(); ++_iter234)
+      std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> ::const_iterator _iter271;
+      for (_iter271 = this->success.begin(); _iter271 != this->success.end(); ++_iter271)
       {
-        xfer += (*_iter234).write(oprot);
+        xfer += (*_iter271).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -11468,14 +14442,14 @@ uint32_t Airavata_getApplicationOutputs_presult::read(::apache::thrift::protocol
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size235;
-            ::apache::thrift::protocol::TType _etype238;
-            xfer += iprot->readListBegin(_etype238, _size235);
-            (*(this->success)).resize(_size235);
-            uint32_t _i239;
-            for (_i239 = 0; _i239 < _size235; ++_i239)
+            uint32_t _size272;
+            ::apache::thrift::protocol::TType _etype275;
+            xfer += iprot->readListBegin(_etype275, _size272);
+            (*(this->success)).resize(_size272);
+            uint32_t _i276;
+            for (_i276 = 0; _i276 < _size272; ++_i276)
             {
-              xfer += (*(this->success))[_i239].read(iprot);
+              xfer += (*(this->success))[_i276].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -11613,17 +14587,17 @@ uint32_t Airavata_getAvailableAppInterfaceComputeResources_result::read(::apache
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->success.clear();
-            uint32_t _size240;
-            ::apache::thrift::protocol::TType _ktype241;
-            ::apache::thrift::protocol::TType _vtype242;
-            xfer += iprot->readMapBegin(_ktype241, _vtype242, _size240);
-            uint32_t _i244;
-            for (_i244 = 0; _i244 < _size240; ++_i244)
+            uint32_t _size277;
+            ::apache::thrift::protocol::TType _ktype278;
+            ::apache::thrift::protocol::TType _vtype279;
+            xfer += iprot->readMapBegin(_ktype278, _vtype279, _size277);
+            uint32_t _i281;
+            for (_i281 = 0; _i281 < _size277; ++_i281)
             {
-              std::string _key245;
-              xfer += iprot->readString(_key245);
-              std::string& _val246 = this->success[_key245];
-              xfer += iprot->readString(_val246);
+              std::string _key282;
+              xfer += iprot->readString(_key282);
+              std::string& _val283 = this->success[_key282];
+              xfer += iprot->readString(_val283);
             }
             xfer += iprot->readMapEnd();
           }
@@ -11678,11 +14652,11 @@ uint32_t Airavata_getAvailableAppInterfaceComputeResources_result::write(::apach
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_MAP, 0);
     {
       xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->success.size()));
-      std::map<std::string, std::string> ::const_iterator _iter247;
-      for (_iter247 = this->success.begin(); _iter247 != this->success.end(); ++_iter247)
+      std::map<std::string, std::string> ::const_iterator _iter284;
+      for (_iter284 = this->success.begin(); _iter284 != this->success.end(); ++_iter284)
       {
-        xfer += oprot->writeString(_iter247->first);
-        xfer += oprot->writeString(_iter247->second);
+        xfer += oprot->writeString(_iter284->first);
+        xfer += oprot->writeString(_iter284->second);
       }
       xfer += oprot->writeMapEnd();
     }
@@ -11729,17 +14703,17 @@ uint32_t Airavata_getAvailableAppInterfaceComputeResources_presult::read(::apach
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             (*(this->success)).clear();
-            uint32_t _size248;
-            ::apache::thrift::protocol::TType _ktype249;
-            ::apache::thrift::protocol::TType _vtype250;
-            xfer += iprot->readMapBegin(_ktype249, _vtype250, _size248);
-            uint32_t _i252;
-            for (_i252 = 0; _i252 < _size248; ++_i252)
+            uint32_t _size285;
+            ::apache::thrift::protocol::TType _ktype286;
+            ::apache::thrift::protocol::TType _vtype287;
+            xfer += iprot->readMapBegin(_ktype286, _vtype287, _size285);
+            uint32_t _i289;
+            for (_i289 = 0; _i289 < _size285; ++_i289)
             {
-              std::string _key253;
-              xfer += iprot->readString(_key253);
-              std::string& _val254 = (*(this->success))[_key253];
-              xfer += iprot->readString(_val254);
+              std::string _key290;
+              xfer += iprot->readString(_key290);
+              std::string& _val291 = (*(this->success))[_key290];
+              xfer += iprot->readString(_val291);
             }
             xfer += iprot->readMapEnd();
           }
@@ -12303,17 +15277,17 @@ uint32_t Airavata_getAllComputeResourceNames_result::read(::apache::thrift::prot
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->success.clear();
-            uint32_t _size255;
-            ::apache::thrift::protocol::TType _ktype256;
-            ::apache::thrift::protocol::TType _vtype257;
-            xfer += iprot->readMapBegin(_ktype256, _vtype257, _size255);
-            uint32_t _i259;
-            for (_i259 = 0; _i259 < _size255; ++_i259)
+            uint32_t _size292;
+            ::apache::thrift::protocol::TType _ktype293;
+            ::apache::thrift::protocol::TType _vtype294;
+            xfer += iprot->readMapBegin(_ktype293, _vtype294, _size292);
+            uint32_t _i296;
+            for (_i296 = 0; _i296 < _size292; ++_i296)
             {
-              std::string _key260;
-              xfer += iprot->readString(_key260);
-              std::string& _val261 = this->success[_key260];
-              xfer += iprot->readString(_val261);
+              std::string _key297;
+              xfer += iprot->readString(_key297);
+              std::string& _val298 = this->success[_key297];
+              xfer += iprot->readString(_val298);
             }
             xfer += iprot->readMapEnd();
           }
@@ -12368,11 +15342,11 @@ uint32_t Airavata_getAllComputeResourceNames_result::write(::apache::thrift::pro
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_MAP, 0);
     {
       xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->success.size()));
-      std::map<std::string, std::string> ::const_iterator _iter262;
-      for (_iter262 = this->success.begin(); _iter262 != this->success.end(); ++_iter262)
+      std::map<std::string, std::string> ::const_iterator _iter299;
+      for (_iter299 = this->success.begin(); _iter299 != this->success.end(); ++_iter299)
       {
-        xfer += oprot->writeString(_iter262->first);
-        xfer += oprot->writeString(_iter262->second);
+        xfer += oprot->writeString(_iter299->first);
+        xfer += oprot->writeString(_iter299->second);
       }
       xfer += oprot->writeMapEnd();
     }
@@ -12419,17 +15393,17 @@ uint32_t Airavata_getAllComputeResourceNames_presult::read(::apache::thrift::pro
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             (*(this->success)).clear();
-            uint32_t _size263;
-            ::apache::thrift::protocol::TType _ktype264;
-            ::apache::thrift::protocol::TType _vtype265;
-            xfer += iprot->readMapBegin(_ktype264, _vtype265, _size263);
-            uint32_t _i267;
-            for (_i267 = 0; _i267 < _size263; ++_i267)
+            uint32_t _size300;
+            ::apache::thrift::protocol::TType _ktype301;
+            ::apache::thrift::protocol::TType _vtype302;
+            xfer += iprot->readMapBegin(_ktype301, _vtype302, _size300);
+            uint32_t _i304;
+            for (_i304 = 0; _i304 < _size300; ++_i304)
             {
-              std::string _key268;
-              xfer += iprot->readString(_key268);
-              std::string& _val269 = (*(this->success))[_key268];
-              xfer += iprot->readString(_val269);
+              std::string _key305;
+              xfer += iprot->readString(_key305);
+              std::string& _val306 = (*(this->success))[_key305];
+              xfer += iprot->readString(_val306);
             }
             xfer += iprot->readMapEnd();
           }
@@ -19312,17 +22286,17 @@ uint32_t Airavata_changeJobSubmissionPriorities_args::read(::apache::thrift::pro
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->jobSubmissionPriorityMap.clear();
-            uint32_t _size270;
-            ::apache::thrift::protocol::TType _ktype271;
-            ::apache::thrift::protocol::TType _vtype272;
-            xfer += iprot->readMapBegin(_ktype271, _vtype272, _size270);
-            uint32_t _i274;
-            for (_i274 = 0; _i274 < _size270; ++_i274)
+            uint32_t _size307;
+            ::apache::thrift::protocol::TType _ktype308;
+            ::apache::thrift::protocol::TType _vtype309;
+            xfer += iprot->readMapBegin(_ktype308, _vtype309, _size307);
+            uint32_t _i311;
+            for (_i311 = 0; _i311 < _size307; ++_i311)
             {
-              std::string _key275;
-              xfer += iprot->readString(_key275);
-              int32_t& _val276 = this->jobSubmissionPriorityMap[_key275];
-              xfer += iprot->readI32(_val276);
+              std::string _key312;
+              xfer += iprot->readString(_key312);
+              int32_t& _val313 = this->jobSubmissionPriorityMap[_key312];
+              xfer += iprot->readI32(_val313);
             }
             xfer += iprot->readMapEnd();
           }
@@ -19352,11 +22326,11 @@ uint32_t Airavata_changeJobSubmissionPriorities_args::write(::apache::thrift::pr
   xfer += oprot->writeFieldBegin("jobSubmissionPriorityMap", ::apache::thrift::protocol::T_MAP, 1);
   {
     xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_I32, static_cast<uint32_t>(this->jobSubmissionPriorityMap.size()));
-    std::map<std::string, int32_t> ::const_iterator _iter277;
-    for (_iter277 = this->jobSubmissionPriorityMap.begin(); _iter277 != this->jobSubmissionPriorityMap.end(); ++_iter277)
+    std::map<std::string, int32_t> ::const_iterator _iter314;
+    for (_iter314 = this->jobSubmissionPriorityMap.begin(); _iter314 != this->jobSubmissionPriorityMap.end(); ++_iter314)
     {
-      xfer += oprot->writeString(_iter277->first);
-      xfer += oprot->writeI32(_iter277->second);
+      xfer += oprot->writeString(_iter314->first);
+      xfer += oprot->writeI32(_iter314->second);
     }
     xfer += oprot->writeMapEnd();
   }
@@ -19374,11 +22348,11 @@ uint32_t Airavata_changeJobSubmissionPriorities_pargs::write(::apache::thrift::p
   xfer += oprot->writeFieldBegin("jobSubmissionPriorityMap", ::apache::thrift::protocol::T_MAP, 1);
   {
     xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_I32, static_cast<uint32_t>((*(this->jobSubmissionPriorityMap)).size()));
-    std::map<std::string, int32_t> ::const_iterator _iter278;
-    for (_iter278 = (*(this->jobSubmissionPriorityMap)).begin(); _iter278 != (*(this->jobSubmissionPriorityMap)).end(); ++_iter278)
+    std::map<std::string, int32_t> ::const_iterator _iter315;
+    for (_iter315 = (*(this->jobSubmissionPriorityMap)).begin(); _iter315 != (*(this->jobSubmissionPriorityMap)).end(); ++_iter315)
     {
-      xfer += oprot->writeString(_iter278->first);
-      xfer += oprot->writeI32(_iter278->second);
+      xfer += oprot->writeString(_iter315->first);
+      xfer += oprot->writeI32(_iter315->second);
     }
     xfer += oprot->writeMapEnd();
   }
@@ -19570,17 +22544,17 @@ uint32_t Airavata_changeDataMovementPriorities_args::read(::apache::thrift::prot
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->dataMovementPriorityMap.clear();
-            uint32_t _size279;
-            ::apache::thrift::protocol::TType _ktype280;
-            ::apache::thrift::protocol::TType _vtype281;
-            xfer += iprot->readMapBegin(_ktype280, _vtype281, _size279);
-            uint32_t _i283;
-            for (_i283 = 0; _i283 < _size279; ++_i283)
+            uint32_t _size316;
+            ::apache::thrift::protocol::TType _ktype317;
+            ::apache::thrift::protocol::TType _vtype318;
+            xfer += iprot->readMapBegin(_ktype317, _vtype318, _size316);
+            uint32_t _i320;
+            for (_i320 = 0; _i320 < _size316; ++_i320)
             {
-              std::string _key284;
-              xfer += iprot->readString(_key284);
-              int32_t& _val285 = this->dataMovementPriorityMap[_key284];
-              xfer += iprot->readI32(_val285);
+              std::string _key321;
+              xfer += iprot->readString(_key321);
+              int32_t& _val322 = this->dataMovementPriorityMap[_key321];
+              xfer += iprot->readI32(_val322);
             }
             xfer += iprot->readMapEnd();
           }
@@ -19610,11 +22584,11 @@ uint32_t Airavata_changeDataMovementPriorities_args::write(::apache::thrift::pro
   xfer += oprot->writeFieldBegin("dataMovementPriorityMap", ::apache::thrift::protocol::T_MAP, 1);
   {
     xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_I32, static_cast<uint32_t>(this->dataMovementPriorityMap.size()));
-    std::map<std::string, int32_t> ::const_iterator _iter286;
-    for (_iter286 = this->dataMovementPriorityMap.begin(); _iter286 != this->dataMovementPriorityMap.end(); ++_iter286)
+    std::map<std::string, int32_t> ::const_iterator _iter323;
+    for (_iter323 = this->dataMovementPriorityMap.begin(); _iter323 != this->dataMovementPriorityMap.end(); ++_iter323)
     {
-      xfer += oprot->writeString(_iter286->first);
-      xfer += oprot->writeI32(_iter286->second);
+      xfer += oprot->writeString(_iter323->first);
+      xfer += oprot->writeI32(_iter323->second);
     }
     xfer += oprot->writeMapEnd();
   }
@@ -19632,11 +22606,11 @@ uint32_t Airavata_changeDataMovementPriorities_pargs::write(::apache::thrift::pr
   xfer += oprot->writeFieldBegin("dataMovementPriorityMap", ::apache::thrift::protocol::T_MAP, 1);
   {
     xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_STRING, ::apache::thrift::protocol::T_I32, static_cast<uint32_t>((*(this->dataMovementPriorityMap)).size()));
-    std::map<std::string, int32_t> ::const_iterator _iter287;
-    for (_iter287 = (*(this->dataMovementPriorityMap)).begin(); _iter287 != (*(this->dataMovementPriorityMap)).end(); ++_iter287)
+    std::map<std::string, int32_t> ::const_iterator _iter324;
+    for (_iter324 = (*(this->dataMovementPriorityMap)).begin(); _iter324 != (*(this->dataMovementPriorityMap)).end(); ++_iter324)
     {
-      xfer += oprot->writeString(_iter287->first);
-      xfer += oprot->writeI32(_iter287->second);
+      xfer += oprot->writeString(_iter324->first);
+      xfer += oprot->writeI32(_iter324->second);
     }
     xfer += oprot->writeMapEnd();
   }
@@ -22973,14 +25947,14 @@ uint32_t Airavata_getAllGatewayComputeResourcePreferences_result::read(::apache:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size288;
-            ::apache::thrift::protocol::TType _etype291;
-            xfer += iprot->readListBegin(_etype291, _size288);
-            this->success.resize(_size288);
-            uint32_t _i292;
-            for (_i292 = 0; _i292 < _size288; ++_i292)
+            uint32_t _size325;
+            ::apache::thrift::protocol::TType _etype328;
+            xfer += iprot->readListBegin(_etype328, _size325);
+            this->success.resize(_size325);
+            uint32_t _i329;
+            for (_i329 = 0; _i329 < _size325; ++_i329)
             {
-              xfer += this->success[_i292].read(iprot);
+              xfer += this->success[_i329].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -23035,10 +26009,10 @@ uint32_t Airavata_getAllGatewayComputeResourcePreferences_result::write(::apache
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference> ::const_iterator _iter293;
-      for (_iter293 = this->success.begin(); _iter293 != this->success.end(); ++_iter293)
+      std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference> ::const_iterator _iter330;
+      for (_iter330 = this->success.begin(); _iter330 != this->success.end(); ++_iter330)
       {
-        xfer += (*_iter293).write(oprot);
+        xfer += (*_iter330).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -23085,14 +26059,14 @@ uint32_t Airavata_getAllGatewayComputeResourcePreferences_presult::read(::apache
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size294;
-            ::apache::thrift::protocol::TType _etype297;
-            xfer += iprot->readListBegin(_etype297, _size294);
-            (*(this->success)).resize(_size294);
-            uint32_t _i298;
-            for (_i298 = 0; _i298 < _size294; ++_i298)
+            uint32_t _size331;
+            ::apache::thrift::protocol::TType _etype334;
+            xfer += iprot->readListBegin(_etype334, _size331);
+            (*(this->success)).resize(_size331);
+            uint32_t _i335;
+            for (_i335 = 0; _i335 < _size331; ++_i335)
             {
-              xfer += (*(this->success))[_i298].read(iprot);
+              xfer += (*(this->success))[_i335].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -23206,14 +26180,14 @@ uint32_t Airavata_getAllGatewayComputeResources_result::read(::apache::thrift::p
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size299;
-            ::apache::thrift::protocol::TType _etype302;
-            xfer += iprot->readListBegin(_etype302, _size299);
-            this->success.resize(_size299);
-            uint32_t _i303;
-            for (_i303 = 0; _i303 < _size299; ++_i303)
+            uint32_t _size336;
+            ::apache::thrift::protocol::TType _etype339;
+            xfer += iprot->readListBegin(_etype339, _size336);
+            this->success.resize(_size336);
+            uint32_t _i340;
+            for (_i340 = 0; _i340 < _size336; ++_i340)
             {
-              xfer += this->success[_i303].read(iprot);
+              xfer += this->success[_i340].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -23268,10 +26242,10 @@ uint32_t Airavata_getAllGatewayComputeResources_result::write(::apache::thrift::
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->success.size()));
-      std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile> ::const_iterator _iter304;
-      for (_iter304 = this->success.begin(); _iter304 != this->success.end(); ++_iter304)
+      std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile> ::const_iterator _iter341;
+      for (_iter341 = this->success.begin(); _iter341 != this->success.end(); ++_iter341)
       {
-        xfer += (*_iter304).write(oprot);
+        xfer += (*_iter341).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -23318,14 +26292,14 @@ uint32_t Airavata_getAllGatewayComputeResources_presult::read(::apache::thrift::
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size305;
-            ::apache::thrift::protocol::TType _etype308;
-            xfer += iprot->readListBegin(_etype308, _size305);
-            (*(this->success)).resize(_size305);
-            uint32_t _i309;
-            for (_i309 = 0; _i309 < _size305; ++_i309)
+            uint32_t _size342;
+            ::apache::thrift::protocol::TType _etype345;
+            xfer += iprot->readListBegin(_etype345, _size342);
+            (*(this->success)).resize(_size342);
+            uint32_t _i346;
+            for (_i346 = 0; _i346 < _size342; ++_i346)
             {
-              xfer += (*(this->success))[_i309].read(iprot);
+              xfer += (*(this->success))[_i346].read(iprot);
             }
             xfer += iprot->readListEnd();
           }
@@ -23888,6 +26862,7 @@ uint32_t Airavata_getAllWorkflows_args::read(::apache::thrift::protocol::TProtoc
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_gatewayId = false;
 
   while (true)
   {
@@ -23895,18 +26870,37 @@ uint32_t Airavata_getAllWorkflows_args::read(::apache::thrift::protocol::TProtoc
     if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
-    xfer += iprot->skip(ftype);
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
     xfer += iprot->readFieldEnd();
   }
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
 
 uint32_t Airavata_getAllWorkflows_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_getAllWorkflows_args");
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -23916,6 +26910,10 @@ uint32_t Airavata_getAllWorkflows_args::write(::apache::thrift::protocol::TProto
 uint32_t Airavata_getAllWorkflows_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_getAllWorkflows_pargs");
+
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->gatewayId)));
+  xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -23946,14 +26944,14 @@ uint32_t Airavata_getAllWorkflows_result::read(::apache::thrift::protocol::TProt
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->success.clear();
-            uint32_t _size310;
-            ::apache::thrift::protocol::TType _etype313;
-            xfer += iprot->readListBegin(_etype313, _size310);
-            this->success.resize(_size310);
-            uint32_t _i314;
-            for (_i314 = 0; _i314 < _size310; ++_i314)
+            uint32_t _size347;
+            ::apache::thrift::protocol::TType _etype350;
+            xfer += iprot->readListBegin(_etype350, _size347);
+            this->success.resize(_size347);
+            uint32_t _i351;
+            for (_i351 = 0; _i351 < _size347; ++_i351)
             {
-              xfer += iprot->readString(this->success[_i314]);
+              xfer += iprot->readString(this->success[_i351]);
             }
             xfer += iprot->readListEnd();
           }
@@ -24008,10 +27006,10 @@ uint32_t Airavata_getAllWorkflows_result::write(::apache::thrift::protocol::TPro
     xfer += oprot->writeFieldBegin("success", ::apache::thrift::protocol::T_LIST, 0);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->success.size()));
-      std::vector<std::string> ::const_iterator _iter315;
-      for (_iter315 = this->success.begin(); _iter315 != this->success.end(); ++_iter315)
+      std::vector<std::string> ::const_iterator _iter352;
+      for (_iter352 = this->success.begin(); _iter352 != this->success.end(); ++_iter352)
       {
-        xfer += oprot->writeString((*_iter315));
+        xfer += oprot->writeString((*_iter352));
       }
       xfer += oprot->writeListEnd();
     }
@@ -24058,14 +27056,14 @@ uint32_t Airavata_getAllWorkflows_presult::read(::apache::thrift::protocol::TPro
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             (*(this->success)).clear();
-            uint32_t _size316;
-            ::apache::thrift::protocol::TType _etype319;
-            xfer += iprot->readListBegin(_etype319, _size316);
-            (*(this->success)).resize(_size316);
-            uint32_t _i320;
-            for (_i320 = 0; _i320 < _size316; ++_i320)
+            uint32_t _size353;
+            ::apache::thrift::protocol::TType _etype356;
+            xfer += iprot->readListBegin(_etype356, _size353);
+            (*(this->success)).resize(_size353);
+            uint32_t _i357;
+            for (_i357 = 0; _i357 < _size353; ++_i357)
             {
-              xfer += iprot->readString((*(this->success))[_i320]);
+              xfer += iprot->readString((*(this->success))[_i357]);
             }
             xfer += iprot->readListEnd();
           }
@@ -24551,6 +27549,7 @@ uint32_t Airavata_registerWorkflow_args::read(::apache::thrift::protocol::TProto
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_gatewayId = false;
   bool isset_workflow = false;
 
   while (true)
@@ -24562,6 +27561,14 @@ uint32_t Airavata_registerWorkflow_args::read(::apache::thrift::protocol::TProto
     switch (fid)
     {
       case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 2:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->workflow.read(iprot);
           isset_workflow = true;
@@ -24578,6 +27585,8 @@ uint32_t Airavata_registerWorkflow_args::read(::apache::thrift::protocol::TProto
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_workflow)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
@@ -24587,7 +27596,11 @@ uint32_t Airavata_registerWorkflow_args::write(::apache::thrift::protocol::TProt
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_registerWorkflow_args");
 
-  xfer += oprot->writeFieldBegin("workflow", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("workflow", ::apache::thrift::protocol::T_STRUCT, 2);
   xfer += this->workflow.write(oprot);
   xfer += oprot->writeFieldEnd();
 
@@ -24600,7 +27613,11 @@ uint32_t Airavata_registerWorkflow_pargs::write(::apache::thrift::protocol::TPro
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_registerWorkflow_pargs");
 
-  xfer += oprot->writeFieldBegin("workflow", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString((*(this->gatewayId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("workflow", ::apache::thrift::protocol::T_STRUCT, 2);
   xfer += (*(this->workflow)).write(oprot);
   xfer += oprot->writeFieldEnd();
 
@@ -25505,18 +28522,618 @@ void AiravataClient::recv_getAPIVersion(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAPIVersion failed: unknown result");
 }
 
-void AiravataClient::createProject(std::string& _return, const  ::apache::airavata::model::workspace::Project& project)
+void AiravataClient::addGateway(std::string& _return, const  ::apache::airavata::model::workspace::Gateway& gateway)
 {
-  send_createProject(project);
+  send_addGateway(gateway);
+  recv_addGateway(_return);
+}
+
+void AiravataClient::send_addGateway(const  ::apache::airavata::model::workspace::Gateway& gateway)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("addGateway", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  Airavata_addGateway_pargs args;
+  args.gateway = &gateway;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void AiravataClient::recv_addGateway(std::string& _return)
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("addGateway") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  Airavata_addGateway_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
+  if (result.__isset.ire) {
+    throw result.ire;
+  }
+  if (result.__isset.ace) {
+    throw result.ace;
+  }
+  if (result.__isset.ase) {
+    throw result.ase;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "addGateway failed: unknown result");
+}
+
+void AiravataClient::updateGateway(const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway)
+{
+  send_updateGateway(gatewayId, updatedGateway);
+  recv_updateGateway();
+}
+
+void AiravataClient::send_updateGateway(const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("updateGateway", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  Airavata_updateGateway_pargs args;
+  args.gatewayId = &gatewayId;
+  args.updatedGateway = &updatedGateway;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void AiravataClient::recv_updateGateway()
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("updateGateway") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  Airavata_updateGateway_presult result;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.ire) {
+    throw result.ire;
+  }
+  if (result.__isset.ace) {
+    throw result.ace;
+  }
+  if (result.__isset.ase) {
+    throw result.ase;
+  }
+  return;
+}
+
+void AiravataClient::getGateway( ::apache::airavata::model::workspace::Gateway& _return, const std::string& gatewayId)
+{
+  send_getGateway(gatewayId);
+  recv_getGateway(_return);
+}
+
+void AiravataClient::send_getGateway(const std::string& gatewayId)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("getGateway", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  Airavata_getGateway_pargs args;
+  args.gatewayId = &gatewayId;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void AiravataClient::recv_getGateway( ::apache::airavata::model::workspace::Gateway& _return)
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("getGateway") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  Airavata_getGateway_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
+  if (result.__isset.ire) {
+    throw result.ire;
+  }
+  if (result.__isset.ace) {
+    throw result.ace;
+  }
+  if (result.__isset.ase) {
+    throw result.ase;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getGateway failed: unknown result");
+}
+
+bool AiravataClient::deleteGateway(const std::string& gatewayId)
+{
+  send_deleteGateway(gatewayId);
+  return recv_deleteGateway();
+}
+
+void AiravataClient::send_deleteGateway(const std::string& gatewayId)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("deleteGateway", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  Airavata_deleteGateway_pargs args;
+  args.gatewayId = &gatewayId;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+bool AiravataClient::recv_deleteGateway()
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("deleteGateway") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  bool _return;
+  Airavata_deleteGateway_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    return _return;
+  }
+  if (result.__isset.ire) {
+    throw result.ire;
+  }
+  if (result.__isset.ace) {
+    throw result.ace;
+  }
+  if (result.__isset.ase) {
+    throw result.ase;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "deleteGateway failed: unknown result");
+}
+
+void AiravataClient::getAllGateways(std::vector< ::apache::airavata::model::workspace::Gateway> & _return)
+{
+  send_getAllGateways();
+  recv_getAllGateways(_return);
+}
+
+void AiravataClient::send_getAllGateways()
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("getAllGateways", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  Airavata_getAllGateways_pargs args;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void AiravataClient::recv_getAllGateways(std::vector< ::apache::airavata::model::workspace::Gateway> & _return)
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("getAllGateways") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  Airavata_getAllGateways_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
+  if (result.__isset.ire) {
+    throw result.ire;
+  }
+  if (result.__isset.ace) {
+    throw result.ace;
+  }
+  if (result.__isset.ase) {
+    throw result.ase;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllGateways failed: unknown result");
+}
+
+bool AiravataClient::isGatewayExist(const std::string& gatewayId)
+{
+  send_isGatewayExist(gatewayId);
+  return recv_isGatewayExist();
+}
+
+void AiravataClient::send_isGatewayExist(const std::string& gatewayId)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("isGatewayExist", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  Airavata_isGatewayExist_pargs args;
+  args.gatewayId = &gatewayId;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+bool AiravataClient::recv_isGatewayExist()
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("isGatewayExist") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  bool _return;
+  Airavata_isGatewayExist_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    return _return;
+  }
+  if (result.__isset.ire) {
+    throw result.ire;
+  }
+  if (result.__isset.ace) {
+    throw result.ace;
+  }
+  if (result.__isset.ase) {
+    throw result.ase;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "isGatewayExist failed: unknown result");
+}
+
+void AiravataClient::generateAndRegisterSSHKeys(std::string& _return, const std::string& gatewayId, const std::string& userName)
+{
+  send_generateAndRegisterSSHKeys(gatewayId, userName);
+  recv_generateAndRegisterSSHKeys(_return);
+}
+
+void AiravataClient::send_generateAndRegisterSSHKeys(const std::string& gatewayId, const std::string& userName)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("generateAndRegisterSSHKeys", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  Airavata_generateAndRegisterSSHKeys_pargs args;
+  args.gatewayId = &gatewayId;
+  args.userName = &userName;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void AiravataClient::recv_generateAndRegisterSSHKeys(std::string& _return)
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("generateAndRegisterSSHKeys") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  Airavata_generateAndRegisterSSHKeys_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
+  if (result.__isset.ire) {
+    throw result.ire;
+  }
+  if (result.__isset.ace) {
+    throw result.ace;
+  }
+  if (result.__isset.ase) {
+    throw result.ase;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "generateAndRegisterSSHKeys failed: unknown result");
+}
+
+void AiravataClient::getSSHPubKey(std::string& _return, const std::string& airavataCredStoreToken)
+{
+  send_getSSHPubKey(airavataCredStoreToken);
+  recv_getSSHPubKey(_return);
+}
+
+void AiravataClient::send_getSSHPubKey(const std::string& airavataCredStoreToken)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("getSSHPubKey", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  Airavata_getSSHPubKey_pargs args;
+  args.airavataCredStoreToken = &airavataCredStoreToken;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void AiravataClient::recv_getSSHPubKey(std::string& _return)
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("getSSHPubKey") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  Airavata_getSSHPubKey_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
+  if (result.__isset.ire) {
+    throw result.ire;
+  }
+  if (result.__isset.ace) {
+    throw result.ace;
+  }
+  if (result.__isset.ase) {
+    throw result.ase;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getSSHPubKey failed: unknown result");
+}
+
+void AiravataClient::getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const std::string& userName)
+{
+  send_getAllUserSSHPubKeys(userName);
+  recv_getAllUserSSHPubKeys(_return);
+}
+
+void AiravataClient::send_getAllUserSSHPubKeys(const std::string& userName)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("getAllUserSSHPubKeys", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  Airavata_getAllUserSSHPubKeys_pargs args;
+  args.userName = &userName;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void AiravataClient::recv_getAllUserSSHPubKeys(std::map<std::string, std::string> & _return)
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("getAllUserSSHPubKeys") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  Airavata_getAllUserSSHPubKeys_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
+  if (result.__isset.ire) {
+    throw result.ire;
+  }
+  if (result.__isset.ace) {
+    throw result.ace;
+  }
+  if (result.__isset.ase) {
+    throw result.ase;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllUserSSHPubKeys failed: unknown result");
+}
+
+void AiravataClient::createProject(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project)
+{
+  send_createProject(gatewayId, project);
   recv_createProject(_return);
 }
 
-void AiravataClient::send_createProject(const  ::apache::airavata::model::workspace::Project& project)
+void AiravataClient::send_createProject(const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("createProject", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_createProject_pargs args;
+  args.gatewayId = &gatewayId;
   args.project = &project;
   args.write(oprot_);
 
@@ -25708,18 +29325,89 @@ void AiravataClient::recv_getProject( ::apache::airavata::model::workspace::Proj
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getProject failed: unknown result");
 }
 
-void AiravataClient::getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& userName)
+bool AiravataClient::deleteProject(const std::string& projectId)
 {
-  send_getAllUserProjects(userName);
+  send_deleteProject(projectId);
+  return recv_deleteProject();
+}
+
+void AiravataClient::send_deleteProject(const std::string& projectId)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("deleteProject", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  Airavata_deleteProject_pargs args;
+  args.projectId = &projectId;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+bool AiravataClient::recv_deleteProject()
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("deleteProject") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  bool _return;
+  Airavata_deleteProject_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    return _return;
+  }
+  if (result.__isset.ire) {
+    throw result.ire;
+  }
+  if (result.__isset.ace) {
+    throw result.ace;
+  }
+  if (result.__isset.ase) {
+    throw result.ase;
+  }
+  if (result.__isset.pnfe) {
+    throw result.pnfe;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "deleteProject failed: unknown result");
+}
+
+void AiravataClient::getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName)
+{
+  send_getAllUserProjects(gatewayId, userName);
   recv_getAllUserProjects(_return);
 }
 
-void AiravataClient::send_getAllUserProjects(const std::string& userName)
+void AiravataClient::send_getAllUserProjects(const std::string& gatewayId, const std::string& userName)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("getAllUserProjects", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_getAllUserProjects_pargs args;
+  args.gatewayId = &gatewayId;
   args.userName = &userName;
   args.write(oprot_);
 
@@ -25775,18 +29463,19 @@ void AiravataClient::recv_getAllUserProjects(std::vector< ::apache::airavata::mo
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllUserProjects failed: unknown result");
 }
 
-void AiravataClient::searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& userName, const std::string& projectName)
+void AiravataClient::searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& projectName)
 {
-  send_searchProjectsByProjectName(userName, projectName);
+  send_searchProjectsByProjectName(gatewayId, userName, projectName);
   recv_searchProjectsByProjectName(_return);
 }
 
-void AiravataClient::send_searchProjectsByProjectName(const std::string& userName, const std::string& projectName)
+void AiravataClient::send_searchProjectsByProjectName(const std::string& gatewayId, const std::string& userName, const std::string& projectName)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("searchProjectsByProjectName", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_searchProjectsByProjectName_pargs args;
+  args.gatewayId = &gatewayId;
   args.userName = &userName;
   args.projectName = &projectName;
   args.write(oprot_);
@@ -25843,18 +29532,19 @@ void AiravataClient::recv_searchProjectsByProjectName(std::vector< ::apache::air
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "searchProjectsByProjectName failed: unknown result");
 }
 
-void AiravataClient::searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& userName, const std::string& description)
+void AiravataClient::searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description)
 {
-  send_searchProjectsByProjectDesc(userName, description);
+  send_searchProjectsByProjectDesc(gatewayId, userName, description);
   recv_searchProjectsByProjectDesc(_return);
 }
 
-void AiravataClient::send_searchProjectsByProjectDesc(const std::string& userName, const std::string& description)
+void AiravataClient::send_searchProjectsByProjectDesc(const std::string& gatewayId, const std::string& userName, const std::string& description)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("searchProjectsByProjectDesc", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_searchProjectsByProjectDesc_pargs args;
+  args.gatewayId = &gatewayId;
   args.userName = &userName;
   args.description = &description;
   args.write(oprot_);
@@ -25911,18 +29601,19 @@ void AiravataClient::recv_searchProjectsByProjectDesc(std::vector< ::apache::air
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "searchProjectsByProjectDesc failed: unknown result");
 }
 
-void AiravataClient::searchExperimentsByName(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const std::string& expName)
+void AiravataClient::searchExperimentsByName(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& expName)
 {
-  send_searchExperimentsByName(userName, expName);
+  send_searchExperimentsByName(gatewayId, userName, expName);
   recv_searchExperimentsByName(_return);
 }
 
-void AiravataClient::send_searchExperimentsByName(const std::string& userName, const std::string& expName)
+void AiravataClient::send_searchExperimentsByName(const std::string& gatewayId, const std::string& userName, const std::string& expName)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("searchExperimentsByName", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_searchExperimentsByName_pargs args;
+  args.gatewayId = &gatewayId;
   args.userName = &userName;
   args.expName = &expName;
   args.write(oprot_);
@@ -25979,18 +29670,19 @@ void AiravataClient::recv_searchExperimentsByName(std::vector< ::apache::airavat
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "searchExperimentsByName failed: unknown result");
 }
 
-void AiravataClient::searchExperimentsByDesc(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const std::string& description)
+void AiravataClient::searchExperimentsByDesc(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description)
 {
-  send_searchExperimentsByDesc(userName, description);
+  send_searchExperimentsByDesc(gatewayId, userName, description);
   recv_searchExperimentsByDesc(_return);
 }
 
-void AiravataClient::send_searchExperimentsByDesc(const std::string& userName, const std::string& description)
+void AiravataClient::send_searchExperimentsByDesc(const std::string& gatewayId, const std::string& userName, const std::string& description)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("searchExperimentsByDesc", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_searchExperimentsByDesc_pargs args;
+  args.gatewayId = &gatewayId;
   args.userName = &userName;
   args.description = &description;
   args.write(oprot_);
@@ -26047,18 +29739,19 @@ void AiravataClient::recv_searchExperimentsByDesc(std::vector< ::apache::airavat
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "searchExperimentsByDesc failed: unknown result");
 }
 
-void AiravataClient::searchExperimentsByApplication(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const std::string& applicationId)
+void AiravataClient::searchExperimentsByApplication(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& applicationId)
 {
-  send_searchExperimentsByApplication(userName, applicationId);
+  send_searchExperimentsByApplication(gatewayId, userName, applicationId);
   recv_searchExperimentsByApplication(_return);
 }
 
-void AiravataClient::send_searchExperimentsByApplication(const std::string& userName, const std::string& applicationId)
+void AiravataClient::send_searchExperimentsByApplication(const std::string& gatewayId, const std::string& userName, const std::string& applicationId)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("searchExperimentsByApplication", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_searchExperimentsByApplication_pargs args;
+  args.gatewayId = &gatewayId;
   args.userName = &userName;
   args.applicationId = &applicationId;
   args.write(oprot_);
@@ -26115,18 +29808,19 @@ void AiravataClient::recv_searchExperimentsByApplication(std::vector< ::apache::
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "searchExperimentsByApplication failed: unknown result");
 }
 
-void AiravataClient::searchExperimentsByStatus(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState)
+void AiravataClient::searchExperimentsByStatus(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState)
 {
-  send_searchExperimentsByStatus(userName, experimentState);
+  send_searchExperimentsByStatus(gatewayId, userName, experimentState);
   recv_searchExperimentsByStatus(_return);
 }
 
-void AiravataClient::send_searchExperimentsByStatus(const std::string& userName, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState)
+void AiravataClient::send_searchExperimentsByStatus(const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("searchExperimentsByStatus", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_searchExperimentsByStatus_pargs args;
+  args.gatewayId = &gatewayId;
   args.userName = &userName;
   args.experimentState = &experimentState;
   args.write(oprot_);
@@ -26183,18 +29877,19 @@ void AiravataClient::recv_searchExperimentsByStatus(std::vector< ::apache::airav
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "searchExperimentsByStatus failed: unknown result");
 }
 
-void AiravataClient::searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& userName, const int64_t fromTime, const int64_t toTime)
+void AiravataClient::searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime)
 {
-  send_searchExperimentsByCreationTime(userName, fromTime, toTime);
+  send_searchExperimentsByCreationTime(gatewayId, userName, fromTime, toTime);
   recv_searchExperimentsByCreationTime(_return);
 }
 
-void AiravataClient::send_searchExperimentsByCreationTime(const std::string& userName, const int64_t fromTime, const int64_t toTime)
+void AiravataClient::send_searchExperimentsByCreationTime(const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("searchExperimentsByCreationTime", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_searchExperimentsByCreationTime_pargs args;
+  args.gatewayId = &gatewayId;
   args.userName = &userName;
   args.fromTime = &fromTime;
   args.toTime = &toTime;
@@ -26322,18 +30017,19 @@ void AiravataClient::recv_getAllExperimentsInProject(std::vector< ::apache::aira
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllExperimentsInProject failed: unknown result");
 }
 
-void AiravataClient::getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& userName)
+void AiravataClient::getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& gatewayId, const std::string& userName)
 {
-  send_getAllUserExperiments(userName);
+  send_getAllUserExperiments(gatewayId, userName);
   recv_getAllUserExperiments(_return);
 }
 
-void AiravataClient::send_getAllUserExperiments(const std::string& userName)
+void AiravataClient::send_getAllUserExperiments(const std::string& gatewayId, const std::string& userName)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("getAllUserExperiments", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_getAllUserExperiments_pargs args;
+  args.gatewayId = &gatewayId;
   args.userName = &userName;
   args.write(oprot_);
 
@@ -26389,18 +30085,19 @@ void AiravataClient::recv_getAllUserExperiments(std::vector< ::apache::airavata:
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllUserExperiments failed: unknown result");
 }
 
-void AiravataClient::createExperiment(std::string& _return, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment)
+void AiravataClient::createExperiment(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment)
 {
-  send_createExperiment(experiment);
+  send_createExperiment(gatewayId, experiment);
   recv_createExperiment(_return);
 }
 
-void AiravataClient::send_createExperiment(const  ::apache::airavata::model::workspace::experiment::Experiment& experiment)
+void AiravataClient::send_createExperiment(const std::string& gatewayId, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("createExperiment", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_createExperiment_pargs args;
+  args.gatewayId = &gatewayId;
   args.experiment = &experiment;
   args.write(oprot_);
 
@@ -26979,6 +30676,76 @@ void AiravataClient::recv_getExperimentOutputs(std::vector< ::apache::airavata::
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getExperimentOutputs failed: unknown result");
 }
 
+void AiravataClient::getIntermediateOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& airavataExperimentId)
+{
+  send_getIntermediateOutputs(airavataExperimentId);
+  recv_getIntermediateOutputs(_return);
+}
+
+void AiravataClient::send_getIntermediateOutputs(const std::string& airavataExperimentId)
+{
+  int32_t cseqid = 0;
+  oprot_->writeMessageBegin("getIntermediateOutputs", ::apache::thrift::protocol::T_CALL, cseqid);
+
+  Airavata_getIntermediateOutputs_pargs args;
+  args.airavataExperimentId = &airavataExperimentId;
+  args.write(oprot_);
+
+  oprot_->writeMessageEnd();
+  oprot_->getTransport()->writeEnd();
+  oprot_->getTransport()->flush();
+}
+
+void AiravataClient::recv_getIntermediateOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return)
+{
+
+  int32_t rseqid = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TMessageType mtype;
+
+  iprot_->readMessageBegin(fname, mtype, rseqid);
+  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
+    ::apache::thrift::TApplicationException x;
+    x.read(iprot_);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+    throw x;
+  }
+  if (mtype != ::apache::thrift::protocol::T_REPLY) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  if (fname.compare("getIntermediateOutputs") != 0) {
+    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
+    iprot_->readMessageEnd();
+    iprot_->getTransport()->readEnd();
+  }
+  Airavata_getIntermediateOutputs_presult result;
+  result.success = &_return;
+  result.read(iprot_);
+  iprot_->readMessageEnd();
+  iprot_->getTransport()->readEnd();
+
+  if (result.__isset.success) {
+    // _return pointer has now been filled
+    return;
+  }
+  if (result.__isset.ire) {
+    throw result.ire;
+  }
+  if (result.__isset.enf) {
+    throw result.enf;
+  }
+  if (result.__isset.ace) {
+    throw result.ace;
+  }
+  if (result.__isset.ase) {
+    throw result.ase;
+  }
+  throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getIntermediateOutputs failed: unknown result");
+}
+
 void AiravataClient::getJobStatuses(std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & _return, const std::string& airavataExperimentId)
 {
   send_getJobStatuses(airavataExperimentId);
@@ -27325,18 +31092,19 @@ void AiravataClient::recv_terminateExperiment()
   return;
 }
 
-void AiravataClient::registerApplicationModule(std::string& _return, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule)
+void AiravataClient::registerApplicationModule(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule)
 {
-  send_registerApplicationModule(applicationModule);
+  send_registerApplicationModule(gatewayId, applicationModule);
   recv_registerApplicationModule(_return);
 }
 
-void AiravataClient::send_registerApplicationModule(const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule)
+void AiravataClient::send_registerApplicationModule(const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("registerApplicationModule", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_registerApplicationModule_pargs args;
+  args.gatewayId = &gatewayId;
   args.applicationModule = &applicationModule;
   args.write(oprot_);
 
@@ -27527,18 +31295,19 @@ bool AiravataClient::recv_updateApplicationModule()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "updateApplicationModule failed: unknown result");
 }
 
-void AiravataClient::getAllAppModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return)
+void AiravataClient::getAllAppModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return, const std::string& gatewayId)
 {
-  send_getAllAppModules();
+  send_getAllAppModules(gatewayId);
   recv_getAllAppModules(_return);
 }
 
-void AiravataClient::send_getAllAppModules()
+void AiravataClient::send_getAllAppModules(const std::string& gatewayId)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("getAllAppModules", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_getAllAppModules_pargs args;
+  args.gatewayId = &gatewayId;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -27660,18 +31429,19 @@ bool AiravataClient::recv_deleteApplicationModule()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "deleteApplicationModule failed: unknown result");
 }
 
-void AiravataClient::registerApplicationDeployment(std::string& _return, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment)
+void AiravataClient::registerApplicationDeployment(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment)
 {
-  send_registerApplicationDeployment(applicationDeployment);
+  send_registerApplicationDeployment(gatewayId, applicationDeployment);
   recv_registerApplicationDeployment(_return);
 }
 
-void AiravataClient::send_registerApplicationDeployment(const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment)
+void AiravataClient::send_registerApplicationDeployment(const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("registerApplicationDeployment", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_registerApplicationDeployment_pargs args;
+  args.gatewayId = &gatewayId;
   args.applicationDeployment = &applicationDeployment;
   args.write(oprot_);
 
@@ -27929,18 +31699,19 @@ bool AiravataClient::recv_deleteApplicationDeployment()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "deleteApplicationDeployment failed: unknown result");
 }
 
-void AiravataClient::getAllApplicationDeployments(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> & _return)
+void AiravataClient::getAllApplicationDeployments(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> & _return, const std::string& gatewayId)
 {
-  send_getAllApplicationDeployments();
+  send_getAllApplicationDeployments(gatewayId);
   recv_getAllApplicationDeployments(_return);
 }
 
-void AiravataClient::send_getAllApplicationDeployments()
+void AiravataClient::send_getAllApplicationDeployments(const std::string& gatewayId)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("getAllApplicationDeployments", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_getAllApplicationDeployments_pargs args;
+  args.gatewayId = &gatewayId;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -28062,18 +31833,19 @@ void AiravataClient::recv_getAppModuleDeployedResources(std::vector<std::string>
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAppModuleDeployedResources failed: unknown result");
 }
 
-void AiravataClient::registerApplicationInterface(std::string& _return, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface)
+void AiravataClient::registerApplicationInterface(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface)
 {
-  send_registerApplicationInterface(applicationInterface);
+  send_registerApplicationInterface(gatewayId, applicationInterface);
   recv_registerApplicationInterface(_return);
 }
 
-void AiravataClient::send_registerApplicationInterface(const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface)
+void AiravataClient::send_registerApplicationInterface(const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("registerApplicationInterface", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_registerApplicationInterface_pargs args;
+  args.gatewayId = &gatewayId;
   args.applicationInterface = &applicationInterface;
   args.write(oprot_);
 
@@ -28331,18 +32103,19 @@ bool AiravataClient::recv_deleteApplicationInterface()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "deleteApplicationInterface failed: unknown result");
 }
 
-void AiravataClient::getAllApplicationInterfaceNames(std::map<std::string, std::string> & _return)
+void AiravataClient::getAllApplicationInterfaceNames(std::map<std::string, std::string> & _return, const std::string& gatewayId)
 {
-  send_getAllApplicationInterfaceNames();
+  send_getAllApplicationInterfaceNames(gatewayId);
   recv_getAllApplicationInterfaceNames(_return);
 }
 
-void AiravataClient::send_getAllApplicationInterfaceNames()
+void AiravataClient::send_getAllApplicationInterfaceNames(const std::string& gatewayId)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("getAllApplicationInterfaceNames", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_getAllApplicationInterfaceNames_pargs args;
+  args.gatewayId = &gatewayId;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -28397,18 +32170,19 @@ void AiravataClient::recv_getAllApplicationInterfaceNames(std::map<std::string, 
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAllApplicationInterfaceNames failed: unknown result");
 }
 
-void AiravataClient::getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & _return)
+void AiravataClient::getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & _return, const std::string& gatewayId)
 {
-  send_getAllApplicationInterfaces();
+  send_getAllApplicationInterfaces(gatewayId);
   recv_getAllApplicationInterfaces(_return);
 }
 
-void AiravataClient::send_getAllApplicationInterfaces()
+void AiravataClient::send_getAllApplicationInterfaces(const std::string& gatewayId)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("getAllApplicationInterfaces", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_getAllApplicationInterfaces_pargs args;
+  args.gatewayId = &gatewayId;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -32050,18 +35824,19 @@ bool AiravataClient::recv_deleteGatewayComputeResourcePreference()
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "deleteGatewayComputeResourcePreference failed: unknown result");
 }
 
-void AiravataClient::getAllWorkflows(std::vector<std::string> & _return)
+void AiravataClient::getAllWorkflows(std::vector<std::string> & _return, const std::string& gatewayId)
 {
-  send_getAllWorkflows();
+  send_getAllWorkflows(gatewayId);
   recv_getAllWorkflows(_return);
 }
 
-void AiravataClient::send_getAllWorkflows()
+void AiravataClient::send_getAllWorkflows(const std::string& gatewayId)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("getAllWorkflows", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_getAllWorkflows_pargs args;
+  args.gatewayId = &gatewayId;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -32245,18 +36020,19 @@ void AiravataClient::recv_deleteWorkflow()
   return;
 }
 
-void AiravataClient::registerWorkflow(std::string& _return, const  ::Workflow& workflow)
+void AiravataClient::registerWorkflow(std::string& _return, const std::string& gatewayId, const  ::Workflow& workflow)
 {
-  send_registerWorkflow(workflow);
+  send_registerWorkflow(gatewayId, workflow);
   recv_registerWorkflow(_return);
 }
 
-void AiravataClient::send_registerWorkflow(const  ::Workflow& workflow)
+void AiravataClient::send_registerWorkflow(const std::string& gatewayId, const  ::Workflow& workflow)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("registerWorkflow", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_registerWorkflow_pargs args;
+  args.gatewayId = &gatewayId;
   args.workflow = &workflow;
   args.write(oprot_);
 
@@ -32591,6 +36367,572 @@ void AiravataProcessor::process_getAPIVersion(int32_t seqid, ::apache::thrift::p
   }
 }
 
+void AiravataProcessor::process_addGateway(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("Airavata.addGateway", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Airavata.addGateway");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "Airavata.addGateway");
+  }
+
+  Airavata_addGateway_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "Airavata.addGateway", bytes);
+  }
+
+  Airavata_addGateway_result result;
+  try {
+    iface_->addGateway(result.success, args.gateway);
+    result.__isset.success = true;
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
+    result.ire = ire;
+    result.__isset.ire = true;
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
+    result.ace = ace;
+    result.__isset.ace = true;
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
+    result.ase = ase;
+    result.__isset.ase = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "Airavata.addGateway");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("addGateway", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "Airavata.addGateway");
+  }
+
+  oprot->writeMessageBegin("addGateway", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "Airavata.addGateway", bytes);
+  }
+}
+
+void AiravataProcessor::process_updateGateway(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("Airavata.updateGateway", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Airavata.updateGateway");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "Airavata.updateGateway");
+  }
+
+  Airavata_updateGateway_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "Airavata.updateGateway", bytes);
+  }
+
+  Airavata_updateGateway_result result;
+  try {
+    iface_->updateGateway(args.gatewayId, args.updatedGateway);
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
+    result.ire = ire;
+    result.__isset.ire = true;
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
+    result.ace = ace;
+    result.__isset.ace = true;
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
+    result.ase = ase;
+    result.__isset.ase = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "Airavata.updateGateway");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("updateGateway", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "Airavata.updateGateway");
+  }
+
+  oprot->writeMessageBegin("updateGateway", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "Airavata.updateGateway", bytes);
+  }
+}
+
+void AiravataProcessor::process_getGateway(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("Airavata.getGateway", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Airavata.getGateway");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "Airavata.getGateway");
+  }
+
+  Airavata_getGateway_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "Airavata.getGateway", bytes);
+  }
+
+  Airavata_getGateway_result result;
+  try {
+    iface_->getGateway(result.success, args.gatewayId);
+    result.__isset.success = true;
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
+    result.ire = ire;
+    result.__isset.ire = true;
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
+    result.ace = ace;
+    result.__isset.ace = true;
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
+    result.ase = ase;
+    result.__isset.ase = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "Airavata.getGateway");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("getGateway", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "Airavata.getGateway");
+  }
+
+  oprot->writeMessageBegin("getGateway", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "Airavata.getGateway", bytes);
+  }
+}
+
+void AiravataProcessor::process_deleteGateway(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("Airavata.deleteGateway", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Airavata.deleteGateway");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "Airavata.deleteGateway");
+  }
+
+  Airavata_deleteGateway_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "Airavata.deleteGateway", bytes);
+  }
+
+  Airavata_deleteGateway_result result;
+  try {
+    result.success = iface_->deleteGateway(args.gatewayId);
+    result.__isset.success = true;
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
+    result.ire = ire;
+    result.__isset.ire = true;
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
+    result.ace = ace;
+    result.__isset.ace = true;
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
+    result.ase = ase;
+    result.__isset.ase = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "Airavata.deleteGateway");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("deleteGateway", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "Airavata.deleteGateway");
+  }
+
+  oprot->writeMessageBegin("deleteGateway", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "Airavata.deleteGateway", bytes);
+  }
+}
+
+void AiravataProcessor::process_getAllGateways(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("Airavata.getAllGateways", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Airavata.getAllGateways");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "Airavata.getAllGateways");
+  }
+
+  Airavata_getAllGateways_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "Airavata.getAllGateways", bytes);
+  }
+
+  Airavata_getAllGateways_result result;
+  try {
+    iface_->getAllGateways(result.success);
+    result.__isset.success = true;
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
+    result.ire = ire;
+    result.__isset.ire = true;
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
+    result.ace = ace;
+    result.__isset.ace = true;
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
+    result.ase = ase;
+    result.__isset.ase = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "Airavata.getAllGateways");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("getAllGateways", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "Airavata.getAllGateways");
+  }
+
+  oprot->writeMessageBegin("getAllGateways", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "Airavata.getAllGateways", bytes);
+  }
+}
+
+void AiravataProcessor::process_isGatewayExist(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("Airavata.isGatewayExist", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Airavata.isGatewayExist");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "Airavata.isGatewayExist");
+  }
+
+  Airavata_isGatewayExist_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "Airavata.isGatewayExist", bytes);
+  }
+
+  Airavata_isGatewayExist_result result;
+  try {
+    result.success = iface_->isGatewayExist(args.gatewayId);
+    result.__isset.success = true;
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
+    result.ire = ire;
+    result.__isset.ire = true;
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
+    result.ace = ace;
+    result.__isset.ace = true;
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
+    result.ase = ase;
+    result.__isset.ase = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "Airavata.isGatewayExist");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("isGatewayExist", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "Airavata.isGatewayExist");
+  }
+
+  oprot->writeMessageBegin("isGatewayExist", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "Airavata.isGatewayExist", bytes);
+  }
+}
+
+void AiravataProcessor::process_generateAndRegisterSSHKeys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("Airavata.generateAndRegisterSSHKeys", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Airavata.generateAndRegisterSSHKeys");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "Airavata.generateAndRegisterSSHKeys");
+  }
+
+  Airavata_generateAndRegisterSSHKeys_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "Airavata.generateAndRegisterSSHKeys", bytes);
+  }
+
+  Airavata_generateAndRegisterSSHKeys_result result;
+  try {
+    iface_->generateAndRegisterSSHKeys(result.success, args.gatewayId, args.userName);
+    result.__isset.success = true;
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
+    result.ire = ire;
+    result.__isset.ire = true;
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
+    result.ace = ace;
+    result.__isset.ace = true;
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
+    result.ase = ase;
+    result.__isset.ase = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "Airavata.generateAndRegisterSSHKeys");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("generateAndRegisterSSHKeys", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "Airavata.generateAndRegisterSSHKeys");
+  }
+
+  oprot->writeMessageBegin("generateAndRegisterSSHKeys", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "Airavata.generateAndRegisterSSHKeys", bytes);
+  }
+}
+
+void AiravataProcessor::process_getSSHPubKey(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("Airavata.getSSHPubKey", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Airavata.getSSHPubKey");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "Airavata.getSSHPubKey");
+  }
+
+  Airavata_getSSHPubKey_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "Airavata.getSSHPubKey", bytes);
+  }
+
+  Airavata_getSSHPubKey_result result;
+  try {
+    iface_->getSSHPubKey(result.success, args.airavataCredStoreToken);
+    result.__isset.success = true;
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
+    result.ire = ire;
+    result.__isset.ire = true;
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
+    result.ace = ace;
+    result.__isset.ace = true;
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
+    result.ase = ase;
+    result.__isset.ase = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "Airavata.getSSHPubKey");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("getSSHPubKey", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "Airavata.getSSHPubKey");
+  }
+
+  oprot->writeMessageBegin("getSSHPubKey", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "Airavata.getSSHPubKey", bytes);
+  }
+}
+
+void AiravataProcessor::process_getAllUserSSHPubKeys(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("Airavata.getAllUserSSHPubKeys", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Airavata.getAllUserSSHPubKeys");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "Airavata.getAllUserSSHPubKeys");
+  }
+
+  Airavata_getAllUserSSHPubKeys_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "Airavata.getAllUserSSHPubKeys", bytes);
+  }
+
+  Airavata_getAllUserSSHPubKeys_result result;
+  try {
+    iface_->getAllUserSSHPubKeys(result.success, args.userName);
+    result.__isset.success = true;
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
+    result.ire = ire;
+    result.__isset.ire = true;
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
+    result.ace = ace;
+    result.__isset.ace = true;
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
+    result.ase = ase;
+    result.__isset.ase = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "Airavata.getAllUserSSHPubKeys");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("getAllUserSSHPubKeys", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "Airavata.getAllUserSSHPubKeys");
+  }
+
+  oprot->writeMessageBegin("getAllUserSSHPubKeys", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "Airavata.getAllUserSSHPubKeys", bytes);
+  }
+}
+
 void AiravataProcessor::process_createProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
@@ -32614,7 +36956,7 @@ void AiravataProcessor::process_createProject(int32_t seqid, ::apache::thrift::p
 
   Airavata_createProject_result result;
   try {
-    iface_->createProject(result.success, args.project);
+    iface_->createProject(result.success, args.gatewayId, args.project);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -32785,6 +37127,72 @@ void AiravataProcessor::process_getProject(int32_t seqid, ::apache::thrift::prot
   }
 }
 
+void AiravataProcessor::process_deleteProject(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("Airavata.deleteProject", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Airavata.deleteProject");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "Airavata.deleteProject");
+  }
+
+  Airavata_deleteProject_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "Airavata.deleteProject", bytes);
+  }
+
+  Airavata_deleteProject_result result;
+  try {
+    result.success = iface_->deleteProject(args.projectId);
+    result.__isset.success = true;
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
+    result.ire = ire;
+    result.__isset.ire = true;
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
+    result.ace = ace;
+    result.__isset.ace = true;
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
+    result.ase = ase;
+    result.__isset.ase = true;
+  } catch ( ::apache::airavata::api::error::ProjectNotFoundException &pnfe) {
+    result.pnfe = pnfe;
+    result.__isset.pnfe = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "Airavata.deleteProject");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("deleteProject", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "Airavata.deleteProject");
+  }
+
+  oprot->writeMessageBegin("deleteProject", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "Airavata.deleteProject", bytes);
+  }
+}
+
 void AiravataProcessor::process_getAllUserProjects(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
@@ -32808,7 +37216,7 @@ void AiravataProcessor::process_getAllUserProjects(int32_t seqid, ::apache::thri
 
   Airavata_getAllUserProjects_result result;
   try {
-    iface_->getAllUserProjects(result.success, args.userName);
+    iface_->getAllUserProjects(result.success, args.gatewayId, args.userName);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -32871,7 +37279,7 @@ void AiravataProcessor::process_searchProjectsByProjectName(int32_t seqid, ::apa
 
   Airavata_searchProjectsByProjectName_result result;
   try {
-    iface_->searchProjectsByProjectName(result.success, args.userName, args.projectName);
+    iface_->searchProjectsByProjectName(result.success, args.gatewayId, args.userName, args.projectName);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -32934,7 +37342,7 @@ void AiravataProcessor::process_searchProjectsByProjectDesc(int32_t seqid, ::apa
 
   Airavata_searchProjectsByProjectDesc_result result;
   try {
-    iface_->searchProjectsByProjectDesc(result.success, args.userName, args.description);
+    iface_->searchProjectsByProjectDesc(result.success, args.gatewayId, args.userName, args.description);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -32997,7 +37405,7 @@ void AiravataProcessor::process_searchExperimentsByName(int32_t seqid, ::apache:
 
   Airavata_searchExperimentsByName_result result;
   try {
-    iface_->searchExperimentsByName(result.success, args.userName, args.expName);
+    iface_->searchExperimentsByName(result.success, args.gatewayId, args.userName, args.expName);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -33060,7 +37468,7 @@ void AiravataProcessor::process_searchExperimentsByDesc(int32_t seqid, ::apache:
 
   Airavata_searchExperimentsByDesc_result result;
   try {
-    iface_->searchExperimentsByDesc(result.success, args.userName, args.description);
+    iface_->searchExperimentsByDesc(result.success, args.gatewayId, args.userName, args.description);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -33123,7 +37531,7 @@ void AiravataProcessor::process_searchExperimentsByApplication(int32_t seqid, ::
 
   Airavata_searchExperimentsByApplication_result result;
   try {
-    iface_->searchExperimentsByApplication(result.success, args.userName, args.applicationId);
+    iface_->searchExperimentsByApplication(result.success, args.gatewayId, args.userName, args.applicationId);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -33186,7 +37594,7 @@ void AiravataProcessor::process_searchExperimentsByStatus(int32_t seqid, ::apach
 
   Airavata_searchExperimentsByStatus_result result;
   try {
-    iface_->searchExperimentsByStatus(result.success, args.userName, args.experimentState);
+    iface_->searchExperimentsByStatus(result.success, args.gatewayId, args.userName, args.experimentState);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -33249,7 +37657,7 @@ void AiravataProcessor::process_searchExperimentsByCreationTime(int32_t seqid, :
 
   Airavata_searchExperimentsByCreationTime_result result;
   try {
-    iface_->searchExperimentsByCreationTime(result.success, args.userName, args.fromTime, args.toTime);
+    iface_->searchExperimentsByCreationTime(result.success, args.gatewayId, args.userName, args.fromTime, args.toTime);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -33378,7 +37786,7 @@ void AiravataProcessor::process_getAllUserExperiments(int32_t seqid, ::apache::t
 
   Airavata_getAllUserExperiments_result result;
   try {
-    iface_->getAllUserExperiments(result.success, args.userName);
+    iface_->getAllUserExperiments(result.success, args.gatewayId, args.userName);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -33441,7 +37849,7 @@ void AiravataProcessor::process_createExperiment(int32_t seqid, ::apache::thrift
 
   Airavata_createExperiment_result result;
   try {
-    iface_->createExperiment(result.success, args.experiment);
+    iface_->createExperiment(result.success, args.gatewayId, args.experiment);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -33984,6 +38392,72 @@ void AiravataProcessor::process_getExperimentOutputs(int32_t seqid, ::apache::th
   }
 }
 
+void AiravataProcessor::process_getIntermediateOutputs(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+{
+  void* ctx = NULL;
+  if (this->eventHandler_.get() != NULL) {
+    ctx = this->eventHandler_->getContext("Airavata.getIntermediateOutputs", callContext);
+  }
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "Airavata.getIntermediateOutputs");
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preRead(ctx, "Airavata.getIntermediateOutputs");
+  }
+
+  Airavata_getIntermediateOutputs_args args;
+  args.read(iprot);
+  iprot->readMessageEnd();
+  uint32_t bytes = iprot->getTransport()->readEnd();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postRead(ctx, "Airavata.getIntermediateOutputs", bytes);
+  }
+
+  Airavata_getIntermediateOutputs_result result;
+  try {
+    iface_->getIntermediateOutputs(result.success, args.airavataExperimentId);
+    result.__isset.success = true;
+  } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
+    result.ire = ire;
+    result.__isset.ire = true;
+  } catch ( ::apache::airavata::api::error::ExperimentNotFoundException &enf) {
+    result.enf = enf;
+    result.__isset.enf = true;
+  } catch ( ::apache::airavata::api::error::AiravataClientException &ace) {
+    result.ace = ace;
+    result.__isset.ace = true;
+  } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
+    result.ase = ase;
+    result.__isset.ase = true;
+  } catch (const std::exception& e) {
+    if (this->eventHandler_.get() != NULL) {
+      this->eventHandler_->handlerError(ctx, "Airavata.getIntermediateOutputs");
+    }
+
+    ::apache::thrift::TApplicationException x(e.what());
+    oprot->writeMessageBegin("getIntermediateOutputs", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    x.write(oprot);
+    oprot->writeMessageEnd();
+    oprot->getTransport()->writeEnd();
+    oprot->getTransport()->flush();
+    return;
+  }
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->preWrite(ctx, "Airavata.getIntermediateOutputs");
+  }
+
+  oprot->writeMessageBegin("getIntermediateOutputs", ::apache::thrift::protocol::T_REPLY, seqid);
+  result.write(oprot);
+  oprot->writeMessageEnd();
+  bytes = oprot->getTransport()->writeEnd();
+  oprot->getTransport()->flush();
+
+  if (this->eventHandler_.get() != NULL) {
+    this->eventHandler_->postWrite(ctx, "Airavata.getIntermediateOutputs", bytes);
+  }
+}
+
 void AiravataProcessor::process_getJobStatuses(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
@@ -34336,7 +38810,7 @@ void AiravataProcessor::process_registerApplicationModule(int32_t seqid, ::apach
 
   Airavata_registerApplicationModule_result result;
   try {
-    iface_->registerApplicationModule(result.success, args.applicationModule);
+    iface_->registerApplicationModule(result.success, args.gatewayId, args.applicationModule);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -34525,7 +38999,7 @@ void AiravataProcessor::process_getAllAppModules(int32_t seqid, ::apache::thrift
 
   Airavata_getAllAppModules_result result;
   try {
-    iface_->getAllAppModules(result.success);
+    iface_->getAllAppModules(result.success, args.gatewayId);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -34651,7 +39125,7 @@ void AiravataProcessor::process_registerApplicationDeployment(int32_t seqid, ::a
 
   Airavata_registerApplicationDeployment_result result;
   try {
-    iface_->registerApplicationDeployment(result.success, args.applicationDeployment);
+    iface_->registerApplicationDeployment(result.success, args.gatewayId, args.applicationDeployment);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -34903,7 +39377,7 @@ void AiravataProcessor::process_getAllApplicationDeployments(int32_t seqid, ::ap
 
   Airavata_getAllApplicationDeployments_result result;
   try {
-    iface_->getAllApplicationDeployments(result.success);
+    iface_->getAllApplicationDeployments(result.success, args.gatewayId);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -35029,7 +39503,7 @@ void AiravataProcessor::process_registerApplicationInterface(int32_t seqid, ::ap
 
   Airavata_registerApplicationInterface_result result;
   try {
-    iface_->registerApplicationInterface(result.success, args.applicationInterface);
+    iface_->registerApplicationInterface(result.success, args.gatewayId, args.applicationInterface);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -35281,7 +39755,7 @@ void AiravataProcessor::process_getAllApplicationInterfaceNames(int32_t seqid, :
 
   Airavata_getAllApplicationInterfaceNames_result result;
   try {
-    iface_->getAllApplicationInterfaceNames(result.success);
+    iface_->getAllApplicationInterfaceNames(result.success, args.gatewayId);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -35344,7 +39818,7 @@ void AiravataProcessor::process_getAllApplicationInterfaces(int32_t seqid, ::apa
 
   Airavata_getAllApplicationInterfaces_result result;
   try {
-    iface_->getAllApplicationInterfaces(result.success);
+    iface_->getAllApplicationInterfaces(result.success, args.gatewayId);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -38746,7 +43220,7 @@ void AiravataProcessor::process_getAllWorkflows(int32_t seqid, ::apache::thrift:
 
   Airavata_getAllWorkflows_result result;
   try {
-    iface_->getAllWorkflows(result.success);
+    iface_->getAllWorkflows(result.success, args.gatewayId);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -38934,7 +43408,7 @@ void AiravataProcessor::process_registerWorkflow(int32_t seqid, ::apache::thrift
 
   Airavata_registerWorkflow_result result;
   try {
-    iface_->registerWorkflow(result.success, args.workflow);
+    iface_->registerWorkflow(result.success, args.gatewayId, args.workflow);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;

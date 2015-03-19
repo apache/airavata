@@ -21,26 +21,20 @@
 
 package org.apache.aiaravata.application.catalog.data.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.airavata.appcatalog.cpi.GwyResourceProfile;
-import org.apache.aiaravata.application.catalog.data.model.GatewayProfile;
-import org.apache.aiaravata.application.catalog.data.resources.AbstractResource;
-import org.apache.aiaravata.application.catalog.data.resources.ComputeHostPreferenceResource;
-import org.apache.aiaravata.application.catalog.data.resources.ComputeResourceResource;
-import org.apache.aiaravata.application.catalog.data.resources.GatewayProfileResource;
-import org.apache.aiaravata.application.catalog.data.resources.Resource;
+import org.apache.aiaravata.application.catalog.data.resources.*;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogThriftConversion;
-import org.apache.aiaravata.application.catalog.data.util.AppCatalogUtils;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.appcatalog.gatewayprofile.gatewayResourceProfileModelConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GwyResourceProfileImpl implements GwyResourceProfile {
     private final static Logger logger = LoggerFactory.getLogger(GwyResourceProfileImpl.class);
@@ -49,15 +43,11 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
     public String addGatewayResourceProfile(org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile gatewayProfile) throws AppCatalogException {
         try {
             GatewayProfileResource profileResource = new GatewayProfileResource();
-            profileResource.setGatewayName(gatewayProfile.getGatewayName());
             if (!gatewayProfile.getGatewayID().equals("") && !gatewayProfile.getGatewayID().equals(gatewayResourceProfileModelConstants.DEFAULT_ID)){
                 profileResource.setGatewayID(gatewayProfile.getGatewayID());
-            }else {
-                profileResource.setGatewayID(AppCatalogUtils.getID(gatewayProfile.getGatewayName()));
             }
-            profileResource.setGatewayDesc(gatewayProfile.getGatewayDescription());
+//            profileResource.setGatewayID(gatewayProfile.getGatewayID());
             profileResource.save();
-            gatewayProfile.setGatewayID(profileResource.getGatewayID());
             List<ComputeResourcePreference> computeResourcePreferences = gatewayProfile.getComputeResourcePreferences();
             if (computeResourcePreferences != null && !computeResourcePreferences.isEmpty()){
                 for (ComputeResourcePreference preference : computeResourcePreferences ){
@@ -68,6 +58,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
                     resource.setComputeHostResource((ComputeResourceResource)computeHostResource.get(preference.getComputeResourceId()));
                     resource.setGatewayId(profileResource.getGatewayID());
                     resource.setOverrideByAiravata(preference.isOverridebyAiravata());
+                    resource.setLoginUserName(preference.getLoginUserName());
                     if (preference.getPreferredJobSubmissionProtocol() != null){
                         resource.setPreferredJobProtocol(preference.getPreferredJobSubmissionProtocol().toString());
                     }
@@ -94,8 +85,6 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
         try {
             GatewayProfileResource profileResource = new GatewayProfileResource();
             GatewayProfileResource existingGP = (GatewayProfileResource)profileResource.get(gatewayId);
-            existingGP.setGatewayName(updatedProfile.getGatewayName());
-            existingGP.setGatewayDesc(updatedProfile.getGatewayDescription());
             existingGP.save();
 
             List<ComputeResourcePreference> computeResourcePreferences = updatedProfile.getComputeResourcePreferences();
@@ -107,6 +96,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
                     ComputeResourceResource computeHostResource = new ComputeResourceResource();
                     resource.setComputeHostResource((ComputeResourceResource)computeHostResource.get(preference.getComputeResourceId()));
                     resource.setGatewayId(gatewayId);
+                    resource.setLoginUserName(preference.getLoginUserName());
                     resource.setOverrideByAiravata(preference.isOverridebyAiravata());
                     if (preference.getPreferredJobSubmissionProtocol() != null){
                         resource.setPreferredJobProtocol(preference.getPreferredJobSubmissionProtocol().toString());
@@ -225,7 +215,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
     public List<String> getGatewayProfileIds(String gatewayName) throws AppCatalogException {
         try {
             GatewayProfileResource profileResource = new GatewayProfileResource();
-            List<Resource> resourceList = profileResource.get(AbstractResource.GatewayProfileConstants.GATEWAY_NAME, gatewayName);
+            List<Resource> resourceList = profileResource.get(AbstractResource.GatewayProfileConstants.GATEWAY_ID, gatewayName);
             List<String> gatewayIds = new ArrayList<String>();
             if (resourceList != null && !resourceList.isEmpty()){
                 for (Resource resource : resourceList){

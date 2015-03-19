@@ -33,27 +33,27 @@ public interface OutputParser {
      * @param descriptor
      * @return
      */
-    public void parse(JobDescriptor descriptor,String rawOutput)throws SSHApiException;
+    public void parseSingleJob(JobDescriptor descriptor, String rawOutput)throws SSHApiException;
 
     /**
-     * This can be used to parse the result of a job submission to get the JobID
+     * This can be used to parseSingleJob the result of a job submission to get the JobID
      * @param rawOutput
      * @return
      */
-    public String parse(String rawOutput)throws SSHApiException;
+    public String parseJobSubmission(String rawOutput)throws SSHApiException;
 
 
     /**
-     * This can be used to get the job status from the putput
+     * This can be used to get the job status from the output
      * @param jobID
      * @param rawOutput
      */
-    public JobStatus parse(String jobID, String rawOutput)throws SSHApiException;
+    public JobStatus parseJobStatus(String jobID, String rawOutput)throws SSHApiException;
 
     /**
-     * This can be used to parse a big output and get multipleJob statuses
+     * This can be used to parseSingleJob a big output and get multipleJob statuses
      * @param statusMap list of status map will return and key will be the job ID
      * @param rawOutput
      */
-    public void parse(String userName,Map<String,JobStatus> statusMap, String rawOutput)throws SSHApiException;
+    public void parseJobStatuses(String userName, Map<String, JobStatus> statusMap, String rawOutput)throws SSHApiException;
 }

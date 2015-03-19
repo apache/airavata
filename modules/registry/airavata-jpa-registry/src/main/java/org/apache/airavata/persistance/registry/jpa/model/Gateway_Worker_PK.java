@@ -24,11 +24,11 @@ package org.apache.airavata.persistance.registry.jpa.model;
 import java.io.Serializable;
 
 public class Gateway_Worker_PK implements Serializable {
-    private String gateway_name;
+    private String gateway_id;
     private String user_name;
 
-    public Gateway_Worker_PK(String gateway_name, String user_name) {
-        this.gateway_name = gateway_name;
+    public Gateway_Worker_PK(String gateway_id, String user_name) {
+        this.gateway_id = gateway_id;
         this.user_name = user_name;
     }
 
@@ -54,11 +54,11 @@ public class Gateway_Worker_PK implements Serializable {
         this.user_name = user_name;
     }
 
-    public String getGateway_name() {
-        return gateway_name;
+    public String getGateway_id() {
+        return gateway_id;
     }
 
-    public void setGateway_name(String gateway_name) {
-        this.gateway_name = gateway_name;
+    public void setGateway_id(String gateway_id) {
+        this.gateway_id = gateway_id;
     }
 }

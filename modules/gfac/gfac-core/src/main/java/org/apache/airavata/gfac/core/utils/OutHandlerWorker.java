@@ -26,6 +26,8 @@ import org.apache.airavata.gfac.core.cpi.GFac;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.model.messaging.event.TaskIdentifier;
 import org.apache.airavata.model.messaging.event.TaskStatusChangeRequestEvent;
+import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
+import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.model.workspace.experiment.TaskState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,9 +53,16 @@ public class OutHandlerWorker implements Runnable {
             gfac.invokeOutFlowHandlers(monitorID.getJobExecutionContext());
         } catch (GFacException e) {
             TaskIdentifier taskIdentifier = new TaskIdentifier(monitorID.getTaskID(), monitorID.getWorkflowNodeID(),monitorID.getExperimentID(), monitorID.getJobExecutionContext().getGatewayID());
-            monitorPublisher.publish(new TaskStatusChangeRequestEvent(TaskState.FAILED, taskIdentifier));
             //FIXME this is a case where the output retrieving fails even if the job execution was a success. Thus updating the task status
+            monitorPublisher.publish(new TaskStatusChangeRequestEvent(TaskState.FAILED, taskIdentifier));
+            try {
+                GFacUtils.saveErrorDetails(monitorID.getJobExecutionContext(), e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+            } catch (GFacException e1) {
+                logger.error("Error while persisting error details", e);
+            }
             logger.info(e.getLocalizedMessage(), e);
+            // Save error details to registry
+
         }
         monitorPublisher.publish(monitorID.getStatus());
     }

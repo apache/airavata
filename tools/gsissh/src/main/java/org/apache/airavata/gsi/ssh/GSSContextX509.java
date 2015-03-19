@@ -168,12 +168,19 @@ public class GSSContextX509 implements com.jcraft.jsch.GSSContext {
 
     public boolean isEstablished() {
         // this must check to see if the call returned GSS_S_COMPLETE
-        return context.isEstablished();
+        if (context != null){
+            return context.isEstablished();
+        }
+        return false;
     }
 
     public byte[] init(byte[] token, int s, int l) throws JSchException {
         try {
-            return context.initSecContext(token, s, l);
+            if (context != null){
+                return context.initSecContext(token, s, l);
+            }else {
+                throw new JSchException("Context is null..");
+            }
         } catch (GSSException ex) {
             throw new JSchException(ex.toString());
         }

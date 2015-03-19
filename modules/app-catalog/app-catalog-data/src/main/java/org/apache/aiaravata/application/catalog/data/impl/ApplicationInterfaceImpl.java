@@ -43,10 +43,11 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
     private final static Logger logger = LoggerFactory.getLogger(ApplicationInterfaceImpl.class);
 
     @Override
-    public String addApplicationModule(ApplicationModule applicationModule) throws AppCatalogException {
+    public String addApplicationModule(ApplicationModule applicationModule, String gatewayId) throws AppCatalogException {
         try {
             AppModuleResource moduleResource = new AppModuleResource();
             moduleResource.setModuleName(applicationModule.getAppModuleName());
+            moduleResource.setGatewayId(gatewayId);
             if (!applicationModule.getAppModuleId().equals("") && !applicationModule.getAppModuleId().equals(applicationInterfaceModelConstants.DEFAULT_ID)){
                 moduleResource.setModuleId(applicationModule.getAppModuleId());
             }else {
@@ -64,7 +65,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
     }
 
     @Override
-    public String addApplicationInterface(ApplicationInterfaceDescription applicationInterfaceDescription) throws AppCatalogException {
+    public String addApplicationInterface(ApplicationInterfaceDescription applicationInterfaceDescription, String gatewayId) throws AppCatalogException {
         try {
             AppInterfaceResource resource = new AppInterfaceResource();
             resource.setAppName(applicationInterfaceDescription.getApplicationName());
@@ -74,6 +75,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
                 resource.setInterfaceId(AppCatalogUtils.getID(applicationInterfaceDescription.getApplicationName()));
             }
             resource.setAppDescription(applicationInterfaceDescription.getApplicationDescription());
+            resource.setGatewayId(gatewayId);
             resource.save();
             applicationInterfaceDescription.setApplicationInterfaceId(resource.getInterfaceId());
 
@@ -315,10 +317,11 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
     }
 
     @Override
-    public List<ApplicationModule> getAllApplicationModules() throws AppCatalogException {
+    public List<ApplicationModule> getAllApplicationModules(String gatewayId) throws AppCatalogException {
         List<ApplicationModule> applicationModules = new ArrayList<ApplicationModule>();
         try {
             AppModuleResource resource = new AppModuleResource();
+            resource.setGatewayId(gatewayId);
             List<Resource> resources = resource.getAll();
             if (resources != null && !resources.isEmpty()){
                 applicationModules = AppCatalogThriftConversion.getAppModules(resources);
@@ -352,9 +355,10 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
     }
 
     @Override
-    public List<ApplicationInterfaceDescription> getAllApplicationInterfaces() throws AppCatalogException {
+    public List<ApplicationInterfaceDescription> getAllApplicationInterfaces(String gatewayId) throws AppCatalogException {
         try {
             AppInterfaceResource resource = new AppInterfaceResource();
+            resource.setGatewayId(gatewayId);
             List<Resource> resources = resource.getAll();
             return AppCatalogThriftConversion.getAppInterfaceDescList(resources);
         }catch (Exception e){

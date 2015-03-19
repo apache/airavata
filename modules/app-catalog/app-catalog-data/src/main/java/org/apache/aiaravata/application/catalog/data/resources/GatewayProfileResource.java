@@ -39,8 +39,6 @@ public class GatewayProfileResource extends AbstractResource {
     private final static Logger logger = LoggerFactory.getLogger(GatewayProfileResource.class);
 
     private String gatewayID;
-    private String gatewayName;
-    private String gatewayDesc;
     private Timestamp createdTime;
     private Timestamp updatedTime;
 
@@ -133,8 +131,8 @@ public class GatewayProfileResource extends AbstractResource {
                         gatewayProfileResources.add(gatewayProfileResource);
                     }
                 }
-            } else if (fieldName.equals(GatewayProfileConstants.GATEWAY_NAME)) {
-                generator.setParameter(GatewayProfileConstants.GATEWAY_NAME, value);
+            } else if (fieldName.equals(GatewayProfileConstants.GATEWAY_ID)) {
+                generator.setParameter(GatewayProfileConstants.GATEWAY_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
@@ -225,8 +223,8 @@ public class GatewayProfileResource extends AbstractResource {
                         gatewayProfileResourceIDs.add(gatewayProfile.getGatewayID());
                     }
                 }
-            } else if (fieldName.equals(GatewayProfileConstants.GATEWAY_NAME)) {
-                generator.setParameter(GatewayProfileConstants.GATEWAY_NAME, value);
+            } else if (fieldName.equals(GatewayProfileConstants.GATEWAY_ID)) {
+                generator.setParameter(GatewayProfileConstants.GATEWAY_ID, value);
                 q = generator.selectQuery(em);
                 results = q.getResultList();
                 if (results.size() != 0) {
@@ -267,15 +265,11 @@ public class GatewayProfileResource extends AbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             if (existingGatewayProfile != null) {
-                existingGatewayProfile.setGatewayDesc(gatewayDesc);
-                existingGatewayProfile.setGatewayName(gatewayName);
                 existingGatewayProfile.setUpdateTime(AiravataUtils.getCurrentTimestamp());
                 em.merge(existingGatewayProfile);
             } else {
                 GatewayProfile gatewayProfile = new GatewayProfile();
                 gatewayProfile.setGatewayID(gatewayID);
-                gatewayProfile.setGatewayName(gatewayName);
-                gatewayProfile.setGatewayDesc(gatewayDesc);
                 gatewayProfile.setCreationTime(AiravataUtils.getCurrentTimestamp());
                 em.persist(gatewayProfile);
             }
@@ -320,21 +314,5 @@ public class GatewayProfileResource extends AbstractResource {
 
     public void setGatewayID(String gatewayID) {
         this.gatewayID = gatewayID;
-    }
-
-    public String getGatewayName() {
-        return gatewayName;
-    }
-
-    public void setGatewayName(String gatewayName) {
-        this.gatewayName = gatewayName;
-    }
-
-    public String getGatewayDesc() {
-        return gatewayDesc;
-    }
-
-    public void setGatewayDesc(String gatewayDesc) {
-        this.gatewayDesc = gatewayDesc;
     }
 }

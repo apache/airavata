@@ -42,6 +42,8 @@ public class ApplicationModule implements Serializable {
     private String moduleDesc;
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
+    @Column(name = "GATEWAY_ID")
+    private String gatewayId;
 
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
@@ -93,5 +95,13 @@ public class ApplicationModule implements Serializable {
 
     public void setModuleDesc(String moduleDesc) {
         this.moduleDesc = moduleDesc;
+    }
+
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
     }
 }

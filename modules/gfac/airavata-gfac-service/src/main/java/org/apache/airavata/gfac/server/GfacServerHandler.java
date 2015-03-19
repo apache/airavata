@@ -28,6 +28,10 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.logger.AiravataLogger;
 import org.apache.airavata.common.logger.AiravataLoggerFactory;
 import org.apache.airavata.common.utils.*;
+import org.apache.airavata.common.utils.AiravataZKUtils;
+import org.apache.airavata.common.utils.Constants;
+import org.apache.airavata.common.utils.MonitorPublisher;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.cpi.GFac;
 import org.apache.airavata.gfac.core.utils.GFacThreadPoolExecutor;
@@ -172,46 +176,26 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
         synchronized (mutex) {
             Event.KeeperState state = watchedEvent.getState();
             logger.info(state.name());
-            if (state == Event.KeeperState.SyncConnected) {
-                mutex.notify();
-            } else if (state == Event.KeeperState.Expired ||
-                    state == Event.KeeperState.Disconnected) {
-                try {
-                    mutex = -1;
-                    zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), 6000, this);
-                    synchronized (mutex) {
-                        mutex.wait();  // waiting for the syncConnected event
-                    }
-                    storeServerConfig();
-                } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
-                } catch (ApplicationSettingsException e) {
-                    logger.error(e.getMessage(), e);
-                } catch (InterruptedException e) {
-                    logger.error(e.getMessage(), e);
-                } catch (KeeperException e) {
-                    logger.error(e.getMessage(), e);
-                }
-            } else if (Event.EventType.NodeDeleted.equals(watchedEvent.getType())) {
-                String path = watchedEvent.getPath();
-                String experimentNode = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
-                if (path.startsWith(experimentNode)) {
-                    // we got a watch when experiment is removed
-                    String deliveryPath = path + GFacUtils.DELIVERY_TAG_POSTFIX;
+            switch (state){
+                case SyncConnected:
+                    mutex.notify();
+                    break;
+                case Expired:case Disconnected:
                     try {
-                        Stat exists = zk.exists(deliveryPath, false);
-                        byte[] data = zk.getData(path + GFacUtils.DELIVERY_TAG_POSTFIX, false, exists);
-                        long value = ByateArrayToLong(data);
-                        logger.info("ExperimentId+taskId" + path);
-                        logger.info("Sending Ack back to the Queue, because task is over");
-                        rabbitMQTaskLaunchConsumer.sendAck(value);
-                        ZKUtil.deleteRecursive(zk,deliveryPath);
-                    } catch (KeeperException e) {
+                        zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), 6000, this);
+                        synchronized (mutex) {
+                            mutex.wait();  // waiting for the syncConnected event
+                        }
+                        storeServerConfig();
+                    } catch (IOException e) {
+                        logger.error(e.getMessage(), e);
+                    } catch (ApplicationSettingsException e) {
                         logger.error(e.getMessage(), e);
                     } catch (InterruptedException e) {
                         logger.error(e.getMessage(), e);
+                    } catch (KeeperException e) {
+                        logger.error(e.getMessage(), e);
                     }
-                }
             }
         }
     }

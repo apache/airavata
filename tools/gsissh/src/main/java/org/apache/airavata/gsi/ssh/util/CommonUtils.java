@@ -55,6 +55,15 @@ public class CommonUtils {
             return hours + ":" + minutes + ":00";
         }
     }
+    public static String maxWallTimeCalculatorForLSF(int maxWalltime) {
+        if (maxWalltime < 60) {
+            return "00:" + maxWalltime;
+        } else {
+            int minutes = maxWalltime % 60;
+            int hours = maxWalltime / 60;
+            return hours + ":" + minutes;
+        }
+    }
     public static JobManagerConfiguration getPBSJobManager(String installedPath) {
         return new PBSJobConfiguration("PBSTemplate.xslt",".pbs", installedPath, new PBSOutputParser());
     }
@@ -65,5 +74,9 @@ public class CommonUtils {
 
      public static JobManagerConfiguration getSGEJobManager(String installedPath) {
         return new PBSJobConfiguration("SGETemplate.xslt", ".pbs", installedPath, new SGEOutputParser());
+    }
+
+    public static JobManagerConfiguration getLSFJobManager(String installedPath) {
+        return new LSFJobConfiguration("LSFTemplate.xslt", ".lsf", installedPath, new LSFOutputParser());
     }
 }

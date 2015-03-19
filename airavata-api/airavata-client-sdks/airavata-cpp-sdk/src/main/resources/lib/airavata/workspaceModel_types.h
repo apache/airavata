@@ -241,34 +241,65 @@ class User {
 
 void swap(User &a, User &b);
 
+typedef struct _Gateway__isset {
+  _Gateway__isset() : gatewayName(false), domain(false), emailAddress(false) {}
+  bool gatewayName;
+  bool domain;
+  bool emailAddress;
+} _Gateway__isset;
 
 class Gateway {
  public:
 
-  static const char* ascii_fingerprint; // = "07A9615F837F7D0A952B595DD3020972";
-  static const uint8_t binary_fingerprint[16]; // = {0x07,0xA9,0x61,0x5F,0x83,0x7F,0x7D,0x0A,0x95,0x2B,0x59,0x5D,0xD3,0x02,0x09,0x72};
+  static const char* ascii_fingerprint; // = "6BA700CA2E5FC52A8DA5ADCF811DC8DA";
+  static const uint8_t binary_fingerprint[16]; // = {0x6B,0xA7,0x00,0xCA,0x2E,0x5F,0xC5,0x2A,0x8D,0xA5,0xAD,0xCF,0x81,0x1D,0xC8,0xDA};
 
-  Gateway() : gatewayId("DO_NOT_SET_AT_CLIENTS"), name() {
+  Gateway() : gatewayId(), gatewayName(), domain(), emailAddress() {
   }
 
   virtual ~Gateway() throw() {}
 
   std::string gatewayId;
-  std::string name;
+  std::string gatewayName;
+  std::string domain;
+  std::string emailAddress;
+
+  _Gateway__isset __isset;
 
   void __set_gatewayId(const std::string& val) {
     gatewayId = val;
   }
 
-  void __set_name(const std::string& val) {
-    name = val;
+  void __set_gatewayName(const std::string& val) {
+    gatewayName = val;
+    __isset.gatewayName = true;
+  }
+
+  void __set_domain(const std::string& val) {
+    domain = val;
+    __isset.domain = true;
+  }
+
+  void __set_emailAddress(const std::string& val) {
+    emailAddress = val;
+    __isset.emailAddress = true;
   }
 
   bool operator == (const Gateway & rhs) const
   {
     if (!(gatewayId == rhs.gatewayId))
       return false;
-    if (!(name == rhs.name))
+    if (__isset.gatewayName != rhs.__isset.gatewayName)
+      return false;
+    else if (__isset.gatewayName && !(gatewayName == rhs.gatewayName))
+      return false;
+    if (__isset.domain != rhs.__isset.domain)
+      return false;
+    else if (__isset.domain && !(domain == rhs.domain))
+      return false;
+    if (__isset.emailAddress != rhs.__isset.emailAddress)
+      return false;
+    else if (__isset.emailAddress && !(emailAddress == rhs.emailAddress))
       return false;
     return true;
   }

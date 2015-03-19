@@ -38,8 +38,9 @@ struct ResourceJobManagerType {
   enum type {
     FORK = 0,
     PBS = 1,
-    UGE = 2,
-    SLURM = 3
+    SLURM = 2,
+    LSF = 3,
+    UGE = 4
   };
 };
 

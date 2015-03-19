@@ -53,7 +53,9 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Gateway");
 
   private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("name", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField GATEWAY_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayName", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField DOMAIN_FIELD_DESC = new org.apache.thrift.protocol.TField("domain", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField EMAIL_ADDRESS_FIELD_DESC = new org.apache.thrift.protocol.TField("emailAddress", org.apache.thrift.protocol.TType.STRING, (short)4);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -62,12 +64,16 @@ import org.slf4j.LoggerFactory;
   }
 
   private String gatewayId; // required
-  private String name; // required
+  private String gatewayName; // optional
+  private String domain; // optional
+  private String emailAddress; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     GATEWAY_ID((short)1, "gatewayId"),
-    NAME((short)2, "name");
+    GATEWAY_NAME((short)2, "gatewayName"),
+    DOMAIN((short)3, "domain"),
+    EMAIL_ADDRESS((short)4, "emailAddress");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -84,8 +90,12 @@ import org.slf4j.LoggerFactory;
       switch(fieldId) {
         case 1: // GATEWAY_ID
           return GATEWAY_ID;
-        case 2: // NAME
-          return NAME;
+        case 2: // GATEWAY_NAME
+          return GATEWAY_NAME;
+        case 3: // DOMAIN
+          return DOMAIN;
+        case 4: // EMAIL_ADDRESS
+          return EMAIL_ADDRESS;
         default:
           return null;
       }
@@ -126,29 +136,30 @@ import org.slf4j.LoggerFactory;
   }
 
   // isset id assignments
+  private _Fields optionals[] = {_Fields.GATEWAY_NAME,_Fields.DOMAIN,_Fields.EMAIL_ADDRESS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.NAME, new org.apache.thrift.meta_data.FieldMetaData("name", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.GATEWAY_NAME, new org.apache.thrift.meta_data.FieldMetaData("gatewayName", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.DOMAIN, new org.apache.thrift.meta_data.FieldMetaData("domain", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.EMAIL_ADDRESS, new org.apache.thrift.meta_data.FieldMetaData("emailAddress", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Gateway.class, metaDataMap);
   }
 
   public Gateway() {
-    this.gatewayId = "DO_NOT_SET_AT_CLIENTS";
-
   }
 
   public Gateway(
-    String gatewayId,
-    String name)
+    String gatewayId)
   {
     this();
     this.gatewayId = gatewayId;
-    this.name = name;
   }
 
   /**
@@ -158,8 +169,14 @@ import org.slf4j.LoggerFactory;
     if (other.isSetGatewayId()) {
       this.gatewayId = other.gatewayId;
     }
-    if (other.isSetName()) {
-      this.name = other.name;
+    if (other.isSetGatewayName()) {
+      this.gatewayName = other.gatewayName;
+    }
+    if (other.isSetDomain()) {
+      this.domain = other.domain;
+    }
+    if (other.isSetEmailAddress()) {
+      this.emailAddress = other.emailAddress;
     }
   }
 
@@ -169,9 +186,10 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public void clear() {
-    this.gatewayId = "DO_NOT_SET_AT_CLIENTS";
-
-    this.name = null;
+    this.gatewayId = null;
+    this.gatewayName = null;
+    this.domain = null;
+    this.emailAddress = null;
   }
 
   public String getGatewayId() {
@@ -197,26 +215,72 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public String getName() {
-    return this.name;
+  public String getGatewayName() {
+    return this.gatewayName;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setGatewayName(String gatewayName) {
+    this.gatewayName = gatewayName;
   }
 
-  public void unsetName() {
-    this.name = null;
+  public void unsetGatewayName() {
+    this.gatewayName = null;
   }
 
-  /** Returns true if field name is set (has been assigned a value) and false otherwise */
-  public boolean isSetName() {
-    return this.name != null;
+  /** Returns true if field gatewayName is set (has been assigned a value) and false otherwise */
+  public boolean isSetGatewayName() {
+    return this.gatewayName != null;
   }
 
-  public void setNameIsSet(boolean value) {
+  public void setGatewayNameIsSet(boolean value) {
     if (!value) {
-      this.name = null;
+      this.gatewayName = null;
+    }
+  }
+
+  public String getDomain() {
+    return this.domain;
+  }
+
+  public void setDomain(String domain) {
+    this.domain = domain;
+  }
+
+  public void unsetDomain() {
+    this.domain = null;
+  }
+
+  /** Returns true if field domain is set (has been assigned a value) and false otherwise */
+  public boolean isSetDomain() {
+    return this.domain != null;
+  }
+
+  public void setDomainIsSet(boolean value) {
+    if (!value) {
+      this.domain = null;
+    }
+  }
+
+  public String getEmailAddress() {
+    return this.emailAddress;
+  }
+
+  public void setEmailAddress(String emailAddress) {
+    this.emailAddress = emailAddress;
+  }
+
+  public void unsetEmailAddress() {
+    this.emailAddress = null;
+  }
+
+  /** Returns true if field emailAddress is set (has been assigned a value) and false otherwise */
+  public boolean isSetEmailAddress() {
+    return this.emailAddress != null;
+  }
+
+  public void setEmailAddressIsSet(boolean value) {
+    if (!value) {
+      this.emailAddress = null;
     }
   }
 
@@ -230,11 +294,27 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
-    case NAME:
+    case GATEWAY_NAME:
       if (value == null) {
-        unsetName();
+        unsetGatewayName();
       } else {
-        setName((String)value);
+        setGatewayName((String)value);
+      }
+      break;
+
+    case DOMAIN:
+      if (value == null) {
+        unsetDomain();
+      } else {
+        setDomain((String)value);
+      }
+      break;
+
+    case EMAIL_ADDRESS:
+      if (value == null) {
+        unsetEmailAddress();
+      } else {
+        setEmailAddress((String)value);
       }
       break;
 
@@ -246,8 +326,14 @@ import org.slf4j.LoggerFactory;
     case GATEWAY_ID:
       return getGatewayId();
 
-    case NAME:
-      return getName();
+    case GATEWAY_NAME:
+      return getGatewayName();
+
+    case DOMAIN:
+      return getDomain();
+
+    case EMAIL_ADDRESS:
+      return getEmailAddress();
 
     }
     throw new IllegalStateException();
@@ -262,8 +348,12 @@ import org.slf4j.LoggerFactory;
     switch (field) {
     case GATEWAY_ID:
       return isSetGatewayId();
-    case NAME:
-      return isSetName();
+    case GATEWAY_NAME:
+      return isSetGatewayName();
+    case DOMAIN:
+      return isSetDomain();
+    case EMAIL_ADDRESS:
+      return isSetEmailAddress();
     }
     throw new IllegalStateException();
   }
@@ -290,12 +380,30 @@ import org.slf4j.LoggerFactory;
         return false;
     }
 
-    boolean this_present_name = true && this.isSetName();
-    boolean that_present_name = true && that.isSetName();
-    if (this_present_name || that_present_name) {
-      if (!(this_present_name && that_present_name))
+    boolean this_present_gatewayName = true && this.isSetGatewayName();
+    boolean that_present_gatewayName = true && that.isSetGatewayName();
+    if (this_present_gatewayName || that_present_gatewayName) {
+      if (!(this_present_gatewayName && that_present_gatewayName))
         return false;
-      if (!this.name.equals(that.name))
+      if (!this.gatewayName.equals(that.gatewayName))
+        return false;
+    }
+
+    boolean this_present_domain = true && this.isSetDomain();
+    boolean that_present_domain = true && that.isSetDomain();
+    if (this_present_domain || that_present_domain) {
+      if (!(this_present_domain && that_present_domain))
+        return false;
+      if (!this.domain.equals(that.domain))
+        return false;
+    }
+
+    boolean this_present_emailAddress = true && this.isSetEmailAddress();
+    boolean that_present_emailAddress = true && that.isSetEmailAddress();
+    if (this_present_emailAddress || that_present_emailAddress) {
+      if (!(this_present_emailAddress && that_present_emailAddress))
+        return false;
+      if (!this.emailAddress.equals(that.emailAddress))
         return false;
     }
 
@@ -325,12 +433,32 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetName()).compareTo(other.isSetName());
+    lastComparison = Boolean.valueOf(isSetGatewayName()).compareTo(other.isSetGatewayName());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetName()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.name, other.name);
+    if (isSetGatewayName()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayName, other.gatewayName);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetDomain()).compareTo(other.isSetDomain());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetDomain()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.domain, other.domain);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetEmailAddress()).compareTo(other.isSetEmailAddress());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetEmailAddress()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.emailAddress, other.emailAddress);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -362,14 +490,36 @@ import org.slf4j.LoggerFactory;
       sb.append(this.gatewayId);
     }
     first = false;
-    if (!first) sb.append(", ");
-    sb.append("name:");
-    if (this.name == null) {
-      sb.append("null");
-    } else {
-      sb.append(this.name);
+    if (isSetGatewayName()) {
+      if (!first) sb.append(", ");
+      sb.append("gatewayName:");
+      if (this.gatewayName == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.gatewayName);
+      }
+      first = false;
     }
-    first = false;
+    if (isSetDomain()) {
+      if (!first) sb.append(", ");
+      sb.append("domain:");
+      if (this.domain == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.domain);
+      }
+      first = false;
+    }
+    if (isSetEmailAddress()) {
+      if (!first) sb.append(", ");
+      sb.append("emailAddress:");
+      if (this.emailAddress == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.emailAddress);
+      }
+      first = false;
+    }
     sb.append(")");
     return sb.toString();
   }
@@ -378,10 +528,6 @@ import org.slf4j.LoggerFactory;
     // check for required fields
     if (!isSetGatewayId()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayId' is unset! Struct:" + toString());
-    }
-
-    if (!isSetName()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'name' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -429,10 +575,26 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // NAME
+          case 2: // GATEWAY_NAME
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.name = iprot.readString();
-              struct.setNameIsSet(true);
+              struct.gatewayName = iprot.readString();
+              struct.setGatewayNameIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 3: // DOMAIN
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.domain = iprot.readString();
+              struct.setDomainIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 4: // EMAIL_ADDRESS
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.emailAddress = iprot.readString();
+              struct.setEmailAddressIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -455,10 +617,26 @@ import org.slf4j.LoggerFactory;
         oprot.writeString(struct.gatewayId);
         oprot.writeFieldEnd();
       }
-      if (struct.name != null) {
-        oprot.writeFieldBegin(NAME_FIELD_DESC);
-        oprot.writeString(struct.name);
-        oprot.writeFieldEnd();
+      if (struct.gatewayName != null) {
+        if (struct.isSetGatewayName()) {
+          oprot.writeFieldBegin(GATEWAY_NAME_FIELD_DESC);
+          oprot.writeString(struct.gatewayName);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.domain != null) {
+        if (struct.isSetDomain()) {
+          oprot.writeFieldBegin(DOMAIN_FIELD_DESC);
+          oprot.writeString(struct.domain);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.emailAddress != null) {
+        if (struct.isSetEmailAddress()) {
+          oprot.writeFieldBegin(EMAIL_ADDRESS_FIELD_DESC);
+          oprot.writeString(struct.emailAddress);
+          oprot.writeFieldEnd();
+        }
       }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
@@ -478,7 +656,26 @@ import org.slf4j.LoggerFactory;
     public void write(org.apache.thrift.protocol.TProtocol prot, Gateway struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeString(struct.gatewayId);
-      oprot.writeString(struct.name);
+      BitSet optionals = new BitSet();
+      if (struct.isSetGatewayName()) {
+        optionals.set(0);
+      }
+      if (struct.isSetDomain()) {
+        optionals.set(1);
+      }
+      if (struct.isSetEmailAddress()) {
+        optionals.set(2);
+      }
+      oprot.writeBitSet(optionals, 3);
+      if (struct.isSetGatewayName()) {
+        oprot.writeString(struct.gatewayName);
+      }
+      if (struct.isSetDomain()) {
+        oprot.writeString(struct.domain);
+      }
+      if (struct.isSetEmailAddress()) {
+        oprot.writeString(struct.emailAddress);
+      }
     }
 
     @Override
@@ -486,8 +683,19 @@ import org.slf4j.LoggerFactory;
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.gatewayId = iprot.readString();
       struct.setGatewayIdIsSet(true);
-      struct.name = iprot.readString();
-      struct.setNameIsSet(true);
+      BitSet incoming = iprot.readBitSet(3);
+      if (incoming.get(0)) {
+        struct.gatewayName = iprot.readString();
+        struct.setGatewayNameIsSet(true);
+      }
+      if (incoming.get(1)) {
+        struct.domain = iprot.readString();
+        struct.setDomainIsSet(true);
+      }
+      if (incoming.get(2)) {
+        struct.emailAddress = iprot.readString();
+        struct.setEmailAddressIsSet(true);
+      }
     }
   }
 

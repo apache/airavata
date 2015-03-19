@@ -44,6 +44,15 @@ public class AppInterfaceResource extends AbstractResource {
     private String appDescription;
     private Timestamp createdTime;
     private Timestamp updatedTime;
+    private String gatewayId;
+
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
 
     public Timestamp getCreatedTime() {
         return createdTime;
@@ -190,6 +199,7 @@ public class AppInterfaceResource extends AbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(APPLICATION_INTERFACE);
+            generator.setParameter(ApplicationInterfaceConstants.GATEWAY_ID, gatewayId);
             Query   q = generator.selectQuery(em);
             List results = q.getResultList();
                 if (results.size() != 0) {
@@ -304,6 +314,7 @@ public class AppInterfaceResource extends AbstractResource {
                 existigAppInterface.setAppName(appName);
                 existigAppInterface.setAppDescription(appDescription);
                 existigAppInterface.setUpdateTime(AiravataUtils.getCurrentTimestamp());
+                existigAppInterface.setGatewayId(gatewayId);
                 em.merge(existigAppInterface);
             }else {
                 ApplicationInterface applicationInterface = new ApplicationInterface();
@@ -311,6 +322,7 @@ public class AppInterfaceResource extends AbstractResource {
                 applicationInterface.setAppName(appName);
                 applicationInterface.setAppDescription(appDescription);
                 applicationInterface.setCreationTime(AiravataUtils.getCurrentTimestamp());
+                applicationInterface.setGatewayId(gatewayId);
                 em.persist(applicationInterface);
             }
             em.getTransaction().commit();
