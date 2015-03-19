@@ -236,7 +236,19 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
                 log.errorId(experimentId, "Error retrieving the Experiment by the given experimentID: {} ", experimentId);
                 return false;
             }
-            ExecutionType executionType = DataModelUtils.getExecutionType(experiment);
+            CredentialReader credentialReader = GFacUtils.getCredentialReader();
+            String gatewayId = null;
+            if (credentialReader != null) {
+                try {
+                    gatewayId = credentialReader.getGatewayID(token);
+                } catch (Exception e) {
+                    log.error(e.getLocalizedMessage());
+                }
+            }
+            if (gatewayId == null) {
+                throw new AiravataException("Couldn't identify the gateway Id using the credential token");
+            }
+            ExecutionType executionType = DataModelUtils.getExecutionType(gatewayId, experiment);
             synchronized (this) {
       		if (executionType==ExecutionType.SINGLE_APP) {
                   //its an single application execution experiment
@@ -247,10 +259,10 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
   					//its a workflow execution experiment
                   log.debugId(experimentId, "Launching workflow experiment {}.", experimentId);
   				  launchWorkflowExperiment(experimentId, token);
-  	          } else {
-                  log.errorId(experimentId, "Couldn't identify experiment type, experiment {} is neither single application nor workflow.", experimentId);
-                  throw new TException("Experiment '" + experimentId + "' launch failed. Unable to figureout execution type for application " + experiment.getApplicationId());
-              }
+            } else {
+                log.errorId(experimentId, "Couldn't identify experiment type, experiment {} is neither single application nor workflow.", experimentId);
+                throw new TException("Experiment '" + experimentId + "' launch failed. Unable to figureout execution type for application " + experiment.getApplicationId());
+            }
           }
          }catch(Exception e){
              throw new TException("Experiment '" + experimentId + "' launch failed. Unable to figureout execution type for application " + experiment.getApplicationId());
