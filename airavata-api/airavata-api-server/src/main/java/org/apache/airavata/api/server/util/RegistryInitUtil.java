@@ -84,17 +84,38 @@ public class RegistryInitUtil {
                 logger.info("Database already created for Registry!");
             }
             try{
-                GatewayResource gateway = (GatewayResource)ResourceUtils.createGateway(ServerSettings.getDefaultUserGateway());
-                gateway.save();
-                UserResource user = ResourceUtils.createUser(ServerSettings.getDefaultUser(), ServerSettings.getDefaultUserPassword());
-                user.save();
-                WorkerResource workerResource = (WorkerResource)gateway.create(ResourceType.GATEWAY_WORKER);
-                workerResource.setUser(user.getUserName());
-                workerResource.save();
-                ProjectResource projectResource = workerResource.createProject(DEFAULT_PROJECT_NAME);
-                projectResource.setName(DEFAULT_PROJECT_NAME);
-                projectResource.setGateway(gateway);
-                projectResource.save();
+                GatewayResource gateway;
+                if (!ResourceUtils.isGatewayExist(ServerSettings.getDefaultUserGateway())){
+                    gateway = (GatewayResource)ResourceUtils.createGateway(ServerSettings.getDefaultUserGateway());
+                    gateway.save();
+                }else {
+                    gateway = (GatewayResource)ResourceUtils.getGateway(ServerSettings.getDefaultUserGateway());
+                }
+
+                UserResource user;
+                if (!ResourceUtils.isUserExist(ServerSettings.getDefaultUser())){
+                    user = ResourceUtils.createUser(ServerSettings.getDefaultUser(), ServerSettings.getDefaultUserPassword());
+                    user.save();
+                }else {
+                    user = (UserResource)ResourceUtils.getUser(ServerSettings.getDefaultUser());
+                }
+
+                WorkerResource workerResource;
+                if (!gateway.isExists(ResourceType.GATEWAY_WORKER, ServerSettings.getDefaultUserGateway())){
+                    workerResource = (WorkerResource)gateway.create(ResourceType.GATEWAY_WORKER);
+                    workerResource.setUser(user.getUserName());
+                    workerResource.save();
+                }else {
+                    workerResource =  (WorkerResource)gateway.get(ResourceType.GATEWAY_WORKER, ServerSettings.getDefaultUser());
+                }
+                ProjectResource projectResource;
+                if (!workerResource.isExists(ResourceType.PROJECT, DEFAULT_PROJECT_NAME)){
+                    projectResource = workerResource.createProject(DEFAULT_PROJECT_NAME);
+                    projectResource.setName(DEFAULT_PROJECT_NAME);
+                    projectResource.setGateway(gateway);
+                    projectResource.save();
+                }
+
             } catch (ApplicationSettingsException e) {
                 logger.error("Unable to read airavata-server properties...", e.getMessage());
             }
