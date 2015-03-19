@@ -111,7 +111,7 @@ public class WorkflowImportWindow {
                         public void run() {
                             try {
 								//FIXME: Update the gateway id fetched from UI
-                                List<String> resultList = getClient().getAllWorkflows("default");
+                                List<String> resultList = getClient().getAllWorkflows(engine.getConfiguration().getThriftClientData(ThriftServiceType.API_SERVICE).getGatewayId());
 								if (resultList == null || resultList.size() == 0) {
 								    /*
 								     * OGCEXRegistryLoaderWindow.this.list.getList(). setListData( new

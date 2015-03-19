@@ -767,7 +767,7 @@ public class XBayaConfiguration extends Observable implements Observer {
         	try {
 				Client airavataClient = XBayaUtil.getAiravataClient(getThriftClientData(ThriftServiceType.API_SERVICE));
 				if (getJcrComponentRegistry() == null) {
-					setJcrComponentRegistry(new JCRComponentRegistry(airavataClient));
+					setJcrComponentRegistry(new JCRComponentRegistry(getThriftClientData(ThriftServiceType.API_SERVICE).getGatewayId(),airavataClient));
 				} else {
 					getJcrComponentRegistry().setClient(airavataClient);
 				}
