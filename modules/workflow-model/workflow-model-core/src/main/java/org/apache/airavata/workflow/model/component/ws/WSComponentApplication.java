@@ -50,7 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xmlpull.infoset.XmlNamespace;
 
-import xsul5.XmlConstants;
+//import xsul5.XmlConstants;
 
 @XmlRootElement(name = "Application")
 @XmlType(propOrder = {"applicationId", "name", "description", "inputParameters", "outputParameters"})

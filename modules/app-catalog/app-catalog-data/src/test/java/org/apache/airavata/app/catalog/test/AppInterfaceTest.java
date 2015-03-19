@@ -27,7 +27,9 @@ import org.airavata.appcatalog.cpi.ApplicationInterface;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.aiaravata.application.catalog.data.resources.AbstractResource;
 import org.apache.airavata.app.catalog.test.util.Initialize;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
@@ -96,7 +98,7 @@ public class AppInterfaceTest {
             description.setApplicationModules(modules);
             description.setApplicationInputs(inputs);
             description.setApplicationOutputs(outputs);
-            String appID = appInterface.addApplicationInterface(description);
+            String appID = appInterface.addApplicationInterface(description, ServerSettings.getDefaultUserGateway());
             System.out.println("********** application id ************* : " + appID);
             ApplicationInterfaceDescription ainterface = null;
             if (appInterface.isApplicationInterfaceExists(appID)){
@@ -141,7 +143,7 @@ public class AppInterfaceTest {
             List<ApplicationInterfaceDescription> apps = appInterface.getApplicationInterfaces(filters);
             System.out.println("********** Size og app interfaces ************* : " + apps.size());
 
-            List<ApplicationInterfaceDescription> appInts = appInterface.getAllApplicationInterfaces();
+            List<ApplicationInterfaceDescription> appInts = appInterface.getAllApplicationInterfaces(ServerSettings.getDefaultUserGateway());
             System.out.println("********** Size of all app interfaces ************* : " + appInts.size());
 
             List<String> appIntIds = appInterface.getAllApplicationInterfaceIds();
@@ -149,6 +151,8 @@ public class AppInterfaceTest {
 
             assertTrue("App interface saved successfully", ainterface != null);
         }catch (AppCatalogException e) {
+            e.printStackTrace();
+        } catch (ApplicationSettingsException e) {
             e.printStackTrace();
         }
 
@@ -160,9 +164,11 @@ public class AppInterfaceTest {
             module.setAppModuleName(moduleName);
             module.setAppModuleVersion("1.0.0");
             module.setAppModuleDescription("WeatherForcast");
-            return appcatalog.getApplicationInterface().addApplicationModule(module);
+            return appcatalog.getApplicationInterface().addApplicationModule(module, ServerSettings.getDefaultUserGateway());
         } catch (AppCatalogException e) {
             logger.error(e.getMessage(), e);
+        } catch (ApplicationSettingsException e) {
+            e.printStackTrace();
         }
         return null;
     }

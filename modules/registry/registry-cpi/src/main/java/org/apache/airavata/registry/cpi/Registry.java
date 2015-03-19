@@ -36,7 +36,7 @@ public interface Registry {
      *                       etc
      * @return return the identifier to identify the object
      */
-    public Object add(ParentDataType dataType, Object newObjectToAdd) throws RegistryException ;
+    public Object add(ParentDataType dataType, Object newObjectToAdd, String gatewayId) throws RegistryException ;
 
     /**
      * This method is to add an object in to the registry

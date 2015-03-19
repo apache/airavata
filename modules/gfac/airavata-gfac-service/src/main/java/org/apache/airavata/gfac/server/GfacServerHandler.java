@@ -27,7 +27,11 @@ import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.logger.AiravataLogger;
 import org.apache.airavata.common.logger.AiravataLoggerFactory;
-import org.apache.airavata.common.utils.*;
+import org.apache.airavata.common.utils.AiravataZKUtils;
+import org.apache.airavata.common.utils.Constants;
+import org.apache.airavata.common.utils.MonitorPublisher;
+import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.cpi.GFac;
 import org.apache.airavata.gfac.core.utils.GFacThreadPoolExecutor;
@@ -171,26 +175,26 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
         synchronized (mutex) {
             Event.KeeperState state = watchedEvent.getState();
             logger.info(state.name());
-            if (state == Event.KeeperState.SyncConnected) {
-                mutex.notify();
-            } else if (state == Event.KeeperState.Expired ||
-                    state == Event.KeeperState.Disconnected) {
-                try {
-                    mutex = -1;
-                    zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), 6000, this);
-                    synchronized (mutex) {
-                        mutex.wait();  // waiting for the syncConnected event
+            switch (state){
+                case SyncConnected:
+                    mutex.notify();
+                    break;
+                case Expired:case Disconnected:
+                    try {
+                        zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), 6000, this);
+                        synchronized (mutex) {
+                            mutex.wait();  // waiting for the syncConnected event
+                        }
+                        storeServerConfig();
+                    } catch (IOException e) {
+                        logger.error(e.getMessage(), e);
+                    } catch (ApplicationSettingsException e) {
+                        logger.error(e.getMessage(), e);
+                    } catch (InterruptedException e) {
+                        logger.error(e.getMessage(), e);
+                    } catch (KeeperException e) {
+                        logger.error(e.getMessage(), e);
                     }
-                    storeServerConfig();
-                } catch (IOException e) {
-                    logger.error(e.getMessage(), e);
-                } catch (ApplicationSettingsException e) {
-                    logger.error(e.getMessage(), e);
-                } catch (InterruptedException e) {
-                    logger.error(e.getMessage(), e);
-                } catch (KeeperException e) {
-                    logger.error(e.getMessage(), e);
-                }
             }
         }
     }

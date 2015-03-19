@@ -26,7 +26,7 @@ import org.apache.airavata.workflow.model.component.ws.WSComponent;
 import org.apache.airavata.workflow.model.graph.Graph;
 import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.subworkflow.SubWorkflowNode;
-import org.apache.airavata.workflow.model.ode.ODEClient;
+//import org.apache.airavata.workflow.model.ode.ODEClient;
 import org.apache.airavata.workflow.model.wf.Workflow;
 
 public class SubWorkflowComponent extends WSComponent {
@@ -40,7 +40,7 @@ public class SubWorkflowComponent extends WSComponent {
     }
 
     public static SubWorkflowComponent getInstance(Workflow workflow) throws ComponentException {
-        new ODEClient().getInputs(workflow);
+//        new ODEClient().getInputs(workflow);
         return new SubWorkflowComponent(workflow);
     }
 

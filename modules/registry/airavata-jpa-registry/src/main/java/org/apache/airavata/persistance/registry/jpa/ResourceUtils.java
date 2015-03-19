@@ -74,16 +74,16 @@ public class ResourceUtils {
     }
 
     /**
-     * @param gatewayName
+     * @param gatewayId
      * @return
      */
-    public static Resource createGateway(String gatewayName) throws RegistryException {
-        if (!isGatewayExist(gatewayName)) {
+    public static Resource createGateway(String gatewayId) throws RegistryException {
+        if (!isGatewayExist(gatewayId)) {
             GatewayResource gatewayResource = new GatewayResource();
-            gatewayResource.setGatewayName(gatewayName);
+            gatewayResource.setGatewayId(gatewayId);
             return gatewayResource;
         }else {
-            return getGateway(gatewayName);
+            return getGateway(gatewayId);
         }
     }
 
@@ -99,12 +99,12 @@ public class ResourceUtils {
 
     }
 
-    public static Resource getGateway(String gatewayName) throws RegistryException{
+    public static Resource getGateway(String gatewayId) throws RegistryException{
         EntityManager em = null;
         try {
-            if (isGatewayExist(gatewayName)) {
+            if (isGatewayExist(gatewayId)) {
                 em = getEntityManager();
-                Gateway gateway = em.find(Gateway.class, gatewayName);
+                Gateway gateway = em.find(Gateway.class, gatewayId);
                 GatewayResource gatewayResource = (GatewayResource)Utils.getResource(ResourceType.GATEWAY, gateway);
                 em.close();
                 return gatewayResource;
@@ -181,11 +181,11 @@ public class ResourceUtils {
 
     }
 
-    public static Resource getWorker(String gatewayName, String userName) throws RegistryException{
+    public static Resource getWorker(String gatewayId, String userName) throws RegistryException{
         EntityManager em = null;
         try {
             em = getEntityManager();
-            Gateway_Worker gatewayWorker = em.find(Gateway_Worker.class, new Gateway_Worker_PK(gatewayName, userName));
+            Gateway_Worker gatewayWorker = em.find(Gateway_Worker.class, new Gateway_Worker_PK(gatewayId, userName));
             WorkerResource workerResource = (WorkerResource) Utils.getResource(ResourceType.GATEWAY_WORKER, gatewayWorker);
             em.close();
             return workerResource;
@@ -206,16 +206,16 @@ public class ResourceUtils {
 
 
     /**
-     * @param gatewayName
+     * @param gatewayId
      * @return
      */
-    public static boolean isGatewayExist(String gatewayName) throws RegistryException{
+    public static boolean isGatewayExist(String gatewayId) throws RegistryException{
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
             QueryGenerator generator = new QueryGenerator(AbstractResource.GATEWAY);
-            generator.setParameter(AbstractResource.GatewayConstants.GATEWAY_NAME, gatewayName);
+            generator.setParameter(AbstractResource.GatewayConstants.GATEWAY_ID, gatewayId);
             Query q = generator.selectQuery(em);
             int size = q.getResultList().size();
             em.getTransaction().commit();
@@ -235,17 +235,50 @@ public class ResourceUtils {
 
     }
 
-    /**
-     * @param gatewayName
-     * @return
-     */
-    public static boolean removeGateway(String gatewayName) {
+    public static List<Resource> getAllGateways() throws RegistryException{
+        List<Resource> resourceList = new ArrayList<Resource>();
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
             QueryGenerator generator = new QueryGenerator(AbstractResource.GATEWAY);
-            generator.setParameter(AbstractResource.GatewayConstants.GATEWAY_NAME, gatewayName);
+            Query q = generator.selectQuery(em);
+            List results = q.getResultList();
+            if (results.size() != 0) {
+                for (Object result : results) {
+                    Gateway gateway = (Gateway) result;
+                    GatewayResource gatewayResource =
+                            (GatewayResource) Utils.getResource(ResourceType.GATEWAY, gateway);
+                    resourceList.add(gatewayResource);
+                }
+            }
+            em.getTransaction().commit();
+            em.close();
+        }catch (Exception e){
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        }finally {
+            if (em != null && em.isOpen()){
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+        return resourceList;
+    }
+
+    /**
+     * @param gatewayId
+     * @return
+     */
+    public static boolean removeGateway(String gatewayId) {
+        EntityManager em = null;
+        try {
+            em = getEntityManager();
+            em.getTransaction().begin();
+            QueryGenerator generator = new QueryGenerator(AbstractResource.GATEWAY);
+            generator.setParameter(AbstractResource.GatewayConstants.GATEWAY_ID, gatewayId);
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
@@ -279,7 +312,7 @@ public class ResourceUtils {
             if (!isUserExist(userResource.getUserName())){
                 userResource.save();
             }
-            Gateway gateway = em.find(Gateway.class, gatewayResource.getGatewayName());
+            Gateway gateway = em.find(Gateway.class, gatewayResource.getGatewayId());
             Users user = em.find(Users.class, userResource.getUserName());
             Gateway_Worker gatewayWorker = new Gateway_Worker();
             gatewayWorker.setGateway(gateway);
@@ -312,7 +345,7 @@ public class ResourceUtils {
             em = getEntityManager();
             em.getTransaction().begin();
             QueryGenerator generator = new QueryGenerator(AbstractResource.GATEWAY_WORKER);
-            generator.setParameter(AbstractResource.GatewayWorkerConstants.GATEWAY_NAME,
+            generator.setParameter(AbstractResource.GatewayWorkerConstants.GATEWAY_ID,
                     gatewayResource.getGatewayName());
             generator.setParameter(AbstractResource.UserConstants.USERNAME, userResource.getUserName());
             Query q = generator.deleteQuery(em);

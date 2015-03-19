@@ -33,14 +33,14 @@ public interface ApplicationInterface {
      * @param applicationModule application module
      * @return unique module id
      */
-    String addApplicationModule (ApplicationModule applicationModule) throws AppCatalogException;
+    String addApplicationModule (ApplicationModule applicationModule, String gatewayId) throws AppCatalogException;
 
     /**
      * This method will add application interface description
      * @param applicationInterfaceDescription application interface
      * @return unique app interface id
      */
-    String addApplicationInterface(ApplicationInterfaceDescription applicationInterfaceDescription) throws AppCatalogException;
+    String addApplicationInterface(ApplicationInterfaceDescription applicationInterfaceDescription, String gatewayId) throws AppCatalogException;
 
     /**
      * This method will add an application module mapping
@@ -86,7 +86,7 @@ public interface ApplicationInterface {
      */
     List<ApplicationModule> getApplicationModules(Map<String, String> filters) throws AppCatalogException;
 
-    List<ApplicationModule> getAllApplicationModules() throws AppCatalogException;
+    List<ApplicationModule> getAllApplicationModules(String gatewayId) throws AppCatalogException;
 
     /**
      * This method will return a list of application interfaces according to given search criteria
@@ -99,7 +99,7 @@ public interface ApplicationInterface {
      * This method will return all the application interfaces
      * @return list of all the application interfaces
      */
-    List<ApplicationInterfaceDescription> getAllApplicationInterfaces() throws AppCatalogException;
+    List<ApplicationInterfaceDescription> getAllApplicationInterfaces(String gatewayId) throws AppCatalogException;
 
     List<String> getAllApplicationInterfaceIds() throws AppCatalogException;
 

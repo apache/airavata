@@ -33,7 +33,7 @@ import java.util.Map;
 public class SlurmOutputParser implements OutputParser {
     private static final Logger log = LoggerFactory.getLogger(SlurmOutputParser.class);
 
-    public void parse(JobDescriptor descriptor, String rawOutput) throws SSHApiException {
+    public void parseSingleJob(JobDescriptor descriptor, String rawOutput) throws SSHApiException {
         log.info(rawOutput);
         String[] info = rawOutput.split("\n");
         String lastString = info[info.length - 1];
@@ -88,12 +88,12 @@ public class SlurmOutputParser implements OutputParser {
     }
 
     /**
-     * This can be used to parse the outpu of sbatch and extrac the jobID from the content
+     * This can be used to parseSingleJob the outpu of sbatch and extrac the jobID from the content
      *
      * @param rawOutput
      * @return
      */
-    public String parse(String rawOutput) throws SSHApiException {
+    public String parseJobSubmission(String rawOutput) throws SSHApiException {
         log.info(rawOutput);
         String[] info = rawOutput.split("\n");
         for (String anInfo : info) {
@@ -106,7 +106,7 @@ public class SlurmOutputParser implements OutputParser {
 //        throw new SSHApiException(rawOutput);  //todo//To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public JobStatus parse(String jobID, String rawOutput) throws SSHApiException {
+    public JobStatus parseJobStatus(String jobID, String rawOutput) throws SSHApiException {
         log.info(rawOutput);
         String[] info = rawOutput.split("\n");
         String lastString = info[info.length - 1];
@@ -148,7 +148,7 @@ public class SlurmOutputParser implements OutputParser {
         return JobStatus.valueOf("U");
     }
 
-    public void parse(String userName, Map<String, JobStatus> statusMap, String rawOutput) throws SSHApiException {
+    public void parseJobStatuses(String userName, Map<String, JobStatus> statusMap, String rawOutput) throws SSHApiException {
         log.debug(rawOutput);
         String[] info = rawOutput.split("\n");
         String lastString = info[info.length - 1];

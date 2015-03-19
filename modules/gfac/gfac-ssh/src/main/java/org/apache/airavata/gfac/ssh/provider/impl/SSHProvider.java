@@ -154,6 +154,7 @@ public class SSHProvider extends AbstractProvider {
                     }
                     // This installed path is a mandetory field, because this could change based on the computing resource
                     JobDescriptor jobDescriptor = GFACSSHUtils.createJobDescriptor(jobExecutionContext, cluster);
+
                     jobDetails.setJobName(jobDescriptor.getJobName());
                     log.info(jobDescriptor.toXML());
 

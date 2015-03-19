@@ -95,6 +95,8 @@ public interface ComputeResource {
      */
     String addScpDataMovement (SCPDataMovement scpDataMovement) throws AppCatalogException;
 
+    String addUnicoreDataMovement (UnicoreDataMovement unicoreDataMovement) throws AppCatalogException;
+
     /**
      * This will add a SCPDataMovement protocol to the database
      * @param computeResourceId compute resource id
@@ -165,6 +167,7 @@ public interface ComputeResource {
      * @return UnicoreSubmission object
      */
     UnicoreJobSubmission getUNICOREJobSubmission (String submissionId) throws AppCatalogException;
+    UnicoreDataMovement getUNICOREDataMovement (String dataMovementId) throws AppCatalogException;
 
     
 

@@ -29,26 +29,30 @@ import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
 /**
- * Enumeration of local resource job manager types supported by Airavata
- * 
- * FORK:
- *  Forking of commands without any job manager
- * 
- * PBS:
- *  Job manager supporting the Portal Batch System (PBS) protocol. Some examples include TORQUE, PBSPro, Grid Engine.
- * 
- * UGE:
- *  Univa Grid Engine, a variation of PBS implementation.
- * 
- * SLURM:
- *  The Simple Linux Utility for Resource Management is a open source workload manager.
- * 
+ * * Enumeration of local resource job manager types supported by Airavata
+ * *
+ * * FORK:
+ * *  Forking of commands without any job manager
+ * *
+ * * PBS:
+ * *  Job manager supporting the Portal Batch System (PBS) protocol. Some examples include TORQUE, PBSPro, Grid Engine.
+ * *
+ * * SLURM:
+ * *  The Simple Linux Utility for Resource Management is a open source workload manager.
+ *  *
+ *  * UGE:
+ *  *  Univa Grid Engine, a variation of PBS implementation.
+ *  *
+ *  * LSF:
+ *  *  IBM Platform Load Sharing Facility is dominantly installed on IBM clusters.
+ * *
  */
 @SuppressWarnings("all") public enum ResourceJobManagerType implements org.apache.thrift.TEnum {
   FORK(0),
   PBS(1),
-  UGE(2),
-  SLURM(3);
+  SLURM(2),
+  LSF(3),
+  UGE(4);
 
   private final int value;
 
@@ -74,9 +78,11 @@ import org.apache.thrift.TEnum;
       case 1:
         return PBS;
       case 2:
-        return UGE;
-      case 3:
         return SLURM;
+      case 3:
+        return LSF;
+      case 4:
+        return UGE;
       default:
         return null;
     }

@@ -26,6 +26,8 @@ import java.util.List;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.airavata.appcatalog.cpi.ApplicationInterface;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.util.ExecutionType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.workflow.catalog.WorkflowCatalogFactory;
@@ -42,14 +44,16 @@ public class WorkflowUtils {
 			if (allApplicationInterfaceIds.contains(applicationId)){
 				return ExecutionType.SINGLE_APP;
 			} else {
-				List<String> allWorkflows = WorkflowCatalogFactory.getWorkflowCatalog().getAllWorkflows();
+				List<String> allWorkflows = WorkflowCatalogFactory.getWorkflowCatalog().getAllWorkflows(ServerSettings.getDefaultUserGateway());
 				if (allWorkflows.contains(applicationId)){
 					return ExecutionType.WORKFLOW;
 				}
 			}
 		} catch (AppCatalogException e) {
             logger.error(e.getMessage(), e);
-		}
-		return ExecutionType.UNKNOWN;
+		} catch (ApplicationSettingsException e) {
+            logger.error(e.getMessage(), e);
+        }
+        return ExecutionType.UNKNOWN;
 	}
 }

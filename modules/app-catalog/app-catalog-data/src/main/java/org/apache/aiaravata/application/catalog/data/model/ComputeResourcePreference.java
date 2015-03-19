@@ -53,6 +53,8 @@ public class ComputeResourcePreference {
     private String scratchLocation;
     @Column(name = "ALLOCATION_PROJECT_NUMBER")
     private String projectNumber;
+    @Column(name = "LOGIN_USERNAME")
+    private String loginUserName;
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "RESOURCE_ID")
@@ -140,5 +142,13 @@ public class ComputeResourcePreference {
 
     public void setGatewayProfile(GatewayProfile gatewayProfile) {
         this.gatewayProfile = gatewayProfile;
+    }
+
+    public String getLoginUserName() {
+        return loginUserName;
+    }
+
+    public void setLoginUserName(String loginUserName) {
+        this.loginUserName = loginUserName;
     }
 }

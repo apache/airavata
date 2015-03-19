@@ -74,12 +74,6 @@ public class WorkerResource extends AbstractResource {
 				projectResource.setGateway(gateway);
 				result=projectResource;
 				break;
-			case USER_WORKFLOW:
-				UserWorkflowResource userWorkflowResource = new UserWorkflowResource();
-				userWorkflowResource.setWorker(this);
-				userWorkflowResource.setGateway(gateway);
-				result=userWorkflowResource;
-                break;
             case EXPERIMENT:
                 ExperimentResource experimentResource = new ExperimentResource();
                 experimentResource.setExecutionUser(user);
@@ -110,14 +104,6 @@ public class WorkerResource extends AbstractResource {
                 case PROJECT:
                     generator = new QueryGenerator(PROJECT);
                     generator.setParameter(ProjectConstants.PROJECT_ID, name);
-                    q = generator.deleteQuery(em);
-                    q.executeUpdate();
-                    break;
-                case USER_WORKFLOW:
-                    generator = new QueryGenerator(USER_WORKFLOW);
-                    generator.setParameter(UserWorkflowConstants.OWNER, getUser());
-                    generator.setParameter(UserWorkflowConstants.TEMPLATE_NAME, name);
-                    generator.setParameter(UserWorkflowConstants.GATEWAY_NAME, gateway.getGatewayName());
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
@@ -167,15 +153,6 @@ public class WorkerResource extends AbstractResource {
                     q = generator.selectQuery(em);
                     Project project = (Project) q.getSingleResult();
                     result = Utils.getResource(ResourceType.PROJECT, project);
-                    break;
-                case USER_WORKFLOW:
-                    generator = new QueryGenerator(USER_WORKFLOW);
-                    generator.setParameter(UserWorkflowConstants.OWNER, getUser());
-                    generator.setParameter(UserWorkflowConstants.TEMPLATE_NAME, name);
-                    generator.setParameter(UserWorkflowConstants.GATEWAY_NAME, gateway.getGatewayName());
-                    q = generator.selectQuery(em);
-                    User_Workflow userWorkflow = (User_Workflow) q.getSingleResult();
-                    result = Utils.getResource(ResourceType.USER_WORKFLOW, userWorkflow);
                     break;
                 case EXPERIMENT:
                     generator = new QueryGenerator(EXPERIMENT);
@@ -258,7 +235,7 @@ public class WorkerResource extends AbstractResource {
                 case PROJECT:
                     generator = new QueryGenerator(PROJECT);
                     Users users = em.find(Users.class, getUser());
-                    Gateway gatewayModel = em.find(Gateway.class, gateway.getGatewayName());
+                    Gateway gatewayModel = em.find(Gateway.class, gateway.getGatewayId());
                     generator.setParameter("users", users);
                     generator.setParameter("gateway", gatewayModel);
 //                generator.setParameter(ProjectConstants.USERNAME, getUser());
@@ -268,17 +245,6 @@ public class WorkerResource extends AbstractResource {
                         Project project = (Project) o;
                         ProjectResource projectResource = (ProjectResource) Utils.getResource(ResourceType.PROJECT, project);
                         result.add(projectResource);
-                    }
-                    break;
-                case USER_WORKFLOW:
-                    generator = new QueryGenerator(USER_WORKFLOW);
-                    generator.setParameter(UserWorkflowConstants.OWNER, getUser());
-                    q = generator.selectQuery(em);
-//	            q.setParameter("usr_name", getUser());
-                    for (Object o : q.getResultList()) {
-                        User_Workflow userWorkflow = (User_Workflow) o;
-                        UserWorkflowResource userWorkflowResource = (UserWorkflowResource) Utils.getResource(ResourceType.USER_WORKFLOW, userWorkflow);
-                        result.add(userWorkflowResource);
                     }
                     break;
                 case EXPERIMENT:
@@ -318,7 +284,7 @@ public class WorkerResource extends AbstractResource {
         EntityManager em = null;
         try {
             em = ResourceUtils.getEntityManager();
-            Gateway_Worker existingWorker = em.find(Gateway_Worker.class, new Gateway_Worker_PK(gateway.getGatewayName(), user));
+            Gateway_Worker existingWorker = em.find(Gateway_Worker.class, new Gateway_Worker_PK(gateway.getGatewayId(), user));
             em.close();
 
             em = ResourceUtils.getEntityManager();
@@ -327,14 +293,14 @@ public class WorkerResource extends AbstractResource {
             Users existingUser = em.find(Users.class, this.user);
             gatewayWorker.setUser(existingUser);
             gatewayWorker.setUser_name(existingUser.getUser_name());
-            Gateway gatewaymodel = em.find(Gateway.class, gateway.getGatewayName());
+            Gateway gatewaymodel = em.find(Gateway.class, gateway.getGatewayId());
             gatewayWorker.setGateway(gatewaymodel);
-            gatewayWorker.setGateway_name(gatewaymodel.getGateway_name());
+            gatewayWorker.setGateway_id(gatewaymodel.getGateway_id());
             if (existingWorker != null) {
                 existingWorker.setUser_name(existingUser.getUser_name());
                 existingWorker.setUser(existingUser);
                 existingWorker.setGateway(gatewaymodel);
-                existingWorker.setGateway_name(gatewaymodel.getGateway_name());
+                existingWorker.setGateway_id(gatewaymodel.getGateway_id());
                 gatewayWorker = em.merge(existingWorker);
             } else {
                 em.persist(gatewayWorker);
@@ -443,56 +409,6 @@ public class WorkerResource extends AbstractResource {
 
     /**
      *
-     * @param templateName user workflow template
-     * @return whether the workflow is already exists under the given user
-     */
-	public boolean isWorkflowTemplateExists(String templateName) throws RegistryException{
-		return isExists(ResourceType.USER_WORKFLOW, templateName);
-	}
-
-    /**
-     *
-     * @param templateName user workflow template
-     * @return user workflow resource
-     */
-	public UserWorkflowResource createWorkflowTemplate(String templateName) throws RegistryException{
-		UserWorkflowResource workflow=(UserWorkflowResource)create(ResourceType.USER_WORKFLOW);
-		workflow.setName(templateName);
-		return workflow;
-	}
-
-    /**
-     *
-     * @param templateName user workflow template
-     * @return user workflow resource
-     */
-	public UserWorkflowResource getWorkflowTemplate(String templateName) throws RegistryException{
-		return (UserWorkflowResource)get(ResourceType.USER_WORKFLOW, templateName);
-	}
-
-    /**
-     *
-     * @param templateName user workflow template
-     */
-    public void removeWorkflowTemplate(String templateName) throws RegistryException{
-		remove(ResourceType.USER_WORKFLOW, templateName);
-	}
-
-    /**
-     *
-     * @return list of user workflows for the given user
-     */
-    public List<UserWorkflowResource> getWorkflowTemplates() throws RegistryException{
-		List<UserWorkflowResource> result=new ArrayList<UserWorkflowResource>();
-		List<Resource> list = get(ResourceType.USER_WORKFLOW);
-		for (Resource resource : list) {
-			result.add((UserWorkflowResource) resource);
-		}
-		return result;
-	}
-
-    /**
-     *
      * @param name experiment name
      * @return whether experiment is already exist for the given user
      */
@@ -545,7 +461,9 @@ public class WorkerResource extends AbstractResource {
                     String filterVal = filters.get(field);
                     if (field.equals(ProjectConstants.USERNAME)) {
                         query += "p." + field + "= '" + filterVal + "' AND ";
-                    } else {
+                    }else if (field.equals(ProjectConstants.GATEWAY_ID)) {
+                        query += "p." + field + "= '" + filterVal + "' AND ";
+                    }else {
                         if (filterVal.contains("*")){
                             filterVal = filterVal.replaceAll("\\*", "");
                         }
@@ -588,6 +506,8 @@ public class WorkerResource extends AbstractResource {
                 for (String field : filters.keySet()) {
                     String filterVal = filters.get(field);
                     if (field.equals(ExperimentConstants.EXECUTION_USER)) {
+                        query += "e." + field + "= '" + filterVal + "' AND ";
+                    }else if (field.equals(ExperimentConstants.GATEWAY_ID)) {
                         query += "e." + field + "= '" + filterVal + "' AND ";
                     } else {
                         if (filterVal.contains("*")){

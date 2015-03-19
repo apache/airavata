@@ -35,8 +35,6 @@ public abstract class AbstractResource implements Resource {
 	public static final String GATEWAY_WORKER = "Gateway_Worker";
 	public static final String PROJECT = "Project";
 	public static final String PROJECT_USER = "ProjectUser";
-	public static final String PUBLISHED_WORKFLOW = "Published_Workflow";
-	public static final String USER_WORKFLOW = "User_Workflow";
 	public static final String EXPERIMENT = "Experiment";
 	public static final String NOTIFICATION_EMAIL = "Notification_Email";
 	public static final String EXPERIMENT_CONFIG_DATA = "ExperimentConfigData";
@@ -61,8 +59,10 @@ public abstract class AbstractResource implements Resource {
 
 	// Gateway Table
 	public final class GatewayConstants {
+		public static final String GATEWAY_ID = "gateway_id";
 		public static final String GATEWAY_NAME = "gateway_name";
-		public static final String GATEWAY_OWNER = "owner";
+		public static final String DOMAIN = "domain";
+		public static final String EMAIL_ADDRESS = "emailAddress";
 	}
 
 	// Configuration Table
@@ -84,12 +84,12 @@ public abstract class AbstractResource implements Resource {
 	// Gateway_Worker table
 	public final class GatewayWorkerConstants {
 		public static final String USERNAME = "user_name";
-		public static final String GATEWAY_NAME = "gateway_name";
+		public static final String GATEWAY_ID = "gateway_id";
 	}
 
 	// Project table
 	public final class ProjectConstants {
-		public static final String GATEWAY_NAME = "gateway_name";
+		public static final String GATEWAY_ID = "gateway_id";
 		public static final String USERNAME = "user_name";
 		public static final String PROJECT_NAME = "project_name";
 		public static final String PROJECT_ID = "project_id";
@@ -102,32 +102,11 @@ public abstract class AbstractResource implements Resource {
         public static final String PROJECT_ID = "projectID";
     }
 
-	// Published_Workflow table
-	public final class PublishedWorkflowConstants {
-		public static final String GATEWAY_NAME = "gateway_name";
-		public static final String CREATED_USER = "created_user";
-		public static final String PUBLISH_WORKFLOW_NAME = "publish_workflow_name";
-		public static final String VERSION = "version";
-		public static final String PUBLISHED_DATE = "published_date";
-		public static final String PATH = "path";
-		public static final String WORKFLOW_CONTENT = "workflow_content";
-	}
-
-	// User_Workflow table
-	public final class UserWorkflowConstants {
-		public static final String GATEWAY_NAME = "gateway_name";
-		public static final String OWNER = "owner";
-		public static final String TEMPLATE_NAME = "template_name";
-		public static final String LAST_UPDATED_DATE = "last_updated_date";
-		public static final String PATH = "path";
-		public static final String WORKFLOW_GRAPH = "workflow_graph";
-	}
-
 	// Experiment table
 	public final class ExperimentConstants {
 		public static final String PROJECT_ID = "projectID";
 		public static final String EXECUTION_USER = "executionUser";
-		public static final String GATEWAY_NAME = "gatewayName";
+		public static final String GATEWAY_ID = "gatewayId";
 		public static final String EXPERIMENT_ID = "expId";
 		public static final String EXPERIMENT_NAME = "expName";
 		public static final String DESCRIPTION = "expDesc";

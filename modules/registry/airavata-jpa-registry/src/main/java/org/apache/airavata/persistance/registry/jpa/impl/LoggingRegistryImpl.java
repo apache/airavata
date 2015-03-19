@@ -30,47 +30,58 @@ import java.util.Map;
 public class LoggingRegistryImpl implements Registry {
     private final static Logger logger = LoggerFactory.getLogger(LoggingRegistryImpl.class);
 
+    @Override
+    public Object add(ParentDataType dataType, Object newObjectToAdd, String gatewayId) throws RegistryException {
+        return null;
+    }
+
+    @Override
     public Object add(ChildDataType dataType, Object newObjectToAdd, Object dependentIdentifiers) throws RegistryException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
-    public Object add(ParentDataType dataType, Object newObjectToAdd) throws RegistryException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
+    @Override
     public void update(RegistryModelType dataType, Object newObjectToUpdate, Object identifier) throws RegistryException {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
+    @Override
     public void update(RegistryModelType dataType, Object identifier, String fieldName, Object value) throws RegistryException {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
+    @Override
     public Object get(RegistryModelType dataType, Object identifier) throws RegistryException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
+    @Override
     public List<Object> get(RegistryModelType dataType, String fieldName, Object value) throws RegistryException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
+    @Override
     public List<Object> search(RegistryModelType dataType, Map<String, String> filters) throws RegistryException {
         return null;
     }
 
+    @Override
     public Object getValue(RegistryModelType dataType, Object identifier, String field) throws RegistryException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
+    @Override
     public List<String> getIds(RegistryModelType dataType, String fieldName, Object value) throws RegistryException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
+    @Override
     public void remove(RegistryModelType dataType, Object identifier) throws RegistryException {
-        //To change body of implemented methods use File | Settings | File Templates.
+
     }
 
+    @Override
     public boolean isExist(RegistryModelType dataType, Object identifier) throws RegistryException {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 }

@@ -25,8 +25,6 @@ public enum ResourceType {
     PROJECT,
     USER,
     PROJECT_USER,
-    PUBLISHED_WORKFLOW,
-    USER_WORKFLOW,
     CONFIGURATION,
     GATEWAY_WORKER,
     EXPERIMENT,

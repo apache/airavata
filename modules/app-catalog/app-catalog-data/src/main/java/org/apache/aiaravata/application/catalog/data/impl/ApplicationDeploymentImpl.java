@@ -41,7 +41,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
     private final static Logger logger = LoggerFactory.getLogger(ApplicationDeploymentImpl.class);
 
     @Override
-    public String addApplicationDeployment(ApplicationDeploymentDescription deploymentDescription) throws AppCatalogException {
+    public String addApplicationDeployment(ApplicationDeploymentDescription deploymentDescription, String gatewayId) throws AppCatalogException {
         try {
             AppDeploymentResource deploymentResource = new AppDeploymentResource();
             ComputeResourceResource computeHostResource = new ComputeResourceResource();
@@ -62,6 +62,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             deploymentResource.setHostResource((ComputeResourceResource)computeHostResource.get(deploymentDescription.getComputeHostId()));
             deploymentResource.setAppDes(deploymentDescription.getAppDeploymentDescription());
             deploymentResource.setExecutablePath(deploymentDescription.getExecutablePath());
+            deploymentResource.setGatewayId(gatewayId);
             ApplicationParallelismType parallelism = deploymentDescription.getParallelism();
             if (parallelism != null){
                 deploymentResource.setParallelism(parallelism.toString());
@@ -360,10 +361,11 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
     }
 
     @Override
-    public List<ApplicationDeploymentDescription> getAllApplicationDeployements() throws AppCatalogException {
+    public List<ApplicationDeploymentDescription> getAllApplicationDeployements(String gatewayId) throws AppCatalogException {
         List<ApplicationDeploymentDescription> deploymentDescriptions = new ArrayList<ApplicationDeploymentDescription>();
         try {
             AppDeploymentResource resource = new AppDeploymentResource();
+            resource.setGatewayId(gatewayId);
             List<Resource> resources = resource.getAll();
             if (resources != null && !resources.isEmpty()){
                 deploymentDescriptions = AppCatalogThriftConversion.getAppDepDescList(resources);

@@ -95,4 +95,19 @@ public class PBSJobConfiguration implements JobManagerConfiguration {
     public RawCommandInfo getUserBasedMonitorCommand(String userName) {
         return new RawCommandInfo(this.installedPath + "qstat -u " + userName);
     }
+
+    @Override
+    public String  getBaseCancelCommand() {
+        return "qdel";
+    }
+
+    @Override
+    public String  getBaseMonitorCommand() {
+        return "qstat";
+    }
+
+    @Override
+    public String getBaseSubmitCommand() {
+        return "qsub ";
+    }
 }

@@ -28,7 +28,7 @@ import org.apache.airavata.gsi.ssh.impl.JobStatus;
  * This interface can be implemented by the end user of the API
  * to do desired operations based on the job status change. API has a
  * default joblistener which can be used by the end users, but its
- * configurable and can be parse to jobsubmission methods.
+ * configurable and can be parseSingleJob to jobsubmission methods.
  */
 public abstract class JobSubmissionListener {
 

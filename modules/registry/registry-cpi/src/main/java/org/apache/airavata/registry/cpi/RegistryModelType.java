@@ -24,6 +24,7 @@ public enum RegistryModelType {
     GROUP,
     USER,
     PROJECT,
+    GATEWAY,
     EXPERIMENT,
     EXPERIMENT_INPUT,
     EXPERIMENT_OUTPUT,

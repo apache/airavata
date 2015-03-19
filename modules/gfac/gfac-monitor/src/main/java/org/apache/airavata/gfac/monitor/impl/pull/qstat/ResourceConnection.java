@@ -87,7 +87,7 @@ public class ResourceConnection {
     public JobState getJobStatus(MonitorID monitorID) throws SSHApiException {
         String jobID = monitorID.getJobID();
         //todo so currently we execute the qstat for each job but we can use user based monitoring
-        //todo or we should concatenate all the commands and execute them in one go and parse the response
+        //todo or we should concatenate all the commands and execute them in one go and parseSingleJob the response
         return getStatusFromString(cluster.getJobStatus(jobID).toString());
     }
 
@@ -101,7 +101,7 @@ public class ResourceConnection {
         }
         String userName = cluster.getServerInfo().getUserName();
         //todo so currently we execute the qstat for each job but we can use user based monitoring
-        //todo or we should concatenate all the commands and execute them in one go and parse the response
+        //todo or we should concatenate all the commands and execute them in one go and parseSingleJob the response
         //
         cluster.getJobStatuses(userName, treeMap);
         for (String key : treeMap.keySet()) {
@@ -113,27 +113,27 @@ public class ResourceConnection {
     private JobState getStatusFromString(String status) {
         log.info("parsing the job status returned : " + status);
         if (status != null) {
-            if ("C".equals(status) || "CD".equals(status) || "E".equals(status) || "CG".equals(status)) {
+            if ("C".equals(status) || "CD".equals(status) || "E".equals(status) || "CG".equals(status) || "DONE".equals(status)) {
                 return JobState.COMPLETE;
             } else if ("H".equals(status) || "h".equals(status)) {
                 return JobState.HELD;
-            } else if ("Q".equals(status) || "qw".equals(status)) {
+            } else if ("Q".equals(status) || "qw".equals(status) || "PEND".equals(status)) {
                 return JobState.QUEUED;
-            } else if ("R".equals(status) || "CF".equals(status) || "r".equals(status)) {
+            } else if ("R".equals(status) || "CF".equals(status) || "r".equals(status) || "RUN".equals(status)) {
                 return JobState.ACTIVE;
             } else if ("T".equals(status)) {
                 return JobState.HELD;
             } else if ("W".equals(status) || "PD".equals(status)) {
                 return JobState.QUEUED;
-            } else if ("S".equals(status)) {
+            } else if ("S".equals(status) || "PSUSP".equals(status) || "USUSP".equals(status) || "SSUSP".equals(status)) {
                 return JobState.SUSPENDED;
             } else if ("CA".equals(status)) {
                 return JobState.CANCELED;
-            } else if ("F".equals(status) || "NF".equals(status) || "TO".equals(status)) {
+            } else if ("F".equals(status) || "NF".equals(status) || "TO".equals(status) || "EXIT".equals(status)) {
                 return JobState.FAILED;
             } else if ("PR".equals(status) || "Er".equals(status)) {
                 return JobState.FAILED;
-            } else if ("U".equals(status)) {
+            } else if ("U".equals(status) || ("UNKWN".equals(status))) {
                 return JobState.UNKNOWN;
             }
         }

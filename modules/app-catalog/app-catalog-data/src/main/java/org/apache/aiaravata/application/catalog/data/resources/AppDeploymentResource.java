@@ -47,10 +47,19 @@ public class AppDeploymentResource extends AbstractResource {
     private String executablePath;
     private String parallelism;
     private String appDes;
+    private String gatewayId;
     private ComputeResourceResource hostResource;
     private AppModuleResource moduleResource;
     private Timestamp createdTime;
     private Timestamp updatedTime;
+
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
 
     public Timestamp getCreatedTime() {
         return createdTime;
@@ -241,6 +250,7 @@ public class AppDeploymentResource extends AbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(APPLICATION_DEPLOYMENT);
+            generator.setParameter(ApplicationDeploymentConstants.GATEWAY_ID, gatewayId);
             Query q = generator.selectQuery(em);
             List results = q.getResultList();
                 if (results.size() != 0) {
@@ -372,6 +382,7 @@ public class AppDeploymentResource extends AbstractResource {
                 existingDeployment.setHostID(hostId);
                 existingDeployment.setExecutablePath(executablePath);
                 existingDeployment.setParallelism(parallelism);
+                existingDeployment.setGatewayId(gatewayId);
                 existingDeployment.setUpdateTime(AiravataUtils.getCurrentTimestamp());
                 em.merge(existingDeployment);
             }else {
@@ -384,6 +395,7 @@ public class AppDeploymentResource extends AbstractResource {
                 deployment.setComputeResource(computeHost);
                 deployment.setExecutablePath(executablePath);
                 deployment.setParallelism(parallelism);
+                deployment.setGatewayId(gatewayId);
                 deployment.setCreationTime(AiravataUtils.getCurrentTimestamp());
                 em.persist(deployment);
             }

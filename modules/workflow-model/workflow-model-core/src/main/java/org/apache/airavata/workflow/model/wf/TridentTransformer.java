@@ -29,33 +29,33 @@ import org.apache.airavata.workflow.model.xsd.LeadContextHeaderXSD;
 import org.apache.airavata.workflow.model.xsd.LeadCrosscutXSD;
 import org.xmlpull.infoset.XmlElement;
 
-import xsul5.wsdl.WsdlDefinitions;
+//import xsul5.wsdl.WsdlDefinitions;
 
 public class TridentTransformer {
 
-    public void process(WsdlDefinitions wsdl) {
-        XmlElement types = wsdl.getTypes();
-        Iterable<XmlElement> schemas = types.elements(null, "schema");
-        LinkedList<XmlElement> removeList = new LinkedList<XmlElement>();
-        for (XmlElement schema : schemas) {
-            String tns = schema.attributeValue("targetNamespace");
-            if (null != tns && -1 != tns.indexOf("http://www.extreme.indiana.edu/xbaya")) {
-            } else {
-                removeList.add(schema);
-            }
-        }
-        for (XmlElement schema : removeList) {
-            types.removeChild(schema);
-        }
-
-        types.addChild(XMLUtil.stringToXmlElement(GFacSimpleTypesXSD.XSD));
-        types.addChild(XMLUtil.stringToXmlElement(LeadCrosscutXSD.XSD));
-        types.addChild(XMLUtil.stringToXmlElement(LeadContextHeaderXSD.XSD));
-
-        XmlElement xml = wsdl.xml();
-        XMLUtil.removeElements(xml, "partnerLinkType");
-        XMLUtil.removeElements(xml, "default");
-
-    }
+//    public void process(WsdlDefinitions wsdl) {
+//        XmlElement types = wsdl.getTypes();
+//        Iterable<XmlElement> schemas = types.elements(null, "schema");
+//        LinkedList<XmlElement> removeList = new LinkedList<XmlElement>();
+//        for (XmlElement schema : schemas) {
+//            String tns = schema.attributeValue("targetNamespace");
+//            if (null != tns && -1 != tns.indexOf("http://www.extreme.indiana.edu/xbaya")) {
+//            } else {
+//                removeList.add(schema);
+//            }
+//        }
+//        for (XmlElement schema : removeList) {
+//            types.removeChild(schema);
+//        }
+//
+//        types.addChild(XMLUtil.stringToXmlElement(GFacSimpleTypesXSD.XSD));
+//        types.addChild(XMLUtil.stringToXmlElement(LeadCrosscutXSD.XSD));
+//        types.addChild(XMLUtil.stringToXmlElement(LeadContextHeaderXSD.XSD));
+//
+//        XmlElement xml = wsdl.xml();
+//        XMLUtil.removeElements(xml, "partnerLinkType");
+//        XMLUtil.removeElements(xml, "default");
+//
+//    }
 
 }

@@ -20,10 +20,35 @@
 */
 package org.apache.airavata.gsi.ssh.impl;
 
-import com.jcraft.jsch.*;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.net.URL;
+import java.security.SecureRandom;
+import java.util.List;
+import java.util.Map;
 
-import org.apache.airavata.gsi.ssh.api.*;
-import org.apache.airavata.gsi.ssh.api.authentication.*;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
+import org.apache.airavata.gsi.ssh.api.Cluster;
+import org.apache.airavata.gsi.ssh.api.CommandExecutor;
+import org.apache.airavata.gsi.ssh.api.SSHApiException;
+import org.apache.airavata.gsi.ssh.api.ServerInfo;
+import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
+import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
+import org.apache.airavata.gsi.ssh.api.authentication.SSHKeyAuthentication;
+import org.apache.airavata.gsi.ssh.api.authentication.SSHPasswordAuthentication;
+import org.apache.airavata.gsi.ssh.api.authentication.SSHPublicKeyAuthentication;
+import org.apache.airavata.gsi.ssh.api.authentication.SSHPublicKeyFileAuthentication;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.api.job.JobManagerConfiguration;
 import org.apache.airavata.gsi.ssh.api.job.OutputParser;
@@ -37,25 +62,15 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.transform.*;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.net.URL;
-import java.security.SecureRandom;
-import java.util.List;
-import java.util.Map;
+import com.jcraft.jsch.ExtendedSession;
+import com.jcraft.jsch.GSISSHIdentityFile;
+import com.jcraft.jsch.GSISSHIdentityRepository;
+import com.jcraft.jsch.Identity;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 
 public class GSISSHAbstractCluster implements Cluster {
-    static {
-        JSch.setConfig("gssapi-with-mic.x509", "org.apache.airavata.gsi.ssh.GSSContextX509");
-        JSch.setConfig("userauth.gssapi-with-mic", "com.jcraft.jsch.UserAuthGSSAPIWithMICGSSCredentials");
-
-    }
 
     private static final Logger log = LoggerFactory.getLogger(GSISSHAbstractCluster.class);
     public static final String X509_CERT_DIR = "X509_CERT_DIR";
@@ -70,7 +85,10 @@ public class GSISSHAbstractCluster implements Cluster {
     private Session session;
 
     private ConfigReader configReader;
+	
+    private JSch defaultJSch;
 
+    private static Identity identityFile = null;
 
     public GSISSHAbstractCluster(ServerInfo serverInfo, AuthenticationInfo authenticationInfo, JobManagerConfiguration config) throws SSHApiException {
         this(serverInfo, authenticationInfo);
@@ -82,12 +100,17 @@ public class GSISSHAbstractCluster implements Cluster {
         reconnect(serverInfo, authenticationInfo);
     }
 
+    public GSISSHAbstractCluster(JobManagerConfiguration config) {
+        this.jobManagerConfiguration = config;
+    }
     private synchronized void reconnect(ServerInfo serverInfo, AuthenticationInfo authenticationInfo) throws SSHApiException {
         this.serverInfo = serverInfo;
 
         this.authenticationInfo = authenticationInfo;
 
         if (authenticationInfo instanceof GSIAuthenticationInfo) {
+            JSch.setConfig("gssapi-with-mic.x509", "org.apache.airavata.gsi.ssh.GSSContextX509");
+            JSch.setConfig("userauth.gssapi-with-mic", "com.jcraft.jsch.UserAuthGSSAPIWithMICGSSCredentials");
             System.setProperty(X509_CERT_DIR, (String) ((GSIAuthenticationInfo) authenticationInfo).getProperties().
                     get("X509_CERT_DIR"));
         }
@@ -98,24 +121,21 @@ public class GSISSHAbstractCluster implements Cluster {
         } catch (IOException e) {
             throw new SSHApiException("Unable to load system configurations.", e);
         }
-        JSch jSch = new ExtendedJSch();
-
-        log.debug("Connecting to server - " + serverInfo.getHost() + ":" + serverInfo.getPort() + " with user name - "
-                + serverInfo.getUserName());
-
         try {
-            session = jSch.getSession(serverInfo.getUserName(), serverInfo.getHost(), serverInfo.getPort());
-            session.setTimeout(Integer.parseInt(configReader.getConfiguration(SSH_SESSION_TIMEOUT)));
-        } catch (Exception e) {
+        	 if(defaultJSch == null){
+             	defaultJSch = createJSch(authenticationInfo);
+             }
+     	        log.debug("Connecting to server - " + serverInfo.getHost() + ":" + serverInfo.getPort() + " with user name - "
+                     + serverInfo.getUserName());
+
+        	session = createSession(defaultJSch,serverInfo.getUserName(), serverInfo.getHost(), serverInfo.getPort());
+        	}
+        	catch (Exception e) {
             throw new SSHApiException("An exception occurred while creating SSH session." +
                     "Connecting server - " + serverInfo.getHost() + ":" + serverInfo.getPort() +
                     " connecting user name - "
                     + serverInfo.getUserName(), e);
         }
-
-        java.util.Properties config = this.configReader.getProperties();
-        session.setConfig(config);
-
 
         //=============================================================
         // Handling vanilla SSH pieces
@@ -143,10 +163,8 @@ public class GSISSHAbstractCluster implements Cluster {
 
             logDebug("The public key file for vanilla SSH " + publicKeyFile);
 
-            Identity identityFile;
-
             try {
-                identityFile = GSISSHIdentityFile.newInstance(privateKeyFile, null, jSch);
+                identityFile = GSISSHIdentityFile.newInstance(privateKeyFile, null, defaultJSch);
             } catch (JSchException e) {
                 throw new SSHApiException("An exception occurred while initializing keys using files. " +
                         "(private key and public key)." +
@@ -157,7 +175,7 @@ public class GSISSHAbstractCluster implements Cluster {
             }
 
             // Add identity to identity repository
-            GSISSHIdentityRepository identityRepository = new GSISSHIdentityRepository(jSch);
+            GSISSHIdentityRepository identityRepository = new GSISSHIdentityRepository(defaultJSch);
             identityRepository.add(identityFile);
 
             // Set repository to session
@@ -173,14 +191,11 @@ public class GSISSHAbstractCluster implements Cluster {
 
             SSHPublicKeyAuthentication sshPublicKeyAuthentication
                     = (SSHPublicKeyAuthentication) authenticationInfo;
-
-            Identity identityFile;
-
             try {
                 String name = serverInfo.getUserName() + "_" + serverInfo.getHost();
                 identityFile = GSISSHIdentityFile.newInstance(name,
                         sshPublicKeyAuthentication.getPrivateKey(serverInfo.getUserName(), serverInfo.getHost()),
-                        sshPublicKeyAuthentication.getPublicKey(serverInfo.getUserName(), serverInfo.getHost()), jSch);
+                        sshPublicKeyAuthentication.getPublicKey(serverInfo.getUserName(), serverInfo.getHost()), defaultJSch);
             } catch (JSchException e) {
                 throw new SSHApiException("An exception occurred while initializing keys using byte arrays. " +
                         "(private key and public key)." +
@@ -190,7 +205,7 @@ public class GSISSHAbstractCluster implements Cluster {
             }
 
             // Add identity to identity repository
-            GSISSHIdentityRepository identityRepository = new GSISSHIdentityRepository(jSch);
+            GSISSHIdentityRepository identityRepository = new GSISSHIdentityRepository(defaultJSch);
             identityRepository.add(identityFile);
 
             // Set repository to session
@@ -212,7 +227,7 @@ public class GSISSHAbstractCluster implements Cluster {
         }
 
         try {
-            session.connect();
+            session.connect(Integer.parseInt(configReader.getConfiguration(SSH_SESSION_TIMEOUT)));
         } catch (Exception e) {
             throw new SSHApiException("An exception occurred while connecting to server." +
                     "Connecting server - " + serverInfo.getHost() + ":" + serverInfo.getPort() +
@@ -226,7 +241,7 @@ public class GSISSHAbstractCluster implements Cluster {
 
         StandardOutReader stdOutReader = new StandardOutReader();
         CommandExecutor.executeCommand(rawCommandInfo, this.getSession(), stdOutReader);
-        String outputifAvailable = getOutputifAvailable(stdOutReader, "Error reading output of job submission",rawCommandInfo.getBaseCommand(jobManagerConfiguration.getInstalledPath()));
+        String outputifAvailable = getOutputifAvailable(stdOutReader, "Error reading output of job submission",jobManagerConfiguration.getBaseCancelCommand());
         // this might not be the case for all teh resources, if so Cluster implementation can override this method
         // because here after cancelling we try to get the job description and return it back
         try {
@@ -259,9 +274,9 @@ public class GSISSHAbstractCluster implements Cluster {
         //Check whether pbs submission is successful or not, if it failed throw and exception in submitJob method
         // with the error thrown in qsub command
         //
-        String outputifAvailable = getOutputifAvailable(standardOutReader,"Error reading output of job submission",rawCommandInfo.getBaseCommand(jobManagerConfiguration.getInstalledPath()));
+        String outputifAvailable = getOutputifAvailable(standardOutReader,"Error reading output of job submission",jobManagerConfiguration.getBaseSubmitCommand());
         OutputParser outputParser = jobManagerConfiguration.getParser();
-        return  outputParser.parse(outputifAvailable);
+        return  outputParser.parseJobSubmission(outputifAvailable);
     }
 
     public synchronized String submitBatchJob(JobDescriptor jobDescriptor) throws SSHApiException {
@@ -341,14 +356,64 @@ public class GSISSHAbstractCluster implements Cluster {
     }
 
 
+    public void generateJobScript(JobDescriptor jobDescriptor) throws SSHApiException {
+        TransformerFactory factory = TransformerFactory.newInstance();
+        URL resource = this.getClass().getClassLoader().getResource(jobManagerConfiguration.getJobDescriptionTemplateName());
+
+        if (resource == null) {
+            String error = "System configuration file '" + jobManagerConfiguration.getJobDescriptionTemplateName()
+                    + "' not found in the classpath";
+            throw new SSHApiException(error);
+        }
+
+        Source xslt = new StreamSource(new File(resource.getPath()));
+        Transformer transformer;
+        StringWriter results = new StringWriter();
+        File tempPBSFile = null;
+        try {
+            // generate the pbs script using xslt
+            transformer = factory.newTransformer(xslt);
+            Source text = new StreamSource(new ByteArrayInputStream(jobDescriptor.toXML().getBytes()));
+            transformer.transform(text, new StreamResult(results));
+            String scriptContent = results.toString().replaceAll("^[ |\t]*\n$", "");
+            if (scriptContent.startsWith("\n")) {
+                scriptContent = scriptContent.substring(1);
+            }
+//            log.debug("generated PBS:" + results.toString());
+
+            // creating a temporary file using pbs script generated above
+            int number = new SecureRandom().nextInt();
+            number = (number < 0 ? -number : number);
+
+            tempPBSFile = new File(Integer.toString(number) + jobManagerConfiguration.getScriptExtension());
+            log.info("File Path: " + tempPBSFile.getAbsolutePath());
+            log.info("File Content: " + scriptContent);
+            FileUtils.writeStringToFile(tempPBSFile, scriptContent);
+        } catch (TransformerConfigurationException e) {
+            throw new SSHApiException("Error parsing PBS transformation", e);
+        } catch (TransformerException e) {
+            throw new SSHApiException("Error generating PBS script", e);
+        } catch (IOException e) {
+            throw new SSHApiException("An exception occurred while connecting to server." +
+                    "Connecting server - " + serverInfo.getHost() + ":" + serverInfo.getPort() +
+                    " connecting user name - "
+                    + serverInfo.getUserName(), e);
+        } finally {
+            if (tempPBSFile != null) {
+                tempPBSFile.delete();
+            }
+        }
+    }
+
+
 
     public synchronized JobDescriptor getJobDescriptorById(String jobID) throws SSHApiException {
         RawCommandInfo rawCommandInfo = jobManagerConfiguration.getMonitorCommand(jobID);
         StandardOutReader stdOutReader = new StandardOutReader();
         CommandExecutor.executeCommand(rawCommandInfo, this.getSession(), stdOutReader);
-        String result = getOutputifAvailable(stdOutReader, "Error getting job information from the resource !",rawCommandInfo.getBaseCommand(jobManagerConfiguration.getInstalledPath()));
+        String result = getOutputifAvailable(stdOutReader, "Error getting job information from the resource !",jobManagerConfiguration.getBaseMonitorCommand());
         JobDescriptor jobDescriptor = new JobDescriptor();
-        jobManagerConfiguration.getParser().parse(jobDescriptor,result);
+        jobManagerConfiguration.getParser().parseSingleJob(jobDescriptor, result);
         return jobDescriptor;
     }
 
@@ -356,8 +421,8 @@ public class GSISSHAbstractCluster implements Cluster {
         RawCommandInfo rawCommandInfo = jobManagerConfiguration.getMonitorCommand(jobID);
         StandardOutReader stdOutReader = new StandardOutReader();
         CommandExecutor.executeCommand(rawCommandInfo, this.getSession(), stdOutReader);
-        String result = getOutputifAvailable(stdOutReader, "Error getting job information from the resource !", rawCommandInfo.getBaseCommand(jobManagerConfiguration.getInstalledPath()));
-        return jobManagerConfiguration.getParser().parse(jobID, result);
+        String result = getOutputifAvailable(stdOutReader, "Error getting job information from the resource !", jobManagerConfiguration.getBaseMonitorCommand());
+        return jobManagerConfiguration.getParser().parseJobStatus(jobID, result);
     }
 
     private static void logDebug(String message) {
@@ -573,8 +638,8 @@ public class GSISSHAbstractCluster implements Cluster {
                 }
             }
         }
-        String result = getOutputifAvailable(stdOutReader, "Error getting job information from the resource !", rawCommandInfo.getBaseCommand(jobManagerConfiguration.getInstalledPath()));
-        jobManagerConfiguration.getParser().parse(userName,jobIDs, result);
+        String result = getOutputifAvailable(stdOutReader, "Error getting job information from the resource !", jobManagerConfiguration.getBaseMonitorCommand());
+        jobManagerConfiguration.getParser().parseJobStatuses(userName, jobIDs, result);
     }
 
     public ServerInfo getServerInfo() {
@@ -620,6 +685,70 @@ public class GSISSHAbstractCluster implements Cluster {
     }
 
     public void disconnect() throws SSHApiException {
-//        getSession().disconnect();
+    	if(getSession().isConnected()){
+    		getSession().disconnect();
+    	}
     }
+    /**
+	
+	 *            the file system abstraction which will be necessary to
+	 *            perform certain file system operations.
+	 * @return the new default JSch implementation.
+	 * @throws JSchException
+	 *             known host keys cannot be loaded.
+	 */
+	protected JSch createJSch(AuthenticationInfo authenticationInfo) throws JSchException {
+//		final File fs = new File(System.getProperty("user.home"));
+		if(authenticationInfo instanceof GSIAuthenticationInfo){
+			final JSch jsch = new ExtendedJSch();
+//			knownHosts(jsch, fs);
+			return jsch;
+		}else{
+		final JSch jsch = new JSch();
+//		knownHosts(jsch, fs);
+		return jsch;
+		}
+		
+	}
+	/**
+	 * Create a new remote session for the requested address.
+	 *
+	 * @param user
+	 *            login to authenticate as.
+	 * @param host
+	 *            server name to connect to.
+	 * @param port
+	 *            port number of the SSH daemon (typically 22).
+	 * @return new session instance, but otherwise unconfigured.
+	 * @throws JSchException
+	 *             the session could not be created.
+	 */
+	private Session createSession(JSch jsch, String user, String host, int port) throws JSchException {
+		final Session session = jsch.getSession(user, host, port);
+		// We retry already in getSession() method. JSch must not retry
+		// on its own.
+		session.setConfig("MaxAuthTries", "1"); //$NON-NLS-1$ //$NON-NLS-2$
+		session.setTimeout(Integer.parseInt(configReader.getConfiguration(SSH_SESSION_TIMEOUT)));
+	    java.util.Properties config = this.configReader.getProperties();
+	    session.setConfig(config);
+	    
+    	return session;
+	}
+	private static void knownHosts(final JSch sch,final File home) throws JSchException {
+		if (home == null)
+			return;
+		final File known_hosts = new File(new File(home, ".ssh"), "known_hosts"); //$NON-NLS-1$ //$NON-NLS-2$
+		try {
+			final FileInputStream in = new FileInputStream(known_hosts);
+			try {
+				sch.setKnownHosts(in);
+			} finally {
+				in.close();
+			}
+		} catch (FileNotFoundException none) {
+			// Oh well. They don't have a known hosts in home.
+		} catch (IOException err) {
+			// Oh well. They don't have a known hosts in home.
+		}
+	}
 }

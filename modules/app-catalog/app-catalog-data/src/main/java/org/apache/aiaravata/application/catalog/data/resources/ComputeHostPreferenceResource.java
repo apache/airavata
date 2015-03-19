@@ -50,9 +50,18 @@ public class ComputeHostPreferenceResource extends AbstractResource {
     private String batchQueue;
     private String scratchLocation;
     private String projectNumber;
+    private String loginUserName;
 
     private GatewayProfileResource gatewayProfile;
     private ComputeResourceResource computeHostResource;
+
+    public String getLoginUserName() {
+        return loginUserName;
+    }
+
+    public void setLoginUserName(String loginUserName) {
+        this.loginUserName = loginUserName;
+    }
 
     public String getGatewayId() {
         return gatewayId;
@@ -339,6 +348,7 @@ public class ComputeHostPreferenceResource extends AbstractResource {
                 existingPreference.setScratchLocation(scratchLocation);
                 existingPreference.setProjectNumber(projectNumber);
                 existingPreference.setBatchQueue(batchQueue);
+                existingPreference.setLoginUserName(loginUserName);
                 em.merge(existingPreference);
             } else {
                 ComputeResourcePreference resourcePreference = new ComputeResourcePreference();
@@ -352,6 +362,7 @@ public class ComputeHostPreferenceResource extends AbstractResource {
                 resourcePreference.setScratchLocation(scratchLocation);
                 resourcePreference.setProjectNumber(projectNumber);
                 resourcePreference.setBatchQueue(batchQueue);
+                resourcePreference.setLoginUserName(loginUserName);
                 em.persist(resourcePreference);
             }
             em.getTransaction().commit();

@@ -41,10 +41,11 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
     private final static Logger logger = LoggerFactory.getLogger(WorkflowCatalogImpl.class);
 
     @Override
-    public List<String> getAllWorkflows() throws AppCatalogException {
+    public List<String> getAllWorkflows(String gatewayId) throws AppCatalogException {
         List<String> workflowIds = new ArrayList<String>();
         try {
             WorkflowResource resource = new WorkflowResource();
+            resource.setGatewayId(gatewayId);
             workflowIds = resource.getAllIds();
         } catch (Exception e) {
             logger.error("Error while retrieving all the workflow template ids...", e);
@@ -77,12 +78,13 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
     }
 
     @Override
-    public String registerWorkflow(Workflow workflow) throws AppCatalogException {
+    public String registerWorkflow(Workflow workflow, String gatewayId) throws AppCatalogException {
         try {
             WorkflowResource resource = new WorkflowResource();
             resource.setWfTemplateId(AppCatalogUtils.getID(workflow.getName()));
             resource.setWfName(workflow.getName());
             resource.setGraph(workflow.getGraph());
+            resource.setGatewayId(gatewayId);
             if (workflow.getImage() != null){
                 resource.setImage(new String(workflow.getImage()));
             }

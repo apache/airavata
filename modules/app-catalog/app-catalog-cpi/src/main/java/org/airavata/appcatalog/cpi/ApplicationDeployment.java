@@ -30,7 +30,7 @@ public interface ApplicationDeployment {
      * @param deploymentDescription application deployment
      * @return unique id for application deployment
      */
-    String addApplicationDeployment (ApplicationDeploymentDescription deploymentDescription) throws AppCatalogException;
+    String addApplicationDeployment (ApplicationDeploymentDescription deploymentDescription, String gatewayId) throws AppCatalogException;
 
     /**
      * This method will update application deployment
@@ -53,7 +53,7 @@ public interface ApplicationDeployment {
      */
     List<ApplicationDeploymentDescription> getApplicationDeployements (Map<String, String> filters) throws AppCatalogException;
 
-    List<ApplicationDeploymentDescription> getAllApplicationDeployements () throws AppCatalogException;
+    List<ApplicationDeploymentDescription> getAllApplicationDeployements (String gatewayId) throws AppCatalogException;
 
     List<String> getAllApplicationDeployementIds () throws AppCatalogException;
 

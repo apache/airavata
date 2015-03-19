@@ -23,6 +23,7 @@ package org.apache.airavata.workflow.model.graph.system;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.system.StreamSourceComponent;
@@ -30,7 +31,7 @@ import org.apache.airavata.workflow.model.graph.Graph;
 import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.GraphSchema;
 import org.apache.airavata.workflow.model.graph.Port;
-import org.apache.axiom.om.util.UUIDGenerator;
+//import org.apache.axiom.om.util.UUIDGenerator;
 import org.xmlpull.infoset.XmlElement;
 
 public class StreamSourceNode extends ParameterNode {
@@ -48,7 +49,7 @@ public class StreamSourceNode extends ParameterNode {
      */
     public StreamSourceNode(Graph graph) {
         super(graph);
-        this.label = UUIDGenerator.getUUID();
+        this.label = UUID.randomUUID().toString();
     }
 
     /**
@@ -59,7 +60,7 @@ public class StreamSourceNode extends ParameterNode {
      */
     public StreamSourceNode(XmlElement nodeElement) throws GraphException {
         super(nodeElement);
-        this.label = UUIDGenerator.getUUID();
+        this.label = UUID.randomUUID().toString();
     }
 
     /**

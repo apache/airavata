@@ -22,6 +22,7 @@ class ComputeResourcePreference {
 
   public $computeResourceId = null;
   public $overridebyAiravata = true;
+  public $loginUserName = null;
   public $preferredJobSubmissionProtocol = null;
   public $preferredDataMovementProtocol = null;
   public $preferredBatchQueue = null;
@@ -40,22 +41,26 @@ class ComputeResourcePreference {
           'type' => TType::BOOL,
           ),
         3 => array(
+          'var' => 'loginUserName',
+          'type' => TType::STRING,
+          ),
+        4 => array(
           'var' => 'preferredJobSubmissionProtocol',
           'type' => TType::I32,
           ),
-        4 => array(
+        5 => array(
           'var' => 'preferredDataMovementProtocol',
           'type' => TType::I32,
           ),
-        5 => array(
+        6 => array(
           'var' => 'preferredBatchQueue',
           'type' => TType::STRING,
           ),
-        6 => array(
+        7 => array(
           'var' => 'scratchLocation',
           'type' => TType::STRING,
           ),
-        7 => array(
+        8 => array(
           'var' => 'allocationProjectNumber',
           'type' => TType::STRING,
           ),
@@ -67,6 +72,9 @@ class ComputeResourcePreference {
       }
       if (isset($vals['overridebyAiravata'])) {
         $this->overridebyAiravata = $vals['overridebyAiravata'];
+      }
+      if (isset($vals['loginUserName'])) {
+        $this->loginUserName = $vals['loginUserName'];
       }
       if (isset($vals['preferredJobSubmissionProtocol'])) {
         $this->preferredJobSubmissionProtocol = $vals['preferredJobSubmissionProtocol'];
@@ -120,34 +128,41 @@ class ComputeResourcePreference {
           }
           break;
         case 3:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->preferredJobSubmissionProtocol);
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->loginUserName);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 4:
           if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->preferredDataMovementProtocol);
+            $xfer += $input->readI32($this->preferredJobSubmissionProtocol);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 5:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->preferredBatchQueue);
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->preferredDataMovementProtocol);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 6:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->scratchLocation);
+            $xfer += $input->readString($this->preferredBatchQueue);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 7:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->scratchLocation);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 8:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->allocationProjectNumber);
           } else {
@@ -177,28 +192,33 @@ class ComputeResourcePreference {
       $xfer += $output->writeBool($this->overridebyAiravata);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->loginUserName !== null) {
+      $xfer += $output->writeFieldBegin('loginUserName', TType::STRING, 3);
+      $xfer += $output->writeString($this->loginUserName);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->preferredJobSubmissionProtocol !== null) {
-      $xfer += $output->writeFieldBegin('preferredJobSubmissionProtocol', TType::I32, 3);
+      $xfer += $output->writeFieldBegin('preferredJobSubmissionProtocol', TType::I32, 4);
       $xfer += $output->writeI32($this->preferredJobSubmissionProtocol);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->preferredDataMovementProtocol !== null) {
-      $xfer += $output->writeFieldBegin('preferredDataMovementProtocol', TType::I32, 4);
+      $xfer += $output->writeFieldBegin('preferredDataMovementProtocol', TType::I32, 5);
       $xfer += $output->writeI32($this->preferredDataMovementProtocol);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->preferredBatchQueue !== null) {
-      $xfer += $output->writeFieldBegin('preferredBatchQueue', TType::STRING, 5);
+      $xfer += $output->writeFieldBegin('preferredBatchQueue', TType::STRING, 6);
       $xfer += $output->writeString($this->preferredBatchQueue);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->scratchLocation !== null) {
-      $xfer += $output->writeFieldBegin('scratchLocation', TType::STRING, 6);
+      $xfer += $output->writeFieldBegin('scratchLocation', TType::STRING, 7);
       $xfer += $output->writeString($this->scratchLocation);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->allocationProjectNumber !== null) {
-      $xfer += $output->writeFieldBegin('allocationProjectNumber', TType::STRING, 7);
+      $xfer += $output->writeFieldBegin('allocationProjectNumber', TType::STRING, 8);
       $xfer += $output->writeString($this->allocationProjectNumber);
       $xfer += $output->writeFieldEnd();
     }
@@ -212,9 +232,7 @@ class ComputeResourcePreference {
 class GatewayResourceProfile {
   static $_TSPEC;
 
-  public $gatewayID = "DO_NOT_SET_AT_CLIENTS";
-  public $gatewayName = null;
-  public $gatewayDescription = null;
+  public $gatewayID = null;
   public $computeResourcePreferences = null;
 
   public function __construct($vals=null) {
@@ -225,14 +243,6 @@ class GatewayResourceProfile {
           'type' => TType::STRING,
           ),
         2 => array(
-          'var' => 'gatewayName',
-          'type' => TType::STRING,
-          ),
-        3 => array(
-          'var' => 'gatewayDescription',
-          'type' => TType::STRING,
-          ),
-        4 => array(
           'var' => 'computeResourcePreferences',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -246,12 +256,6 @@ class GatewayResourceProfile {
     if (is_array($vals)) {
       if (isset($vals['gatewayID'])) {
         $this->gatewayID = $vals['gatewayID'];
-      }
-      if (isset($vals['gatewayName'])) {
-        $this->gatewayName = $vals['gatewayName'];
-      }
-      if (isset($vals['gatewayDescription'])) {
-        $this->gatewayDescription = $vals['gatewayDescription'];
       }
       if (isset($vals['computeResourcePreferences'])) {
         $this->computeResourcePreferences = $vals['computeResourcePreferences'];
@@ -286,20 +290,6 @@ class GatewayResourceProfile {
           }
           break;
         case 2:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->gatewayName);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 3:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->gatewayDescription);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 4:
           if ($ftype == TType::LST) {
             $this->computeResourcePreferences = array();
             $_size0 = 0;
@@ -335,21 +325,11 @@ class GatewayResourceProfile {
       $xfer += $output->writeString($this->gatewayID);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->gatewayName !== null) {
-      $xfer += $output->writeFieldBegin('gatewayName', TType::STRING, 2);
-      $xfer += $output->writeString($this->gatewayName);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->gatewayDescription !== null) {
-      $xfer += $output->writeFieldBegin('gatewayDescription', TType::STRING, 3);
-      $xfer += $output->writeString($this->gatewayDescription);
-      $xfer += $output->writeFieldEnd();
-    }
     if ($this->computeResourcePreferences !== null) {
       if (!is_array($this->computeResourcePreferences)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('computeResourcePreferences', TType::LST, 4);
+      $xfer += $output->writeFieldBegin('computeResourcePreferences', TType::LST, 2);
       {
         $output->writeListBegin(TType::STRUCT, count($this->computeResourcePreferences));
         {
@@ -368,7 +348,5 @@ class GatewayResourceProfile {
   }
 
 }
-
-$GLOBALS['gatewayResourceProfileModel_CONSTANTS']['DEFAULT_ID'] = "DO_NOT_SET_AT_CLIENTS";
 
 

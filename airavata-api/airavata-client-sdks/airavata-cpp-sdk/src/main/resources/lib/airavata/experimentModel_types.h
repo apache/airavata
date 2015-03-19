@@ -495,7 +495,7 @@ class ApplicationStatus {
 void swap(ApplicationStatus &a, ApplicationStatus &b);
 
 typedef struct _ComputationalResourceScheduling__isset {
-  _ComputationalResourceScheduling__isset() : resourceHostId(false), totalCPUCount(false), nodeCount(false), numberOfThreads(false), queueName(false), wallTimeLimit(false), jobStartTime(false), totalPhysicalMemory(false), computationalProjectAccount(false) {}
+  _ComputationalResourceScheduling__isset() : resourceHostId(false), totalCPUCount(false), nodeCount(false), numberOfThreads(false), queueName(false), wallTimeLimit(false), jobStartTime(false), totalPhysicalMemory(false), computationalProjectAccount(false), chassisName(false) {}
   bool resourceHostId;
   bool totalCPUCount;
   bool nodeCount;
@@ -505,15 +505,16 @@ typedef struct _ComputationalResourceScheduling__isset {
   bool jobStartTime;
   bool totalPhysicalMemory;
   bool computationalProjectAccount;
+  bool chassisName;
 } _ComputationalResourceScheduling__isset;
 
 class ComputationalResourceScheduling {
  public:
 
-  static const char* ascii_fingerprint; // = "32AC7AC41AD3753A7224A32FD6EB4B5D";
-  static const uint8_t binary_fingerprint[16]; // = {0x32,0xAC,0x7A,0xC4,0x1A,0xD3,0x75,0x3A,0x72,0x24,0xA3,0x2F,0xD6,0xEB,0x4B,0x5D};
+  static const char* ascii_fingerprint; // = "F43E914A611D39345BCC729678C1C696";
+  static const uint8_t binary_fingerprint[16]; // = {0xF4,0x3E,0x91,0x4A,0x61,0x1D,0x39,0x34,0x5B,0xCC,0x72,0x96,0x78,0xC1,0xC6,0x96};
 
-  ComputationalResourceScheduling() : resourceHostId(), totalCPUCount(0), nodeCount(0), numberOfThreads(0), queueName(), wallTimeLimit(0), jobStartTime(0), totalPhysicalMemory(0), computationalProjectAccount() {
+  ComputationalResourceScheduling() : resourceHostId(), totalCPUCount(0), nodeCount(0), numberOfThreads(0), queueName(), wallTimeLimit(0), jobStartTime(0), totalPhysicalMemory(0), computationalProjectAccount(), chassisName() {
   }
 
   virtual ~ComputationalResourceScheduling() throw() {}
@@ -527,6 +528,7 @@ class ComputationalResourceScheduling {
   int32_t jobStartTime;
   int32_t totalPhysicalMemory;
   std::string computationalProjectAccount;
+  std::string chassisName;
 
   _ComputationalResourceScheduling__isset __isset;
 
@@ -575,6 +577,11 @@ class ComputationalResourceScheduling {
     __isset.computationalProjectAccount = true;
   }
 
+  void __set_chassisName(const std::string& val) {
+    chassisName = val;
+    __isset.chassisName = true;
+  }
+
   bool operator == (const ComputationalResourceScheduling & rhs) const
   {
     if (__isset.resourceHostId != rhs.__isset.resourceHostId)
@@ -612,6 +619,10 @@ class ComputationalResourceScheduling {
     if (__isset.computationalProjectAccount != rhs.__isset.computationalProjectAccount)
       return false;
     else if (__isset.computationalProjectAccount && !(computationalProjectAccount == rhs.computationalProjectAccount))
+      return false;
+    if (__isset.chassisName != rhs.__isset.chassisName)
+      return false;
+    else if (__isset.chassisName && !(chassisName == rhs.chassisName))
       return false;
     return true;
   }
@@ -844,22 +855,24 @@ class QualityOfServiceParams {
 void swap(QualityOfServiceParams &a, QualityOfServiceParams &b);
 
 typedef struct _UserConfigurationData__isset {
-  _UserConfigurationData__isset() : shareExperimentPublicly(true), computationalResourceScheduling(false), advanceInputDataHandling(false), advanceOutputDataHandling(false), qosParams(false), throttleResources(true) {}
+  _UserConfigurationData__isset() : shareExperimentPublicly(true), computationalResourceScheduling(false), advanceInputDataHandling(false), advanceOutputDataHandling(false), qosParams(false), throttleResources(true), userDN(false), generateCert(true) {}
   bool shareExperimentPublicly;
   bool computationalResourceScheduling;
   bool advanceInputDataHandling;
   bool advanceOutputDataHandling;
   bool qosParams;
   bool throttleResources;
+  bool userDN;
+  bool generateCert;
 } _UserConfigurationData__isset;
 
 class UserConfigurationData {
  public:
 
-  static const char* ascii_fingerprint; // = "4E5EF84AE34A2F52BCD6617A229780E0";
-  static const uint8_t binary_fingerprint[16]; // = {0x4E,0x5E,0xF8,0x4A,0xE3,0x4A,0x2F,0x52,0xBC,0xD6,0x61,0x7A,0x22,0x97,0x80,0xE0};
+  static const char* ascii_fingerprint; // = "0EA9FCA690C445780E02BCAC89B1D820";
+  static const uint8_t binary_fingerprint[16]; // = {0x0E,0xA9,0xFC,0xA6,0x90,0xC4,0x45,0x78,0x0E,0x02,0xBC,0xAC,0x89,0xB1,0xD8,0x20};
 
-  UserConfigurationData() : airavataAutoSchedule(false), overrideManualScheduledParams(false), shareExperimentPublicly(false), throttleResources(false) {
+  UserConfigurationData() : airavataAutoSchedule(false), overrideManualScheduledParams(false), shareExperimentPublicly(false), throttleResources(false), userDN(), generateCert(false) {
   }
 
   virtual ~UserConfigurationData() throw() {}
@@ -872,6 +885,8 @@ class UserConfigurationData {
   AdvancedOutputDataHandling advanceOutputDataHandling;
   QualityOfServiceParams qosParams;
   bool throttleResources;
+  std::string userDN;
+  bool generateCert;
 
   _UserConfigurationData__isset __isset;
 
@@ -913,6 +928,16 @@ class UserConfigurationData {
     __isset.throttleResources = true;
   }
 
+  void __set_userDN(const std::string& val) {
+    userDN = val;
+    __isset.userDN = true;
+  }
+
+  void __set_generateCert(const bool val) {
+    generateCert = val;
+    __isset.generateCert = true;
+  }
+
   bool operator == (const UserConfigurationData & rhs) const
   {
     if (!(airavataAutoSchedule == rhs.airavataAutoSchedule))
@@ -942,6 +967,14 @@ class UserConfigurationData {
     if (__isset.throttleResources != rhs.__isset.throttleResources)
       return false;
     else if (__isset.throttleResources && !(throttleResources == rhs.throttleResources))
+      return false;
+    if (__isset.userDN != rhs.__isset.userDN)
+      return false;
+    else if (__isset.userDN && !(userDN == rhs.userDN))
+      return false;
+    if (__isset.generateCert != rhs.__isset.generateCert)
+      return false;
+    else if (__isset.generateCert && !(generateCert == rhs.generateCert))
       return false;
     return true;
   }
@@ -1296,8 +1329,8 @@ typedef struct _TaskDetails__isset {
 class TaskDetails {
  public:
 
-  static const char* ascii_fingerprint; // = "6EAEEB62655ECD5CA7A24BFDE46F678C";
-  static const uint8_t binary_fingerprint[16]; // = {0x6E,0xAE,0xEB,0x62,0x65,0x5E,0xCD,0x5C,0xA7,0xA2,0x4B,0xFD,0xE4,0x6F,0x67,0x8C};
+  static const char* ascii_fingerprint; // = "88276CFCC9B30CA0B93A5931F93CACC4";
+  static const uint8_t binary_fingerprint[16]; // = {0x88,0x27,0x6C,0xFC,0xC9,0xB3,0x0C,0xA0,0xB9,0x3A,0x59,0x31,0xF9,0x3C,0xAC,0xC4};
 
   TaskDetails() : taskID("DO_NOT_SET_AT_CLIENTS"), creationTime(0), applicationId(), applicationVersion(), applicationDeploymentId(), enableEmailNotification(0) {
   }
@@ -1495,8 +1528,8 @@ typedef struct _WorkflowNodeDetails__isset {
 class WorkflowNodeDetails {
  public:
 
-  static const char* ascii_fingerprint; // = "CDDA44A784FD60829B4F4EAA67D71C72";
-  static const uint8_t binary_fingerprint[16]; // = {0xCD,0xDA,0x44,0xA7,0x84,0xFD,0x60,0x82,0x9B,0x4F,0x4E,0xAA,0x67,0xD7,0x1C,0x72};
+  static const char* ascii_fingerprint; // = "940AB958A2909A83261C2016BD466838";
+  static const uint8_t binary_fingerprint[16]; // = {0x94,0x0A,0xB9,0x58,0xA2,0x90,0x9A,0x83,0x26,0x1C,0x20,0x16,0xBD,0x46,0x68,0x38};
 
   WorkflowNodeDetails() : nodeInstanceId("DO_NOT_SET_AT_CLIENTS"), creationTime(0), nodeName("SINGLE_APP_NODE"), executionUnit((ExecutionUnit::type)1), executionUnitData() {
     executionUnit = (ExecutionUnit::type)1;
@@ -1736,8 +1769,8 @@ typedef struct _Experiment__isset {
 class Experiment {
  public:
 
-  static const char* ascii_fingerprint; // = "145D3134FA7C46D3D99051850C4984FF";
-  static const uint8_t binary_fingerprint[16]; // = {0x14,0x5D,0x31,0x34,0xFA,0x7C,0x46,0xD3,0xD9,0x90,0x51,0x85,0x0C,0x49,0x84,0xFF};
+  static const char* ascii_fingerprint; // = "AAB7BCD0F1CB7A0198FEF5DB532788A8";
+  static const uint8_t binary_fingerprint[16]; // = {0xAA,0xB7,0xBC,0xD0,0xF1,0xCB,0x7A,0x01,0x98,0xFE,0xF5,0xDB,0x53,0x27,0x88,0xA8};
 
   Experiment() : experimentID("DO_NOT_SET_AT_CLIENTS"), projectID("DEFAULT"), creationTime(0), userName(), name(), description(), applicationId(), applicationVersion(), workflowTemplateId(), workflowTemplateVersion(), enableEmailNotification(0), workflowExecutionInstanceId() {
   }

@@ -36,7 +36,8 @@
 namespace apache { namespace airavata { namespace model { namespace appcatalog { namespace gatewayprofile {
 
 typedef struct _ComputeResourcePreference__isset {
-  _ComputeResourcePreference__isset() : preferredJobSubmissionProtocol(false), preferredDataMovementProtocol(false), preferredBatchQueue(false), scratchLocation(false), allocationProjectNumber(false) {}
+  _ComputeResourcePreference__isset() : loginUserName(false), preferredJobSubmissionProtocol(false), preferredDataMovementProtocol(false), preferredBatchQueue(false), scratchLocation(false), allocationProjectNumber(false) {}
+  bool loginUserName;
   bool preferredJobSubmissionProtocol;
   bool preferredDataMovementProtocol;
   bool preferredBatchQueue;
@@ -47,16 +48,17 @@ typedef struct _ComputeResourcePreference__isset {
 class ComputeResourcePreference {
  public:
 
-  static const char* ascii_fingerprint; // = "365108C84A2E160D53CD17C2A7F06F5C";
-  static const uint8_t binary_fingerprint[16]; // = {0x36,0x51,0x08,0xC8,0x4A,0x2E,0x16,0x0D,0x53,0xCD,0x17,0xC2,0xA7,0xF0,0x6F,0x5C};
+  static const char* ascii_fingerprint; // = "D89E0E13D04B60B99B78496AC9B85D52";
+  static const uint8_t binary_fingerprint[16]; // = {0xD8,0x9E,0x0E,0x13,0xD0,0x4B,0x60,0xB9,0x9B,0x78,0x49,0x6A,0xC9,0xB8,0x5D,0x52};
 
-  ComputeResourcePreference() : computeResourceId(), overridebyAiravata(true), preferredJobSubmissionProtocol(( ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type)0), preferredDataMovementProtocol(( ::apache::airavata::model::appcatalog::computeresource::DataMovementProtocol::type)0), preferredBatchQueue(), scratchLocation(), allocationProjectNumber() {
+  ComputeResourcePreference() : computeResourceId(), overridebyAiravata(true), loginUserName(), preferredJobSubmissionProtocol(( ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type)0), preferredDataMovementProtocol(( ::apache::airavata::model::appcatalog::computeresource::DataMovementProtocol::type)0), preferredBatchQueue(), scratchLocation(), allocationProjectNumber() {
   }
 
   virtual ~ComputeResourcePreference() throw() {}
 
   std::string computeResourceId;
   bool overridebyAiravata;
+  std::string loginUserName;
    ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type preferredJobSubmissionProtocol;
    ::apache::airavata::model::appcatalog::computeresource::DataMovementProtocol::type preferredDataMovementProtocol;
   std::string preferredBatchQueue;
@@ -71,6 +73,11 @@ class ComputeResourcePreference {
 
   void __set_overridebyAiravata(const bool val) {
     overridebyAiravata = val;
+  }
+
+  void __set_loginUserName(const std::string& val) {
+    loginUserName = val;
+    __isset.loginUserName = true;
   }
 
   void __set_preferredJobSubmissionProtocol(const  ::apache::airavata::model::appcatalog::computeresource::JobSubmissionProtocol::type val) {
@@ -103,6 +110,10 @@ class ComputeResourcePreference {
     if (!(computeResourceId == rhs.computeResourceId))
       return false;
     if (!(overridebyAiravata == rhs.overridebyAiravata))
+      return false;
+    if (__isset.loginUserName != rhs.__isset.loginUserName)
+      return false;
+    else if (__isset.loginUserName && !(loginUserName == rhs.loginUserName))
       return false;
     if (__isset.preferredJobSubmissionProtocol != rhs.__isset.preferredJobSubmissionProtocol)
       return false;
@@ -140,40 +151,28 @@ class ComputeResourcePreference {
 void swap(ComputeResourcePreference &a, ComputeResourcePreference &b);
 
 typedef struct _GatewayResourceProfile__isset {
-  _GatewayResourceProfile__isset() : gatewayDescription(false), computeResourcePreferences(false) {}
-  bool gatewayDescription;
+  _GatewayResourceProfile__isset() : computeResourcePreferences(false) {}
   bool computeResourcePreferences;
 } _GatewayResourceProfile__isset;
 
 class GatewayResourceProfile {
  public:
 
-  static const char* ascii_fingerprint; // = "42DA2625493A482A59D0742432A025BD";
-  static const uint8_t binary_fingerprint[16]; // = {0x42,0xDA,0x26,0x25,0x49,0x3A,0x48,0x2A,0x59,0xD0,0x74,0x24,0x32,0xA0,0x25,0xBD};
+  static const char* ascii_fingerprint; // = "106DE1CD0F7026F6471DE8DAF360BE03";
+  static const uint8_t binary_fingerprint[16]; // = {0x10,0x6D,0xE1,0xCD,0x0F,0x70,0x26,0xF6,0x47,0x1D,0xE8,0xDA,0xF3,0x60,0xBE,0x03};
 
-  GatewayResourceProfile() : gatewayID("DO_NOT_SET_AT_CLIENTS"), gatewayName(), gatewayDescription() {
+  GatewayResourceProfile() : gatewayID() {
   }
 
   virtual ~GatewayResourceProfile() throw() {}
 
   std::string gatewayID;
-  std::string gatewayName;
-  std::string gatewayDescription;
   std::vector<ComputeResourcePreference>  computeResourcePreferences;
 
   _GatewayResourceProfile__isset __isset;
 
   void __set_gatewayID(const std::string& val) {
     gatewayID = val;
-  }
-
-  void __set_gatewayName(const std::string& val) {
-    gatewayName = val;
-  }
-
-  void __set_gatewayDescription(const std::string& val) {
-    gatewayDescription = val;
-    __isset.gatewayDescription = true;
   }
 
   void __set_computeResourcePreferences(const std::vector<ComputeResourcePreference> & val) {
@@ -184,12 +183,6 @@ class GatewayResourceProfile {
   bool operator == (const GatewayResourceProfile & rhs) const
   {
     if (!(gatewayID == rhs.gatewayID))
-      return false;
-    if (!(gatewayName == rhs.gatewayName))
-      return false;
-    if (__isset.gatewayDescription != rhs.__isset.gatewayDescription)
-      return false;
-    else if (__isset.gatewayDescription && !(gatewayDescription == rhs.gatewayDescription))
       return false;
     if (__isset.computeResourcePreferences != rhs.__isset.computeResourcePreferences)
       return false;
