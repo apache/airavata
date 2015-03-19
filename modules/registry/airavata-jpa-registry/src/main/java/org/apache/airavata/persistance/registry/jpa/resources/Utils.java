@@ -722,8 +722,9 @@ public class Utils {
             configDataResource.setAiravataAutoSchedule(o.isAiravataAutoSchedule());
             configDataResource.setOverrideManualParams(o.isOverrideManualParams());
             configDataResource.setShareExp(o.isShareExp());
+            configDataResource.setUserDn(o.getUserDn());
+            configDataResource.setGenerateCert(o.isGenerateCert());
         }
-
         return configDataResource;
     }
 
