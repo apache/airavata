@@ -165,14 +165,15 @@ public class RabbitMQTaskLaunchConsumer {
                             event = taskTerminateEvent;
                             gatewayId = null;
                         }
+                        System.out.println("*deliveryTag:"+deliveryTag);
                         MessageContext messageContext = new MessageContext(event, message.getMessageType(), message.getMessageId(), gatewayId,deliveryTag);
                         messageContext.setUpdatedTime(AiravataUtils.getTime(message.getUpdatedTime()));
                         handler.onMessage(messageContext);
-                        try {
+                        /*try {
                             channel.basicAck(deliveryTag,false); //todo move this logic to monitoring component to ack when the job is done
                         } catch (IOException e) {
                             logger.error(e.getMessage(), e);
-                        }
+                        }*/
                     } catch (TException e) {
                         String msg = "Failed to de-serialize the thrift message, from routing keys and queueName " + id;
                         log.warn(msg, e);

@@ -94,10 +94,11 @@ public class MonitorID {
         experimentID = jobExecutionContext.getExperiment().getExperimentID();
         workflowNodeID = jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId();// at this point we only have one node todo: fix this
         try {
-            jobID = jobExecutionContext.getJobDetails().getJobID();
             jobName = jobExecutionContext.getJobDetails().getJobName();
+            jobID = jobExecutionContext.getJobDetails().getJobID();
         }catch(NullPointerException e){
             logger.error("There is not job created at this point");
+            // this is not a big deal we create MonitorId before having a jobId or job Name
         }
     }
 

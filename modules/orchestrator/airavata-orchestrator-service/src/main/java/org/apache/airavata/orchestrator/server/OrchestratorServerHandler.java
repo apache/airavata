@@ -115,7 +115,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 //            setGatewayName(ServerSettings.getDefaultUserGateway());
             setAiravataUserName(ServerSettings.getDefaultUser());
 			try {
-				zk = new ZooKeeper(zkhostPort, 6000, this); // no watcher is
+				zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this); // no watcher is
 															// required, this
 															// will only use to
 															// store some data
@@ -303,7 +303,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 					case Expired:
 					case Disconnected:
 						try {
-							zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), 6000, this);
+							zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this);
 							synchronized (mutex) {
 								mutex.wait(); // waiting for the syncConnected event
 							}

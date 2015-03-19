@@ -30,6 +30,9 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
 import org.apache.airavata.gfac.core.monitor.state.GfacExperimentStateChangeRequest;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
+import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.messaging.core.impl.RabbitMQProducer;
+import org.apache.airavata.messaging.core.impl.RabbitMQTaskLaunchConsumer;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
@@ -44,19 +47,21 @@ public class GfacInternalStatusUpdator implements AbstractActivityListener, Watc
 
     private static Integer mutex = -1;
 
+    private RabbitMQTaskLaunchConsumer consumer;
+
     @Subscribe
     public void updateZK(GfacExperimentStateChangeRequest statusChangeRequest) throws Exception {
         logger.info("Gfac internal state changed to: " + statusChangeRequest.getState().toString());
         MonitorID monitorID = statusChangeRequest.getMonitorID();
-        String experimentPath = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments") +
-                File.separator + ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME) + File.separator + statusChangeRequest.getMonitorID().getExperimentID() + "+" + monitorID.getTaskID();
-        String deliveryTagPath = experimentPath + GFacUtils.DELIVERY_TAG_POSTFIX;
+        String experimentNode = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
+        String experimentPath = experimentNode + File.separator + ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME)
+                + File.separator + statusChangeRequest.getMonitorID().getExperimentID() + "+" + monitorID.getTaskID();
         Stat exists = null;
         try {
             if (!zk.getState().isConnected()) {
                 String zkhostPort = AiravataZKUtils.getZKhostPort();
-                zk = new ZooKeeper(zkhostPort, 6000, this);
-                synchronized (mutex){
+                zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this);
+                synchronized (mutex) {
                     mutex.wait();
                 }
             }
@@ -77,11 +82,11 @@ public class GfacInternalStatusUpdator implements AbstractActivityListener, Watc
             throw new Exception(e.getMessage(), e);
         }
         Stat state = zk.exists(experimentPath + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false);
-        if(state == null) {
+        if (state == null) {
             // state znode has to be created
             zk.create(experimentPath + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE,
                     String.valueOf(statusChangeRequest.getState().getValue()).getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-        }else {
+        } else {
             zk.setData(experimentPath + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE,
                     String.valueOf(statusChangeRequest.getState().getValue()).getBytes(), state.getVersion());
         }
@@ -89,12 +94,20 @@ public class GfacInternalStatusUpdator implements AbstractActivityListener, Watc
             case COMPLETED:
                 logger.info("Experiment Completed, So removing the ZK entry for the experiment" + monitorID.getExperimentID());
                 logger.info("Zookeeper experiment Path: " + experimentPath);
+                if (ServerSettings.isGFacPassiveMode()) {
+                    consumer.sendAck(GFacUtils.getDeliveryTag(statusChangeRequest.getMonitorID().getExperimentID(),
+                            monitorID.getTaskID(), zk, experimentNode, ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME)));
+                }
                 ZKUtil.deleteRecursive(zk, experimentPath);
                 break;
             case FAILED:
                 logger.info("Experiment Failed, So removing the ZK entry for the experiment" + monitorID.getExperimentID());
                 logger.info("Zookeeper experiment Path: " + experimentPath);
-                ZKUtil.deleteRecursive(zk,experimentPath);
+                if (ServerSettings.isGFacPassiveMode()) {
+                    consumer.sendAck(GFacUtils.getDeliveryTag(statusChangeRequest.getMonitorID().getExperimentID(),
+                            monitorID.getTaskID(), zk, experimentNode, ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME)));
+                }
+                ZKUtil.deleteRecursive(zk, experimentPath);
                 break;
             default:
         }
@@ -104,6 +117,9 @@ public class GfacInternalStatusUpdator implements AbstractActivityListener, Watc
         for (Object configuration : configurations) {
             if (configuration instanceof ZooKeeper) {
                 this.zk = (ZooKeeper) configuration;
+            }
+            if (configuration instanceof RabbitMQTaskLaunchConsumer) {
+                this.consumer = (RabbitMQTaskLaunchConsumer) configuration;
             }
         }
     }
