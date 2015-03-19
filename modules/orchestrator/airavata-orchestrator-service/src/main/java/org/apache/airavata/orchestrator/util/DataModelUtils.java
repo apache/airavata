@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 public class DataModelUtils {
 
     private final static Logger logger = LoggerFactory.getLogger(DataModelUtils.class);
-	public static ExecutionType getExecutionType(Experiment experiment){
+	public static ExecutionType getExecutionType(String gatewayId, Experiment experiment){
 		try {
 			ApplicationInterface applicationInterface = AppCatalogFactory.getAppCatalog().getApplicationInterface();
 			List<String> allApplicationInterfaceIds = applicationInterface.getAllApplicationInterfaceIds();
@@ -45,16 +45,14 @@ public class DataModelUtils {
 			if (allApplicationInterfaceIds.contains(applicationId)){
 				return ExecutionType.SINGLE_APP;
 			} else {
-				List<String> allWorkflows = WorkflowCatalogFactory.getWorkflowCatalog().getAllWorkflows(ServerSettings.getDefaultUserGateway());
+				List<String> allWorkflows = WorkflowCatalogFactory.getWorkflowCatalog().getAllWorkflows(gatewayId);
 				if (allWorkflows.contains(applicationId)){
 					return ExecutionType.WORKFLOW;
 				}
 			}
 		} catch (AppCatalogException e) {
 			logger.error(e.getMessage(), e);
-		} catch (ApplicationSettingsException e) {
-            logger.error(e.getMessage(), e);
-        }
+		}
         return ExecutionType.UNKNOWN;
 	}
 }
