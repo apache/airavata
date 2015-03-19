@@ -124,9 +124,9 @@ public class LocalProvider extends AbstractProvider {
         // log info
         log.info("Command = " + InputUtils.buildCommand(cmdList));
         log.info("Working dir = " + builder.directory());
-        for (String key : builder.environment().keySet()) {
+        /*for (String key : builder.environment().keySet()) {
             log.info("Env[" + key + "] = " + builder.environment().get(key));
-        }
+        }*/
     }
 
     public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {

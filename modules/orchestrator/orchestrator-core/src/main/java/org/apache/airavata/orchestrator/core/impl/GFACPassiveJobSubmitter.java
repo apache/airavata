@@ -105,40 +105,28 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
         try {
             if (zk == null || !zk.getState().isConnected()) {
                 String zkhostPort = AiravataZKUtils.getZKhostPort();
-                zk = new ZooKeeper(zkhostPort, 6000, this);
+                zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this);
                 synchronized (mutex) {
                     mutex.wait();
                 }
             }
-            String gfacServer = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NODE, "/gfac-server");
-            List<String> children = zk.getChildren(gfacServer, this);
-
-            if (children.size() == 0) {
-                // Zookeeper data need cleaning
-                throw new OrchestratorException("There is no active GFac instance to route the request");
-            } else {
-                String gatewayId = null;
-                CredentialReader credentialReader = GFacUtils.getCredentialReader();
-                if (credentialReader != null) {
-                    try {
-                        gatewayId = credentialReader.getGatewayID(tokenId);
-                    } catch (Exception e) {
-                        logger.error(e.getLocalizedMessage());
-                    }
+            String gatewayId = null;
+            CredentialReader credentialReader = GFacUtils.getCredentialReader();
+            if (credentialReader != null) {
+                try {
+                    gatewayId = credentialReader.getGatewayID(tokenId);
+                } catch (Exception e) {
+                    logger.error(e.getLocalizedMessage());
                 }
-                if(gatewayId == null || gatewayId.isEmpty()){
-                    gatewayId = ServerSettings.getDefaultUserGateway();
-                }
-
-                TaskSubmitEvent taskSubmitEvent = new TaskSubmitEvent(experimentID, taskID, gatewayId,tokenId);
-                MessageContext messageContext = new MessageContext(taskSubmitEvent, MessageType.LAUNCHTASK, "LAUNCH.TASK-" + UUID.randomUUID().toString(), gatewayId);
-                messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-                publisher.publish(messageContext);
             }
+            if (gatewayId == null || gatewayId.isEmpty()) {
+                gatewayId = ServerSettings.getDefaultUserGateway();
+            }
+            TaskSubmitEvent taskSubmitEvent = new TaskSubmitEvent(experimentID, taskID, gatewayId, tokenId);
+            MessageContext messageContext = new MessageContext(taskSubmitEvent, MessageType.LAUNCHTASK, "LAUNCH.TASK-" + UUID.randomUUID().toString(), gatewayId);
+            messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+            publisher.publish(messageContext);
         } catch (InterruptedException e) {
-            logger.error(e.getMessage(), e);
-            throw new OrchestratorException(e);
-        } catch (KeeperException e) {
             logger.error(e.getMessage(), e);
             throw new OrchestratorException(e);
         } catch (ApplicationSettingsException e) {
@@ -167,7 +155,7 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
         try {
             if (zk == null || !zk.getState().isConnected()) {
                 String zkhostPort = AiravataZKUtils.getZKhostPort();
-                zk = new ZooKeeper(zkhostPort, 6000, this);
+                zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this);
                 synchronized (mutex) {
                     mutex.wait();
                 }

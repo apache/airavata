@@ -127,7 +127,7 @@ public class AiravataAPIServer implements IServer, Watcher{
             String rabbitMqBrokerURL = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.RABBITMQ_BROKER_URL);
             String rabbitMqExchange = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.RABBITMQ_EXCHANGE);
             String rabbitMq = rabbitMqBrokerURL + File.separator + rabbitMqExchange;
-            zk = new ZooKeeper(zkhostPort, 6000, this);   // no watcher is required, this will only use to store some data
+            zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this);   // no watcher is required, this will only use to store some data
             String apiServer = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_API_SERVER_NODE, "/airavata-server");
             String OrchServer = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_ORCHESTRATOR_SERVER_NODE, "/orchestrator-server");
             String gfacServer = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_GFAC_SERVER_NODE, "/gfac-server");
@@ -309,7 +309,7 @@ public class AiravataAPIServer implements IServer, Watcher{
                 case Expired:case Disconnected:
                     try {
                         mutex = -1;
-                        zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), 6000, this);
+                        zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this);
                         synchronized (mutex) {
                             mutex.wait();  // waiting for the syncConnected event
                         }

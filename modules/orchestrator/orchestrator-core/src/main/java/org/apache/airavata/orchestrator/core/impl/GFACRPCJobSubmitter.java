@@ -78,7 +78,7 @@ public class GFACRPCJobSubmitter implements JobSubmitter, Watcher {
 		try {
 			if (zk == null || !zk.getState().isConnected()) {
 				String zkhostPort = AiravataZKUtils.getZKhostPort();
-				zk = new ZooKeeper(zkhostPort, 6000, this);
+				zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this);
 				synchronized (mutex) {
 					mutex.wait();
 				}
@@ -146,7 +146,7 @@ public class GFACRPCJobSubmitter implements JobSubmitter, Watcher {
         try {
             if (zk == null || !zk.getState().isConnected()) {
                 String zkhostPort = AiravataZKUtils.getZKhostPort();
-                zk = new ZooKeeper(zkhostPort, 6000, this);
+                zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this);
                 synchronized (mutex) {
                     mutex.wait();
                 }

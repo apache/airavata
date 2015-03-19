@@ -64,6 +64,10 @@ public class AiravataZKUtils {
                 + ":" + ServerSettings.getSetting(Constants.ZOOKEEPER_SERVER_PORT,"2181");
     }
 
+    public static int getZKTimeout()throws ApplicationSettingsException {
+        return Integer.parseInt(ServerSettings.getSetting(Constants.ZOOKEEPER_TIMEOUT,"30000"));
+    }
+
     public static String getExpStatePath(String experimentId, String taskId) throws ApplicationSettingsException {
         return AiravataZKUtils.getExpZnodePath(experimentId, taskId) +
                 File.separator +
@@ -87,6 +91,7 @@ public class AiravataZKUtils {
         }
         return null;
     }
+
 
     public static int getExpStateValueWithGivenPath(ZooKeeper zk,String fullPath)throws ApplicationSettingsException,
             KeeperException, InterruptedException {

@@ -70,7 +70,7 @@ public class OrchestratorRecoveryHandler implements Watcher {
      */
     public void recover() throws OrchestratorException, ApplicationSettingsException, IOException, KeeperException, InterruptedException {
         String zkhostPort = AiravataZKUtils.getZKhostPort();
-        zk = new ZooKeeper(zkhostPort, 6000, this);
+        zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this);
         synchronized (mutex) {
             mutex.wait();
         }

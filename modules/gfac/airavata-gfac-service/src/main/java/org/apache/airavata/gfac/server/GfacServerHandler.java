@@ -66,6 +66,8 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
 
     private RabbitMQTaskLaunchConsumer rabbitMQTaskLaunchConsumer;
 
+    private static int requestCount=0;
+
     private Registry registry;
     private AppCatalog appCatalog;
 
@@ -96,7 +98,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
             String zkhostPort = AiravataZKUtils.getZKhostPort();
             airavataServerHostPort = ServerSettings.getSetting(Constants.GFAC_SERVER_HOST)
                     + ":" + ServerSettings.getSetting(Constants.GFAC_SERVER_PORT);
-            zk = new ZooKeeper(zkhostPort, 6000, this);   // no watcher is required, this will only use to store some data
+            zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this);   // no watcher is required, this will only use to store some data
             gfacServer = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NODE, "/gfac-server");
             gfacExperiments = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
             synchronized (mutex) {
@@ -110,14 +112,14 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
             appCatalog = AppCatalogFactory.getAppCatalog();
             setGatewayProperties();
             BetterGfacImpl.startDaemonHandlers();
-            BetterGfacImpl.startStatusUpdators(registry, zk, publisher);
-            inHandlerFutures = new ArrayList<Future>();
 
             if (ServerSettings.isGFacPassiveMode()) {
                 rabbitMQTaskLaunchConsumer = new RabbitMQTaskLaunchConsumer();
                 rabbitMQTaskLaunchConsumer.listen(new TaskLaunchMessageHandler());
-
             }
+            BetterGfacImpl.startStatusUpdators(registry, zk, publisher, rabbitMQTaskLaunchConsumer);
+            inHandlerFutures = new ArrayList<Future>();
+
         } catch (ApplicationSettingsException e) {
             logger.error("Error initialising GFAC", e);
             throw new Exception("Error initialising GFAC", e);
@@ -182,7 +184,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                     break;
                 case Expired:case Disconnected:
                     try {
-                        zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), 6000, this);
+                        zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this);
                         synchronized (mutex) {
                             mutex.wait();  // waiting for the syncConnected event
                         }
@@ -231,6 +233,8 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
      * @param gatewayId
      */
     public boolean submitJob(String experimentId, String taskId, String gatewayId) throws TException {
+        requestCount++;
+        logger.info("-----------------------------------------------------" + requestCount+"-----------------------------------------------------");
         logger.infoId(experimentId, "GFac Received submit jog request for the Experiment: {} TaskId: {}", experimentId, taskId);
         GFac gfac = getGfac();
         InputHandlerWorker inputHandlerWorker = new InputHandlerWorker(gfac, experimentId, taskId, gatewayId);
