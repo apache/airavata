@@ -265,20 +265,17 @@ public class WorkflowInterpreterLaunchWindow {
         this.dialog.setDefaultButton(okButton);
     }
 
-    private void execute() throws AiravataClientConnectException, InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-
-    	
+    private void execute() throws AiravataClientConnectException, TException {
     	ThriftClientData thriftClientData = engine.getConfiguration().getThriftClientData(ThriftServiceType.API_SERVICE);
 		Client airavataClient = XBayaUtil.getAiravataClient(thriftClientData);
+        String gatewayId = engine.getConfiguration().getThriftClientData(ThriftServiceType.API_SERVICE).getGatewayId();
 
-		
 		Workflow workflowClone = workflow.clone();
 		workflowClone.setName(workflowClone.getName()+UUID.randomUUID().toString());
 		org.apache.airavata.model.Workflow w = new org.apache.airavata.model.Workflow();
 		w.setName(workflowClone.getName());
         w.setGraph(JSONUtil.jsonElementToString(workflowClone.toJSON()));
-		//FIXME:: use gatewayId from UI
-        w.setTemplateId(airavataClient.registerWorkflow("default", w));
+        w.setTemplateId(airavataClient.registerWorkflow(gatewayId, w));
         String instanceName = this.instanceNameTextField.getText();
         if (instanceName.trim().equals("")){
         	JOptionPane.showMessageDialog(engine.getGUI().getFrame(),
@@ -287,20 +284,16 @@ public class WorkflowInterpreterLaunchWindow {
         		    JOptionPane.ERROR_MESSAGE);
         	return;
         }
-
         //previous instance name
         if (!instanceNameTextField.getText().equals("")){
             this.instanceNameTextField.setText("");
         }
-
         // Use topic as a base of workflow instance ID so that the monitor can
         // find it.
-
         Project project = new Project();
         project.setName("project1");
         project.setOwner(thriftClientData.getUsername());
-        //FIXME:: use gatewayId from UI
-        project.setProjectID(airavataClient.createProject("default", project));
+        project.setProjectID(airavataClient.createProject(gatewayId, project));
         final List<InputNode> inputNodes = GraphUtil.getInputNodes(this.workflow.getGraph());
         final Experiment experiment = new Experiment();
         experiment.setApplicationId(w.getTemplateId());
@@ -322,7 +315,6 @@ public class WorkflowInterpreterLaunchWindow {
 
 			experiment.addToExperimentInputs(elem );
         }
-
         final List<OutputNode> outputNodes = GraphUtil.getOutputNodes(this.workflow.getGraph());
         OutputDataObjectType outputDataObjectType = null;
         for (OutputNode outputNode : outputNodes) {
@@ -331,7 +323,6 @@ public class WorkflowInterpreterLaunchWindow {
             outputDataObjectType.setType(DataType.STRING);
             experiment.addToExperimentOutputs(outputDataObjectType);
         }
-
         // Add scheduling configurations
         if (host != null && host.getSelectedIndex() >= 0) {
             String selectedHostName = host.getSelectedItem().toString();
@@ -378,10 +369,7 @@ public class WorkflowInterpreterLaunchWindow {
             airavataClient.launchExperiment(experiment.getExperimentID(), "testToken");
 
         }*/
-
-        //FIXME:: use gatewayId from UI
-        experiment.setExperimentID(airavataClient.createExperiment("default", experiment));
-
+        experiment.setExperimentID(airavataClient.createExperiment(gatewayId, experiment));
         try {
             this.engine.getMonitor().subscribe(experiment.getExperimentID());
             this.engine.getMonitor().fireStartMonitoring(workflow.getName());
@@ -389,7 +377,6 @@ public class WorkflowInterpreterLaunchWindow {
             logger.error("Error while subscribing with experiment Id : " + experiment.getExperimentID(), e);
         }
         airavataClient.launchExperiment(experiment.getExperimentID(), "testToken");
-
         hide();
     }
     

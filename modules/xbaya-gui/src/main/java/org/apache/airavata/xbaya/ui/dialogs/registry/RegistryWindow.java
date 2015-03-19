@@ -55,14 +55,14 @@ public class RegistryWindow {
 
     private XBayaTextField portTextField;
 
-    private XBayaTextField gatewayNameTextField;
+    private XBayaTextField gatewayIdTextField;
 
     private XBayaTextField usernameTextField;
 
     private XBayaComboBox serviceTypeCombo;
 
 
-    private String gatewayName;
+    private String gatewayId;
 
     private String username;
 
@@ -100,14 +100,14 @@ public class RegistryWindow {
     private void ok() {
         setServerName(this.serverTextField.getText());
         setPreviousServerName(this.serverTextField.getText());
-        setGatewayName(this.gatewayNameTextField.getText());
+        setGatewayId(this.gatewayIdTextField.getText());
         setUsername(new String(this.usernameTextField.getText()));
         setServerPort(this.portTextField.getText());
         setServiceType((ThriftServiceType)serviceTypeModel.getSelectedItem());
         try {
 			validateData();
 			XBayaConfiguration configuration = this.engine.getConfiguration();
-	        configuration.addThriftClientData(new ThriftClientData(getServiceType(),serverName, Integer.parseInt(serverPort),gatewayName, username));
+	        configuration.addThriftClientData(new ThriftClientData(getServiceType(),serverName, Integer.parseInt(serverPort), gatewayId, username));
 	        hide();
 		} catch (Exception e) {
             this.engine.getGUI().getErrorWindow().error(e.getMessage());
@@ -120,16 +120,16 @@ public class RegistryWindow {
     private void initGUI() {
         this.serverTextField = new XBayaTextField();
         this.portTextField = new XBayaTextField();
-        this.gatewayNameTextField = new XBayaTextField();
+        this.gatewayIdTextField = new XBayaTextField();
         this.usernameTextField = new XBayaTextField();
         this.serverTextField.setText("localhost");
         this.portTextField.setText("8930");
-        this.gatewayNameTextField.setText("airavata");
+        this.gatewayIdTextField.setText("airavata");
         this.usernameTextField.setText("airavata");
         ThriftClientData thriftClientData = engine.getConfiguration().getThriftClientData(ThriftServiceType.API_SERVICE);
     	if (thriftClientData!=null){
     		this.serverTextField.setText(thriftClientData.getServerAddress());
-            this.gatewayNameTextField.setText(thriftClientData.getGatewayId());
+            this.gatewayIdTextField.setText(thriftClientData.getGatewayId());
             this.portTextField.setText(String.valueOf(thriftClientData.getServerPort()));
             this.usernameTextField.setText(thriftClientData.getUsername());
     	}
@@ -142,7 +142,7 @@ public class RegistryWindow {
 
         XBayaLabel serverAddressLabel = new XBayaLabel("Server Address", this.serverTextField);
         XBayaLabel serverPortLabel = new XBayaLabel("Server Port", this.portTextField);
-        XBayaLabel gatewayNameLabel = new XBayaLabel("Gateway Name", this.gatewayNameTextField);
+        XBayaLabel gatewayNameLabel = new XBayaLabel("Gateway ID", this.gatewayIdTextField);
         XBayaLabel gatewayUserLabel = new XBayaLabel("Gateway User", this.usernameTextField);
         serviceTypeModel = new DefaultComboBoxModel(ThriftServiceType.values());
         serviceTypeModel.setSelectedItem(getServiceType());
@@ -163,7 +163,7 @@ public class RegistryWindow {
         infoPanel.add(serverPortLabel);
         infoPanel.add(this.portTextField);
         infoPanel.add(gatewayNameLabel);
-        infoPanel.add(this.gatewayNameTextField);
+        infoPanel.add(this.gatewayIdTextField);
         infoPanel.add(gatewayUserLabel);
         infoPanel.add(this.usernameTextField);
         infoPanel.layout(5, 2, GridPanel.WEIGHT_NONE, 1);
@@ -210,16 +210,16 @@ public class RegistryWindow {
         return serverName;
     }
 
-    public String getGatewayName() {
-        return gatewayName;
+    public String getGatewayId() {
+        return gatewayId;
     }
 
     public void setServerName(String serverName) {
         this.serverName = serverName;
     }
 
-    public void setGatewayName(String gateway) {
-        this.gatewayName = gateway;
+    public void setGatewayId(String gateway) {
+        this.gatewayId = gateway;
     }
 
     public void setUsername(String username) {

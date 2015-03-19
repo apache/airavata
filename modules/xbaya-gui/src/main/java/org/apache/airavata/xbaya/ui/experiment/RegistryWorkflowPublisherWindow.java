@@ -102,8 +102,7 @@ public class RegistryWorkflowPublisherWindow {
     			org.apache.airavata.model.Workflow workflowData = new org.apache.airavata.model.Workflow();
     			workflowData.setName(workflowTemplateName);
     			workflowData.setGraph(workflowAsString);
-                //FIXME: Use the gatewayId from the UI
-    			client.registerWorkflow("default", workflowData);
+    			client.registerWorkflow(engine.getConfiguration().getThriftClientData(ThriftServiceType.API_SERVICE).getGatewayId(), workflowData);
     			hide();
         	}
 		} catch (Exception e) {
