@@ -298,7 +298,8 @@ public class LaunchApplicationWindow {
         String owner = this.thriftClientData.getUsername();        
         if(owner.equals(""))owner="NotKnown";              
         project.setOwner(owner);
-        project.setProjectID(airavataClient.createProject(project));
+        //FIXME:: use gatewayId from UI
+        project.setProjectID(airavataClient.createProject("default", project));
 //        final List<InputNode> inputNodes = GraphUtil.getInputNodes(this.workflow.getGraph());
         final List<DataPort> inputPorts = node.getInputPorts();
         final Experiment experiment = new Experiment();
@@ -366,8 +367,9 @@ public class LaunchApplicationWindow {
             elem.setValue("");
 			experiment.addToExperimentOutputs(elem );
         }
-  
-        experiment.setExperimentID(airavataClient.createExperiment(experiment));
+
+        //FIXME:: use gatewayId from UI
+        experiment.setExperimentID(airavataClient.createExperiment("default", experiment));
         airavataClient.launchExperiment(experiment.getExperimentID(), "testToken");
         hide();
         JOptionPane.showMessageDialog(null, "Experiment Launched. You will be alerted on completion.");

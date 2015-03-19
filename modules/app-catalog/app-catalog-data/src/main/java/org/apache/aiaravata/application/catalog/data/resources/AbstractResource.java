@@ -32,6 +32,7 @@ public abstract class AbstractResource implements Resource {
     public static final String POST_JOBCOMMAND = "PostJobCommand";
     public static final String GLOBUS_SUBMISSION = "GlobusJobSubmission";
     public static final String UNICORE_JOB_SUBMISSION = "UnicoreJobSubmission";
+    public static final String UNICORE_DATA_MOVEMENT = "UnicoreDataMovement";
     public static final String GLOBUS_GK_ENDPOINT = "GlobusGKEndpoint";
     public static final String SSH_SUBMISSION = "SSHSubmission";
 	public static final String SCP_DATA_MOVEMENT = "ScpDataMovement";
@@ -124,6 +125,13 @@ public abstract class AbstractResource implements Resource {
         public static final String SUBMISSION_ID = "submissionID";
         public static final String SECURITY_PROTOCAL = "securityProtocol";
         public static final String UNICORE_ENDPOINT_URL = "unicoreEndpointUrl";
+        
+    }
+
+    public final class UnicoreDataMovementConstants {
+        public static final String DATAMOVEMENT_ID = "dataMovementId";
+        public static final String SECURITY_PROTOCAL = "securityProtocol";
+        public static final String UNICORE_ENDPOINT_URL = "unicoreEndpointUrl";
     }
 
     
@@ -173,6 +181,7 @@ public abstract class AbstractResource implements Resource {
 
     public final class ApplicationModuleConstants {
         public static final String MODULE_ID = "moduleID";
+        public static final String GATEWAY_ID = "gatewayId";
         public static final String MODULE_NAME = "moduleName";
         public static final String MODULE_VERSION = "moduleVersion";
         public static final String MODULE_DESC = "moduleDesc";
@@ -182,6 +191,7 @@ public abstract class AbstractResource implements Resource {
         public static final String APP_MODULE_ID = "appModuleID";
         public static final String DEPLOYMENT_ID = "deploymentID";
         public static final String COMPUTE_HOST_ID = "hostID";
+        public static final String GATEWAY_ID = "gatewayId";
         public static final String EXECUTABLE_PATH = "executablePath";
         public static final String APPLICATION_DESC = "applicationDesc";
         public static final String ENV_MODULE_LOAD_CMD = "envModuleLoaString";
@@ -209,6 +219,7 @@ public abstract class AbstractResource implements Resource {
     public final class ApplicationInterfaceConstants {
         public static final String INTERFACE_ID = "interfaceID";
         public static final String APPLICATION_NAME = "appName";
+        public static final String GATEWAY_ID = "gatewayId";
     }
 
     public final class AppModuleMappingConstants {
@@ -254,7 +265,6 @@ public abstract class AbstractResource implements Resource {
 
     public final class GatewayProfileConstants {
         public static final String GATEWAY_ID = "gatewayID";
-        public static final String GATEWAY_NAME = "gatewayName";
         public static final String GATEWAY_DESC = "gatewayDesc";
     }
 
@@ -362,5 +372,6 @@ public abstract class AbstractResource implements Resource {
         public static final String CREATED_USER = "createdUser";
         public static final String GRAPH = "graph";
         public static final String WF_TEMPLATE_ID = "wfTemplateId";
+        public static final String GATEWAY_ID = "gatewayId";
     }
 }

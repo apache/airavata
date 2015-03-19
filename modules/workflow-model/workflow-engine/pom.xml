@@ -90,7 +90,7 @@
 	    <type>zip</type>
 	    <optional>true</optional>
         </dependency-->
-
+		
         <dependency>
             <groupId>org.ogce</groupId>
             <artifactId>xpp3</artifactId>
@@ -101,6 +101,7 @@
             <artifactId>xpp5</artifactId>
             <version>${xpp5.version}</version>
         </dependency>
+        <!-- 
         <dependency>
             <groupId>org.ogce</groupId>
             <artifactId>xsul</artifactId>
@@ -110,7 +111,7 @@
             <groupId>org.ogce</groupId>
             <artifactId>gpel-client</artifactId>
             <version>${gpel.version}</version>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>org.ogce</groupId>
             <artifactId>atomixmiser</artifactId>

@@ -83,7 +83,7 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
     private void addProjects() throws TException {
         for (int i = 0; i < projects.length; i++){
         	Project project = ProjectModelUtil.createProject(projects[i], "admin", "test project");
-            String projectId = getClient().createProject(project);
+            String projectId = getClient().createProject("default", project);
             projectIds.add(projectId);
         }
     }
@@ -161,7 +161,7 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
 	public List<Experiment> listUserExperiments(String user) throws ApplicationSettingsException,
 			AiravataClientConnectException, InvalidRequestException,
 			AiravataClientException, AiravataSystemException, TException {
-		return getClient().getAllUserExperiments(user);
+		return getClient().getAllUserExperiments("default", user);
 	}
 
 	public List<Experiment> listProjectExperiments(String projectID) throws ApplicationSettingsException,
@@ -173,7 +173,7 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
 	public List<Project> listUserProjects(String user) throws ApplicationSettingsException,
 			AiravataClientConnectException, InvalidRequestException,
 			AiravataClientException, AiravataSystemException, TException {
-		return getClient().getAllUserProjects(user);
+		return getClient().getAllUserProjects("default", user);
 	}
 
 	public String runExperiment(String user, String project) throws ApplicationSettingsException, AiravataClientConnectException,
@@ -209,7 +209,7 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
 		simpleExperiment.setUserConfigurationData(userConfigurationData);
 
 		Client client = getClient();
-		final String expId = client.createExperiment(simpleExperiment);
+		final String expId = client.createExperiment("default", simpleExperiment);
 
 		client.launchExperiment(expId, "testToken");
 		return expId;

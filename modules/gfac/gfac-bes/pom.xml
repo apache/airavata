@@ -95,14 +95,19 @@
 		</dependency>
 		<!-- Unicore dependencies -->
 		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1</version>
+		</dependency>
+		<dependency>
 			<groupId>eu.unicore</groupId>
 			<artifactId>unicore-client-wrapper</artifactId>
 			<version>1.7.2_1</version>
 			<exclusions>
-				<exclusion>
+				<!-- <exclusion>
 					<groupId>org.apache.santuario</groupId>
 					<artifactId>xmlsec</artifactId>
-				</exclusion>
+				</exclusion> -->
 				<exclusion>
 					<groupId>net.sf.saxon</groupId>
 					<artifactId>saxon</artifactId>

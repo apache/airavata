@@ -780,6 +780,7 @@ class ComputationalResourceScheduling {
   public $jobStartTime = null;
   public $totalPhysicalMemory = null;
   public $computationalProjectAccount = null;
+  public $chassisName = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -820,6 +821,10 @@ class ComputationalResourceScheduling {
           'var' => 'computationalProjectAccount',
           'type' => TType::STRING,
           ),
+        10 => array(
+          'var' => 'chassisName',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -849,6 +854,9 @@ class ComputationalResourceScheduling {
       }
       if (isset($vals['computationalProjectAccount'])) {
         $this->computationalProjectAccount = $vals['computationalProjectAccount'];
+      }
+      if (isset($vals['chassisName'])) {
+        $this->chassisName = $vals['chassisName'];
       }
     }
   }
@@ -935,6 +943,13 @@ class ComputationalResourceScheduling {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 10:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->chassisName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -991,6 +1006,11 @@ class ComputationalResourceScheduling {
     if ($this->computationalProjectAccount !== null) {
       $xfer += $output->writeFieldBegin('computationalProjectAccount', TType::STRING, 9);
       $xfer += $output->writeString($this->computationalProjectAccount);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->chassisName !== null) {
+      $xfer += $output->writeFieldBegin('chassisName', TType::STRING, 10);
+      $xfer += $output->writeString($this->chassisName);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -1367,6 +1387,8 @@ class UserConfigurationData {
   public $advanceOutputDataHandling = null;
   public $qosParams = null;
   public $throttleResources = false;
+  public $userDN = null;
+  public $generateCert = false;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -1407,6 +1429,14 @@ class UserConfigurationData {
           'var' => 'throttleResources',
           'type' => TType::BOOL,
           ),
+        9 => array(
+          'var' => 'userDN',
+          'type' => TType::STRING,
+          ),
+        10 => array(
+          'var' => 'generateCert',
+          'type' => TType::BOOL,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -1433,6 +1463,12 @@ class UserConfigurationData {
       }
       if (isset($vals['throttleResources'])) {
         $this->throttleResources = $vals['throttleResources'];
+      }
+      if (isset($vals['userDN'])) {
+        $this->userDN = $vals['userDN'];
+      }
+      if (isset($vals['generateCert'])) {
+        $this->generateCert = $vals['generateCert'];
       }
     }
   }
@@ -1516,6 +1552,20 @@ class UserConfigurationData {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 9:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->userDN);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 10:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->generateCert);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -1579,6 +1629,16 @@ class UserConfigurationData {
     if ($this->throttleResources !== null) {
       $xfer += $output->writeFieldBegin('throttleResources', TType::BOOL, 8);
       $xfer += $output->writeBool($this->throttleResources);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->userDN !== null) {
+      $xfer += $output->writeFieldBegin('userDN', TType::STRING, 9);
+      $xfer += $output->writeString($this->userDN);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->generateCert !== null) {
+      $xfer += $output->writeFieldBegin('generateCert', TType::BOOL, 10);
+      $xfer += $output->writeBool($this->generateCert);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

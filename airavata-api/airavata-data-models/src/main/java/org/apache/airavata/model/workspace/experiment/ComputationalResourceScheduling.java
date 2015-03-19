@@ -65,6 +65,7 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField JOB_START_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("jobStartTime", org.apache.thrift.protocol.TType.I32, (short)7);
   private static final org.apache.thrift.protocol.TField TOTAL_PHYSICAL_MEMORY_FIELD_DESC = new org.apache.thrift.protocol.TField("totalPhysicalMemory", org.apache.thrift.protocol.TType.I32, (short)8);
   private static final org.apache.thrift.protocol.TField COMPUTATIONAL_PROJECT_ACCOUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("computationalProjectAccount", org.apache.thrift.protocol.TType.STRING, (short)9);
+  private static final org.apache.thrift.protocol.TField CHASSIS_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("chassisName", org.apache.thrift.protocol.TType.STRING, (short)10);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -81,6 +82,7 @@ import org.slf4j.LoggerFactory;
   private int jobStartTime; // optional
   private int totalPhysicalMemory; // optional
   private String computationalProjectAccount; // optional
+  private String chassisName; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -92,7 +94,8 @@ import org.slf4j.LoggerFactory;
     WALL_TIME_LIMIT((short)6, "wallTimeLimit"),
     JOB_START_TIME((short)7, "jobStartTime"),
     TOTAL_PHYSICAL_MEMORY((short)8, "totalPhysicalMemory"),
-    COMPUTATIONAL_PROJECT_ACCOUNT((short)9, "computationalProjectAccount");
+    COMPUTATIONAL_PROJECT_ACCOUNT((short)9, "computationalProjectAccount"),
+    CHASSIS_NAME((short)10, "chassisName");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -125,6 +128,8 @@ import org.slf4j.LoggerFactory;
           return TOTAL_PHYSICAL_MEMORY;
         case 9: // COMPUTATIONAL_PROJECT_ACCOUNT
           return COMPUTATIONAL_PROJECT_ACCOUNT;
+        case 10: // CHASSIS_NAME
+          return CHASSIS_NAME;
         default:
           return null;
       }
@@ -172,7 +177,7 @@ import org.slf4j.LoggerFactory;
   private static final int __JOBSTARTTIME_ISSET_ID = 4;
   private static final int __TOTALPHYSICALMEMORY_ISSET_ID = 5;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.RESOURCE_HOST_ID,_Fields.TOTAL_CPUCOUNT,_Fields.NODE_COUNT,_Fields.NUMBER_OF_THREADS,_Fields.QUEUE_NAME,_Fields.WALL_TIME_LIMIT,_Fields.JOB_START_TIME,_Fields.TOTAL_PHYSICAL_MEMORY,_Fields.COMPUTATIONAL_PROJECT_ACCOUNT};
+  private _Fields optionals[] = {_Fields.RESOURCE_HOST_ID,_Fields.TOTAL_CPUCOUNT,_Fields.NODE_COUNT,_Fields.NUMBER_OF_THREADS,_Fields.QUEUE_NAME,_Fields.WALL_TIME_LIMIT,_Fields.JOB_START_TIME,_Fields.TOTAL_PHYSICAL_MEMORY,_Fields.COMPUTATIONAL_PROJECT_ACCOUNT,_Fields.CHASSIS_NAME};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -193,6 +198,8 @@ import org.slf4j.LoggerFactory;
     tmpMap.put(_Fields.TOTAL_PHYSICAL_MEMORY, new org.apache.thrift.meta_data.FieldMetaData("totalPhysicalMemory", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.COMPUTATIONAL_PROJECT_ACCOUNT, new org.apache.thrift.meta_data.FieldMetaData("computationalProjectAccount", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.CHASSIS_NAME, new org.apache.thrift.meta_data.FieldMetaData("chassisName", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ComputationalResourceScheduling.class, metaDataMap);
@@ -221,6 +228,9 @@ import org.slf4j.LoggerFactory;
     if (other.isSetComputationalProjectAccount()) {
       this.computationalProjectAccount = other.computationalProjectAccount;
     }
+    if (other.isSetChassisName()) {
+      this.chassisName = other.chassisName;
+    }
   }
 
   public ComputationalResourceScheduling deepCopy() {
@@ -244,6 +254,7 @@ import org.slf4j.LoggerFactory;
     setTotalPhysicalMemoryIsSet(false);
     this.totalPhysicalMemory = 0;
     this.computationalProjectAccount = null;
+    this.chassisName = null;
   }
 
   public String getResourceHostId() {
@@ -447,6 +458,29 @@ import org.slf4j.LoggerFactory;
     }
   }
 
+  public String getChassisName() {
+    return this.chassisName;
+  }
+
+  public void setChassisName(String chassisName) {
+    this.chassisName = chassisName;
+  }
+
+  public void unsetChassisName() {
+    this.chassisName = null;
+  }
+
+  /** Returns true if field chassisName is set (has been assigned a value) and false otherwise */
+  public boolean isSetChassisName() {
+    return this.chassisName != null;
+  }
+
+  public void setChassisNameIsSet(boolean value) {
+    if (!value) {
+      this.chassisName = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case RESOURCE_HOST_ID:
@@ -521,6 +555,14 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case CHASSIS_NAME:
+      if (value == null) {
+        unsetChassisName();
+      } else {
+        setChassisName((String)value);
+      }
+      break;
+
     }
   }
 
@@ -553,6 +595,9 @@ import org.slf4j.LoggerFactory;
     case COMPUTATIONAL_PROJECT_ACCOUNT:
       return getComputationalProjectAccount();
 
+    case CHASSIS_NAME:
+      return getChassisName();
+
     }
     throw new IllegalStateException();
   }
@@ -582,6 +627,8 @@ import org.slf4j.LoggerFactory;
       return isSetTotalPhysicalMemory();
     case COMPUTATIONAL_PROJECT_ACCOUNT:
       return isSetComputationalProjectAccount();
+    case CHASSIS_NAME:
+      return isSetChassisName();
     }
     throw new IllegalStateException();
   }
@@ -677,6 +724,15 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_computationalProjectAccount && that_present_computationalProjectAccount))
         return false;
       if (!this.computationalProjectAccount.equals(that.computationalProjectAccount))
+        return false;
+    }
+
+    boolean this_present_chassisName = true && this.isSetChassisName();
+    boolean that_present_chassisName = true && that.isSetChassisName();
+    if (this_present_chassisName || that_present_chassisName) {
+      if (!(this_present_chassisName && that_present_chassisName))
+        return false;
+      if (!this.chassisName.equals(that.chassisName))
         return false;
     }
 
@@ -786,6 +842,16 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetChassisName()).compareTo(other.isSetChassisName());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetChassisName()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.chassisName, other.chassisName);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -868,6 +934,16 @@ import org.slf4j.LoggerFactory;
         sb.append("null");
       } else {
         sb.append(this.computationalProjectAccount);
+      }
+      first = false;
+    }
+    if (isSetChassisName()) {
+      if (!first) sb.append(", ");
+      sb.append("chassisName:");
+      if (this.chassisName == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.chassisName);
       }
       first = false;
     }
@@ -988,6 +1064,14 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 10: // CHASSIS_NAME
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.chassisName = iprot.readString();
+              struct.setChassisNameIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1052,6 +1136,13 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldEnd();
         }
       }
+      if (struct.chassisName != null) {
+        if (struct.isSetChassisName()) {
+          oprot.writeFieldBegin(CHASSIS_NAME_FIELD_DESC);
+          oprot.writeString(struct.chassisName);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1097,7 +1188,10 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetComputationalProjectAccount()) {
         optionals.set(8);
       }
-      oprot.writeBitSet(optionals, 9);
+      if (struct.isSetChassisName()) {
+        optionals.set(9);
+      }
+      oprot.writeBitSet(optionals, 10);
       if (struct.isSetResourceHostId()) {
         oprot.writeString(struct.resourceHostId);
       }
@@ -1125,12 +1219,15 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetComputationalProjectAccount()) {
         oprot.writeString(struct.computationalProjectAccount);
       }
+      if (struct.isSetChassisName()) {
+        oprot.writeString(struct.chassisName);
+      }
     }
 
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ComputationalResourceScheduling struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      BitSet incoming = iprot.readBitSet(9);
+      BitSet incoming = iprot.readBitSet(10);
       if (incoming.get(0)) {
         struct.resourceHostId = iprot.readString();
         struct.setResourceHostIdIsSet(true);
@@ -1166,6 +1263,10 @@ import org.slf4j.LoggerFactory;
       if (incoming.get(8)) {
         struct.computationalProjectAccount = iprot.readString();
         struct.setComputationalProjectAccountIsSet(true);
+      }
+      if (incoming.get(9)) {
+        struct.chassisName = iprot.readString();
+        struct.setChassisNameIsSet(true);
       }
     }
   }

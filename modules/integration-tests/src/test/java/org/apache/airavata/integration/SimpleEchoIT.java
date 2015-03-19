@@ -21,6 +21,7 @@
 
 package org.apache.airavata.integration;
 
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.integration.tools.DocumentCreatorNew;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
@@ -77,8 +78,7 @@ public class SimpleEchoIT extends SingleAppIntegrationTestBase {
         exOut.add(output);
 
         Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
-        String projectId = getClient().createProject(project);
-
+        String projectId = getClient().createProject("php_reference_gateway", project);
         Experiment simpleExperiment =
                 ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", appId, appId, exInputs);
         simpleExperiment.setExperimentOutputs(exOut);

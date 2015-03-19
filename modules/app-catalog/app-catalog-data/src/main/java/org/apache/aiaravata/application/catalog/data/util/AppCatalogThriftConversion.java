@@ -232,13 +232,21 @@ public class AppCatalogThriftConversion {
     
     public static UnicoreJobSubmissionResource getUnicoreJobSubmission (UnicoreJobSubmission submission){
     	UnicoreJobSubmissionResource resource = new UnicoreJobSubmissionResource();
-        
         resource.setjobSubmissionInterfaceId(submission.getJobSubmissionInterfaceId());
-        
         if (submission.getSecurityProtocol() != null){
             resource.setSecurityProtocol(submission.getSecurityProtocol().toString());
         }
         resource.setUnicoreEndpointUrl(submission.getUnicoreEndPointURL());
+        return resource;
+    }
+
+    public static UnicoreDataMovementResource getUnicoreDMResource (UnicoreDataMovement dataMovement){
+        UnicoreDataMovementResource resource = new UnicoreDataMovementResource();
+        resource.setDataMovementId(dataMovement.getDataMovementInterfaceId());
+        if (dataMovement.getSecurityProtocol() != null){
+            resource.setSecurityProtocol(dataMovement.getSecurityProtocol().toString());
+        }
+        resource.setUnicoreEndpointUrl(dataMovement.getUnicoreEndPointURL());
         return resource;
     }
 
@@ -329,8 +337,20 @@ public class AppCatalogThriftConversion {
     	UnicoreJobSubmission unicoreJobSubmission = new UnicoreJobSubmission();
     	unicoreJobSubmission.setUnicoreEndPointURL(submission.getUnicoreEndpointUrl());
     	unicoreJobSubmission.setJobSubmissionInterfaceId(submission.getjobSubmissionInterfaceId());
-    	unicoreJobSubmission.setSecurityProtocol(SecurityProtocol.GSI);
+        if (submission.getSecurityProtocol() != null){
+            unicoreJobSubmission.setSecurityProtocol(SecurityProtocol.valueOf(submission.getSecurityProtocol()));
+        }
         return unicoreJobSubmission;
+    }
+
+    public static UnicoreDataMovement getUnicoreDMDescription (UnicoreDataMovementResource resource) throws AppCatalogException {
+        UnicoreDataMovement dataMovement = new UnicoreDataMovement();
+        dataMovement.setUnicoreEndPointURL(resource.getUnicoreEndpointUrl());
+        dataMovement.setDataMovementInterfaceId(resource.getDataMovementId());
+        if (resource.getSecurityProtocol() != null){
+            dataMovement.setSecurityProtocol(SecurityProtocol.valueOf(resource.getSecurityProtocol()));
+        }
+        return dataMovement;
     }
 
     
@@ -704,6 +724,7 @@ public class AppCatalogThriftConversion {
         preference.setPreferredBatchQueue(resource.getBatchQueue());
         preference.setScratchLocation(resource.getScratchLocation());
         preference.setAllocationProjectNumber(resource.getProjectNumber());
+        preference.setLoginUserName(resource.getLoginUserName());
         return preference;
     }
 
@@ -744,8 +765,6 @@ public class AppCatalogThriftConversion {
     public static GatewayResourceProfile getGatewayResourceProfile(GatewayProfileResource gw, List<ComputeResourcePreference> preferences){
         GatewayResourceProfile gatewayProfile = new GatewayResourceProfile();
         gatewayProfile.setGatewayID(gw.getGatewayID());
-        gatewayProfile.setGatewayDescription(gw.getGatewayDesc());
-        gatewayProfile.setGatewayName(gw.getGatewayName());
         gatewayProfile.setComputeResourcePreferences(preferences);
         return gatewayProfile;
     }

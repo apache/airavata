@@ -38,9 +38,9 @@ import org.apache.airavata.workflow.model.component.url.URLComponentReference;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xsul.wsdl.WsdlDefinitions;
-import xsul.wsdl.WsdlException;
-import xsul.wsdl.WsdlResolver;
+//import xsul.wsdl.WsdlDefinitions;
+//import xsul.wsdl.WsdlException;
+//import xsul.wsdl.WsdlResolver;
 
 public class WSComponentRegistry extends ComponentRegistry {
 
@@ -58,25 +58,25 @@ public class WSComponentRegistry extends ComponentRegistry {
 
         try {
             URI url = new URI("http://129.79.49.210:8080/axis2/services/AmazonEC2Webservice?wsdl");
-            WsdlResolver wsdlResolver = WsdlResolver.getInstance();
-            WsdlDefinitions definitions = wsdlResolver.loadWsdl(url);
-            List<WSComponent> components = WSComponentFactory.createComponents(WSDLUtil
-                    .wsdlDefinitions3ToWsdlDefintions5(definitions));
-
-            this.componentMap = new LinkedHashMap<String, Component>();
-
-            for (Component component : components) {
-                this.componentMap.put(component.getName(), component);
-            }
+//            WsdlResolver wsdlResolver = WsdlResolver.getInstance();
+//            WsdlDefinitions definitions = wsdlResolver.loadWsdl(url);
+//            List<WSComponent> components = WSComponentFactory.createComponents(WSDLUtil
+//                    .wsdlDefinitions3ToWsdlDefintions5(definitions));
+//
+//            this.componentMap = new LinkedHashMap<String, Component>();
+//
+//            for (Component component : components) {
+//                this.componentMap.put(component.getName(), component);
+//            }
 
             String urlString = url.toString();
             String name = urlString.substring(urlString.lastIndexOf('/') + 1);
-            treeLeaf = new URLComponentReference(name, components);
+//            treeLeaf = new URLComponentReference(name, components);
 
 //        } catch (ComponentException e) {
 //            e.printStackTrace();
-        } catch (WsdlException e) {
-            log.error(e.getMessage(), e);
+//        } catch (WsdlException e) {
+//            log.error(e.getMessage(), e);
         } catch (URISyntaxException e) {
             log.error(e.getMessage(), e);
         }

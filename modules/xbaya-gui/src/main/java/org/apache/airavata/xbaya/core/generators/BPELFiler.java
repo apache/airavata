@@ -120,25 +120,25 @@ public class BPELFiler {
             // Add ".wsdl" at the end of the file name
             File wsdlFile = new File(path + XBayaConstants.WSDL_SUFFIX);
 
-            try {
-                // Create the script.
-                bpel.create(BPELScriptType.BPEL2);
-
-                GpelProcess gpelProcess = bpel.getGpelProcess();
-                XMLUtil.saveXML(gpelProcess.xml(), bpelFile);
-
-                WorkflowWSDL workflowWSDL = bpel.getWorkflowWSDL();
-                XMLUtil.saveXML(workflowWSDL.getWsdlDefinitions().xml(), wsdlFile);
-
-            } catch (IOException e) {
-                this.engine.getGUI().getErrorWindow().error(ErrorMessages.WRITE_FILE_ERROR, e);
-            } catch (GraphException e) {
-                this.engine.getGUI().getErrorWindow().error(ErrorMessages.GRAPH_NOT_READY_ERROR, e);
-            } catch (RuntimeException e) {
-                this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
-            } catch (Error e) {
-                this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
-            }
+//            try {
+//                // Create the script.
+//                bpel.create(BPELScriptType.BPEL2);
+//
+//                GpelProcess gpelProcess = bpel.getGpelProcess();
+//                XMLUtil.saveXML(gpelProcess.xml(), bpelFile);
+//
+//                WorkflowWSDL workflowWSDL = bpel.getWorkflowWSDL();
+//                XMLUtil.saveXML(workflowWSDL.getWsdlDefinitions().xml(), wsdlFile);
+//
+//            } catch (IOException e) {
+//                this.engine.getGUI().getErrorWindow().error(ErrorMessages.WRITE_FILE_ERROR, e);
+//            } catch (GraphException e) {
+//                this.engine.getGUI().getErrorWindow().error(ErrorMessages.GRAPH_NOT_READY_ERROR, e);
+//            } catch (RuntimeException e) {
+//                this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+//            } catch (Error e) {
+//                this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+//            }
         }
     }
 

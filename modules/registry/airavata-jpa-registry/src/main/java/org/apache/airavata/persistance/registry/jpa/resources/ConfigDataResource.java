@@ -39,6 +39,24 @@ public class ConfigDataResource extends AbstractResource {
     private boolean airavataAutoSchedule;
     private boolean overrideManualParams;
     private boolean shareExp;
+    private String userDn;
+    private boolean generateCert;
+
+    public String getUserDn() {
+        return userDn;
+    }
+
+    public void setUserDn(String userDn) {
+        this.userDn = userDn;
+    }
+
+    public boolean isGenerateCert() {
+        return generateCert;
+    }
+
+    public void setGenerateCert(boolean generateCert) {
+        this.generateCert = generateCert;
+    }
 
     public ExperimentResource getExperimentResource() {
         return experimentResource;
@@ -113,12 +131,16 @@ public class ConfigDataResource extends AbstractResource {
             configData.setAiravataAutoSchedule(airavataAutoSchedule);
             configData.setOverrideManualParams(overrideManualParams);
             configData.setShareExp(shareExp);
+            configData.setUserDn(userDn);
+            configData.setGenerateCert(generateCert);
             if (existingConfig != null) {
                 existingConfig.setExpId(experimentResource.getExpID());
                 existingConfig.setExperiment(experiment);
                 existingConfig.setAiravataAutoSchedule(airavataAutoSchedule);
                 existingConfig.setOverrideManualParams(overrideManualParams);
                 existingConfig.setShareExp(shareExp);
+                existingConfig.setUserDn(userDn);
+                existingConfig.setGenerateCert(generateCert);
                 configData = em.merge(existingConfig);
             } else {
                 em.persist(configData);

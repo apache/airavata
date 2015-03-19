@@ -29,8 +29,8 @@ import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xsul.wsif.WSIFMessage;
-import xsul.xwsif_runtime.WSIFClient;
+//import xsul.wsif.WSIFMessage;
+//import xsul.xwsif_runtime.WSIFClient;
 
 public class DynamicInvoker implements Invoker {
 
@@ -143,27 +143,27 @@ public class DynamicInvoker implements Invoker {
     }
 
     /**
-     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#getOutputs()
-     */
-    public WSIFMessage getOutputs() throws WorkflowException {
-        waitToFinish();
-        return (WSIFMessage) this.result;
-
-    }
-
-    @Override
-    public WSIFClient getClient() {
-        return null;
-    }
-
-    @Override
-    public WSIFMessage getInputs() throws WorkflowException {
-        return null;
-    }
-
-    @Override
-    public WSIFMessage getFault() throws WorkflowException {
-        return null;
-    }
+//     * @see org.apache.airavata.xbaya.invoker.WorkflowInvoker#getOutputs()
+//     */
+//    public WSIFMessage getOutputs() throws WorkflowException {
+//        waitToFinish();
+//        return (WSIFMessage) this.result;
+//
+//    }
+//
+//    @Override
+//    public WSIFClient getClient() {
+//        return null;
+//    }
+//
+//    @Override
+//    public WSIFMessage getInputs() throws WorkflowException {
+//        return null;
+//    }
+//
+//    @Override
+//    public WSIFMessage getFault() throws WorkflowException {
+//        return null;
+//    }
 
 }

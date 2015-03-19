@@ -476,8 +476,10 @@ class User {
 class Gateway {
   static $_TSPEC;
 
-  public $gatewayId = "DO_NOT_SET_AT_CLIENTS";
-  public $name = null;
+  public $gatewayId = null;
+  public $gatewayName = null;
+  public $domain = null;
+  public $emailAddress = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -487,7 +489,15 @@ class Gateway {
           'type' => TType::STRING,
           ),
         2 => array(
-          'var' => 'name',
+          'var' => 'gatewayName',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'domain',
+          'type' => TType::STRING,
+          ),
+        4 => array(
+          'var' => 'emailAddress',
           'type' => TType::STRING,
           ),
         );
@@ -496,8 +506,14 @@ class Gateway {
       if (isset($vals['gatewayId'])) {
         $this->gatewayId = $vals['gatewayId'];
       }
-      if (isset($vals['name'])) {
-        $this->name = $vals['name'];
+      if (isset($vals['gatewayName'])) {
+        $this->gatewayName = $vals['gatewayName'];
+      }
+      if (isset($vals['domain'])) {
+        $this->domain = $vals['domain'];
+      }
+      if (isset($vals['emailAddress'])) {
+        $this->emailAddress = $vals['emailAddress'];
       }
     }
   }
@@ -530,7 +546,21 @@ class Gateway {
           break;
         case 2:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->name);
+            $xfer += $input->readString($this->gatewayName);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->domain);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->emailAddress);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -553,9 +583,19 @@ class Gateway {
       $xfer += $output->writeString($this->gatewayId);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->name !== null) {
-      $xfer += $output->writeFieldBegin('name', TType::STRING, 2);
-      $xfer += $output->writeString($this->name);
+    if ($this->gatewayName !== null) {
+      $xfer += $output->writeFieldBegin('gatewayName', TType::STRING, 2);
+      $xfer += $output->writeString($this->gatewayName);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->domain !== null) {
+      $xfer += $output->writeFieldBegin('domain', TType::STRING, 3);
+      $xfer += $output->writeString($this->domain);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->emailAddress !== null) {
+      $xfer += $output->writeFieldBegin('emailAddress', TType::STRING, 4);
+      $xfer += $output->writeString($this->emailAddress);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

@@ -159,7 +159,7 @@ public class RegisterOGCEUS3Application {
             System.out.println("\n #### Registering Application Modules #### \n");
 
             //Register Echo
-            ultrascanModuleId = airavataClient.registerApplicationModule(
+            ultrascanModuleId = airavataClient.registerApplicationModule(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(
                             "ultrascan_ogce", "1.0", "ultrascan application"));
             System.out.println("Ultrascan Module Id " + ultrascanModuleId);
@@ -191,7 +191,7 @@ public class RegisterOGCEUS3Application {
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
   
-            ultrascanAppId = airavataClient.registerApplicationInterface(
+            ultrascanAppId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("ultrascan", "ultrascan application",
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("Ultrascan Application Interface Id " + ultrascanAppId);
@@ -206,12 +206,12 @@ public class RegisterOGCEUS3Application {
 			System.out.println("#### Registering Application Deployments on Stampede #### \n");
 
 			// Register Stampede
-			String ultascanStamplede = airavataClient.registerApplicationDeployment(RegisterSampleApplicationsUtils.createApplicationDeployment(ultrascanModuleId,
+			String ultascanStamplede = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY, RegisterSampleApplicationsUtils.createApplicationDeployment(ultrascanModuleId,
 					stampedeResourceId, "/home1/01437/ogce/xsede_apps/ultrascan/bin/us_mpi_analysis",
                     ApplicationParallelismType.MPI, "ultrascan OGCE application", null, null, null));
 			System.out.println("Ultrascan on stampede deployment Id " + ultascanStamplede);
 			
-			String ultascanTrestles = airavataClient.registerApplicationDeployment(RegisterSampleApplicationsUtils.createApplicationDeployment(ultrascanModuleId,
+			String ultascanTrestles = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY, RegisterSampleApplicationsUtils.createApplicationDeployment(ultrascanModuleId,
 					trestlesResourceId, "/home/ogce/xsede_app/ultrascan/bin/us_mpi_analysis",
                     ApplicationParallelismType.MPI, "ultrascan OGCE application", null, null, null));
 			System.out.println("Ultrascan on trestles deployment Id " + ultascanTrestles);
@@ -248,7 +248,7 @@ public class RegisterOGCEUS3Application {
 //                            "/mnt/glusterfs/work/");
 
             GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
-            gatewayResourceProfile.setGatewayName(DEFAULT_GATEWAY);
+            gatewayResourceProfile.setGatewayID(DEFAULT_GATEWAY);
             gatewayResourceProfile.addToComputeResourcePreferences(stampedeResourcePreferences);
             gatewayResourceProfile.addToComputeResourcePreferences(trestlesResourcePreferences);
   //          gatewayResourceProfile.addToComputeResourcePreferences(lonestarResourcePreferences);

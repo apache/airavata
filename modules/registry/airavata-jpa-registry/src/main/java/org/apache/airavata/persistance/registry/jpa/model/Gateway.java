@@ -33,10 +33,14 @@ import java.io.Serializable;
 @Table(name ="GATEWAY")
 public class Gateway implements Serializable {
     @Id
+    @Column(name = "GATEWAY_ID")
+    private String gateway_id;
     @Column(name = "GATEWAY_NAME")
     private String gateway_name;
-    @Column(name = "OWNER")
-    private String owner;
+    @Column(name = "DOMAIN")
+    private String domain;
+    @Column(name = "EMAIL_ADDRESS")
+    private String emailAddress;
 
     public String getGateway_name() {
         return gateway_name;
@@ -46,11 +50,27 @@ public class Gateway implements Serializable {
         this.gateway_name = gateway_name;
     }
 
-    public String getOwner() {
-        return owner;
+    public String getDomain() {
+        return domain;
     }
 
-    public void setOwner(String owner) {
-        this.owner = owner;
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
+
+    public String getGateway_id() {
+        return gateway_id;
+    }
+
+    public void setGateway_id(String gateway_id) {
+        this.gateway_id = gateway_id;
+    }
+
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
     }
 }

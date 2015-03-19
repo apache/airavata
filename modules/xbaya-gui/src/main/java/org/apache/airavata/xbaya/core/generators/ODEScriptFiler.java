@@ -122,45 +122,45 @@ public class ODEScriptFiler {
                 } catch (URISyntaxException e) {
                     log.error(e.getMessage(), e);
                 }
-                process = wf.getOdeProcess(WSDLUtil.appendWSDLQuary(temp), this.engine.getConfiguration().getODEURL());
-                String processString = process.xmlStringPretty();
-                FileWriter writer = new FileWriter(bpelFile);
-                writer.write(processString);
-                writer.close();
-
-                WsdlDefinitions workflowWSDL = wf.getOdeWorkflowWSDL(this.engine.getConfiguration().getDSCURL(),
-                        this.engine.getConfiguration().getODEURL());
-                String workflowWsdlStr = XmlConstants.BUILDER.serializeToStringPretty(workflowWSDL.xml());
-                writer = new FileWriter(wsdlFile);
-                writer.write(workflowWsdlStr);
-
-                Map<String, WsdlDefinitions> wsdlMap = wf.getOdeServiceWSDLs(
-                        this.engine.getConfiguration().getDSCURL(), this.engine.getConfiguration().getODEURL());
-                Set<String> keySet = wsdlMap.keySet();
-                for (String string : keySet) {
-                    writer = new FileWriter(new File(wsdlFile.getParent(), QName.valueOf(string).getLocalPart()));
-                    writer.write(XmlConstants.BUILDER.serializeToStringPretty(wsdlMap.get(string).xml()));
-                    writer.close();
-                }
-
-                XmlElement deployDescriptor = wf.getODEDeploymentDescriptor(this.engine.getConfiguration().getDSCURL(),
-                        this.engine.getConfiguration().getODEURL());
-                writer = new FileWriter(new File(wsdlFile.getParent(), "deploy.xml"));
-                writer.write(XmlConstants.BUILDER.serializeToString(deployDescriptor));
-                writer.close();
-
+//                process = wf.getOdeProcess(WSDLUtil.appendWSDLQuary(temp), this.engine.getConfiguration().getODEURL());
+//                String processString = process.xmlStringPretty();
+//                FileWriter writer = new FileWriter(bpelFile);
+//                writer.write(processString);
+//                writer.close();
+//
+//                WsdlDefinitions workflowWSDL = wf.getOdeWorkflowWSDL(this.engine.getConfiguration().getDSCURL(),
+//                        this.engine.getConfiguration().getODEURL());
+//                String workflowWsdlStr = XmlConstants.BUILDER.serializeToStringPretty(workflowWSDL.xml());
+//                writer = new FileWriter(wsdlFile);
+//                writer.write(workflowWsdlStr);
+//
+//                Map<String, WsdlDefinitions> wsdlMap = wf.getOdeServiceWSDLs(
+//                        this.engine.getConfiguration().getDSCURL(), this.engine.getConfiguration().getODEURL());
+//                Set<String> keySet = wsdlMap.keySet();
+//                for (String string : keySet) {
+//                    writer = new FileWriter(new File(wsdlFile.getParent(), QName.valueOf(string).getLocalPart()));
+//                    writer.write(XmlConstants.BUILDER.serializeToStringPretty(wsdlMap.get(string).xml()));
+//                    writer.close();
+//                }
+//
+//                XmlElement deployDescriptor = wf.getODEDeploymentDescriptor(this.engine.getConfiguration().getDSCURL(),
+//                        this.engine.getConfiguration().getODEURL());
+//                writer = new FileWriter(new File(wsdlFile.getParent(), "deploy.xml"));
+//                writer.write(XmlConstants.BUILDER.serializeToString(deployDescriptor));
+//                writer.close();
+//
             }
-
-        } catch (IOException e) {
-            this.engine.getGUI().getErrorWindow().error(ErrorMessages.WRITE_FILE_ERROR, e);
-        } catch (GraphException e) {
-            this.engine.getGUI().getErrorWindow().error(ErrorMessages.GRAPH_FORMAT_ERROR, e);
+//
+//        } catch (IOException e) {
+//            this.engine.getGUI().getErrorWindow().error(ErrorMessages.WRITE_FILE_ERROR, e);
+//        } catch (GraphException e) {
+//            this.engine.getGUI().getErrorWindow().error(ErrorMessages.GRAPH_FORMAT_ERROR, e);
         } catch (RuntimeException e) {
             this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
         } catch (Error e) {
             this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
-        } catch (ComponentException e) {
-            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
+//        } catch (ComponentException e) {
+//            this.engine.getGUI().getErrorWindow().error(ErrorMessages.UNEXPECTED_ERROR, e);
         }
 
     }

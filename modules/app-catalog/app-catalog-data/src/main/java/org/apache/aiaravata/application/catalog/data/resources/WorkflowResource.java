@@ -46,6 +46,7 @@ public class WorkflowResource extends AbstractResource {
     private Timestamp createdTime;
     private Timestamp updatedTime;
     private String image;
+    private String gatewayId;
 
     public Timestamp getCreatedTime() {
         return createdTime;
@@ -69,6 +70,14 @@ public class WorkflowResource extends AbstractResource {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
     }
 
     @Override
@@ -171,6 +180,7 @@ public class WorkflowResource extends AbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(WORKFLOW);
+            generator.setParameter(WorkflowConstants.GATEWAY_ID, gatewayId);
             Query q = generator.selectQuery(em);
             List results = q.getResultList();
             if (results.size() != 0) {
@@ -205,6 +215,7 @@ public class WorkflowResource extends AbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(WORKFLOW);
+            generator.setParameter(WorkflowConstants.GATEWAY_ID, gatewayId);
             Query q = generator.selectQuery(em);
             List results = q.getResultList();
             if (results.size() != 0) {
@@ -288,6 +299,7 @@ public class WorkflowResource extends AbstractResource {
             }
             workflow.setWfName(getWfName());
             workflow.setCreatedUser(getCreatedUser());
+            workflow.setGatewayId(gatewayId);
             if (getGraph() != null){
                 workflow.setGraph(getGraph().toCharArray());
             }

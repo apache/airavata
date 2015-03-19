@@ -12,47 +12,47 @@
     #! /bin/bash
 # Grid Engine batch job script built by Apache Airavata
 #   <xsl:choose>
-    <xsl:when test="ns:shellName">
+    <xsl:when test="ns:shellName != ''">
 #$ -S <xsl:value-of select="ns:shellName"/>
     </xsl:when></xsl:choose>
 #$ -V
     <xsl:choose>
-    <xsl:when test="ns:queueName">
+    <xsl:when test="ns:queueName != ''">
 #$ -q <xsl:value-of select="ns:queueName"/>
     </xsl:when>
     </xsl:choose>
     <xsl:choose>
-    <xsl:when test="ns:mailOptions">
+    <xsl:when test="ns:mailOptions != ''">
 #$ -m <xsl:value-of select="ns:mailOptions"/>
     </xsl:when>
     </xsl:choose>
     <xsl:choose>
-    <xsl:when test="ns:mailAddress">
+    <xsl:when test="ns:mailAddress != ''">
 #$ -M <xsl:value-of select="ns:mailAddress"/>
     </xsl:when>
     </xsl:choose>
     <xsl:choose>
-<xsl:when test="ns:acountString">
+<xsl:when test="ns:acountString != ''">
 #$ -A <xsl:value-of select="ns:acountString"/>
     </xsl:when>
     </xsl:choose>
     <xsl:choose>
-    <xsl:when test="ns:maxWallTime">
+    <xsl:when test="ns:maxWallTime != ''">
 #$ -l h_rt=<xsl:value-of select="ns:maxWallTime"/>
     </xsl:when>
     </xsl:choose>
     <xsl:choose>
-    <xsl:when test="ns:jobName">
+    <xsl:when test="ns:jobName != ''">
 #$ -N <xsl:value-of select="ns:jobName"/>
     </xsl:when>
     </xsl:choose>
     <xsl:choose>
-    <xsl:when test="ns:standardOutFile">
+    <xsl:when test="ns:standardOutFile != ''">
 #$ -o <xsl:value-of select="ns:standardOutFile"/>
     </xsl:when>
     </xsl:choose>
     <xsl:choose>
-    <xsl:when test="ns:standardOutFile">
+    <xsl:when test="ns:standardOutFile != ''">
 #$ -e <xsl:value-of select="ns:standardErrorFile"/>
     </xsl:when>
     </xsl:choose>

@@ -55,6 +55,8 @@ struct User {
 }
 
 struct Gateway {
-    1: required string gatewayId = experimentModel.DEFAULT_ID
-    2: required string name,
+    1: required string gatewayId,
+    2: optional string gatewayName,
+    3: optional string domain,
+    4: optional string emailAddress
 }

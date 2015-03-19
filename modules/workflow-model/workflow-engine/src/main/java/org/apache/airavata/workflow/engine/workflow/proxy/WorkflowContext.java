@@ -27,13 +27,13 @@ import org.apache.airavata.workflow.model.wf.Workflow;
 import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSException;
 
-import xsul.lead.LeadContextHeader;
+//import xsul.lead.LeadContextHeader;
 
 public interface WorkflowContext {
 
     public void prepare(WorkflowClient client, Workflow workflow) throws GSSException, URISyntaxException;
 
-    public LeadContextHeader getHeader();
+//    public LeadContextHeader getHeader();
 
     public GSSCredential getCredentials();
 

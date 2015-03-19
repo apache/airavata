@@ -36,6 +36,7 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,10 +56,14 @@ public class RabbitMQListener {
     private static boolean allMessages = false;
 
     public static void main(String[] args) {
+        File file = new File("/tmp/latency_client");
         parseArguments(args);
         try {
+            FileOutputStream fos = new FileOutputStream(file, false);
+            final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
             AiravataUtils.setExecutionAsServer();
             String brokerUrl = ServerSettings.getSetting(RABBITMQ_BROKER_URL);
+            System.out.println("broker url " + brokerUrl);
             final String exchangeName = ServerSettings.getSetting(RABBITMQ_EXCHANGE_NAME);
             RabbitMQStatusConsumer consumer = new RabbitMQStatusConsumer(brokerUrl, exchangeName);
             consumer.listen(new MessageHandler() {
@@ -99,6 +104,14 @@ public class RabbitMQListener {
 
                 @Override
                 public void onMessage(MessageContext message) {
+                    try {
+                        long latency = System.currentTimeMillis() - message.getUpdatedTime().getTime();
+                        bw.write(message.getMessageId() + " :" + latency);
+                        bw.newLine();
+                        bw.flush();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     if (message.getType().equals(MessageType.EXPERIMENT)){
                         try {
                             ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent();

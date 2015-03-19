@@ -37,7 +37,7 @@ public class UnicoreJobSubmission {
 
     @Column(name = "UNICORE_ENDPOINT_URL")
     private String unicoreEndpointUrl;
-
+    
     public String getUnicoreEndpointUrl() {
 		return unicoreEndpointUrl;
 	}
@@ -45,7 +45,8 @@ public class UnicoreJobSubmission {
     public void setUnicoreEndpointUrl(String unicoreEndpointUrl) {
 		this.unicoreEndpointUrl = unicoreEndpointUrl;
 	}
-
+    
+    
 	public String getSubmissionID() {
         return submissionID;
     }

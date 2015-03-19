@@ -65,6 +65,8 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField ADVANCE_OUTPUT_DATA_HANDLING_FIELD_DESC = new org.apache.thrift.protocol.TField("advanceOutputDataHandling", org.apache.thrift.protocol.TType.STRUCT, (short)6);
   private static final org.apache.thrift.protocol.TField QOS_PARAMS_FIELD_DESC = new org.apache.thrift.protocol.TField("qosParams", org.apache.thrift.protocol.TType.STRUCT, (short)7);
   private static final org.apache.thrift.protocol.TField THROTTLE_RESOURCES_FIELD_DESC = new org.apache.thrift.protocol.TField("throttleResources", org.apache.thrift.protocol.TType.BOOL, (short)8);
+  private static final org.apache.thrift.protocol.TField USER_DN_FIELD_DESC = new org.apache.thrift.protocol.TField("userDN", org.apache.thrift.protocol.TType.STRING, (short)9);
+  private static final org.apache.thrift.protocol.TField GENERATE_CERT_FIELD_DESC = new org.apache.thrift.protocol.TField("generateCert", org.apache.thrift.protocol.TType.BOOL, (short)10);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -80,6 +82,8 @@ import org.slf4j.LoggerFactory;
   private AdvancedOutputDataHandling advanceOutputDataHandling; // optional
   private QualityOfServiceParams qosParams; // optional
   private boolean throttleResources; // optional
+  private String userDN; // optional
+  private boolean generateCert; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -90,7 +94,9 @@ import org.slf4j.LoggerFactory;
     ADVANCE_INPUT_DATA_HANDLING((short)5, "advanceInputDataHandling"),
     ADVANCE_OUTPUT_DATA_HANDLING((short)6, "advanceOutputDataHandling"),
     QOS_PARAMS((short)7, "qosParams"),
-    THROTTLE_RESOURCES((short)8, "throttleResources");
+    THROTTLE_RESOURCES((short)8, "throttleResources"),
+    USER_DN((short)9, "userDN"),
+    GENERATE_CERT((short)10, "generateCert");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -121,6 +127,10 @@ import org.slf4j.LoggerFactory;
           return QOS_PARAMS;
         case 8: // THROTTLE_RESOURCES
           return THROTTLE_RESOURCES;
+        case 9: // USER_DN
+          return USER_DN;
+        case 10: // GENERATE_CERT
+          return GENERATE_CERT;
         default:
           return null;
       }
@@ -165,8 +175,9 @@ import org.slf4j.LoggerFactory;
   private static final int __OVERRIDEMANUALSCHEDULEDPARAMS_ISSET_ID = 1;
   private static final int __SHAREEXPERIMENTPUBLICLY_ISSET_ID = 2;
   private static final int __THROTTLERESOURCES_ISSET_ID = 3;
+  private static final int __GENERATECERT_ISSET_ID = 4;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.SHARE_EXPERIMENT_PUBLICLY,_Fields.COMPUTATIONAL_RESOURCE_SCHEDULING,_Fields.ADVANCE_INPUT_DATA_HANDLING,_Fields.ADVANCE_OUTPUT_DATA_HANDLING,_Fields.QOS_PARAMS,_Fields.THROTTLE_RESOURCES};
+  private _Fields optionals[] = {_Fields.SHARE_EXPERIMENT_PUBLICLY,_Fields.COMPUTATIONAL_RESOURCE_SCHEDULING,_Fields.ADVANCE_INPUT_DATA_HANDLING,_Fields.ADVANCE_OUTPUT_DATA_HANDLING,_Fields.QOS_PARAMS,_Fields.THROTTLE_RESOURCES,_Fields.USER_DN,_Fields.GENERATE_CERT};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -186,6 +197,10 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, QualityOfServiceParams.class)));
     tmpMap.put(_Fields.THROTTLE_RESOURCES, new org.apache.thrift.meta_data.FieldMetaData("throttleResources", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
+    tmpMap.put(_Fields.USER_DN, new org.apache.thrift.meta_data.FieldMetaData("userDN", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.GENERATE_CERT, new org.apache.thrift.meta_data.FieldMetaData("generateCert", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(UserConfigurationData.class, metaDataMap);
   }
@@ -198,6 +213,8 @@ import org.slf4j.LoggerFactory;
     this.shareExperimentPublicly = false;
 
     this.throttleResources = false;
+
+    this.generateCert = false;
 
   }
 
@@ -233,6 +250,10 @@ import org.slf4j.LoggerFactory;
       this.qosParams = new QualityOfServiceParams(other.qosParams);
     }
     this.throttleResources = other.throttleResources;
+    if (other.isSetUserDN()) {
+      this.userDN = other.userDN;
+    }
+    this.generateCert = other.generateCert;
   }
 
   public UserConfigurationData deepCopy() {
@@ -252,6 +273,9 @@ import org.slf4j.LoggerFactory;
     this.advanceOutputDataHandling = null;
     this.qosParams = null;
     this.throttleResources = false;
+
+    this.userDN = null;
+    this.generateCert = false;
 
   }
 
@@ -435,6 +459,51 @@ import org.slf4j.LoggerFactory;
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __THROTTLERESOURCES_ISSET_ID, value);
   }
 
+  public String getUserDN() {
+    return this.userDN;
+  }
+
+  public void setUserDN(String userDN) {
+    this.userDN = userDN;
+  }
+
+  public void unsetUserDN() {
+    this.userDN = null;
+  }
+
+  /** Returns true if field userDN is set (has been assigned a value) and false otherwise */
+  public boolean isSetUserDN() {
+    return this.userDN != null;
+  }
+
+  public void setUserDNIsSet(boolean value) {
+    if (!value) {
+      this.userDN = null;
+    }
+  }
+
+  public boolean isGenerateCert() {
+    return this.generateCert;
+  }
+
+  public void setGenerateCert(boolean generateCert) {
+    this.generateCert = generateCert;
+    setGenerateCertIsSet(true);
+  }
+
+  public void unsetGenerateCert() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __GENERATECERT_ISSET_ID);
+  }
+
+  /** Returns true if field generateCert is set (has been assigned a value) and false otherwise */
+  public boolean isSetGenerateCert() {
+    return EncodingUtils.testBit(__isset_bitfield, __GENERATECERT_ISSET_ID);
+  }
+
+  public void setGenerateCertIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __GENERATECERT_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case AIRAVATA_AUTO_SCHEDULE:
@@ -501,6 +570,22 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case USER_DN:
+      if (value == null) {
+        unsetUserDN();
+      } else {
+        setUserDN((String)value);
+      }
+      break;
+
+    case GENERATE_CERT:
+      if (value == null) {
+        unsetGenerateCert();
+      } else {
+        setGenerateCert((Boolean)value);
+      }
+      break;
+
     }
   }
 
@@ -530,6 +615,12 @@ import org.slf4j.LoggerFactory;
     case THROTTLE_RESOURCES:
       return Boolean.valueOf(isThrottleResources());
 
+    case USER_DN:
+      return getUserDN();
+
+    case GENERATE_CERT:
+      return Boolean.valueOf(isGenerateCert());
+
     }
     throw new IllegalStateException();
   }
@@ -557,6 +648,10 @@ import org.slf4j.LoggerFactory;
       return isSetQosParams();
     case THROTTLE_RESOURCES:
       return isSetThrottleResources();
+    case USER_DN:
+      return isSetUserDN();
+    case GENERATE_CERT:
+      return isSetGenerateCert();
     }
     throw new IllegalStateException();
   }
@@ -643,6 +738,24 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_throttleResources && that_present_throttleResources))
         return false;
       if (this.throttleResources != that.throttleResources)
+        return false;
+    }
+
+    boolean this_present_userDN = true && this.isSetUserDN();
+    boolean that_present_userDN = true && that.isSetUserDN();
+    if (this_present_userDN || that_present_userDN) {
+      if (!(this_present_userDN && that_present_userDN))
+        return false;
+      if (!this.userDN.equals(that.userDN))
+        return false;
+    }
+
+    boolean this_present_generateCert = true && this.isSetGenerateCert();
+    boolean that_present_generateCert = true && that.isSetGenerateCert();
+    if (this_present_generateCert || that_present_generateCert) {
+      if (!(this_present_generateCert && that_present_generateCert))
+        return false;
+      if (this.generateCert != that.generateCert)
         return false;
     }
 
@@ -742,6 +855,26 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetUserDN()).compareTo(other.isSetUserDN());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetUserDN()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userDN, other.userDN);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetGenerateCert()).compareTo(other.isSetGenerateCert());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetGenerateCert()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.generateCert, other.generateCert);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -819,6 +952,22 @@ import org.slf4j.LoggerFactory;
       if (!first) sb.append(", ");
       sb.append("throttleResources:");
       sb.append(this.throttleResources);
+      first = false;
+    }
+    if (isSetUserDN()) {
+      if (!first) sb.append(", ");
+      sb.append("userDN:");
+      if (this.userDN == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.userDN);
+      }
+      first = false;
+    }
+    if (isSetGenerateCert()) {
+      if (!first) sb.append(", ");
+      sb.append("generateCert:");
+      sb.append(this.generateCert);
       first = false;
     }
     sb.append(")");
@@ -954,6 +1103,22 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 9: // USER_DN
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.userDN = iprot.readString();
+              struct.setUserDNIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 10: // GENERATE_CERT
+            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+              struct.generateCert = iprot.readBool();
+              struct.setGenerateCertIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1011,6 +1176,18 @@ import org.slf4j.LoggerFactory;
         oprot.writeBool(struct.throttleResources);
         oprot.writeFieldEnd();
       }
+      if (struct.userDN != null) {
+        if (struct.isSetUserDN()) {
+          oprot.writeFieldBegin(USER_DN_FIELD_DESC);
+          oprot.writeString(struct.userDN);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.isSetGenerateCert()) {
+        oprot.writeFieldBegin(GENERATE_CERT_FIELD_DESC);
+        oprot.writeBool(struct.generateCert);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1049,7 +1226,13 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetThrottleResources()) {
         optionals.set(5);
       }
-      oprot.writeBitSet(optionals, 6);
+      if (struct.isSetUserDN()) {
+        optionals.set(6);
+      }
+      if (struct.isSetGenerateCert()) {
+        optionals.set(7);
+      }
+      oprot.writeBitSet(optionals, 8);
       if (struct.isSetShareExperimentPublicly()) {
         oprot.writeBool(struct.shareExperimentPublicly);
       }
@@ -1068,6 +1251,12 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetThrottleResources()) {
         oprot.writeBool(struct.throttleResources);
       }
+      if (struct.isSetUserDN()) {
+        oprot.writeString(struct.userDN);
+      }
+      if (struct.isSetGenerateCert()) {
+        oprot.writeBool(struct.generateCert);
+      }
     }
 
     @Override
@@ -1077,7 +1266,7 @@ import org.slf4j.LoggerFactory;
       struct.setAiravataAutoScheduleIsSet(true);
       struct.overrideManualScheduledParams = iprot.readBool();
       struct.setOverrideManualScheduledParamsIsSet(true);
-      BitSet incoming = iprot.readBitSet(6);
+      BitSet incoming = iprot.readBitSet(8);
       if (incoming.get(0)) {
         struct.shareExperimentPublicly = iprot.readBool();
         struct.setShareExperimentPubliclyIsSet(true);
@@ -1105,6 +1294,14 @@ import org.slf4j.LoggerFactory;
       if (incoming.get(5)) {
         struct.throttleResources = iprot.readBool();
         struct.setThrottleResourcesIsSet(true);
+      }
+      if (incoming.get(6)) {
+        struct.userDN = iprot.readString();
+        struct.setUserDNIsSet(true);
+      }
+      if (incoming.get(7)) {
+        struct.generateCert = iprot.readBool();
+        struct.setGenerateCertIsSet(true);
       }
     }
   }

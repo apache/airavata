@@ -24,7 +24,8 @@ public enum ParentDataType {
     GROUP,
     USER,
     PROJECT,
-    EXPERIMENT
+    EXPERIMENT,
+    GATEWAY
 }
 
 

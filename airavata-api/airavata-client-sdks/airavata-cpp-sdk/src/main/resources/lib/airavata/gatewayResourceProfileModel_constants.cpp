@@ -28,8 +28,6 @@ namespace apache { namespace airavata { namespace model { namespace appcatalog {
 const gatewayResourceProfileModelConstants g_gatewayResourceProfileModel_constants;
 
 gatewayResourceProfileModelConstants::gatewayResourceProfileModelConstants() {
-  DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS";
-
 }
 
 }}}}} // namespace

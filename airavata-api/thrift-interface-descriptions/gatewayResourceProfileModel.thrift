@@ -23,8 +23,6 @@ namespace php Airavata.Model.AppCatalog.GatewayProfile
 namespace cpp apache.airavata.model.appcatalog.gatewayprofile
 include "computeResourceModel.thrift"
 
-const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
-
 /**
  * Gateway specific preferences for a Computer Resource
  *
@@ -32,6 +30,9 @@ const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
  *   Corelate the preference to a compute resource.
  *
  * overridebyAiravata:
+ *   If turned true, Airavata will override the preferences of better alternatives exist.
+ *
+ * loginUserName:
  *   If turned true, Airavata will override the preferences of better alternatives exist.
  *
  * preferredJobSubmissionProtocol:
@@ -55,11 +56,12 @@ const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 struct ComputeResourcePreference {
     1: required string computeResourceId,
     2: required bool overridebyAiravata = 1,
-    3: optional computeResourceModel.JobSubmissionProtocol preferredJobSubmissionProtocol,
-    4: optional computeResourceModel.DataMovementProtocol preferredDataMovementProtocol,
-    5: optional string preferredBatchQueue,
-    6: optional string scratchLocation,
-    7: optional string allocationProjectNumber
+    3: optional string loginUserName,
+    4: optional computeResourceModel.JobSubmissionProtocol preferredJobSubmissionProtocol,
+    5: optional computeResourceModel.DataMovementProtocol preferredDataMovementProtocol,
+    6: optional string preferredBatchQueue,
+    7: optional string scratchLocation,
+    8: optional string allocationProjectNumber
 }
 
 /**
@@ -68,20 +70,12 @@ struct ComputeResourcePreference {
  * gatewayID:
  *   Unique identifier for the gateway assigned by Airavata. Corelate this to Airavata Admin API Gateway Registration.
  *
- * gatewayName:
- *   Name of the Gateway.
- *
- * gatewayDescription:
- *  A user friendly description of the gateway.
- *
  * computeResourcePreferences:
  *  List of resource preferences for each of the registered compute resources.
  *
  *
 */
 struct GatewayResourceProfile {
-    1: required string gatewayID = DEFAULT_ID,
-    2: required string gatewayName,
-    3: optional string gatewayDescription,
-    4: optional list<ComputeResourcePreference> computeResourcePreferences
+    1: required string gatewayID,
+    2: optional list<ComputeResourcePreference> computeResourcePreferences
 }
