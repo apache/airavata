@@ -98,6 +98,7 @@ public class GfacInternalStatusUpdator implements AbstractActivityListener, Watc
                     consumer.sendAck(GFacUtils.getDeliveryTag(statusChangeRequest.getMonitorID().getExperimentID(),
                             monitorID.getTaskID(), zk, experimentNode, ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME)));
                 }
+                ZKUtil.deleteRecursive(zk,experimentPath+GFacUtils.DELIVERY_TAG_POSTFIX);
                 ZKUtil.deleteRecursive(zk, experimentPath);
                 break;
             case FAILED:
@@ -107,6 +108,7 @@ public class GfacInternalStatusUpdator implements AbstractActivityListener, Watc
                     consumer.sendAck(GFacUtils.getDeliveryTag(statusChangeRequest.getMonitorID().getExperimentID(),
                             monitorID.getTaskID(), zk, experimentNode, ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME)));
                 }
+                ZKUtil.deleteRecursive(zk,experimentPath+GFacUtils.DELIVERY_TAG_POSTFIX);
                 ZKUtil.deleteRecursive(zk, experimentPath);
                 break;
             default:
