@@ -59,6 +59,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
+import java.util.concurrent.locks.Lock;
 
 
 public class GfacServerHandler implements GfacService.Iface, Watcher {
@@ -78,6 +79,8 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
     private ZooKeeper zk;
 
     private static Integer mutex = -1;
+
+    private static Lock lock;
 
     private MonitorPublisher publisher;
 
