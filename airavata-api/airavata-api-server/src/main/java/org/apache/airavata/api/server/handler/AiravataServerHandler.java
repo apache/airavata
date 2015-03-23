@@ -101,7 +101,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     public AiravataServerHandler() {
         try {
             if (ServerSettings.isRabbitMqPublishEnabled()) {
-                publisher = PublisherFactory.createPublisher();
+                publisher = PublisherFactory.createActivityPublisher();
             }
         } catch (ApplicationSettingsException e) {
             logger.error("Error occured while reading airavata-server properties..", e);

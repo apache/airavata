@@ -199,7 +199,7 @@ public class CommonUtils {
             if (zk == null || !zk.getState().isConnected()) {
                 try {
                     final CountDownLatch countDownLatch = new CountDownLatch(1);
-                    zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), 6000, new Watcher() {
+                    zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), new Watcher() {
                         @Override
                         public void process(WatchedEvent event) {
                             countDownLatch.countDown();

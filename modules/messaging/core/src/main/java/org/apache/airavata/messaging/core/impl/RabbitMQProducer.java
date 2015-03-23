@@ -48,6 +48,15 @@ public class RabbitMQProducer {
 
     private String url;
 
+    private String getExchangeType = "topic";
+
+
+    public RabbitMQProducer(String url, String exchangeName,String getExchangeType) {
+        this.exchangeName = exchangeName;
+        this.url = url;
+        this.getExchangeType = getExchangeType;
+    }
+
     public RabbitMQProducer(String url, String exchangeName) {
         this.exchangeName = exchangeName;
         this.url = url;
@@ -104,8 +113,10 @@ public class RabbitMQProducer {
                 log.info("setting basic.qos / prefetch count to " + prefetchCount + " for " + exchangeName);
                 channel.basicQos(prefetchCount);
             }
-            channel.exchangeDeclare(exchangeName, "topic", false);
-        } catch (Exception e) {
+            if(exchangeName!=null) {
+                channel.exchangeDeclare(exchangeName, getExchangeType, false);
+            }
+            } catch (Exception e) {
             reset();
             String msg = "could not open channel for exchange " + exchangeName;
             log.error(msg);
@@ -116,6 +127,18 @@ public class RabbitMQProducer {
     public void send(byte []message, String routingKey) throws Exception {
         try {
             channel.basicPublish(exchangeName, routingKey, null, message);
+        } catch (IOException e) {
+            String msg = "Failed to publish message to exchange: " + exchangeName;
+            log.error(msg, e);
+            throw new Exception(msg, e);
+        }
+    }
+
+    public void sendToWorkerQueue(byte []message, String routingKey) throws Exception {
+        try {
+            channel.basicPublish( "", routingKey,
+                    MessageProperties.PERSISTENT_TEXT_PLAIN,
+                    message);
         } catch (IOException e) {
             String msg = "Failed to publish message to exchange: " + exchangeName;
             log.error(msg, e);
