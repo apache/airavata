@@ -49,6 +49,7 @@ import org.apache.airavata.gfac.core.states.GfacPluginState;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.PublisherFactory;
+import org.apache.airavata.messaging.core.impl.RabbitMQTaskLaunchConsumer;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
@@ -111,18 +112,18 @@ public class BetterGfacImpl implements GFac,Watcher {
         this.appCatalog = appCatalog;
     }
 
-    public static void startStatusUpdators(Registry registry, ZooKeeper zk, MonitorPublisher publisher) {
+    public static void startStatusUpdators(Registry registry, ZooKeeper zk, MonitorPublisher publisher,RabbitMQTaskLaunchConsumer rabbitMQTaskLaunchConsumer) {
         try {
             String[] listenerClassList = ServerSettings.getActivityListeners();
             Publisher rabbitMQPublisher = null;
             if (ServerSettings.isRabbitMqPublishEnabled()){
-                rabbitMQPublisher = PublisherFactory.createPublisher();
+                rabbitMQPublisher = PublisherFactory.createActivityPublisher();
             }
             for (String listenerClass : listenerClassList) {
                 Class<? extends AbstractActivityListener> aClass = Class.forName(listenerClass).asSubclass(AbstractActivityListener.class);
                 AbstractActivityListener abstractActivityListener = aClass.newInstance();
                 activityListeners.add(abstractActivityListener);
-                abstractActivityListener.setup(publisher, registry, zk, rabbitMQPublisher);
+                abstractActivityListener.setup(publisher, registry, zk, rabbitMQPublisher,rabbitMQTaskLaunchConsumer);
                 log.info("Registering listener: " + listenerClass);
                 publisher.registerListener(abstractActivityListener);
             }
@@ -1178,6 +1179,7 @@ public class BetterGfacImpl implements GFac,Watcher {
     }
 
     public void process(WatchedEvent watchedEvent) {
+        log.info(watchedEvent.getPath());
         if(Event.EventType.NodeDataChanged.equals(watchedEvent.getType())){
             // node data is changed, this means node is cancelled.
             log.info("Experiment is cancelled with this path:"+watchedEvent.getPath());

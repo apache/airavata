@@ -35,11 +35,15 @@ final class MessageType {
   const TASK = 1;
   const WORKFLOWNODE = 2;
   const JOB = 3;
+  const LAUNCHTASK = 4;
+  const TERMINATETASK = 5;
   static public $__names = array(
     0 => 'EXPERIMENT',
     1 => 'TASK',
     2 => 'WORKFLOWNODE',
     3 => 'JOB',
+    4 => 'LAUNCHTASK',
+    5 => 'TERMINATETASK',
   );
 }
 
@@ -958,6 +962,230 @@ class JobIdentifier {
     if ($this->gatewayId !== null) {
       $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 5);
       $xfer += $output->writeString($this->gatewayId);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class TaskSubmitEvent {
+  static $_TSPEC;
+
+  public $experimentId = null;
+  public $taskId = null;
+  public $gatewayId = null;
+  public $tokenId = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'experimentId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'taskId',
+          'type' => TType::STRING,
+          ),
+        3 => array(
+          'var' => 'gatewayId',
+          'type' => TType::STRING,
+          ),
+        4 => array(
+          'var' => 'tokenId',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['experimentId'])) {
+        $this->experimentId = $vals['experimentId'];
+      }
+      if (isset($vals['taskId'])) {
+        $this->taskId = $vals['taskId'];
+      }
+      if (isset($vals['gatewayId'])) {
+        $this->gatewayId = $vals['gatewayId'];
+      }
+      if (isset($vals['tokenId'])) {
+        $this->tokenId = $vals['tokenId'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'TaskSubmitEvent';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->experimentId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->taskId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->tokenId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('TaskSubmitEvent');
+    if ($this->experimentId !== null) {
+      $xfer += $output->writeFieldBegin('experimentId', TType::STRING, 1);
+      $xfer += $output->writeString($this->experimentId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->taskId !== null) {
+      $xfer += $output->writeFieldBegin('taskId', TType::STRING, 2);
+      $xfer += $output->writeString($this->taskId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gatewayId !== null) {
+      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 3);
+      $xfer += $output->writeString($this->gatewayId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->tokenId !== null) {
+      $xfer += $output->writeFieldBegin('tokenId', TType::STRING, 4);
+      $xfer += $output->writeString($this->tokenId);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class TaskTerminateEvent {
+  static $_TSPEC;
+
+  public $experimentId = null;
+  public $taskId = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'experimentId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'taskId',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['experimentId'])) {
+        $this->experimentId = $vals['experimentId'];
+      }
+      if (isset($vals['taskId'])) {
+        $this->taskId = $vals['taskId'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'TaskTerminateEvent';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->experimentId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->taskId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('TaskTerminateEvent');
+    if ($this->experimentId !== null) {
+      $xfer += $output->writeFieldBegin('experimentId', TType::STRING, 1);
+      $xfer += $output->writeString($this->experimentId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->taskId !== null) {
+      $xfer += $output->writeFieldBegin('taskId', TType::STRING, 2);
+      $xfer += $output->writeString($this->taskId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

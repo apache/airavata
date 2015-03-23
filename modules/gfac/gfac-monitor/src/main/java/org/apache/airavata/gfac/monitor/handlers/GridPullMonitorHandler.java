@@ -125,6 +125,7 @@ public class GridPullMonitorHandler extends ThreadedHandler implements Watcher{
 
 
     public void process(WatchedEvent watchedEvent) {
+        logger.info(watchedEvent.getPath());
         if(Event.EventType.NodeDataChanged.equals(watchedEvent.getType())){
             // node data is changed, this means node is cancelled.
             logger.info("Experiment is cancelled with this path:"+watchedEvent.getPath());

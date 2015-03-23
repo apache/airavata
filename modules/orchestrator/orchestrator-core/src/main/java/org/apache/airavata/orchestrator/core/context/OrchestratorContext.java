@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.airavata.gfac.client.GFACInstance;
+import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.orchestrator.core.OrchestratorConfiguration;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.zookeeper.ZooKeeper;
@@ -39,6 +40,8 @@ public class OrchestratorContext {
     private Registry newRegistry;
 
     private static ZooKeeper zk; // this instance can be accessed by the Validators and other components
+
+    private Publisher publisher;
     
     public OrchestratorContext(List<GFACInstance> gfacInstanceList) {
         if (gfacInstanceList != null) {
@@ -46,6 +49,14 @@ public class OrchestratorContext {
         }else {
             this.gfacInstanceList = new ArrayList<GFACInstance>();
         }
+    }
+
+    public Publisher getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(Publisher publisher) {
+        this.publisher = publisher;
     }
 
     public OrchestratorContext() {

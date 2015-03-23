@@ -57,4 +57,5 @@ public final class Constants {
     public static final String ZOOKEEPER_API_SERVER_NAME = "api-server-name";
     public static final String STAT = "stat";
     public static final String JOB = "job";
+    public static final String ZOOKEEPER_TIMEOUT = "zookeeper.timeout";
 }

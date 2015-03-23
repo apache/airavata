@@ -103,7 +103,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 		// registering with zk
 		try {
 			if (ServerSettings.isRabbitMqPublishEnabled()) {
-	                publisher = PublisherFactory.createPublisher();
+	                publisher = PublisherFactory.createActivityPublisher();
 	        }
 			String zkhostPort = AiravataZKUtils.getZKhostPort();
 			String airavataServerHostPort = ServerSettings
@@ -115,7 +115,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 //            setGatewayName(ServerSettings.getDefaultUserGateway());
             setAiravataUserName(ServerSettings.getDefaultUser());
 			try {
-				zk = new ZooKeeper(zkhostPort, 6000, this); // no watcher is
+				zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this); // no watcher is
 															// required, this
 															// will only use to
 															// store some data
@@ -156,6 +156,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 			registry = RegistryFactory.getDefaultRegistry();
 			orchestrator.initialize();
 			orchestrator.getOrchestratorContext().setZk(this.zk);
+			orchestrator.getOrchestratorContext().setPublisher(this.publisher);
 		} catch (OrchestratorException e) {
             log.error(e.getMessage(), e);
             throw new OrchestratorException("Error while initializing orchestrator service", e);
@@ -291,43 +292,45 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 	 * This method gracefully handler gfac node failures
 	 */
 	synchronized public void process(WatchedEvent watchedEvent) {
+		log.info(watchedEvent.getPath());
 		synchronized (mutex) {
 			try {
 				Event.KeeperState state = watchedEvent.getState();
 				switch (state) {
-				case SyncConnected:
-					mutex.notify();
-					break;
-                case Expired:case Disconnected:
-                        try {
-                            zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), 6000, this);
-                            synchronized (mutex) {
-                                mutex.wait(); // waiting for the syncConnected event
-                            }
-                            String airavataServerHostPort = ServerSettings
-                                    .getSetting(Constants.ORCHESTRATOR_SERVER_HOST)
-                                    + ":"
-                                    + ServerSettings
-                                    .getSetting(Constants.ORCHESTRATOR_SERVER_PORT);
-                            String OrchServer = ServerSettings
-                                    .getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_ORCHESTRATOR_SERVER_NODE);
-                            registerOrchestratorService(airavataServerHostPort, OrchServer);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        } catch (ApplicationSettingsException e) {
-                            e.printStackTrace();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        } catch (KeeperException e) {
-                            e.printStackTrace();
-                        }
-                        break;
-                }
+					case SyncConnected:
+						mutex.notify();
+						break;
+					case Expired:
+					case Disconnected:
+						try {
+							zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this);
+							synchronized (mutex) {
+								mutex.wait(); // waiting for the syncConnected event
+							}
+							String airavataServerHostPort = ServerSettings
+									.getSetting(Constants.ORCHESTRATOR_SERVER_HOST)
+									+ ":"
+									+ ServerSettings
+									.getSetting(Constants.ORCHESTRATOR_SERVER_PORT);
+							String OrchServer = ServerSettings
+									.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_ORCHESTRATOR_SERVER_NODE);
+							registerOrchestratorService(airavataServerHostPort, OrchServer);
+						} catch (IOException e) {
+							e.printStackTrace();
+						} catch (ApplicationSettingsException e) {
+							e.printStackTrace();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						} catch (KeeperException e) {
+							e.printStackTrace();
+						}
+						break;
+				}
 				if (watchedEvent.getPath() != null
 						&& watchedEvent.getPath().startsWith(
-								ServerSettings.getSetting(
-										Constants.ZOOKEEPER_GFAC_SERVER_NODE,
-										"/gfac-server"))) {
+						ServerSettings.getSetting(
+								Constants.ZOOKEEPER_GFAC_SERVER_NODE,
+								"/gfac-server"))) {
 					List<String> children = zk.getChildren(ServerSettings
 							.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NODE,
 									"/gfac-server"), true);
@@ -339,18 +342,18 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 										+ File.separator + gfacNodes, this);
 					}
 					switch (watchedEvent.getType()) {
-					case NodeCreated:
-						mutex.notify();
-						break;
-					case NodeDeleted:
-						// here we have to handle gfac node shutdown case
-						if (children.size() == 0) {
-							log.error("There are not gfac instances to route failed jobs");
-							return;
-						}
-						// we recover one gfac node at a time
-						final WatchedEvent event = watchedEvent;
-						final OrchestratorServerHandler handler = this;
+						case NodeCreated:
+							mutex.notify();
+							break;
+						case NodeDeleted:
+							// here we have to handle gfac node shutdown case
+							if (children.size() == 0) {
+								log.error("There are not gfac instances to route failed jobs");
+								return;
+							}
+							// we recover one gfac node at a time
+							final WatchedEvent event = watchedEvent;
+							final OrchestratorServerHandler handler = this;
 						/*(new Thread() {  // disabling ft implementation with zk
 							public void run() {
 								int retry = 0;
@@ -371,7 +374,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 
 							}
 						}).start();*/
-						break;
+							break;
 					}
 
 

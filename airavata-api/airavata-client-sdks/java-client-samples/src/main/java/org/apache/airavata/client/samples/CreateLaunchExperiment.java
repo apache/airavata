@@ -52,13 +52,13 @@ public class CreateLaunchExperiment {
     public static final int THRIFT_SERVER_PORT = 8930;
 //	public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
 //	public static final int THRIFT_SERVER_PORT = 9930;
-	
+
     private final static Logger logger = LoggerFactory.getLogger(CreateLaunchExperiment.class);
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_GATEWAY = "php_reference_gateway";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_61988d1f-7ca9-47ba-9212-a0ac2e973cf1";
+    private static String echoAppId = "Echo_78c785c6-3748-4a93-8569-19fee56581bc";
     private static String mpiAppId = "HelloMPI_720e159f-198f-4daa-96ca-9f5eafee92c9";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
     private static String amberAppId = "Amber_aa083c86-4680-4002-b3ef-fad93c181926";
@@ -78,27 +78,26 @@ public class CreateLaunchExperiment {
 
     private static String gatewayId;
 
- // unicore service endpoint url
+    // unicore service endpoint url
     private static final String unicoreEndPointURL = "https://fsd-cloud15.zam.kfa-juelich.de:7000/INTEROP1/services/BESFactory?res=default_bes_factory";
-    
-    
+
+
     public static void main(String[] args) throws Exception {
         airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
         System.out.println("API version is " + airavataClient.getAPIVersion());
-        getAvailableAppInterfaceComputeResources("Echo_4fb76cb3-6bf6-409e-aa17-7cc7ee6e41af");
 //        createGateway();
 //        getGateway("testGatewayId");
 //        registerApplications(); // run this only the first time
-//        createAndLaunchExp();
+        createAndLaunchExp();
     }
-    
+
     private static String fsdResourceId;
 
 
     public static void getAvailableAppInterfaceComputeResources(String appInterfaceId) {
         try {
             Map<String, String> availableAppInterfaceComputeResources = airavataClient.getAvailableAppInterfaceComputeResources(appInterfaceId);
-            for (String key : availableAppInterfaceComputeResources.keySet()){
+            for (String key : availableAppInterfaceComputeResources.keySet()) {
                 System.out.println("id : " + key);
                 System.out.println("name : " + availableAppInterfaceComputeResources.get(key));
             }
@@ -115,7 +114,7 @@ public class CreateLaunchExperiment {
     }
 
 
-    public static void createGateway(){
+    public static void createGateway() {
         try {
             Gateway gateway = new Gateway();
             gateway.setGatewayId("testGatewayId2");
@@ -134,14 +133,14 @@ public class CreateLaunchExperiment {
 
     }
 
-    public static void getGateway(String gatewayId){
+    public static void getGateway(String gatewayId) {
         try {
             Gateway gateway = airavataClient.getGateway(gatewayId);
             gateway.setDomain("testDomain");
             airavataClient.updateGateway(gatewayId, gateway);
             List<Gateway> allGateways = airavataClient.getAllGateways();
             System.out.println(allGateways.size());
-            if (airavataClient.isGatewayExist(gatewayId)){
+            if (airavataClient.isGatewayExist(gatewayId)) {
                 Gateway gateway1 = airavataClient.getGateway(gatewayId);
                 System.out.println(gateway1.getGatewayName());
             }
@@ -161,21 +160,21 @@ public class CreateLaunchExperiment {
 
 
     public static void createAndLaunchExp() throws TException {
-//        final String expId = createEchoExperimentForFSD(airavataClient);
+        List<String> experimentIds = new ArrayList<String>();
         try {
-            for (int i = 0; i < 1; i++) {
+            for (int i = 0; i < 100; i++) {
 //                final String expId = createExperimentForSSHHost(airavata);
 //                final String expId = createEchoExperimentForFSD(airavataClient);
 //                final String expId = createMPIExperimentForFSD(airavataClient);
 //               final String expId = createEchoExperimentForStampede(airavataClient);
 //                final String expId = createEchoExperimentForTrestles(airavataClient);
-//                final String expId = createExperimentEchoForLocalHost(airavataClient);
+                final String expId = createExperimentEchoForLocalHost(airavataClient);
+                experimentIds.add(expId);
 //                final String expId = createExperimentWRFTrestles(airavataClient);
 //                final String expId = createExperimentForBR2(airavataClient);
 //                final String expId = createExperimentForBR2Amber(airavataClient);
 //                final String expId = createExperimentWRFStampede(airavataClient);
 //                final String expId = createExperimentForStampedeAmber(airavataClient);
-                final String expId = createExperimentForTrestlesAmber(airavataClient);
 //                final String expId = createExperimentGROMACSStampede(airavataClient);
 //                final String expId = createExperimentESPRESSOStampede(airavataClient);
 //                final String expId = createExperimentLAMMPSStampede(airavataClient);
@@ -190,6 +189,14 @@ public class CreateLaunchExperiment {
 
                 launchExperiment(airavataClient, expId);
             }
+
+            Thread.sleep(10000);
+            for (String exId : experimentIds) {
+                Experiment experiment = airavataClient.getExperiment(exId);
+                System.out.println(experiment.getExperimentID() + " " + experiment.getExperimentStatus().getExperimentState().name());
+            }
+
+
         } catch (Exception e) {
             logger.error("Error while connecting with server", e.getMessage());
             e.printStackTrace();
@@ -197,8 +204,7 @@ public class CreateLaunchExperiment {
         }
     }
 
-   
-    
+
     public static void registerApplications() {
         RegisterSampleApplications registerSampleApplications = new RegisterSampleApplications(airavataClient);
 
@@ -224,25 +230,25 @@ public class CreateLaunchExperiment {
     }
 
     public static String registerUnicoreEndpoint(String hostName, String hostDesc, JobSubmissionProtocol protocol, SecurityProtocol securityProtocol) throws TException {
-		
-		ComputeResourceDescription computeResourceDescription = RegisterSampleApplicationsUtils
-				.createComputeResourceDescription(hostName, hostDesc, null, null);
-		
-		fsdResourceId = airavataClient.registerComputeResource(computeResourceDescription);
-		
-		if (fsdResourceId.isEmpty())
-			throw new AiravataClientException();
-		
-		System.out.println("FSD Compute ResourceID: "+fsdResourceId);
-		
-		JobSubmissionInterface jobSubmission = RegisterSampleApplicationsUtils.createJobSubmissionInterface(fsdResourceId, protocol, 2);
-		UnicoreJobSubmission ucrJobSubmission = new UnicoreJobSubmission();
-		ucrJobSubmission.setSecurityProtocol(securityProtocol);
-		ucrJobSubmission.setUnicoreEndPointURL(unicoreEndPointURL);
-		
-		return jobSubmission.getJobSubmissionInterfaceId();
-	}
-    
+
+        ComputeResourceDescription computeResourceDescription = RegisterSampleApplicationsUtils
+                .createComputeResourceDescription(hostName, hostDesc, null, null);
+
+        fsdResourceId = airavataClient.registerComputeResource(computeResourceDescription);
+
+        if (fsdResourceId.isEmpty())
+            throw new AiravataClientException();
+
+        System.out.println("FSD Compute ResourceID: " + fsdResourceId);
+
+        JobSubmissionInterface jobSubmission = RegisterSampleApplicationsUtils.createJobSubmissionInterface(fsdResourceId, protocol, 2);
+        UnicoreJobSubmission ucrJobSubmission = new UnicoreJobSubmission();
+        ucrJobSubmission.setSecurityProtocol(securityProtocol);
+        ucrJobSubmission.setUnicoreEndPointURL(unicoreEndPointURL);
+
+        return jobSubmission.getJobSubmissionInterfaceId();
+    }
+
     public static String createEchoExperimentForTrestles(Airavata.Client client) throws TException {
         try {
             List<InputDataObjectType> exInputs = client.getApplicationInputs(echoAppId);
@@ -290,28 +296,27 @@ public class CreateLaunchExperiment {
         }
         return null;
     }
-    
-    
+
+
     public static String createEchoExperimentForFSD(Airavata.Client client) throws TException {
         try {
-        	List<InputDataObjectType> exInputs = client.getApplicationInputs(echoAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(echoAppId);
             for (InputDataObjectType inputDataObjectType : exInputs) {
-            	if (inputDataObjectType.getName().equalsIgnoreCase("Input_to_Echo")) {
-                      inputDataObjectType.setValue("Hello World");
-                 }else if (inputDataObjectType.getName().equalsIgnoreCase("Input_to_Echo2")) {
+                if (inputDataObjectType.getName().equalsIgnoreCase("Input_to_Echo")) {
+                    inputDataObjectType.setValue("Hello World");
+                } else if (inputDataObjectType.getName().equalsIgnoreCase("Input_to_Echo2")) {
                     inputDataObjectType.setValue("http://www.textfiles.com/100/ad.txt");
-                }else if (inputDataObjectType.getName().equalsIgnoreCase("Input_to_Echo3")) {
+                } else if (inputDataObjectType.getName().equalsIgnoreCase("Input_to_Echo3")) {
                     inputDataObjectType.setValue("file:///tmp/test.txt");
-                 }
+                }
             }
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
 
-            Experiment simpleExperiment = 
+            Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment("default", "admin", "echoExperiment", "SimpleEcho2", echoAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
-            
-            
-            
+
+
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(echoAppId);
             if (computeResources != null && computeResources.size() != 0) {
                 for (String id : computeResources.keySet()) {
@@ -322,13 +327,13 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setAiravataAutoSchedule(false);
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
-                        
+
                         // set output directory 
                         AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();
-                        dataHandling.setOutputDataDir("/tmp/airavata/output/"+UUID.randomUUID().toString()+"/");
+                        dataHandling.setOutputDataDir("/tmp/airavata/output/" + UUID.randomUUID().toString() + "/");
                         userConfigurationData.setAdvanceOutputDataHandling(dataHandling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        
+
                         return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
@@ -348,25 +353,24 @@ public class CreateLaunchExperiment {
         }
         return null;
     }
-    
-    
+
+
     public static String createMPIExperimentForFSD(Airavata.Client client) throws TException {
         try {
-        	List<InputDataObjectType> exInputs = client.getApplicationInputs(mpiAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(mpiAppId);
             for (InputDataObjectType inputDataObjectType : exInputs) {
-            	if (inputDataObjectType.getName().equalsIgnoreCase("Sample_Input")) {
-                      inputDataObjectType.setValue("");
-                 }
+                if (inputDataObjectType.getName().equalsIgnoreCase("Sample_Input")) {
+                    inputDataObjectType.setValue("");
+                }
             }
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(mpiAppId);
 
-        	  
-            Experiment simpleExperiment = 
+
+            Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment("default", "admin", "mpiExperiment", "HelloMPI", mpiAppId, null);
-          simpleExperiment.setExperimentOutputs(exOut);
-            
-            
-            
+            simpleExperiment.setExperimentOutputs(exOut);
+
+
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(mpiAppId);
             if (computeResources != null && computeResources.size() != 0) {
                 for (String id : computeResources.keySet()) {
@@ -377,13 +381,13 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setAiravataAutoSchedule(false);
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
-                        
+
                         // set output directory 
                         AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();
-                        dataHandling.setOutputDataDir("/tmp/airavata/output/"+UUID.randomUUID().toString()+"/");
+                        dataHandling.setOutputDataDir("/tmp/airavata/output/" + UUID.randomUUID().toString() + "/");
                         userConfigurationData.setAdvanceOutputDataHandling(dataHandling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        
+
                         return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
@@ -404,15 +408,13 @@ public class CreateLaunchExperiment {
         return null;
     }
 
-    
-    
-    
+
     public static String createExperimentWRFStampede(Airavata.Client client) throws TException {
         try {
-        	List<InputDataObjectType> exInputs = client.getApplicationInputs(wrfAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(wrfAppId);
             setWRFInputs(exInputs);
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(wrfAppId);
-       
+
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment("default", "admin", "WRFExperiment", "Testing", wrfAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
@@ -449,26 +451,26 @@ public class CreateLaunchExperiment {
     }
 
 
-	private static void setWRFInputs(List<InputDataObjectType> exInputs) {
-		for (InputDataObjectType inputDataObjectType : exInputs) {
-			if (inputDataObjectType.getName().equalsIgnoreCase("Config_Namelist_File")) {
-		          inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/WRF_FILES/namelist.input");
-		     }else if (inputDataObjectType.getName().equalsIgnoreCase("WRF_Initial_Conditions")) {
-		        inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/WRF_FILES/wrfinput_d01");
-		    }else if (inputDataObjectType.getName().equalsIgnoreCase("WRF_Boundary_File")) {
-		        inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/WRF_FILES/wrfbdy_d01");
-		     }
-		}
-	}
+    private static void setWRFInputs(List<InputDataObjectType> exInputs) {
+        for (InputDataObjectType inputDataObjectType : exInputs) {
+            if (inputDataObjectType.getName().equalsIgnoreCase("Config_Namelist_File")) {
+                inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/WRF_FILES/namelist.input");
+            } else if (inputDataObjectType.getName().equalsIgnoreCase("WRF_Initial_Conditions")) {
+                inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/WRF_FILES/wrfinput_d01");
+            } else if (inputDataObjectType.getName().equalsIgnoreCase("WRF_Boundary_File")) {
+                inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/WRF_FILES/wrfbdy_d01");
+            }
+        }
+    }
 
 
     public static String createExperimentGROMACSStampede(Airavata.Client client) throws TException {
         try {
-        	
-        	List<InputDataObjectType> exInputs = client.getApplicationInputs(gromacsAppId);
-        	setGROMACSInputs(exInputs);
+
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(gromacsAppId);
+            setGROMACSInputs(exInputs);
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(gromacsAppId);
-       
+
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment("default", "admin", "GromacsExperiment", "Testing", gromacsAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
@@ -505,20 +507,21 @@ public class CreateLaunchExperiment {
     }
 
     private static void setGROMACSInputs(List<InputDataObjectType> exInputs) {
-    		for (InputDataObjectType inputDataObjectType : exInputs) {
-			if (inputDataObjectType.getName().equalsIgnoreCase("GROMOS_Coordinate_File")) {
-		          inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/GROMMACS_FILES/pdb1y6l-EM-vacuum.gro");
-		     }else if (inputDataObjectType.getName().equalsIgnoreCase("Portable_Input_Binary_File")) {
-		        inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/GROMMACS_FILES/pdb1y6l-EM-vacuum.tpr");
-		    }
-		}
-	}
+        for (InputDataObjectType inputDataObjectType : exInputs) {
+            if (inputDataObjectType.getName().equalsIgnoreCase("GROMOS_Coordinate_File")) {
+                inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/GROMMACS_FILES/pdb1y6l-EM-vacuum.gro");
+            } else if (inputDataObjectType.getName().equalsIgnoreCase("Portable_Input_Binary_File")) {
+                inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/GROMMACS_FILES/pdb1y6l-EM-vacuum.tpr");
+            }
+        }
+    }
+
     public static String createExperimentESPRESSOStampede(Airavata.Client client) throws TException {
         try {
-         	List<InputDataObjectType> exInputs = client.getApplicationInputs(espressoAppId);
-        	setESPRESSOInputs(exInputs);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(espressoAppId);
+            setESPRESSOInputs(exInputs);
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(espressoAppId);
-        
+
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment("default", "admin", "EspressoExperiment", "Testing", espressoAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
@@ -553,22 +556,23 @@ public class CreateLaunchExperiment {
         }
         return null;
     }
+
     private static void setESPRESSOInputs(List<InputDataObjectType> exInputs) {
-    	for (InputDataObjectType inputDataObjectType : exInputs) {
-		if (inputDataObjectType.getName().equalsIgnoreCase("AI_Pseudopotential_File")) {
-	          inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/ESPRESSO_FILES/Al.sample.in");
-	     }else if (inputDataObjectType.getName().equalsIgnoreCase("AI_Primitive_Cell")) {
-	        inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/ESPRESSO_FILES/Al.pz-vbc.UPF");
-	    }
-	}
-}
+        for (InputDataObjectType inputDataObjectType : exInputs) {
+            if (inputDataObjectType.getName().equalsIgnoreCase("AI_Pseudopotential_File")) {
+                inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/ESPRESSO_FILES/Al.sample.in");
+            } else if (inputDataObjectType.getName().equalsIgnoreCase("AI_Primitive_Cell")) {
+                inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/ESPRESSO_FILES/Al.pz-vbc.UPF");
+            }
+        }
+    }
 
     public static String createExperimentTRINITYStampede(Airavata.Client client) throws TException {
         try {
-        	List<InputDataObjectType> exInputs = client.getApplicationInputs(trinityAppId);
-        	setTRINITYInputs(exInputs);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(trinityAppId);
+            setTRINITYInputs(exInputs);
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(trinityAppId);
-            
+
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment("default", "admin", "TrinityExperiment", "Testing", trinityAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
@@ -603,21 +607,23 @@ public class CreateLaunchExperiment {
         }
         return null;
     }
+
     private static void setTRINITYInputs(List<InputDataObjectType> exInputs) {
-    	for (InputDataObjectType inputDataObjectType : exInputs) {
-    		if (inputDataObjectType.getName().equalsIgnoreCase("RNA_Seq_Left_Input")) {
-	          inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/TRINITY_FILES/reads.left.fq");
-    		}else if (inputDataObjectType.getName().equalsIgnoreCase("RNA_Seq_Right_Input")) {
-	        inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/TRINITY_FILES/reads.right.fq");
-    		}
-    	}
+        for (InputDataObjectType inputDataObjectType : exInputs) {
+            if (inputDataObjectType.getName().equalsIgnoreCase("RNA_Seq_Left_Input")) {
+                inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/TRINITY_FILES/reads.left.fq");
+            } else if (inputDataObjectType.getName().equalsIgnoreCase("RNA_Seq_Right_Input")) {
+                inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/TRINITY_FILES/reads.right.fq");
+            }
+        }
     }
+
     public static String createExperimentLAMMPSStampede(Airavata.Client client) throws TException {
         try {
-         	List<InputDataObjectType> exInputs = client.getApplicationInputs(lammpsAppId);
-        	setLAMMPSInputs(exInputs);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(lammpsAppId);
+            setLAMMPSInputs(exInputs);
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(lammpsAppId);
-            
+
             Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment("default", "admin", "LAMMPSExperiment", "Testing", lammpsAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
@@ -652,17 +658,19 @@ public class CreateLaunchExperiment {
         }
         return null;
     }
+
     private static void setLAMMPSInputs(List<InputDataObjectType> exInputs) {
-    	for (InputDataObjectType inputDataObjectType : exInputs) {
-    		if (inputDataObjectType.getName().equalsIgnoreCase("Friction_Simulation_Input")) {
-	          inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/LAMMPS_FILES/in.friction");
-    		}
-    	}
+        for (InputDataObjectType inputDataObjectType : exInputs) {
+            if (inputDataObjectType.getName().equalsIgnoreCase("Friction_Simulation_Input")) {
+                inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/LAMMPS_FILES/in.friction");
+            }
+        }
     }
+
     public static String createExperimentNWCHEMStampede(Airavata.Client client) throws TException {
         try {
-         	List<InputDataObjectType> exInputs = client.getApplicationInputs(nwchemAppId);
-        	setNWCHEMInputs(exInputs);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(nwchemAppId);
+            setNWCHEMInputs(exInputs);
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(nwchemAppId);
 
             Experiment simpleExperiment =
@@ -699,17 +707,19 @@ public class CreateLaunchExperiment {
         }
         return null;
     }
+
     private static void setNWCHEMInputs(List<InputDataObjectType> exInputs) {
-    	for (InputDataObjectType inputDataObjectType : exInputs) {
-    		if (inputDataObjectType.getName().equalsIgnoreCase("Water_Molecule_Input")) {
-	          inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/NWCHEM_FILES/water.nw");
-    		}
-    	}
+        for (InputDataObjectType inputDataObjectType : exInputs) {
+            if (inputDataObjectType.getName().equalsIgnoreCase("Water_Molecule_Input")) {
+                inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/NWCHEM_FILES/water.nw");
+            }
+        }
     }
+
     public static String createExperimentAUTODOCKStampede(Airavata.Client client) throws TException {
         try {
-        	List<InputDataObjectType> exInputs = client.getApplicationInputs(nwchemAppId);
-        	setAUTODOCKInputs(exInputs);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(nwchemAppId);
+            setAUTODOCKInputs(exInputs);
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(nwchemAppId);
 
             Experiment simpleExperiment =
@@ -746,43 +756,45 @@ public class CreateLaunchExperiment {
         }
         return null;
     }
+
     private static void setAUTODOCKInputs(List<InputDataObjectType> exInputs) {
 
-    	for (InputDataObjectType inputDataObjectType : exInputs) {
-			if (inputDataObjectType.getName().equalsIgnoreCase("AD4_parameters.dat")) {
-				inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/AD4_parameters.dat");
-			} else if (inputDataObjectType.getName().equalsIgnoreCase("hsg1.A.map")) {
-				inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.A.map");
-			} else if (inputDataObjectType.getName().equalsIgnoreCase("hsg1.C.map")) {
-				inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.C.map");
-			} else if (inputDataObjectType.getName().equalsIgnoreCase("hsg1.d.map")) {
-				inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.d.map");
-			} else if (inputDataObjectType.getName().equalsIgnoreCase("hsg1.e.map")) {
-				inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.e.map");
-			} else if (inputDataObjectType.getName().equalsIgnoreCase("hsg1.HD.map")) {
-				inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.HD.map");
-			} else if (inputDataObjectType.getName().equalsIgnoreCase("hsg1.maps.fld")) {
-				inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.maps.fld");
-			} else if (inputDataObjectType.getName().equalsIgnoreCase("hsg1.NA.map")) {
-				inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.NA.map");
-			} else if (inputDataObjectType.getName().equalsIgnoreCase("hsg1.N.map")) {
-				inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.N.map");
-			} else if (inputDataObjectType.getName().equalsIgnoreCase("hsg1.OA.map")) {
-				inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.OA.map");
-			} else if (inputDataObjectType.getName().equalsIgnoreCase("ind.dpf")) {
-				inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/ind.dpf");
-			} else if (inputDataObjectType.getName().equalsIgnoreCase("ind.pdbqt")) {
-				inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/ind.pdbqt");
-			}
-		}
+        for (InputDataObjectType inputDataObjectType : exInputs) {
+            if (inputDataObjectType.getName().equalsIgnoreCase("AD4_parameters.dat")) {
+                inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/AD4_parameters.dat");
+            } else if (inputDataObjectType.getName().equalsIgnoreCase("hsg1.A.map")) {
+                inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.A.map");
+            } else if (inputDataObjectType.getName().equalsIgnoreCase("hsg1.C.map")) {
+                inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.C.map");
+            } else if (inputDataObjectType.getName().equalsIgnoreCase("hsg1.d.map")) {
+                inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.d.map");
+            } else if (inputDataObjectType.getName().equalsIgnoreCase("hsg1.e.map")) {
+                inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.e.map");
+            } else if (inputDataObjectType.getName().equalsIgnoreCase("hsg1.HD.map")) {
+                inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.HD.map");
+            } else if (inputDataObjectType.getName().equalsIgnoreCase("hsg1.maps.fld")) {
+                inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.maps.fld");
+            } else if (inputDataObjectType.getName().equalsIgnoreCase("hsg1.NA.map")) {
+                inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.NA.map");
+            } else if (inputDataObjectType.getName().equalsIgnoreCase("hsg1.N.map")) {
+                inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.N.map");
+            } else if (inputDataObjectType.getName().equalsIgnoreCase("hsg1.OA.map")) {
+                inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/hsg1.OA.map");
+            } else if (inputDataObjectType.getName().equalsIgnoreCase("ind.dpf")) {
+                inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/ind.dpf");
+            } else if (inputDataObjectType.getName().equalsIgnoreCase("ind.pdbqt")) {
+                inputDataObjectType.setValue("/Users/shameera/Downloads/PHP-Gateway-Scripts/appScripts/AUTODOCK_FILES/ind.pdbqt");
+            }
+        }
     }
+
     public static String createExperimentWRFTrestles(Airavata.Client client) throws TException {
         try {
-        	List<InputDataObjectType> exInputs = client.getApplicationInputs(wrfAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(wrfAppId);
             setWRFInputs(exInputs);
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(wrfAppId);
-       
-                    Experiment simpleExperiment =
+
+            Experiment simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment("default", "admin", "WRFExperiment", "Testing", wrfAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
@@ -943,11 +955,11 @@ public class CreateLaunchExperiment {
         try {
             List<InputDataObjectType> exInputs = client.getApplicationInputs(echoAppId);
             for (InputDataObjectType inputDataObjectType : exInputs) {
-				if (inputDataObjectType.getName().equalsIgnoreCase("Input_to_Echo")) {
-					inputDataObjectType.setValue("Hello World");
-				} 
-			}
-			List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
+                if (inputDataObjectType.getName().equalsIgnoreCase("Input_to_Echo")) {
+                    inputDataObjectType.setValue("Hello World");
+                }
+            }
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
             String projectId = client.createProject(DEFAULT_GATEWAY, project);
@@ -1059,13 +1071,13 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentForBR2(Airavata.Client client) throws TException {
         try {
-        	  List<InputDataObjectType> exInputs = client.getApplicationInputs(echoAppId);
-              for (InputDataObjectType inputDataObjectType : exInputs) {
-  				if (inputDataObjectType.getName().equalsIgnoreCase("Input_to_Echo")) {
-  					inputDataObjectType.setValue("Hello World");
-  				} 
-  			}
-  			List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(echoAppId);
+            for (InputDataObjectType inputDataObjectType : exInputs) {
+                if (inputDataObjectType.getName().equalsIgnoreCase("Input_to_Echo")) {
+                    inputDataObjectType.setValue("Hello World");
+                }
+            }
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
 
 
             Project project = ProjectModelUtil.createProject("default", "lahiru", "test project");
@@ -1154,6 +1166,7 @@ public class CreateLaunchExperiment {
         }
         return null;
     }
+
     public static String createExperimentLAMMPSForLSF(Airavata.Client client) throws TException {
         try {
             List<InputDataObjectType> exInputs = client.getApplicationInputs(lammpsAppId);
@@ -1216,7 +1229,7 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentForBR2Amber(Airavata.Client client) throws TException {
         try {
-			List<InputDataObjectType> exInputs = client.getApplicationInputs(amberAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(amberAppId);
 //			for (InputDataObjectType inputDataObjectType : exInputs) {
 //				if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
 //					inputDataObjectType.setValue("/Users/raminder/Documents/Sample/Amber/02_Heat.rst");
@@ -1227,17 +1240,17 @@ public class CreateLaunchExperiment {
 //				}
 //
 //			}
-			for (InputDataObjectType inputDataObjectType : exInputs) {
-				if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
-					inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/02_Heat.rst");
-				} else if (inputDataObjectType.getName().equalsIgnoreCase("Production_Control_File")) {
-					inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/03_Prod.in");
-				} else if (inputDataObjectType.getName().equalsIgnoreCase("Parameter_Topology_File")) {
-					inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/prmtop");
-				}
-			}
+            for (InputDataObjectType inputDataObjectType : exInputs) {
+                if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
+                    inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/02_Heat.rst");
+                } else if (inputDataObjectType.getName().equalsIgnoreCase("Production_Control_File")) {
+                    inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/03_Prod.in");
+                } else if (inputDataObjectType.getName().equalsIgnoreCase("Parameter_Topology_File")) {
+                    inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/prmtop");
+                }
+            }
 
-			List<OutputDataObjectType> exOut = client.getApplicationOutputs(amberAppId);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(amberAppId);
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
             String projectId = client.createProject(DEFAULT_GATEWAY, project);
@@ -1280,7 +1293,7 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentForStampedeAmber(Airavata.Client client) throws TException {
         try {
-			List<InputDataObjectType> exInputs = client.getApplicationInputs(amberAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(amberAppId);
 //			for (InputDataObjectType inputDataObjectType : exInputs) {
 //				if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
 //					inputDataObjectType.setValue("/Users/raminder/Documents/Sample/Amber/02_Heat.rst");
@@ -1291,17 +1304,17 @@ public class CreateLaunchExperiment {
 //				}
 //
 //			}
-			for (InputDataObjectType inputDataObjectType : exInputs) {
-				if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
-					inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/02_Heat.rst");
-				} else if (inputDataObjectType.getName().equalsIgnoreCase("Production_Control_File")) {
-					inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/03_Prod.in");
-				} else if (inputDataObjectType.getName().equalsIgnoreCase("Parameter_Topology_File")) {
-					inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/prmtop");
-				}
-			}
+            for (InputDataObjectType inputDataObjectType : exInputs) {
+                if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
+                    inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/02_Heat.rst");
+                } else if (inputDataObjectType.getName().equalsIgnoreCase("Production_Control_File")) {
+                    inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/03_Prod.in");
+                } else if (inputDataObjectType.getName().equalsIgnoreCase("Parameter_Topology_File")) {
+                    inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/prmtop");
+                }
+            }
 
-			List<OutputDataObjectType> exOut = client.getApplicationOutputs(amberAppId);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(amberAppId);
 
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
@@ -1344,8 +1357,8 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentForTrestlesAmber(Airavata.Client client) throws TException {
         try {
-        	
-			List<InputDataObjectType> exInputs = client.getApplicationInputs(amberAppId);
+
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(amberAppId);
 //			for (InputDataObjectType inputDataObjectType : exInputs) {
 //				if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
 //					inputDataObjectType.setValue("/Users/raminder/Documents/Sample/Amber/02_Heat.rst");
@@ -1356,16 +1369,16 @@ public class CreateLaunchExperiment {
 //				}
 //
 //			}
-			for (InputDataObjectType inputDataObjectType : exInputs) {
-					if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
-						inputDataObjectType.setValue("/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/02_Heat.rst");
-					} else if (inputDataObjectType.getName().equalsIgnoreCase("Production_Control_File")) {
-						inputDataObjectType.setValue("/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/03_Prod.in");
-					} else if (inputDataObjectType.getName().equalsIgnoreCase("Parameter_Topology_File")) {
-						inputDataObjectType.setValue("/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/prmtop");
-					}
-			}
-			List<OutputDataObjectType> exOut = client.getApplicationOutputs(amberAppId);
+            for (InputDataObjectType inputDataObjectType : exInputs) {
+                if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
+                    inputDataObjectType.setValue("/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/02_Heat.rst");
+                } else if (inputDataObjectType.getName().equalsIgnoreCase("Production_Control_File")) {
+                    inputDataObjectType.setValue("/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/03_Prod.in");
+                } else if (inputDataObjectType.getName().equalsIgnoreCase("Parameter_Topology_File")) {
+                    inputDataObjectType.setValue("/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/prmtop");
+                }
+            }
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(amberAppId);
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
             String projectId = client.createProject(DEFAULT_GATEWAY, project);
@@ -1409,7 +1422,7 @@ public class CreateLaunchExperiment {
     public static void launchExperiment(Airavata.Client client, String expId)
             throws TException {
         try {
-        	String tokenId ="-0bbb-403b-a88a-42b6dbe198e9";
+            String tokenId = "-0bbb-403b-a88a-42b6dbe198e9";
             client.launchExperiment(expId, tokenId);
         } catch (ExperimentNotFoundException e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());
