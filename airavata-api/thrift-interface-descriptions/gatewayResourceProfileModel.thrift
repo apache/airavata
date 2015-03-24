@@ -21,6 +21,8 @@
 namespace java org.apache.airavata.model.appcatalog.gatewayprofile
 namespace php Airavata.Model.AppCatalog.GatewayProfile
 namespace cpp apache.airavata.model.appcatalog.gatewayprofile
+namespace py apache.airavata.model.appcatalog.gatewayprofile
+
 include "computeResourceModel.thrift"
 
 /**

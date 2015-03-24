@@ -27,6 +27,7 @@
 namespace java org.apache.airavata.model.appcatalog.appdeployment
 namespace php Airavata.Model.AppCatalog.AppDeployment
 namespace cpp apache.airavata.model.appcatalog.appdeployment
+namespace py apache.airavata.model.appcatalog.appdeployment
 
 const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 

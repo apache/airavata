@@ -37,10 +37,10 @@ namespace java org.apache.airavata.api.workflow
 namespace php Airavata.API.Workflow
 namespace cpp airavata.api.workflow
 namespace perl AiravataWorkflowAPI
-namespace py airavata.api.workflow
+namespace py apache.airavata.api.workflow
 namespace js AiravataWorkflowAPI
 
-const string AIRAVATA_API_VERSION = "0.13.0"
+const string AIRAVATA_API_VERSION = "0.15.0"
 
 service Workflow {
 
