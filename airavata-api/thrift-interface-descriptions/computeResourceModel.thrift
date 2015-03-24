@@ -21,6 +21,7 @@
 namespace java org.apache.airavata.model.appcatalog.computeresource
 namespace php Airavata.Model.AppCatalog.ComputeResource
 namespace cpp apache.airavata.model.appcatalog.computeresource
+namespace py apache.airavata.model.appcatalog.computeresource
 
 const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 

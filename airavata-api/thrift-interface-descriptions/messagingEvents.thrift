@@ -24,6 +24,7 @@ include "applicationInterfaceModel.thrift"
 namespace java org.apache.airavata.model.messaging.event
 namespace php Airavata.Model.Messaging.Event
 namespace cpp apache.airavata.model.messaging.event
+namespace py apache.airavata.model.messaging.event
 
 const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 

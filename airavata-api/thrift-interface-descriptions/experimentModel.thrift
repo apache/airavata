@@ -24,6 +24,7 @@ include "applicationInterfaceModel.thrift"
 namespace java org.apache.airavata.model.workspace.experiment
 namespace php Airavata.Model.Workspace.Experiment
 namespace cpp apache.airavata.model.workspace.experiment
+namespace py apache.airavata.model.workspace.experiment
 
 /*
  * This file describes the definitions of the Airavata Experiment Data Structures. Each of the
