@@ -54,7 +54,8 @@ struct MessageType {
     WORKFLOWNODE = 2,
     JOB = 3,
     LAUNCHTASK = 4,
-    TERMINATETASK = 5
+    TERMINATETASK = 5,
+    TASKOUTPUT = 6
   };
 };
 
@@ -460,6 +461,50 @@ class JobIdentifier {
 };
 
 void swap(JobIdentifier &a, JobIdentifier &b);
+
+
+class ProcessSubmitEvent {
+ public:
+
+  static const char* ascii_fingerprint; // = "07A9615F837F7D0A952B595DD3020972";
+  static const uint8_t binary_fingerprint[16]; // = {0x07,0xA9,0x61,0x5F,0x83,0x7F,0x7D,0x0A,0x95,0x2B,0x59,0x5D,0xD3,0x02,0x09,0x72};
+
+  ProcessSubmitEvent() : taskId(), credentialToken() {
+  }
+
+  virtual ~ProcessSubmitEvent() throw() {}
+
+  std::string taskId;
+  std::string credentialToken;
+
+  void __set_taskId(const std::string& val) {
+    taskId = val;
+  }
+
+  void __set_credentialToken(const std::string& val) {
+    credentialToken = val;
+  }
+
+  bool operator == (const ProcessSubmitEvent & rhs) const
+  {
+    if (!(taskId == rhs.taskId))
+      return false;
+    if (!(credentialToken == rhs.credentialToken))
+      return false;
+    return true;
+  }
+  bool operator != (const ProcessSubmitEvent &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const ProcessSubmitEvent & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+};
+
+void swap(ProcessSubmitEvent &a, ProcessSubmitEvent &b);
 
 
 class TaskSubmitEvent {

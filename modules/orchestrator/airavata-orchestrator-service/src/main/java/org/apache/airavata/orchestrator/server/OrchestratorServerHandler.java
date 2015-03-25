@@ -34,27 +34,38 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.core.scheduler.HostScheduler;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.messaging.core.MessageHandler;
+import org.apache.airavata.messaging.core.MessagingConstants;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.PublisherFactory;
+import org.apache.airavata.messaging.core.impl.RabbitMQProcessConsumer;
+import org.apache.airavata.messaging.core.impl.RabbitMQProcessPublisher;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.airavata.model.messaging.event.ProcessSubmitEvent;
 import org.apache.airavata.model.util.ExecutionType;
-import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.workspace.experiment.ExperimentState;
+import org.apache.airavata.model.workspace.experiment.ExperimentStatus;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.model.workspace.experiment.TaskState;
+import org.apache.airavata.model.workspace.experiment.TaskStatus;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeState;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeStatus;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
-import org.apache.airavata.orchestrator.cpi.OrchestratorService.Client;
 import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
 import org.apache.airavata.orchestrator.cpi.orchestrator_cpi_serviceConstants;
-import org.apache.airavata.orchestrator.util.OrchestratorRecoveryHandler;
+import org.apache.airavata.orchestrator.util.DataModelUtils;
 import org.apache.airavata.orchestrator.util.OrchestratorServerThreadPoolExecutor;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
@@ -62,17 +73,25 @@ import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.TaskDetailConstants;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants;
-import org.apache.airavata.workflow.engine.WorkflowEngine;
-import org.apache.airavata.workflow.engine.WorkflowEngineException;
-import org.apache.airavata.workflow.engine.WorkflowEngineFactory;
-import org.apache.airavata.orchestrator.util.DataModelUtils;
+import org.apache.airavata.simple.workflow.engine.WorkflowEnactmentService;
+import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
-import org.apache.zookeeper.*;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.Watcher;
+import org.apache.zookeeper.ZooDefs;
+import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 public class OrchestratorServerHandler implements OrchestratorService.Iface,
 		Watcher {
@@ -91,7 +110,10 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 	private String gatewayName;
 	private Publisher publisher;
 
-	/**
+    private RabbitMQProcessConsumer rabbitMQProcessConsumer;
+    private RabbitMQProcessPublisher rabbitMQProcessPublisher;
+
+    /**
 	 * Query orchestrator server to fetch the CPI version
 	 */
 	public String getOrchestratorCPIVersion() throws TException {
@@ -157,7 +179,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 			orchestrator.initialize();
 			orchestrator.getOrchestratorContext().setZk(this.zk);
 			orchestrator.getOrchestratorContext().setPublisher(this.publisher);
-		} catch (OrchestratorException e) {
+            startProcessConsumer();
+        } catch (OrchestratorException e) {
             log.error(e.getMessage(), e);
             throw new OrchestratorException("Error while initializing orchestrator service", e);
 		} catch (RegistryException e) {
@@ -165,6 +188,19 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
             throw new OrchestratorException("Error while initializing orchestrator service", e);
 		}
 	}
+
+    private void startProcessConsumer() throws OrchestratorException {
+        try {
+            rabbitMQProcessConsumer = new RabbitMQProcessConsumer();
+            ProcessConsumer processConsumer = new ProcessConsumer();
+            Thread thread = new Thread(processConsumer);
+            thread.start();
+
+        } catch (AiravataException e) {
+            throw new OrchestratorException("Error while starting process consumer", e);
+        }
+
+    }
 
     private void registerOrchestratorService(String airavataServerHostPort, String orchServer) throws KeeperException, InterruptedException {
         Stat zkStat = zk.exists(orchServer, false);
@@ -200,25 +236,34 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
                 log.errorId(experimentId, "Error retrieving the Experiment by the given experimentID: {} ", experimentId);
                 return false;
             }
-            ExecutionType executionType = DataModelUtils.getExecutionType(experiment);
-            synchronized (this) {
-      		if (executionType==ExecutionType.SINGLE_APP) {
-                  //its an single application execution experiment
-                  log.debugId(experimentId, "Launching single application experiment {}.", experimentId);
-                  OrchestratorServerThreadPoolExecutor.getFixedThreadPool().execute(new SingleAppExperimentRunner(experimentId, token));
-            } 
-      		else if (executionType == ExecutionType.WORKFLOW){
-  					//its a workflow execution experiment
-                  log.debugId(experimentId, "Launching workflow experiment {}.", experimentId);
-  				  launchWorkflowExperiment(experimentId, token);
-  	          } else {
-                  log.errorId(experimentId, "Couldn't identify experiment type, experiment {} is neither single application nor workflow.", experimentId);
-                  throw new TException("Experiment '" + experimentId + "' launch failed. Unable to figureout execution type for application " + experiment.getApplicationId());
-              }
-          }
-         }catch(Exception e){
-             throw new TException("Experiment '" + experimentId + "' launch failed. Unable to figureout execution type for application " + experiment.getApplicationId());
-         }
+            CredentialReader credentialReader = GFacUtils.getCredentialReader();
+            String gatewayId = null;
+            if (credentialReader != null) {
+                try {
+                    gatewayId = credentialReader.getGatewayID(token);
+                } catch (Exception e) {
+                    log.error(e.getLocalizedMessage());
+                }
+            }
+            if (gatewayId == null) {
+                throw new AiravataException("Couldn't identify the gateway Id using the credential token");
+            }
+            ExecutionType executionType = DataModelUtils.getExecutionType(gatewayId, experiment);
+            if (executionType == ExecutionType.SINGLE_APP) {
+                //its an single application execution experiment
+                log.debugId(experimentId, "Launching single application experiment {}.", experimentId);
+                OrchestratorServerThreadPoolExecutor.getFixedThreadPool().execute(new SingleAppExperimentRunner(experimentId, token));
+            } else if (executionType == ExecutionType.WORKFLOW) {
+                //its a workflow execution experiment
+                log.debugId(experimentId, "Launching workflow experiment {}.", experimentId);
+                launchWorkflowExperiment(experimentId, token);
+            } else {
+                log.errorId(experimentId, "Couldn't identify experiment type, experiment {} is neither single application nor workflow.", experimentId);
+                throw new TException("Experiment '" + experimentId + "' launch failed. Unable to figureout execution type for application " + experiment.getApplicationId());
+            }
+        } catch (Exception e) {
+            throw new TException("Experiment '" + experimentId + "' launch failed. Unable to figureout execution type for application " + experiment.getApplicationId());
+        }
         return true;
 	}
 
@@ -634,13 +679,21 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
         }
         return true;
     }
+
     private void launchWorkflowExperiment(String experimentId, String airavataCredStoreToken) throws TException {
-    	try {
-			WorkflowEngine workflowEngine = WorkflowEngineFactory.getWorkflowEngine();
-			workflowEngine.launchExperiment(experimentId, airavataCredStoreToken);
-		} catch (WorkflowEngineException e) {
-            log.errorId(experimentId, "Error while launching experiment.", e);
+        try {
+            WorkflowEnactmentService.getInstance().
+                    submitWorkflow(experimentId, airavataCredStoreToken, getGatewayName(), getRabbitMQProcessPublisher());
+        } catch (Exception e) {
+            log.error("Error while launching workflow", e);
         }
+    }
+
+    public synchronized RabbitMQProcessPublisher getRabbitMQProcessPublisher() throws Exception {
+        if (rabbitMQProcessPublisher == null) {
+            rabbitMQProcessPublisher = new RabbitMQProcessPublisher();
+        }
+        return rabbitMQProcessPublisher;
     }
 
 
@@ -727,6 +780,40 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
                 throw new TException(e);
             }
             return true;
+        }
+    }
+
+    private class ProcessConsumer implements Runnable, MessageHandler{
+
+
+        @Override
+        public void run() {
+            try {
+                rabbitMQProcessConsumer.listen(this);
+            } catch (AiravataException e) {
+                log.error("Error while listen to the RabbitMQProcessConsumer");
+            }
+        }
+
+        @Override
+        public Map<String, Object> getProperties() {
+            Map<String, Object> props = new HashMap<String, Object>();
+            props.put(MessagingConstants.RABBIT_QUEUE, RabbitMQProcessPublisher.PROCESS);
+            props.put(MessagingConstants.RABBIT_ROUTING_KEY, RabbitMQProcessPublisher.PROCESS);
+            return props;
+        }
+
+        @Override
+        public void onMessage(MessageContext msgCtx) {
+            TBase event = msgCtx.getEvent();
+            if (event instanceof ProcessSubmitEvent) {
+                ProcessSubmitEvent processSubmitEvent = (ProcessSubmitEvent) event;
+                try {
+                    launchTask(processSubmitEvent.getTaskId(), processSubmitEvent.getCredentialToken());
+                } catch (TException e) {
+                    log.error("Error while launching task : " + processSubmitEvent.getTaskId());
+                }
+            }
         }
     }
 

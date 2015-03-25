@@ -67,21 +67,25 @@ public class RabbitMQStatusPublisher implements Publisher {
             message.setUpdatedTime(msgCtx.getUpdatedTime().getTime());
             String gatewayId = msgCtx.getGatewayId();
             String routingKey = null;
-            if (msgCtx.getType().equals(MessageType.EXPERIMENT)){
+            if (msgCtx.getType() == MessageType.EXPERIMENT) {
                 ExperimentStatusChangeEvent event = (ExperimentStatusChangeEvent) msgCtx.getEvent();
                 routingKey = gatewayId + "." + event.getExperimentId();
-            } else if (msgCtx.getType().equals(MessageType.TASK)) {
+            } else if (msgCtx.getType() == MessageType.TASK) {
                 TaskStatusChangeEvent event = (TaskStatusChangeEvent) msgCtx.getEvent();
-                routingKey =  gatewayId + "." + event.getTaskIdentity().getExperimentId() + "." +
+                routingKey = gatewayId + "." + event.getTaskIdentity().getExperimentId() + "." +
                         event.getTaskIdentity().getWorkflowNodeId() + "." + event.getTaskIdentity().getTaskId();
-            }else if (msgCtx.getType().equals(MessageType.WORKFLOWNODE)){
+            } else if (msgCtx.getType() == MessageType.TASKOUTPUT) {
+                TaskOutputChangeEvent event = (TaskOutputChangeEvent) msgCtx.getEvent();
+                routingKey = gatewayId + "." + event.getTaskIdentity().getExperimentId() + "." +
+                        event.getTaskIdentity().getWorkflowNodeId() + "." + event.getTaskIdentity().getTaskId();
+            } else if (msgCtx.getType() == MessageType.WORKFLOWNODE) {
                 WorkflowNodeStatusChangeEvent event = (WorkflowNodeStatusChangeEvent) msgCtx.getEvent();
                 WorkflowIdentifier workflowNodeIdentity = event.getWorkflowNodeIdentity();
-                routingKey =  gatewayId + "." + workflowNodeIdentity.getExperimentId() + "." + workflowNodeIdentity.getWorkflowNodeId();
-            }else if (msgCtx.getType().equals(MessageType.JOB)){
-                JobStatusChangeEvent event = (JobStatusChangeEvent)msgCtx.getEvent();
+                routingKey = gatewayId + "." + workflowNodeIdentity.getExperimentId() + "." + workflowNodeIdentity.getWorkflowNodeId();
+            } else if (msgCtx.getType() == MessageType.JOB) {
+                JobStatusChangeEvent event = (JobStatusChangeEvent) msgCtx.getEvent();
                 JobIdentifier identity = event.getJobIdentity();
-                routingKey =  gatewayId + "." + identity.getExperimentId() + "." +
+                routingKey = gatewayId + "." + identity.getExperimentId() + "." +
                         identity.getWorkflowNodeId() + "." +
                         identity.getTaskId() + "." +
                         identity.getJobId();

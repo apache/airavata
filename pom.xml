@@ -536,6 +536,7 @@
 				<!--<module>modules/ws-messenger</module>-->
 				<module>modules/messaging</module>
 				<module>modules/integration-tests</module>
+				<module>modules/simple-workflow</module>
 				<module>modules/xbaya-gui</module>
 			</modules>
 		</profile>

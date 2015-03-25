@@ -23,19 +23,12 @@
     <name>Airavata Credential Store</name>
     <url>http://airavata.apache.org/</url>
 
-    <profiles>
-        <profile>
-            <id>default</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <modules>
-                <module>credential-store-service</module>
-                <module>credential-store-stubs</module>
-                <module>credential-store-webapp</module>
-            </modules>
-        </profile>
-    </profiles>
+    <modules>
+        <module>credential-store-service</module>
+        <module>credential-store-stubs</module>
+        <module>credential-store-webapp</module>
+    </modules>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>

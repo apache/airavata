@@ -26,6 +26,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-credential-store</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.thrift</groupId>
             <artifactId>libthrift</artifactId>
             <version>${thrift.version}</version>
@@ -45,9 +50,14 @@
             <artifactId>airavata-orchestrator-stubs</artifactId>
             <version>${project.version}</version>
         </dependency>
-       <dependency>
+        <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-workflow-engine</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>simple-workflow</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -60,12 +70,12 @@
             <artifactId>app-catalog-cpi</artifactId>
             <version>${project.version}</version>
         </dependency>
-	<dependency>
+        <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-model-utils</artifactId>
             <version>${project.version}</version>
         </dependency>
-	<dependency>
+        <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-server-configuration</artifactId>
             <scope>test</scope>

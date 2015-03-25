@@ -18,7 +18,6 @@ public class CountWriterTask extends TimerTask {
     @Override
     public void run() {
         try {
-            System.out.println("########### calling Write Task ############");
             StatCounter statCounter = StatCounter.getInstance();
             List<Long> contPer10S = statCounter.getMessageContPer10S();
             fos = new FileOutputStream(file, false);

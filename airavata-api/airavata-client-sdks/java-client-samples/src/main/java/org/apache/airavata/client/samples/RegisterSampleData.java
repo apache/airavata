@@ -35,6 +35,7 @@ import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerTy
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.error.AiravataClientConnectException;
+import org.apache.airavata.model.workspace.Gateway;
 import org.apache.thrift.TException;
 
 import java.io.File;
@@ -45,7 +46,6 @@ public class RegisterSampleData {
 
     private static final String THRIFT_SERVER_HOST = "127.0.0.1";
     private static final int THRIFT_SERVER_PORT = 8930;
-    private static final String DEFAULT_GATEWAY = "Sample";
 
     private Airavata.Client airavataClient;
     private String localhost_ip = "127.0.0.1";
@@ -57,6 +57,8 @@ public class RegisterSampleData {
     private String sampleScriptDir;
     private String monteXModuleId;
     private String gaussianModuleId;
+
+    private String gatewayId;
 
     public static void main(String[] args) throws AiravataClientConnectException, TException {
         RegisterSampleData registerSampleData = new RegisterSampleData();
@@ -77,6 +79,7 @@ public class RegisterSampleData {
 
     public void register() throws AiravataClientConnectException, TException {
         airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
+        gatewayId = registerGateway();
         registerLocalhost();
         registerGatewayProfile();
         registerApplicationModules();
@@ -84,11 +87,18 @@ public class RegisterSampleData {
         registerApplicationInterfaces();
     }
 
+    private String registerGateway() throws TException {
+        Gateway gateway = new Gateway();
+        gateway.setGatewayName("Sample");
+        gateway.setGatewayId("sample");
+        return airavataClient.addGateway(gateway);
+    }
+
     private void registerGatewayProfile() throws TException {
         ComputeResourcePreference localhostResourcePreference = RegisterSampleApplicationsUtils.
                 createComputeResourcePreference(localhostId, "Sample", false, null, null, null, sampleScriptDir + "/..");
         GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
-        gatewayResourceProfile.setGatewayID(DEFAULT_GATEWAY);
+        gatewayResourceProfile.setGatewayID(gatewayId);
         gatewayResourceProfile.addToComputeResourcePreferences(localhostResourcePreference);
         airavataClient.registerGatewayResourceProfile(gatewayResourceProfile);
     }
@@ -142,7 +152,7 @@ public class RegisterSampleData {
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
 
-            String addApplicationInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
+            String addApplicationInterfaceId = airavataClient.registerApplicationInterface(gatewayId,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("Gaussian", "Gaussian application",
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("Gaussian Application Interface Id " + addApplicationInterfaceId);
@@ -190,7 +200,7 @@ public class RegisterSampleData {
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
 
-            String addApplicationInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
+            String addApplicationInterfaceId = airavataClient.registerApplicationInterface(gatewayId,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("Tinker_Monte", "Monte application",
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("Monte Application Interface Id " + addApplicationInterfaceId);
@@ -203,42 +213,42 @@ public class RegisterSampleData {
     private void registerApplicationDeployments() throws TException {
         System.out.println("#### Registering Application Deployments on Localhost ####");
         //Register Echo
-        String echoAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
+        String echoAppDeployId = airavataClient.registerApplicationDeployment(gatewayId,
                 RegisterSampleApplicationsUtils.createApplicationDeployment(echoModuleId, localhostId,
                         sampleScriptDir + "/echo.sh", ApplicationParallelismType.SERIAL, "Echo application description",
                         null, null, null));
         System.out.println("Successfully registered Echo application on localhost, application Id = " + echoAppDeployId);
 
         //Register Add application
-        String addAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
+        String addAppDeployId = airavataClient.registerApplicationDeployment(gatewayId,
                 RegisterSampleApplicationsUtils.createApplicationDeployment(addModuleId, localhostId,
                         sampleScriptDir + "/add.sh", ApplicationParallelismType.SERIAL, "Add application description",
                         null, null, null));
         System.out.println("Successfully registered Add application on localhost, application Id = " + addAppDeployId);
 
         //Register Multiply application
-        String multiplyAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
+        String multiplyAppDeployId = airavataClient.registerApplicationDeployment(gatewayId,
                 RegisterSampleApplicationsUtils.createApplicationDeployment(multiplyModuleId, localhostId,
                         sampleScriptDir + "/multiply.sh", ApplicationParallelismType.SERIAL, "Multiply application description",
                         null, null, null));
         System.out.println("Successfully registered Multiply application on localhost, application Id = " + multiplyAppDeployId);
 
         //Register Subtract application
-        String subtractAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
+        String subtractAppDeployId = airavataClient.registerApplicationDeployment(gatewayId,
                 RegisterSampleApplicationsUtils.createApplicationDeployment(subtractModuleId, localhostId,
                         sampleScriptDir + "/subtract.sh", ApplicationParallelismType.SERIAL, "Subtract application description ",
                         null, null, null));
         System.out.println("Successfully registered Subtract application on localhost, application Id = " + subtractAppDeployId);
 
         //Register Tinker monte application
-        String tinkerMonteAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
+        String tinkerMonteAppDeployId = airavataClient.registerApplicationDeployment(gatewayId,
                 RegisterSampleApplicationsUtils.createApplicationDeployment(monteXModuleId, localhostId,
                         sampleScriptDir + "/monte.x", ApplicationParallelismType.SERIAL, "Grid chem tinker monte application description ",
                         null, null, null));
         System.out.println("Successfully registered tinker monte application on localhost, application Id = " + tinkerMonteAppDeployId);
 
         //Register Tinker monte application
-        String gaussianAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
+        String gaussianAppDeployId = airavataClient.registerApplicationDeployment(gatewayId,
                 RegisterSampleApplicationsUtils.createApplicationDeployment(gaussianModuleId, localhostId,
                         sampleScriptDir + "/gaussian.sh", ApplicationParallelismType.SERIAL, "Grid chem Gaussian application description ",
                         null, null, null));
@@ -247,28 +257,28 @@ public class RegisterSampleData {
 
     private void registerApplicationModules() throws TException {
         //Register Echo
-        echoModuleId = airavataClient.registerApplicationModule(DEFAULT_GATEWAY,
+        echoModuleId = airavataClient.registerApplicationModule(gatewayId,
                 RegisterSampleApplicationsUtils.createApplicationModule(
                         "Echo", "1.0", "Echo application description"));
         //Register Echo
-        addModuleId = airavataClient.registerApplicationModule(DEFAULT_GATEWAY,
+        addModuleId = airavataClient.registerApplicationModule(gatewayId,
                 RegisterSampleApplicationsUtils.createApplicationModule(
                         "Add", "1.0", "Add application description"));
         //Register Echo
-        multiplyModuleId = airavataClient.registerApplicationModule(DEFAULT_GATEWAY,
+        multiplyModuleId = airavataClient.registerApplicationModule(gatewayId,
                 RegisterSampleApplicationsUtils.createApplicationModule(
                         "Multiply", "1.0", "Multiply application description"));
         //Register Echo
-        subtractModuleId = airavataClient.registerApplicationModule(DEFAULT_GATEWAY,
+        subtractModuleId = airavataClient.registerApplicationModule(gatewayId,
                 RegisterSampleApplicationsUtils.createApplicationModule(
                         "Subtract", "1.0", "Subtract application description"));
         //Register Monte
-        monteXModuleId = airavataClient.registerApplicationModule(DEFAULT_GATEWAY,
+        monteXModuleId = airavataClient.registerApplicationModule(gatewayId,
                 RegisterSampleApplicationsUtils.createApplicationModule(
                         "Tinker Monte", "1.0", "Grid chem tinker monte application description"));
 
         // Register gaussian application
-        gaussianModuleId = airavataClient.registerApplicationModule(DEFAULT_GATEWAY,
+        gaussianModuleId = airavataClient.registerApplicationModule(gatewayId,
                 RegisterSampleApplicationsUtils.createApplicationModule(
                         "Gaussian", "1.0", "Grid Chem Gaussian application description"));
 
@@ -294,7 +304,7 @@ public class RegisterSampleData {
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
 
-            String echoInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
+            String echoInterfaceId = airavataClient.registerApplicationInterface(gatewayId,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("Echo", "Echo application description",
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("Echo Application Interface Id " + echoInterfaceId);
@@ -326,7 +336,7 @@ public class RegisterSampleData {
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
 
-            String addApplicationInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
+            String addApplicationInterfaceId = airavataClient.registerApplicationInterface(gatewayId,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("Add", "Add two numbers",
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("Add Application Interface Id " + addApplicationInterfaceId);
@@ -358,7 +368,7 @@ public class RegisterSampleData {
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
 
-            String multiplyApplicationInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
+            String multiplyApplicationInterfaceId = airavataClient.registerApplicationInterface(gatewayId,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("Multiply", "Multiply two numbers",
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("Multiply Application Interface Id " + multiplyApplicationInterfaceId);
@@ -390,7 +400,7 @@ public class RegisterSampleData {
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
 
-            String subtractApplicationInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
+            String subtractApplicationInterfaceId = airavataClient.registerApplicationInterface(gatewayId,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("Subtract", "Subtract two numbers",
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("Subtract Application Interface Id " + subtractApplicationInterfaceId);

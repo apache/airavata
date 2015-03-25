@@ -37,6 +37,7 @@ final class MessageType {
   const JOB = 3;
   const LAUNCHTASK = 4;
   const TERMINATETASK = 5;
+  const TASKOUTPUT = 6;
   static public $__names = array(
     0 => 'EXPERIMENT',
     1 => 'TASK',
@@ -44,6 +45,7 @@ final class MessageType {
     3 => 'JOB',
     4 => 'LAUNCHTASK',
     5 => 'TERMINATETASK',
+    6 => 'TASKOUTPUT',
   );
 }
 
@@ -962,6 +964,98 @@ class JobIdentifier {
     if ($this->gatewayId !== null) {
       $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 5);
       $xfer += $output->writeString($this->gatewayId);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class ProcessSubmitEvent {
+  static $_TSPEC;
+
+  public $taskId = null;
+  public $credentialToken = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'taskId',
+          'type' => TType::STRING,
+          ),
+        2 => array(
+          'var' => 'credentialToken',
+          'type' => TType::STRING,
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['taskId'])) {
+        $this->taskId = $vals['taskId'];
+      }
+      if (isset($vals['credentialToken'])) {
+        $this->credentialToken = $vals['credentialToken'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'ProcessSubmitEvent';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->taskId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->credentialToken);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('ProcessSubmitEvent');
+    if ($this->taskId !== null) {
+      $xfer += $output->writeFieldBegin('taskId', TType::STRING, 1);
+      $xfer += $output->writeString($this->taskId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->credentialToken !== null) {
+      $xfer += $output->writeFieldBegin('credentialToken', TType::STRING, 2);
+      $xfer += $output->writeString($this->credentialToken);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

@@ -34,7 +34,8 @@ import org.apache.thrift.TEnum;
   WORKFLOWNODE(2),
   JOB(3),
   LAUNCHTASK(4),
-  TERMINATETASK(5);
+  TERMINATETASK(5),
+  TASKOUTPUT(6);
 
   private final int value;
 
@@ -67,6 +68,8 @@ import org.apache.thrift.TEnum;
         return LAUNCHTASK;
       case 5:
         return TERMINATETASK;
+      case 6:
+        return TASKOUTPUT;
       default:
         return null;
     }

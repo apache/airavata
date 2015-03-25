@@ -35,10 +35,12 @@ public class JCRComponentRegistry extends ComponentRegistry {
 
     private static final Logger log = LoggerFactory.getLogger(JCRComponentRegistry.class);
     private static final String NAME = "Applications";
+    private final String gatewayId;
     private Airavata.Client client;
     
-    public JCRComponentRegistry(Airavata.Client client) {
+    public JCRComponentRegistry(String gatewayId, Airavata.Client client) {
     	setClient(client);
+        this.gatewayId = gatewayId;
     }
 
     /**
@@ -48,8 +50,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
     public List<ComponentReference> getComponentReferenceList() {
         List<ComponentReference> tree = new ArrayList<ComponentReference>();
         try {
-        	//FIXME: Pass Gateway ID to the UI and use it to fetch the applications
-            List<ApplicationInterfaceDescription> allApplicationInterfaces = client.getAllApplicationInterfaces("default");
+            List<ApplicationInterfaceDescription> allApplicationInterfaces = client.getAllApplicationInterfaces(gatewayId);
         	for (ApplicationInterfaceDescription interfaceDescription : allApplicationInterfaces) {
         		JCRComponentReference jcr = new JCRComponentReference(interfaceDescription.getApplicationName(),interfaceDescription);
                 tree.add(jcr);

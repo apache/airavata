@@ -264,6 +264,7 @@ public class LaunchApplicationWindow {
 
     private void execute() throws AiravataClientConnectException, InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
     	List<NodeImpl> nodes = workflow.getGraph().getNodes();
+        String gatewayId = engine.getConfiguration().getThriftClientData(ThriftServiceType.API_SERVICE).getGatewayId();
     	String appId = null;
     	NodeImpl node = null;
     	for(int i=0; i<nodes.size(); i++){
@@ -298,8 +299,7 @@ public class LaunchApplicationWindow {
         String owner = this.thriftClientData.getUsername();        
         if(owner.equals(""))owner="NotKnown";              
         project.setOwner(owner);
-        //FIXME:: use gatewayId from UI
-        project.setProjectID(airavataClient.createProject("default", project));
+        project.setProjectID(airavataClient.createProject(gatewayId, project));
 //        final List<InputNode> inputNodes = GraphUtil.getInputNodes(this.workflow.getGraph());
         final List<DataPort> inputPorts = node.getInputPorts();
         final Experiment experiment = new Experiment();
@@ -368,8 +368,7 @@ public class LaunchApplicationWindow {
 			experiment.addToExperimentOutputs(elem );
         }
 
-        //FIXME:: use gatewayId from UI
-        experiment.setExperimentID(airavataClient.createExperiment("default", experiment));
+        experiment.setExperimentID(airavataClient.createExperiment(gatewayId, experiment));
         airavataClient.launchExperiment(experiment.getExperimentID(), "testToken");
         hide();
         JOptionPane.showMessageDialog(null, "Experiment Launched. You will be alerted on completion.");
