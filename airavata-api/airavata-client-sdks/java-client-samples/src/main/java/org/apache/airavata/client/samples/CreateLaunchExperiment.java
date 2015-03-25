@@ -59,7 +59,7 @@ public class CreateLaunchExperiment {
     private static Airavata.Client airavataClient;
 
     private static String echoAppId = "Echo_5dd52cd4-f9a0-459f-9baf-f8e715e44548";
-    private static String mpiAppId = "HelloMPI_720e159f-198f-4daa-96ca-9f5eafee92c9";
+    private static String mpiAppId = "HelloMPI_bfd56d58-6085-4b7f-89fc-646576830518";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
     private static String amberAppId = "Amber_aa083c86-4680-4002-b3ef-fad93c181926";
     private static String gromacsAppId = "GROMACS_05622038-9edd-4cb1-824e-0b7cb993364b";
@@ -165,10 +165,10 @@ public class CreateLaunchExperiment {
             for (int i = 0; i < 1; i++) {
 //                final String expId = createExperimentForSSHHost(airavata);
 //                final String expId = createEchoExperimentForFSD(airavataClient);
-//                final String expId = createMPIExperimentForFSD(airavataClient);
+                final String expId = createMPIExperimentForFSD(airavataClient);
 //               final String expId = createEchoExperimentForStampede(airavataClient);
 //                final String expId = createEchoExperimentForTrestles(airavataClient);
-                final String expId = createExperimentEchoForLocalHost(airavataClient);
+//                final String expId = createExperimentEchoForLocalHost(airavataClient);
                 experimentIds.add(expId);
 //                final String expId = createExperimentWRFTrestles(airavataClient);
 //                final String expId = createExperimentForBR2(airavataClient);
@@ -327,6 +327,9 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setAiravataAutoSchedule(false);
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
+                        
+                        userConfigurationData.setGenerateCert(false);
+                        userConfigurationData.setUserDN("");
 
                         // set output directory 
                         AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();
@@ -381,6 +384,9 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setAiravataAutoSchedule(false);
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
+                        
+                        userConfigurationData.setGenerateCert(false);
+                        userConfigurationData.setUserDN("");
 
                         // set output directory 
                         AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();

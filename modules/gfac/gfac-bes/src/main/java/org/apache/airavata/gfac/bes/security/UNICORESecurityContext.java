@@ -26,12 +26,15 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.RequestData;
+import org.apache.airavata.gfac.bes.utils.BESConstants;
 import org.apache.airavata.gfac.bes.utils.SecurityUtils;
+import org.apache.airavata.gfac.core.provider.GFacProviderException;
+import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +64,7 @@ public class UNICORESecurityContext extends X509SecurityContext {
 	 * @throws ApplicationSettingsException 
 	 * @throws GFacException, ApplicationSettingsException
 	 */
-	public DefaultClientConfiguration getDefaultConfiguration() throws GFacException, ApplicationSettingsException {
+	public DefaultClientConfiguration getDefaultConfiguration(Boolean enableMessageLogging) throws GFacException, ApplicationSettingsException {
 		try{
 			X509Credential cred = getX509Credentials();
 			secProperties = new DefaultClientConfiguration(dcValidator, cred);
@@ -71,14 +74,65 @@ public class UNICORESecurityContext extends X509SecurityContext {
 			throw new GFacException(e.getMessage(), e); 
 		} 
 		secProperties.getETDSettings().setExtendTrustDelegation(true);
+		if(enableMessageLogging) secProperties.setMessageLogging(true);
 //		secProperties.setMessageLogging(true);
 //		secProperties.setDoSignMessage(true);
 		secProperties.getETDSettings().setIssuerCertificateChain(secProperties.getCredential().getCertificateChain());
 		
+		return secProperties;
+	}
+
+	public DefaultClientConfiguration getDefaultConfiguration(Boolean enableMessageLogging, UserConfigurationData userData) throws GFacException, ApplicationSettingsException {
+		X509Credential cred = null;
 		
+		try{
+			boolean genCert = userData.isGenerateCert();
+				if(genCert) {
+					String userDN = userData.getUserDN();
+					if (userDN == null && "".equals(userDN)){
+						log.warn("Cannot generate cert, falling back to container configured MyProxy credentials");
+						return getDefaultConfiguration(enableMessageLogging);
+					}
+					else {
+						log.info("Generating X.509 certificate for: "+userDN);
+						try {
+							
+							String caCertPath = ServerSettings.getSetting(BESConstants.PROP_CA_CERT_PATH, "");
+							String caKeyPath = ServerSettings.getSetting(BESConstants.PROP_CA_KEY_PATH, "");
+							String caKeyPass = ServerSettings.getSetting(BESConstants.PROP_CA_KEY_PASS, "");
+							
+							if(caCertPath.equals("") || caKeyPath.equals("")) {
+								throw new Exception("CA certificate or key file path missing in the properties file. "
+										            + "Please make sure "+BESConstants.PROP_CA_CERT_PATH+ " or "+BESConstants.PROP_CA_KEY_PATH+" are not empty.");
+							}
+							
+							if("".equals(caKeyPass)) {
+								log.warn("Caution: CA key has no password. For security reasons it is highly recommended to set a CA key password");
+							}
+							cred = generateShortLivedCredential(userDN, caCertPath, caKeyPath, caKeyPass);
+						}catch (Exception e){
+							throw new GFacProviderException("Error occured while generating a short lived credential for user:"+userDN, e);
+						}
+						
+					}
+				}else  {
+					return getDefaultConfiguration(enableMessageLogging);
+				}
+				
+			secProperties = new DefaultClientConfiguration(dcValidator, cred);
+			setExtraSettings();
+		}
+		catch (Exception e) {
+			throw new GFacException(e.getMessage(), e); 
+		} 
+		secProperties.getETDSettings().setExtendTrustDelegation(true);
+		if(enableMessageLogging) secProperties.setMessageLogging(true);
+//		secProperties.setDoSignMessage(true);
+		secProperties.getETDSettings().setIssuerCertificateChain(secProperties.getCredential().getCertificateChain());
 		
 		return secProperties;
 	}
+
 	
 	/**
 	 * Get server signed credentials. Each time it is invoked new certificate 
