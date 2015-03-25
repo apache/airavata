@@ -66,9 +66,14 @@
             <artifactId>airavata-orchestrator-stubs</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.apache.airavata</groupId>-->
+            <!--<artifactId>airavata-workflow-engine</artifactId>-->
+            <!--<version>${project.version}</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-workflow-engine</artifactId>
+            <artifactId>airavata-messaging-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
