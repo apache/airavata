@@ -88,14 +88,18 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
 		}
 		SecurityUtils.addSecurityContext(jobExecutionContext);
 		UNICORESecurityContext unicoreContext = (UNICORESecurityContext) jobExecutionContext.getSecurityContext(X509SecurityContext.X509_SECURITY_CONTEXT);
-		if (log.isDebugEnabled()) {
-			log.debug("Generating default configuration.");
-		}
-		// TODO: check what credential mode should be used
-		try {
-			secProperties = unicoreContext.getDefaultConfiguration();
+		try{
+			if (jobExecutionContext.getExperiment()
+					.getUserConfigurationData().isGenerateCert())  {
+				secProperties = unicoreContext
+						.getDefaultConfiguration(false, jobExecutionContext
+								.getExperiment().getUserConfigurationData());
+			}else {
+				secProperties = unicoreContext.getDefaultConfiguration(false);
+			}
+				
 		} catch (ApplicationSettingsException e) {
-			throw new GFacProviderException(e.getMessage(), e);
+			throw new GFacProviderException("Error initializing security of Unicore provider", e);
 		}
 		if (log.isDebugEnabled()) {
 			log.debug("Security properties initialized.");
