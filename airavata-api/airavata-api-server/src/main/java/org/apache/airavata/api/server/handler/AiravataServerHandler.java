@@ -83,7 +83,6 @@ import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.utils.Constants;
-import org.apache.airavata.workflow.catalog.WorkflowCatalogFactory;
 import org.apache.thrift.TException;
 
 import java.util.ArrayList;
@@ -3094,7 +3093,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 	private WorkflowCatalog getWorkflowCatalog() {
 		if (workflowCatalog == null) {
 			try {
-				workflowCatalog = WorkflowCatalogFactory.getWorkflowCatalog();
+				workflowCatalog = AppCatalogFactory.getAppCatalog().getWorkflowCatalog();
 			} catch (Exception e) {
 				logger.error("Unable to create Workflow Catalog", e);
 			}

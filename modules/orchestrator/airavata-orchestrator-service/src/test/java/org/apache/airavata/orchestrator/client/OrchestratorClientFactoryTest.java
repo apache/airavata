@@ -21,8 +21,6 @@
 
 package org.apache.airavata.orchestrator.client;
 
-import org.apache.airavata.api.Airavata;
-import org.apache.airavata.api.client.AiravataClientFactory;
 //import org.apache.airavata.client.AiravataAPIFactory;
 //import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 //import org.apache.airavata.client.tools.DocumentCreator;
