@@ -162,7 +162,7 @@ public class CreateLaunchExperiment {
     public static void createAndLaunchExp() throws TException {
         List<String> experimentIds = new ArrayList<String>();
         try {
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 1; i++) {
 //                final String expId = createExperimentForSSHHost(airavata);
 //                final String expId = createEchoExperimentForFSD(airavataClient);
 //                final String expId = createMPIExperimentForFSD(airavataClient);

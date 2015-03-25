@@ -41,7 +41,8 @@ enum MessageType {
     WORKFLOWNODE,
     JOB,
     LAUNCHTASK,
-    TERMINATETASK
+    TERMINATETASK,
+    TASKOUTPUT
 }
 
 struct ExperimentStatusChangeEvent {
@@ -102,6 +103,11 @@ struct JobIdentifier {
 //    // FIXME - Job execution context
 //    //8:
 // }
+
+struct ProcessSubmitEvent{
+    1: required string taskId;
+    2: required string credentialToken;
+}
 
 struct TaskSubmitEvent{
     1: required string experimentId,
