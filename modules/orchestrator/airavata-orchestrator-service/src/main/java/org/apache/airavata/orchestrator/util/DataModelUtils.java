@@ -26,11 +26,8 @@ import java.util.List;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.airavata.appcatalog.cpi.ApplicationInterface;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.util.ExecutionType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.workflow.catalog.WorkflowCatalogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +42,7 @@ public class DataModelUtils {
 			if (allApplicationInterfaceIds.contains(applicationId)){
 				return ExecutionType.SINGLE_APP;
 			} else {
-				List<String> allWorkflows = WorkflowCatalogFactory.getWorkflowCatalog().getAllWorkflows(gatewayId);
+				List<String> allWorkflows = AppCatalogFactory.getAppCatalog().getWorkflowCatalog().getAllWorkflows(gatewayId);
 				if (allWorkflows.contains(applicationId)){
 					return ExecutionType.WORKFLOW;
 				}
