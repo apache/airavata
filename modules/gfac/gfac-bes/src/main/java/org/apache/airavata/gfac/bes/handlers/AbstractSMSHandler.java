@@ -134,7 +134,7 @@ public abstract class AbstractSMSHandler implements BESConstants, GFacHandler{
         }
         //TODO: check what kind of credential (server signed or myproxy) should be used
         try {
-			secProperties = unicoreContext.getDefaultConfiguration();
+			secProperties = unicoreContext.getDefaultConfiguration(false);
 		} catch (Exception e) {
 			throw new GFacHandlerException(e);
 		} 
