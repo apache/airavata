@@ -31,4 +31,11 @@ public interface BESConstants {
 	
 	public static final String PROP_CLIENT_CONF = "bes.client.config";
 	
+	public static final String PROP_CA_CERT_PATH = "bes.ca.cert.path";
+	
+	public static final String PROP_CA_KEY_PATH = "bes.ca.key.path";
+	
+	public static final String PROP_CA_KEY_PASS = "bes.ca.key.pass";
+
+	
 }
