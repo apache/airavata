@@ -246,7 +246,9 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
                 }
             }
             if (gatewayId == null) {
-                throw new AiravataException("Couldn't identify the gateway Id using the credential token");
+                gatewayId = ServerSettings.getDefaultUserGateway();
+                log.info("Couldn't identify the gateway Id using the credential token, Use default gateway Id");
+//                throw new AiravataException("Couldn't identify the gateway Id using the credential token");
             }
             ExecutionType executionType = DataModelUtils.getExecutionType(gatewayId, experiment);
             if (executionType == ExecutionType.SINGLE_APP) {
@@ -262,7 +264,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
                 throw new TException("Experiment '" + experimentId + "' launch failed. Unable to figureout execution type for application " + experiment.getApplicationId());
             }
         } catch (Exception e) {
-            throw new TException("Experiment '" + experimentId + "' launch failed. Unable to figureout execution type for application " + experiment.getApplicationId());
+            throw new TException("Experiment '" + experimentId + "' launch failed. Unable to figureout execution type for application " + experiment.getApplicationId(), e);
         }
         return true;
 	}
