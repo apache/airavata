@@ -531,7 +531,7 @@
 				<module>modules/orchestrator</module>
 				<module>tools</module>
 				<module>modules/server</module>
-				<!--<module>modules/test-suite</module>-->
+				<module>modules/test-suite</module>
 				<module>modules/distribution</module>
 				<!--<module>modules/ws-messenger</module>-->
 				<module>modules/messaging</module>
@@ -618,6 +618,7 @@
 				<module>tools</module>
 				<module>modules/server</module>
 				<module>modules/distribution</module>
+				<module>modules/test-suite</module>
 				<module>modules/integration-tests</module>
 			</modules>
 		</profile>
