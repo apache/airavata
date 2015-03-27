@@ -28,6 +28,10 @@ public class TestFrameworkConstants {
     public static final class AiravataClientConstants {
         public static final String THRIFT_SERVER_HOST = "thrift.server.host";
         public static final String THRIFT_SERVER_PORT = "thrift.server.port";
+        public static final String CS_JBDC_URL = "credential.store.jdbc.url";
+        public static final String CS_JBDC_DRIVER = "credential.store.jdbc.driver";
+        public static final String CS_DB_USERNAME = "credential.store.jdbc.user";
+        public static final String CS_DB_PWD = "credential.store.jdbc.password";
     }
 
     public static final class FrameworkPropertiesConstants {
@@ -40,6 +44,11 @@ public class TestFrameworkConstants {
         public static final String SSH_PRIKEY_LOCATION = "ssh.private.key.location";
         public static final String SSH_PWD = "ssh.password";
         public static final String SSH_USERNAME = "ssh.username";
+    }
+
+    public static final class GatewayConstants {
+        public static final String GENERIC_GATEWAY_NAME = "testGateway";
+        public static final String GENERIC_GATEWAY_DOMAIN = ".airavata.org";
     }
 
     public static final class AppcatalogConstants {
