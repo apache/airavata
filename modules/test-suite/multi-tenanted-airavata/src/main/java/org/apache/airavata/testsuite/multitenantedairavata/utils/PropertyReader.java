@@ -53,7 +53,7 @@ public class PropertyReader {
 
     }
 
-    public static String readProperty (String propertyName, PropertyFileType type){
+    public String readProperty (String propertyName, PropertyFileType type){
         switch (type){
             case AIRAVATA_CLIENT:
                 return airavataClientProperties.getProperty(propertyName);

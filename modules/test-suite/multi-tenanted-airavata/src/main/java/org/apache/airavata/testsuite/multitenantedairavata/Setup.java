@@ -22,13 +22,187 @@
 package org.apache.airavata.testsuite.multitenantedairavata;
 
 
+import org.apache.airavata.api.Airavata;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.DBUtil;
+import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
+import org.apache.airavata.credential.store.store.CredentialStoreException;
+import org.apache.airavata.credential.store.store.impl.SSHCredentialWriter;
+import org.apache.airavata.credential.store.util.TokenGenerator;
+import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.error.AiravataClientException;
+import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.model.error.InvalidRequestException;
+import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.testsuite.multitenantedairavata.utils.PropertyFileType;
+import org.apache.airavata.testsuite.multitenantedairavata.utils.PropertyReader;
+import org.apache.airavata.testsuite.multitenantedairavata.utils.TestFrameworkConstants;
+import org.apache.thrift.TException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class Setup {
+    private final static Logger logger = LoggerFactory.getLogger(Setup.class);
+    private AiravataClient airavataClient;
+    private Airavata.Client airavata;
+    private PropertyReader propertyReader;
+    private int gatewayCount;
+    private Map<String, String> tokenMap;
+    private Map<String, String> projectMap;
 
-    public void createGateways(){
-
+    public Setup() {
+        this.airavataClient = AiravataClient.getInstance();
+        this.airavata = airavataClient.getAiravataClient();
+        this.tokenMap = new HashMap<String, String>();
+        this.projectMap = new HashMap<String, String>();
+        propertyReader = new PropertyReader();
     }
 
-    public void registerSSHKeys (){
+    public void createGateways() throws Exception{
+        try {
+            // read gateway count from properties file
+            gatewayCount = Integer.valueOf(propertyReader.readProperty(TestFrameworkConstants.FrameworkPropertiesConstants.NUMBER_OF_GATEWAYS, PropertyFileType.TEST_FRAMEWORK));
+            String genericGatewayName = propertyReader.readProperty(TestFrameworkConstants.GatewayConstants.GENERIC_GATEWAY_NAME, PropertyFileType.TEST_FRAMEWORK);
+            String genericGatewayDomain = propertyReader.readProperty(TestFrameworkConstants.GatewayConstants.GENERIC_GATEWAY_DOMAIN, PropertyFileType.TEST_FRAMEWORK);
+            for (int i = 0; i < gatewayCount; i++){
+                Gateway gateway = new Gateway();
+                String gatewayId = genericGatewayName + (i + 1);
+                gateway.setGatewayId(gatewayId);
+                gateway.setGatewayName(gatewayId);
+                gateway.setDomain(gatewayId + genericGatewayDomain);
+                airavata.addGateway(gateway);
+                GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
+                gatewayResourceProfile.setGatewayID(gatewayId);
+                airavata.registerGatewayResourceProfile(gatewayResourceProfile);
+                // create a project per each gateway
+                createProject(gatewayId);
+            }
+        } catch (AiravataSystemException e) {
+            logger.error("Error while creating airavata client instance", e);
+            throw new Exception("Error while creating airavata client instance", e);
+        } catch (InvalidRequestException e) {
+            logger.error("Invalid request for airavata client instance", e);
+            throw new Exception("Invalid request for airavata client instance", e);
+        } catch (AiravataClientException e) {
+            logger.error("Error while creating airavata client instance", e);
+            throw new Exception("Error while creating airavata client instance", e);
+        } catch (TException e) {
+            logger.error("Error while communicating with airavata client ", e);
+            throw new Exception("Error while communicating with airavata client", e);
+        }
+    }
 
+    public void createProject (String gatewayId) throws Exception{
+        Project project = new Project();
+        project.setName("testProj_" + gatewayId);
+        project.setOwner("testUser_" + gatewayId);
+        String projectId = airavata.createProject(gatewayId, project);
+        projectMap.put(gatewayId, projectId);
+    }
+
+    public void registerSSHKeys () throws Exception{
+        try {
+            // credential store related functions are not in the current api, so need to call credential store directly
+            AiravataUtils.setExecutionAsClient();
+            String jdbcURL = propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.CS_JBDC_URL, PropertyFileType.AIRAVATA_CLIENT);
+            String jdbcDriver = propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.CS_JBDC_DRIVER, PropertyFileType.AIRAVATA_CLIENT);
+            String userName = propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.CS_DB_USERNAME, PropertyFileType.AIRAVATA_CLIENT);
+            String password = propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.CS_DB_PWD, PropertyFileType.AIRAVATA_CLIENT);
+            String privateKeyPath = propertyReader.readProperty(TestFrameworkConstants.FrameworkPropertiesConstants.SSH_PRIKEY_LOCATION, PropertyFileType.TEST_FRAMEWORK);
+            String pubKeyPath = propertyReader.readProperty(TestFrameworkConstants.FrameworkPropertiesConstants.SSH_PUBKEY_LOCATION, PropertyFileType.TEST_FRAMEWORK);
+            String keyPassword = propertyReader.readProperty(TestFrameworkConstants.FrameworkPropertiesConstants.SSH_PWD, PropertyFileType.TEST_FRAMEWORK);
+            DBUtil dbUtil = new DBUtil(jdbcURL, userName, password, jdbcDriver);
+            SSHCredentialWriter writer = new SSHCredentialWriter(dbUtil);
+            List<Gateway> allGateways = airavata.getAllGateways();
+            for (Gateway gateway : allGateways){
+                SSHCredential sshCredential = new SSHCredential();
+                sshCredential.setGateway(gateway.getGatewayId());
+                String token = TokenGenerator.generateToken(gateway.getGatewayId(), null);
+                sshCredential.setToken(token);
+                sshCredential.setPortalUserName("testuser");
+                FileInputStream privateKeyStream = new FileInputStream(privateKeyPath);
+                File filePri = new File(privateKeyPath);
+                byte[] bFilePri = new byte[(int) filePri.length()];
+                privateKeyStream.read(bFilePri);
+                FileInputStream pubKeyStream = new FileInputStream(pubKeyPath);
+                File filePub = new File(pubKeyPath);
+                byte[] bFilePub = new byte[(int) filePub.length()];
+                pubKeyStream.read(bFilePub);
+                privateKeyStream.close();
+                pubKeyStream.close();
+                sshCredential.setPrivateKey(bFilePri);
+                sshCredential.setPublicKey(bFilePub);
+                sshCredential.setPassphrase(keyPassword);
+                writer.writeCredentials(sshCredential);
+                tokenMap.put(gateway.getGatewayId(), token);
+            }
+        } catch (ClassNotFoundException e) {
+            logger.error("Unable to find mysql driver", e);
+            throw new Exception("Unable to find mysql driver",e);
+        } catch (InstantiationException e) {
+            logger.error("Error while saving SSH credentials", e);
+            throw new Exception("Error while saving SSH credentials",e);
+        } catch (IllegalAccessException e) {
+            logger.error("Error while saving SSH credentials", e);
+            throw new Exception("Error while saving SSH credentials",e);
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read airavata-client properties", e);
+            throw new Exception("Unable to read airavata-client properties",e);
+        } catch (AiravataSystemException e) {
+            logger.error("Error occured while connecting with airavata client", e);
+            throw new Exception("Error occured while connecting with airavata client",e);
+        } catch (InvalidRequestException e) {
+            logger.error("Error occured while connecting with airavata client", e);
+            throw new Exception("Error occured while connecting with airavata client",e);
+        } catch (AiravataClientException e) {
+            logger.error("Error occured while connecting with airavata client", e);
+            throw new Exception("Error occured while connecting with airavata client",e);
+        } catch (TException e) {
+            logger.error("Error occured while connecting with airavata client", e);
+            throw new Exception("Error occured while connecting with airavata client",e);
+        } catch (FileNotFoundException e) {
+            logger.error("Could not find keys specified in the path", e);
+            throw new Exception("Could not find keys specified in the path",e);
+        } catch (CredentialStoreException e) {
+            logger.error("Error while saving SSH credentials", e);
+            throw new Exception("Error while saving SSH credentials",e);
+        } catch (IOException e) {
+            logger.error("Error while saving SSH credentials", e);
+            throw new Exception("Error while saving SSH credentials",e);
+        }
+    }
+
+    public int getGatewayCount() {
+        return gatewayCount;
+    }
+
+    public void setGatewayCount(int gatewayCount) {
+        this.gatewayCount = gatewayCount;
+    }
+
+    public Map<String, String> getTokenMap() {
+        return tokenMap;
+    }
+
+    public void setTokenMap(Map<String, String> tokenMap) {
+        this.tokenMap = tokenMap;
+    }
+
+    public Map<String, String> getProjectMap() {
+        return projectMap;
+    }
+
+    public void setProjectMap(Map<String, String> projectMap) {
+        this.projectMap = projectMap;
     }
 }

@@ -45,10 +45,10 @@ public class AiravataClient {
         propertyReader = new PropertyReader();
     }
 
-    public static Airavata.Client getAiravataClient(){
+    public Airavata.Client getAiravataClient(){
         try {
-            String airavataHost = PropertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.THRIFT_SERVER_HOST, PropertyFileType.AIRAVATA_CLIENT);
-            int airavataport = Integer.valueOf(PropertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.THRIFT_SERVER_PORT, PropertyFileType.AIRAVATA_CLIENT));
+            String airavataHost = propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.THRIFT_SERVER_HOST, PropertyFileType.AIRAVATA_CLIENT);
+            int airavataport = Integer.valueOf(propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.THRIFT_SERVER_PORT, PropertyFileType.AIRAVATA_CLIENT));
             airavataClient = AiravataClientFactory.createAiravataClient(airavataHost, airavataport);
             return airavataClient;
         } catch (AiravataClientConnectException e) {
