@@ -51,10 +51,12 @@ public class RabbitMQTaskLaunchConsumer {
     private Connection connection;
     private Channel channel;
     private Map<String, QueueDetails> queueDetailsMap = new HashMap<String, QueueDetails>();
+    private boolean durableQueue;
 
     public RabbitMQTaskLaunchConsumer() throws AiravataException {
         try {
             url = ServerSettings.getSetting(MessagingConstants.RABBITMQ_BROKER_URL);
+            durableQueue = Boolean.parseBoolean(ServerSettings.getSetting(MessagingConstants.DURABLE_QUEUE));
             taskLaunchExchangeName = ServerSettings.getSetting(MessagingConstants.RABBITMQ_TASK_LAUNCH_EXCHANGE_NAME);
             createConnection();
         } catch (ApplicationSettingsException e) {
@@ -117,7 +119,8 @@ public class RabbitMQTaskLaunchConsumer {
                 }
                 queueName = channel.queueDeclare().getQueue();
             } else {
-                channel.queueDeclare(queueName, true, false, false, null);
+
+                channel.queueDeclare(queueName, durableQueue, false, false, null);
             }
 
             final String id = getId(keys, queueName);
