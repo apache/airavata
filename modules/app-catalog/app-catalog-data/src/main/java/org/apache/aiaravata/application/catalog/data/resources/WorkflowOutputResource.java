@@ -276,7 +276,7 @@ public class WorkflowOutputResource extends AbstractResource {
                 existingWorkflowOutput.setWorkflow(workflow);
                 existingWorkflowOutput.setDataType(dataType);
                 existingWorkflowOutput.setOutputKey(outputKey);
-                if (outputKey != null){
+                if (outputVal != null){
                     existingWorkflowOutput.setOutputVal(outputVal.toCharArray());
                 }
                 existingWorkflowOutput.setValidityType(validityType);
@@ -290,7 +290,7 @@ public class WorkflowOutputResource extends AbstractResource {
                 workflowOutput.setWorkflow(workflow);
                 workflowOutput.setDataType(dataType);
                 workflowOutput.setOutputKey(outputKey);
-                if (outputKey != null){
+                if (outputVal != null){
                     workflowOutput.setOutputVal(outputVal.toCharArray());
                 }
                 workflowOutput.setValidityType(validityType);

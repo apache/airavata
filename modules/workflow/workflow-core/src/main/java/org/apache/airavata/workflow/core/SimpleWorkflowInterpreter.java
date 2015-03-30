@@ -21,6 +21,8 @@
 
 package org.apache.airavata.workflow.core;
 
+import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.messaging.core.MessageContext;
@@ -151,6 +153,22 @@ class SimpleWorkflowInterpreter{
             addToProcessingQueue(processContext);
             publishToProcessQueue(process);
         }
+        if (processingQueue.isEmpty()) {
+            try {
+                saveWorkflowOutputs();
+            } catch (AppCatalogException e) {
+                throw new AiravataException("Error while updating completed workflow outputs to registry", e);
+            }
+        }
+    }
+
+    private void saveWorkflowOutputs() throws AppCatalogException {
+        List<OutputDataObjectType> outputDataObjects = new ArrayList<OutputDataObjectType>();
+        for (WorkflowOutputNode completeWorkflowOutput : completeWorkflowOutputs) {
+            outputDataObjects.add(completeWorkflowOutput.getOutputObject());
+        }
+        AppCatalogFactory.getAppCatalog().getWorkflowCatalog()
+                .updateWorkflowOutputs(experiment.getApplicationId(), outputDataObjects);
     }
 
 

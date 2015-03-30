@@ -160,6 +160,7 @@ public class AiravataWorkflowParser implements WorkflowParser {
         WorkflowOutputNodeImpl workflowOutputNode = new WorkflowOutputNodeImpl(oNode.getID(), oNode.getName());
         OutputDataObjectType outputDataObjectType = new OutputDataObjectType();
         outputDataObjectType.setType(oNode.getParameterType());
+        outputDataObjectType.setName(oNode.getID());
         workflowOutputNode.setOutputObject(outputDataObjectType);
         return workflowOutputNode;
     }
