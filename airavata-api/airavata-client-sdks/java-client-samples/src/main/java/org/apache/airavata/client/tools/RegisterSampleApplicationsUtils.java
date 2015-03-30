@@ -24,6 +24,7 @@ package org.apache.airavata.client.tools;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
+import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
 import org.apache.airavata.model.appcatalog.appinterface.*;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
@@ -73,7 +74,7 @@ public class RegisterSampleApplicationsUtils {
         return deployment;
     }
 
-    public static ApplicationModule createApplicationModule(String appModuleName,
+      public static ApplicationModule createApplicationModule(String appModuleName,
                                                             String appModuleVersion, String appModuleDescription) {
         ApplicationModule module = new ApplicationModule();
         module.setAppModuleDescription(appModuleDescription);

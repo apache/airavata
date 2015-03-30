@@ -36,6 +36,10 @@ public interface BESConstants {
 	public static final String PROP_CA_KEY_PATH = "bes.ca.key.path";
 	
 	public static final String PROP_CA_KEY_PASS = "bes.ca.key.pass";
+	
+	public static final String NUMBER_OF_PROCESSES = "NumberOfProcesses";
+	
+	public static final String PROCESSES_PER_HOST = "ProcessesPerHost";
 
 	
 }

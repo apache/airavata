@@ -34,10 +34,13 @@ public class ResourceProcessor {
 		
 		TaskDetails taskData = context.getTaskData();
 		
+		
+		
 		if(taskData != null && taskData.isSetTaskScheduling()){
 			try {
-				ComputationalResourceScheduling crs = taskData.getTaskScheduling();
 				
+				ComputationalResourceScheduling crs = taskData.getTaskScheduling();
+			
 				if (crs.getTotalPhysicalMemory() > 0) {
 					RangeValueType rangeType = new RangeValueType();
 					rangeType.setLowerBound(Double.NaN);
@@ -52,6 +55,8 @@ public class ResourceProcessor {
 					rangeType.setUpperBound(Double.NaN);
 					rangeType.setExact(crs.getNodeCount());
 					JSDLUtils.setTotalResourceCountRequirements(value, rangeType);
+					// set totalcpu count to -1 as we dont need that
+					crs.setTotalCPUCount(0);
 				}
 	
 				if(crs.getWallTimeLimit() > 0) {
@@ -70,6 +75,7 @@ public class ResourceProcessor {
 					rangeType.setExact(crs.getTotalCPUCount());
 					JSDLUtils.setTotalCPUCountRequirements(value, rangeType);
 				}
+				
 			} catch (NullPointerException npe) {
 				new GFacProviderException("No value set for resource requirements.",npe);
 			}
