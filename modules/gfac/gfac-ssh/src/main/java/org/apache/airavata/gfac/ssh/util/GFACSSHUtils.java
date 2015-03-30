@@ -331,7 +331,8 @@ public class GFACSSHUtils {
         if (computationalProjectAccount != null) {
             jobDescriptor.setAcountString(computationalProjectAccount);
         }
-        jobDescriptor.setJobName(String.valueOf(generateJobName()));
+        // To make job name alpha numeric
+        jobDescriptor.setJobName("A" + String.valueOf(generateJobName()));
         jobDescriptor.setWorkingDirectory(jobExecutionContext.getWorkingDir());
 
         List<String> inputValues = new ArrayList<String>();
