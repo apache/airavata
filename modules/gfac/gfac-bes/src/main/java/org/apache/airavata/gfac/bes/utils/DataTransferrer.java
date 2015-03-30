@@ -37,6 +37,8 @@ import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,9 +93,10 @@ public class DataTransferrer {
 			file.mkdirs();	
 		}
 		List<String> outPrms = extractOutParams(jobContext);
+		
 		for (String outPrm : outPrms) {
-				String outputLocation = downloadLocation+File.separator+outPrm;
-				FileDownloader fileDownloader = new FileDownloader(outPrm,outputLocation, Mode.overwrite);
+				if("".equals(outPrm)) continue;
+				FileDownloader fileDownloader = new FileDownloader(outPrm,downloadLocation, Mode.overwrite);
 				try {
 					fileDownloader.perform(storageClient);
 				} catch (Exception e) {
