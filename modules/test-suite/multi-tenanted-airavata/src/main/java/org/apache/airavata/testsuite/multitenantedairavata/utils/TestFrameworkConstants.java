@@ -53,7 +53,34 @@ public class TestFrameworkConstants {
 
     public static final class AppcatalogConstants {
         public static final String AMBER_APP_NAME = "amber_sander";
+        public static final String ECHO_NAME = "Echo";
+        public static final String ESPRESSO_NAME = "ESPRESSO";
+        public static final String GROMACS_NAME = "GROMACS";
+        public static final String LAMMPS_NAME = "LAMMPS";
+        public static final String NWCHEM_NAME = "NWChem";
+        public static final String TRINITY_NAME = "Trinity";
+        public static final String WRF_NAME = "WRF";
+        public static final String PHASTA_NAME = "PHASTA";
+        public static final String TINKER_MONTE_NAME = "TinkerMonte";
+        public static final String GAUSSIAN_NAME = "Gaussian";
+        public static final String GAMESS_NAME = "Gamess";
 
+        public static final String ECHO_DESCRIPTION = "A Simple Echo Application";
+        public static final String AMBER_DESCRIPTION = "Assisted Model Building with Energy Refinement MD Package";
+        public static final String ESPRESSO_DESCRIPTION = "Nanoscale electronic-structure calculations and materials modeling";
+        public static final String GROMACS_DESCRIPTION = "GROMACS Molecular Dynamics Package";
+        public static final String LAMMPS_DESCRIPTION = "Large-scale Atomic/Molecular Massively Parallel Simulator";
+        public static final String NWCHEM_DESCRIPTION = "Ab initio computational chemistry software package";
+        public static final String TRINITY_DESCRPTION = "de novo reconstruction of transcriptomes from RNA-seq data";
+        public static final String WRF_DESCRIPTION = "Weather Research and Forecasting";
+        public static final String PHASTA_DESCRIPTION = "Computational fluid dynamics solver";
+        public static final String TINKER_MONTE_DESCRIPTION = "Grid Chem Tinker Monte Application";
+        public static final String GAUSSIAN_DESCRIPTION = "Grid Chem Gaussian Application";
+        public static final String GAMESS_DESCRIPTION = "A Gamess Application";
+
+        public static final String STAMPEDE_RESOURCE_NAME = "stampede.tacc.xsede.org";
+        public static final String TRESTLES_RESOURCE_NAME = "trestles.sdsc.xsede.org";
+        public static final String BR2_RESOURCE_NAME = "bigred2.uits.iu.edu";
     }
 
     public static final class CredentialStoreConstants {
