@@ -29,6 +29,10 @@ import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
+import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
@@ -109,6 +113,11 @@ public class RegisterSampleData {
 
             ComputeResourceDescription computeResourceDescription = RegisterSampleApplicationsUtils.
                     createComputeResourceDescription("localhost", "LocalHost", null, null);
+            DataMovementInterface dataMovementInterface = new DataMovementInterface("localhost_data_movement_interface", DataMovementProtocol.LOCAL, 1);
+            computeResourceDescription.addToDataMovementInterfaces(dataMovementInterface);
+            JobSubmissionInterface jobSubmissionInterface = new JobSubmissionInterface("localhost_job_submission_interface", JobSubmissionProtocol.LOCAL, 1);
+            computeResourceDescription.addToJobSubmissionInterfaces(jobSubmissionInterface);
+
             localhostId = airavataClient.registerComputeResource(computeResourceDescription);
             ResourceJobManager resourceJobManager = RegisterSampleApplicationsUtils.
                     createResourceJobManager(ResourceJobManagerType.FORK, null, null, null);

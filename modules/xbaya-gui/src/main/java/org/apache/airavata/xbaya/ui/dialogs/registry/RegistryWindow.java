@@ -124,7 +124,7 @@ public class RegistryWindow {
         this.usernameTextField = new XBayaTextField();
         this.serverTextField.setText("localhost");
         this.portTextField.setText("8930");
-        this.gatewayIdTextField.setText("airavata");
+        this.gatewayIdTextField.setText("sample");
         this.usernameTextField.setText("airavata");
         ThriftClientData thriftClientData = engine.getConfiguration().getThriftClientData(ThriftServiceType.API_SERVICE);
     	if (thriftClientData!=null){
