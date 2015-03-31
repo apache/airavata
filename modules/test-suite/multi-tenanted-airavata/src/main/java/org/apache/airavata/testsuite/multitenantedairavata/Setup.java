@@ -107,7 +107,7 @@ public class Setup {
         project.setName("testProj_" + gatewayId);
         project.setOwner("testUser_" + gatewayId);
         String projectId = airavata.createProject(gatewayId, project);
-        projectMap.put(gatewayId, projectId);
+        projectMap.put(projectId, gatewayId);
     }
 
     public void registerSSHKeys () throws Exception{
