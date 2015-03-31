@@ -144,7 +144,7 @@ public class ComputeResourceRegister {
         return computeResourceId;
     }
 
-    public static ComputeResourceDescription createComputeResourceDescription(
+    public ComputeResourceDescription createComputeResourceDescription(
             String hostName, String hostDesc, List<String> hostAliases, List<String> ipAddresses) {
         ComputeResourceDescription host = new ComputeResourceDescription();
         host.setHostName(hostName);
@@ -154,7 +154,7 @@ public class ComputeResourceRegister {
         return host;
     }
 
-    public static ResourceJobManager createResourceJobManager(
+    public ResourceJobManager createResourceJobManager(
             ResourceJobManagerType resourceJobManagerType, String pushMonitoringEndpoint, String jobManagerBinPath,
             Map<JobManagerCommand, String> jobManagerCommands) {
         ResourceJobManager resourceJobManager = new ResourceJobManager();
@@ -197,8 +197,7 @@ public class ComputeResourceRegister {
         }
     }
 
-    public static ComputeResourcePreference
-    createComputeResourcePreference(String computeResourceId, String allocationProjectNumber,
+    public ComputeResourcePreference createComputeResourcePreference(String computeResourceId, String allocationProjectNumber,
                                     boolean overridebyAiravata, String preferredBatchQueue,
                                     JobSubmissionProtocol preferredJobSubmissionProtocol,
                                     DataMovementProtocol preferredDataMovementProtocol,

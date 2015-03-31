@@ -83,7 +83,7 @@ public class ApplicationRegister {
         addLAMMPSApplication();
     }
 
-    public void addAmberApplication () throws Exception{
+    protected void addAmberApplication () throws Exception{
         for (Gateway gateway : allGateways){
             // add amber module
             String amberModuleId = airavata.registerApplicationModule(gateway.getGatewayId(),
@@ -185,7 +185,7 @@ public class ApplicationRegister {
     }
 
 
-    public void addEchoApplication() throws Exception{
+    protected void addEchoApplication() throws Exception{
         for (Gateway gateway : allGateways){
             // add echo module
             String echoModuleId = airavata.registerApplicationModule(gateway.getGatewayId(),
@@ -218,14 +218,14 @@ public class ApplicationRegister {
         }
     }
 
-    public void addLAMMPSApplication() throws Exception{
+    protected void addLAMMPSApplication() throws Exception{
         // add LAMPPS module
         // add LAMPSS interface
         // add LAMPSS deployment
     }
 
 
-    public static ApplicationDeploymentDescription createApplicationDeployment(String appModuleId,
+    protected ApplicationDeploymentDescription createApplicationDeployment(String appModuleId,
                                                                                String computeResourceId,
                                                                                String executablePath,
                                                                                ApplicationParallelismType parallelism,
@@ -245,7 +245,7 @@ public class ApplicationRegister {
         return deployment;
     }
 
-    public static ApplicationModule createApplicationModule(String appModuleName,
+    protected ApplicationModule createApplicationModule(String appModuleName,
                                                             String appModuleVersion, String appModuleDescription) {
         ApplicationModule module = new ApplicationModule();
         module.setAppModuleDescription(appModuleDescription);
@@ -254,7 +254,7 @@ public class ApplicationRegister {
         return module;
     }
 
-    public static InputDataObjectType createAppInput (String inputName,
+    protected InputDataObjectType createAppInput (String inputName,
                                                       String value,
                                                       DataType type,
                                                       String applicationArgument,
@@ -278,7 +278,7 @@ public class ApplicationRegister {
         return input;
     }
 
-    public static OutputDataObjectType createAppOutput(String inputName,
+    protected OutputDataObjectType createAppOutput(String inputName,
                                                        String value,
                                                        DataType type,
                                                        boolean isRequired,
@@ -292,7 +292,7 @@ public class ApplicationRegister {
         return outputDataObjectType;
     }
 
-    public static ApplicationInterfaceDescription createApplicationInterfaceDescription
+    protected ApplicationInterfaceDescription createApplicationInterfaceDescription
             (String applicationName, String applicationDescription, List<String> applicationModules,
              List<InputDataObjectType> applicationInputs, List<OutputDataObjectType>applicationOutputs) {
         ApplicationInterfaceDescription applicationInterfaceDescription = new ApplicationInterfaceDescription();
