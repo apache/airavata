@@ -51,21 +51,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Setup {
-    private final static Logger logger = LoggerFactory.getLogger(Setup.class);
-    private AiravataClient airavataClient;
+public class GatewayRegister {
+    private final static Logger logger = LoggerFactory.getLogger(GatewayRegister.class);
     private Airavata.Client airavata;
     private PropertyReader propertyReader;
     private int gatewayCount;
     private Map<String, String> tokenMap;
     private Map<String, String> projectMap;
 
-    public Setup() {
-        this.airavataClient = AiravataClient.getInstance();
-        this.airavata = airavataClient.getAiravataClient();
-        this.tokenMap = new HashMap<String, String>();
-        this.projectMap = new HashMap<String, String>();
-        propertyReader = new PropertyReader();
+    public GatewayRegister(Airavata.Client client) throws Exception{
+        try {
+            this.airavata = client;
+            this.tokenMap = new HashMap<String, String>();
+            this.projectMap = new HashMap<String, String>();
+            propertyReader = new PropertyReader();
+        }catch (Exception e){
+            logger.error("Error while initializing setup step", e);
+            throw new Exception("Error while initializing setup step", e);
+        }
+
     }
 
     public void createGateways() throws Exception{
@@ -204,5 +208,13 @@ public class Setup {
 
     public void setProjectMap(Map<String, String> projectMap) {
         this.projectMap = projectMap;
+    }
+
+    public Airavata.Client getAiravata() {
+        return airavata;
+    }
+
+    public void setAiravata(Airavata.Client airavata) {
+        this.airavata = airavata;
     }
 }
