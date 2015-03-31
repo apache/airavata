@@ -29,6 +29,7 @@ import java.util.*;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
+import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
 import org.apache.airavata.model.appcatalog.appinterface.*;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
@@ -60,7 +61,8 @@ public class RegisterSampleApplications {
 
     private static String fsdResourceId;
  // unicore service endpoint url
-    private static final String unicoreEndPointURL = "https://fsd-cloud15.zam.kfa-juelich.de:7000/INTEROP1/services/BESFactory?res=default_bes_factory";
+//    private static final String unicoreEndPointURL = "https://fsd-cloud15.zam.kfa-juelich.de:7000/INTEROP1/services/BESFactory?res=default_bes_factory";
+    private static final String unicoreEndPointURL = "https://deisa-unic.fz-juelich.de:9111/FZJ_JUROPA/services/BESFactory?res=default_bes_factory";
     
     //Appplication Names
     private static final String echoName = "Echo";
@@ -565,17 +567,40 @@ public class RegisterSampleApplications {
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Sample_Input", "",
                     DataType.STRING, null, 1,true, false, false, "An optional MPI source file", null);
             
+            InputDataObjectType input11 = RegisterSampleApplicationsUtils.createAppInput("US3INPUT", "",
+                    DataType.URI, null, 1,true, false, false, "Input US3 file", null);
+            
+            InputDataObjectType input12 = RegisterSampleApplicationsUtils.createAppInput("US3INPUTARG", "",
+                    DataType.STRING, null, 1,true, false, false, "Input US3 Arg", null);
+
+            
+            InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("NumberOfProcesses", "",
+                    DataType.INTEGER, null, 2,false, true, false, "Number Of Processes", null);
+            
+            
+            InputDataObjectType input3 = RegisterSampleApplicationsUtils.createAppInput("ProcessesPerHost", "",
+                    DataType.INTEGER, null, 3,false, true, false, "Processes per host", null);
+            
+
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
+            applicationInputs.add(input2);
+            applicationInputs.add(input3);
+            applicationInputs.add(input11);
+            applicationInputs.add(input12);
             
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("STDOutput",
                     "", DataType.STDOUT, true, true);
             OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("STDErr",
                     "", DataType.STDERR, true, true);
             
+            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("US3OUT",
+                    "", DataType.STRING, true, false);
+
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
             applicationOutputs.add(output2);
+            applicationOutputs.add(output3);
  
             
             mpiInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
@@ -1263,11 +1288,18 @@ public class RegisterSampleApplications {
                     RegisterSampleApplicationsUtils.createApplicationDeployment(echoModuleId, fsdResourceId,
                             "/bin/echo", ApplicationParallelismType.SERIAL, echoDescription, null, null, null));
             System.out.println("Echo on FSD deployment Id: " + echoAppDeployId);
-
+            
             //Register MPI
+//            String mpiAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
+//                    RegisterSampleApplicationsUtils.createApplicationDeployment(mpiModuleId, fsdResourceId,
+//                            "/home/bes/hellompi", ApplicationParallelismType.OPENMP_MPI, mpiDescription, null, null, null));
+            
+            
             String mpiAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(mpiModuleId, fsdResourceId,
-                            "/home/bes/hellompi", ApplicationParallelismType.OPENMP_MPI, mpiDescription, null, null, null));
+                            "us_mpi_analysis", ApplicationParallelismType.MPI, mpiDescription, null, null, null));
+
+            
             System.out.println("MPI on FSD deployment Id: " + mpiAppDeployId);
 
         } catch (TException e) {

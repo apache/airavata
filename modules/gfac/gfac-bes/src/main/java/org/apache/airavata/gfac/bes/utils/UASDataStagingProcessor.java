@@ -136,7 +136,10 @@ public class UASDataStagingProcessor {
 					ApplicationProcessor.addApplicationArgument(value, context, input.getValue());
 				}
 				else if (input.getType().equals(DataType.FLOAT) || input.getType().equals(DataType.INTEGER)){
-					ApplicationProcessor.addApplicationArgument(value, context, String.valueOf(input.getValue()));
+					if(! (input.getName().equals(BESConstants.NUMBER_OF_PROCESSES) || input.getName().equals(BESConstants.PROCESSES_PER_HOST))) {
+						// temp avoid environ going to app args
+						ApplicationProcessor.addApplicationArgument(value, context, String.valueOf(input.getValue()));
+					}
 				}
 			}
 		}

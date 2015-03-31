@@ -52,7 +52,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>workflow-core</artifactId>
+            <artifactId>airavata-workflow-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
