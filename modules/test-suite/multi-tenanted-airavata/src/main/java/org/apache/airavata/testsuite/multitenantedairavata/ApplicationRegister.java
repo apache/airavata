@@ -77,8 +77,6 @@ public class ApplicationRegister {
         }
     }
 
-
-
     public void addApplications () throws Exception{
         addAmberApplication();
         addEchoApplication();
