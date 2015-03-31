@@ -21,6 +21,8 @@
 
 package org.airavata.appcatalog.cpi;
 
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+
 import java.util.List;
 
 public interface WorkflowCatalog {
@@ -38,4 +40,6 @@ public interface WorkflowCatalog {
     public String getWorkflowTemplateId(String workflowName) throws AppCatalogException;
 
     public boolean isWorkflowExistWithName(String workflowName) throws AppCatalogException;
+
+    public void updateWorkflowOutputs(String workflowTemplateId, List<OutputDataObjectType> workflowOutputs) throws AppCatalogException;
 }

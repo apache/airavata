@@ -21,9 +21,13 @@
 
 package org.apache.airavata.gfac.bes.utils;
 
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
+import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.ApplicationType;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionType;
 import org.ggf.schemas.jsdl.x2005.x11.jsdlPosix.FileNameType;
@@ -77,24 +81,35 @@ public class ApplicationProcessor {
                 }else if (parallelism.equals(ApplicationParallelismType.MPI)){
                     JSDLUtils.getSPMDApplication(value).setSPMDVariation(SPMDVariations.MPI.value());
                 }
-
-                int totalCPUCount = context.getTaskData().getTaskScheduling().getTotalCPUCount();
-                if(totalCPUCount > 0){
-					NumberOfProcessesType num = NumberOfProcessesType.Factory.newInstance();
-                    num.setStringValue(String.valueOf(totalCPUCount));
-					JSDLUtils.getSPMDApplication(value).setNumberOfProcesses(num);
-				}
-
-                int totalNodeCount = context.getTaskData().getTaskScheduling().getNodeCount();
-                if(totalNodeCount > 0){
-                    int ppn = totalCPUCount / totalNodeCount;
-                    ProcessesPerHostType pph = ProcessesPerHostType.Factory.newInstance();
-                    pph.setStringValue(String.valueOf(ppn));
-                    JSDLUtils.getSPMDApplication(value).setProcessesPerHost(pph);
+                
+                // setting number of processes
+                try { 
+	                String np = getInputAsString(context, BESConstants.NUMBER_OF_PROCESSES);
+	                if((np != null)  && (Integer.parseInt(np) > 0)){
+						NumberOfProcessesType num = NumberOfProcessesType.Factory.newInstance();
+	                    num.setStringValue(np);
+						JSDLUtils.getSPMDApplication(value).setNumberOfProcesses(num);
+					}
+	
+                }catch(RuntimeException np) {
+                	// do nothing
                 }
 
-                int totalThreadCount = context.getTaskData().getTaskScheduling().getNumberOfThreads();
 
+                try { 
+	                // setting processes per host
+	                String pphost = getInputAsString(context, BESConstants.PROCESSES_PER_HOST);
+	                if((pphost != null)  && (Integer.parseInt(pphost) > 0)){
+	                    ProcessesPerHostType pph = ProcessesPerHostType.Factory.newInstance();
+	                    pph.setStringValue(String.valueOf(pphost));
+	                    JSDLUtils.getSPMDApplication(value).setProcessesPerHost(pph);
+	                }
+                }catch(RuntimeException np) {
+                	// do nothing
+                }
+                
+                int totalThreadCount = context.getTaskData().getTaskScheduling().getNumberOfThreads();
+                // we take it as threads per processes
                 if(totalThreadCount > 0){
 					ThreadsPerProcessType tpp = ThreadsPerProcessType.Factory.newInstance();
 					tpp.setStringValue(String.valueOf(totalThreadCount));
@@ -186,6 +201,21 @@ public class ApplicationProcessor {
 		
 		return isParallel;
 	}
+	
+	private static String getInputAsString(JobExecutionContext context, String name) {
+		List<InputDataObjectType> inputList = context.getTaskData().getApplicationInputs();
+		String value = null;
+		for (Iterator<InputDataObjectType> iterator = inputList.iterator(); iterator.hasNext();) {
+			InputDataObjectType inputDataObjectType = iterator
+					.next();
+			if (inputDataObjectType.getName().equals(name)) {
+				value = inputDataObjectType.getValue();
+				break;
+			}
+		}
+		return value;
+	}
+	
 	
 
 }

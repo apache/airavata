@@ -268,62 +268,74 @@ public class WorkflowInterpreterLaunchWindow {
     }
 
     private void execute() throws AiravataClientConnectException, TException {
-    	ThriftClientData thriftClientData = engine.getConfiguration().getThriftClientData(ThriftServiceType.API_SERVICE);
-		Client airavataClient = XBayaUtil.getAiravataClient(thriftClientData);
-        String gatewayId = engine.getConfiguration().getThriftClientData(ThriftServiceType.API_SERVICE).getGatewayId();
-
-		Workflow workflowClone = workflow.clone();
-		workflowClone.setName(workflowClone.getName()+UUID.randomUUID().toString());
-		org.apache.airavata.model.Workflow w = new org.apache.airavata.model.Workflow();
-		w.setName(workflowClone.getName());
-        w.setGraph(JSONUtil.jsonElementToString(workflowClone.toJSON()));
-        w.setTemplateId(airavataClient.registerWorkflow(gatewayId, w));
         String instanceName = this.instanceNameTextField.getText();
         if (instanceName.trim().equals("")){
-        	JOptionPane.showMessageDialog(engine.getGUI().getFrame(),
-        		    "Experiment name cannot be empty",
-        		    "Experiment Name",
-        		    JOptionPane.ERROR_MESSAGE);
-        	return;
+            JOptionPane.showMessageDialog(engine.getGUI().getFrame(),
+                    "Experiment name cannot be empty",
+                    "Experiment Name",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
         }
-        //previous instance name
-        if (!instanceNameTextField.getText().equals("")){
-            this.instanceNameTextField.setText("");
+        ThriftClientData thriftClientData = engine.getConfiguration().getThriftClientData(ThriftServiceType.API_SERVICE);
+        Client airavataClient = XBayaUtil.getAiravataClient(thriftClientData);
+        String gatewayId = engine.getConfiguration().getThriftClientData(ThriftServiceType.API_SERVICE).getGatewayId();
+
+        final List<InputNode> inputNodes = GraphUtil.getInputNodes(this.workflow.getGraph());
+        List<InputDataObjectType> inputDataTypes = new ArrayList<InputDataObjectType>();
+        List<OutputDataObjectType> outputDataTypes = new ArrayList<OutputDataObjectType>();
+        InputDataObjectType input = null;
+        for (int i = 0; i < inputNodes.size(); i++) {
+            InputNode inputNode = inputNodes.get(i);
+            XBayaTextField parameterTextField = this.parameterTextFields.get(i);
+            inputNode.getID();
+            String value = parameterTextField.getText();
+            input = new InputDataObjectType();
+//            inputNode.setDefaultValue(value);
+            input.setName(inputNode.getID());
+            input.setType(inputNode.getDataType());
+            input.setValue(value);
+            input.setApplicationArgument(inputNode.getApplicationArgument());
+            input.setInputOrder(inputNode.getInputOrder());
+            inputDataTypes.add(input);
+
         }
+        final List<OutputNode> outputNodes = GraphUtil.getOutputNodes(this.workflow.getGraph());
+        OutputDataObjectType output = null;
+        for (OutputNode outputNode : outputNodes) {
+            output = new OutputDataObjectType();
+            output.setName(outputNode.getID());
+            output.setType(DataType.STRING);
+            outputDataTypes.add(output);
+        }
+
+        Workflow workflowClone = workflow.clone();
+        workflowClone.setName(workflowClone.getName() + UUID.randomUUID().toString());
+        org.apache.airavata.model.Workflow workflowModel = new org.apache.airavata.model.Workflow();
+        workflowModel.setName(workflowClone.getName());
+        workflowModel.setGraph(JSONUtil.jsonElementToString(workflowClone.toJSON()));
+        for (InputDataObjectType inputDataType : inputDataTypes) {
+            workflowModel.addToWorkflowInputs(inputDataType);
+        }
+        for (OutputDataObjectType outputDataType : outputDataTypes) {
+            workflowModel.addToWorkflowOutputs(outputDataType);
+        }
+        workflowModel.setTemplateId(airavataClient.registerWorkflow(gatewayId, workflowModel));
         // Use topic as a base of workflow instance ID so that the monitor can
         // find it.
         Project project = new Project();
         project.setName("project1");
         project.setOwner(thriftClientData.getUsername());
         project.setProjectID(airavataClient.createProject(gatewayId, project));
-        final List<InputNode> inputNodes = GraphUtil.getInputNodes(this.workflow.getGraph());
         final Experiment experiment = new Experiment();
-        experiment.setApplicationId(w.getTemplateId());
+        experiment.setApplicationId(workflowModel.getTemplateId());
         experiment.setName(instanceName);
         experiment.setProjectID(project.getProjectID());
         experiment.setUserName(thriftClientData.getUsername());
-        for (int i = 0; i < inputNodes.size(); i++) {
-            InputNode inputNode = inputNodes.get(i);
-            XBayaTextField parameterTextField = this.parameterTextFields.get(i);
-            inputNode.getID();
-            String value = parameterTextField.getText();
-//            inputNode.setDefaultValue(value);
-            InputDataObjectType elem = new InputDataObjectType();
-            elem.setName(inputNode.getID());
-            elem.setType(inputNode.getDataType());
-            elem.setValue(value);
-            elem.setApplicationArgument(inputNode.getApplicationArgument());
-            elem.setInputOrder(inputNode.getInputOrder());
-
-			experiment.addToExperimentInputs(elem );
+        for (InputDataObjectType inputDataType : inputDataTypes) {
+            experiment.addToExperimentInputs(inputDataType);
         }
-        final List<OutputNode> outputNodes = GraphUtil.getOutputNodes(this.workflow.getGraph());
-        OutputDataObjectType outputDataObjectType = null;
-        for (OutputNode outputNode : outputNodes) {
-            outputDataObjectType = new OutputDataObjectType();
-            outputDataObjectType.setName(outputNode.getName());
-            outputDataObjectType.setType(DataType.STRING);
-            experiment.addToExperimentOutputs(outputDataObjectType);
+        for (OutputDataObjectType outputDataType : outputDataTypes) {
+            experiment.addToExperimentOutputs(outputDataType);
         }
         // Add scheduling configurations
         if (host != null && host.getSelectedIndex() >= 0) {
@@ -379,10 +391,17 @@ public class WorkflowInterpreterLaunchWindow {
             logger.error("Error while subscribing with experiment Id : " + experiment.getExperimentID(), e);
         }
         airavataClient.launchExperiment(experiment.getExperimentID(), token.getText());
+
+        clean();
         hide();
     }
-    
-	private OrchestratorService.Client getOrchestratorClient() {
+
+    private void clean() {
+        this.instanceNameTextField.setText("");
+        this.token.setText("");
+    }
+
+    private OrchestratorService.Client getOrchestratorClient() {
 		final int serverPort = Integer.parseInt(ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ORCHESTRATOR_SERVER_PORT,"8940"));
         final String serverHost = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ORCHESTRATOR_SERVER_HOST, null);
         try {

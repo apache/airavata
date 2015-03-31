@@ -208,4 +208,25 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
         }
         return false;
     }
+
+    @Override
+    public void updateWorkflowOutputs(String workflowTemplateId, List<OutputDataObjectType> workflowOutputs) throws AppCatalogException {
+        WorkflowResource resource = new WorkflowResource();
+        WorkflowResource existingWF = (WorkflowResource)resource.get(workflowTemplateId);
+        if (workflowOutputs != null && workflowOutputs.size() != 0) {
+            for (OutputDataObjectType output : workflowOutputs) {
+                WorkflowOutputResource outputResource = new WorkflowOutputResource();
+                Map<String, String> ids = new HashMap<String, String>();
+                ids.put(AbstractResource.WFOutputConstants.WF_TEMPLATE_ID, existingWF.getWfTemplateId());
+                ids.put(AbstractResource.WFOutputConstants.OUTPUT_KEY, output.getName());
+                WorkflowOutputResource existingOutput = (WorkflowOutputResource) outputResource.get(ids);
+                existingOutput.setWorkflowResource(existingWF);
+                existingOutput.setOutputKey(output.getName());
+                existingOutput.setOutputVal(output.getValue());
+                existingOutput.setWfTemplateId(existingWF.getWfTemplateId());
+                existingOutput.setDataType(output.getType().toString());
+                existingOutput.save();
+            }
+        }
+    }
 }
