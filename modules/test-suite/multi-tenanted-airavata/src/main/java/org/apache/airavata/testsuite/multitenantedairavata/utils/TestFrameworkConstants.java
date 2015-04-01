@@ -32,6 +32,8 @@ public class TestFrameworkConstants {
         public static final String CS_JBDC_DRIVER = "credential.store.jdbc.driver";
         public static final String CS_DB_USERNAME = "credential.store.jdbc.user";
         public static final String CS_DB_PWD = "credential.store.jdbc.password";
+        public static final String RABBIT_BROKER_URL = "rabbitmq.broker.url";
+        public static final String RABBIT_EXCHANGE_NAME = "rabbitmq.exchange.name";
     }
 
     public static final class FrameworkPropertiesConstants {
@@ -81,6 +83,14 @@ public class TestFrameworkConstants {
         public static final String STAMPEDE_RESOURCE_NAME = "stampede.tacc.xsede.org";
         public static final String TRESTLES_RESOURCE_NAME = "trestles.sdsc.xsede.org";
         public static final String BR2_RESOURCE_NAME = "bigred2.uits.iu.edu";
+
+
+        public static final String AMBER_HEAT_RST_LOCATION = "02_Heat.rst_location";
+        public static final String AMBER_PROD_IN_LOCATION = "03_Prod.in_location";
+        public static final String AMBER_PRMTOP_LOCATION = "prmtop_location";
+
+
+
     }
 
     public static final class CredentialStoreConstants {
