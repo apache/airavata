@@ -72,6 +72,7 @@ public class RabbitMQTaskLaunchPublisher implements Publisher{
             }
             byte[] messageBody = ThriftUtils.serializeThriftObject(message);
             rabbitMQProducer.sendToWorkerQueue(messageBody, routingKey);
+            log.info("Successfully published to launch queue ...");
         } catch (TException e) {
             String msg = "Error while deserializing the object";
             log.error(msg, e);
