@@ -47,8 +47,6 @@ public class GfacInternalStatusUpdator implements AbstractActivityListener, Watc
 
     private static Integer mutex = -1;
 
-    private RabbitMQTaskLaunchConsumer consumer;
-
     @Subscribe
     public void updateZK(GfacExperimentStateChangeRequest statusChangeRequest) throws Exception {
         logger.info("Gfac internal state changed to: " + statusChangeRequest.getState().toString());
@@ -94,22 +92,10 @@ public class GfacInternalStatusUpdator implements AbstractActivityListener, Watc
             case COMPLETED:
                 logger.info("Experiment Completed, So removing the ZK entry for the experiment" + monitorID.getExperimentID());
                 logger.info("Zookeeper experiment Path: " + experimentPath);
-                if (ServerSettings.isGFacPassiveMode()) {
-                    consumer.sendAck(GFacUtils.getDeliveryTag(statusChangeRequest.getMonitorID().getExperimentID(),
-                            monitorID.getTaskID(), zk, experimentNode, ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME)));
-                }
-                ZKUtil.deleteRecursive(zk,experimentPath+GFacUtils.DELIVERY_TAG_POSTFIX);
-                ZKUtil.deleteRecursive(zk, experimentPath);
                 break;
             case FAILED:
                 logger.info("Experiment Failed, So removing the ZK entry for the experiment" + monitorID.getExperimentID());
                 logger.info("Zookeeper experiment Path: " + experimentPath);
-                if (ServerSettings.isGFacPassiveMode()) {
-                    consumer.sendAck(GFacUtils.getDeliveryTag(statusChangeRequest.getMonitorID().getExperimentID(),
-                            monitorID.getTaskID(), zk, experimentNode, ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME)));
-                }
-                ZKUtil.deleteRecursive(zk,experimentPath+GFacUtils.DELIVERY_TAG_POSTFIX);
-                ZKUtil.deleteRecursive(zk, experimentPath);
                 break;
             default:
         }
@@ -119,9 +105,6 @@ public class GfacInternalStatusUpdator implements AbstractActivityListener, Watc
         for (Object configuration : configurations) {
             if (configuration instanceof ZooKeeper) {
                 this.zk = (ZooKeeper) configuration;
-            }
-            if (configuration instanceof RabbitMQTaskLaunchConsumer) {
-                this.consumer = (RabbitMQTaskLaunchConsumer) configuration;
             }
         }
     }

@@ -20,6 +20,7 @@
  */
 package org.apache.airavata.gfac.core.utils;
 
+import edu.uiuc.ncsa.security.delegation.services.Server;
 import org.airavata.appcatalog.cpi.AppCatalog;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
@@ -67,7 +68,6 @@ import java.util.*;
 
 public class GFacUtils {
 	private final static Logger log = LoggerFactory.getLogger(GFacUtils.class);
-	public static final String DELIVERY_TAG_POSTFIX = "-deliveryTag";
 
 	private GFacUtils() {
 	}
@@ -1051,10 +1051,9 @@ public class GFacUtils {
 													  String pickedChild, String tokenId) throws KeeperException,
 			InterruptedException {
 		String experimentPath = experimentNode + File.separator + pickedChild;
-		String newExpNode = experimentPath + File.separator + experimentID
-				+ "+" + taskID;
+		String newExpNode = experimentPath + File.separator + experimentID;
         Stat exists1 = zk.exists(newExpNode, false);
-        String experimentEntry = GFacUtils.findExperimentEntry(experimentID, taskID, zk);
+        String experimentEntry = GFacUtils.findExperimentEntry(experimentID, zk);
         String foundExperimentPath = null;
 		if (exists1 == null && experimentEntry == null) {  // this means this is a very new experiment
 			List<String> runningGfacNodeNames = AiravataZKUtils
@@ -1063,8 +1062,7 @@ public class GFacUtils {
 			for (String gfacServerNode : runningGfacNodeNames) {
 				if (!gfacServerNode.equals(pickedChild)) {
 					foundExperimentPath = experimentNode + File.separator
-							+ gfacServerNode + File.separator + experimentID
-							+ "+" + taskID;
+							+ gfacServerNode + File.separator + experimentID;
 					exists1 = zk.exists(foundExperimentPath, false);
 					if (exists1 != null) { // when the experiment is found we
 											// break the loop
@@ -1131,7 +1129,7 @@ public class GFacUtils {
 				log.info("Deleting experiment data: " + foundExperimentPath);
 				ZKUtil.deleteRecursive(zk, foundExperimentPath);
 			}
-		}else if(experimentEntry != null && GFacUtils.isCancelled(experimentID,taskID,zk) ){
+		}else if(experimentEntry != null && GFacUtils.isCancelled(experimentID,zk) ){
             // this happens when a cancel request comes to a differnt gfac node, in this case we do not move gfac experiment
             // node to gfac node specific location, because original request execution will fail with errors
             log.error("This experiment is already cancelled and its already executing the cancel operation so cannot submit again !");
@@ -1145,8 +1143,7 @@ public class GFacUtils {
             for (String gfacServerNode : runningGfacNodeNames) {
                 if (!gfacServerNode.equals(pickedChild)) {
                     foundExperimentPath = experimentNode + File.separator
-                            + gfacServerNode + File.separator + experimentID
-                            + "+" + taskID;
+                            + gfacServerNode + File.separator + experimentID;
                     break;
                 }
             }
@@ -1161,10 +1158,9 @@ public class GFacUtils {
 														  String pickedChild, String tokenId, long deliveryTag) throws KeeperException,
 			InterruptedException, ApplicationSettingsException {
 		String experimentPath = experimentNode + File.separator + pickedChild;
-		String newExpNode = experimentPath + File.separator + experimentID
-				+ "+" + taskID;
+		String newExpNode = experimentPath + File.separator + experimentID;
 		Stat exists1 = zk.exists(newExpNode, false);
-		String experimentEntry = GFacUtils.findExperimentEntry(experimentID, taskID, zk);
+		String experimentEntry = GFacUtils.findExperimentEntry(experimentID, zk);
 		if (exists1 != null) {
 			log.error("This request is wrong because its already running in the same instance");
 			return false;
@@ -1186,7 +1182,7 @@ public class GFacUtils {
 			String s1 = zk.create(newExpNode + File.separator + "operation", "submit".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
 					CreateMode.PERSISTENT);
 			zk.exists(s1, true);// we want to know when this node get deleted
-			String s2 = zk.create(newExpNode + DELIVERY_TAG_POSTFIX, longToBytes(deliveryTag), ZooDefs.Ids.OPEN_ACL_UNSAFE,  // here we store the value of delivery message
+			String s2 = zk.create(newExpNode + AiravataZKUtils.DELIVERY_TAG_POSTFIX, longToBytes(deliveryTag), ZooDefs.Ids.OPEN_ACL_UNSAFE,  // here we store the value of delivery message
 					CreateMode.PERSISTENT);
 		} else {
 			log.error("ExperimentID: " + experimentID + " taskID: " + taskID
@@ -1237,16 +1233,14 @@ public class GFacUtils {
 	 * @throws KeeperException
 	 * @throws InterruptedException
 	 */
-    public static String findExperimentEntry(String experimentID,
-                                                String taskID, ZooKeeper zk
+    public static String findExperimentEntry(String experimentID, ZooKeeper zk
                                                 ) throws KeeperException,
             InterruptedException {
         String experimentNode = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
         List<String> children = zk.getChildren(experimentNode, false);
         for(String pickedChild:children) {
             String experimentPath = experimentNode + File.separator + pickedChild;
-            String newExpNode = experimentPath + File.separator + experimentID
-                    + "+" + taskID;
+            String newExpNode = experimentPath + File.separator + experimentID;
             Stat exists = zk.exists(newExpNode, false);
             if(exists == null){
                 continue;
@@ -1257,9 +1251,36 @@ public class GFacUtils {
         return null;
     }
 
+	/**
+	 * This will return a value if the server is down because we iterate through exisiting experiment nodes, not
+	 * through gfac-server nodes
+	 * @param experimentID
+	 * @param zk
+	 * @return
+	 * @throws KeeperException
+	 * @throws InterruptedException
+	 */
+	public static String findExperimentEntryPassive(String experimentID, ZooKeeper zk
+	) throws KeeperException,
+			InterruptedException {
+		String experimentNode = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
+		List<String> children = zk.getChildren(experimentNode, false);
+		for(String pickedChild:children) {
+			String experimentPath = experimentNode + File.separator + pickedChild;
+			String newExpNode = experimentPath + File.separator + experimentID;
+			Stat exists = zk.exists(newExpNode, false);
+			if(exists == null){
+				continue;
+			}else{
+				return newExpNode;
+			}
+		}
+		return null;
+	}
+
     public static void setExperimentCancel(String experimentId,String taskId,ZooKeeper zk)throws KeeperException,
             InterruptedException {
-        String experimentEntry = GFacUtils.findExperimentEntry(experimentId, taskId, zk);
+        String experimentEntry = GFacUtils.findExperimentEntry(experimentId, zk);
         if(experimentEntry == null){
             log.error("Cannot find the experiment Entry, so cancel operation cannot be performed !!!");
         }else {
@@ -1273,11 +1294,11 @@ public class GFacUtils {
         }
 
     }
-    public static boolean isCancelled(String experimentID,
-                                             String taskID, ZooKeeper zk
+    public static boolean isCancelled(String experimentID, ZooKeeper zk
     ) throws KeeperException,
             InterruptedException {
-        String experimentEntry = GFacUtils.findExperimentEntry(experimentID, taskID, zk);
+		String experimentEntry = GFacUtils.findExperimentEntry(experimentID, zk);
+
         if(experimentEntry == null){
             return false;
         }else {
@@ -1311,18 +1332,6 @@ public class GFacUtils {
 		}
 	}
 
-	public static long getDeliveryTag(String experimentID,
-									  String taskID, ZooKeeper zk, String experimentNode,
-									  String pickedChild) throws KeeperException, InterruptedException,GFacException {
-		String experimentPath = experimentNode + File.separator + pickedChild;
-		String deliveryTagPath = experimentPath + File.separator + experimentID
-				+ "+" + taskID + DELIVERY_TAG_POSTFIX;
-		Stat exists = zk.exists(deliveryTagPath, false);
-		if(exists==null) {
-			throw new GFacException("Cannot find delivery Tag for this experiment");
-		}
-		return bytesToLong(zk.getData(deliveryTagPath, false, exists));
-	}
 	public static String getPluginData(JobExecutionContext jobExecutionContext,
 			String className) throws ApplicationSettingsException,
 			KeeperException, InterruptedException {

@@ -49,6 +49,8 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
     private Publisher publisher;
 
 
+
+
     public Registry getAiravataRegistry() {
         return airavataRegistry;
     }
