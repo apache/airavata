@@ -89,7 +89,7 @@ public class GridPullMonitorHandler extends ThreadedHandler implements Watcher{
         try {
             ZooKeeper zk = jobExecutionContext.getZk();
             try {
-                String experimentEntry = GFacUtils.findExperimentEntry(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID(), zk);
+                String experimentEntry = GFacUtils.findExperimentEntry(jobExecutionContext.getExperimentID(), zk);
                 String path = experimentEntry + File.separator + "operation";
                 Stat exists = zk.exists(path, this);
                 if (exists != null) {

@@ -22,12 +22,13 @@ package org.apache.airavata.api.server.listener;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.airavata.api.server.util.DataModelUtils;
-import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.MonitorPublisher;
-import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.*;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.messaging.core.impl.RabbitMQTaskLaunchConsumer;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.messaging.event.WorkflowNodeStatusChangeEvent;
@@ -36,17 +37,28 @@ import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.ExperimentState;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryModelType;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.ZKUtil;
+import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.Calendar;
 
 public class AiravataExperimentStatusUpdator implements AbstractActivityListener {
     private final static Logger logger = LoggerFactory.getLogger(AiravataExperimentStatusUpdator.class);
 
     private Registry airavataRegistry;
+
     private MonitorPublisher monitorPublisher;
+
     private Publisher publisher;
+
+    private ZooKeeper zk;
+
+    private RabbitMQTaskLaunchConsumer consumer;
+
 
     public Registry getAiravataRegistry() {
         return airavataRegistry;
@@ -61,7 +73,9 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
 		try {
 			boolean updateExperimentStatus=true;
 			ExecutionType executionType = DataModelUtils.getExecutionType((Experiment) airavataRegistry.get(RegistryModelType.EXPERIMENT, nodeStatus.getWorkflowNodeIdentity().getExperimentId()));
-			
+            String experimentNode = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
+            String experimentPath = experimentNode + File.separator + ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME)
+                    + File.separator + nodeStatus.getWorkflowNodeIdentity().getExperimentId();
 	        ExperimentState state = ExperimentState.UNKNOWN;
 	        switch (nodeStatus.getState()) {
 	            case CANCELED:
@@ -73,19 +87,23 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
 	            	}else{
 	                state = ExperimentState.EXECUTING; updateExperimentStatus = true;
 	                }
+
+                    cleanup(nodeStatus, experimentNode, experimentPath);
 	                break;
 	            case INVOKED:
 	                state = ExperimentState.LAUNCHED; updateExperimentStatus = false;
 	                break;
 	            case FAILED:
 	                state = ExperimentState.FAILED; updateExperimentStatus = true;
+                    cleanup(nodeStatus,experimentNode,experimentPath);
 	                break;
 	            case EXECUTING:
 	                state = ExperimentState.EXECUTING; updateExperimentStatus = true;
 	                break;
 	            case CANCELING:
 	                state = ExperimentState.CANCELING; updateExperimentStatus = true;
-	                break;
+                    cleanup(nodeStatus,experimentNode,experimentPath);
+                    break;
 	            default:
 	                return;
 	        }
@@ -109,7 +127,15 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
             throw new Exception("Error persisting experiment status..", e);
 		}
     }
-    
+
+    private void cleanup(WorkflowNodeStatusChangeEvent nodeStatus, String experimentNode, String experimentPath) throws ApplicationSettingsException, KeeperException, InterruptedException, AiravataException {
+        if (ServerSettings.isGFacPassiveMode()) {
+            consumer.sendAck(AiravataZKUtils.getDeliveryTag(nodeStatus.getWorkflowNodeIdentity().getExperimentId(), zk, experimentNode, ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME)));
+        }
+        ZKUtil.deleteRecursive(zk, experimentPath + AiravataZKUtils.DELIVERY_TAG_POSTFIX);
+        ZKUtil.deleteRecursive(zk, experimentPath);
+    }
+
     public  ExperimentState updateExperimentStatus(String experimentId, ExperimentState state) throws Exception {
     	Experiment details = (Experiment)airavataRegistry.get(RegistryModelType.EXPERIMENT, experimentId);
         if(details == null) {
@@ -140,7 +166,12 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
 				this.monitorPublisher=(MonitorPublisher) configuration;
 			} else if (configuration instanceof Publisher){
                 this.publisher=(Publisher) configuration;
+            }else if (configuration instanceof RabbitMQTaskLaunchConsumer) {
+                this.consumer = (RabbitMQTaskLaunchConsumer) configuration;
+            }else if (configuration instanceof ZooKeeper) {
+                this.zk = (ZooKeeper) configuration;
             }
+
         }
 	}
 }
