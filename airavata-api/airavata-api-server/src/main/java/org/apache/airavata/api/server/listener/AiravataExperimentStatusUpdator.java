@@ -27,6 +27,7 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.*;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
 import org.apache.airavata.messaging.core.MessageContext;
+import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.impl.RabbitMQTaskLaunchConsumer;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
@@ -128,9 +129,20 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
 		}
     }
 
-    private void cleanup(WorkflowNodeStatusChangeEvent nodeStatus, String experimentNode, String experimentPath) throws ApplicationSettingsException, KeeperException, InterruptedException, AiravataException {
+    private void cleanup(WorkflowNodeStatusChangeEvent nodeStatus, String experimentNode, String experimentPath) throws KeeperException, InterruptedException, AiravataException {
+        int count =0;
+        long deliveryTag = AiravataZKUtils.getDeliveryTag(nodeStatus.getWorkflowNodeIdentity().getExperimentId(), zk, experimentNode, ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME));
         if (ServerSettings.isGFacPassiveMode()) {
-            consumer.sendAck(AiravataZKUtils.getDeliveryTag(nodeStatus.getWorkflowNodeIdentity().getExperimentId(), zk, experimentNode, ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME)));
+            while(!consumer.isOpen() && count<3){
+                try {
+                    consumer.reconnect();
+                } catch (AiravataException e) {
+                    count++;
+                }
+            }
+            if(consumer.isOpen()){
+                consumer.sendAck(deliveryTag);
+            }
         }
         ZKUtil.deleteRecursive(zk, experimentPath + AiravataZKUtils.DELIVERY_TAG_POSTFIX);
         ZKUtil.deleteRecursive(zk, experimentPath);
