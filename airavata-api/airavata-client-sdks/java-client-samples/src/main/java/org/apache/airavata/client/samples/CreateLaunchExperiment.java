@@ -58,7 +58,7 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_GATEWAY = "php_reference_gateway";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_11afd5ec-e04e-45c9-843b-0c5b28a617f8";
+    private static String echoAppId = "Echo_fcac7076-e350-4dfb-a6eb-73e2d648fc60";
     private static String mpiAppId = "HelloMPI_bfd56d58-6085-4b7f-89fc-646576830518";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
     private static String amberAppId = "Amber_aa083c86-4680-4002-b3ef-fad93c181926";
