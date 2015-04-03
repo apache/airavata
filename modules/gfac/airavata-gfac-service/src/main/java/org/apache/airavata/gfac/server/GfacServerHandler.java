@@ -60,6 +60,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.locks.Lock;
 
@@ -92,8 +93,6 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
 
     private String airavataServerHostPort;
 
-    private List<Future> inHandlerFutures;
-
 
     private BlockingQueue<TaskSubmitEvent> taskSubmitEvents;
 
@@ -123,8 +122,6 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                 rabbitMQTaskLaunchConsumer.listen(new TaskLaunchMessageHandler());
             }
             BetterGfacImpl.startStatusUpdators(registry, zk, publisher, rabbitMQTaskLaunchConsumer);
-            inHandlerFutures = new ArrayList<Future>();
-
         } catch (ApplicationSettingsException e) {
             logger.error("Error initialising GFAC", e);
             throw new Exception("Error initialising GFAC", e);
@@ -245,9 +242,15 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
         InputHandlerWorker inputHandlerWorker = new InputHandlerWorker(gfac, experimentId, taskId, gatewayId);
 //        try {
 //            if( gfac.submitJob(experimentId, taskId, gatewayId)){
-        logger.debugId(experimentId, "Submitted jog to the Gfac Implementation, experiment {}, task {}, gateway " +
+        logger.debugId(experimentId, "Submitted job to the Gfac Implementation, experiment {}, task {}, gateway " +
                 "{}", experimentId, taskId, gatewayId);
-        inHandlerFutures.add(GFacThreadPoolExecutor.getFixedThreadPool().submit(inputHandlerWorker));
+        try {
+            GFacThreadPoolExecutor.getFixedThreadPool().submit(inputHandlerWorker).get();
+        } catch (InterruptedException e) {
+            logger.error(e.getMessage(), e);
+        } catch (ExecutionException e) {
+            logger.error(e.getMessage(), e);
+        }
         // we immediately return when we have a threadpool
         return true;
     }

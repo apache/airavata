@@ -93,7 +93,7 @@ public class TokenizedSSHAuthInfo implements SSHPublicKeyFileAuthentication {
                 try {
                     gssCredentials = getDefaultCredentials();
                 } catch (Exception e) {
-                    throw new SecurityException("Error retrieving my proxy using username password");
+                    throw new SecurityException("Error retrieving my proxy using username password",e.getCause());
                 }
             }
             // if still null, throw an exception
