@@ -97,10 +97,10 @@ public class ApplicationRegister {
             // add amber deployment
             List<String> moduleLoadCMDs = new ArrayList<String>();
             moduleLoadCMDs.add("module load amber");
-            String amberStampedeAppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(),
-                    createApplicationDeployment(amberModuleId, stampedeResourceId,
-                            "/opt/apps/intel13/mvapich2_1_9/amber/12.0/bin/sander.MPI -O", ApplicationParallelismType.MPI,
-                            TestFrameworkConstants.AppcatalogConstants.AMBER_DESCRIPTION, moduleLoadCMDs, null, null));
+            ApplicationDeploymentDescription amberStampedeDeployment = createApplicationDeployment(amberModuleId, stampedeResourceId,
+                    "/opt/apps/intel13/mvapich2_1_9/amber/12.0/bin/sander.MPI -O", ApplicationParallelismType.MPI,
+                    TestFrameworkConstants.AppcatalogConstants.AMBER_DESCRIPTION, moduleLoadCMDs, null, null);
+            String amberStampedeAppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(),amberStampedeDeployment);
 
             String amberTrestlesAppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(),
                     createApplicationDeployment(amberModuleId, trestlesResourceId,

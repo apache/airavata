@@ -46,11 +46,12 @@ public class TestFrameworkConstants {
         public static final String SSH_PRIKEY_LOCATION = "ssh.private.key.location";
         public static final String SSH_PWD = "ssh.password";
         public static final String SSH_USERNAME = "ssh.username";
+        public static final String TOKEN_WRITE_LOCATION = "token.file.location";
     }
 
     public static final class GatewayConstants {
-        public static final String GENERIC_GATEWAY_NAME = "testGateway";
-        public static final String GENERIC_GATEWAY_DOMAIN = ".airavata.org";
+        public static final String GENERIC_GATEWAY_NAME = "generic.gateway.name";
+        public static final String GENERIC_GATEWAY_DOMAIN = "generic.gateway.domain";
     }
 
     public static final class AppcatalogConstants {
@@ -94,6 +95,7 @@ public class TestFrameworkConstants {
     }
 
     public static final class CredentialStoreConstants {
+        public static final String TOKEN_FILE_NAME = "testFrameworkTokens";
 
     }
 

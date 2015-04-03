@@ -21,24 +21,118 @@
 
 package org.apache.airavata.testsuite.multitenantedairavata;
 
+import org.apache.airavata.testsuite.multitenantedairavata.utils.PropertyFileType;
+import org.apache.airavata.testsuite.multitenantedairavata.utils.PropertyReader;
+import org.apache.airavata.testsuite.multitenantedairavata.utils.TestFrameworkConstants;
+import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
+
 public class FrameworkBootstrapping {
     private final static Logger logger = LoggerFactory.getLogger(FrameworkBootstrapping.class);
+    private static boolean runAll = false;
+    private static boolean regApps = false;
+    private static boolean expExec = false;
+    private static PropertyReader propertyReader;
+    private static Map<String, String> tokens;
+    private static ExperimentExecution experimentExecution;
 
     public static void main(String[] args) {
+        parseArguments(args);
         try {
             FrameworkSetup setup = FrameworkSetup.getInstance();
-            setup.getGatewayRegister().createGateways();
-            logger.info("Gateways created...");
-            setup.getGatewayRegister().registerSSHKeys();
-            logger.info("Registered SSH keys to each gateway...");
-            setup.getApplicationRegister().addApplications();
-            logger.info("Applications registered for each each gateway...");
+            propertyReader = new PropertyReader();
+
+            if (runAll){
+                setup.getGatewayRegister().createGateways();
+                logger.info("Gateways created...");
+                setup.getGatewayRegister().registerSSHKeys();
+                logger.info("Registered SSH keys to each gateway...");
+                tokens = readTokens();
+                setup.getApplicationRegister().addApplications();
+                logger.info("Applications registered for each each gateway...");
+                experimentExecution = new ExperimentExecution(setup.getAiravata(), tokens);
+                experimentExecution.createEchoExperiment();
+                experimentExecution.createAmberExperiment();
+                experimentExecution.launchExperiments();
+                experimentExecution.monitorExperiments();
+            }else if (regApps){
+                setup.getGatewayRegister().createGateways();
+                logger.info("Gateways created...");
+                setup.getGatewayRegister().registerSSHKeys();
+                logger.info("Registered SSH keys to each gateway...");
+                tokens = readTokens();
+                setup.getComputeResourceRegister().addComputeResources();
+                setup.getApplicationRegister().addApplications();
+                logger.info("Applications registered for each each gateway...");
+            }else if (expExec){
+                tokens = readTokens();
+                experimentExecution = new ExperimentExecution(setup.getAiravata(), tokens);
+                experimentExecution.createEchoExperiment();
+                experimentExecution.createAmberExperiment();
+                experimentExecution.launchExperiments();
+                experimentExecution.monitorExperiments();
+            }
         } catch (Exception e) {
             logger.error("Error occured while set up", e);
         }
+    }
 
+    public static Map<String, String> readTokens () throws Exception{
+        Map<String, String> tokens = new HashMap<String, String>();
+        String fileLocation = propertyReader.readProperty(TestFrameworkConstants.FrameworkPropertiesConstants.TOKEN_WRITE_LOCATION, PropertyFileType.TEST_FRAMEWORK);
+        String fileName = TestFrameworkConstants.CredentialStoreConstants.TOKEN_FILE_NAME;
+        String path = fileLocation + File.separator + fileName;
+        File tokenFile = new File(path);
+        if (tokenFile.exists()){
+            FileInputStream fis = new FileInputStream(tokenFile);
+            //Construct BufferedReader from InputStreamReader
+            BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] strings = line.split(":");
+                tokens.put(strings[0], strings[1]);
+            }
+            br.close();
+        }else {
+            throw new Exception("Could not find token file.. Please run application registration step if you haven't run it");
+        }
+        return tokens;
+    }
+
+    public static void parseArguments(String[] args) {
+        try{
+            Options options = new Options();
+
+            options.addOption("regApps", false , "Gateway ID");
+            options.addOption("expExec", false, "Experiment ID");
+            options.addOption("a", false, "Do application registration and experiment execution together");
+
+            CommandLineParser parser = new PosixParser();
+            CommandLine cmd = parser.parse( options, args);
+            if (cmd.getOptions() == null || cmd.getOptions().length == 0){
+                logger.info("You have not specified any options. We assume you need to start from the scratch...");
+                runAll= true;
+            }
+            if (cmd.hasOption("regApps")){
+                logger.info("Register Applications only...");
+                regApps = true;
+            }else if (cmd.hasOption("expExec")){
+                logger.info("Execute Experiments only...");
+                expExec = true;
+            }else {
+                runAll = true;
+            }
+        } catch (ParseException e) {
+            logger.error("Error while reading command line parameters" , e);
+        }
     }
 }

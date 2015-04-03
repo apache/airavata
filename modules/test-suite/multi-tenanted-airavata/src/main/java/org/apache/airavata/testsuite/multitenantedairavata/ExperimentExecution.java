@@ -27,13 +27,16 @@ import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.messaging.core.MessagingConstants;
 import org.apache.airavata.messaging.core.impl.RabbitMQStatusConsumer;
-import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.error.AiravataClientException;
+import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.util.ExperimentModelUtil;
+import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.ExperimentState;
@@ -57,21 +60,62 @@ public class ExperimentExecution {
     private Map<String, String> experimentsWithTokens;
     private Map<String, String> experimentsWithGateway;
     private Map<String, String> csTokens;
-    private Map<String, String> appInterfaceMap;
-    private Map<String, String> projectsMap;
+    private Map<String, Map<String, String>> appInterfaceMap;
+    private Map<String, List<Project>> projectsMap;
     private PropertyReader propertyReader;
 
     public ExperimentExecution(Airavata.Client airavata,
-                               Map<String, String> tokenMap,
-                               Map<String, String> appInterfaces,
-                               Map<String, String> projectMap ) {
+                               Map<String, String> tokenMap ) {
         this.airavata = airavata;
         this.csTokens = tokenMap;
-        this.appInterfaceMap = appInterfaces;
+        this.appInterfaceMap = getApplicationMap(tokenMap);
         this.propertyReader = new PropertyReader();
-        this.projectsMap = projectMap;
+        this.projectsMap = getProjects(tokenMap);
         this.experimentsWithTokens = new HashMap<String, String>();
         this.experimentsWithGateway = new HashMap<String, String>();
+    }
+
+    protected Map<String, Map<String, String>> getApplicationMap (Map<String, String> tokenMap){
+        appInterfaceMap = new HashMap<String, Map<String, String>>();
+        try {
+            if (tokenMap != null && !tokenMap.isEmpty()){
+                for (String gatewayId : tokenMap.keySet()){
+                    Map<String, String> allApplicationInterfaceNames = airavata.getAllApplicationInterfaceNames(gatewayId);
+                    appInterfaceMap.put(gatewayId, allApplicationInterfaceNames);
+                }
+            }
+        } catch (AiravataSystemException e) {
+            e.printStackTrace();
+        } catch (InvalidRequestException e) {
+            e.printStackTrace();
+        } catch (AiravataClientException e) {
+            e.printStackTrace();
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+        return appInterfaceMap;
+    }
+
+    protected Map<String, List<Project>> getProjects (Map<String, String> tokenMap){
+        projectsMap = new HashMap<String, List<Project>>();
+        try {
+            if (tokenMap != null && !tokenMap.isEmpty()){
+                for (String gatewayId : tokenMap.keySet()){
+                    String userName = "testUser_" + gatewayId;
+                    List<Project> allUserProjects = airavata.getAllUserProjects(gatewayId, userName);
+                    projectsMap.put(gatewayId, allUserProjects);
+                }
+            }
+        } catch (AiravataSystemException e) {
+            e.printStackTrace();
+        } catch (InvalidRequestException e) {
+            e.printStackTrace();
+        } catch (AiravataClientException e) {
+            e.printStackTrace();
+        } catch (TException e) {
+            e.printStackTrace();
+        }
+        return projectsMap;
     }
 
     public void launchExperiments () throws Exception {
@@ -155,7 +199,7 @@ public class ExperimentExecution {
         try {
             for (String gatewayId : csTokens.keySet()){
                 String token = csTokens.get(gatewayId);
-                Map<String, String> appsWithNames = generateAppsPerGateway(gatewayId);
+                Map<String, String> appsWithNames = appInterfaceMap.get(gatewayId);
                 for (String appId : appsWithNames.keySet()){
                     List<InputDataObjectType> applicationInputs = airavata.getApplicationInputs(appId);
                     List<OutputDataObjectType> appOutputs = airavata.getApplicationOutputs(appId);
@@ -175,9 +219,13 @@ public class ExperimentExecution {
                             }
                         }
 
-                        String projectId = getProjectIdForGateway(gatewayId);
+                        List<Project> projectsPerGateway = projectsMap.get(gatewayId);
+                        String projectID = null;
+                        if (projectsPerGateway != null && !projectsPerGateway.isEmpty()){
+                            projectID = projectsPerGateway.get(0).getProjectID();
+                        }
                         Experiment simpleExperiment =
-                                ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "Amber Experiment", "Amber Experiment run", appId, applicationInputs);
+                                ExperimentModelUtil.createSimpleExperiment(projectID, "admin", "Amber Experiment", "Amber Experiment run", appId, applicationInputs);
                         simpleExperiment.setExperimentOutputs(appOutputs);
                         String experimentId;
                         Map<String, String> computeResources = airavata.getAvailableAppInterfaceComputeResources(appId);
@@ -226,39 +274,11 @@ public class ExperimentExecution {
         }
     }
 
-    public String getProjectIdForGateway (String gatewayId){
-        for (String projectId : projectsMap.keySet()){
-            String gateway = projectsMap.get(projectId);
-            if (gateway.equals(gatewayId)){
-                return projectId;
-            }
-        }
-        return null;
-    }
-
-    public Map<String, String> generateAppsPerGateway (String gatewayId) throws Exception {
-        Map<String, String> appWithNames = new HashMap<String, String>();
-        try {
-            for (String appId : appInterfaceMap.keySet()){
-                String gateway = appInterfaceMap.get(appId);
-                ApplicationInterfaceDescription applicationInterface = airavata.getApplicationInterface(appId);
-                if (gateway.equals(gatewayId)){
-                    appWithNames.put(appId, applicationInterface.getApplicationName());
-                }
-            }
-        }catch (Exception e){
-            logger.error("Error while getting application interface", e);
-            throw new Exception("Error while getting application interface", e);
-        }
-
-        return appWithNames;
-    }
-
     public void createEchoExperiment () throws Exception{
         try {
             for (String gatewayId : csTokens.keySet()) {
                 String token = csTokens.get(gatewayId);
-                Map<String, String> appsWithNames = generateAppsPerGateway(gatewayId);
+                Map<String, String> appsWithNames = appInterfaceMap.get(gatewayId);
                 for (String appId : appsWithNames.keySet()) {
                     List<InputDataObjectType> applicationInputs = airavata.getApplicationInputs(appId);
                     List<OutputDataObjectType> appOutputs = airavata.getApplicationOutputs(appId);
@@ -270,9 +290,13 @@ public class ExperimentExecution {
                             }
                         }
 
-                        String projectId = getProjectIdForGateway(gatewayId);
+                        List<Project> projectsPerGateway = projectsMap.get(gatewayId);
+                        String projectID = null;
+                        if (projectsPerGateway != null && !projectsPerGateway.isEmpty()){
+                            projectID = projectsPerGateway.get(0).getProjectID();
+                        }
                         Experiment simpleExperiment =
-                                ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "Echo Experiment", "Echo Experiment run", appId, applicationInputs);
+                                ExperimentModelUtil.createSimpleExperiment(projectID, "admin", "Echo Experiment", "Echo Experiment run", appId, applicationInputs);
                         simpleExperiment.setExperimentOutputs(appOutputs);
                         String experimentId;
                         Map<String, String> computeResources = airavata.getAvailableAppInterfaceComputeResources(appId);
