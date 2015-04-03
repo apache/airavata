@@ -239,7 +239,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
     public boolean submitJob(String experimentId, String taskId, String gatewayId) throws TException {
         requestCount++;
         logger.info("-----------------------------------------------------" + requestCount+"-----------------------------------------------------");
-        logger.infoId(experimentId, "GFac Received submit jog request for the Experiment: {} TaskId: {}", experimentId, taskId);
+        logger.infoId(experimentId, "GFac Received submit job request for the Experiment: {} TaskId: {}", experimentId, taskId);
         GFac gfac = getGfac();
         InputHandlerWorker inputHandlerWorker = new InputHandlerWorker(gfac, experimentId, taskId, gatewayId);
 //        try {

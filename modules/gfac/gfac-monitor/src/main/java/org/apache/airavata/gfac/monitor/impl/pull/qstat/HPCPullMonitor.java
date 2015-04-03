@@ -195,6 +195,8 @@ public class HPCPullMonitor extends PullMonitor {
                                 logger.info("Job cancelled: marking the Job as ************CANCELLED************ experiment {}, task {}, job name {} .",
                                         iMonitorID.getExperimentID(), iMonitorID.getTaskID(), iMonitorID.getJobName());
                                 sendNotification(iMonitorID);
+                                logger.info("To avoid timing issues we sleep sometime and try to retrieve output files");
+                                Thread.sleep(10000);
                                 GFacThreadPoolExecutor.getFixedThreadPool().submit(new OutHandlerWorker(gfac, iMonitorID, publisher));
                                 break;
                             }

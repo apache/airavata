@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.common.utils;
 
+import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.KeeperException;
@@ -45,18 +46,20 @@ public class AiravataZKUtils {
 
     public static final String ZK_EXPERIMENT_STATE_NODE = "state";
 
+    public static final String DELIVERY_TAG_POSTFIX = "-deliveryTag";
+
     public static String getExpZnodePath(String experimentId, String taskId) throws ApplicationSettingsException {
         return ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE) +
                 File.separator +
                 ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME) + File.separator
-                + experimentId + "+" + taskId;
+                + experimentId;
     }
 
     public static String getExpZnodeHandlerPath(String experimentId, String taskId, String className) throws ApplicationSettingsException {
         return ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE) +
                 File.separator +
                 ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME) + File.separator
-                + experimentId + "+" + taskId + File.separator + className;
+                + experimentId + File.separator + className;
     }
 
     public static String getZKhostPort() throws ApplicationSettingsException {
@@ -194,6 +197,30 @@ public class AiravataZKUtils {
         byte[] bytes = new byte[8];
         ByteBuffer.wrap(bytes).putDouble(value);
         return bytes;
+    }
+
+    public static long getDeliveryTag(String experimentID, ZooKeeper zk, String experimentNode,
+                                      String pickedChild) throws KeeperException, InterruptedException,AiravataException {
+        String experimentPath = experimentNode + File.separator + pickedChild;
+        String deliveryTagPath = experimentPath + File.separator + experimentID
+                + DELIVERY_TAG_POSTFIX;
+        Stat exists = zk.exists(deliveryTagPath, false);
+        if(exists==null) {
+            throw new AiravataException("Cannot find delivery Tag for this experiment");
+        }
+        return bytesToLong(zk.getData(deliveryTagPath, false, exists));
+    }
+    public static byte[] longToBytes(long x) {
+        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+        buffer.putLong(x);
+        return buffer.array();
+    }
+
+    public static long bytesToLong(byte[] bytes) {
+        ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
+        buffer.put(bytes);
+        buffer.flip();//need flip
+        return buffer.getLong();
     }
 
     public static double toDouble(byte[] bytes) {
