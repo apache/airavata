@@ -675,7 +675,7 @@ public class GSISSHAbstractCluster implements Cluster {
         String[] list = command.split(File.separator);
         command = list[list.length - 1];
         // We are checking for stderr containing the command issued. Thus ignores the verbose logs in stderr.
-        if (stdErrorString != null && stdErrorString.contains(command) && !stdErrorString.contains("Warning")) {
+        if (stdErrorString != null && stdErrorString.contains(command.trim()) && !stdErrorString.contains("Warning")) {
             log.error("Standard Error output : " + stdErrorString);
             throw new SSHApiException(errorMsg + "\n\r StandardOutput: "+ stdOutputString + "\n\r StandardError: "+ stdErrorString);
         }else if(stdOutputString.contains("error")){

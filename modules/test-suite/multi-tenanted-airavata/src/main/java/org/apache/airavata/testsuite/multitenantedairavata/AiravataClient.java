@@ -45,7 +45,7 @@ public class AiravataClient {
         propertyReader = new PropertyReader();
     }
 
-    public Airavata.Client getAiravataClient(){
+    public Airavata.Client getAiravataClient() throws Exception{
         try {
             String airavataHost = propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.THRIFT_SERVER_HOST, PropertyFileType.AIRAVATA_CLIENT);
             int airavataport = Integer.valueOf(propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.THRIFT_SERVER_PORT, PropertyFileType.AIRAVATA_CLIENT));
@@ -53,7 +53,7 @@ public class AiravataClient {
             return airavataClient;
         } catch (AiravataClientConnectException e) {
             logger.error("Error while creating airavata client instance", e);
+            throw new Exception("Error while creating airavata client instance", e);
         }
-        return null;
     }
 }

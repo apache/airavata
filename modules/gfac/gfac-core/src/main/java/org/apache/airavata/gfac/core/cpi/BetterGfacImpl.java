@@ -478,7 +478,7 @@ public class BetterGfacImpl implements GFac,Watcher {
         // We need to check whether this job is submitted as a part of a large workflow. If yes,
         // we need to setup workflow tracking listerner.
         try {
-            String experimentEntry = GFacUtils.findExperimentEntry(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID(), zk);
+            String experimentEntry = GFacUtils.findExperimentEntry(jobExecutionContext.getExperimentID(), zk);
             Stat exists = zk.exists(experimentEntry + File.separator + "operation", false);
             zk.getData(experimentEntry + File.separator + "operation", this, exists);
             int stateVal = GFacUtils.getZKExperimentStateValue(zk, jobExecutionContext);   // this is the original state came, if we query again it might be different,so we preserve this state in the environment
@@ -534,7 +534,7 @@ public class BetterGfacImpl implements GFac,Watcher {
         // we need to setup workflow tracking listener.
         try {
             // we cannot call GFacUtils.getZKExperimentStateValue because experiment might be running in some other node
-            String expPath = GFacUtils.findExperimentEntry(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID(), zk);
+            String expPath = GFacUtils.findExperimentEntry(jobExecutionContext.getExperimentID(), zk);
             int stateVal = GFacUtils.getZKExperimentStateValue(zk, expPath);   // this is the original state came, if we query again it might be different,so we preserve this state in the environment
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
                     , GfacExperimentState.ACCEPTED));                  // immediately we get the request we update the status

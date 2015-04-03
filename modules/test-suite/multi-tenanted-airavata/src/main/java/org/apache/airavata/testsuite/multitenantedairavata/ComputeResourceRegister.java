@@ -23,42 +23,92 @@ package org.apache.airavata.testsuite.multitenantedairavata;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.error.AiravataClientException;
+import org.apache.airavata.testsuite.multitenantedairavata.utils.PropertyFileType;
+import org.apache.airavata.testsuite.multitenantedairavata.utils.PropertyReader;
+import org.apache.airavata.testsuite.multitenantedairavata.utils.TestFrameworkConstants;
 import org.apache.thrift.TException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ComputeResourceRegister {
     private Airavata.Client airavata;
     private List<String> computeResourceIds;
+    private PropertyReader propertyReader;
+    private Map<String, String> loginNamesWithResourceMap;
+    private final static Logger logger = LoggerFactory.getLogger(ComputeResourceRegister.class);
 
-    public ComputeResourceRegister(Airavata.Client airavata) {
+    public ComputeResourceRegister(Airavata.Client airavata) throws Exception {
         this.airavata = airavata;
         computeResourceIds = new ArrayList<String>();
+        propertyReader = new PropertyReader();
+        loginNamesWithResourceMap = getLoginNamesMap();
+
     }
 
-    public void addComputeResources () throws TException {
-        // adding stampede
-        String stampedeResourceId = registerComputeHost("stampede.tacc.xsede.org", "TACC Stampede Cluster",
-                ResourceJobManagerType.SLURM, "push", "/usr/bin", SecurityProtocol.SSH_KEYS, 22, null);
-        System.out.println("Stampede Resource Id is " + stampedeResourceId);
+    public Map<String, String> getLoginNamesMap() throws Exception {
+        loginNamesWithResourceMap = new HashMap<String, String>();
+        List<String> loginNameList = new ArrayList<String>();
+        List<String> computerResources = new ArrayList<String>();
+        String loginNames = propertyReader.readProperty(TestFrameworkConstants.FrameworkPropertiesConstants.LOGIN_USERNAME_LIST, PropertyFileType.TEST_FRAMEWORK);
+        if (loginNames != null && !loginNames.isEmpty()){
+            String[] names = loginNames.split(",");
+            loginNameList = Arrays.asList(names);
+        }
+        String clist = propertyReader.readProperty(TestFrameworkConstants.FrameworkPropertiesConstants.COMPUTE_RESOURCE_LIST, PropertyFileType.TEST_FRAMEWORK);
+        if (clist != null && !clist.isEmpty()) {
+            String[] resources = clist.split(",");
+            computerResources = Arrays.asList(resources);
+        }
 
-        //Register Trestles
-        String trestlesResourceId = registerComputeHost("trestles.sdsc.xsede.org", "SDSC Trestles Cluster",
-                ResourceJobManagerType.PBS, "push", "/opt/torque/bin/", SecurityProtocol.SSH_KEYS, 22, null);
-        System.out.println("Trestles Resource Id is " + trestlesResourceId);
+        if (computerResources.size() == loginNameList.size()){
+            for (int i=0; i < computerResources.size(); i++){
+                loginNamesWithResourceMap.put(computerResources.get(i), loginNameList.get(i));
+            }
+        }else {
+           logger.error("Each compute resource should have a login user name. Please check whether you specified them correctly " +
+                   "in test-framework.properties files..");
+            throw new Exception("Each compute resource should have a login user name. Please check whether you specified them correctly " +
+                    "in test-framework.properties files..");
+        }
+        return loginNamesWithResourceMap;
+    }
 
-        //Register BigRedII
-        String bigredResourceId = registerComputeHost("bigred2.uits.iu.edu", "IU BigRed II Cluster",
-                ResourceJobManagerType.PBS, "push", "/opt/torque/torque-4.2.3.1/bin/", SecurityProtocol.SSH_KEYS, 22, "aprun -n");
-        System.out.println("BigredII Resource Id is " + bigredResourceId);
+    public void addComputeResources () throws Exception {
+        String stampedeResourceId = null;
+        String trestlesResourceId = null;
+        String bigredResourceId = null;
+        try {
+            for (String resourceName : loginNamesWithResourceMap.keySet()) {
+                if (resourceName.contains("stampede")) {
+                    // adding stampede
+                    stampedeResourceId = registerComputeHost(resourceName, "TACC Stampede Cluster",
+                            ResourceJobManagerType.SLURM, "push", "/usr/bin", SecurityProtocol.SSH_KEYS, 22, null);
+                    System.out.println("Stampede Resource Id is " + stampedeResourceId);
+                } else if (resourceName.contains("trestles")) {
+                    //Register Trestles
+                    trestlesResourceId = registerComputeHost("trestles.sdsc.xsede.org", "SDSC Trestles Cluster",
+                            ResourceJobManagerType.PBS, "push", "/opt/torque/bin/", SecurityProtocol.SSH_KEYS, 22, null);
+                    System.out.println("Trestles Resource Id is " + trestlesResourceId);
+                } else if (resourceName.contains("bigred2")) {
+                    //Register BigRedII
+                    bigredResourceId = registerComputeHost("bigred2.uits.iu.edu", "IU BigRed II Cluster",
+                            ResourceJobManagerType.PBS, "push", "/opt/torque/torque-4.2.3.1/bin/", SecurityProtocol.SSH_KEYS, 22, "aprun -n");
+                    System.out.println("BigredII Resource Id is " + bigredResourceId);
+                }
+            }
+            computeResourceIds.add(stampedeResourceId);
+            computeResourceIds.add(trestlesResourceId);
+            computeResourceIds.add(bigredResourceId);
+        }catch (Exception e) {
+            logger.error("Error occured while adding compute resources", e);
+            throw new Exception("Error occured while adding compute resources", e);
+        }
 
-        computeResourceIds.add(stampedeResourceId);
-        computeResourceIds.add(trestlesResourceId);
-        computeResourceIds.add(bigredResourceId);
     }
 
     public String registerComputeHost(String hostName, String hostDesc,
@@ -94,7 +144,7 @@ public class ComputeResourceRegister {
         return computeResourceId;
     }
 
-    public static ComputeResourceDescription createComputeResourceDescription(
+    public ComputeResourceDescription createComputeResourceDescription(
             String hostName, String hostDesc, List<String> hostAliases, List<String> ipAddresses) {
         ComputeResourceDescription host = new ComputeResourceDescription();
         host.setHostName(hostName);
@@ -104,7 +154,7 @@ public class ComputeResourceRegister {
         return host;
     }
 
-    public static ResourceJobManager createResourceJobManager(
+    public ResourceJobManager createResourceJobManager(
             ResourceJobManagerType resourceJobManagerType, String pushMonitoringEndpoint, String jobManagerBinPath,
             Map<JobManagerCommand, String> jobManagerCommands) {
         ResourceJobManager resourceJobManager = new ResourceJobManager();
@@ -113,5 +163,63 @@ public class ComputeResourceRegister {
         resourceJobManager.setJobManagerBinPath(jobManagerBinPath);
         resourceJobManager.setJobManagerCommands(jobManagerCommands);
         return resourceJobManager;
+    }
+
+    public void registerGatewayResourceProfile() throws Exception{
+        try {
+            ComputeResourcePreference stampedeResourcePreferences = null;
+            ComputeResourcePreference trestlesResourcePreferences = null;
+            ComputeResourcePreference bigRedResourcePreferences = null;
+
+            for (String resourceName : loginNamesWithResourceMap.keySet()) {
+                if (resourceName.contains("stampede")) {
+                    stampedeResourcePreferences = createComputeResourcePreference(resourceName, "TG-STA110014S", false, null,
+                            JobSubmissionProtocol.SSH, DataMovementProtocol.SCP, "/scratch/01437/ogce/gta-work-dirs", loginNamesWithResourceMap.get(resourceName));
+                }else if (resourceName.contains("trestles")){
+                    trestlesResourcePreferences = createComputeResourcePreference(resourceName, "sds128", false, null, JobSubmissionProtocol.SSH,
+                            DataMovementProtocol.SCP, "/oasis/scratch/trestles/ogce/temp_project/gta-work-dirs", loginNamesWithResourceMap.get(resourceName));
+                }else if (resourceName.contains("bigred2")){
+                    bigRedResourcePreferences = createComputeResourcePreference(resourceName, "TG-STA110014S", false, null, null, null,
+                            "/N/dc2/scratch/cgateway/gta-work-dirs", loginNamesWithResourceMap.get(resourceName));
+                }
+            }
+
+            List<GatewayResourceProfile> allGatewayComputeResources = airavata.getAllGatewayComputeResources();
+            for (GatewayResourceProfile gatewayResourceProfile : allGatewayComputeResources){
+                gatewayResourceProfile.addToComputeResourcePreferences(stampedeResourcePreferences);
+                gatewayResourceProfile.addToComputeResourcePreferences(trestlesResourcePreferences);
+                gatewayResourceProfile.addToComputeResourcePreferences(bigRedResourcePreferences);
+                airavata.updateGatewayResourceProfile(gatewayResourceProfile.getGatewayID(), gatewayResourceProfile);
+            }
+        } catch (TException e) {
+            logger.error("Error occured while updating gateway resource profiles", e);
+            throw new Exception("Error occured while updating gateway resource profiles", e);
+        }
+    }
+
+    public ComputeResourcePreference createComputeResourcePreference(String computeResourceId, String allocationProjectNumber,
+                                    boolean overridebyAiravata, String preferredBatchQueue,
+                                    JobSubmissionProtocol preferredJobSubmissionProtocol,
+                                    DataMovementProtocol preferredDataMovementProtocol,
+                                    String scratchLocation,
+                                    String loginUserName) {
+        ComputeResourcePreference computeResourcePreference = new ComputeResourcePreference();
+        computeResourcePreference.setComputeResourceId(computeResourceId);
+        computeResourcePreference.setOverridebyAiravata(overridebyAiravata);
+        computeResourcePreference.setAllocationProjectNumber(allocationProjectNumber);
+        computeResourcePreference.setPreferredBatchQueue(preferredBatchQueue);
+        computeResourcePreference.setPreferredDataMovementProtocol(preferredDataMovementProtocol);
+        computeResourcePreference.setPreferredJobSubmissionProtocol(preferredJobSubmissionProtocol);
+        computeResourcePreference.setScratchLocation(scratchLocation);
+        computeResourcePreference.setLoginUserName(loginUserName);
+        return computeResourcePreference;
+    }
+
+    public List<String> getComputeResourceIds() {
+        return computeResourceIds;
+    }
+
+    public void setComputeResourceIds(List<String> computeResourceIds) {
+        this.computeResourceIds = computeResourceIds;
     }
 }

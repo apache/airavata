@@ -81,7 +81,7 @@ public class OrchestratorRecoveryHandler implements Watcher {
             log.info("Recovering Experiment: " + expId.split("\\+")[0]);
             log.info("------------------------------------------------------------------------------------");
             try {
-                if(GFacUtils.isCancelled(expId.split("\\+")[0], expId.split("\\+")[1], zk)) {// during relaunching we check the operation and then launch
+                if(GFacUtils.isCancelled(expId.split("\\+")[0], zk)) {// during relaunching we check the operation and then launch
                     serverHandler.terminateExperiment(expId.split("\\+")[0]);
                 }else {
                     serverHandler.launchExperiment(expId.split("\\+")[0], null);
