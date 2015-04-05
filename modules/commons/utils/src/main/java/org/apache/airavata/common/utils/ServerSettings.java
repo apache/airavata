@@ -66,6 +66,13 @@ public class ServerSettings extends ApplicationSettings {
     private static final int DEFAULT_ENACTMENT_THREAD_POOL_SIZE = 10;
     private static final String WORKFLOW_PARSER = "workflow.parser";
 
+    // email based monitoring configurations
+    private static final String EMAIL_BASED_MONITOR_HOST = "email.based.monitor.host";
+    private static final String EMAIL_BASED_MONITOR_ADDRESS = "email.based.monitor.address";
+    private static final String EMAIL_BASED_MONITOR_PASSWORD = "email.based.monitor.password";
+    private static final String EMAIL_BASED_MONITOR_FOLDER_NAME = "email.based.monitor.folder.name";
+    private static final String EMAIL_BASED_MONITOR_STORE_PROTOCOL = "email.based.monitor.store.protocol";
+
 
     private static boolean stopAllThreads = false;
 
@@ -206,5 +213,25 @@ public class ServerSettings extends ApplicationSettings {
 
     public static String getWorkflowParser() throws ApplicationSettingsException {
         return getSetting(WORKFLOW_PARSER);
+    }
+
+    public static String getEmailBasedMonitorHost() throws ApplicationSettingsException {
+        return getSetting(EMAIL_BASED_MONITOR_HOST);
+    }
+
+    public static String getEmailBasedMonitorAddress() throws ApplicationSettingsException {
+        return getSetting(EMAIL_BASED_MONITOR_ADDRESS);
+    }
+
+    public static String getEmailBasedMonitorPassword() throws ApplicationSettingsException {
+        return getSetting(EMAIL_BASED_MONITOR_PASSWORD);
+    }
+
+    public static String getEmailBasedMonitorFolderName() throws ApplicationSettingsException {
+        return getSetting(EMAIL_BASED_MONITOR_FOLDER_NAME);
+    }
+
+    public static String getEmailBasedMonitorStoreProtocol() throws ApplicationSettingsException {
+        return getSetting(EMAIL_BASED_MONITOR_STORE_PROTOCOL);
     }
 }

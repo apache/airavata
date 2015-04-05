@@ -22,6 +22,7 @@ package org.apache.airavata.gfac.core.utils;
 
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.cpi.GFac;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.model.messaging.event.TaskIdentifier;
@@ -40,6 +41,7 @@ public class OutHandlerWorker implements Runnable {
     private MonitorID monitorID;
 
     private MonitorPublisher monitorPublisher;
+    private JobExecutionContext jEC;
 
     public OutHandlerWorker(GFac gfac, MonitorID monitorID,MonitorPublisher monitorPublisher) {
         this.gfac = gfac;
@@ -47,10 +49,17 @@ public class OutHandlerWorker implements Runnable {
         this.monitorPublisher = monitorPublisher;
     }
 
+    public OutHandlerWorker(JobExecutionContext jEC, MonitorPublisher monitorPublisher) {
+        this.jEC = jEC;
+        this.gfac = jEC.getGfac();
+        this.monitorPublisher = monitorPublisher;
+    }
+
     @Override
     public void run() {
         try {
-            gfac.invokeOutFlowHandlers(monitorID.getJobExecutionContext());
+//            gfac.invokeOutFlowHandlers(monitorID.getJobExecutionContext());
+            gfac.invokeOutFlowHandlers(jEC);
         } catch (GFacException e) {
             TaskIdentifier taskIdentifier = new TaskIdentifier(monitorID.getTaskID(), monitorID.getWorkflowNodeID(),monitorID.getExperimentID(), monitorID.getJobExecutionContext().getGatewayID());
             //FIXME this is a case where the output retrieving fails even if the job execution was a success. Thus updating the task status
@@ -64,6 +73,8 @@ public class OutHandlerWorker implements Runnable {
             // Save error details to registry
 
         }
-        monitorPublisher.publish(monitorID.getStatus());
+//        monitorPublisher.publish(monitorID.getStatus());
+        monitorPublisher.publish(jEC.getJobDetails().getJobStatus());
+
     }
 }

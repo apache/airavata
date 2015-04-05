@@ -18,7 +18,13 @@
  * under the License.
  *
 */
-package org.apache.airavata.gfac.monitor.impl.mail.parser;
+package org.apache.airavata.gfac.core.monitor.mail.parser;
+
+import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.gfac.core.monitor.mail.JobStatusResult;
+import org.apache.airavata.model.workspace.experiment.JobState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -27,22 +33,45 @@ import java.util.regex.Pattern;
 
 public class SLURMEmailParser implements EmailParser {
 
+    private static final Logger log = LoggerFactory.getLogger(SLURMEmailParser.class);
+
     private static final String JOBID = "jobId";
     private static final String STATUS = "status";
     private static final String REGEX = "[A-Z]*\\s[a-zA-Z]*_[a-z]*=(?<" + JOBID
             + ">\\d*)\\s[a-zA-Z]*=[a-zA-Z0-9-]*\\s(?<" + STATUS + ">[]a-zA-Z]*),.*";
 
     @Override
-    public void parseEmail(Message message) throws MessagingException {
+    public JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException{
         String subject = message.getSubject();
         Pattern pattern = Pattern.compile(REGEX);
         Matcher matcher = pattern.matcher(subject);
+        JobStatusResult jobStatusResult = new JobStatusResult();
         if (matcher.find()) {
+            jobStatusResult.setJobId(matcher.group(JOBID));
+            jobStatusResult.setState(getJobState(matcher.group(STATUS)));
+            // TODO remove following test lines
             String jobId = matcher.group(JOBID);
             String status = matcher.group(STATUS);
-            System.out.println("SLURM " + status + " message received -> " + jobId);
+            log.info("SLURM " + status + " message received -> " + jobId);
+            return jobStatusResult;
         } else {
-            System.out.println("No matches found ");
+            log.error("No matched found for subject -> " + subject);
+        }
+        return null;
+    }
+
+    private JobState getJobState(String state) {
+        switch (state) {
+            case "Began":
+                return JobState.QUEUED;
+            case "Ended":
+                return JobState.COMPLETE;
+            case "Failed":
+                return JobState.FAILED;
+            default:
+                log.error("Job State " + state + " isn't handle by SLURM parser");
+                return JobState.UNKNOWN;
+
         }
     }
 
