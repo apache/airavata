@@ -22,18 +22,17 @@
 package org.apache.airavata.gfac.ssh.provider.impl;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.gfac.Constants;
-import org.apache.airavata.gfac.ExecutionMode;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
-import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
-import org.apache.airavata.gfac.core.handler.ThreadedHandler;
 import org.apache.airavata.gfac.core.notification.events.StartExecutionEvent;
 import org.apache.airavata.gfac.core.provider.AbstractProvider;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
+import org.apache.airavata.gfac.core.monitor.mail.EmailBasedMonitor;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
 import org.apache.airavata.gfac.ssh.util.GFACSSHUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
@@ -135,7 +134,7 @@ public class SSHProvider extends AbstractProvider {
 //                GFacUtils.updateJobStatus(details, JobState.COMPLETE);
             } catch (Exception e) {
                 throw new GFacProviderException(e.getMessage(), e);
-            } 
+            }
         } else {
             try {
                 jobExecutionContext.getNotifier().publish(new StartExecutionEvent());
@@ -368,7 +367,7 @@ public class SSHProvider extends AbstractProvider {
     }
 
     public void delegateToMonitorHandlers(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
-        List<ThreadedHandler> daemonHandlers = BetterGfacImpl.getDaemonHandlers();
+        /*List<ThreadedHandler> daemonHandlers = BetterGfacImpl.getDaemonHandlers();
         if (daemonHandlers == null) {
             daemonHandlers = BetterGfacImpl.getDaemonHandlers();
         }
@@ -384,6 +383,11 @@ public class SSHProvider extends AbstractProvider {
         if (pullMonitorHandler == null && pushMonitorHandler == null && ExecutionMode.ASYNCHRONOUS.equals(jobExecutionContext.getGFacConfiguration().getExecutionMode())) {
             log.error("No Daemon handler is configured in gfac-config.xml, either pull or push, so monitoring will not invoked" +
                     ", execution is configured as asynchronous, so Outhandler will not be invoked");
+        }*/
+        try {
+            EmailBasedMonitor.getInstant(((MonitorPublisher) jobExecutionContext.getProperty("MonitorPubliser")));
+        } catch (ApplicationSettingsException e) {
+            throw new GFacHandlerException("Error while delegating job execution context to email based monitor");
         }
     }
 
