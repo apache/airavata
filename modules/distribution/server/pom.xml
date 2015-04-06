@@ -169,18 +169,6 @@
 			<artifactId>log4j</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>javax.jcr</groupId>
-			<artifactId>jcr</artifactId>
-			<version>${jcr.version}</version>
-		</dependency>
-		<!-- dependency> <groupId>org.ogce</groupId> <artifactId>xpp3</artifactId> 
-			<version>${xpp3.version}</version> </dependency> <dependency> <groupId>org.ogce</groupId> 
-			<artifactId>xpp5</artifactId> <version>${xpp5.version}</version> </dependency> 
-			<dependency> <groupId>org.ogce</groupId> <artifactId>xsul</artifactId> <version>${xsul.version}</version> 
-			</dependency> <dependency> <groupId>org.ogce</groupId> <artifactId>gpel-client</artifactId> 
-			<version>${gpel.version}</version> </dependency> <dependency> <groupId>org.python</groupId> 
-			<artifactId>jython</artifactId> <version>${jython.version}</version> </dependency> -->
-		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk</artifactId>
 			<version>1.9.0</version>
@@ -196,9 +184,6 @@
 			<artifactId>jets3t</artifactId>
 			<version>0.8.0</version>
 		</dependency>
-		<!-- dependency> <groupId>org.ogce</groupId> <artifactId>atomixmiser</artifactId> 
-			<version>${atomixmiser.version}</version> </dependency> <dependency> <groupId>org.ogce</groupId> 
-			<artifactId>yfilter</artifactId> <version>${yfilter.version}</version> </dependency> -->
 		<dependency>
 			<groupId>commons-collections</groupId>
 			<artifactId>commons-collections</artifactId>
@@ -645,14 +630,9 @@
 		<grizzly.version>2.0.0-M3</grizzly.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<archieve.name>apache-airavata-server</archieve.name>
-		<used.axis2.release>${axis2.version}</used.axis2.release>
 		<airavata.dist.name>${archieve.name}-${project.version}</airavata.dist.name>
 		<airavata.work.dir>${project.build.directory}/tests/${airavata.dist.name}</airavata.work.dir>
 		<airavata.bin.zip>${project.build.directory}/${airavata.dist.name}-bin.zip</airavata.bin.zip>
 		<airavata.bin.tar.gz>${project.build.directory}/${airavata.dist.name}-bin.tar.gz</airavata.bin.tar.gz>
-		<airavata.webapp.dir>${project.build.directory}/airavata-axis2</airavata.webapp.dir>
-		<!--airavata.war.dir>${project.build.directory}/test</airavata.war.dir> 
-			<airavata.webapp.war.zip>${project.build.directory}/${airavata.dist.name}.war.zip</airavata.webapp.war.zip> 
-			<airavata.webapp.war.tar.gz>${project.build.directory}/${airavata.dist.name}.war.tar.gz</airavata.webapp.war.tar.gz -->
 	</properties>
 </project>

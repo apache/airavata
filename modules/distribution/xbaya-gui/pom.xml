@@ -55,24 +55,6 @@
 							</execution>
 						</executions>
 					</plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <configuration>
-                            <encoding>UTF-8</encoding>
-                            <source>1.6</source>
-                            <target>1.6</target>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>default</id>
-                                <phase>compile</phase>
-                                <goals>
-                                    <goal>compile</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
 				    <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-assembly-plugin</artifactId>
