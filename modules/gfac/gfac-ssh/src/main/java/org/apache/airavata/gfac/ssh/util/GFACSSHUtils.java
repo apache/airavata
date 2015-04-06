@@ -290,25 +290,32 @@ public class GFACSSHUtils {
             }
         }
         try {
-			if(ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_ENABLE).equalsIgnoreCase("true")){
-				jobDescriptor.setMailOptions(ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_FLAGS));
-				String emailids = ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_EMAILIDS);
-			
-				if(taskData.isEnableEmailNotification()){
-					List<String> emailList = jobExecutionContext.getTaskData().getEmailAddresses();
-					String elist = GFacUtils.listToCsv(emailList, ',');
-					if(emailids != null && !emailids.isEmpty()){
-						emailids = emailids +"," + elist;
-					}else{
-						emailids = elist;
-					}
-				}
-				if(emailids != null && !emailids.isEmpty()){
-					logger.info("Email list: "+ emailids);
-					jobDescriptor.setMailAddress(emailids);
-				}
-			}
-		} catch (ApplicationSettingsException e) {
+			if(ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_ENABLE).equalsIgnoreCase("true")) {
+                String flags = ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_FLAGS);
+                if (flags != null && jobExecutionContext.getApplicationContext().getComputeResourceDescription().getHostName().equals("stampede.tacc.xsede.org")) {
+                    flags = "ALL";
+                }
+                jobDescriptor.setMailOptions(flags);
+
+                String emailids = ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_EMAILIDS);
+
+                if (taskData.isEnableEmailNotification()) {
+                    List<String> emailList = jobExecutionContext.getTaskData().getEmailAddresses();
+                    String elist = GFacUtils.listToCsv(emailList, ',');
+                    if (elist != null && !elist.isEmpty()) {
+                        if (emailids != null && !emailids.isEmpty()) {
+                            emailids = emailids + "," + elist;
+                        } else {
+                            emailids = elist;
+                        }
+                    }
+                }
+                if (emailids != null && !emailids.isEmpty()) {
+                    logger.info("Email list: " + emailids);
+                    jobDescriptor.setMailAddress(emailids);
+                }
+            }
+        } catch (ApplicationSettingsException e) {
 			 logger.error("ApplicationSettingsException : " +e.getLocalizedMessage());
 		}
         // this is common for any application descriptor

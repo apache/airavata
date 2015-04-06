@@ -22,6 +22,8 @@ package org.apache.airavata.gfac.core.monitor.mail;
 
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.logger.AiravataLogger;
+import org.apache.airavata.common.logger.AiravataLoggerFactory;
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
@@ -30,9 +32,10 @@ import org.apache.airavata.gfac.core.utils.OutHandlerWorker;
 import org.apache.airavata.gfac.core.monitor.mail.parser.EmailParser;
 import org.apache.airavata.gfac.core.monitor.mail.parser.PBSEmailParser;
 import org.apache.airavata.gfac.core.monitor.mail.parser.SLURMEmailParser;
+import org.apache.airavata.model.messaging.event.JobIdentifier;
+import org.apache.airavata.model.messaging.event.JobStatusChangeRequestEvent;
+import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.model.workspace.experiment.JobStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.mail.Address;
 import javax.mail.Flags;
@@ -48,7 +51,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class EmailBasedMonitor implements Runnable{
 
-    private static final Logger log = LoggerFactory.getLogger(EmailBasedMonitor.class);
+    private static final AiravataLogger log = AiravataLoggerFactory.getLogger(EmailBasedMonitor.class);
 
     private static final String PBS_CONSULT_SDSC_EDU = "pbsconsult@sdsc.edu";
     private static final String SLURM_BATCH_STAMPEDE = "slurm@batch1.stampede.tacc.utexas.edu";
@@ -136,9 +139,9 @@ public class EmailBasedMonitor implements Runnable{
                 for (Message message : searchMessages) {
                     try {
                         JobStatusResult jobStatusResult = parse(message);
-                        updateJobStatus(jobStatusResult);
+                        process(jobStatusResult);
                     } catch (AiravataException e) {
-                        log.error("Error parsing email message =====================================>");
+                        log.error("Error parsing email message =====================================>", e);
                         try {
                             writeEnvelopeOnError(message);
                         } catch (MessagingException e1) {
@@ -164,13 +167,41 @@ public class EmailBasedMonitor implements Runnable{
         }
     }
 
-    private void updateJobStatus(JobStatusResult jobStatusResult) throws AiravataException {
-        JobExecutionContext jEC = jobMonitorMap.remove(jobStatusResult.getJobId());
+    private void process(JobStatusResult jobStatusResult) throws AiravataException {
+        JobExecutionContext jEC = jobMonitorMap.get(jobStatusResult.getJobId());
         if (jEC == null) {
             throw new AiravataException("JobExecutionContext is not found for job Id " + jobStatusResult.getJobId());
         }
-        jEC.getJobDetails().setJobStatus(new JobStatus(jobStatusResult.getState()));
-        GFacThreadPoolExecutor.getFixedThreadPool().submit(new OutHandlerWorker(jEC, monitorPublisher));
+        JobState resultState = jobStatusResult.getState();
+        jEC.getJobDetails().setJobStatus(new JobStatus(resultState));
+        if (resultState == JobState.COMPLETE) {
+            GFacThreadPoolExecutor.getFixedThreadPool().submit(new OutHandlerWorker(jEC, monitorPublisher));
+        }else if (resultState == JobState.QUEUED) {
+            // TODO - publish queued rabbitmq message
+        }else if (resultState == JobState.FAILED) {
+            // TODO - handle failed scenario
+            jobMonitorMap.remove(jobStatusResult.getJobId());
+            log.info("Job failed email received , removed job from job monitoring");
+//            monitorPublisher.publish(jEC.getJobDetails().getJobStatus());
+        }
+        publishJobStatusChange(jEC);
+    }
+
+    private void publishJobStatusChange(JobExecutionContext jobExecutionContext) {
+        JobStatusChangeRequestEvent jobStatus = new JobStatusChangeRequestEvent();
+        JobIdentifier jobIdentity = new JobIdentifier(jobExecutionContext.getJobDetails().getJobID(),
+                jobExecutionContext.getTaskData().getTaskID(),
+                jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
+                jobExecutionContext.getExperimentID(),
+                jobExecutionContext.getGatewayID());
+        jobStatus.setJobIdentity(jobIdentity);
+        jobStatus.setState(jobExecutionContext.getJobDetails().getJobStatus().getJobState());
+        // we have this JobStatus class to handle amqp monitoring
+        log.debugId(jobStatus.getJobIdentity().getJobId(), "Published job status change request, " +
+                        "experiment {} , task {}", jobStatus.getJobIdentity().getExperimentId(),
+                jobStatus.getJobIdentity().getTaskId());
+
+        monitorPublisher.publish(jobStatus);
     }
 
     private void writeEnvelopeOnError(Message m) throws MessagingException {

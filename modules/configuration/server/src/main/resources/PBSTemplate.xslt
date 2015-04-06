@@ -25,12 +25,7 @@
 #PBS -N <xsl:value-of select="ns:jobName"/>
         </xsl:when>
     </xsl:choose>
-    <xsl:choose>
-    <xsl:when test="ns:mailOptions != ''">
-#PBS -m <xsl:value-of select="ns:mailOptions"/>
-    </xsl:when>
-    </xsl:choose>
-    <xsl:choose>
+#PBS -m abe   <xsl:choose>
     <xsl:when test="ns:mailAddress != ''">
 #PBS -M <xsl:value-of select="ns:mailAddress"/>
     </xsl:when>
