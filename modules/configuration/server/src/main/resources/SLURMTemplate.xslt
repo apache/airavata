@@ -31,15 +31,10 @@
         </xsl:choose>
     <xsl:choose>
     <xsl:when test="ns:mailAddress != ''">
-#SBATCH -mail-user=<xsl:value-of select="ns:mailAddress"/>
+#SBATCH --mail-user=<xsl:value-of select="ns:mailAddress"/>
     </xsl:when>
     </xsl:choose>
-    <xsl:choose>
-    <xsl:when test="ns:mailType != ''">
-#SBATCH -mail-type=<xsl:value-of select="ns:mailType"/>
-    </xsl:when>
-    </xsl:choose>
-    <xsl:choose>
+#SBATCH --mail-type=ALL   <xsl:choose>
 <xsl:when test="ns:acountString != ''">
 #SBATCH -A <xsl:value-of select="ns:acountString"/>
     </xsl:when>

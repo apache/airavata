@@ -38,8 +38,10 @@ public class PBSEmailParser implements EmailParser {
 
     private static final String STATUS = "status";
     private static final String JOBID = "jobId";
+    private static final String EXIT_STATUS = "exitStatus";
     private static final String REGEX = "[a-zA-Z: ]*(?<" + JOBID + ">[a-zA-Z0-9-\\.]*)\\s+.*\\s+.*\\s+(?<"
             + STATUS + ">[a-zA-Z\\ ]*)";
+    private static final String REGEX_EXIT_STATUS = "Exit_status=(?<" + EXIT_STATUS + ">[\\d]+)";
 
     @Override
     public JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException {
@@ -51,7 +53,7 @@ public class PBSEmailParser implements EmailParser {
             if (matcher.find()) {
                 jobStatusResult.setJobId(matcher.group(JOBID));
                 String statusLine = matcher.group(STATUS);
-                jobStatusResult.setState(getJobState(statusLine));
+                jobStatusResult.setState(getJobState(statusLine, content));
                 return jobStatusResult;
             } else {
                 log.error("No matched found for content => \n" + content);
@@ -63,15 +65,35 @@ public class PBSEmailParser implements EmailParser {
         return null;
     }
 
-    private JobState getJobState(String statusLine) {
+    private JobState getJobState(String statusLine, String content) {
         switch (statusLine) {
             case "Begun execution":
                 return JobState.QUEUED;
             case "Execution terminated":
-                return JobState.COMPLETE;
+                int exitStatus = getExitStatus(content);
+                switch (exitStatus) {
+                    case 0:
+                        return JobState.COMPLETE;
+                    case 1:
+                        return JobState.FAILED;
+                    default:
+                        return JobState.UNKNOWN;
+                }
             default:
                 return JobState.UNKNOWN;
         }
+    }
+
+    private int getExitStatus(String content) {
+        Pattern pattern = Pattern.compile(REGEX_EXIT_STATUS);
+        Matcher matcher = pattern.matcher(content);
+        if (matcher.find()) {
+            String group = matcher.group(EXIT_STATUS);
+            if (group != null && !group.trim().isEmpty()) {
+                return Integer.valueOf(group.trim());
+            }
+        }
+        return -1;
     }
 
 

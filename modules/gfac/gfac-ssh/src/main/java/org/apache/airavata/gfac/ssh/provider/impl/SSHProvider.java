@@ -385,7 +385,8 @@ public class SSHProvider extends AbstractProvider {
                     ", execution is configured as asynchronous, so Outhandler will not be invoked");
         }*/
         try {
-            EmailBasedMonitor.getInstant(((MonitorPublisher) jobExecutionContext.getProperty("MonitorPubliser")));
+            EmailBasedMonitor emailBasedMonitor = EmailBasedMonitor.getInstant(((MonitorPublisher) jobExecutionContext.getProperty("MonitorPublisher")));
+            emailBasedMonitor.addToJobMonitorMap(jobExecutionContext);
         } catch (ApplicationSettingsException e) {
             throw new GFacHandlerException("Error while delegating job execution context to email based monitor");
         }

@@ -61,7 +61,7 @@ public class SLURMEmailParser implements EmailParser {
     }
 
     private JobState getJobState(String state) {
-        switch (state) {
+        switch (state.trim()) {
             case "Began":
                 return JobState.QUEUED;
             case "Ended":
