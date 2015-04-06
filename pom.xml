@@ -83,7 +83,6 @@
 		<xsul5.version>1.2.7</xsul5.version>
 		<gpel.version>1.0.9</gpel.version>
 		<atomixmiser.version>0.9.4</atomixmiser.version>
-		<yfilter.version>1.0</yfilter.version>
 		<jython.version>2.5.3</jython.version>
 		<jersey.version>1.13</jersey.version>
 		<tomcat.version>7.0.41</tomcat.version>
@@ -532,7 +531,6 @@
 				<module>modules/server</module>
 				<module>modules/test-suite</module>
 				<module>modules/distribution</module>
-				<!--<module>modules/ws-messenger</module>-->
 				<module>modules/messaging</module>
 				<module>modules/integration-tests</module>
 				<module>modules/workflow</module>
