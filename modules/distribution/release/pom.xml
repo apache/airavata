@@ -108,8 +108,6 @@
     </build>
 
     <properties>
-        <jersey.version>1.13</jersey.version>
-        <grizzly.version>2.0.0-M3</grizzly.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <archieve.name>apache-airavata-client</archieve.name>
 		<airavata.client-dist.name>${archieve.name}-${project.version}</airavata.client-dist.name>

@@ -414,7 +414,7 @@
 			<artifactId>jersey-client</artifactId>
 			<version>${jersey.version}</version>
 		</dependency>
-		<!--dependency> <groupId>org.apache.airavata</groupId> <artifactId>airavata-common-utils</artifactId> 
+		<!--dependency> <groupId>org.apache.airavata</groupId> <artifactId>airavata-common-utils</artifactId>
 			<version>${project.version}</version> </dependency -->
 		<dependency>
 			<groupId>javax.servlet</groupId>

@@ -102,8 +102,6 @@
 
     
     <properties>
-        <jersey.version>1.13</jersey.version>
-        <grizzly.version>2.0.0-M3</grizzly.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <archive.name>apache-airavata-client-python-sdk</archive.name>
         <airavata.client-dist.name>${archive.name}-${project.version}</airavata.client-dist.name>

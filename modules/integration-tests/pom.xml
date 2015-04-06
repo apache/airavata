@@ -263,7 +263,6 @@
 
 
     <properties>
-        <jersey.version>1.13</jersey.version>
         <user />
         <pwd />
         <cert />
