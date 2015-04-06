@@ -106,7 +106,6 @@
         <grizzly.version>2.0.0-M3</grizzly.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <archive.name>apache-airavata-client-cpp-sdk</archive.name>
-        <used.axis2.release>${axis2.version}</used.axis2.release>
         <airavata.client-dist.name>${archive.name}-${project.version}</airavata.client-dist.name>
         <airavata.client-bin.zip>${project.build.directory}/${airavata.client-dist.name}-bin.zip</airavata.client-bin.zip>
         <airavata.client-bin.tar.gz>${project.build.directory}/${airavata.client-dist.name}-bin.tar.gz</airavata.client-bin.tar.gz>
