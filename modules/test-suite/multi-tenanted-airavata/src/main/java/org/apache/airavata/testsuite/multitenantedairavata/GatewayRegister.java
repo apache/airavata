@@ -131,27 +131,29 @@ public class GatewayRegister {
             SSHCredentialWriter writer = new SSHCredentialWriter(dbUtil);
             List<Gateway> allGateways = airavata.getAllGateways();
             for (Gateway gateway : allGateways){
-                SSHCredential sshCredential = new SSHCredential();
-                sshCredential.setGateway(gateway.getGatewayId());
-                String token = TokenGenerator.generateToken(gateway.getGatewayId(), null);
-                sshCredential.setToken(token);
-                sshCredential.setPortalUserName("testuser");
-                FileInputStream privateKeyStream = new FileInputStream(privateKeyPath);
-                File filePri = new File(privateKeyPath);
-                byte[] bFilePri = new byte[(int) filePri.length()];
-                privateKeyStream.read(bFilePri);
-                FileInputStream pubKeyStream = new FileInputStream(pubKeyPath);
-                File filePub = new File(pubKeyPath);
-                byte[] bFilePub = new byte[(int) filePub.length()];
-                pubKeyStream.read(bFilePub);
-                privateKeyStream.close();
-                pubKeyStream.close();
-                sshCredential.setPrivateKey(bFilePri);
-                sshCredential.setPublicKey(bFilePub);
-                sshCredential.setPassphrase(keyPassword);
-                writer.writeCredentials(sshCredential);
-                tokenMap.put(gateway.getGatewayId(), token);
-                tokenWriter.println(gateway.getGatewayId() + ":" + token);
+                if (!gateway.getGatewayId().equals("php_reference_gateway")){
+                    SSHCredential sshCredential = new SSHCredential();
+                    sshCredential.setGateway(gateway.getGatewayId());
+                    String token = TokenGenerator.generateToken(gateway.getGatewayId(), null);
+                    sshCredential.setToken(token);
+                    sshCredential.setPortalUserName("testuser");
+                    FileInputStream privateKeyStream = new FileInputStream(privateKeyPath);
+                    File filePri = new File(privateKeyPath);
+                    byte[] bFilePri = new byte[(int) filePri.length()];
+                    privateKeyStream.read(bFilePri);
+                    FileInputStream pubKeyStream = new FileInputStream(pubKeyPath);
+                    File filePub = new File(pubKeyPath);
+                    byte[] bFilePub = new byte[(int) filePub.length()];
+                    pubKeyStream.read(bFilePub);
+                    privateKeyStream.close();
+                    pubKeyStream.close();
+                    sshCredential.setPrivateKey(bFilePri);
+                    sshCredential.setPublicKey(bFilePub);
+                    sshCredential.setPassphrase(keyPassword);
+                    writer.writeCredentials(sshCredential);
+                    tokenMap.put(gateway.getGatewayId(), token);
+                    tokenWriter.println(gateway.getGatewayId() + ":" + token);
+                }
             }
             tokenWriter.close();
         } catch (ClassNotFoundException e) {

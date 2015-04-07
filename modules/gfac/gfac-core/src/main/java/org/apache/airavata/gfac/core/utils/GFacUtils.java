@@ -1167,15 +1167,17 @@ public class GFacUtils {
 		} else if (experimentEntry == null) {  // this means this is a very new experiment
 			// are going to create a new node
 			log.info("This is a new Job, so creating all the experiment docs from the scratch");
-			Stat expParent = zk.exists(newExpNode, false);
+
 			zk.create(newExpNode, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
 					CreateMode.PERSISTENT);
-
+            Stat expParent = zk.exists(newExpNode, false);
 			if (tokenId != null && expParent != null) {
 				zk.setData(newExpNode, tokenId.getBytes(),
 						expParent.getVersion());
 			}
-			String s = zk.create(newExpNode + File.separator + "state", String
+
+            String token = AiravataZKUtils.getExpTokenId(zk, experimentID, taskID);
+            String s = zk.create(newExpNode + File.separator + "state", String
 							.valueOf(GfacExperimentState.LAUNCHED.getValue())
 							.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
 					CreateMode.PERSISTENT);
@@ -1227,7 +1229,6 @@ public class GFacUtils {
 	 * This will return a value if the server is down because we iterate through exisiting experiment nodes, not
 	 * through gfac-server nodes
 	 * @param experimentID
-	 * @param taskID
 	 * @param zk
 	 * @return
 	 * @throws KeeperException

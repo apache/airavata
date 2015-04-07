@@ -55,17 +55,6 @@ public class ApplicationRegister {
         allGateways = getAllGateways(airavata);
         applicationInterfaceListPerGateway = new HashMap<String, String>();
         applicationDeployementListPerGateway = new HashMap<String, String>();
-        Map<String, String> allComputeResourceNames = airavata.getAllComputeResourceNames();
-        for (String resourceId : allComputeResourceNames.keySet()){
-            String resourceName = allComputeResourceNames.get(resourceId);
-            if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.STAMPEDE_RESOURCE_NAME)){
-                stampedeResourceId = resourceId;
-            }else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.TRESTLES_RESOURCE_NAME)){
-                trestlesResourceId = resourceId;
-            }else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.BR2_RESOURCE_NAME)){
-                br2ResourceId = resourceId;
-            }
-        }
     }
 
     public List<Gateway> getAllGateways(Airavata.Client client) throws Exception{
@@ -78,6 +67,17 @@ public class ApplicationRegister {
     }
 
     public void addApplications () throws Exception{
+        Map<String, String> allComputeResourceNames = airavata.getAllComputeResourceNames();
+        for (String resourceId : allComputeResourceNames.keySet()){
+            String resourceName = allComputeResourceNames.get(resourceId);
+            if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.STAMPEDE_RESOURCE_NAME)){
+                stampedeResourceId = resourceId;
+            }else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.TRESTLES_RESOURCE_NAME)){
+                trestlesResourceId = resourceId;
+            }else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.BR2_RESOURCE_NAME)){
+                br2ResourceId = resourceId;
+            }
+        }
         addAmberApplication();
         addEchoApplication();
         addLAMMPSApplication();

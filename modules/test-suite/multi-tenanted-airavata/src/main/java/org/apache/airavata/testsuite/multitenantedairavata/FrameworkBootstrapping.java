@@ -56,6 +56,8 @@ public class FrameworkBootstrapping {
                 setup.getGatewayRegister().registerSSHKeys();
                 logger.info("Registered SSH keys to each gateway...");
                 tokens = readTokens();
+                setup.getComputeResourceRegister().addComputeResources();
+                setup.getComputeResourceRegister().registerGatewayResourceProfile();
                 setup.getApplicationRegister().addApplications();
                 logger.info("Applications registered for each each gateway...");
                 experimentExecution = new ExperimentExecution(setup.getAiravata(), tokens);
@@ -70,15 +72,16 @@ public class FrameworkBootstrapping {
                 logger.info("Registered SSH keys to each gateway...");
                 tokens = readTokens();
                 setup.getComputeResourceRegister().addComputeResources();
+                setup.getComputeResourceRegister().registerGatewayResourceProfile();
                 setup.getApplicationRegister().addApplications();
                 logger.info("Applications registered for each each gateway...");
             }else if (expExec){
                 tokens = readTokens();
                 experimentExecution = new ExperimentExecution(setup.getAiravata(), tokens);
                 experimentExecution.createEchoExperiment();
-                experimentExecution.createAmberExperiment();
+//                experimentExecution.createAmberExperiment();
                 experimentExecution.launchExperiments();
-                experimentExecution.monitorExperiments();
+//                experimentExecution.monitorExperiments();
             }
         } catch (Exception e) {
             logger.error("Error occured while set up", e);
