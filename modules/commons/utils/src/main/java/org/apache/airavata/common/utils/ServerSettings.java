@@ -72,9 +72,11 @@ public class ServerSettings extends ApplicationSettings {
     private static final String EMAIL_BASED_MONITOR_PASSWORD = "email.based.monitor.password";
     private static final String EMAIL_BASED_MONITOR_FOLDER_NAME = "email.based.monitor.folder.name";
     private static final String EMAIL_BASED_MONITOR_STORE_PROTOCOL = "email.based.monitor.store.protocol";
+    private static final String ENABLE_EMAIL_BASED_MONITORING = "enable.email.based.monitoring";
 
 
     private static boolean stopAllThreads = false;
+    private static boolean emailBaseNotificationEnable;
 
     public static String getDefaultUser() throws ApplicationSettingsException {
         return getSetting(DEFAULT_USER);
@@ -234,4 +236,9 @@ public class ServerSettings extends ApplicationSettings {
     public static String getEmailBasedMonitorStoreProtocol() throws ApplicationSettingsException {
         return getSetting(EMAIL_BASED_MONITOR_STORE_PROTOCOL);
     }
+
+    public static boolean isEmailBasedNotificationEnable() {
+        return Boolean.valueOf(getSetting(ENABLE_EMAIL_BASED_MONITORING, "false"));
+    }
+
 }
