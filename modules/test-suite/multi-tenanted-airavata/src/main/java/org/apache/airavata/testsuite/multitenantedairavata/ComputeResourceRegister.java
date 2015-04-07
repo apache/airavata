@@ -40,6 +40,7 @@ public class ComputeResourceRegister {
     private List<String> computeResourceIds;
     private PropertyReader propertyReader;
     private Map<String, String> loginNamesWithResourceMap;
+    private Map<String, String> loginNamesWithResourceIds;
     private final static Logger logger = LoggerFactory.getLogger(ComputeResourceRegister.class);
 
     public ComputeResourceRegister(Airavata.Client airavata) throws Exception {
@@ -76,6 +77,17 @@ public class ComputeResourceRegister {
                     "in test-framework.properties files..");
         }
         return loginNamesWithResourceMap;
+    }
+
+    public Map<String, String> getLoginNamesWithResourceIDs() throws Exception {
+        loginNamesWithResourceIds = new HashMap<String, String>();
+        Map<String, String> allComputeResourceNames = airavata.getAllComputeResourceNames();
+        for (String resourceId : allComputeResourceNames.keySet()) {
+            String resourceName = allComputeResourceNames.get(resourceId);
+            loginNamesWithResourceIds.put(resourceId, loginNamesWithResourceMap.get(resourceName));
+        }
+
+        return loginNamesWithResourceIds;
     }
 
     public void addComputeResources () throws Exception {
@@ -171,25 +183,25 @@ public class ComputeResourceRegister {
             ComputeResourcePreference trestlesResourcePreferences = null;
             ComputeResourcePreference bigRedResourcePreferences = null;
 
-            for (String resourceName : loginNamesWithResourceMap.keySet()) {
-                if (resourceName.contains("stampede")) {
-                    stampedeResourcePreferences = createComputeResourcePreference(resourceName, "TG-STA110014S", false, null,
-                            JobSubmissionProtocol.SSH, DataMovementProtocol.SCP, "/scratch/01437/ogce/gta-work-dirs", loginNamesWithResourceMap.get(resourceName));
-                }else if (resourceName.contains("trestles")){
-                    trestlesResourcePreferences = createComputeResourcePreference(resourceName, "sds128", false, null, JobSubmissionProtocol.SSH,
-                            DataMovementProtocol.SCP, "/oasis/scratch/trestles/ogce/temp_project/gta-work-dirs", loginNamesWithResourceMap.get(resourceName));
-                }else if (resourceName.contains("bigred2")){
-                    bigRedResourcePreferences = createComputeResourcePreference(resourceName, "TG-STA110014S", false, null, null, null,
-                            "/N/dc2/scratch/cgateway/gta-work-dirs", loginNamesWithResourceMap.get(resourceName));
-                }
-            }
+            loginNamesWithResourceIds = getLoginNamesWithResourceIDs();
 
             List<GatewayResourceProfile> allGatewayComputeResources = airavata.getAllGatewayComputeResources();
-            for (GatewayResourceProfile gatewayResourceProfile : allGatewayComputeResources){
-                gatewayResourceProfile.addToComputeResourcePreferences(stampedeResourcePreferences);
-                gatewayResourceProfile.addToComputeResourcePreferences(trestlesResourcePreferences);
-                gatewayResourceProfile.addToComputeResourcePreferences(bigRedResourcePreferences);
-                airavata.updateGatewayResourceProfile(gatewayResourceProfile.getGatewayID(), gatewayResourceProfile);
+            for (GatewayResourceProfile gatewayResourceProfile : allGatewayComputeResources) {
+                for (String resourceId : loginNamesWithResourceIds.keySet()) {
+                    if (resourceId.contains("stampede")) {
+                        stampedeResourcePreferences = createComputeResourcePreference(resourceId, "TG-STA110014S", false, null,
+                                JobSubmissionProtocol.SSH, DataMovementProtocol.SCP, "/scratch/01437/ogce/gta-work-dirs", loginNamesWithResourceIds.get(resourceId));
+                        airavata.addGatewayComputeResourcePreference(gatewayResourceProfile.getGatewayID(), resourceId, stampedeResourcePreferences);
+                    }else if (resourceId.contains("trestles")){
+                        trestlesResourcePreferences = createComputeResourcePreference(resourceId, "sds128", false, null, JobSubmissionProtocol.SSH,
+                                DataMovementProtocol.SCP, "/oasis/scratch/trestles/ogce/temp_project/gta-work-dirs", loginNamesWithResourceIds.get(resourceId));
+                        airavata.addGatewayComputeResourcePreference(gatewayResourceProfile.getGatewayID(), resourceId, trestlesResourcePreferences);
+                    }else if (resourceId.contains("bigred2")){
+                        bigRedResourcePreferences = createComputeResourcePreference(resourceId, "TG-STA110014S", false, null, null, null,
+                                "/N/dc2/scratch/cgateway/gta-work-dirs", loginNamesWithResourceIds.get(resourceId));
+                        airavata.addGatewayComputeResourcePreference(gatewayResourceProfile.getGatewayID(), resourceId, bigRedResourcePreferences);
+                    }
+                }
             }
         } catch (TException e) {
             logger.error("Error occured while updating gateway resource profiles", e);

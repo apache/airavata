@@ -101,9 +101,11 @@ public class ExperimentExecution {
         try {
             if (tokenMap != null && !tokenMap.isEmpty()){
                 for (String gatewayId : tokenMap.keySet()){
-                    String userName = "testUser_" + gatewayId;
-                    List<Project> allUserProjects = airavata.getAllUserProjects(gatewayId, userName);
-                    projectsMap.put(gatewayId, allUserProjects);
+                    if (!gatewayId.equals("php_reference_gateway")){
+                        String userName = "testUser_" + gatewayId;
+                        List<Project> allUserProjects = airavata.getAllUserProjects(gatewayId, userName);
+                        projectsMap.put(gatewayId, allUserProjects);
+                    }
                 }
             }
         } catch (AiravataSystemException e) {
@@ -224,8 +226,9 @@ public class ExperimentExecution {
                         if (projectsPerGateway != null && !projectsPerGateway.isEmpty()){
                             projectID = projectsPerGateway.get(0).getProjectID();
                         }
+                        String userName = "testUser_" + gatewayId;
                         Experiment simpleExperiment =
-                                ExperimentModelUtil.createSimpleExperiment(projectID, "admin", "Amber Experiment", "Amber Experiment run", appId, applicationInputs);
+                                ExperimentModelUtil.createSimpleExperiment(projectID, userName, "Amber Experiment", "Amber Experiment run", appId, applicationInputs);
                         simpleExperiment.setExperimentOutputs(appOutputs);
                         String experimentId;
                         Map<String, String> computeResources = airavata.getAvailableAppInterfaceComputeResources(appId);
@@ -277,67 +280,70 @@ public class ExperimentExecution {
     public void createEchoExperiment () throws Exception{
         try {
             for (String gatewayId : csTokens.keySet()) {
-                String token = csTokens.get(gatewayId);
-                Map<String, String> appsWithNames = appInterfaceMap.get(gatewayId);
-                for (String appId : appsWithNames.keySet()) {
-                    List<InputDataObjectType> applicationInputs = airavata.getApplicationInputs(appId);
-                    List<OutputDataObjectType> appOutputs = airavata.getApplicationOutputs(appId);
-                    String appName = appsWithNames.get(appId);
-                    if (appName.equals(TestFrameworkConstants.AppcatalogConstants.ECHO_NAME)) {
-                        for (InputDataObjectType inputDataObjectType : applicationInputs) {
-                            if (inputDataObjectType.getName().equalsIgnoreCase("input_to_Echo")) {
-                                inputDataObjectType.setValue("Hello World !!!");
+                if (!gatewayId.equals("php_reference_gateway")){
+                    String token = csTokens.get(gatewayId);
+                    Map<String, String> appsWithNames = appInterfaceMap.get(gatewayId);
+                    for (String appId : appsWithNames.keySet()) {
+                        String appName = appsWithNames.get(appId);
+                        if (appName.equals(TestFrameworkConstants.AppcatalogConstants.ECHO_NAME)) {
+                            List<InputDataObjectType> applicationInputs = airavata.getApplicationInputs(appId);
+                            List<OutputDataObjectType> appOutputs = airavata.getApplicationOutputs(appId);
+                            for (InputDataObjectType inputDataObjectType : applicationInputs) {
+                                if (inputDataObjectType.getName().equalsIgnoreCase("input_to_Echo")) {
+                                    inputDataObjectType.setValue("Hello World !!!");
+                                }
                             }
-                        }
 
-                        List<Project> projectsPerGateway = projectsMap.get(gatewayId);
-                        String projectID = null;
-                        if (projectsPerGateway != null && !projectsPerGateway.isEmpty()){
-                            projectID = projectsPerGateway.get(0).getProjectID();
-                        }
-                        Experiment simpleExperiment =
-                                ExperimentModelUtil.createSimpleExperiment(projectID, "admin", "Echo Experiment", "Echo Experiment run", appId, applicationInputs);
-                        simpleExperiment.setExperimentOutputs(appOutputs);
-                        String experimentId;
-                        Map<String, String> computeResources = airavata.getAvailableAppInterfaceComputeResources(appId);
-                        if (computeResources != null && computeResources.size() != 0) {
-                            for (String id : computeResources.keySet()) {
-                                String resourceName = computeResources.get(id);
-                                if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.TRESTLES_RESOURCE_NAME)) {
-                                    ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "normal", 20, 0, 1, null);
-                                    UserConfigurationData userConfigurationData = new UserConfigurationData();
-                                    userConfigurationData.setAiravataAutoSchedule(false);
-                                    userConfigurationData.setOverrideManualScheduledParams(false);
-                                    userConfigurationData.setComputationalResourceScheduling(scheduling);
-                                    simpleExperiment.setUserConfigurationData(userConfigurationData);
-                                    experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
-                                    experimentsWithTokens.put(experimentId, token);
-                                    experimentsWithGateway.put(experimentId, gatewayId);
-                                } else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.STAMPEDE_RESOURCE_NAME)) {
-                                    ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "normal", 20, 0, 1, null);
-                                    UserConfigurationData userConfigurationData = new UserConfigurationData();
-                                    userConfigurationData.setAiravataAutoSchedule(false);
-                                    userConfigurationData.setOverrideManualScheduledParams(false);
-                                    userConfigurationData.setComputationalResourceScheduling(scheduling);
-                                    simpleExperiment.setUserConfigurationData(userConfigurationData);
-                                    experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
-                                    experimentsWithTokens.put(experimentId, token);
-                                    experimentsWithGateway.put(experimentId, gatewayId);
-                                } else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.BR2_RESOURCE_NAME)) {
-                                    ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "normal", 20, 0, 1, null);
-                                    UserConfigurationData userConfigurationData = new UserConfigurationData();
-                                    userConfigurationData.setAiravataAutoSchedule(false);
-                                    userConfigurationData.setOverrideManualScheduledParams(false);
-                                    userConfigurationData.setComputationalResourceScheduling(scheduling);
-                                    simpleExperiment.setUserConfigurationData(userConfigurationData);
-                                    experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
-                                    experimentsWithTokens.put(experimentId, token);
-                                    experimentsWithGateway.put(experimentId, gatewayId);
+                            List<Project> projectsPerGateway = projectsMap.get(gatewayId);
+                            String projectID = null;
+                            if (projectsPerGateway != null && !projectsPerGateway.isEmpty()){
+                                projectID = projectsPerGateway.get(0).getProjectID();
+                            }
+                            Experiment simpleExperiment =
+                                    ExperimentModelUtil.createSimpleExperiment(projectID, "admin", "Echo Experiment", "Echo Experiment run", appId, applicationInputs);
+                            simpleExperiment.setExperimentOutputs(appOutputs);
+                            String experimentId;
+                            Map<String, String> computeResources = airavata.getAvailableAppInterfaceComputeResources(appId);
+                            if (computeResources != null && computeResources.size() != 0) {
+                                for (String id : computeResources.keySet()) {
+                                    String resourceName = computeResources.get(id);
+                                    if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.TRESTLES_RESOURCE_NAME)) {
+                                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "normal", 20, 0, 1, null);
+                                        UserConfigurationData userConfigurationData = new UserConfigurationData();
+                                        userConfigurationData.setAiravataAutoSchedule(false);
+                                        userConfigurationData.setOverrideManualScheduledParams(false);
+                                        userConfigurationData.setComputationalResourceScheduling(scheduling);
+                                        simpleExperiment.setUserConfigurationData(userConfigurationData);
+                                        experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
+                                        experimentsWithTokens.put(experimentId, token);
+                                        experimentsWithGateway.put(experimentId, gatewayId);
+                                    } else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.STAMPEDE_RESOURCE_NAME)) {
+                                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "normal", 20, 0, 1, null);
+                                        UserConfigurationData userConfigurationData = new UserConfigurationData();
+                                        userConfigurationData.setAiravataAutoSchedule(false);
+                                        userConfigurationData.setOverrideManualScheduledParams(false);
+                                        userConfigurationData.setComputationalResourceScheduling(scheduling);
+                                        simpleExperiment.setUserConfigurationData(userConfigurationData);
+                                        experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
+                                        experimentsWithTokens.put(experimentId, token);
+                                        experimentsWithGateway.put(experimentId, gatewayId);
+                                    } else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.BR2_RESOURCE_NAME)) {
+                                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "normal", 20, 0, 1, null);
+                                        UserConfigurationData userConfigurationData = new UserConfigurationData();
+                                        userConfigurationData.setAiravataAutoSchedule(false);
+                                        userConfigurationData.setOverrideManualScheduledParams(false);
+                                        userConfigurationData.setComputationalResourceScheduling(scheduling);
+                                        simpleExperiment.setUserConfigurationData(userConfigurationData);
+                                        experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
+                                        experimentsWithTokens.put(experimentId, token);
+                                        experimentsWithGateway.put(experimentId, gatewayId);
+                                    }
                                 }
                             }
                         }
                     }
                 }
+
             }
         }catch (Exception e){
             logger.error("Error while creating Echo experiment", e);
