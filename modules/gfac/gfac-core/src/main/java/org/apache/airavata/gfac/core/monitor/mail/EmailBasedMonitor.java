@@ -102,6 +102,7 @@ public class EmailBasedMonitor implements Runnable{
     }
 
     public void addToJobMonitorMap(String jobId, JobExecutionContext jobExecutionContext) {
+        log.info("Added Job Id : " + jobId + " to email based monitor map");
         jobMonitorMap.put(jobId, jobExecutionContext);
     }
 

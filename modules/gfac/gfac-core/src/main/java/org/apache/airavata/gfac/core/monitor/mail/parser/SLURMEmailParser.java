@@ -42,10 +42,10 @@ public class SLURMEmailParser implements EmailParser {
 
     @Override
     public JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException{
+        JobStatusResult jobStatusResult = new JobStatusResult();
         String subject = message.getSubject();
         Pattern pattern = Pattern.compile(REGEX);
         Matcher matcher = pattern.matcher(subject);
-        JobStatusResult jobStatusResult = new JobStatusResult();
         if (matcher.find()) {
             jobStatusResult.setJobId(matcher.group(JOBID));
             jobStatusResult.setState(getJobState(matcher.group(STATUS)));
@@ -57,7 +57,7 @@ public class SLURMEmailParser implements EmailParser {
         } else {
             log.error("No matched found for subject -> " + subject);
         }
-        return null;
+        return jobStatusResult;
     }
 
     private JobState getJobState(String state) {

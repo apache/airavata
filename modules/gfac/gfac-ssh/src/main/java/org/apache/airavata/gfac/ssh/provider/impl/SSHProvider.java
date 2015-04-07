@@ -22,12 +22,15 @@
 package org.apache.airavata.gfac.ssh.provider.impl;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.MonitorPublisher;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.Constants;
+import org.apache.airavata.gfac.ExecutionMode;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
+import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
+import org.apache.airavata.gfac.core.handler.ThreadedHandler;
 import org.apache.airavata.gfac.core.notification.events.StartExecutionEvent;
 import org.apache.airavata.gfac.core.provider.AbstractProvider;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
@@ -367,28 +370,31 @@ public class SSHProvider extends AbstractProvider {
     }
 
     public void delegateToMonitorHandlers(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
-        /*List<ThreadedHandler> daemonHandlers = BetterGfacImpl.getDaemonHandlers();
-        if (daemonHandlers == null) {
-            daemonHandlers = BetterGfacImpl.getDaemonHandlers();
-        }
-        ThreadedHandler pullMonitorHandler = null;
-        ThreadedHandler pushMonitorHandler = null;
-        for (ThreadedHandler threadedHandler : daemonHandlers) {
-            if ("org.apache.airavata.gfac.monitor.handlers.GridPullMonitorHandler".equals(threadedHandler.getClass().getName())) {
-                pullMonitorHandler = threadedHandler;
-                pullMonitorHandler.invoke(jobExecutionContext);
+        if (ServerSettings.isEmailBasedNotificationEnable()) {
+            try {
+                EmailBasedMonitor emailBasedMonitor = EmailBasedMonitor.getInstant(BetterGfacImpl.getMonitorPublisher());
+                emailBasedMonitor.addToJobMonitorMap(jobExecutionContext);
+            } catch (ApplicationSettingsException e) {
+                throw new GFacHandlerException("Error while delegating job execution context to email based monitor");
             }
-            // have to handle the GridPushMonitorHandler logic
-        }
-        if (pullMonitorHandler == null && pushMonitorHandler == null && ExecutionMode.ASYNCHRONOUS.equals(jobExecutionContext.getGFacConfiguration().getExecutionMode())) {
-            log.error("No Daemon handler is configured in gfac-config.xml, either pull or push, so monitoring will not invoked" +
-                    ", execution is configured as asynchronous, so Outhandler will not be invoked");
-        }*/
-        try {
-            EmailBasedMonitor emailBasedMonitor = EmailBasedMonitor.getInstant(((MonitorPublisher) jobExecutionContext.getProperty("MonitorPublisher")));
-            emailBasedMonitor.addToJobMonitorMap(jobExecutionContext);
-        } catch (ApplicationSettingsException e) {
-            throw new GFacHandlerException("Error while delegating job execution context to email based monitor");
+        } else {
+            List<ThreadedHandler> daemonHandlers = BetterGfacImpl.getDaemonHandlers();
+            if (daemonHandlers == null) {
+                daemonHandlers = BetterGfacImpl.getDaemonHandlers();
+            }
+            ThreadedHandler pullMonitorHandler = null;
+            ThreadedHandler pushMonitorHandler = null;
+            for (ThreadedHandler threadedHandler : daemonHandlers) {
+                if ("org.apache.airavata.gfac.monitor.handlers.GridPullMonitorHandler".equals(threadedHandler.getClass().getName())) {
+                    pullMonitorHandler = threadedHandler;
+                    pullMonitorHandler.invoke(jobExecutionContext);
+                }
+                // have to handle the GridPushMonitorHandler logic
+            }
+            if (pullMonitorHandler == null && pushMonitorHandler == null && ExecutionMode.ASYNCHRONOUS.equals(jobExecutionContext.getGFacConfiguration().getExecutionMode())) {
+                log.error("No Daemon handler is configured in gfac-config.xml, either pull or push, so monitoring will not invoked" +
+                        ", execution is configured as asynchronous, so Outhandler will not be invoked");
+            }
         }
     }
 

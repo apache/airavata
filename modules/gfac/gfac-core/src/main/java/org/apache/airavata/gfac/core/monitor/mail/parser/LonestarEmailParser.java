@@ -20,5 +20,55 @@
 */
 package org.apache.airavata.gfac.core.monitor.mail.parser;
 
-public class LonestarEmailParser {
+import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.gfac.core.monitor.mail.JobStatusResult;
+import org.apache.airavata.model.workspace.experiment.JobState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class LonestarEmailParser implements EmailParser {
+    private static final Logger log = LoggerFactory.getLogger(LonestarEmailParser.class);
+    //root@c312-206.ls4.tacc.utexas.edu
+    private static final String SIGNAL = "signal";
+    private static final String LONESTAR_REGEX = "Job (?<" + JOBID + ">\\d+) \\(.*\\) (?<" + STATUS
+            + ">.*)\\s[a-zA-Z =]+(?<" + EXIT_STATUS + ">\\d+)\\sSignal[ ]*=[ ]*(?<" + SIGNAL + ">[a-zA-z]*)";
+
+    @Override
+    public JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException {
+        JobStatusResult jobStatusResult = new JobStatusResult();
+        try {
+            String content = ((String) message.getContent());
+            Pattern pattern = Pattern.compile(LONESTAR_REGEX);
+            Matcher matcher = pattern.matcher(content);
+            if (matcher.find()) {
+                jobStatusResult.setJobId(matcher.group(JOBID));
+                String status = matcher.group(STATUS);
+                jobStatusResult.setState(getJobState(status, content));
+                return jobStatusResult;
+            } else {
+                log.error("No matched found for content => \n" + content);
+            }
+        } catch (IOException e) {
+            throw new AiravataException("Error while reading content of the email message");
+        }
+        return jobStatusResult;
+    }
+
+    private JobState getJobState(String status, String content) {
+        switch (status) {
+            case "Aborted":
+                return JobState.FAILED;
+            case "Scucess":
+                return JobState.COMPLETE;
+            default:
+                return JobState.UNKNOWN;
+        }
+
+    }
 }
