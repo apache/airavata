@@ -66,7 +66,6 @@ public class GatewayRegister {
             logger.error("Error while initializing setup step", e);
             throw new Exception("Error while initializing setup step", e);
         }
-
     }
 
     public void createGateways() throws Exception{

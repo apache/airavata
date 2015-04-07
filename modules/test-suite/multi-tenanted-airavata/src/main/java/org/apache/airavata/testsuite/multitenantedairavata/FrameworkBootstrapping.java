@@ -79,10 +79,6 @@ public class FrameworkBootstrapping {
                 experimentExecution.createAmberExperiment();
                 experimentExecution.launchExperiments();
                 experimentExecution.monitorExperiments();
-//                PrintWriter resultWriter = experimentExecution.getResultWriter();
-//                resultWriter.println("End of test framework results");
-//                resultWriter.println("======================================");
-//                resultWriter.flush();
             }
         } catch (Exception e) {
             logger.error("Error occured while set up", e);
@@ -118,7 +114,7 @@ public class FrameworkBootstrapping {
 
             options.addOption("regApps", false , "Gateway ID");
             options.addOption("expExec", false, "Experiment ID");
-            options.addOption("a", false, "Do application registration and experiment execution together");
+            options.addOption("runAll", false, "Do application registration and experiment execution together");
 
             CommandLineParser parser = new PosixParser();
             CommandLine cmd = parser.parse( options, args);
