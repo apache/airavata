@@ -36,20 +36,18 @@ public class PBSEmailParser implements EmailParser {
 
     private static final Logger log = LoggerFactory.getLogger(PBSEmailParser.class);
 
-    private static final String STATUS = "status";
-    private static final String JOBID = "jobId";
-    private static final String EXIT_STATUS = "exitStatus";
+
     private static final String REGEX = "[a-zA-Z: ]*(?<" + JOBID + ">[a-zA-Z0-9-\\.]*)\\s+.*\\s+.*\\s+(?<"
             + STATUS + ">[a-zA-Z\\ ]*)";
     private static final String REGEX_EXIT_STATUS = "Exit_status=(?<" + EXIT_STATUS + ">[\\d]+)";
 
     @Override
     public JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException {
+        JobStatusResult jobStatusResult = new JobStatusResult();
         try {
             String content = ((String) message.getContent());
             Pattern pattern = Pattern.compile(REGEX);
             Matcher matcher = pattern.matcher(content);
-            JobStatusResult jobStatusResult = new JobStatusResult();
             if (matcher.find()) {
                 jobStatusResult.setJobId(matcher.group(JOBID));
                 String statusLine = matcher.group(STATUS);
@@ -62,7 +60,7 @@ public class PBSEmailParser implements EmailParser {
         } catch (IOException e) {
             throw new AiravataException("Error while reading content of the email message");
         }
-        return null;
+        return jobStatusResult;
     }
 
     private JobState getJobState(String statusLine, String content) {

@@ -305,7 +305,6 @@ public class BetterGfacImpl implements GFac,Watcher {
         jobExecutionContext.setGfac(this);
         jobExecutionContext.setZk(zk);
         jobExecutionContext.setCredentialStoreToken(AiravataZKUtils.getExpTokenId(zk, experimentID, taskID));
-        jobExecutionContext.setProperty("MonitorPublisher", monitorPublisher);
 
         // handle job submission protocol
         List<JobSubmissionInterface> jobSubmissionInterfaces = computeResource.getJobSubmissionInterfaces();
