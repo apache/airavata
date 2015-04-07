@@ -28,10 +28,7 @@ import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -79,9 +76,13 @@ public class FrameworkBootstrapping {
                 tokens = readTokens();
                 experimentExecution = new ExperimentExecution(setup.getAiravata(), tokens);
                 experimentExecution.createEchoExperiment();
-//                experimentExecution.createAmberExperiment();
+                experimentExecution.createAmberExperiment();
                 experimentExecution.launchExperiments();
-//                experimentExecution.monitorExperiments();
+                experimentExecution.monitorExperiments();
+//                PrintWriter resultWriter = experimentExecution.getResultWriter();
+//                resultWriter.println("End of test framework results");
+//                resultWriter.println("======================================");
+//                resultWriter.flush();
             }
         } catch (Exception e) {
             logger.error("Error occured while set up", e);

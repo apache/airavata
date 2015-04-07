@@ -99,12 +99,12 @@ public class ComputeResourceRegister {
                 if (resourceName.contains("stampede")) {
                     // adding stampede
                     stampedeResourceId = registerComputeHost(resourceName, "TACC Stampede Cluster",
-                            ResourceJobManagerType.SLURM, "push", "/usr/bin", SecurityProtocol.SSH_KEYS, 22, null);
+                            ResourceJobManagerType.SLURM, "push", "/usr/bin", SecurityProtocol.SSH_KEYS, 22, "ibrun");
                     System.out.println("Stampede Resource Id is " + stampedeResourceId);
                 } else if (resourceName.contains("trestles")) {
                     //Register Trestles
                     trestlesResourceId = registerComputeHost("trestles.sdsc.xsede.org", "SDSC Trestles Cluster",
-                            ResourceJobManagerType.PBS, "push", "/opt/torque/bin/", SecurityProtocol.SSH_KEYS, 22, null);
+                            ResourceJobManagerType.PBS, "push", "/opt/torque/bin/", SecurityProtocol.SSH_KEYS, 22, "mpirun -np");
                     System.out.println("Trestles Resource Id is " + trestlesResourceId);
                 } else if (resourceName.contains("bigred2")) {
                     //Register BigRedII

@@ -37,10 +37,7 @@ import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
-import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.model.workspace.experiment.ExperimentState;
-import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
+import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.testsuite.multitenantedairavata.utils.PropertyFileType;
 import org.apache.airavata.testsuite.multitenantedairavata.utils.PropertyReader;
 import org.apache.airavata.testsuite.multitenantedairavata.utils.TestFrameworkConstants;
@@ -49,10 +46,11 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.File;
+import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class ExperimentExecution {
     private Airavata.Client airavata;
@@ -63,9 +61,10 @@ public class ExperimentExecution {
     private Map<String, Map<String, String>> appInterfaceMap;
     private Map<String, List<Project>> projectsMap;
     private PropertyReader propertyReader;
+    private PrintWriter resultWriter;
 
     public ExperimentExecution(Airavata.Client airavata,
-                               Map<String, String> tokenMap ) {
+                               Map<String, String> tokenMap ) throws Exception {
         this.airavata = airavata;
         this.csTokens = tokenMap;
         this.appInterfaceMap = getApplicationMap(tokenMap);
@@ -73,9 +72,23 @@ public class ExperimentExecution {
         this.projectsMap = getProjects(tokenMap);
         this.experimentsWithTokens = new HashMap<String, String>();
         this.experimentsWithGateway = new HashMap<String, String>();
+        String resultFileLocation = propertyReader.readProperty(TestFrameworkConstants.FrameworkPropertiesConstants.RESULT_WRITE_LOCATION, PropertyFileType.TEST_FRAMEWORK);
+        String resultFileName = getResultFileName();
+        File resultFile = new File(resultFileLocation + resultFileName);
+        resultWriter = new PrintWriter(resultFile, "UTF-8");
+        resultWriter.println("Test Framework Results");
+        resultWriter.println("========================================");
     }
 
-    protected Map<String, Map<String, String>> getApplicationMap (Map<String, String> tokenMap){
+    public PrintWriter getResultWriter() {
+        return resultWriter;
+    }
+
+    public void setResultWriter(PrintWriter resultWriter) {
+        this.resultWriter = resultWriter;
+    }
+
+    protected Map<String, Map<String, String>> getApplicationMap (Map<String, String> tokenMap) throws  Exception{
         appInterfaceMap = new HashMap<String, Map<String, String>>();
         try {
             if (tokenMap != null && !tokenMap.isEmpty()){
@@ -85,18 +98,22 @@ public class ExperimentExecution {
                 }
             }
         } catch (AiravataSystemException e) {
-            e.printStackTrace();
+            logger.error("Error while getting application interfaces", e);
+            throw new Exception("Error while getting application interfaces", e);
         } catch (InvalidRequestException e) {
-            e.printStackTrace();
+            logger.error("Error while getting application interfaces", e);
+            throw new Exception("Error while getting application interfaces", e);
         } catch (AiravataClientException e) {
-            e.printStackTrace();
+            logger.error("Error while getting application interfaces", e);
+            throw new Exception("Error while getting application interfaces", e);
         } catch (TException e) {
-            e.printStackTrace();
+            logger.error("Error while getting application interfaces", e);
+            throw new Exception("Error while getting application interfaces", e);
         }
         return appInterfaceMap;
     }
 
-    protected Map<String, List<Project>> getProjects (Map<String, String> tokenMap){
+    protected Map<String, List<Project>> getProjects (Map<String, String> tokenMap) throws Exception{
         projectsMap = new HashMap<String, List<Project>>();
         try {
             if (tokenMap != null && !tokenMap.isEmpty()){
@@ -109,13 +126,17 @@ public class ExperimentExecution {
                 }
             }
         } catch (AiravataSystemException e) {
-            e.printStackTrace();
+            logger.error("Error while getting all user projects", e);
+            throw new Exception("Error while getting all user projects", e);
         } catch (InvalidRequestException e) {
-            e.printStackTrace();
+            logger.error("Error while getting all user projects", e);
+            throw new Exception("Error while getting all user projects", e);
         } catch (AiravataClientException e) {
-            e.printStackTrace();
+            logger.error("Error while getting all user projects", e);
+            throw new Exception("Error while getting all user projects", e);
         } catch (TException e) {
-            e.printStackTrace();
+            logger.error("Error while getting all user projects", e);
+            throw new Exception("Error while getting all user projects", e);
         }
         return projectsMap;
     }
@@ -132,69 +153,107 @@ public class ExperimentExecution {
     }
 
     public void monitorExperiments () throws Exception {
+
         String brokerUrl = propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.RABBIT_BROKER_URL, PropertyFileType.AIRAVATA_CLIENT);
         System.out.println("broker url " + brokerUrl);
         final String exchangeName = propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.RABBIT_EXCHANGE_NAME, PropertyFileType.AIRAVATA_CLIENT);
         RabbitMQStatusConsumer consumer = new RabbitMQStatusConsumer(brokerUrl, exchangeName);
-        for (final String expId : experimentsWithGateway.keySet()){
-            final String gatewayId = experimentsWithGateway.get(expId);
-            consumer.listen(new MessageHandler() {
-                @Override
-                public Map<String, Object> getProperties() {
-                    Map<String, Object> props = new HashMap<String, Object>();
-                    List<String> routingKeys = new ArrayList<String>();
+
+        consumer.listen(new MessageHandler() {
+            @Override
+            public Map<String, Object> getProperties() {
+                Map<String, Object> props = new HashMap<String, Object>();
+                List<String> routingKeys = new ArrayList<String>();
+                for (String expId : experimentsWithGateway.keySet()) {
+                    String gatewayId = experimentsWithGateway.get(expId);
+                    System.out.println("experiment Id : " + expId + " gateway Id : " + gatewayId);
+
                     routingKeys.add(gatewayId);
                     routingKeys.add(gatewayId + "." + expId);
                     routingKeys.add(gatewayId + "." + expId + ".*");
                     routingKeys.add(gatewayId + "." + expId + ".*.*");
                     routingKeys.add(gatewayId + "." + expId + ".*.*.*");
-
-                    props.put(MessagingConstants.RABBIT_ROUTING_KEY, routingKeys);
-                    return props;
                 }
+                props.put(MessagingConstants.RABBIT_ROUTING_KEY, routingKeys);
+                return props;
+            }
 
-                @Override
-                public void onMessage(MessageContext message) {
+            @Override
+            public void onMessage(MessageContext message) {
 
-                    if (message.getType().equals(MessageType.EXPERIMENT)){
-                        try {
-                            ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent();
-                            TBase messageEvent = message.getEvent();
-                            byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
-                            ThriftUtils.createThriftFromBytes(bytes, event);
-                            ExperimentState expState = event.getState();
-                            if (expState.equals(ExperimentState.COMPLETED)){
-                                // check file transfers
-                                List<OutputDataObjectType> experimentOutputs = airavata.getExperimentOutputs(expId);
-                                int i = 1;
-                                for (OutputDataObjectType output : experimentOutputs){
-                                    logger.info("################ Experiment : " + expId + " COMPLETES ###################");
-                                    logger.info("Output " + i + " : "  + output.getValue());
-                                    i++;
-                                }
+                if (message.getType().equals(MessageType.EXPERIMENT)) {
+                    try {
+                        ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent();
+                        TBase messageEvent = message.getEvent();
+                        byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
+                        ThriftUtils.createThriftFromBytes(bytes, event);
+                        ExperimentState expState = event.getState();
+                        String expId = event.getExperimentId();
+                        String gatewayId = event.getGatewayId();
+
+                        if (expState.equals(ExperimentState.COMPLETED)) {
+                            resultWriter.println();
+                            resultWriter.println("Results for experiment : " + expId + " of gateway Id : " + gatewayId);
+                            resultWriter.println("=====================================================================");
+                            resultWriter.println("Status : " + ExperimentState.COMPLETED.toString());
+                            // check file transfers
+                            List<OutputDataObjectType> experimentOutputs = airavata.getExperimentOutputs(expId);
+                            int i = 1;
+                            for (OutputDataObjectType output : experimentOutputs) {
+
+                                System.out.println("################ Experiment : " + expId + " COMPLETES ###################");
+                                System.out.println("Output " + i + " : " + output.getValue());
+                                resultWriter.println("Output " + i + " : " + output.getValue());
+                                i++;
                             }
-                            logger.info(" Experiment Id : '" + expId
-                                    + "' with state : '" + event.getState().toString() +
-                                    " for Gateway " + event.getGatewayId());
-                        } catch (TException e) {
-                            logger.error(e.getMessage(), e);
+                            resultWriter.println("################  End of Results for Experiment : " + expId + " ###############");
+                            resultWriter.println();
+                        } else if (expState.equals(ExperimentState.FAILED)) {
+                            // check file transfers
+                            int j = 1;
+                            resultWriter.println("Status : " + ExperimentState.FAILED.toString());
+                            System.out.println("################ Experiment : " + expId + " FAILED ###################");
+                            Experiment experiment = airavata.getExperiment(expId);
+                            List<ErrorDetails> errors = experiment.getErrors();
+                            for (ErrorDetails errorDetails : errors) {
+                                System.out.println(errorDetails.getActualErrorMessage());
+                                resultWriter.println("Actual Error : " + j + " : " + errorDetails.getActualErrorMessage());
+                                resultWriter.println("User Friendly Message : " + j + " : " + errorDetails.getUserFriendlyMessage());
+                                resultWriter.println("Corrective Action : " + j + " : " + errorDetails.getCorrectiveAction());
+                            }
+                            resultWriter.println("################  End of Results for Experiment : " + expId + " ###############");
                         }
-                    }else if (message.getType().equals(MessageType.JOB)){
-                        try {
-                            JobStatusChangeEvent event = new JobStatusChangeEvent();
-                            TBase messageEvent = message.getEvent();
-                            byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
-                            ThriftUtils.createThriftFromBytes(bytes, event);
-                            logger.info(" Job ID : '" + event.getJobIdentity().getJobId()
-                                    + "' with state : '" + event.getState().toString() +
-                                    " for Gateway " + event.getJobIdentity().getGatewayId());
-                        } catch (TException e) {
-                            logger.error(e.getMessage(), e);
-                        }
+                        System.out.println(" Experiment Id : '" + expId
+                                + "' with state : '" + event.getState().toString() +
+                                " for Gateway " + event.getGatewayId());
+                    } catch (TException e) {
+                        e.printStackTrace();
+                        logger.error(e.getMessage(), e);
+                    }
+                } else if (message.getType().equals(MessageType.JOB)) {
+                    try {
+                        JobStatusChangeEvent event = new JobStatusChangeEvent();
+                        TBase messageEvent = message.getEvent();
+                        byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
+                        ThriftUtils.createThriftFromBytes(bytes, event);
+                        System.out.println(" Job ID : '" + event.getJobIdentity().getJobId()
+                                + "' with state : '" + event.getState().toString() +
+                                " for Gateway " + event.getJobIdentity().getGatewayId());
+//                        resultWriter.println("Job Status : " + event.getState().toString());
+
+                    } catch (TException e) {
+                        logger.error(e.getMessage(), e);
                     }
                 }
-            });
-        }
+            resultWriter.flush();
+            }
+        });
+    }
+
+    private String getResultFileName (){
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HHmmss");
+        Calendar cal = Calendar.getInstance();
+        return dateFormat.format(cal.getTime());
     }
 
     public void createAmberExperiment () throws Exception{
@@ -255,17 +314,18 @@ public class ExperimentExecution {
                                     experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
                                     experimentsWithTokens.put(experimentId, token);
                                     experimentsWithGateway.put(experimentId, gatewayId);
-                                }else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.BR2_RESOURCE_NAME)) {
-                                    ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "normal", 20, 0, 1, null);
-                                    UserConfigurationData userConfigurationData = new UserConfigurationData();
-                                    userConfigurationData.setAiravataAutoSchedule(false);
-                                    userConfigurationData.setOverrideManualScheduledParams(false);
-                                    userConfigurationData.setComputationalResourceScheduling(scheduling);
-                                    simpleExperiment.setUserConfigurationData(userConfigurationData);
-                                    experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
-                                    experimentsWithTokens.put(experimentId, token);
-                                    experimentsWithGateway.put(experimentId, gatewayId);
                                 }
+//                                else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.BR2_RESOURCE_NAME)) {
+//                                    ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "normal", 20, 0, 1, null);
+//                                    UserConfigurationData userConfigurationData = new UserConfigurationData();
+//                                    userConfigurationData.setAiravataAutoSchedule(false);
+//                                    userConfigurationData.setOverrideManualScheduledParams(false);
+//                                    userConfigurationData.setComputationalResourceScheduling(scheduling);
+//                                    simpleExperiment.setUserConfigurationData(userConfigurationData);
+//                                    experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
+//                                    experimentsWithTokens.put(experimentId, token);
+//                                    experimentsWithGateway.put(experimentId, gatewayId);
+//                                }
                             }
                         }
                     }
@@ -327,17 +387,18 @@ public class ExperimentExecution {
                                         experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
                                         experimentsWithTokens.put(experimentId, token);
                                         experimentsWithGateway.put(experimentId, gatewayId);
-                                    } else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.BR2_RESOURCE_NAME)) {
-                                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "normal", 20, 0, 1, null);
-                                        UserConfigurationData userConfigurationData = new UserConfigurationData();
-                                        userConfigurationData.setAiravataAutoSchedule(false);
-                                        userConfigurationData.setOverrideManualScheduledParams(false);
-                                        userConfigurationData.setComputationalResourceScheduling(scheduling);
-                                        simpleExperiment.setUserConfigurationData(userConfigurationData);
-                                        experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
-                                        experimentsWithTokens.put(experimentId, token);
-                                        experimentsWithGateway.put(experimentId, gatewayId);
                                     }
+//                                    else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.BR2_RESOURCE_NAME)) {
+//                                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "normal", 20, 0, 1, null);
+//                                        UserConfigurationData userConfigurationData = new UserConfigurationData();
+//                                        userConfigurationData.setAiravataAutoSchedule(false);
+//                                        userConfigurationData.setOverrideManualScheduledParams(false);
+//                                        userConfigurationData.setComputationalResourceScheduling(scheduling);
+//                                        simpleExperiment.setUserConfigurationData(userConfigurationData);
+//                                        experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
+//                                        experimentsWithTokens.put(experimentId, token);
+//                                        experimentsWithGateway.put(experimentId, gatewayId);
+//                                    }
                                 }
                             }
                         }
