@@ -191,8 +191,8 @@ public class ExperimentExecution {
                         String expId = event.getExperimentId();
                         String gatewayId = event.getGatewayId();
 
+                        resultWriter.println();
                         if (expState.equals(ExperimentState.COMPLETED)) {
-                            resultWriter.println();
                             resultWriter.println("Results for experiment : " + expId + " of gateway Id : " + gatewayId);
                             resultWriter.println("=====================================================================");
                             resultWriter.println("Status : " + ExperimentState.COMPLETED.toString());
@@ -200,16 +200,17 @@ public class ExperimentExecution {
                             List<OutputDataObjectType> experimentOutputs = airavata.getExperimentOutputs(expId);
                             int i = 1;
                             for (OutputDataObjectType output : experimentOutputs) {
-
                                 System.out.println("################ Experiment : " + expId + " COMPLETES ###################");
                                 System.out.println("Output " + i + " : " + output.getValue());
                                 resultWriter.println("Output " + i + " : " + output.getValue());
                                 i++;
                             }
-                            resultWriter.println("################  End of Results for Experiment : " + expId + " ###############");
+                            resultWriter.println("End of Results for Experiment : " + expId );
+                            resultWriter.println("=====================================================================");
                             resultWriter.println();
                         } else if (expState.equals(ExperimentState.FAILED)) {
-                            // check file transfers
+                            resultWriter.println("Results for experiment : " + expId + " of gateway Id : " + gatewayId);
+                            resultWriter.println("=====================================================================");
                             int j = 1;
                             resultWriter.println("Status : " + ExperimentState.FAILED.toString());
                             System.out.println("################ Experiment : " + expId + " FAILED ###################");
@@ -221,13 +222,14 @@ public class ExperimentExecution {
                                 resultWriter.println("User Friendly Message : " + j + " : " + errorDetails.getUserFriendlyMessage());
                                 resultWriter.println("Corrective Action : " + j + " : " + errorDetails.getCorrectiveAction());
                             }
-                            resultWriter.println("################  End of Results for Experiment : " + expId + " ###############");
+                            resultWriter.println("End of Results for Experiment : " + expId );
+                            resultWriter.println("=====================================================================");
+                            resultWriter.println();
                         }
                         System.out.println(" Experiment Id : '" + expId
                                 + "' with state : '" + event.getState().toString() +
                                 " for Gateway " + event.getGatewayId());
                     } catch (TException e) {
-                        e.printStackTrace();
                         logger.error(e.getMessage(), e);
                     }
                 } else if (message.getType().equals(MessageType.JOB)) {
