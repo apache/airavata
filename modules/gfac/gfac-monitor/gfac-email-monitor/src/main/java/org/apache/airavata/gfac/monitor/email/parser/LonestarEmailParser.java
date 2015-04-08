@@ -18,10 +18,10 @@
  * under the License.
  *
 */
-package org.apache.airavata.gfac.core.monitor.mail.parser;
+package org.apache.airavata.gfac.monitor.email.parser;
 
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.gfac.core.monitor.mail.JobStatusResult;
+import org.apache.airavata.gfac.monitor.email.JobStatusResult;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +64,7 @@ public class LonestarEmailParser implements EmailParser {
         switch (status) {
             case "Aborted":
                 return JobState.FAILED;
-            case "Scucess":
+            case "Success":
                 return JobState.COMPLETE;
             default:
                 return JobState.UNKNOWN;

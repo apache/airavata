@@ -18,27 +18,18 @@
  * under the License.
  *
 */
-package org.apache.airavata.gfac.core.monitor.mail;
+package org.apache.airavata.gfac.monitor.email.parser;
 
-import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.gfac.monitor.email.JobStatusResult;
 
-public class JobStatusResult {
-    private JobState state;
-    private String jobId;
+import javax.mail.Message;
+import javax.mail.MessagingException;
 
-    public JobState getState() {
-        return state;
-    }
+public interface EmailParser {
+    static final String STATUS = "status";
+    static final String JOBID = "jobId";
+    static final String EXIT_STATUS = "exitStatus";
 
-    public void setState(JobState state) {
-        this.state = state;
-    }
-
-    public String getJobId() {
-        return jobId;
-    }
-
-    public void setJobId(String jobId) {
-        this.jobId = jobId;
-    }
+    JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException;
 }
