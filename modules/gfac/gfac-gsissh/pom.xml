@@ -23,6 +23,12 @@
     <url>http://airavata.apache.org/</url>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-gfac-email-monitor</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- Logging -->
         <dependency>
             <groupId>org.slf4j</groupId>
