@@ -76,7 +76,6 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         } catch (Exception e) {
             throw new OrchestratorException("Error launching the job", e);
         }
-
     }
 
     /**

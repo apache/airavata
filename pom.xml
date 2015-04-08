@@ -22,7 +22,7 @@
 	<parent>
 		<groupId>org.apache</groupId>
 		<artifactId>apache</artifactId>
-		<version>14</version>
+		<version>16</version>
 	</parent>
 
 	<groupId>org.apache.airavata</groupId>
@@ -69,14 +69,13 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<axis2.version>1.5.1</axis2.version>
-		<derby.version>10.9.1.0</derby.version>
-		<org.slf4j.version>1.7.6</org.slf4j.version>
-		<log4j.version>1.2.16</log4j.version>
+		<derby.version>10.11.1.1</derby.version>
+		<org.slf4j.version>1.7.10</org.slf4j.version>
+		<log4j.version>1.2.17</log4j.version>
 		<axiom.version>1.2.8</axiom.version>
-		<surefire.version>2.12</surefire.version>
-		<junit.version>4.7</junit.version>
+		<surefire.version>2.18.1</surefire.version>
+		<junit.version>4.12</junit.version>
 		<curator.version>2.7.1</curator.version>
-		<jcr.version>2.0</jcr.version>
 		<xmlbeans.version>2.5.0</xmlbeans.version>
 		<xpp3.version>1.1.6</xpp3.version>
 		<xpp5.version>1.2.8</xpp5.version>
@@ -84,18 +83,17 @@
 		<xsul5.version>1.2.7</xsul5.version>
 		<gpel.version>1.0.9</gpel.version>
 		<atomixmiser.version>0.9.4</atomixmiser.version>
-		<yfilter.version>1.0</yfilter.version>
 		<jython.version>2.5.3</jython.version>
 		<jersey.version>1.13</jersey.version>
 		<tomcat.version>7.0.41</tomcat.version>
 		<cargo.version>1.3.1</cargo.version>
 		<oa4mp.version>1.1.3</oa4mp.version>
-		<antrun.version>1.7</antrun.version>
+		<antrun.version>1.8</antrun.version>
 		<bouncy.castle.version>1.50</bouncy.castle.version>
 		<jglobus.version>2.1.0</jglobus.version>
 		<ebay.cors.filter>1.0.0</ebay.cors.filter>
 		<thrift.version>0.9.1</thrift.version>
-		<mysql.connector.version>5.1.31</mysql.connector.version>
+		<mysql.connector.version>5.1.34</mysql.connector.version>
 		<skipTests>false</skipTests>
         <google.gson.version>2.3</google.gson.version>
 		<zk.version>3.4.0</zk.version>
@@ -489,8 +487,8 @@
 						<artifactId>maven-compiler-plugin</artifactId>
 						<version>3.1</version>
 						<configuration>
-							<source>1.6</source>
-							<target>1.6</target>
+							<source>1.8</source>
+							<target>1.8</target>
 						</configuration>
 					</plugin>
 					<plugin>
@@ -533,7 +531,6 @@
 				<module>modules/server</module>
 				<module>modules/test-suite</module>
 				<module>modules/distribution</module>
-				<!--<module>modules/ws-messenger</module>-->
 				<module>modules/messaging</module>
 				<module>modules/integration-tests</module>
 				<module>modules/workflow</module>
@@ -582,8 +579,8 @@
 						<artifactId>maven-compiler-plugin</artifactId>
 						<version>3.1</version>
 						<configuration>
-							<source>1.6</source>
-							<target>1.6</target>
+							<source>1.8</source>
+							<target>1.8</target>
 						</configuration>
 					</plugin>
 					<plugin>
@@ -622,53 +619,6 @@
 				<module>modules/integration-tests</module>
 			</modules>
 		</profile>
-		<!--profile> <id>ec2Tests</id> <build> <plugins> <plugin> <groupId>org.apache.maven.plugins</groupId> 
-			<artifactId>maven-remote-resources-plugin</artifactId> <executions> <execution> 
-			<goals> <goal>process</goal> </goals> </execution> </executions> </plugin> 
-			<plugin> <artifactId>maven-resources-plugin</artifactId> <version>2.5</version> 
-			<executions> <execution> <id>copy-resources</id> <phase>validate</phase> 
-			<goals> <goal>copy-resources</goal> </goals> <configuration> <outputDirectory>${basedir}/target/classes/META-INF</outputDirectory> 
-			<resources> <resource> <directory>${basedir}/src/main/assembly/dist</directory> 
-			<filtering>true</filtering> </resource> </resources> </configuration> </execution> 
-			</executions> </plugin> <plugin> <groupId>org.apache.maven.plugins</groupId> 
-			<artifactId>maven-compiler-plugin</artifactId> <version>2.3.2</version> <configuration> 
-			<source>1.6</source> <target>1.6</target> </configuration> </plugin> <plugin> 
-			<groupId>org.apache.maven.plugins</groupId> <artifactId>maven-surefire-plugin</artifactId> 
-			<version>${surefire.version}</version> <configuration> <failIfNoTests>false</failIfNoTests> 
-			<skipTests>${skipTests}</skipTests> <workingDirectory>${project.build.testOutputDirectory}</workingDirectory> 
-			<excludes> <exclude>**/IT.java</exclude> </excludes> <includes> <include>**/*TestEC2Auth.java</include> 
-			</includes> </configuration> </plugin> </plugins> </build> <activation> <activeByDefault>true</activeByDefault> 
-			</activation> <modules> <module>airavata-api</module> <module>modules/gfac</module> 
-			<module>modules/ws-messenger</module> <module>modules/workflow-model</module> 
-			<module>modules/commons</module> <module>modules/registry</module> <module>modules/airavata-client</module> 
-			<module>modules/security</module> <module>modules/credential-store</module> 
-			<module>modules/orchestrator</module> <module>tools</module> <module>modules/server</module> 
-			<module>modules/test-suite</module> <module>modules/distribution</module> 
-			<module>modules/integration-tests</module> </modules> </profile> <profile> 
-			<id>allHpcTests</id> <build> <plugins> <plugin> <groupId>org.apache.maven.plugins</groupId> 
-			<artifactId>maven-remote-resources-plugin</artifactId> <executions> <execution> 
-			<goals> <goal>process</goal> </goals> </execution> </executions> </plugin> 
-			<plugin> <artifactId>maven-resources-plugin</artifactId> <version>2.5</version> 
-			<executions> <execution> <id>copy-resources</id> <phase>validate</phase> 
-			<goals> <goal>copy-resources</goal> </goals> <configuration> <outputDirectory>${basedir}/target/classes/META-INF</outputDirectory> 
-			<resources> <resource> <directory>${basedir}/src/main/assembly/dist</directory> 
-			<filtering>true</filtering> </resource> </resources> </configuration> </execution> 
-			</executions> </plugin> <plugin> <groupId>org.apache.maven.plugins</groupId> 
-			<artifactId>maven-compiler-plugin</artifactId> <version>2.3.2</version> <configuration> 
-			<source>1.6</source> <target>1.6</target> </configuration> </plugin> <plugin> 
-			<groupId>org.apache.maven.plugins</groupId> <artifactId>maven-surefire-plugin</artifactId> 
-			<version>${surefire.version}</version> <configuration> <failIfNoTests>false</failIfNoTests> 
-			<skipTests>${skipTests}</skipTests> <workingDirectory>${project.build.testOutputDirectory}</workingDirectory> 
-			<excludes> <exclude>**/IT.java</exclude> </excludes> <includes> <include>**/*TestWithMyProxyAuth.java</include> 
-			<include>**/*TestWithSSHAuth.java</include> <include>**/*TestWithEC2Auth.java</include> 
-			</includes> </configuration> </plugin> </plugins> </build> <activation> <activeByDefault>true</activeByDefault> 
-			</activation> <modules> <module>airavata-api</module> <module>modules/gfac</module> 
-			<module>modules/ws-messenger</module> <module>modules/workflow-model</module> 
-			<module>modules/commons</module> <module>modules/registry</module> <module>modules/airavata-client</module> 
-			<module>modules/security</module> <module>modules/credential-store</module> 
-			<module>modules/orchestrator</module> <module>tools</module> <module>modules/server</module> 
-			<module>modules/test-suite</module> <module>modules/distribution</module> 
-			<module>modules/integration-tests</module> </modules> </profile -->
 		<profile>
 			<id>pedantic</id>
 			<build>
@@ -678,8 +628,8 @@
 						<artifactId>maven-compiler-plugin</artifactId>
 						<version>3.1</version>
 						<configuration>
-							<source>1.6</source>
-							<target>1.6</target>
+							<source>1.8</source>
+							<target>1.8</target>
 						</configuration>
 					</plugin>
 					<plugin>

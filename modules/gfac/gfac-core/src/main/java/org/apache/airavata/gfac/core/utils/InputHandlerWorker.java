@@ -46,6 +46,8 @@ public class InputHandlerWorker implements Callable {
 
     @Override
     public Object call() throws Exception {
-        return gfac.submitJob(experimentId,taskId,gatewayId);
+        boolean b = gfac.submitJob(experimentId, taskId, gatewayId);
+        log.info("InHandler and provider Gfac invocation returned: " + b);
+        return b;
     }
 }

@@ -52,6 +52,8 @@ public class RabbitMQTaskLaunchConsumer {
     private Channel channel;
     private Map<String, QueueDetails> queueDetailsMap = new HashMap<String, QueueDetails>();
     private boolean durableQueue;
+    private MessageHandler messageHandler;
+
 
     public RabbitMQTaskLaunchConsumer() throws AiravataException {
         try {
@@ -94,8 +96,21 @@ public class RabbitMQTaskLaunchConsumer {
         }
     }
 
+    public void reconnect() throws AiravataException{
+        if(messageHandler!=null) {
+            try {
+                listen(messageHandler);
+            } catch (AiravataException e) {
+                String msg = "could not open channel for exchange " + taskLaunchExchangeName;
+                log.error(msg);
+                throw new AiravataException(msg, e);
+
+            }
+        }
+    }
     public String listen(final MessageHandler handler) throws AiravataException {
         try {
+            messageHandler = handler;
             Map<String, Object> props = handler.getProperties();
             final Object routing = props.get(MessagingConstants.RABBIT_ROUTING_KEY);
             if (routing == null) {
@@ -244,6 +259,12 @@ public class RabbitMQTaskLaunchConsumer {
             } catch (IOException ignore) {
             }
         }
+    }
+    public boolean isOpen(){
+        if(connection!=null){
+            return connection.isOpen();
+        }
+        return false;
     }
 
     public void sendAck(long deliveryTag){

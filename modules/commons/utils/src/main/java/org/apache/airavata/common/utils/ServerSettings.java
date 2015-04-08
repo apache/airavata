@@ -59,9 +59,11 @@ public class ServerSettings extends ApplicationSettings {
     public static final String JOB_NOTIFICATION_EMAILIDS = "job.notification.emailids";
     public static final String JOB_NOTIFICATION_FLAGS = "job.notification.flags";
     public static final String GFAC_PASSIVE = "gfac.passive"; // by default this is desabled
+    public static final String LAUNCH_QUEUE_NAME = "launch.queue.name";
+    public static final String CANCEL_QUEUE_NAME = "cancel.queue.name";
 
 
-//    Workflow Enactment Service component configuration.
+    //    Workflow Enactment Service component configuration.
     private static final String ENACTMENT_THREAD_POOL_SIZE = "enactment.thread.pool.size";
     private static final int DEFAULT_ENACTMENT_THREAD_POOL_SIZE = 10;
     private static final String WORKFLOW_PARSER = "workflow.parser";
@@ -80,6 +82,15 @@ public class ServerSettings extends ApplicationSettings {
 
     public static String getDefaultUser() throws ApplicationSettingsException {
         return getSetting(DEFAULT_USER);
+    }
+
+    public static String getLaunchQueueName() {
+        return getSetting(LAUNCH_QUEUE_NAME, "launch.queue");
+    }
+
+
+    public static String getCancelQueueName() {
+        return getSetting(CANCEL_QUEUE_NAME, "cancel.queue");
     }
 
     public static String getDefaultUserPassword() throws ApplicationSettingsException {
