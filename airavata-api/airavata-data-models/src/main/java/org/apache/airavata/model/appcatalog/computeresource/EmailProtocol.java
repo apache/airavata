@@ -29,24 +29,16 @@ import java.util.HashMap;
 import org.apache.thrift.TEnum;
 
 /**
- * Monitoring modes
- * 
- * POLL_JOB_MANAGER:
- * GFac need to pull job status changes.
- * 
- * XSEDE_AMQP_SUBSCRIBE:
- * Server will publish job status changes to amqp servert.
- * 
+ * Email protocol
  * 
  */
-@SuppressWarnings("all") public enum MonitorMode implements org.apache.thrift.TEnum {
-  POLL_JOB_MANAGER(0),
-  JOB_EMAIL_NOTIFICATION_MONITOR(1),
-  XSEDE_AMQP_SUBSCRIBE(2);
+@SuppressWarnings("all") public enum EmailProtocol implements org.apache.thrift.TEnum {
+  POP3(0),
+  IMAPS(1);
 
   private final int value;
 
-  private MonitorMode(int value) {
+  private EmailProtocol(int value) {
     this.value = value;
   }
 
@@ -61,14 +53,12 @@ import org.apache.thrift.TEnum;
    * Find a the enum type by its integer value, as defined in the Thrift IDL.
    * @return null if the value is not found.
    */
-  public static MonitorMode findByValue(int value) { 
+  public static EmailProtocol findByValue(int value) { 
     switch (value) {
       case 0:
-        return POLL_JOB_MANAGER;
+        return POP3;
       case 1:
-        return JOB_EMAIL_NOTIFICATION_MONITOR;
-      case 2:
-        return XSEDE_AMQP_SUBSCRIBE;
+        return IMAPS;
       default:
         return null;
     }
