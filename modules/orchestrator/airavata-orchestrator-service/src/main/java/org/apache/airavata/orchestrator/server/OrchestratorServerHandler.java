@@ -124,9 +124,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 	public OrchestratorServerHandler() throws OrchestratorException{
 		// registering with zk
 		try {
-			if (ServerSettings.isRabbitMqPublishEnabled()) {
-	                publisher = PublisherFactory.createActivityPublisher();
-	        }
+	        publisher = PublisherFactory.createActivityPublisher();
 			String zkhostPort = AiravataZKUtils.getZKhostPort();
 			String airavataServerHostPort = ServerSettings
 					.getSetting(Constants.ORCHESTRATOR_SERVER_HOST)
@@ -736,27 +734,25 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
                         status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
                         experiment.setExperimentStatus(status);
                         registry.update(RegistryModelType.EXPERIMENT_STATUS, status, experimentId);
-                        if (ServerSettings.isRabbitMqPublishEnabled()) {
-                        	 String gatewayId = null;
-                        	 CredentialReader credentialReader = GFacUtils.getCredentialReader();
-                             if (credentialReader != null) {
-                                 try {
-                                	 gatewayId = credentialReader.getGatewayID(airavataCredStoreToken);
-                                 } catch (Exception e) {
-                                     log.error(e.getLocalizedMessage());
-                                 }
-                             }
-                            if(gatewayId == null || gatewayId.isEmpty()){
-                             gatewayId = ServerSettings.getDefaultUserGateway();
+                        String gatewayId = null;
+                        CredentialReader credentialReader = GFacUtils.getCredentialReader();
+                        if (credentialReader != null) {
+                            try {
+                                gatewayId = credentialReader.getGatewayID(airavataCredStoreToken);
+                            } catch (Exception e) {
+                                log.error(e.getLocalizedMessage());
                             }
-                            ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.LAUNCHED,
-                                    experimentId,
-                                    gatewayId);
-                            String messageId = AiravataUtils.getId("EXPERIMENT");
-                            MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT, messageId, gatewayId);
-                            messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-                            publisher.publish(messageContext);
                         }
+                        if (gatewayId == null || gatewayId.isEmpty()) {
+                            gatewayId = ServerSettings.getDefaultUserGateway();
+                        }
+                        ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.LAUNCHED,
+                                experimentId,
+                                gatewayId);
+                        String messageId = AiravataUtils.getId("EXPERIMENT");
+                        MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT, messageId, gatewayId);
+                        messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+                        publisher.publish(messageContext);
                         registry.update(RegistryModelType.TASK_DETAIL, taskData, taskData.getTaskID());
                         //launching the experiment
                         launchTask(taskData.getTaskID(), airavataCredStoreToken);

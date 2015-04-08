@@ -120,9 +120,7 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
             String messageId = AiravataUtils.getId("EXPERIMENT");
             MessageContext msgCntxt = new MessageContext(event, MessageType.EXPERIMENT, messageId, nodeStatus.getWorkflowNodeIdentity().getGatewayId());
             msgCntxt.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-            if ( ServerSettings.isRabbitMqPublishEnabled()){
-                publisher.publish(msgCntxt);
-            }
+            publisher.publish(msgCntxt);
 		} catch (Exception e) {
             logger.error("Error persisting data" + e.getLocalizedMessage(), e);
             throw new Exception("Error persisting experiment status..", e);

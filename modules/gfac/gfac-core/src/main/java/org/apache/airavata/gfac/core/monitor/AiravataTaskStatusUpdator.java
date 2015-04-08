@@ -62,9 +62,7 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
             String messageId = AiravataUtils.getId("TASK");
             MessageContext msgCntxt = new MessageContext(event, MessageType.TASK, messageId, taskStatus.getTaskIdentity().getGatewayId());
             msgCntxt.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-            if ( ServerSettings.isRabbitMqPublishEnabled()){
-                publisher.publish(msgCntxt);
-            }
+            publisher.publish(msgCntxt);
 		} catch (Exception e) {
             String msg = "Error persisting data task status to database...";
             logger.error(msg + e.getLocalizedMessage(), e);
@@ -109,9 +107,7 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
             String messageId = AiravataUtils.getId("TASK");
             MessageContext msgCntxt = new MessageContext(event, MessageType.TASK, messageId,jobStatus.getJobIdentity().getGatewayId());
             msgCntxt.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-            if ( ServerSettings.isRabbitMqPublishEnabled()){
-                publisher.publish(msgCntxt);
-            }
+            publisher.publish(msgCntxt);
 
         }  catch (Exception e) {
             logger.error("Error persisting data" + e.getLocalizedMessage(), e);
