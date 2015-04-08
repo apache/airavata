@@ -18,7 +18,7 @@
  * under the License.
  *
 */
-package org.apache.airavata.gfac.core.monitor.mail;
+package org.apache.airavata.gfac.monitor.email;
 
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -29,9 +29,10 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.utils.GFacThreadPoolExecutor;
 import org.apache.airavata.gfac.core.utils.OutHandlerWorker;
-import org.apache.airavata.gfac.core.monitor.mail.parser.EmailParser;
-import org.apache.airavata.gfac.core.monitor.mail.parser.PBSEmailParser;
-import org.apache.airavata.gfac.core.monitor.mail.parser.SLURMEmailParser;
+import org.apache.airavata.gfac.monitor.email.parser.EmailParser;
+import org.apache.airavata.gfac.monitor.email.parser.LonestarEmailParser;
+import org.apache.airavata.gfac.monitor.email.parser.PBSEmailParser;
+import org.apache.airavata.gfac.monitor.email.parser.SLURMEmailParser;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeRequestEvent;
 import org.apache.airavata.model.workspace.experiment.JobState;
@@ -55,6 +56,7 @@ public class EmailBasedMonitor implements Runnable{
 
     private static final String PBS_CONSULT_SDSC_EDU = "pbsconsult@sdsc.edu";
     private static final String SLURM_BATCH_STAMPEDE = "slurm@batch1.stampede.tacc.utexas.edu";
+    private static final String LONESTAR_ADDRESS = "root@c312-206.ls4.tacc.utexas.edu";
     private static EmailBasedMonitor emailBasedMonitor;
     private final MonitorPublisher monitorPublisher;
 
@@ -116,6 +118,9 @@ public class EmailBasedMonitor implements Runnable{
                 break;
             case SLURM_BATCH_STAMPEDE:
                 emailParser = new SLURMEmailParser();
+                break;
+            case LONESTAR_ADDRESS:
+                emailParser = new LonestarEmailParser();
                 break;
             default:
                 throw new AiravataException("Un-handle address type for email monitoring -->  " + addressStr);
