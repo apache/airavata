@@ -55,17 +55,6 @@ public class ApplicationRegister {
         allGateways = getAllGateways(airavata);
         applicationInterfaceListPerGateway = new HashMap<String, String>();
         applicationDeployementListPerGateway = new HashMap<String, String>();
-        Map<String, String> allComputeResourceNames = airavata.getAllComputeResourceNames();
-        for (String resourceId : allComputeResourceNames.keySet()){
-            String resourceName = allComputeResourceNames.get(resourceId);
-            if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.STAMPEDE_RESOURCE_NAME)){
-                stampedeResourceId = resourceId;
-            }else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.TRESTLES_RESOURCE_NAME)){
-                trestlesResourceId = resourceId;
-            }else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.BR2_RESOURCE_NAME)){
-                br2ResourceId = resourceId;
-            }
-        }
     }
 
     public List<Gateway> getAllGateways(Airavata.Client client) throws Exception{
@@ -78,6 +67,17 @@ public class ApplicationRegister {
     }
 
     public void addApplications () throws Exception{
+        Map<String, String> allComputeResourceNames = airavata.getAllComputeResourceNames();
+        for (String resourceId : allComputeResourceNames.keySet()){
+            String resourceName = allComputeResourceNames.get(resourceId);
+            if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.STAMPEDE_RESOURCE_NAME)){
+                stampedeResourceId = resourceId;
+            }else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.TRESTLES_RESOURCE_NAME)){
+                trestlesResourceId = resourceId;
+            }else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.BR2_RESOURCE_NAME)){
+                br2ResourceId = resourceId;
+            }
+        }
         addAmberApplication();
         addEchoApplication();
         addLAMMPSApplication();
@@ -97,10 +97,10 @@ public class ApplicationRegister {
             // add amber deployment
             List<String> moduleLoadCMDs = new ArrayList<String>();
             moduleLoadCMDs.add("module load amber");
-            String amberStampedeAppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(),
-                    createApplicationDeployment(amberModuleId, stampedeResourceId,
-                            "/opt/apps/intel13/mvapich2_1_9/amber/12.0/bin/sander.MPI -O", ApplicationParallelismType.MPI,
-                            TestFrameworkConstants.AppcatalogConstants.AMBER_DESCRIPTION, moduleLoadCMDs, null, null));
+            ApplicationDeploymentDescription amberStampedeDeployment = createApplicationDeployment(amberModuleId, stampedeResourceId,
+                    "/opt/apps/intel13/mvapich2_1_9/amber/12.0/bin/sander.MPI -O", ApplicationParallelismType.MPI,
+                    TestFrameworkConstants.AppcatalogConstants.AMBER_DESCRIPTION, moduleLoadCMDs, null, null);
+            String amberStampedeAppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(),amberStampedeDeployment);
 
             String amberTrestlesAppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(),
                     createApplicationDeployment(amberModuleId, trestlesResourceId,
@@ -127,25 +127,25 @@ public class ApplicationRegister {
         appModules.add(amberModuleId);
 
         InputDataObjectType input1 = createAppInput("Heat_Restart_File", null,
-                DataType.URI, null, 1, true, true,false, "Heating up the system equilibration stage - 02_Heat.rst", null);
+                DataType.URI, "-c", 1, true, true,false, "Heating up the system equilibration stage - 02_Heat.rst", null);
 
         InputDataObjectType input2 = createAppInput("Production_Control_File", null,
-                DataType.URI, null, 2, true, true, false, "Constant pressure and temperature for production stage - 03_Prod.in", null);
+                DataType.URI, "-i ", 2, true, true, false, "Constant pressure and temperature for production stage - 03_Prod.in", null);
 
         InputDataObjectType input3 = createAppInput("Parameter_Topology_File", null,
-                DataType.URI, null, 3, true, true, false, "Parameter and Topology coordinates - prmtop", null);
+                DataType.URI, "-p", 3, true, true, false, "Parameter and Topology coordinates - prmtop", null);
 
         List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
         applicationInputs.add(input1);
         applicationInputs.add(input2);
         applicationInputs.add(input3);
 
-        OutputDataObjectType output1 = createAppOutput("AMBER_Execution_Summary", "03_Prod.info", DataType.URI, true, true);
-        OutputDataObjectType output2 = createAppOutput("AMBER_Execution_log", "03_Prod.out", DataType.URI, true, true);
-        OutputDataObjectType output3 = createAppOutput("AMBER_Trajectory_file", "03_Prod.mdcrd", DataType.URI, true, true);
-        OutputDataObjectType output4 = createAppOutput("AMBER_Restart_file", "03_Prod.rst", DataType.URI, true, true);
-        OutputDataObjectType output5 = createAppOutput("STDOUT", null, DataType.STDOUT, true, false);
-        OutputDataObjectType output6 = createAppOutput("STDERR", null, DataType.STDERR, true, false);
+        OutputDataObjectType output1 = createAppOutput("AMBER_Execution_Summary", "03_Prod.info", DataType.URI, true, true, "-inf");
+        OutputDataObjectType output2 = createAppOutput("AMBER_Execution_log", "03_Prod.out", DataType.URI, true, true, "-o");
+        OutputDataObjectType output3 = createAppOutput("AMBER_Trajectory_file", "03_Prod.mdcrd", DataType.URI, true, true, "-x");
+        OutputDataObjectType output4 = createAppOutput("AMBER_Restart_file", "03_Prod.rst", DataType.URI, true, true, " -r");
+        OutputDataObjectType output5 = createAppOutput("STDOUT", null, DataType.STDOUT, true, false, null);
+        OutputDataObjectType output6 = createAppOutput("STDERR", null, DataType.STDERR, true, false, null);
         List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
         applicationOutputs.add(output1);
         applicationOutputs.add(output2);
@@ -171,8 +171,8 @@ public class ApplicationRegister {
         List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
         applicationInputs.add(input1);
 
-        OutputDataObjectType output1 = createAppOutput("STDOUT", null, DataType.STDOUT, true, false);
-        OutputDataObjectType output2 = createAppOutput("STDERR", null, DataType.STDERR, true, false);
+        OutputDataObjectType output1 = createAppOutput("STDOUT", null, DataType.STDOUT, true, false, null);
+        OutputDataObjectType output2 = createAppOutput("STDERR", null, DataType.STDERR, true, false, null);
         List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
         applicationOutputs.add(output1);
         applicationOutputs.add(output2);
@@ -282,13 +282,15 @@ public class ApplicationRegister {
                                                        String value,
                                                        DataType type,
                                                        boolean isRequired,
-                                                       boolean requiredToCMD) {
+                                                       boolean requiredToCMD,
+                                                       String argument) {
         OutputDataObjectType outputDataObjectType = new OutputDataObjectType();
         if (inputName != null) outputDataObjectType.setName(inputName);
         if (value != null) outputDataObjectType.setValue(value);
         if (type != null) outputDataObjectType.setType(type);
         outputDataObjectType.setIsRequired(isRequired);
         outputDataObjectType.setRequiredToAddedToCommandLine(requiredToCMD);
+        outputDataObjectType.setApplicationArgument(argument);
         return outputDataObjectType;
     }
 

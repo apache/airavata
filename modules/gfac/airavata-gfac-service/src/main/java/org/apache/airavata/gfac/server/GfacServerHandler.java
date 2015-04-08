@@ -21,6 +21,7 @@
 package org.apache.airavata.gfac.server;
 
 import com.google.common.eventbus.EventBus;
+import edu.uiuc.ncsa.security.delegation.services.Server;
 import org.airavata.appcatalog.cpi.AppCatalog;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
@@ -59,6 +60,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.locks.Lock;
 
@@ -91,8 +93,6 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
 
     private String airavataServerHostPort;
 
-    private List<Future> inHandlerFutures;
-
 
     private BlockingQueue<TaskSubmitEvent> taskSubmitEvents;
 
@@ -122,8 +122,6 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                 rabbitMQTaskLaunchConsumer.listen(new TaskLaunchMessageHandler());
             }
             BetterGfacImpl.startStatusUpdators(registry, zk, publisher, rabbitMQTaskLaunchConsumer);
-            inHandlerFutures = new ArrayList<Future>();
-
         } catch (ApplicationSettingsException e) {
             logger.error("Error initialising GFAC", e);
             throw new Exception("Error initialising GFAC", e);
@@ -244,9 +242,15 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
         InputHandlerWorker inputHandlerWorker = new InputHandlerWorker(gfac, experimentId, taskId, gatewayId);
 //        try {
 //            if( gfac.submitJob(experimentId, taskId, gatewayId)){
-        logger.debugId(experimentId, "Submitted jog to the Gfac Implementation, experiment {}, task {}, gateway " +
+        logger.debugId(experimentId, "Submitted job to the Gfac Implementation, experiment {}, task {}, gateway " +
                 "{}", experimentId, taskId, gatewayId);
-        inHandlerFutures.add(GFacThreadPoolExecutor.getFixedThreadPool().submit(inputHandlerWorker));
+        try {
+            GFacThreadPoolExecutor.getFixedThreadPool().submit(inputHandlerWorker).get();
+        } catch (InterruptedException e) {
+            logger.error(e.getMessage(), e);
+        } catch (ExecutionException e) {
+            logger.error(e.getMessage(), e);
+        }
         // we immediately return when we have a threadpool
         return true;
     }
@@ -306,8 +310,6 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
     }
 
     private class TaskLaunchMessageHandler implements MessageHandler {
-        public static final String LAUNCH_TASK = "launch.task";
-        public static final String TERMINATE_TASK = "teminate.task";
         private String experimentNode;
         private String nodeName;
 
@@ -319,10 +321,10 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
         public Map<String, Object> getProperties() {
             Map<String, Object> props = new HashMap<String, Object>();
             ArrayList<String> keys = new ArrayList<String>();
-            keys.add(LAUNCH_TASK);
-            keys.add(TERMINATE_TASK);
+            keys.add(ServerSettings.getLaunchQueueName());
+            keys.add(ServerSettings.getCancelQueueName());
             props.put(MessagingConstants.RABBIT_ROUTING_KEY, keys);
-            props.put(MessagingConstants.RABBIT_QUEUE, LAUNCH_TASK);
+            props.put(MessagingConstants.RABBIT_QUEUE, ServerSettings.getLaunchQueueName());
             return props;
         }
 

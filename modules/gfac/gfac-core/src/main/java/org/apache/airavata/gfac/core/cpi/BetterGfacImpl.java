@@ -115,10 +115,8 @@ public class BetterGfacImpl implements GFac,Watcher {
     public static void startStatusUpdators(Registry registry, ZooKeeper zk, MonitorPublisher publisher,RabbitMQTaskLaunchConsumer rabbitMQTaskLaunchConsumer) {
         try {
             String[] listenerClassList = ServerSettings.getActivityListeners();
-            Publisher rabbitMQPublisher = null;
-            if (ServerSettings.isRabbitMqPublishEnabled()){
-                rabbitMQPublisher = PublisherFactory.createActivityPublisher();
-            }
+            Publisher rabbitMQPublisher = PublisherFactory.createActivityPublisher();
+
             for (String listenerClass : listenerClassList) {
                 Class<? extends AbstractActivityListener> aClass = Class.forName(listenerClass).asSubclass(AbstractActivityListener.class);
                 AbstractActivityListener abstractActivityListener = aClass.newInstance();

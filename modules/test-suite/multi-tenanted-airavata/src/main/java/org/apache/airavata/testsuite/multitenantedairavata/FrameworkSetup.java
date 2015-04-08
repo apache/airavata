@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 public class FrameworkSetup {
     private static FrameworkSetup instance = new FrameworkSetup();
     private GatewayRegister gatewayRegister;
+    private ComputeResourceRegister computeResourceRegister;
     private ApplicationRegister applicationRegister;
     private Airavata.Client airavata;
     private final static Logger logger = LoggerFactory.getLogger(FrameworkSetup.class);
@@ -42,6 +43,7 @@ public class FrameworkSetup {
             this.airavata = airavataClient.getAiravataClient();
             gatewayRegister = new GatewayRegister(airavata);
             applicationRegister = new ApplicationRegister(airavata);
+            computeResourceRegister = new ComputeResourceRegister(airavata);
         } catch (Exception e) {
             logger.error("Error while creating airavata client instance", e);
         }
@@ -69,5 +71,13 @@ public class FrameworkSetup {
 
     public void setAiravata(Airavata.Client airavata) {
         this.airavata = airavata;
+    }
+
+    public ComputeResourceRegister getComputeResourceRegister() {
+        return computeResourceRegister;
+    }
+
+    public void setComputeResourceRegister(ComputeResourceRegister computeResourceRegister) {
+        this.computeResourceRegister = computeResourceRegister;
     }
 }

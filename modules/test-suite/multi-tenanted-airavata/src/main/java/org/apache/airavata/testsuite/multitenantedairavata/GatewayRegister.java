@@ -43,10 +43,7 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +66,6 @@ public class GatewayRegister {
             logger.error("Error while initializing setup step", e);
             throw new Exception("Error while initializing setup step", e);
         }
-
     }
 
     public void createGateways() throws Exception{
@@ -116,6 +112,11 @@ public class GatewayRegister {
 
     public void registerSSHKeys () throws Exception{
         try {
+            // write tokens to file
+            String tokenWriteLocation = propertyReader.readProperty(TestFrameworkConstants.FrameworkPropertiesConstants.TOKEN_WRITE_LOCATION, PropertyFileType.TEST_FRAMEWORK);
+            String fileName = tokenWriteLocation + File.separator + TestFrameworkConstants.CredentialStoreConstants.TOKEN_FILE_NAME;
+
+            PrintWriter tokenWriter = new PrintWriter(fileName, "UTF-8");
             // credential store related functions are not in the current api, so need to call credential store directly
             AiravataUtils.setExecutionAsClient();
             String jdbcURL = propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.CS_JBDC_URL, PropertyFileType.AIRAVATA_CLIENT);
@@ -129,27 +130,31 @@ public class GatewayRegister {
             SSHCredentialWriter writer = new SSHCredentialWriter(dbUtil);
             List<Gateway> allGateways = airavata.getAllGateways();
             for (Gateway gateway : allGateways){
-                SSHCredential sshCredential = new SSHCredential();
-                sshCredential.setGateway(gateway.getGatewayId());
-                String token = TokenGenerator.generateToken(gateway.getGatewayId(), null);
-                sshCredential.setToken(token);
-                sshCredential.setPortalUserName("testuser");
-                FileInputStream privateKeyStream = new FileInputStream(privateKeyPath);
-                File filePri = new File(privateKeyPath);
-                byte[] bFilePri = new byte[(int) filePri.length()];
-                privateKeyStream.read(bFilePri);
-                FileInputStream pubKeyStream = new FileInputStream(pubKeyPath);
-                File filePub = new File(pubKeyPath);
-                byte[] bFilePub = new byte[(int) filePub.length()];
-                pubKeyStream.read(bFilePub);
-                privateKeyStream.close();
-                pubKeyStream.close();
-                sshCredential.setPrivateKey(bFilePri);
-                sshCredential.setPublicKey(bFilePub);
-                sshCredential.setPassphrase(keyPassword);
-                writer.writeCredentials(sshCredential);
-                tokenMap.put(gateway.getGatewayId(), token);
+                if (!gateway.getGatewayId().equals("php_reference_gateway")){
+                    SSHCredential sshCredential = new SSHCredential();
+                    sshCredential.setGateway(gateway.getGatewayId());
+                    String token = TokenGenerator.generateToken(gateway.getGatewayId(), null);
+                    sshCredential.setToken(token);
+                    sshCredential.setPortalUserName("testuser");
+                    FileInputStream privateKeyStream = new FileInputStream(privateKeyPath);
+                    File filePri = new File(privateKeyPath);
+                    byte[] bFilePri = new byte[(int) filePri.length()];
+                    privateKeyStream.read(bFilePri);
+                    FileInputStream pubKeyStream = new FileInputStream(pubKeyPath);
+                    File filePub = new File(pubKeyPath);
+                    byte[] bFilePub = new byte[(int) filePub.length()];
+                    pubKeyStream.read(bFilePub);
+                    privateKeyStream.close();
+                    pubKeyStream.close();
+                    sshCredential.setPrivateKey(bFilePri);
+                    sshCredential.setPublicKey(bFilePub);
+                    sshCredential.setPassphrase(keyPassword);
+                    writer.writeCredentials(sshCredential);
+                    tokenMap.put(gateway.getGatewayId(), token);
+                    tokenWriter.println(gateway.getGatewayId() + ":" + token);
+                }
             }
+            tokenWriter.close();
         } catch (ClassNotFoundException e) {
             logger.error("Unable to find mysql driver", e);
             throw new Exception("Unable to find mysql driver",e);

@@ -60,11 +60,7 @@
             <artifactId>xsul5</artifactId>
             <version>${xsul5.version}</version>
         </dependency> 
-        <dependency>
-            <groupId>org.apache.axis2</groupId>
-            <artifactId>axis2-kernel</artifactId>
-            <version>${axis2.version}</version>
-        </dependency> -->
+ -->
         <dependency>
             <groupId>commons-dbcp</groupId>
             <artifactId>commons-dbcp</artifactId>

@@ -20,7 +20,6 @@
 */
 package org.apache.airavata.messaging.core.impl;
 
-import com.rabbitmq.client.MessageProperties;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -29,23 +28,24 @@ import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingConstants;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.messaging.event.*;
+import org.apache.catalina.Server;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RabbitMQTaskLaunchPublisher implements Publisher{
     private final static Logger log = LoggerFactory.getLogger(RabbitMQTaskLaunchPublisher.class);
-    public static final String LAUNCH_TASK = "launch.task";
-    public static final String TERMINATE_TASK = "teminate.task";
+    private  String launchTask;
+    private  String cancelTask;
 
     private RabbitMQProducer rabbitMQProducer;
 
     public RabbitMQTaskLaunchPublisher() throws Exception {
         String brokerUrl;
-        String exchangeName;
         try {
             brokerUrl = ServerSettings.getSetting(MessagingConstants.RABBITMQ_BROKER_URL);
-            exchangeName = ServerSettings.getSetting(MessagingConstants.RABBITMQ_TASK_LAUNCH_EXCHANGE_NAME);
+            launchTask = ServerSettings.getLaunchQueueName();
+            cancelTask = ServerSettings.getCancelQueueName();
         } catch (ApplicationSettingsException e) {
             String message = "Failed to get read the required properties from airavata to initialize rabbitmq";
             log.error(message, e);
@@ -66,9 +66,9 @@ public class RabbitMQTaskLaunchPublisher implements Publisher{
             message.setUpdatedTime(msgCtx.getUpdatedTime().getTime());
             String routingKey = null;
             if (msgCtx.getType().equals(MessageType.LAUNCHTASK)){
-                routingKey = LAUNCH_TASK;
+                routingKey = launchTask;
             }else if(msgCtx.getType().equals(MessageType.TERMINATETASK)){
-                routingKey = TERMINATE_TASK;
+                routingKey = cancelTask;
             }
             byte[] messageBody = ThriftUtils.serializeThriftObject(message);
             rabbitMQProducer.sendToWorkerQueue(messageBody, routingKey);

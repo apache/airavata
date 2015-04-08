@@ -128,24 +128,5 @@ the License. -->
         	<version>${zk.version}</version>
         </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-        </plugins>
-        <testSourceDirectory>${project.basedir}/src/test/java</testSourceDirectory>
-        <testOutputDirectory>${project.build.directory}/test-classes</testOutputDirectory>
-        <testResources>
-            <testResource>
-                <directory>${project.basedir}/src/test/resources</directory>
-            </testResource>
-        </testResources>
-    </build>
 
 </project>

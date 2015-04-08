@@ -263,24 +263,11 @@
 
 
     <properties>
-        <jersey.version>1.13</jersey.version>
         <user />
         <pwd />
         <cert />
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <archieve.name>apache-airavata</archieve.name>
-        <used.axis2.release>${axis2.version}</used.axis2.release>
-        <major.tomcat.version>7</major.tomcat.version>
-        <cargo.debug.address>8000</cargo.debug.address>
-        <cargo.debug.suspend>y</cargo.debug.suspend>
-        <test.running.port>8080</test.running.port>
-        <tomcat.extract.dir>${project.build.directory}</tomcat.extract.dir>
-        <tomcat.work.dir>${tomcat.extract.dir}/apache-tomcat-${tomcat.version}</tomcat.work.dir>
-        <local.tomcat.distribution>
-            ${settings.localRepository}/org/apache/airavata/integration/tomcat/apache-tomcat/${tomcat.version}/apache-tomcat-${tomcat.version}.zip
-        </local.tomcat.distribution>
-
-
         <airavata.executable>airavata-server.sh</airavata.executable>
         <airavata.server.name>apache-airavata-server</airavata.server.name>
         <airavata.server.start.spawn>true</airavata.server.start.spawn>
