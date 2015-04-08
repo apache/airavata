@@ -74,9 +74,7 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener {
                 String messageId = AiravataUtils.getId("JOB");
                 MessageContext msgCntxt = new MessageContext(event, MessageType.JOB, messageId, jobStatus.getJobIdentity().getGatewayId());
                 msgCntxt.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-                if ( ServerSettings.isRabbitMqPublishEnabled()){
-                    publisher.publish(msgCntxt);
-                }
+                publisher.publish(msgCntxt);
             } catch (Exception e) {
                 logger.error("Error persisting data" + e.getLocalizedMessage(), e);
                 throw new Exception("Error persisting job status..", e);

@@ -99,9 +99,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     public AiravataServerHandler() {
         try {
-            if (ServerSettings.isRabbitMqPublishEnabled()) {
-                publisher = PublisherFactory.createActivityPublisher();
-            }
+            publisher = PublisherFactory.createActivityPublisher();
         } catch (ApplicationSettingsException e) {
             logger.error("Error occured while reading airavata-server properties..", e);
         } catch (AiravataException e) {
@@ -811,16 +809,14 @@ public class AiravataServerHandler implements Airavata.Iface {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             }
-            String experimentId = (String)registry.add(ParentDataType.EXPERIMENT, experiment, gatewayId);
-            if (ServerSettings.isRabbitMqPublishEnabled()){
-                ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.CREATED,
-                        experimentId,
-                        gatewayId);
-                String messageId = AiravataUtils.getId("EXPERIMENT");
-                MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT,messageId,gatewayId);
-                messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-                publisher.publish(messageContext);
-            }
+            String experimentId = (String) registry.add(ParentDataType.EXPERIMENT, experiment, gatewayId);
+            ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.CREATED,
+                    experimentId,
+                    gatewayId);
+            String messageId = AiravataUtils.getId("EXPERIMENT");
+            MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT, messageId, gatewayId);
+            messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+            publisher.publish(messageContext);
             logger.infoId(experimentId, "Created new experiment with experiment name {}", experiment.getName());
             return experimentId;
         } catch (Exception e) {

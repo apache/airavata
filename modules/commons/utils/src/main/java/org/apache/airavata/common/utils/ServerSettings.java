@@ -54,7 +54,6 @@ public class ServerSettings extends ApplicationSettings {
     private static final String STATUS_PUBLISHER = "status.publisher";
     private static final String TASK_LAUNCH_PUBLISHER = "task.launch.publisher";
     private static final String ACTIVITY_LISTENERS = "activity.listeners";
-    public static final String PUBLISH_RABBITMQ = "publish.rabbitmq";
     public static final String JOB_NOTIFICATION_ENABLE = "job.notification.enable";
     public static final String JOB_NOTIFICATION_EMAILIDS = "job.notification.emailids";
     public static final String JOB_NOTIFICATION_FLAGS = "job.notification.flags";
@@ -176,11 +175,6 @@ public class ServerSettings extends ApplicationSettings {
 
     public static String getTaskLaunchPublisher() throws ApplicationSettingsException {
         return getSetting(TASK_LAUNCH_PUBLISHER);
-    }
-
-    public static boolean isRabbitMqPublishEnabled() throws ApplicationSettingsException {
-        String setting = getSetting(PUBLISH_RABBITMQ);
-        return Boolean.parseBoolean(setting);
     }
 
     public static boolean isGFacPassiveMode()throws ApplicationSettingsException {

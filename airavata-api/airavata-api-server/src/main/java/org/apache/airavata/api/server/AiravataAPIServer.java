@@ -199,15 +199,13 @@ public class AiravataAPIServer implements IServer, Watcher{
                     zk.create(rabbitMQ, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
                             CreateMode.PERSISTENT);
                 }
-                if (ServerSettings.isRabbitMqPublishEnabled()) {
-                    String rabbitMqInstantNode = rabbitMQ + File.separator + String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
-                    zkStat = zk.exists(rabbitMqInstantNode, false);
-                    if (zkStat == null) {
-                        zk.create(rabbitMqInstantNode,
-                                rabbitMq.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                                CreateMode.EPHEMERAL);      // other component will watch these childeren creation deletion to monitor the status of the node
-                        logger.info("Successfully created rabbitMQ node");
-                    }
+                String rabbitMqInstantNode = rabbitMQ + File.separator + String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
+                zkStat = zk.exists(rabbitMqInstantNode, false);
+                if (zkStat == null) {
+                    zk.create(rabbitMqInstantNode,
+                            rabbitMq.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
+                            CreateMode.EPHEMERAL);      // other component will watch these childeren creation deletion to monitor the status of the node
+                    logger.info("Successfully created rabbitMQ node");
                 }
                 logger.info("Finished starting ZK: " + zk);
             }
