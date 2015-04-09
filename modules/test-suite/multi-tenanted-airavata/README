@@ -45,7 +45,7 @@ How to run
         * result.file.location
         * Amber input file locations (02_Heat.rst_location, 03_Prod.in_location, prmtop_location)
 3. To run the jar, in the command line type :
-        java -Xmx1024m -jar multi-tenanted-airavata-0.15-SNAPSHOT-jar-with-dependencies.jar -regApps
+        java -cp ./:./resources:multi-tenanted-airavata-0.15-SNAPSHOT-jar-with-dependencies.jar org.apache.airavata.testsuite.multitenantedairavata.FrameworkBootstrapping -regApps
 
         You can provide different parameters.
             -regApps = to register gateways, generate SSH keys, register applications
