@@ -36,6 +36,7 @@ import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
+import org.apache.airavata.testsuite.multitenantedairavata.utils.FrameworkUtils;
 import org.apache.airavata.testsuite.multitenantedairavata.utils.PropertyFileType;
 import org.apache.airavata.testsuite.multitenantedairavata.utils.PropertyReader;
 import org.apache.airavata.testsuite.multitenantedairavata.utils.TestFrameworkConstants;
@@ -55,6 +56,9 @@ public class GatewayRegister {
     private int gatewayCount;
     private Map<String, String> tokenMap;
     private Map<String, String> projectMap;
+    private String testUser;
+    private String testProject;
+    private List<String> gatewaysToAvoid;
 
     public GatewayRegister(Airavata.Client client) throws Exception{
         try {
@@ -62,6 +66,10 @@ public class GatewayRegister {
             this.tokenMap = new HashMap<String, String>();
             this.projectMap = new HashMap<String, String>();
             propertyReader = new PropertyReader();
+            testUser = propertyReader.readProperty(TestFrameworkConstants.FrameworkPropertiesConstants.TEST_USER, PropertyFileType.TEST_FRAMEWORK);
+            testProject = propertyReader.readProperty(TestFrameworkConstants.FrameworkPropertiesConstants.TEST_PROJECT, PropertyFileType.TEST_FRAMEWORK);
+            FrameworkUtils frameworkUtils = FrameworkUtils.getInstance();
+            gatewaysToAvoid = frameworkUtils.getGatewayListToAvoid();
         }catch (Exception e){
             logger.error("Error while initializing setup step", e);
             throw new Exception("Error while initializing setup step", e);
@@ -104,8 +112,8 @@ public class GatewayRegister {
 
     public void createProject (String gatewayId) throws Exception{
         Project project = new Project();
-        project.setName("testProj_" + gatewayId);
-        project.setOwner("testUser_" + gatewayId);
+        project.setName(testProject);
+        project.setOwner(testUser);
         String projectId = airavata.createProject(gatewayId, project);
         projectMap.put(projectId, gatewayId);
     }
@@ -130,12 +138,19 @@ public class GatewayRegister {
             SSHCredentialWriter writer = new SSHCredentialWriter(dbUtil);
             List<Gateway> allGateways = airavata.getAllGateways();
             for (Gateway gateway : allGateways){
-                if (!gateway.getGatewayId().equals("php_reference_gateway")){
+                boolean isgatewayValid = true;
+                for (String ovoidGateway : gatewaysToAvoid){
+                    if (gateway.getGatewayId().equals(ovoidGateway)){
+                        isgatewayValid = false;
+                        break;
+                    }
+                }
+                if (isgatewayValid) {
                     SSHCredential sshCredential = new SSHCredential();
                     sshCredential.setGateway(gateway.getGatewayId());
                     String token = TokenGenerator.generateToken(gateway.getGatewayId(), null);
                     sshCredential.setToken(token);
-                    sshCredential.setPortalUserName("testuser");
+                    sshCredential.setPortalUserName(testUser);
                     FileInputStream privateKeyStream = new FileInputStream(privateKeyPath);
                     File filePri = new File(privateKeyPath);
                     byte[] bFilePri = new byte[(int) filePri.length()];

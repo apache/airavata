@@ -67,7 +67,7 @@ public class FrameworkBootstrapping {
                 logger.info("Gateways created...");
                 setup.getGatewayRegister().registerSSHKeys();
                 logger.info("Registered SSH keys to each gateway...");
-                tokens = readTokens();
+//                tokens = readTokens();
                 setup.getComputeResourceRegister().addComputeResources();
                 setup.getComputeResourceRegister().registerGatewayResourceProfile();
                 setup.getApplicationRegister().addApplications();
