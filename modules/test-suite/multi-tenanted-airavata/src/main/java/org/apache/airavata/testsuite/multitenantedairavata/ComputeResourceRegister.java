@@ -109,7 +109,7 @@ public class ComputeResourceRegister {
                 } else if (resourceName.contains("bigred2")) {
                     //Register BigRedII
                     bigredResourceId = registerComputeHost("bigred2.uits.iu.edu", "IU BigRed II Cluster",
-                            ResourceJobManagerType.PBS, "push", "/opt/torque/torque-4.2.3.1/bin/", SecurityProtocol.SSH_KEYS, 22, "aprun -n");
+                            ResourceJobManagerType.PBS, "push", "/opt/torque/torque-5.0.1/bin/", SecurityProtocol.SSH_KEYS, 22, "aprun -n");
                     System.out.println("BigredII Resource Id is " + bigredResourceId);
                 }
             }
