@@ -30,6 +30,7 @@ import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.workspace.Gateway;
+import org.apache.airavata.testsuite.multitenantedairavata.utils.FrameworkUtils;
 import org.apache.airavata.testsuite.multitenantedairavata.utils.TestFrameworkConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +49,7 @@ public class ApplicationRegister {
     private String stampedeResourceId;
     private String trestlesResourceId;
     private String br2ResourceId;
+    private List<String> gatewaysToAvoid;
 
 
     public ApplicationRegister(Airavata.Client airavata) throws Exception {
@@ -55,6 +57,8 @@ public class ApplicationRegister {
         allGateways = getAllGateways(airavata);
         applicationInterfaceListPerGateway = new HashMap<String, String>();
         applicationDeployementListPerGateway = new HashMap<String, String>();
+        FrameworkUtils frameworkUtils = FrameworkUtils.getInstance();
+        gatewaysToAvoid = frameworkUtils.getGatewayListToAvoid();
     }
 
     public List<Gateway> getAllGateways(Airavata.Client client) throws Exception{
@@ -84,41 +88,51 @@ public class ApplicationRegister {
     }
 
     protected void addAmberApplication () throws Exception{
-        for (Gateway gateway : allGateways){
-            // add amber module
-            String amberModuleId = airavata.registerApplicationModule(gateway.getGatewayId(),
-                    createApplicationModule(TestFrameworkConstants.AppcatalogConstants.AMBER_APP_NAME, "12.0", TestFrameworkConstants.AppcatalogConstants.AMBER_DESCRIPTION));
-            System.out.println("Amber Module Id " + amberModuleId);
+        for (Gateway gateway : allGateways) {
+                boolean isgatewayValid = true;
+                for (String ovoidGateway : gatewaysToAvoid){
+                    if (gateway.getGatewayId().equals(ovoidGateway)){
+                        isgatewayValid = false;
+                        break;
+                    }
+                }
+                if (isgatewayValid) {
+                    // add amber module
+                    String amberModuleId = airavata.registerApplicationModule(gateway.getGatewayId(),
+                            createApplicationModule(TestFrameworkConstants.AppcatalogConstants.AMBER_APP_NAME, "12.0", TestFrameworkConstants.AppcatalogConstants.AMBER_DESCRIPTION));
+                    System.out.println("Amber Module Id " + amberModuleId);
 
-            // add amber interface
-            String amberInterfaceId = registerAmberInterface(gateway, amberModuleId);
-            applicationInterfaceListPerGateway.put(amberInterfaceId, gateway.getGatewayId());
+                    // add amber interface
+                    String amberInterfaceId = registerAmberInterface(gateway, amberModuleId);
+                    applicationInterfaceListPerGateway.put(amberInterfaceId, gateway.getGatewayId());
 
-            // add amber deployment
-            List<String> moduleLoadCMDs = new ArrayList<String>();
-            moduleLoadCMDs.add("module load amber");
-            ApplicationDeploymentDescription amberStampedeDeployment = createApplicationDeployment(amberModuleId, stampedeResourceId,
-                    "/opt/apps/intel13/mvapich2_1_9/amber/12.0/bin/sander.MPI -O", ApplicationParallelismType.MPI,
-                    TestFrameworkConstants.AppcatalogConstants.AMBER_DESCRIPTION, moduleLoadCMDs, null, null);
-            String amberStampedeAppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(),amberStampedeDeployment);
+                    // add amber deployment
+                    List<String> moduleLoadCMDs = new ArrayList<String>();
+                    moduleLoadCMDs.add("module load amber");
+                    ApplicationDeploymentDescription amberStampedeDeployment = createApplicationDeployment(amberModuleId, stampedeResourceId,
+                            "/opt/apps/intel13/mvapich2_1_9/amber/12.0/bin/sander.MPI -O", ApplicationParallelismType.MPI,
+                            TestFrameworkConstants.AppcatalogConstants.AMBER_DESCRIPTION, moduleLoadCMDs, null, null);
+                    String amberStampedeAppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(), amberStampedeDeployment);
 
-            String amberTrestlesAppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(),
-                    createApplicationDeployment(amberModuleId, trestlesResourceId,
-                            "/opt/amber/bin/sander.MPI -O", ApplicationParallelismType.MPI,
-                            TestFrameworkConstants.AppcatalogConstants.AMBER_DESCRIPTION, moduleLoadCMDs, null, null));
+                    String amberTrestlesAppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(),
+                            createApplicationDeployment(amberModuleId, trestlesResourceId,
+                                    "/opt/amber/bin/sander.MPI -O", ApplicationParallelismType.MPI,
+                                    TestFrameworkConstants.AppcatalogConstants.AMBER_DESCRIPTION, moduleLoadCMDs, null, null));
 
-            List<String> amberModuleLoadCMDsBr2 = new ArrayList<String>();
-            amberModuleLoadCMDsBr2.add("module load amber/gnu/mpi/12");
-            amberModuleLoadCMDsBr2.add("module swap PrgEnv-cray PrgEnv-gnu");
-            String amberBr2AppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(),
-                    createApplicationDeployment(amberModuleId, br2ResourceId,
-                            "/N/soft/cle4/amber/gnu/mpi/12/amber12/bin/sander.MPI -O", ApplicationParallelismType.MPI,
-                            TestFrameworkConstants.AppcatalogConstants.AMBER_DESCRIPTION, amberModuleLoadCMDsBr2, null, null));
+                    List<String> amberModuleLoadCMDsBr2 = new ArrayList<String>();
+                    amberModuleLoadCMDsBr2.add("module load amber/gnu/mpi/12");
+                    amberModuleLoadCMDsBr2.add("module swap PrgEnv-cray PrgEnv-gnu");
+                    String amberBr2AppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(),
+                            createApplicationDeployment(amberModuleId, br2ResourceId,
+                                    "/N/soft/cle4/amber/gnu/mpi/12/amber12/bin/sander.MPI -O", ApplicationParallelismType.MPI,
+                                    TestFrameworkConstants.AppcatalogConstants.AMBER_DESCRIPTION, amberModuleLoadCMDsBr2, null, null));
 
-            applicationDeployementListPerGateway.put(amberStampedeAppDeployId, gateway.getGatewayId());
-            applicationDeployementListPerGateway.put(amberTrestlesAppDeployId, gateway.getGatewayId());
-            applicationDeployementListPerGateway.put(amberBr2AppDeployId, gateway.getGatewayId());
+                    applicationDeployementListPerGateway.put(amberStampedeAppDeployId, gateway.getGatewayId());
+                    applicationDeployementListPerGateway.put(amberTrestlesAppDeployId, gateway.getGatewayId());
+                    applicationDeployementListPerGateway.put(amberBr2AppDeployId, gateway.getGatewayId());
+                }
         }
+
 
     }
 
@@ -187,34 +201,43 @@ public class ApplicationRegister {
 
     protected void addEchoApplication() throws Exception{
         for (Gateway gateway : allGateways){
-            // add echo module
-            String echoModuleId = airavata.registerApplicationModule(gateway.getGatewayId(),
-                    createApplicationModule(TestFrameworkConstants.AppcatalogConstants.ECHO_NAME, "1.0", TestFrameworkConstants.AppcatalogConstants.ECHO_DESCRIPTION));
-            System.out.println("Echo Module Id " + echoModuleId);
+            boolean isgatewayValid = true;
+            for (String ovoidGateway : gatewaysToAvoid){
+                if (gateway.getGatewayId().equals(ovoidGateway)){
+                    isgatewayValid = false;
+                    break;
+                }
+            }
+            if (isgatewayValid) {
+                // add echo module
+                String echoModuleId = airavata.registerApplicationModule(gateway.getGatewayId(),
+                        createApplicationModule(TestFrameworkConstants.AppcatalogConstants.ECHO_NAME, "1.0", TestFrameworkConstants.AppcatalogConstants.ECHO_DESCRIPTION));
+                System.out.println("Echo Module Id " + echoModuleId);
 
-            // add amber interface
-            String echoInterfaceId = registerEchoInterface(gateway, echoModuleId);
-            applicationInterfaceListPerGateway.put(echoInterfaceId, gateway.getGatewayId());
+                // add amber interface
+                String echoInterfaceId = registerEchoInterface(gateway, echoModuleId);
+                applicationInterfaceListPerGateway.put(echoInterfaceId, gateway.getGatewayId());
 
-            // add amber deployment
-            String echoStampedeAppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(),
-                    createApplicationDeployment(echoModuleId, stampedeResourceId,
-                            "/home1/01437/ogce/production/app_wrappers/echo_wrapper.sh", ApplicationParallelismType.SERIAL,
-                            TestFrameworkConstants.AppcatalogConstants.ECHO_DESCRIPTION, null, null, null));
+                // add amber deployment
+                String echoStampedeAppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(),
+                        createApplicationDeployment(echoModuleId, stampedeResourceId,
+                                "/home1/01437/ogce/production/app_wrappers/echo_wrapper.sh", ApplicationParallelismType.SERIAL,
+                                TestFrameworkConstants.AppcatalogConstants.ECHO_DESCRIPTION, null, null, null));
 
-            String echoTrestlesAppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(),
-                    createApplicationDeployment(echoModuleId, trestlesResourceId,
-                            "/home/ogce/production/app_wrappers/echo_wrapper.sh", ApplicationParallelismType.SERIAL,
-                            TestFrameworkConstants.AppcatalogConstants.ECHO_DESCRIPTION, null, null, null));
+                String echoTrestlesAppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(),
+                        createApplicationDeployment(echoModuleId, trestlesResourceId,
+                                "/home/ogce/production/app_wrappers/echo_wrapper.sh", ApplicationParallelismType.SERIAL,
+                                TestFrameworkConstants.AppcatalogConstants.ECHO_DESCRIPTION, null, null, null));
 
-            String echoBr2AppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(),
-                    createApplicationDeployment(echoModuleId, br2ResourceId,
-                            "/N/u/cgateway/BigRed2/production/app_wrappers/echo_wrapper.sh", ApplicationParallelismType.SERIAL,
-                            TestFrameworkConstants.AppcatalogConstants.ECHO_DESCRIPTION, null, null, null));
+                String echoBr2AppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(),
+                        createApplicationDeployment(echoModuleId, br2ResourceId,
+                                "/N/u/cgateway/BigRed2/production/app_wrappers/echo_wrapper.sh", ApplicationParallelismType.SERIAL,
+                                TestFrameworkConstants.AppcatalogConstants.ECHO_DESCRIPTION, null, null, null));
 
-            applicationDeployementListPerGateway.put(echoStampedeAppDeployId, gateway.getGatewayId());
-            applicationDeployementListPerGateway.put(echoTrestlesAppDeployId, gateway.getGatewayId());
-            applicationDeployementListPerGateway.put(echoBr2AppDeployId, gateway.getGatewayId());
+                applicationDeployementListPerGateway.put(echoStampedeAppDeployId, gateway.getGatewayId());
+                applicationDeployementListPerGateway.put(echoTrestlesAppDeployId, gateway.getGatewayId());
+                applicationDeployementListPerGateway.put(echoBr2AppDeployId, gateway.getGatewayId());
+            }
         }
     }
 
