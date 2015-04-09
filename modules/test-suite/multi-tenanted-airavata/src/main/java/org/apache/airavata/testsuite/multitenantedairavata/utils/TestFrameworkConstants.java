@@ -48,6 +48,9 @@ public class TestFrameworkConstants {
         public static final String SSH_USERNAME = "ssh.username";
         public static final String TOKEN_WRITE_LOCATION = "token.file.location";
         public static final String RESULT_WRITE_LOCATION = "result.file.location";
+        public static final String GATEWAYS_TOSKIP = "gateways.toskip";
+        public static final String TEST_USER = "test.user";
+        public static final String TEST_PROJECT = "test.project";
     }
 
     public static final class GatewayConstants {
