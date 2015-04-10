@@ -1216,7 +1216,7 @@ class SSHJobSubmission:
    - alternativeSSHHostName
    - sshPort
    - monitorMode
-   - emailMonitor
+   - emailMonitorProperty
   """
 
   thrift_spec = (
@@ -1227,17 +1227,17 @@ class SSHJobSubmission:
     (4, TType.STRING, 'alternativeSSHHostName', None, None, ), # 4
     (5, TType.I32, 'sshPort', None, 22, ), # 5
     (6, TType.I32, 'monitorMode', None, None, ), # 6
-    (7, TType.STRUCT, 'emailMonitor', (EmailMonitorProperty, EmailMonitorProperty.thrift_spec), None, ), # 7
+    (7, TType.STRUCT, 'emailMonitorProperty', (EmailMonitorProperty, EmailMonitorProperty.thrift_spec), None, ), # 7
   )
 
-  def __init__(self, jobSubmissionInterfaceId=thrift_spec[1][4], securityProtocol=None, resourceJobManager=None, alternativeSSHHostName=None, sshPort=thrift_spec[5][4], monitorMode=None, emailMonitor=None,):
+  def __init__(self, jobSubmissionInterfaceId=thrift_spec[1][4], securityProtocol=None, resourceJobManager=None, alternativeSSHHostName=None, sshPort=thrift_spec[5][4], monitorMode=None, emailMonitorProperty=None,):
     self.jobSubmissionInterfaceId = jobSubmissionInterfaceId
     self.securityProtocol = securityProtocol
     self.resourceJobManager = resourceJobManager
     self.alternativeSSHHostName = alternativeSSHHostName
     self.sshPort = sshPort
     self.monitorMode = monitorMode
-    self.emailMonitor = emailMonitor
+    self.emailMonitorProperty = emailMonitorProperty
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -1281,8 +1281,8 @@ class SSHJobSubmission:
           iprot.skip(ftype)
       elif fid == 7:
         if ftype == TType.STRUCT:
-          self.emailMonitor = EmailMonitorProperty()
-          self.emailMonitor.read(iprot)
+          self.emailMonitorProperty = EmailMonitorProperty()
+          self.emailMonitorProperty.read(iprot)
         else:
           iprot.skip(ftype)
       else:
@@ -1319,9 +1319,9 @@ class SSHJobSubmission:
       oprot.writeFieldBegin('monitorMode', TType.I32, 6)
       oprot.writeI32(self.monitorMode)
       oprot.writeFieldEnd()
-    if self.emailMonitor is not None:
-      oprot.writeFieldBegin('emailMonitor', TType.STRUCT, 7)
-      self.emailMonitor.write(oprot)
+    if self.emailMonitorProperty is not None:
+      oprot.writeFieldBegin('emailMonitorProperty', TType.STRUCT, 7)
+      self.emailMonitorProperty.write(oprot)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()

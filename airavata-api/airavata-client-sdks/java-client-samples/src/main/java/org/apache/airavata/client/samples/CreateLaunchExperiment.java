@@ -61,7 +61,7 @@ public class CreateLaunchExperiment {
     private static String echoAppId = "Echo_fcac7076-e350-4dfb-a6eb-73e2d648fc60";
     private static String mpiAppId = "HelloMPI_bfd56d58-6085-4b7f-89fc-646576830518";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
-    private static String amberAppId = "Amber_aa083c86-4680-4002-b3ef-fad93c181926";
+    private static String amberAppId = "Amber_717cba99-1085-45de-861c-952001c5243c";
     private static String gromacsAppId = "GROMACS_05622038-9edd-4cb1-824e-0b7cb993364b";
     private static String espressoAppId = "ESPRESSO_10cc2820-5d0b-4c63-9546-8a8b595593c1";
     private static String lammpsAppId = "LAMMPS_2472685b-8acf-497e-aafe-cc66fe5f4cb6";
@@ -168,13 +168,13 @@ public class CreateLaunchExperiment {
 //                final String expId = createMPIExperimentForFSD(airavataClient);
 //               final String expId = createEchoExperimentForStampede(airavataClient);
 //                final String expId = createEchoExperimentForTrestles(airavataClient);
-                final String expId = createExperimentEchoForLocalHost(airavataClient);
-                experimentIds.add(expId);
+//                final String expId = createExperimentEchoForLocalHost(airavataClient);
 //                final String expId = createExperimentWRFTrestles(airavataClient);
 //                final String expId = createExperimentForBR2(airavataClient);
 //                final String expId = createExperimentForBR2Amber(airavataClient);
 //                final String expId = createExperimentWRFStampede(airavataClient);
-//                final String expId = createExperimentForStampedeAmber(airavataClient);
+                final String expId = createExperimentForStampedeAmber(airavataClient);
+//                String expId = createExperimentForTrestlesAmber(airavataClient);
 //                final String expId = createExperimentGROMACSStampede(airavataClient);
 //                final String expId = createExperimentESPRESSOStampede(airavataClient);
 //                final String expId = createExperimentLAMMPSStampede(airavataClient);
@@ -184,6 +184,7 @@ public class CreateLaunchExperiment {
 //                final String expId = createExperimentForLSF(airavataClient);
 //                final String expId = createExperimentLAMMPSForLSF(airavataClient);
 //            	  final String expId = "Ultrascan_ln_eb029947-391a-4ccf-8ace-9bafebe07cc0";
+                experimentIds.add(expId);
                 System.out.println("Experiment ID : " + expId);
 //                updateExperiment(airavata, expId);
 
@@ -1312,11 +1313,11 @@ public class CreateLaunchExperiment {
 //			}
             for (InputDataObjectType inputDataObjectType : exInputs) {
                 if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
-                    inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/02_Heat.rst");
+                    inputDataObjectType.setValue("/Users/shameera/Projects/scigap/apps/AMBER_FILES/02_Heat.rst");
                 } else if (inputDataObjectType.getName().equalsIgnoreCase("Production_Control_File")) {
-                    inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/03_Prod.in");
+                    inputDataObjectType.setValue("/Users/shameera/Projects/scigap/apps/AMBER_FILES/03_Prod.in");
                 } else if (inputDataObjectType.getName().equalsIgnoreCase("Parameter_Topology_File")) {
-                    inputDataObjectType.setValue("file://root@test-drive.airavata.org:/var/www/experimentData/admin101a290e6330f15a91349159553ae8b6bb1/prmtop");
+                    inputDataObjectType.setValue("/Users/shameera/Projects/scigap/apps/AMBER_FILES/prmtop");
                 }
             }
 
@@ -1377,11 +1378,11 @@ public class CreateLaunchExperiment {
 //			}
             for (InputDataObjectType inputDataObjectType : exInputs) {
                 if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
-                    inputDataObjectType.setValue("/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/02_Heat.rst");
+                    inputDataObjectType.setValue("/Users/shameera/Projects/scigap/apps/AMBER_FILES/02_Heat.rst");
                 } else if (inputDataObjectType.getName().equalsIgnoreCase("Production_Control_File")) {
-                    inputDataObjectType.setValue("/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/03_Prod.in");
+                    inputDataObjectType.setValue("/Users/shameera/Projects/scigap/apps/AMBER_FILES/03_Prod.in");
                 } else if (inputDataObjectType.getName().equalsIgnoreCase("Parameter_Topology_File")) {
-                    inputDataObjectType.setValue("/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/prmtop");
+                    inputDataObjectType.setValue("/Users/shameera/Projects/scigap/apps/AMBER_FILES/prmtop");
                 }
             }
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(amberAppId);

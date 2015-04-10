@@ -67,7 +67,7 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField ALTERNATIVE_SSHHOST_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("alternativeSSHHostName", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField SSH_PORT_FIELD_DESC = new org.apache.thrift.protocol.TField("sshPort", org.apache.thrift.protocol.TType.I32, (short)5);
   private static final org.apache.thrift.protocol.TField MONITOR_MODE_FIELD_DESC = new org.apache.thrift.protocol.TField("monitorMode", org.apache.thrift.protocol.TType.I32, (short)6);
-  private static final org.apache.thrift.protocol.TField EMAIL_MONITOR_FIELD_DESC = new org.apache.thrift.protocol.TField("emailMonitor", org.apache.thrift.protocol.TType.STRUCT, (short)7);
+  private static final org.apache.thrift.protocol.TField EMAIL_MONITOR_PROPERTY_FIELD_DESC = new org.apache.thrift.protocol.TField("emailMonitorProperty", org.apache.thrift.protocol.TType.STRUCT, (short)7);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -81,7 +81,7 @@ import org.slf4j.LoggerFactory;
   private String alternativeSSHHostName; // optional
   private int sshPort; // optional
   private MonitorMode monitorMode; // optional
-  private EmailMonitorProperty emailMonitor; // optional
+  private EmailMonitorProperty emailMonitorProperty; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -99,7 +99,7 @@ import org.slf4j.LoggerFactory;
      * @see MonitorMode
      */
     MONITOR_MODE((short)6, "monitorMode"),
-    EMAIL_MONITOR((short)7, "emailMonitor");
+    EMAIL_MONITOR_PROPERTY((short)7, "emailMonitorProperty");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -126,8 +126,8 @@ import org.slf4j.LoggerFactory;
           return SSH_PORT;
         case 6: // MONITOR_MODE
           return MONITOR_MODE;
-        case 7: // EMAIL_MONITOR
-          return EMAIL_MONITOR;
+        case 7: // EMAIL_MONITOR_PROPERTY
+          return EMAIL_MONITOR_PROPERTY;
         default:
           return null;
       }
@@ -170,7 +170,7 @@ import org.slf4j.LoggerFactory;
   // isset id assignments
   private static final int __SSHPORT_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.ALTERNATIVE_SSHHOST_NAME,_Fields.SSH_PORT,_Fields.MONITOR_MODE,_Fields.EMAIL_MONITOR};
+  private _Fields optionals[] = {_Fields.ALTERNATIVE_SSHHOST_NAME,_Fields.SSH_PORT,_Fields.MONITOR_MODE,_Fields.EMAIL_MONITOR_PROPERTY};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -186,7 +186,7 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.MONITOR_MODE, new org.apache.thrift.meta_data.FieldMetaData("monitorMode", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, MonitorMode.class)));
-    tmpMap.put(_Fields.EMAIL_MONITOR, new org.apache.thrift.meta_data.FieldMetaData("emailMonitor", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.EMAIL_MONITOR_PROPERTY, new org.apache.thrift.meta_data.FieldMetaData("emailMonitorProperty", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, EmailMonitorProperty.class)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(SSHJobSubmission.class, metaDataMap);
@@ -231,8 +231,8 @@ import org.slf4j.LoggerFactory;
     if (other.isSetMonitorMode()) {
       this.monitorMode = other.monitorMode;
     }
-    if (other.isSetEmailMonitor()) {
-      this.emailMonitor = new EmailMonitorProperty(other.emailMonitor);
+    if (other.isSetEmailMonitorProperty()) {
+      this.emailMonitorProperty = new EmailMonitorProperty(other.emailMonitorProperty);
     }
   }
 
@@ -250,7 +250,7 @@ import org.slf4j.LoggerFactory;
     this.sshPort = 22;
 
     this.monitorMode = null;
-    this.emailMonitor = null;
+    this.emailMonitorProperty = null;
   }
 
   public String getJobSubmissionInterfaceId() {
@@ -406,26 +406,26 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public EmailMonitorProperty getEmailMonitor() {
-    return this.emailMonitor;
+  public EmailMonitorProperty getEmailMonitorProperty() {
+    return this.emailMonitorProperty;
   }
 
-  public void setEmailMonitor(EmailMonitorProperty emailMonitor) {
-    this.emailMonitor = emailMonitor;
+  public void setEmailMonitorProperty(EmailMonitorProperty emailMonitorProperty) {
+    this.emailMonitorProperty = emailMonitorProperty;
   }
 
-  public void unsetEmailMonitor() {
-    this.emailMonitor = null;
+  public void unsetEmailMonitorProperty() {
+    this.emailMonitorProperty = null;
   }
 
-  /** Returns true if field emailMonitor is set (has been assigned a value) and false otherwise */
-  public boolean isSetEmailMonitor() {
-    return this.emailMonitor != null;
+  /** Returns true if field emailMonitorProperty is set (has been assigned a value) and false otherwise */
+  public boolean isSetEmailMonitorProperty() {
+    return this.emailMonitorProperty != null;
   }
 
-  public void setEmailMonitorIsSet(boolean value) {
+  public void setEmailMonitorPropertyIsSet(boolean value) {
     if (!value) {
-      this.emailMonitor = null;
+      this.emailMonitorProperty = null;
     }
   }
 
@@ -479,11 +479,11 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
-    case EMAIL_MONITOR:
+    case EMAIL_MONITOR_PROPERTY:
       if (value == null) {
-        unsetEmailMonitor();
+        unsetEmailMonitorProperty();
       } else {
-        setEmailMonitor((EmailMonitorProperty)value);
+        setEmailMonitorProperty((EmailMonitorProperty)value);
       }
       break;
 
@@ -510,8 +510,8 @@ import org.slf4j.LoggerFactory;
     case MONITOR_MODE:
       return getMonitorMode();
 
-    case EMAIL_MONITOR:
-      return getEmailMonitor();
+    case EMAIL_MONITOR_PROPERTY:
+      return getEmailMonitorProperty();
 
     }
     throw new IllegalStateException();
@@ -536,8 +536,8 @@ import org.slf4j.LoggerFactory;
       return isSetSshPort();
     case MONITOR_MODE:
       return isSetMonitorMode();
-    case EMAIL_MONITOR:
-      return isSetEmailMonitor();
+    case EMAIL_MONITOR_PROPERTY:
+      return isSetEmailMonitorProperty();
     }
     throw new IllegalStateException();
   }
@@ -609,12 +609,12 @@ import org.slf4j.LoggerFactory;
         return false;
     }
 
-    boolean this_present_emailMonitor = true && this.isSetEmailMonitor();
-    boolean that_present_emailMonitor = true && that.isSetEmailMonitor();
-    if (this_present_emailMonitor || that_present_emailMonitor) {
-      if (!(this_present_emailMonitor && that_present_emailMonitor))
+    boolean this_present_emailMonitorProperty = true && this.isSetEmailMonitorProperty();
+    boolean that_present_emailMonitorProperty = true && that.isSetEmailMonitorProperty();
+    if (this_present_emailMonitorProperty || that_present_emailMonitorProperty) {
+      if (!(this_present_emailMonitorProperty && that_present_emailMonitorProperty))
         return false;
-      if (!this.emailMonitor.equals(that.emailMonitor))
+      if (!this.emailMonitorProperty.equals(that.emailMonitorProperty))
         return false;
     }
 
@@ -694,12 +694,12 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetEmailMonitor()).compareTo(other.isSetEmailMonitor());
+    lastComparison = Boolean.valueOf(isSetEmailMonitorProperty()).compareTo(other.isSetEmailMonitorProperty());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetEmailMonitor()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.emailMonitor, other.emailMonitor);
+    if (isSetEmailMonitorProperty()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.emailMonitorProperty, other.emailMonitorProperty);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -773,13 +773,13 @@ import org.slf4j.LoggerFactory;
       }
       first = false;
     }
-    if (isSetEmailMonitor()) {
+    if (isSetEmailMonitorProperty()) {
       if (!first) sb.append(", ");
-      sb.append("emailMonitor:");
-      if (this.emailMonitor == null) {
+      sb.append("emailMonitorProperty:");
+      if (this.emailMonitorProperty == null) {
         sb.append("null");
       } else {
-        sb.append(this.emailMonitor);
+        sb.append(this.emailMonitorProperty);
       }
       first = false;
     }
@@ -805,8 +805,8 @@ import org.slf4j.LoggerFactory;
     if (resourceJobManager != null) {
       resourceJobManager.validate();
     }
-    if (emailMonitor != null) {
-      emailMonitor.validate();
+    if (emailMonitorProperty != null) {
+      emailMonitorProperty.validate();
     }
   }
 
@@ -895,11 +895,11 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // EMAIL_MONITOR
+          case 7: // EMAIL_MONITOR_PROPERTY
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
-              struct.emailMonitor = new EmailMonitorProperty();
-              struct.emailMonitor.read(iprot);
-              struct.setEmailMonitorIsSet(true);
+              struct.emailMonitorProperty = new EmailMonitorProperty();
+              struct.emailMonitorProperty.read(iprot);
+              struct.setEmailMonitorPropertyIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -951,10 +951,10 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldEnd();
         }
       }
-      if (struct.emailMonitor != null) {
-        if (struct.isSetEmailMonitor()) {
-          oprot.writeFieldBegin(EMAIL_MONITOR_FIELD_DESC);
-          struct.emailMonitor.write(oprot);
+      if (struct.emailMonitorProperty != null) {
+        if (struct.isSetEmailMonitorProperty()) {
+          oprot.writeFieldBegin(EMAIL_MONITOR_PROPERTY_FIELD_DESC);
+          struct.emailMonitorProperty.write(oprot);
           oprot.writeFieldEnd();
         }
       }
@@ -988,7 +988,7 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetMonitorMode()) {
         optionals.set(2);
       }
-      if (struct.isSetEmailMonitor()) {
+      if (struct.isSetEmailMonitorProperty()) {
         optionals.set(3);
       }
       oprot.writeBitSet(optionals, 4);
@@ -1001,8 +1001,8 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetMonitorMode()) {
         oprot.writeI32(struct.monitorMode.getValue());
       }
-      if (struct.isSetEmailMonitor()) {
-        struct.emailMonitor.write(oprot);
+      if (struct.isSetEmailMonitorProperty()) {
+        struct.emailMonitorProperty.write(oprot);
       }
     }
 
@@ -1030,9 +1030,9 @@ import org.slf4j.LoggerFactory;
         struct.setMonitorModeIsSet(true);
       }
       if (incoming.get(3)) {
-        struct.emailMonitor = new EmailMonitorProperty();
-        struct.emailMonitor.read(iprot);
-        struct.setEmailMonitorIsSet(true);
+        struct.emailMonitorProperty = new EmailMonitorProperty();
+        struct.emailMonitorProperty.read(iprot);
+        struct.setEmailMonitorPropertyIsSet(true);
       }
     }
   }

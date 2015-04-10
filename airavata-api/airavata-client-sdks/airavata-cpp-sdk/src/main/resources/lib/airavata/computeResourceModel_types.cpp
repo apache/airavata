@@ -1142,8 +1142,8 @@ uint32_t SSHJobSubmission::read(::apache::thrift::protocol::TProtocol* iprot) {
         break;
       case 7:
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->emailMonitor.read(iprot);
-          this->__isset.emailMonitor = true;
+          xfer += this->emailMonitorProperty.read(iprot);
+          this->__isset.emailMonitorProperty = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -1197,9 +1197,9 @@ uint32_t SSHJobSubmission::write(::apache::thrift::protocol::TProtocol* oprot) c
     xfer += oprot->writeI32((int32_t)this->monitorMode);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.emailMonitor) {
-    xfer += oprot->writeFieldBegin("emailMonitor", ::apache::thrift::protocol::T_STRUCT, 7);
-    xfer += this->emailMonitor.write(oprot);
+  if (this->__isset.emailMonitorProperty) {
+    xfer += oprot->writeFieldBegin("emailMonitorProperty", ::apache::thrift::protocol::T_STRUCT, 7);
+    xfer += this->emailMonitorProperty.write(oprot);
     xfer += oprot->writeFieldEnd();
   }
   xfer += oprot->writeFieldStop();
@@ -1215,7 +1215,7 @@ void swap(SSHJobSubmission &a, SSHJobSubmission &b) {
   swap(a.alternativeSSHHostName, b.alternativeSSHHostName);
   swap(a.sshPort, b.sshPort);
   swap(a.monitorMode, b.monitorMode);
-  swap(a.emailMonitor, b.emailMonitor);
+  swap(a.emailMonitorProperty, b.emailMonitorProperty);
   swap(a.__isset, b.__isset);
 }
 

@@ -647,11 +647,11 @@ class LOCALDataMovement {
 void swap(LOCALDataMovement &a, LOCALDataMovement &b);
 
 typedef struct _SSHJobSubmission__isset {
-  _SSHJobSubmission__isset() : alternativeSSHHostName(false), sshPort(true), monitorMode(false), emailMonitor(false) {}
+  _SSHJobSubmission__isset() : alternativeSSHHostName(false), sshPort(true), monitorMode(false), emailMonitorProperty(false) {}
   bool alternativeSSHHostName;
   bool sshPort;
   bool monitorMode;
-  bool emailMonitor;
+  bool emailMonitorProperty;
 } _SSHJobSubmission__isset;
 
 class SSHJobSubmission {
@@ -671,7 +671,7 @@ class SSHJobSubmission {
   std::string alternativeSSHHostName;
   int32_t sshPort;
   MonitorMode::type monitorMode;
-  EmailMonitorProperty emailMonitor;
+  EmailMonitorProperty emailMonitorProperty;
 
   _SSHJobSubmission__isset __isset;
 
@@ -702,9 +702,9 @@ class SSHJobSubmission {
     __isset.monitorMode = true;
   }
 
-  void __set_emailMonitor(const EmailMonitorProperty& val) {
-    emailMonitor = val;
-    __isset.emailMonitor = true;
+  void __set_emailMonitorProperty(const EmailMonitorProperty& val) {
+    emailMonitorProperty = val;
+    __isset.emailMonitorProperty = true;
   }
 
   bool operator == (const SSHJobSubmission & rhs) const
@@ -727,9 +727,9 @@ class SSHJobSubmission {
       return false;
     else if (__isset.monitorMode && !(monitorMode == rhs.monitorMode))
       return false;
-    if (__isset.emailMonitor != rhs.__isset.emailMonitor)
+    if (__isset.emailMonitorProperty != rhs.__isset.emailMonitorProperty)
       return false;
-    else if (__isset.emailMonitor && !(emailMonitor == rhs.emailMonitor))
+    else if (__isset.emailMonitorProperty && !(emailMonitorProperty == rhs.emailMonitorProperty))
       return false;
     return true;
   }
