@@ -21,18 +21,19 @@
 package org.apache.airavata.gfac.monitor.email;
 
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.logger.AiravataLogger;
 import org.apache.airavata.common.logger.AiravataLoggerFactory;
-import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.utils.GFacThreadPoolExecutor;
 import org.apache.airavata.gfac.core.utils.OutHandlerWorker;
 import org.apache.airavata.gfac.monitor.email.parser.EmailParser;
 import org.apache.airavata.gfac.monitor.email.parser.LonestarEmailParser;
 import org.apache.airavata.gfac.monitor.email.parser.PBSEmailParser;
 import org.apache.airavata.gfac.monitor.email.parser.SLURMEmailParser;
+import org.apache.airavata.model.appcatalog.computeresource.EmailMonitorProperty;
+import org.apache.airavata.model.appcatalog.computeresource.EmailProtocol;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeRequestEvent;
 import org.apache.airavata.model.workspace.experiment.JobState;
@@ -59,39 +60,34 @@ public class EmailBasedMonitor implements Runnable{
     private static final String PBS_CONSULT_SDSC_EDU = "pbsconsult@sdsc.edu";
     private static final String SLURM_BATCH_STAMPEDE = "slurm@batch1.stampede.tacc.utexas.edu";
     private static final String LONESTAR_ADDRESS = "root@c312-206.ls4.tacc.utexas.edu";
-    private static EmailBasedMonitor emailBasedMonitor;
-    private final MonitorPublisher monitorPublisher;
+    private final EmailMonitorProperty emailMonitorProperty;
+    private boolean stopMonitoring = false;
 
     private Session session ;
     private Store store;
     private Folder emailFolder;
-    private String host, emailAddress, password, folderName, mailStoreProtocol;
+//    private String host, emailAddress, password, folderName, mailStoreProtocol;
     private Properties properties;
 
     private Map<String, JobExecutionContext> jobMonitorMap = new ConcurrentHashMap<String, JobExecutionContext>();
 
-    private EmailBasedMonitor(MonitorPublisher monitorPublisher) throws ApplicationSettingsException {
-        this.monitorPublisher = monitorPublisher;
+    public EmailBasedMonitor(EmailMonitorProperty emailMonitorProp) {
+        this.emailMonitorProperty = emailMonitorProp;
         init();
     }
 
-    private void init() throws ApplicationSettingsException {
-        host = ServerSettings.getEmailBasedMonitorHost();
-        emailAddress = ServerSettings.getEmailBasedMonitorAddress();
-        password = ServerSettings.getEmailBasedMonitorPassword();
-        folderName = ServerSettings.getEmailBasedMonitorFolderName();
-        mailStoreProtocol = ServerSettings.getEmailBasedMonitorStoreProtocol();
-
+    private void init() {
         properties = new Properties();
-        properties.put("mail.store.protocol", mailStoreProtocol);
+        properties.put("mail.store.protocol", emailMonitorProperty.getStoreProtocol());
 
     }
 
-    public static EmailBasedMonitor getInstant(MonitorPublisher monitorPublisher) throws ApplicationSettingsException {
+/*    public static EmailBasedMonitor getInstant(EmailMonitorProperty emailMonitorProp, MonitorPublisher monitorPublisher)
+            throws ApplicationSettingsException {
         if (emailBasedMonitor == null) {
             synchronized (EmailBasedMonitor.class) {
                 if (emailBasedMonitor == null) {
-                    emailBasedMonitor = new EmailBasedMonitor(monitorPublisher);
+                    emailBasedMonitor = new EmailBasedMonitor(emailMonitorProp);
                     Thread thread = new Thread(emailBasedMonitor);
                     thread.start();
                 }
@@ -99,7 +95,7 @@ public class EmailBasedMonitor implements Runnable{
         }
 
         return emailBasedMonitor;
-    }
+    }*/
 
     public void addToJobMonitorMap(JobExecutionContext jobExecutionContext) {
         addToJobMonitorMap(jobExecutionContext.getJobDetails().getJobID(), jobExecutionContext);
@@ -134,14 +130,15 @@ public class EmailBasedMonitor implements Runnable{
     public void run() {
         try {
             session = Session.getDefaultInstance(properties);
-            store = session.getStore(mailStoreProtocol);
-            store.connect(host, emailAddress, password);
-            while (!ServerSettings.isStopAllThreads()) {
+            store = session.getStore(getProtocol(emailMonitorProperty.getStoreProtocol()));
+            store.connect(emailMonitorProperty.getHost(), emailMonitorProperty.getEmailAddress(),
+                    emailMonitorProperty.getPassword());
+            while (!(stopMonitoring || ServerSettings.isStopAllThreads())) {
                 if (!store.isConnected()) {
                     store.connect();
                 }
                 Thread.sleep(2000);
-                emailFolder = store.getFolder(folderName);
+                emailFolder = store.getFolder(emailMonitorProperty.getFolderName());
                 emailFolder.open(Folder.READ_WRITE);
                 Message[] searchMessages = emailFolder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
                 List<Message> processedMessages = new ArrayList<>();
@@ -177,6 +174,8 @@ public class EmailBasedMonitor implements Runnable{
             log.error("Couldn't connect to the store ", e);
         } catch (InterruptedException e) {
             log.error("Interrupt exception while sleep ", e);
+        } catch (AiravataException e) {
+            log.error("UnHandled arguments ", e);
         } finally {
             try {
                 store.close();
@@ -186,11 +185,21 @@ public class EmailBasedMonitor implements Runnable{
         }
     }
 
+    private String getProtocol(EmailProtocol storeProtocol) throws AiravataException {
+        switch (storeProtocol) {
+            case IMAPS:
+                return "imaps";
+            case POP3:
+                return "pop3";
+            default:
+                throw new AiravataException("Unhandled Email store protocol ");
+        }
+    }
     private void process(JobStatusResult jobStatusResult, JobExecutionContext jEC){
         JobState resultState = jobStatusResult.getState();
         jEC.getJobDetails().setJobStatus(new JobStatus(resultState));
         if (resultState == JobState.COMPLETE) {
-            GFacThreadPoolExecutor.getFixedThreadPool().submit(new OutHandlerWorker(jEC, monitorPublisher));
+            GFacThreadPoolExecutor.getFixedThreadPool().submit(new OutHandlerWorker(jEC, BetterGfacImpl.getMonitorPublisher()));
         }else if (resultState == JobState.QUEUED) {
             // TODO - publish queued rabbitmq message
         }else if (resultState == JobState.FAILED) {
@@ -216,7 +225,7 @@ public class EmailBasedMonitor implements Runnable{
                         "experiment {} , task {}", jobStatus.getJobIdentity().getExperimentId(),
                 jobStatus.getJobIdentity().getTaskId());
 
-        monitorPublisher.publish(jobStatus);
+        BetterGfacImpl.getMonitorPublisher().publish(jobStatus);
     }
 
     private void writeEnvelopeOnError(Message m) throws MessagingException {
@@ -234,5 +243,9 @@ public class EmailBasedMonitor implements Runnable{
         // SUBJECT
         if (m.getSubject() != null)
             log.error("SUBJECT: " + m.getSubject());
+    }
+
+    public void stopMonitoring() {
+        stopMonitoring = true;
     }
 }

@@ -21,6 +21,7 @@
 
 package org.apache.airavata.gfac.ssh.provider.impl;
 
+import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.Constants;
@@ -36,6 +37,7 @@ import org.apache.airavata.gfac.core.provider.AbstractProvider;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.monitor.email.EmailBasedMonitor;
+import org.apache.airavata.gfac.monitor.email.EmailMonitorFactory;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
 import org.apache.airavata.gfac.ssh.util.GFACSSHUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
@@ -47,9 +49,12 @@ import org.apache.airavata.gsi.ssh.impl.StandardOutReader;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.appcatalog.computeresource.EmailMonitorProperty;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
@@ -369,33 +374,40 @@ public class SSHProvider extends AbstractProvider {
         return stdOutputString;
     }
 
-    public void delegateToMonitorHandlers(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
-        if (ServerSettings.isEmailBasedNotificationEnable()) {
-            try {
-                EmailBasedMonitor emailBasedMonitor = EmailBasedMonitor.getInstant(BetterGfacImpl.getMonitorPublisher());
-                emailBasedMonitor.addToJobMonitorMap(jobExecutionContext);
-            } catch (ApplicationSettingsException e) {
-                throw new GFacHandlerException("Error while delegating job execution context to email based monitor");
-            }
-        } else {
-            List<ThreadedHandler> daemonHandlers = BetterGfacImpl.getDaemonHandlers();
-            if (daemonHandlers == null) {
-                daemonHandlers = BetterGfacImpl.getDaemonHandlers();
-            }
-            ThreadedHandler pullMonitorHandler = null;
-            ThreadedHandler pushMonitorHandler = null;
-            for (ThreadedHandler threadedHandler : daemonHandlers) {
-                if ("org.apache.airavata.gfac.monitor.handlers.GridPullMonitorHandler".equals(threadedHandler.getClass().getName())) {
-                    pullMonitorHandler = threadedHandler;
-                    pullMonitorHandler.invoke(jobExecutionContext);
+    public void delegateToMonitorHandlers(JobExecutionContext jobExecutionContext) throws GFacHandlerException, AppCatalogException {
+        if (jobExecutionContext.getPreferredJobSubmissionProtocol()== JobSubmissionProtocol.SSH) {
+            String jobSubmissionInterfaceId = jobExecutionContext.getPreferredJobSubmissionInterface().getJobSubmissionInterfaceId();
+            SSHJobSubmission sshJobSubmission = jobExecutionContext.getAppCatalog().getComputeResource().getSSHJobSubmission(jobSubmissionInterfaceId);
+            if (sshJobSubmission.getMonitorMode() == MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR) {
+                EmailMonitorProperty emailMonitorProp = sshJobSubmission.getEmailMonitorProperty();
+                if (emailMonitorProp != null) {
+                    EmailMonitorFactory emailMonitorFactory = new EmailMonitorFactory();
+                    EmailBasedMonitor emailBasedMonitor = emailMonitorFactory.getEmailBasedMonitor(emailMonitorProp);
+                    emailBasedMonitor.addToJobMonitorMap(jobExecutionContext);
+                    return;
                 }
-                // have to handle the GridPushMonitorHandler logic
-            }
-            if (pullMonitorHandler == null && pushMonitorHandler == null && ExecutionMode.ASYNCHRONOUS.equals(jobExecutionContext.getGFacConfiguration().getExecutionMode())) {
-                log.error("No Daemon handler is configured in gfac-config.xml, either pull or push, so monitoring will not invoked" +
-                        ", execution is configured as asynchronous, so Outhandler will not be invoked");
             }
         }
+
+        // if email monitor is not activeated or not configure we use pull or push monitor
+        List<ThreadedHandler> daemonHandlers = BetterGfacImpl.getDaemonHandlers();
+        if (daemonHandlers == null) {
+            daemonHandlers = BetterGfacImpl.getDaemonHandlers();
+        }
+        ThreadedHandler pullMonitorHandler = null;
+        ThreadedHandler pushMonitorHandler = null;
+        for (ThreadedHandler threadedHandler : daemonHandlers) {
+            if ("org.apache.airavata.gfac.monitor.handlers.GridPullMonitorHandler".equals(threadedHandler.getClass().getName())) {
+                pullMonitorHandler = threadedHandler;
+                pullMonitorHandler.invoke(jobExecutionContext);
+            }
+            // have to handle the GridPushMonitorHandler logic
+        }
+        if (pullMonitorHandler == null && pushMonitorHandler == null && ExecutionMode.ASYNCHRONOUS.equals(jobExecutionContext.getGFacConfiguration().getExecutionMode())) {
+            log.error("No Daemon handler is configured in gfac-config.xml, either pull or push, so monitoring will not invoked" +
+                    ", execution is configured as asynchronous, so Outhandler will not be invoked");
+        }
+
     }
 
 }

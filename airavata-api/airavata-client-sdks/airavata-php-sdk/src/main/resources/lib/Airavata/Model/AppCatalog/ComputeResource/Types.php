@@ -1232,7 +1232,7 @@ class SSHJobSubmission {
   public $alternativeSSHHostName = null;
   public $sshPort = 22;
   public $monitorMode = null;
-  public $emailMonitor = null;
+  public $emailMonitorProperty = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -1263,7 +1263,7 @@ class SSHJobSubmission {
           'type' => TType::I32,
           ),
         7 => array(
-          'var' => 'emailMonitor',
+          'var' => 'emailMonitorProperty',
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\AppCatalog\ComputeResource\EmailMonitorProperty',
           ),
@@ -1288,8 +1288,8 @@ class SSHJobSubmission {
       if (isset($vals['monitorMode'])) {
         $this->monitorMode = $vals['monitorMode'];
       }
-      if (isset($vals['emailMonitor'])) {
-        $this->emailMonitor = $vals['emailMonitor'];
+      if (isset($vals['emailMonitorProperty'])) {
+        $this->emailMonitorProperty = $vals['emailMonitorProperty'];
       }
     }
   }
@@ -1358,8 +1358,8 @@ class SSHJobSubmission {
           break;
         case 7:
           if ($ftype == TType::STRUCT) {
-            $this->emailMonitor = new \Airavata\Model\AppCatalog\ComputeResource\EmailMonitorProperty();
-            $xfer += $this->emailMonitor->read($input);
+            $this->emailMonitorProperty = new \Airavata\Model\AppCatalog\ComputeResource\EmailMonitorProperty();
+            $xfer += $this->emailMonitorProperty->read($input);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -1410,12 +1410,12 @@ class SSHJobSubmission {
       $xfer += $output->writeI32($this->monitorMode);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->emailMonitor !== null) {
-      if (!is_object($this->emailMonitor)) {
+    if ($this->emailMonitorProperty !== null) {
+      if (!is_object($this->emailMonitorProperty)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('emailMonitor', TType::STRUCT, 7);
-      $xfer += $this->emailMonitor->write($output);
+      $xfer += $output->writeFieldBegin('emailMonitorProperty', TType::STRUCT, 7);
+      $xfer += $this->emailMonitorProperty->write($output);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

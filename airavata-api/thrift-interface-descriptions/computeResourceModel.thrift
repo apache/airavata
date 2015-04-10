@@ -348,7 +348,7 @@ struct SSHJobSubmission {
     4: optional string alternativeSSHHostName,
     5: optional i32 sshPort = 22,
     6: optional MonitorMode monitorMode,
-    7: optional EmailMonitorProperty emailMonitor
+    7: optional EmailMonitorProperty emailMonitorProperty
 }
 
 struct GlobusJobSubmission {
