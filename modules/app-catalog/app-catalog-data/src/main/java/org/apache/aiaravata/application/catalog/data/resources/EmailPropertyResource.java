@@ -208,6 +208,7 @@ public class EmailPropertyResource extends AbstractResource {
 			emailMonitorProperty.setEmailAddress(emailAddress);
 			emailMonitorProperty.setEmailProtocol(protocol);
 			emailMonitorProperty.setFolderName(folderName);
+            emailMonitorProperty.setPassword(password);
 			emailMonitorProperty.setHost(host);
             if (monitorProperty == null) {
 				em.persist(emailMonitorProperty);
