@@ -229,7 +229,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("cloneExperiment\n");
   }
 
-  void terminateExperiment(const std::string& airavataExperimentId) {
+  void terminateExperiment(const std::string& airavataExperimentId, const std::string& tokenId) {
     // Your implementation goes here
     printf("terminateExperiment\n");
   }

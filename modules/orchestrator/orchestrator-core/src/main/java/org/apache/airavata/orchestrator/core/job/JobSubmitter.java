@@ -60,5 +60,5 @@ public interface JobSubmitter {
      * @return
      * @throws OrchestratorException
      */
-    boolean terminate(String experimentID,String taskID)throws OrchestratorException;
+    boolean terminate(String experimentID,String taskID, String tokenId)throws OrchestratorException;
 }

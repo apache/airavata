@@ -52,7 +52,7 @@ public class SLURMEmailParser implements EmailParser {
             // TODO remove following test lines
             String jobId = matcher.group(JOBID);
             String status = matcher.group(STATUS);
-            log.info("SLURM " + status + " message received -> " + jobId);
+//            log.info("SLURM " + status + " message received -> " + jobId);
             return jobStatusResult;
         } else {
             log.error("No matched found for subject -> " + subject);
@@ -75,27 +75,4 @@ public class SLURMEmailParser implements EmailParser {
         }
     }
 
-
-
-/*    -----------------------
-    This is the message envelope
-    ---------------------------
-    FROM: slurm@batch1.stampede.tacc.utexas.edu
-    TO: shameera@scigap.org
-    SUBJECT: SLURM Job_id=5055468 Name=A433255759 Began, Queued time 00:00:01
-            ----------------------------
-    CONTENT-TYPE: TEXT/PLAIN; charset=us-ascii
-    This is plain text
-    ---------------------------*/
-
-/*    -----------------------
-    This is the message envelope
-    ---------------------------
-    FROM: slurm@batch1.stampede.tacc.utexas.edu
-    TO: shameera@scigap.org
-    SUBJECT: SLURM Job_id=5055468 Name=A433255759 Ended, Run time 00:02:40
-            ----------------------------
-    CONTENT-TYPE: TEXT/PLAIN; charset=us-ascii
-    This is plain text
-    ---------------------------*/
 }

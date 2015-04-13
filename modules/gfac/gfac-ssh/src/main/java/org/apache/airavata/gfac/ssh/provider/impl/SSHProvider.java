@@ -378,11 +378,11 @@ public class SSHProvider extends AbstractProvider {
         if (jobExecutionContext.getPreferredJobSubmissionProtocol()== JobSubmissionProtocol.SSH) {
             String jobSubmissionInterfaceId = jobExecutionContext.getPreferredJobSubmissionInterface().getJobSubmissionInterfaceId();
             SSHJobSubmission sshJobSubmission = jobExecutionContext.getAppCatalog().getComputeResource().getSSHJobSubmission(jobSubmissionInterfaceId);
-            if (sshJobSubmission.getMonitorMode() == MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR) {
+            MonitorMode monitorMode = sshJobSubmission.getMonitorMode();
+            if (monitorMode != null && monitorMode == MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR) {
                 EmailMonitorProperty emailMonitorProp = sshJobSubmission.getEmailMonitorProperty();
                 if (emailMonitorProp != null) {
-                    EmailMonitorFactory emailMonitorFactory = new EmailMonitorFactory();
-                    EmailBasedMonitor emailBasedMonitor = emailMonitorFactory.getEmailBasedMonitor(emailMonitorProp);
+                    EmailBasedMonitor emailBasedMonitor = EmailMonitorFactory.getEmailBasedMonitor(emailMonitorProp);
                     emailBasedMonitor.addToJobMonitorMap(jobExecutionContext);
                     return;
                 }

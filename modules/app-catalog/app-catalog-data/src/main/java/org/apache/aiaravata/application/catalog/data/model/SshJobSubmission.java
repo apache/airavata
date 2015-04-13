@@ -32,6 +32,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.apache.airavata.model.appcatalog.computeresource.EmailMonitorProperty;
 import org.apache.openjpa.persistence.DataCache;
 
 @DataCache
@@ -58,6 +59,9 @@ public class SshJobSubmission implements Serializable {
 	
 	@Column(name = "SSH_PORT")
 	private int sshPort;
+
+    @Column(name = "MONITOR_MODE")
+    private String monitorMode;
 
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
@@ -129,4 +133,13 @@ public class SshJobSubmission implements Serializable {
 	public void setSshPort(int sshPort) {
 		this.sshPort=sshPort;
 	}
+
+    public String getMonitorMode() {
+        return monitorMode;
+    }
+
+    public void setMonitorMode(String monitorMode) {
+        this.monitorMode = monitorMode;
+    }
+
 }

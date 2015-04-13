@@ -27,27 +27,31 @@ import java.util.Map;
 
 public class EmailMonitorFactory {
 
-    private Map<String, EmailBasedMonitor> emailMonitors = new HashMap<String, EmailBasedMonitor>();
+    private static Map<String, EmailBasedMonitor> emailMonitors = new HashMap<String, EmailBasedMonitor>();
 
 
-    public synchronized EmailBasedMonitor getEmailBasedMonitor(EmailMonitorProperty emailMonitorProp) {
+    public static EmailBasedMonitor getEmailBasedMonitor(EmailMonitorProperty emailMonitorProp) {
         String key = getKey(emailMonitorProp);
         EmailBasedMonitor monitor = emailMonitors.get(key);
         if (monitor == null) {
-            monitor = new EmailBasedMonitor(emailMonitorProp);
-            emailMonitors.put(key, monitor);
-            new Thread(monitor).start();
+            synchronized (emailMonitors){
+                if (monitor == null) {
+                    monitor = new EmailBasedMonitor(emailMonitorProp);
+                    emailMonitors.put(key, monitor);
+                    new Thread(monitor).start();
+                }
+            }
         }
         return monitor;
     }
 
-    public void stopAllMonitors() {
+    public static void stopAllMonitors() {
         for (EmailBasedMonitor emailBasedMonitor : emailMonitors.values()) {
             emailBasedMonitor.stopMonitoring();
         }
     }
 
-    private String getKey(EmailMonitorProperty emailMonitorProp) {
+    private static String getKey(EmailMonitorProperty emailMonitorProp) {
         StringBuffer sb = new StringBuffer(emailMonitorProp.getHost().trim());
         sb.append("_").append(emailMonitorProp.getStoreProtocol().name());
         sb.append("_").append(emailMonitorProp.getEmailAddress().trim());
