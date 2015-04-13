@@ -27,6 +27,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.aiaravata.application.catalog.data.model.EmailMonitorProperty;
 import org.apache.aiaravata.application.catalog.data.model.ResourceJobManager;
 import org.apache.aiaravata.application.catalog.data.model.SshJobSubmission;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogJPAUtils;
@@ -45,6 +46,9 @@ public class SshJobSubmissionResource extends AbstractResource {
 	private String alternativeSshHostname;
 	private String securityProtocol;
 	private int sshPort;
+    private String monitorMode;
+    private String emailMonitorPropertyId;
+    private EmailMonitorProperty emailMonitorProperty;
     private Timestamp createdTime;
     private Timestamp updatedTime;
 
@@ -230,7 +234,11 @@ public class SshJobSubmissionResource extends AbstractResource {
 			sshJobSubmission.setAlternativeSshHostname(getAlternativeSshHostname());
 			sshJobSubmission.setSecurityProtocol(getSecurityProtocol());
 			sshJobSubmission.setSshPort(getSshPort());
-			if (existingSshJobSubmission == null) {
+            sshJobSubmission.setMonitorMode(getMonitorMode());
+            sshJobSubmission.setEmailMonitorPropertyId(getEmailMonitorPropertyId());
+            EmailMonitorProperty emailMonitorProperty = em.find(EmailMonitorProperty.class, getEmailMonitorPropertyId());
+            sshJobSubmission.setEmailMonitorProperty(emailMonitorProperty);
+            if (existingSshJobSubmission == null) {
 				em.persist(sshJobSubmission);
 			} else {
 				em.merge(sshJobSubmission);
@@ -318,4 +326,28 @@ public class SshJobSubmissionResource extends AbstractResource {
 	public void setSshPort(int sshPort) {
 		this.sshPort=sshPort;
 	}
+
+    public String getMonitorMode() {
+        return monitorMode;
+    }
+
+    public void setMonitorMode(String monitorMode) {
+        this.monitorMode = monitorMode;
+    }
+
+    public EmailMonitorProperty getEmailMonitorProperty() {
+        return emailMonitorProperty;
+    }
+
+    public void setEmailMonitorProperty(EmailMonitorProperty emailMonitorProperty) {
+        this.emailMonitorProperty = emailMonitorProperty;
+    }
+
+    public String getEmailMonitorPropertyId() {
+        return emailMonitorPropertyId;
+    }
+
+    public void setEmailMonitorPropertyId(String emailMonitorPropertyId) {
+        this.emailMonitorPropertyId = emailMonitorPropertyId;
+    }
 }
