@@ -94,46 +94,4 @@ public class PBSEmailParser implements EmailParser {
         return -1;
     }
 
-
-
-/*    -----------------------
-    This is the message envelope
-    ---------------------------
-    FROM: pbsconsult@sdsc.edu
-    TO: shameera@scigap.org
-    SUBJECT: PBS JOB 2556782.trestles-fe1.local
-    ----------------------------
-    CONTENT-TYPE: TEXT/PLAIN
-    This is plain text
-    ---------------------------
-    PBS Job Id: 2556782.trestles-fe1.local
-    Job Name:   A1182004055
-    Exec host:  trestles-1-12/0+trestles-1-12/1+trestles-1-12/2+trestles-1-12/3
-    Begun execution
-    */
-/*
-    -----------------------
-    This is the message envelope
-    ---------------------------
-    FROM: pbsconsult@sdsc.edu
-    TO: shameera@scigap.org
-    SUBJECT: PBS JOB 2556782.trestles-fe1.local
-    ----------------------------
-    CONTENT-TYPE: TEXT/PLAIN
-    This is plain text
-    ---------------------------
-    PBS Job Id: 2556782.trestles-fe1.local
-    Job Name:   A1182004055
-    Exec host:  trestles-1-12/0+trestles-1-12/1+trestles-1-12/2+trestles-1-12/3
-    Execution terminated
-    Exit_status=0
-    resources_used.cput=00:14:31
-    resources_used.mem=124712kb
-    resources_used.vmem=3504116kb
-    resources_used.walltime=00:04:10
-    Error_Path: trestles-login2.sdsc.edu:/oasis/scratch/trestles/ogce/temp_project/gta-work-dirs/MonitorTest_9169517d-e2d9-4ff5-bed5-dee6eb3eebb2/Amber_Sander.stderr
-    Output_Path: trestles-login2.sdsc.edu:/oasis/scratch/trestles/ogce/temp_project/gta-work-dirs/MonitorTest_9169517d-e2d9-4ff5-bed5-dee6eb3eebb2/Amber_Sander.stdout
-    */
-
-
 }
