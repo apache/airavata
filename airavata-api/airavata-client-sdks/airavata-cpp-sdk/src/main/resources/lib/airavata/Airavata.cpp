@@ -9680,6 +9680,14 @@ uint32_t Airavata_terminateExperiment_args::read(::apache::thrift::protocol::TPr
           xfer += iprot->skip(ftype);
         }
         break;
+      case 2:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->tokenId);
+          this->__isset.tokenId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -9700,6 +9708,10 @@ uint32_t Airavata_terminateExperiment_args::write(::apache::thrift::protocol::TP
   xfer += oprot->writeString(this->airavataExperimentId);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("tokenId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->tokenId);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -9711,6 +9723,10 @@ uint32_t Airavata_terminateExperiment_pargs::write(::apache::thrift::protocol::T
 
   xfer += oprot->writeFieldBegin("airavataExperimentId", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString((*(this->airavataExperimentId)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("tokenId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString((*(this->tokenId)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -31027,19 +31043,20 @@ void AiravataClient::recv_cloneExperiment(std::string& _return)
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "cloneExperiment failed: unknown result");
 }
 
-void AiravataClient::terminateExperiment(const std::string& airavataExperimentId)
+void AiravataClient::terminateExperiment(const std::string& airavataExperimentId, const std::string& tokenId)
 {
-  send_terminateExperiment(airavataExperimentId);
+  send_terminateExperiment(airavataExperimentId, tokenId);
   recv_terminateExperiment();
 }
 
-void AiravataClient::send_terminateExperiment(const std::string& airavataExperimentId)
+void AiravataClient::send_terminateExperiment(const std::string& airavataExperimentId, const std::string& tokenId)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("terminateExperiment", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_terminateExperiment_pargs args;
   args.airavataExperimentId = &airavataExperimentId;
+  args.tokenId = &tokenId;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -38745,7 +38762,7 @@ void AiravataProcessor::process_terminateExperiment(int32_t seqid, ::apache::thr
 
   Airavata_terminateExperiment_result result;
   try {
-    iface_->terminateExperiment(args.airavataExperimentId);
+    iface_->terminateExperiment(args.airavataExperimentId, args.tokenId);
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
     result.__isset.ire = true;

@@ -604,7 +604,7 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  void terminateExperiment(1: string airavataExperimentId)
+  void terminateExperiment(1: string airavataExperimentId, 2: string tokenId)
     throws (1: airavataErrors.InvalidRequestException ire,
             2: airavataErrors.ExperimentNotFoundException enf,
             3: airavataErrors.AiravataClientException ace,
