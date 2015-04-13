@@ -137,11 +137,12 @@ public class EmailBasedMonitor implements Runnable{
                 if (!store.isConnected()) {
                     store.connect();
                 }
-                Thread.sleep(2000);
+                Thread.sleep(ServerSettings.getEmailMonitorPeriod());
                 emailFolder = store.getFolder(emailMonitorProperty.getFolderName());
                 emailFolder.open(Folder.READ_WRITE);
                 Message[] searchMessages = emailFolder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
                 List<Message> processedMessages = new ArrayList<>();
+                List<Message> unreadMessages = new ArrayList<>();
                 for (Message message : searchMessages) {
                     try {
                         JobStatusResult jobStatusResult = parse(message);
@@ -152,7 +153,8 @@ public class EmailBasedMonitor implements Runnable{
                         } else {
                             // we can get JobExecutionContext null in multiple Gfac instances environment,
                             // where this job is not submitted by this Gfac instance hence we ignore this message.
-                            log.info("JobExecutionContext is not found for job Id " + jobStatusResult.getJobId());
+                            unreadMessages.add(message);
+//                            log.info("JobExecutionContext is not found for job Id " + jobStatusResult.getJobId());
                         }
                     } catch (AiravataException e) {
                         log.error("Error parsing email message =====================================>", e);
@@ -164,9 +166,15 @@ public class EmailBasedMonitor implements Runnable{
                     }
                 }
                 if (!processedMessages.isEmpty()) {
-                    Message[] prosMessages = new Message[processedMessages.size()];
-                    processedMessages.toArray(prosMessages);
-                    emailFolder.setFlags(prosMessages, new Flags(Flags.Flag.SEEN), true);
+                    Message[] seenMessages = new Message[processedMessages.size()];
+                    processedMessages.toArray(seenMessages);
+                    emailFolder.setFlags(seenMessages, new Flags(Flags.Flag.SEEN), true);
+
+                }
+                if (!unreadMessages.isEmpty()) {
+                    Message[] unseenMessages = new Message[unreadMessages.size()];
+                    unreadMessages.toArray(unseenMessages);
+                    emailFolder.setFlags(unseenMessages, new Flags(Flags.Flag.SEEN), false);
                 }
                 emailFolder.close(false);
             }
