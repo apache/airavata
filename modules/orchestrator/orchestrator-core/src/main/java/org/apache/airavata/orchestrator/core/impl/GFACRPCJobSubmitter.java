@@ -140,7 +140,7 @@ public class GFACRPCJobSubmitter implements JobSubmitter, Watcher {
         return false;
 	}
 
-    public boolean terminate(String experimentID, String taskID) throws OrchestratorException {
+    public boolean terminate(String experimentID, String taskID, String tokenId) throws OrchestratorException {
         ZooKeeper zk = orchestratorContext.getZk();
         GfacService.Client localhost = null;
         try {

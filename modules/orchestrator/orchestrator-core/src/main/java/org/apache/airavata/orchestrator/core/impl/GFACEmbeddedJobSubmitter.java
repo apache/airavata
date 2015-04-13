@@ -81,7 +81,7 @@ public class GFACEmbeddedJobSubmitter implements JobSubmitter {
         }
     }
 
-    public boolean terminate(String experimentID, String taskID) throws OrchestratorException {
+    public boolean terminate(String experimentID, String taskID, String tokenId) throws OrchestratorException {
         return false;
     }
 
