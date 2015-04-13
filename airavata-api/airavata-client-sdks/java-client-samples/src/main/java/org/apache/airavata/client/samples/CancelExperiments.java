@@ -59,7 +59,8 @@ public class CancelExperiments {
     public static void terminateExperiment(Airavata.Client client, String expId)
             throws TException {
         try {
-            client.terminateExperiment(expId);
+        	String tokenId = "-0bbb-403b-a88a-42b6dbe198e9";
+            client.terminateExperiment(expId, tokenId);
         } catch (ExperimentNotFoundException e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());
             throw new ExperimentNotFoundException(e);

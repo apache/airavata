@@ -62,9 +62,14 @@ public abstract class AbstractResource implements Resource {
 	public static final String LOCAL_SUBMISSION = "LocalSubmission";
 	public static final String LOCAL_DATA_MOVEMENT = "LocalDataMovement";
 	public static final String SSH_JOB_SUBMISSION = "SshJobSubmission";
+	public static final String EMAIL_PROPERTY = "EmailMonitorProperty";
     public static final String CLOUD_JOB_SUBMISSION = "CloudJobSubmission";
     public static final String MODULE_LOAD_CMD = "ModuleLoadCmd";
     public static final String WORKFLOW = "Workflow";
+
+    public final class EmailMonitorPropertyConstants {
+        public static final String JOB_SUBMISSION_INTERFACE_ID = "jobSubmissionId";
+    }
 
 	// Compute Resource Table
 	public final class ComputeResourceConstants {

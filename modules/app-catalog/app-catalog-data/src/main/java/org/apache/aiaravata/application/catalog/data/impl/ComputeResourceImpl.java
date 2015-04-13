@@ -176,13 +176,30 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public String addSSHJobSubmission(SSHJobSubmission sshJobSubmission) throws AppCatalogException {
         try {
-        	sshJobSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("SSH"));
+            String submissionId = AppCatalogUtils.getID("SSH");
+            sshJobSubmission.setJobSubmissionInterfaceId(submissionId);
     		String resourceJobManagerId = addResourceJobManager(sshJobSubmission.getResourceJobManager());
     		SshJobSubmissionResource resource = AppCatalogThriftConversion.getSSHJobSubmission(sshJobSubmission);
     		resource.setResourceJobManagerId(resourceJobManagerId);
     		resource.getResourceJobManagerResource().setResourceJobManagerId(resourceJobManagerId);
-    		resource.save();
-        	return resource.getJobSubmissionInterfaceId();
+            if (sshJobSubmission.getMonitorMode() != null){
+                resource.setMonitorMode(sshJobSubmission.getMonitorMode().toString());
+            }
+            resource.save();
+            EmailMonitorProperty emailMonitorProperty = sshJobSubmission.getEmailMonitorProperty();
+            if (emailMonitorProperty != null){
+                EmailPropertyResource emailPropertyResource = new EmailPropertyResource();
+                emailPropertyResource.setJobSubmissionInterfaceId(submissionId);
+                emailPropertyResource.setHost(emailMonitorProperty.getHost());
+                emailPropertyResource.setPassword(emailMonitorProperty.getPassword());
+                emailPropertyResource.setEmailAddress(emailMonitorProperty.getEmailAddress());
+                emailPropertyResource.setFolderName(emailMonitorProperty.getFolderName());
+                if (emailMonitorProperty.getStoreProtocol() != null){
+                    emailPropertyResource.setProtocol(emailMonitorProperty.getStoreProtocol().toString());
+                }
+                emailPropertyResource.save();
+            }
+        	return submissionId;
         }catch (Exception e) {
             logger.error("Error while saving SSH Job Submission...", e);
             throw new AppCatalogException(e);

@@ -55,7 +55,7 @@ interface AiravataIf {
   public function getJobDetails($airavataExperimentId);
   public function getDataTransferDetails($airavataExperimentId);
   public function cloneExperiment($existingExperimentID, $newExperimentName);
-  public function terminateExperiment($airavataExperimentId);
+  public function terminateExperiment($airavataExperimentId, $tokenId);
   public function registerApplicationModule($gatewayId, \Airavata\Model\AppCatalog\AppDeployment\ApplicationModule $applicationModule);
   public function getApplicationModule($appModuleId);
   public function updateApplicationModule($appModuleId, \Airavata\Model\AppCatalog\AppDeployment\ApplicationModule $applicationModule);
@@ -2463,16 +2463,17 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("cloneExperiment failed: unknown result");
   }
 
-  public function terminateExperiment($airavataExperimentId)
+  public function terminateExperiment($airavataExperimentId, $tokenId)
   {
-    $this->send_terminateExperiment($airavataExperimentId);
+    $this->send_terminateExperiment($airavataExperimentId, $tokenId);
     $this->recv_terminateExperiment();
   }
 
-  public function send_terminateExperiment($airavataExperimentId)
+  public function send_terminateExperiment($airavataExperimentId, $tokenId)
   {
     $args = new \Airavata\API\Airavata_terminateExperiment_args();
     $args->airavataExperimentId = $airavataExperimentId;
+    $args->tokenId = $tokenId;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -16311,6 +16312,7 @@ class Airavata_terminateExperiment_args {
   static $_TSPEC;
 
   public $airavataExperimentId = null;
+  public $tokenId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -16319,11 +16321,18 @@ class Airavata_terminateExperiment_args {
           'var' => 'airavataExperimentId',
           'type' => TType::STRING,
           ),
+        2 => array(
+          'var' => 'tokenId',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
       if (isset($vals['airavataExperimentId'])) {
         $this->airavataExperimentId = $vals['airavataExperimentId'];
+      }
+      if (isset($vals['tokenId'])) {
+        $this->tokenId = $vals['tokenId'];
       }
     }
   }
@@ -16354,6 +16363,13 @@ class Airavata_terminateExperiment_args {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->tokenId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -16370,6 +16386,11 @@ class Airavata_terminateExperiment_args {
     if ($this->airavataExperimentId !== null) {
       $xfer += $output->writeFieldBegin('airavataExperimentId', TType::STRING, 1);
       $xfer += $output->writeString($this->airavataExperimentId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->tokenId !== null) {
+      $xfer += $output->writeFieldBegin('tokenId', TType::STRING, 2);
+      $xfer += $output->writeString($this->tokenId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

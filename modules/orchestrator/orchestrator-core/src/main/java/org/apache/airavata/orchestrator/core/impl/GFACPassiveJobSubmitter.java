@@ -150,7 +150,7 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
      * @return
      * @throws OrchestratorException
      */
-    public boolean terminate(String experimentID, String taskID) throws OrchestratorException {
+    public boolean terminate(String experimentID, String taskID, String tokenId) throws OrchestratorException {
         ZooKeeper zk = orchestratorContext.getZk();
         try {
             if (zk == null || !zk.getState().isConnected()) {
@@ -163,7 +163,18 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
             String gfacServer = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NODE, "/gfac-server");
             String experimentNode = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
             List<String> children = zk.getChildren(gfacServer, this);
-
+            String gatewayId = null;
+            CredentialReader credentialReader = GFacUtils.getCredentialReader();
+            if (credentialReader != null) {
+                try {
+                    gatewayId = credentialReader.getGatewayID(tokenId);
+                } catch (Exception e) {
+                    logger.error(e.getLocalizedMessage());
+                }
+            }
+            if (gatewayId == null || gatewayId.isEmpty()) {
+                gatewayId = ServerSettings.getDefaultUserGateway();
+            }
             if (children.size() == 0) {
                 // Zookeeper data need cleaning
                 throw new OrchestratorException("There is no active GFac instance to route the request");
@@ -175,8 +186,8 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
                 String[] split = gfacNodeData.split(":");
                 if (zk.exists(gfacServer + File.separator + pickedChild, false) != null) {
                     // before submitting the job we check again the state of the node
-                    TaskSubmitEvent taskSubmitEvent = new TaskSubmitEvent(experimentID, taskID, null, null);
-                    MessageContext messageContext = new MessageContext(taskSubmitEvent, MessageType.TERMINATETASK, "LAUNCH.TERMINATE-" + UUID.randomUUID().toString(), null);
+                    TaskSubmitEvent taskSubmitEvent = new TaskSubmitEvent(experimentID, taskID, gatewayId, tokenId);
+                    MessageContext messageContext = new MessageContext(taskSubmitEvent, MessageType.TERMINATETASK, "LAUNCH.TERMINATE-" + UUID.randomUUID().toString(), gatewayId);
                     publisher.publish(messageContext);
                 }
             }

@@ -62,5 +62,6 @@ public enum AppCatalogResourceType {
     ClOUD_SUBMISSION,
     WORKFLOW,
     WORKFLOW_INPUT,
-    WORKFLOW_OUTPUT
+    WORKFLOW_OUTPUT,
+    EMAIL_MONITOR_PROPERTY
 }

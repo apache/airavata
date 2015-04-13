@@ -45,6 +45,7 @@ public class SshJobSubmissionResource extends AbstractResource {
 	private String alternativeSshHostname;
 	private String securityProtocol;
 	private int sshPort;
+    private String monitorMode;
     private Timestamp createdTime;
     private Timestamp updatedTime;
 
@@ -230,7 +231,8 @@ public class SshJobSubmissionResource extends AbstractResource {
 			sshJobSubmission.setAlternativeSshHostname(getAlternativeSshHostname());
 			sshJobSubmission.setSecurityProtocol(getSecurityProtocol());
 			sshJobSubmission.setSshPort(getSshPort());
-			if (existingSshJobSubmission == null) {
+            sshJobSubmission.setMonitorMode(getMonitorMode());
+            if (existingSshJobSubmission == null) {
 				em.persist(sshJobSubmission);
 			} else {
 				em.merge(sshJobSubmission);
@@ -318,4 +320,13 @@ public class SshJobSubmissionResource extends AbstractResource {
 	public void setSshPort(int sshPort) {
 		this.sshPort=sshPort;
 	}
+
+    public String getMonitorMode() {
+        return monitorMode;
+    }
+
+    public void setMonitorMode(String monitorMode) {
+        this.monitorMode = monitorMode;
+    }
+
 }

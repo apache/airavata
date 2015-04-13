@@ -566,7 +566,7 @@ class Iface:
     """
     pass
 
-  def terminateExperiment(self, airavataExperimentId):
+  def terminateExperiment(self, airavataExperimentId, tokenId):
     """
     Terminate a running experiment.
 
@@ -602,6 +602,7 @@ class Iface:
 
     Parameters:
      - airavataExperimentId
+     - tokenId
     """
     pass
 
@@ -3493,7 +3494,7 @@ class Client(Iface):
       raise result.ase
     raise TApplicationException(TApplicationException.MISSING_RESULT, "cloneExperiment failed: unknown result");
 
-  def terminateExperiment(self, airavataExperimentId):
+  def terminateExperiment(self, airavataExperimentId, tokenId):
     """
     Terminate a running experiment.
 
@@ -3529,14 +3530,16 @@ class Client(Iface):
 
     Parameters:
      - airavataExperimentId
+     - tokenId
     """
-    self.send_terminateExperiment(airavataExperimentId)
+    self.send_terminateExperiment(airavataExperimentId, tokenId)
     self.recv_terminateExperiment()
 
-  def send_terminateExperiment(self, airavataExperimentId):
+  def send_terminateExperiment(self, airavataExperimentId, tokenId):
     self._oprot.writeMessageBegin('terminateExperiment', TMessageType.CALL, self._seqid)
     args = terminateExperiment_args()
     args.airavataExperimentId = airavataExperimentId
+    args.tokenId = tokenId
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
@@ -7876,7 +7879,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = terminateExperiment_result()
     try:
-      self._handler.terminateExperiment(args.airavataExperimentId)
+      self._handler.terminateExperiment(args.airavataExperimentId, args.tokenId)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.ExperimentNotFoundException, enf:
@@ -15917,15 +15920,18 @@ class terminateExperiment_args:
   """
   Attributes:
    - airavataExperimentId
+   - tokenId
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'airavataExperimentId', None, None, ), # 1
+    (2, TType.STRING, 'tokenId', None, None, ), # 2
   )
 
-  def __init__(self, airavataExperimentId=None,):
+  def __init__(self, airavataExperimentId=None, tokenId=None,):
     self.airavataExperimentId = airavataExperimentId
+    self.tokenId = tokenId
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -15941,6 +15947,11 @@ class terminateExperiment_args:
           self.airavataExperimentId = iprot.readString();
         else:
           iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.tokenId = iprot.readString();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -15954,6 +15965,10 @@ class terminateExperiment_args:
     if self.airavataExperimentId is not None:
       oprot.writeFieldBegin('airavataExperimentId', TType.STRING, 1)
       oprot.writeString(self.airavataExperimentId)
+      oprot.writeFieldEnd()
+    if self.tokenId is not None:
+      oprot.writeFieldBegin('tokenId', TType.STRING, 2)
+      oprot.writeString(self.tokenId)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
