@@ -111,8 +111,9 @@ import org.slf4j.LoggerFactory;
      * *
      * 
      * @param experimentId
+     * @param tokenId
      */
-    public boolean terminateExperiment(String experimentId) throws org.apache.thrift.TException;
+    public boolean terminateExperiment(String experimentId, String tokenId) throws org.apache.thrift.TException;
 
   }
 
@@ -126,7 +127,7 @@ import org.slf4j.LoggerFactory;
 
     public void validateExperiment(String experimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void terminateExperiment(String experimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void terminateExperiment(String experimentId, String tokenId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -246,16 +247,17 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "validateExperiment failed: unknown result");
     }
 
-    public boolean terminateExperiment(String experimentId) throws org.apache.thrift.TException
+    public boolean terminateExperiment(String experimentId, String tokenId) throws org.apache.thrift.TException
     {
-      send_terminateExperiment(experimentId);
+      send_terminateExperiment(experimentId, tokenId);
       return recv_terminateExperiment();
     }
 
-    public void send_terminateExperiment(String experimentId) throws org.apache.thrift.TException
+    public void send_terminateExperiment(String experimentId, String tokenId) throws org.apache.thrift.TException
     {
       terminateExperiment_args args = new terminateExperiment_args();
       args.setExperimentId(experimentId);
+      args.setTokenId(tokenId);
       sendBase("terminateExperiment", args);
     }
 
@@ -418,24 +420,27 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public void terminateExperiment(String experimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void terminateExperiment(String experimentId, String tokenId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      terminateExperiment_call method_call = new terminateExperiment_call(experimentId, resultHandler, this, ___protocolFactory, ___transport);
+      terminateExperiment_call method_call = new terminateExperiment_call(experimentId, tokenId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
 
     public static class terminateExperiment_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String experimentId;
-      public terminateExperiment_call(String experimentId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private String tokenId;
+      public terminateExperiment_call(String experimentId, String tokenId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.experimentId = experimentId;
+        this.tokenId = tokenId;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
         prot.writeMessageBegin(new org.apache.thrift.protocol.TMessage("terminateExperiment", org.apache.thrift.protocol.TMessageType.CALL, 0));
         terminateExperiment_args args = new terminateExperiment_args();
         args.setExperimentId(experimentId);
+        args.setTokenId(tokenId);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -573,7 +578,7 @@ import org.slf4j.LoggerFactory;
 
       public terminateExperiment_result getResult(I iface, terminateExperiment_args args) throws org.apache.thrift.TException {
         terminateExperiment_result result = new terminateExperiment_result();
-        result.success = iface.terminateExperiment(args.experimentId);
+        result.success = iface.terminateExperiment(args.experimentId, args.tokenId);
         result.setSuccessIsSet(true);
         return result;
       }
@@ -861,7 +866,7 @@ import org.slf4j.LoggerFactory;
       }
 
       public void start(I iface, terminateExperiment_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
-        iface.terminateExperiment(args.experimentId,resultHandler);
+        iface.terminateExperiment(args.experimentId, args.tokenId,resultHandler);
       }
     }
 
@@ -3868,6 +3873,7 @@ import org.slf4j.LoggerFactory;
     private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("terminateExperiment_args");
 
     private static final org.apache.thrift.protocol.TField EXPERIMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentId", org.apache.thrift.protocol.TType.STRING, (short)1);
+    private static final org.apache.thrift.protocol.TField TOKEN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("tokenId", org.apache.thrift.protocol.TType.STRING, (short)2);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -3876,10 +3882,12 @@ import org.slf4j.LoggerFactory;
     }
 
     public String experimentId; // required
+    public String tokenId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-      EXPERIMENT_ID((short)1, "experimentId");
+      EXPERIMENT_ID((short)1, "experimentId"),
+      TOKEN_ID((short)2, "tokenId");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -3896,6 +3904,8 @@ import org.slf4j.LoggerFactory;
         switch(fieldId) {
           case 1: // EXPERIMENT_ID
             return EXPERIMENT_ID;
+          case 2: // TOKEN_ID
+            return TOKEN_ID;
           default:
             return null;
         }
@@ -3941,6 +3951,8 @@ import org.slf4j.LoggerFactory;
       Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
       tmpMap.put(_Fields.EXPERIMENT_ID, new org.apache.thrift.meta_data.FieldMetaData("experimentId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.TOKEN_ID, new org.apache.thrift.meta_data.FieldMetaData("tokenId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(terminateExperiment_args.class, metaDataMap);
     }
@@ -3949,10 +3961,12 @@ import org.slf4j.LoggerFactory;
     }
 
     public terminateExperiment_args(
-      String experimentId)
+      String experimentId,
+      String tokenId)
     {
       this();
       this.experimentId = experimentId;
+      this.tokenId = tokenId;
     }
 
     /**
@@ -3961,6 +3975,9 @@ import org.slf4j.LoggerFactory;
     public terminateExperiment_args(terminateExperiment_args other) {
       if (other.isSetExperimentId()) {
         this.experimentId = other.experimentId;
+      }
+      if (other.isSetTokenId()) {
+        this.tokenId = other.tokenId;
       }
     }
 
@@ -3971,6 +3988,7 @@ import org.slf4j.LoggerFactory;
     @Override
     public void clear() {
       this.experimentId = null;
+      this.tokenId = null;
     }
 
     public String getExperimentId() {
@@ -3997,6 +4015,30 @@ import org.slf4j.LoggerFactory;
       }
     }
 
+    public String getTokenId() {
+      return this.tokenId;
+    }
+
+    public terminateExperiment_args setTokenId(String tokenId) {
+      this.tokenId = tokenId;
+      return this;
+    }
+
+    public void unsetTokenId() {
+      this.tokenId = null;
+    }
+
+    /** Returns true if field tokenId is set (has been assigned a value) and false otherwise */
+    public boolean isSetTokenId() {
+      return this.tokenId != null;
+    }
+
+    public void setTokenIdIsSet(boolean value) {
+      if (!value) {
+        this.tokenId = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case EXPERIMENT_ID:
@@ -4007,6 +4049,14 @@ import org.slf4j.LoggerFactory;
         }
         break;
 
+      case TOKEN_ID:
+        if (value == null) {
+          unsetTokenId();
+        } else {
+          setTokenId((String)value);
+        }
+        break;
+
       }
     }
 
@@ -4014,6 +4064,9 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case EXPERIMENT_ID:
         return getExperimentId();
+
+      case TOKEN_ID:
+        return getTokenId();
 
       }
       throw new IllegalStateException();
@@ -4028,6 +4081,8 @@ import org.slf4j.LoggerFactory;
       switch (field) {
       case EXPERIMENT_ID:
         return isSetExperimentId();
+      case TOKEN_ID:
+        return isSetTokenId();
       }
       throw new IllegalStateException();
     }
@@ -4054,6 +4109,15 @@ import org.slf4j.LoggerFactory;
           return false;
       }
 
+      boolean this_present_tokenId = true && this.isSetTokenId();
+      boolean that_present_tokenId = true && that.isSetTokenId();
+      if (this_present_tokenId || that_present_tokenId) {
+        if (!(this_present_tokenId && that_present_tokenId))
+          return false;
+        if (!this.tokenId.equals(that.tokenId))
+          return false;
+      }
+
       return true;
     }
 
@@ -4076,6 +4140,16 @@ import org.slf4j.LoggerFactory;
       }
       if (isSetExperimentId()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.experimentId, other.experimentId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
+      lastComparison = Boolean.valueOf(isSetTokenId()).compareTo(other.isSetTokenId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetTokenId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.tokenId, other.tokenId);
         if (lastComparison != 0) {
           return lastComparison;
         }
@@ -4107,6 +4181,14 @@ import org.slf4j.LoggerFactory;
         sb.append(this.experimentId);
       }
       first = false;
+      if (!first) sb.append(", ");
+      sb.append("tokenId:");
+      if (this.tokenId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.tokenId);
+      }
+      first = false;
       sb.append(")");
       return sb.toString();
     }
@@ -4115,6 +4197,9 @@ import org.slf4j.LoggerFactory;
       // check for required fields
       if (experimentId == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'experimentId' was not present! Struct: " + toString());
+      }
+      if (tokenId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'tokenId' was not present! Struct: " + toString());
       }
       // check for sub-struct validity
     }
@@ -4161,6 +4246,14 @@ import org.slf4j.LoggerFactory;
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 2: // TOKEN_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.tokenId = iprot.readString();
+                struct.setTokenIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -4181,6 +4274,11 @@ import org.slf4j.LoggerFactory;
           oprot.writeString(struct.experimentId);
           oprot.writeFieldEnd();
         }
+        if (struct.tokenId != null) {
+          oprot.writeFieldBegin(TOKEN_ID_FIELD_DESC);
+          oprot.writeString(struct.tokenId);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -4199,6 +4297,7 @@ import org.slf4j.LoggerFactory;
       public void write(org.apache.thrift.protocol.TProtocol prot, terminateExperiment_args struct) throws org.apache.thrift.TException {
         TTupleProtocol oprot = (TTupleProtocol) prot;
         oprot.writeString(struct.experimentId);
+        oprot.writeString(struct.tokenId);
       }
 
       @Override
@@ -4206,6 +4305,8 @@ import org.slf4j.LoggerFactory;
         TTupleProtocol iprot = (TTupleProtocol) prot;
         struct.experimentId = iprot.readString();
         struct.setExperimentIdIsSet(true);
+        struct.tokenId = iprot.readString();
+        struct.setTokenIdIsSet(true);
       }
     }
 
