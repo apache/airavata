@@ -167,6 +167,11 @@ public class ComputeResourceTest {
 
             SSHJobSubmission sshJobSubmission = computeResource.getSSHJobSubmission(sshsubmissionId);
             System.out.println("**********SSH Submission resource job manager ************* : " +  sshJobSubmission.getResourceJobManager().toString());
+            System.out.println("**********Monitor mode ************* : " +  sshJobSubmission.getMonitorMode().toString());
+
+            EmailMonitorProperty emailMonitorProperty = sshJobSubmission.getEmailMonitorProperty();
+            System.out.println("**********email address ************* : " + emailMonitorProperty.getEmailAddress());
+
 
 //            GlobusJobSubmission globusJobSubmission = computeResource.get(globusSubmissionId);
 //            System.out.println("**********Globus Submission resource job manager ************* : " + globusJobSubmission.getResourceJobManager().toString());
@@ -239,6 +244,12 @@ public class ComputeResourceTest {
             commands.put(JobManagerCommand.SUBMISSION, "Sub command");
             commands.put(JobManagerCommand.SHOW_QUEUE, "show q command");
             jobManager.setJobManagerCommands(commands);
+            jobSubmission.setMonitorMode(MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR);
+            EmailMonitorProperty emailMonitorProperty = new EmailMonitorProperty();
+            emailMonitorProperty.setEmailAddress("test");
+            emailMonitorProperty.setPassword("aaa");
+            emailMonitorProperty.setHost("testHost");
+            jobSubmission.setEmailMonitorProperty(emailMonitorProperty);
 //            String jobManagerID = appcatalog.getComputeResource().addResourceJobManager(jobManager);
 //            jobManager.setResourceJobManagerId(jobManagerID);
             jobSubmission.setResourceJobManager(jobManager);

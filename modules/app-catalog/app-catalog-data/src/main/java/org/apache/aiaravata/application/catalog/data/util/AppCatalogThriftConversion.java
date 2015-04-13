@@ -30,6 +30,15 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelism
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
 import org.apache.airavata.model.appcatalog.appinterface.*;
 import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
+import org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
+import org.apache.airavata.model.appcatalog.computeresource.EmailMonitorProperty;
+import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
+import org.apache.airavata.model.appcatalog.computeresource.UnicoreDataMovement;
+import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 
@@ -221,6 +230,9 @@ public class AppCatalogThriftConversion {
         ResourceJobManagerResource resourceJobManager = getResourceJobManager(submission.getResourceJobManager());
 //        resourceJobManager.setResourceJobManagerId(submission.getJobSubmissionInterfaceId());
         resource.setResourceJobManagerId(resourceJobManager.getResourceJobManagerId());
+        if (submission.getMonitorMode() != null){
+            resource.setMonitorMode(submission.getMonitorMode().toString());
+        }
         resource.setResourceJobManagerResource(resourceJobManager);
         if (submission.getSecurityProtocol() != null){
             resource.setSecurityProtocol(submission.getSecurityProtocol().toString());
@@ -330,9 +342,29 @@ public class AppCatalogThriftConversion {
     	sshJobSubmission.setResourceJobManager(getResourceJobManager(submission.getResourceJobManagerResource()));
     	sshJobSubmission.setSecurityProtocol(SecurityProtocol.valueOf(submission.getSecurityProtocol()));
     	sshJobSubmission.setSshPort(submission.getSshPort());
+        if (submission.getMonitorMode() != null){
+            sshJobSubmission.setMonitorMode(MonitorMode.valueOf(submission.getMonitorMode()));
+            EmailPropertyResource emailPropertyResource = new EmailPropertyResource();
+            if (emailPropertyResource.isExists(sshJobSubmission.getJobSubmissionInterfaceId())){
+                EmailPropertyResource emailResource = (EmailPropertyResource)emailPropertyResource.get(submission.getJobSubmissionInterfaceId());
+                sshJobSubmission.setEmailMonitorProperty(getEmailMonitorProperty(emailResource));
+            }
+        }
         return sshJobSubmission;
     }
-    
+
+    public static EmailMonitorProperty getEmailMonitorProperty (EmailPropertyResource resource) throws AppCatalogException {
+        EmailMonitorProperty monitorProperty = new EmailMonitorProperty();
+        monitorProperty.setFolderName(resource.getFolderName());
+        monitorProperty.setHost(resource.getHost());
+        monitorProperty.setEmailAddress(resource.getEmailAddress());
+        monitorProperty.setPassword(resource.getPassword());
+        if (resource.getProtocol() != null){
+            monitorProperty.setStoreProtocol(EmailProtocol.valueOf(resource.getProtocol()));
+        }
+        return monitorProperty;
+    }
+
     public static UnicoreJobSubmission getUnicoreJobSubmissionDescription (UnicoreJobSubmissionResource submission) throws AppCatalogException {
     	UnicoreJobSubmission unicoreJobSubmission = new UnicoreJobSubmission();
     	unicoreJobSubmission.setUnicoreEndPointURL(submission.getUnicoreEndpointUrl());

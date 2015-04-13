@@ -32,6 +32,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.apache.airavata.model.appcatalog.computeresource.EmailMonitorProperty;
 import org.apache.openjpa.persistence.DataCache;
 
 @DataCache
@@ -61,12 +62,6 @@ public class SshJobSubmission implements Serializable {
 
     @Column(name = "MONITOR_MODE")
     private String monitorMode;
-
-    @Column(name = "EMAIL_MONITOR_PROPERTY_ID")
-    private String emailMonitorPropertyId;
-
-    @JoinColumn(name = "EMAIL_MONITOR_PROPERTY_ID")
-    private EmailMonitorProperty emailMonitorProperty;
 
     @Column(name = "CREATION_TIME")
     private Timestamp creationTime;
@@ -147,19 +142,4 @@ public class SshJobSubmission implements Serializable {
         this.monitorMode = monitorMode;
     }
 
-    public EmailMonitorProperty getEmailMonitorProperty() {
-        return emailMonitorProperty;
-    }
-
-    public void setEmailMonitorProperty(EmailMonitorProperty emailMonitorProperty) {
-        this.emailMonitorProperty = emailMonitorProperty;
-    }
-
-    public String getEmailMonitorPropertyId() {
-        return emailMonitorPropertyId;
-    }
-
-    public void setEmailMonitorPropertyId(String emailMonitorPropertyId) {
-        this.emailMonitorPropertyId = emailMonitorPropertyId;
-    }
 }
