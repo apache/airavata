@@ -536,10 +536,10 @@ public class RegisterSampleApplications {
 //            applicationInputs.add(input2); applicationInputs.add(input3);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Output",
-                    "", DataType.STDOUT, false, false);
+                    "", DataType.STDOUT, true, false);
 
             OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Error",
-                    "", DataType.STDERR, false, false);
+                    "", DataType.STDERR, true, false);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);

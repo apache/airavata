@@ -19,14 +19,8 @@
 
 package org.apache.aiaravata.application.catalog.data.resources;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-
 import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.aiaravata.application.catalog.data.model.EmailMonitorProperty;
 import org.apache.aiaravata.application.catalog.data.model.ResourceJobManager;
 import org.apache.aiaravata.application.catalog.data.model.SshJobSubmission;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogJPAUtils;
@@ -37,42 +31,30 @@ import org.apache.airavata.common.utils.AiravataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SshJobSubmissionResource extends AbstractResource {
-	private final static Logger logger = LoggerFactory.getLogger(SshJobSubmissionResource.class);
-	private String resourceJobManagerId;
-	private ResourceJobManagerResource resourceJobManagerResource;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+
+public class EmailPropertyResource extends AbstractResource {
+	private final static Logger logger = LoggerFactory.getLogger(EmailPropertyResource.class);
 	private String jobSubmissionInterfaceId;
-	private String alternativeSshHostname;
-	private String securityProtocol;
-	private int sshPort;
-    private String monitorMode;
-    private Timestamp createdTime;
-    private Timestamp updatedTime;
+	private String host;
+	private String emailAddress;
+	private String password;
+    private String folderName;
+    private String protocol;
+    private SshJobSubmissionResource sshJobSubmissionResource;
 
-    public Timestamp getCreatedTime() {
-        return createdTime;
-    }
-
-    public void setCreatedTime(Timestamp createdTime) {
-        this.createdTime = createdTime;
-    }
-
-    public Timestamp getUpdatedTime() {
-        return updatedTime;
-    }
-
-    public void setUpdatedTime(Timestamp updatedTime) {
-        this.updatedTime = updatedTime;
-    }
-	
 	@Override
 	public void remove(Object identifier) throws AppCatalogException {
 		EntityManager em = null;
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			em.getTransaction().begin();
-			AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(SSH_JOB_SUBMISSION);
-			generator.setParameter(SshJobSubmissionConstants.JOB_SUBMISSION_INTERFACE_ID, identifier);
+			AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(EMAIL_PROPERTY);
+			generator.setParameter(EmailMonitorPropertyConstants.JOB_SUBMISSION_INTERFACE_ID, identifier);
 			Query q = generator.deleteQuery(em);
 			q.executeUpdate();
 			em.getTransaction().commit();
@@ -96,14 +78,14 @@ public class SshJobSubmissionResource extends AbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			em.getTransaction().begin();
-			AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(SSH_JOB_SUBMISSION);
-			generator.setParameter(SshJobSubmissionConstants.JOB_SUBMISSION_INTERFACE_ID, identifier);
+			AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(EMAIL_PROPERTY);
+			generator.setParameter(EmailMonitorPropertyConstants.JOB_SUBMISSION_INTERFACE_ID, identifier);
 			Query q = generator.selectQuery(em);
-			SshJobSubmission sshJobSubmission = (SshJobSubmission) q.getSingleResult();
-			SshJobSubmissionResource sshJobSubmissionResource = (SshJobSubmissionResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.SSH_JOB_SUBMISSION, sshJobSubmission);
+			EmailMonitorProperty emailProperty = (EmailMonitorProperty) q.getSingleResult();
+			EmailPropertyResource emailPropertyResource = (EmailPropertyResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.EMAIL_MONITOR_PROPERTY, emailProperty);
 			em.getTransaction().commit();
 			em.close();
-			return sshJobSubmissionResource;
+			return emailPropertyResource;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -124,16 +106,16 @@ public class SshJobSubmissionResource extends AbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			em.getTransaction().begin();
-			AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(SSH_JOB_SUBMISSION);
+			AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(EMAIL_PROPERTY);
 			Query q;
-			if ((fieldName.equals(SshJobSubmissionConstants.RESOURCE_JOB_MANAGER_ID)) || (fieldName.equals(SshJobSubmissionConstants.JOB_SUBMISSION_INTERFACE_ID)) || (fieldName.equals(SshJobSubmissionConstants.ALTERNATIVE_SSH_HOSTNAME)) || (fieldName.equals(SshJobSubmissionConstants.SECURITY_PROTOCOL)) || (fieldName.equals(SshJobSubmissionConstants.SSH_PORT))) {
+			if (fieldName.equals(EmailMonitorPropertyConstants.JOB_SUBMISSION_INTERFACE_ID)){
 				generator.setParameter(fieldName, value);
 				q = generator.selectQuery(em);
 				List<?> results = q.getResultList();
 				for (Object result : results) {
-					SshJobSubmission sshJobSubmission = (SshJobSubmission) result;
-					SshJobSubmissionResource sshJobSubmissionResource = (SshJobSubmissionResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.SSH_JOB_SUBMISSION, sshJobSubmission);
-					sshJobSubmissionResources.add(sshJobSubmissionResource);
+					EmailMonitorProperty emailMonitorProperty = (EmailMonitorProperty) result;
+					EmailPropertyResource emailPropertyResource = (EmailPropertyResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.EMAIL_MONITOR_PROPERTY, emailMonitorProperty);
+					sshJobSubmissionResources.add(emailPropertyResource);
 				}
 			} else {
 				em.getTransaction().commit();
@@ -174,16 +156,16 @@ public class SshJobSubmissionResource extends AbstractResource {
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
 			em.getTransaction().begin();
-			AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(SSH_JOB_SUBMISSION);
+			AppCatalogQueryGenerator generator = new AppCatalogQueryGenerator(EMAIL_PROPERTY);
 			Query q;
-			if ((fieldName.equals(SshJobSubmissionConstants.RESOURCE_JOB_MANAGER_ID)) || (fieldName.equals(SshJobSubmissionConstants.JOB_SUBMISSION_INTERFACE_ID)) || (fieldName.equals(SshJobSubmissionConstants.ALTERNATIVE_SSH_HOSTNAME)) || (fieldName.equals(SshJobSubmissionConstants.SECURITY_PROTOCOL)) || (fieldName.equals(SshJobSubmissionConstants.SSH_PORT))) {
+			if (fieldName.equals(EmailMonitorPropertyConstants.JOB_SUBMISSION_INTERFACE_ID)) {
 				generator.setParameter(fieldName, value);
 				q = generator.selectQuery(em);
 				List<?> results = q.getResultList();
 				for (Object result : results) {
-					SshJobSubmission sshJobSubmission = (SshJobSubmission) result;
-					SshJobSubmissionResource sshJobSubmissionResource = (SshJobSubmissionResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.SSH_JOB_SUBMISSION, sshJobSubmission);
-					sshJobSubmissionResourceIDs.add(sshJobSubmissionResource.getJobSubmissionInterfaceId());
+					EmailMonitorProperty monitorProperty = (EmailMonitorProperty) result;
+					EmailPropertyResource emailPropertyResource = (EmailPropertyResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.EMAIL_MONITOR_PROPERTY, monitorProperty);
+					sshJobSubmissionResourceIDs.add(emailPropertyResource.getJobSubmissionInterfaceId());
 				}
 			} else {
 				em.getTransaction().commit();
@@ -212,30 +194,25 @@ public class SshJobSubmissionResource extends AbstractResource {
 		EntityManager em = null;
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
-			SshJobSubmission existingSshJobSubmission = em.find(SshJobSubmission.class, jobSubmissionInterfaceId);
+			EmailMonitorProperty monitorProperty = em.find(EmailMonitorProperty.class, jobSubmissionInterfaceId);
 			em.close();
-			SshJobSubmission sshJobSubmission;
+			EmailMonitorProperty emailMonitorProperty;
 			em = AppCatalogJPAUtils.getEntityManager();
 			em.getTransaction().begin();
-			if (existingSshJobSubmission == null) {
-				sshJobSubmission = new SshJobSubmission();
-                sshJobSubmission.setCreationTime(AiravataUtils.getCurrentTimestamp());
+			if (monitorProperty == null) {
+				emailMonitorProperty = new EmailMonitorProperty();
 			} else {
-				sshJobSubmission = existingSshJobSubmission;
-                sshJobSubmission.setUpdateTime(AiravataUtils.getCurrentTimestamp());
+				emailMonitorProperty = monitorProperty;
 			}
-			sshJobSubmission.setResourceJobManagerId(getResourceJobManagerId());
-			ResourceJobManager resourceJobManager = em.find(ResourceJobManager.class, getResourceJobManagerId());
-			sshJobSubmission.setResourceJobManager(resourceJobManager);
-			sshJobSubmission.setJobSubmissionInterfaceId(getJobSubmissionInterfaceId());
-			sshJobSubmission.setAlternativeSshHostname(getAlternativeSshHostname());
-			sshJobSubmission.setSecurityProtocol(getSecurityProtocol());
-			sshJobSubmission.setSshPort(getSshPort());
-            sshJobSubmission.setMonitorMode(getMonitorMode());
-            if (existingSshJobSubmission == null) {
-				em.persist(sshJobSubmission);
+			emailMonitorProperty.setJobSubmissionId(jobSubmissionInterfaceId);
+			emailMonitorProperty.setEmailAddress(emailAddress);
+			emailMonitorProperty.setEmailProtocol(protocol);
+			emailMonitorProperty.setFolderName(folderName);
+			emailMonitorProperty.setHost(host);
+            if (monitorProperty == null) {
+				em.persist(emailMonitorProperty);
 			} else {
-				em.merge(sshJobSubmission);
+				em.merge(emailMonitorProperty);
 			}
 			em.getTransaction().commit();
 			em.close();
@@ -257,9 +234,9 @@ public class SshJobSubmissionResource extends AbstractResource {
 		EntityManager em = null;
 		try {
 			em = AppCatalogJPAUtils.getEntityManager();
-			SshJobSubmission sshJobSubmission = em.find(SshJobSubmission.class, identifier);
+			EmailMonitorProperty emailMonitorProperty = em.find(EmailMonitorProperty.class, identifier);
 			em.close();
-			return sshJobSubmission != null;
+			return emailMonitorProperty != null;
 		} catch (ApplicationSettingsException e) {
 			logger.error(e.getMessage(), e);
 			throw new AppCatalogException(e);
@@ -272,61 +249,60 @@ public class SshJobSubmissionResource extends AbstractResource {
 			}
 		}
 	}
-	
-	public String getResourceJobManagerId() {
-		return resourceJobManagerId;
-	}
-	
-	public ResourceJobManagerResource getResourceJobManagerResource() {
-		return resourceJobManagerResource;
-	}
-	
-	public String getJobSubmissionInterfaceId() {
-		return jobSubmissionInterfaceId;
-	}
-	
-	public String getAlternativeSshHostname() {
-		return alternativeSshHostname;
-	}
-	
-	public String getSecurityProtocol() {
-		return securityProtocol;
-	}
-	
-	public int getSshPort() {
-		return sshPort;
-	}
-	
-	public void setResourceJobManagerId(String resourceJobManagerId) {
-		this.resourceJobManagerId=resourceJobManagerId;
-	}
-	
-	public void setResourceJobManagerResource(ResourceJobManagerResource resourceJobManagerResource) {
-		this.resourceJobManagerResource=resourceJobManagerResource;
-	}
-	
-	public void setJobSubmissionInterfaceId(String jobSubmissionInterfaceId) {
-		this.jobSubmissionInterfaceId=jobSubmissionInterfaceId;
-	}
-	
-	public void setAlternativeSshHostname(String alternativeSshHostname) {
-		this.alternativeSshHostname=alternativeSshHostname;
-	}
-	
-	public void setSecurityProtocol(String securityProtocol) {
-		this.securityProtocol=securityProtocol;
-	}
-	
-	public void setSshPort(int sshPort) {
-		this.sshPort=sshPort;
-	}
 
-    public String getMonitorMode() {
-        return monitorMode;
+    public String getJobSubmissionInterfaceId() {
+        return jobSubmissionInterfaceId;
     }
 
-    public void setMonitorMode(String monitorMode) {
-        this.monitorMode = monitorMode;
+    public void setJobSubmissionInterfaceId(String jobSubmissionInterfaceId) {
+        this.jobSubmissionInterfaceId = jobSubmissionInterfaceId;
     }
 
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public String getEmailAddress() {
+        return emailAddress;
+    }
+
+    public void setEmailAddress(String emailAddress) {
+        this.emailAddress = emailAddress;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getFolderName() {
+        return folderName;
+    }
+
+    public void setFolderName(String folderName) {
+        this.folderName = folderName;
+    }
+
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
+    public SshJobSubmissionResource getSshJobSubmissionResource() {
+        return sshJobSubmissionResource;
+    }
+
+    public void setSshJobSubmissionResource(SshJobSubmissionResource sshJobSubmissionResource) {
+        this.sshJobSubmissionResource = sshJobSubmissionResource;
+    }
 }
