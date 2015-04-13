@@ -25,6 +25,7 @@ import org.apache.aiaravata.application.catalog.data.model.*;
 import org.apache.aiaravata.application.catalog.data.resources.*;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -606,6 +607,8 @@ public class AppCatalogJPAUtils {
             sshJobSubmissionResource.setAlternativeSshHostname(o.getAlternativeSshHostname());
             sshJobSubmissionResource.setSecurityProtocol(o.getSecurityProtocol());
             sshJobSubmissionResource.setSshPort(o.getSshPort());
+            sshJobSubmissionResource.setMonitorMode(o.getMonitorMode());
+            sshJobSubmissionResource.setEmailMonitorProperty(o.getEmailMonitorProperty());
             sshJobSubmissionResource.setCreatedTime(o.getCreationTime());
             if (o.getUpdateTime() != null){
                 sshJobSubmissionResource.setUpdatedTime(o.getUpdateTime());
