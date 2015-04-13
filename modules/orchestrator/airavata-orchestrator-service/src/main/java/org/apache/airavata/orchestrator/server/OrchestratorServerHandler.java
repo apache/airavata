@@ -330,7 +330,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 	 */
 	public boolean terminateExperiment(String experimentId, String tokenId) throws TException {
         log.infoId(experimentId, "Experiment: {} is cancelling  !!!!!", experimentId);
-        return validateStatesAndCancel(experimentId);
+        return validateStatesAndCancel(experimentId, tokenId);
 	}
 
 	/**
@@ -536,7 +536,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 		return selectedModuleId;
 	}
 
-    private boolean validateStatesAndCancel(String experimentId)throws TException{
+    private boolean validateStatesAndCancel(String experimentId, String tokenId)throws TException{
         try {
             Experiment experiment = (Experiment) registry.get(
                     RegistryModelType.EXPERIMENT, experimentId);
@@ -643,7 +643,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
                         // job submisssion+monitoring
                         // launching the experiment
                         orchestrator.cancelExperiment(experiment,
-                                workflowNodeDetail, taskDetails, null);
+                                workflowNodeDetail, taskDetails, tokenId);
 
                         // after performing gfac level cancel operation
                         // mark task cancelled

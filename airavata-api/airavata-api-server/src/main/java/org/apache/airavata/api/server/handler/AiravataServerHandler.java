@@ -1403,7 +1403,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public void terminateExperiment(String airavataExperimentId, String tokenId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
     	Client client = getOrchestratorClient();
-    	client.terminateExperiment(airavataExperimentId);
+    	client.terminateExperiment(airavataExperimentId, tokenId);
     }
 
     /**

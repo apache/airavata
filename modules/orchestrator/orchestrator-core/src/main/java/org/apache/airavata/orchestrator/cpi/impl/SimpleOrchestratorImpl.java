@@ -169,7 +169,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 return;
             }
         }
-        jobSubmitter.terminate(experiment.getExperimentID(),task.getTaskID());
+        jobSubmitter.terminate(experiment.getExperimentID(),task.getTaskID(),tokenId);
     }
 
 
