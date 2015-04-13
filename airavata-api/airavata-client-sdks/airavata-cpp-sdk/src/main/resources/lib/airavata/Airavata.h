@@ -70,7 +70,7 @@ class AiravataIf {
   virtual void getJobDetails(std::vector< ::apache::airavata::model::workspace::experiment::JobDetails> & _return, const std::string& airavataExperimentId) = 0;
   virtual void getDataTransferDetails(std::vector< ::apache::airavata::model::workspace::experiment::DataTransferDetails> & _return, const std::string& airavataExperimentId) = 0;
   virtual void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const std::string& newExperimentName) = 0;
-  virtual void terminateExperiment(const std::string& airavataExperimentId) = 0;
+  virtual void terminateExperiment(const std::string& airavataExperimentId, const std::string& tokenId) = 0;
   virtual void registerApplicationModule(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) = 0;
   virtual void getApplicationModule( ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& _return, const std::string& appModuleId) = 0;
   virtual bool updateApplicationModule(const std::string& appModuleId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) = 0;
@@ -295,7 +295,7 @@ class AiravataNull : virtual public AiravataIf {
   void cloneExperiment(std::string& /* _return */, const std::string& /* existingExperimentID */, const std::string& /* newExperimentName */) {
     return;
   }
-  void terminateExperiment(const std::string& /* airavataExperimentId */) {
+  void terminateExperiment(const std::string& /* airavataExperimentId */, const std::string& /* tokenId */) {
     return;
   }
   void registerApplicationModule(std::string& /* _return */, const std::string& /* gatewayId */, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& /* applicationModule */) {
@@ -5806,19 +5806,21 @@ class Airavata_cloneExperiment_presult {
 };
 
 typedef struct _Airavata_terminateExperiment_args__isset {
-  _Airavata_terminateExperiment_args__isset() : airavataExperimentId(false) {}
+  _Airavata_terminateExperiment_args__isset() : airavataExperimentId(false), tokenId(false) {}
   bool airavataExperimentId;
+  bool tokenId;
 } _Airavata_terminateExperiment_args__isset;
 
 class Airavata_terminateExperiment_args {
  public:
 
-  Airavata_terminateExperiment_args() : airavataExperimentId() {
+  Airavata_terminateExperiment_args() : airavataExperimentId(), tokenId() {
   }
 
   virtual ~Airavata_terminateExperiment_args() throw() {}
 
   std::string airavataExperimentId;
+  std::string tokenId;
 
   _Airavata_terminateExperiment_args__isset __isset;
 
@@ -5826,9 +5828,15 @@ class Airavata_terminateExperiment_args {
     airavataExperimentId = val;
   }
 
+  void __set_tokenId(const std::string& val) {
+    tokenId = val;
+  }
+
   bool operator == (const Airavata_terminateExperiment_args & rhs) const
   {
     if (!(airavataExperimentId == rhs.airavataExperimentId))
+      return false;
+    if (!(tokenId == rhs.tokenId))
       return false;
     return true;
   }
@@ -5851,6 +5859,7 @@ class Airavata_terminateExperiment_pargs {
   virtual ~Airavata_terminateExperiment_pargs() throw() {}
 
   const std::string* airavataExperimentId;
+  const std::string* tokenId;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -16573,8 +16582,8 @@ class AiravataClient : virtual public AiravataIf {
   void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const std::string& newExperimentName);
   void send_cloneExperiment(const std::string& existingExperimentID, const std::string& newExperimentName);
   void recv_cloneExperiment(std::string& _return);
-  void terminateExperiment(const std::string& airavataExperimentId);
-  void send_terminateExperiment(const std::string& airavataExperimentId);
+  void terminateExperiment(const std::string& airavataExperimentId, const std::string& tokenId);
+  void send_terminateExperiment(const std::string& airavataExperimentId, const std::string& tokenId);
   void recv_terminateExperiment();
   void registerApplicationModule(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule);
   void send_registerApplicationModule(const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule);
@@ -17455,13 +17464,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void terminateExperiment(const std::string& airavataExperimentId) {
+  void terminateExperiment(const std::string& airavataExperimentId, const std::string& tokenId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->terminateExperiment(airavataExperimentId);
+      ifaces_[i]->terminateExperiment(airavataExperimentId, tokenId);
     }
-    ifaces_[i]->terminateExperiment(airavataExperimentId);
+    ifaces_[i]->terminateExperiment(airavataExperimentId, tokenId);
   }
 
   void registerApplicationModule(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) {

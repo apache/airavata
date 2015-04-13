@@ -328,7 +328,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 	 * @return
 	 * @throws TException
 	 */
-	public boolean terminateExperiment(String experimentId) throws TException {
+	public boolean terminateExperiment(String experimentId, String tokenId) throws TException {
         log.infoId(experimentId, "Experiment: {} is cancelling  !!!!!", experimentId);
         return validateStatesAndCancel(experimentId);
 	}

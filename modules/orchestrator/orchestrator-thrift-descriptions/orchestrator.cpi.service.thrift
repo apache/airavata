@@ -74,5 +74,5 @@ service OrchestratorService {
      * @return sucess/failure
      *
     **/
-  bool terminateExperiment (1: required string experimentId)
+  bool terminateExperiment (1: required string experimentId, 2: required string tokenId)
 }
