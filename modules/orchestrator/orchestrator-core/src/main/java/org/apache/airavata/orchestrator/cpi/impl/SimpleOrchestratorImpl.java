@@ -92,14 +92,23 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         try {
             Registry newRegistry = orchestratorContext.getNewRegistry();
             experiment = (Experiment) newRegistry.get(RegistryModelType.EXPERIMENT, experimentId);
+            List<WorkflowNodeDetails> workflowNodeDetailsList = experiment.getWorkflowNodeDetailsList();
+            if (workflowNodeDetailsList != null && !workflowNodeDetailsList.isEmpty()){
+                for (WorkflowNodeDetails wfn : workflowNodeDetailsList){
+                    List<TaskDetails> taskDetailsList = wfn.getTaskDetailsList();
+                    if (taskDetailsList != null && !taskDetailsList.isEmpty()){
+                        return taskDetailsList;
+                    }
+                }
+            }else {
+                WorkflowNodeDetails iDontNeedaNode = ExperimentModelUtil.createWorkflowNode("tempNode", null);
+                String nodeID = (String) newRegistry.add(ChildDataType.WORKFLOW_NODE_DETAIL, iDontNeedaNode, experimentId);
 
+                TaskDetails taskDetails = ExperimentModelUtil.cloneTaskFromExperiment(experiment);
+                taskDetails.setTaskID((String) newRegistry.add(ChildDataType.TASK_DETAIL, taskDetails, nodeID));
+                tasks.add(taskDetails);
+            }
 
-            WorkflowNodeDetails iDontNeedaNode = ExperimentModelUtil.createWorkflowNode("IDontNeedaNode", null);
-            String nodeID = (String) newRegistry.add(ChildDataType.WORKFLOW_NODE_DETAIL, iDontNeedaNode, experimentId);
-
-            TaskDetails taskDetails = ExperimentModelUtil.cloneTaskFromExperiment(experiment);
-            taskDetails.setTaskID((String) newRegistry.add(ChildDataType.TASK_DETAIL, taskDetails, nodeID));
-            tasks.add(taskDetails);
         } catch (Exception e) {
             throw new OrchestratorException("Error during creating a task");
         }
