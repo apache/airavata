@@ -58,10 +58,10 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_GATEWAY = "php_reference_gateway";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_fcac7076-e350-4dfb-a6eb-73e2d648fc60";
+    private static String echoAppId = "Echo_4efc544e-b72b-45d4-9f2d-ea1fae602d02";
     private static String mpiAppId = "HelloMPI_bfd56d58-6085-4b7f-89fc-646576830518";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
-    private static String amberAppId = "Amber_717cba99-1085-45de-861c-952001c5243c";
+    private static String amberAppId = "Amber_1e7c89b0-4e03-4f36-8bdd-86c8bb9df8a1";
     private static String gromacsAppId = "GROMACS_05622038-9edd-4cb1-824e-0b7cb993364b";
     private static String espressoAppId = "ESPRESSO_10cc2820-5d0b-4c63-9546-8a8b595593c1";
     private static String lammpsAppId = "LAMMPS_2472685b-8acf-497e-aafe-cc66fe5f4cb6";
@@ -168,12 +168,12 @@ public class CreateLaunchExperiment {
 //                final String expId = createMPIExperimentForFSD(airavataClient);
 //               final String expId = createEchoExperimentForStampede(airavataClient);
 //                final String expId = createEchoExperimentForTrestles(airavataClient);
-//                final String expId = createExperimentEchoForLocalHost(airavataClient);
+                final String expId = createExperimentEchoForLocalHost(airavataClient);
 //                final String expId = createExperimentWRFTrestles(airavataClient);
 //                final String expId = createExperimentForBR2(airavataClient);
 //                final String expId = createExperimentForBR2Amber(airavataClient);
 //                final String expId = createExperimentWRFStampede(airavataClient);
-                final String expId = createExperimentForStampedeAmber(airavataClient);
+//                final String expId = createExperimentForStampedeAmber(airavataClient);
 //                String expId = createExperimentForTrestlesAmber(airavataClient);
 //                final String expId = createExperimentGROMACSStampede(airavataClient);
 //                final String expId = createExperimentESPRESSOStampede(airavataClient);
@@ -191,10 +191,20 @@ public class CreateLaunchExperiment {
                 launchExperiment(airavataClient, expId);
             }
 
-            Thread.sleep(10000);
-            for (String exId : experimentIds) {
-                Experiment experiment = airavataClient.getExperiment(exId);
-                System.out.println(experiment.getExperimentID() + " " + experiment.getExperimentStatus().getExperimentState().name());
+            boolean allNotFinished = true;
+            while(allNotFinished) {
+                allNotFinished = false;
+                for (String exId : experimentIds) {
+                    Experiment experiment = airavataClient.getExperiment(exId);
+                    if(!experiment.getExperimentStatus().getExperimentState().equals(ExperimentState.COMPLETED)&&
+                            !experiment.getExperimentStatus().getExperimentState().equals(ExperimentState.FAILED)
+                            &&!experiment.getExperimentStatus().getExperimentState().equals(ExperimentState.CANCELED)){
+                        allNotFinished = true;
+                    }
+                    System.out.println(experiment.getExperimentID() + " " + experiment.getExperimentStatus().getExperimentState().name());
+                }
+                System.out.println("----------------------------------------------------");
+                Thread.sleep(10000);
             }
 
 
@@ -1313,11 +1323,11 @@ public class CreateLaunchExperiment {
 //			}
             for (InputDataObjectType inputDataObjectType : exInputs) {
                 if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
-                    inputDataObjectType.setValue("/Users/shameera/Projects/scigap/apps/AMBER_FILES/02_Heat.rst");
+                    inputDataObjectType.setValue("/Users/lginnali/Downloads/02_Heat.rst");
                 } else if (inputDataObjectType.getName().equalsIgnoreCase("Production_Control_File")) {
-                    inputDataObjectType.setValue("/Users/shameera/Projects/scigap/apps/AMBER_FILES/03_Prod.in");
+                    inputDataObjectType.setValue("/Users/lginnali/Downloads/03_Prod.in");
                 } else if (inputDataObjectType.getName().equalsIgnoreCase("Parameter_Topology_File")) {
-                    inputDataObjectType.setValue("/Users/shameera/Projects/scigap/apps/AMBER_FILES/prmtop");
+                    inputDataObjectType.setValue("/Users/lginnali/Downloads/prmtop");
                 }
             }
 
@@ -1378,11 +1388,11 @@ public class CreateLaunchExperiment {
 //			}
             for (InputDataObjectType inputDataObjectType : exInputs) {
                 if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
-                    inputDataObjectType.setValue("/Users/shameera/Projects/scigap/apps/AMBER_FILES/02_Heat.rst");
+                    inputDataObjectType.setValue("/Users/lginnali/Downloads/02_Heat.rst");
                 } else if (inputDataObjectType.getName().equalsIgnoreCase("Production_Control_File")) {
-                    inputDataObjectType.setValue("/Users/shameera/Projects/scigap/apps/AMBER_FILES/03_Prod.in");
+                    inputDataObjectType.setValue("/Users/lginnali/Downloads/03_Prod.in");
                 } else if (inputDataObjectType.getName().equalsIgnoreCase("Parameter_Topology_File")) {
-                    inputDataObjectType.setValue("/Users/shameera/Projects/scigap/apps/AMBER_FILES/prmtop");
+                    inputDataObjectType.setValue("/Users/lginnali/Downloads/prmtop");
                 }
             }
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(amberAppId);
