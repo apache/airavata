@@ -46,11 +46,12 @@ public class InputHandlerWorker implements Runnable {
     }
 
     @Override
-    public void run()  {
+    public void run() {
         try {
             gfac.submitJob(experimentId, taskId, gatewayId);
-        } catch (GFacException e) {
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
+            Thread.currentThread().interrupt();
         }
     }
 }
