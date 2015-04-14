@@ -25,6 +25,7 @@ import edu.uiuc.ncsa.security.delegation.services.Server;
 import org.airavata.appcatalog.cpi.AppCatalog;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
+import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.logger.AiravataLogger;
 import org.apache.airavata.common.logger.AiravataLoggerFactory;
@@ -68,7 +69,7 @@ import java.util.concurrent.locks.Lock;
 public class GfacServerHandler implements GfacService.Iface, Watcher {
     private final static AiravataLogger logger = AiravataLoggerFactory.getLogger(GfacServerHandler.class);
 
-    private RabbitMQTaskLaunchConsumer rabbitMQTaskLaunchConsumer;
+    private static RabbitMQTaskLaunchConsumer rabbitMQTaskLaunchConsumer;
 
     private static int requestCount=0;
 
@@ -143,6 +144,15 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
         }
     }
 
+    public static void main(String[] args) {
+        RabbitMQTaskLaunchConsumer rabbitMQTaskLaunchConsumer = null;
+        try {
+            rabbitMQTaskLaunchConsumer = new RabbitMQTaskLaunchConsumer();
+            rabbitMQTaskLaunchConsumer.listen(new TestHandler());
+        } catch (AiravataException e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
     private void storeServerConfig() throws KeeperException, InterruptedException, ApplicationSettingsException {
         Stat zkStat = zk.exists(gfacServer, false);
         if (zkStat == null) {
@@ -244,13 +254,9 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
 //            if( gfac.submitJob(experimentId, taskId, gatewayId)){
         logger.debugId(experimentId, "Submitted job to the Gfac Implementation, experiment {}, task {}, gateway " +
                 "{}", experimentId, taskId, gatewayId);
-        try {
-            GFacThreadPoolExecutor.getFixedThreadPool().submit(inputHandlerWorker).get();
-        } catch (InterruptedException e) {
-            logger.error(e.getMessage(), e);
-        } catch (ExecutionException e) {
-            logger.error(e.getMessage(), e);
-        }
+
+        GFacThreadPoolExecutor.getFixedThreadPool().execute(inputHandlerWorker);
+
         // we immediately return when we have a threadpool
         return true;
     }
@@ -309,6 +315,33 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
         }
     }
 
+    private static  class TestHandler implements MessageHandler{
+        @Override
+        public Map<String, Object> getProperties() {
+            Map<String, Object> props = new HashMap<String, Object>();
+            ArrayList<String> keys = new ArrayList<String>();
+            keys.add(ServerSettings.getLaunchQueueName());
+            keys.add(ServerSettings.getCancelQueueName());
+            props.put(MessagingConstants.RABBIT_ROUTING_KEY, keys);
+            props.put(MessagingConstants.RABBIT_QUEUE, ServerSettings.getLaunchQueueName());
+            return props;
+        }
+
+        @Override
+        public void onMessage(MessageContext message) {
+            TaskSubmitEvent event = new TaskSubmitEvent();
+            TBase messageEvent = message.getEvent();
+            byte[] bytes = new byte[0];
+            try {
+                bytes = ThriftUtils.serializeThriftObject(messageEvent);
+                ThriftUtils.createThriftFromBytes(bytes, event);
+                System.out.println(event.getExperimentId());
+            } catch (TException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
+    }
+
     private class TaskLaunchMessageHandler implements MessageHandler {
         private String experimentNode;
         private String nodeName;
@@ -329,6 +362,8 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
         }
 
         public void onMessage(MessageContext message) {
+            System.out.println(" Message Received with message id '" + message.getMessageId()
+                    + "' and with message type '" + message.getType());
             if (message.getType().equals(MessageType.LAUNCHTASK)) {
                 try {
                     TaskSubmitEvent event = new TaskSubmitEvent();
@@ -339,7 +374,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
 
                     try {
                         GFacUtils.createExperimentEntryForPassive(event.getExperimentId(), event.getTaskId(), zk, experimentNode, nodeName, event.getTokenId(), message.getDeliveryTag());
-                        AiravataZKUtils.getExpStatePath(event.getExperimentId(),event.getTaskId());
+                        AiravataZKUtils.getExpStatePath(event.getExperimentId(), event.getTaskId());
                         submitJob(event.getExperimentId(), event.getTaskId(), event.getGatewayId());
                     } catch (KeeperException e) {
                         logger.error(nodeName + " was interrupted.");
@@ -351,8 +386,6 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                         logger.error(e.getMessage(), e);
                         rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
                     }
-                    System.out.println(" Message Received with message id '" + message.getMessageId()
-                            + "' and with message type '" + message.getType());
                 } catch (TException e) {
                     logger.error(e.getMessage(), e); //nobody is listening so nothing to throw
                 }

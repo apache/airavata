@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.gfac.core.utils;
 
+import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.cpi.GFac;
 import org.slf4j.Logger;
@@ -27,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Callable;
 
-public class InputHandlerWorker implements Callable {
+public class InputHandlerWorker implements Runnable {
     private static Logger log = LoggerFactory.getLogger(InputHandlerWorker.class);
 
     String experimentId;
@@ -45,9 +46,11 @@ public class InputHandlerWorker implements Callable {
     }
 
     @Override
-    public Object call() throws Exception {
-        boolean b = gfac.submitJob(experimentId, taskId, gatewayId);
-        log.info("InHandler and provider Gfac invocation returned: " + b);
-        return b;
+    public void run()  {
+        try {
+            gfac.submitJob(experimentId, taskId, gatewayId);
+        } catch (GFacException e) {
+            log.error(e.getMessage(), e);
+        }
     }
 }
