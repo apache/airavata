@@ -568,16 +568,18 @@ void swap(TaskSubmitEvent &a, TaskSubmitEvent &b);
 class TaskTerminateEvent {
  public:
 
-  static const char* ascii_fingerprint; // = "07A9615F837F7D0A952B595DD3020972";
-  static const uint8_t binary_fingerprint[16]; // = {0x07,0xA9,0x61,0x5F,0x83,0x7F,0x7D,0x0A,0x95,0x2B,0x59,0x5D,0xD3,0x02,0x09,0x72};
+  static const char* ascii_fingerprint; // = "C93D890311F28844166CF6E571EB3AC2";
+  static const uint8_t binary_fingerprint[16]; // = {0xC9,0x3D,0x89,0x03,0x11,0xF2,0x88,0x44,0x16,0x6C,0xF6,0xE5,0x71,0xEB,0x3A,0xC2};
 
-  TaskTerminateEvent() : experimentId(), taskId() {
+  TaskTerminateEvent() : experimentId(), taskId(), gatewayId(), tokenId() {
   }
 
   virtual ~TaskTerminateEvent() throw() {}
 
   std::string experimentId;
   std::string taskId;
+  std::string gatewayId;
+  std::string tokenId;
 
   void __set_experimentId(const std::string& val) {
     experimentId = val;
@@ -587,11 +589,23 @@ class TaskTerminateEvent {
     taskId = val;
   }
 
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
+
+  void __set_tokenId(const std::string& val) {
+    tokenId = val;
+  }
+
   bool operator == (const TaskTerminateEvent & rhs) const
   {
     if (!(experimentId == rhs.experimentId))
       return false;
     if (!(taskId == rhs.taskId))
+      return false;
+    if (!(gatewayId == rhs.gatewayId))
+      return false;
+    if (!(tokenId == rhs.tokenId))
       return false;
     return true;
   }

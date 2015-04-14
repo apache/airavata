@@ -973,17 +973,23 @@ class TaskTerminateEvent:
   Attributes:
    - experimentId
    - taskId
+   - gatewayId
+   - tokenId
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'experimentId', None, None, ), # 1
     (2, TType.STRING, 'taskId', None, None, ), # 2
+    (3, TType.STRING, 'gatewayId', None, None, ), # 3
+    (4, TType.STRING, 'tokenId', None, None, ), # 4
   )
 
-  def __init__(self, experimentId=None, taskId=None,):
+  def __init__(self, experimentId=None, taskId=None, gatewayId=None, tokenId=None,):
     self.experimentId = experimentId
     self.taskId = taskId
+    self.gatewayId = gatewayId
+    self.tokenId = tokenId
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -1004,6 +1010,16 @@ class TaskTerminateEvent:
           self.taskId = iprot.readString();
         else:
           iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRING:
+          self.gatewayId = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRING:
+          self.tokenId = iprot.readString();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -1022,6 +1038,14 @@ class TaskTerminateEvent:
       oprot.writeFieldBegin('taskId', TType.STRING, 2)
       oprot.writeString(self.taskId)
       oprot.writeFieldEnd()
+    if self.gatewayId is not None:
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 3)
+      oprot.writeString(self.gatewayId)
+      oprot.writeFieldEnd()
+    if self.tokenId is not None:
+      oprot.writeFieldBegin('tokenId', TType.STRING, 4)
+      oprot.writeString(self.tokenId)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -1030,6 +1054,10 @@ class TaskTerminateEvent:
       raise TProtocol.TProtocolException(message='Required field experimentId is unset!')
     if self.taskId is None:
       raise TProtocol.TProtocolException(message='Required field taskId is unset!')
+    if self.gatewayId is None:
+      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
+    if self.tokenId is None:
+      raise TProtocol.TProtocolException(message='Required field tokenId is unset!')
     return
 
 

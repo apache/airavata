@@ -1033,8 +1033,8 @@ void swap(TaskSubmitEvent &a, TaskSubmitEvent &b) {
   swap(a.tokenId, b.tokenId);
 }
 
-const char* TaskTerminateEvent::ascii_fingerprint = "07A9615F837F7D0A952B595DD3020972";
-const uint8_t TaskTerminateEvent::binary_fingerprint[16] = {0x07,0xA9,0x61,0x5F,0x83,0x7F,0x7D,0x0A,0x95,0x2B,0x59,0x5D,0xD3,0x02,0x09,0x72};
+const char* TaskTerminateEvent::ascii_fingerprint = "C93D890311F28844166CF6E571EB3AC2";
+const uint8_t TaskTerminateEvent::binary_fingerprint[16] = {0xC9,0x3D,0x89,0x03,0x11,0xF2,0x88,0x44,0x16,0x6C,0xF6,0xE5,0x71,0xEB,0x3A,0xC2};
 
 uint32_t TaskTerminateEvent::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -1049,6 +1049,8 @@ uint32_t TaskTerminateEvent::read(::apache::thrift::protocol::TProtocol* iprot) 
 
   bool isset_experimentId = false;
   bool isset_taskId = false;
+  bool isset_gatewayId = false;
+  bool isset_tokenId = false;
 
   while (true)
   {
@@ -1074,6 +1076,22 @@ uint32_t TaskTerminateEvent::read(::apache::thrift::protocol::TProtocol* iprot) 
           xfer += iprot->skip(ftype);
         }
         break;
+      case 3:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->gatewayId);
+          isset_gatewayId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->tokenId);
+          isset_tokenId = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -1086,6 +1104,10 @@ uint32_t TaskTerminateEvent::read(::apache::thrift::protocol::TProtocol* iprot) 
   if (!isset_experimentId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_taskId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_gatewayId)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_tokenId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
@@ -1102,6 +1124,14 @@ uint32_t TaskTerminateEvent::write(::apache::thrift::protocol::TProtocol* oprot)
   xfer += oprot->writeString(this->taskId);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("gatewayId", ::apache::thrift::protocol::T_STRING, 3);
+  xfer += oprot->writeString(this->gatewayId);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("tokenId", ::apache::thrift::protocol::T_STRING, 4);
+  xfer += oprot->writeString(this->tokenId);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -1111,6 +1141,8 @@ void swap(TaskTerminateEvent &a, TaskTerminateEvent &b) {
   using ::std::swap;
   swap(a.experimentId, b.experimentId);
   swap(a.taskId, b.taskId);
+  swap(a.gatewayId, b.gatewayId);
+  swap(a.tokenId, b.tokenId);
 }
 
 const char* JobStatusChangeEvent::ascii_fingerprint = "062775D589B60D1687103FD465B0F5E8";
