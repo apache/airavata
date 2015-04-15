@@ -91,8 +91,9 @@ import org.slf4j.LoggerFactory;
      * 
      * @param experimentId
      * @param taskId
+     * @param gatewayId
      */
-    public boolean cancelJob(String experimentId, String taskId) throws org.apache.thrift.TException;
+    public boolean cancelJob(String experimentId, String taskId, String gatewayId) throws org.apache.thrift.TException;
 
   }
 
@@ -102,7 +103,7 @@ import org.slf4j.LoggerFactory;
 
     public void submitJob(String experimentId, String taskId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
-    public void cancelJob(String experimentId, String taskId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
+    public void cancelJob(String experimentId, String taskId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException;
 
   }
 
@@ -173,17 +174,18 @@ import org.slf4j.LoggerFactory;
       throw new org.apache.thrift.TApplicationException(org.apache.thrift.TApplicationException.MISSING_RESULT, "submitJob failed: unknown result");
     }
 
-    public boolean cancelJob(String experimentId, String taskId) throws org.apache.thrift.TException
+    public boolean cancelJob(String experimentId, String taskId, String gatewayId) throws org.apache.thrift.TException
     {
-      send_cancelJob(experimentId, taskId);
+      send_cancelJob(experimentId, taskId, gatewayId);
       return recv_cancelJob();
     }
 
-    public void send_cancelJob(String experimentId, String taskId) throws org.apache.thrift.TException
+    public void send_cancelJob(String experimentId, String taskId, String gatewayId) throws org.apache.thrift.TException
     {
       cancelJob_args args = new cancelJob_args();
       args.setExperimentId(experimentId);
       args.setTaskId(taskId);
+      args.setGatewayId(gatewayId);
       sendBase("cancelJob", args);
     }
 
@@ -282,9 +284,9 @@ import org.slf4j.LoggerFactory;
       }
     }
 
-    public void cancelJob(String experimentId, String taskId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
+    public void cancelJob(String experimentId, String taskId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler) throws org.apache.thrift.TException {
       checkReady();
-      cancelJob_call method_call = new cancelJob_call(experimentId, taskId, resultHandler, this, ___protocolFactory, ___transport);
+      cancelJob_call method_call = new cancelJob_call(experimentId, taskId, gatewayId, resultHandler, this, ___protocolFactory, ___transport);
       this.___currentMethod = method_call;
       ___manager.call(method_call);
     }
@@ -292,10 +294,12 @@ import org.slf4j.LoggerFactory;
     public static class cancelJob_call extends org.apache.thrift.async.TAsyncMethodCall {
       private String experimentId;
       private String taskId;
-      public cancelJob_call(String experimentId, String taskId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
+      private String gatewayId;
+      public cancelJob_call(String experimentId, String taskId, String gatewayId, org.apache.thrift.async.AsyncMethodCallback resultHandler, org.apache.thrift.async.TAsyncClient client, org.apache.thrift.protocol.TProtocolFactory protocolFactory, org.apache.thrift.transport.TNonblockingTransport transport) throws org.apache.thrift.TException {
         super(client, protocolFactory, transport, resultHandler, false);
         this.experimentId = experimentId;
         this.taskId = taskId;
+        this.gatewayId = gatewayId;
       }
 
       public void write_args(org.apache.thrift.protocol.TProtocol prot) throws org.apache.thrift.TException {
@@ -303,6 +307,7 @@ import org.slf4j.LoggerFactory;
         cancelJob_args args = new cancelJob_args();
         args.setExperimentId(experimentId);
         args.setTaskId(taskId);
+        args.setGatewayId(gatewayId);
         args.write(prot);
         prot.writeMessageEnd();
       }
@@ -392,7 +397,7 @@ import org.slf4j.LoggerFactory;
 
       public cancelJob_result getResult(I iface, cancelJob_args args) throws org.apache.thrift.TException {
         cancelJob_result result = new cancelJob_result();
-        result.success = iface.cancelJob(args.experimentId, args.taskId);
+        result.success = iface.cancelJob(args.experimentId, args.taskId, args.gatewayId);
         result.setSuccessIsSet(true);
         return result;
       }
@@ -568,7 +573,7 @@ import org.slf4j.LoggerFactory;
       }
 
       public void start(I iface, cancelJob_args args, org.apache.thrift.async.AsyncMethodCallback<Boolean> resultHandler) throws TException {
-        iface.cancelJob(args.experimentId, args.taskId,resultHandler);
+        iface.cancelJob(args.experimentId, args.taskId, args.gatewayId,resultHandler);
       }
     }
 
@@ -2072,6 +2077,7 @@ import org.slf4j.LoggerFactory;
 
     private static final org.apache.thrift.protocol.TField EXPERIMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentId", org.apache.thrift.protocol.TType.STRING, (short)1);
     private static final org.apache.thrift.protocol.TField TASK_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("taskId", org.apache.thrift.protocol.TType.STRING, (short)2);
+    private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)3);
 
     private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
     static {
@@ -2081,11 +2087,13 @@ import org.slf4j.LoggerFactory;
 
     public String experimentId; // required
     public String taskId; // required
+    public String gatewayId; // required
 
     /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
     @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
       EXPERIMENT_ID((short)1, "experimentId"),
-      TASK_ID((short)2, "taskId");
+      TASK_ID((short)2, "taskId"),
+      GATEWAY_ID((short)3, "gatewayId");
 
       private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -2104,6 +2112,8 @@ import org.slf4j.LoggerFactory;
             return EXPERIMENT_ID;
           case 2: // TASK_ID
             return TASK_ID;
+          case 3: // GATEWAY_ID
+            return GATEWAY_ID;
           default:
             return null;
         }
@@ -2151,6 +2161,8 @@ import org.slf4j.LoggerFactory;
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       tmpMap.put(_Fields.TASK_ID, new org.apache.thrift.meta_data.FieldMetaData("taskId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
           new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+      tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+          new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
       metaDataMap = Collections.unmodifiableMap(tmpMap);
       org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(cancelJob_args.class, metaDataMap);
     }
@@ -2160,11 +2172,13 @@ import org.slf4j.LoggerFactory;
 
     public cancelJob_args(
       String experimentId,
-      String taskId)
+      String taskId,
+      String gatewayId)
     {
       this();
       this.experimentId = experimentId;
       this.taskId = taskId;
+      this.gatewayId = gatewayId;
     }
 
     /**
@@ -2177,6 +2191,9 @@ import org.slf4j.LoggerFactory;
       if (other.isSetTaskId()) {
         this.taskId = other.taskId;
       }
+      if (other.isSetGatewayId()) {
+        this.gatewayId = other.gatewayId;
+      }
     }
 
     public cancelJob_args deepCopy() {
@@ -2187,6 +2204,7 @@ import org.slf4j.LoggerFactory;
     public void clear() {
       this.experimentId = null;
       this.taskId = null;
+      this.gatewayId = null;
     }
 
     public String getExperimentId() {
@@ -2237,6 +2255,30 @@ import org.slf4j.LoggerFactory;
       }
     }
 
+    public String getGatewayId() {
+      return this.gatewayId;
+    }
+
+    public cancelJob_args setGatewayId(String gatewayId) {
+      this.gatewayId = gatewayId;
+      return this;
+    }
+
+    public void unsetGatewayId() {
+      this.gatewayId = null;
+    }
+
+    /** Returns true if field gatewayId is set (has been assigned a value) and false otherwise */
+    public boolean isSetGatewayId() {
+      return this.gatewayId != null;
+    }
+
+    public void setGatewayIdIsSet(boolean value) {
+      if (!value) {
+        this.gatewayId = null;
+      }
+    }
+
     public void setFieldValue(_Fields field, Object value) {
       switch (field) {
       case EXPERIMENT_ID:
@@ -2255,6 +2297,14 @@ import org.slf4j.LoggerFactory;
         }
         break;
 
+      case GATEWAY_ID:
+        if (value == null) {
+          unsetGatewayId();
+        } else {
+          setGatewayId((String)value);
+        }
+        break;
+
       }
     }
 
@@ -2265,6 +2315,9 @@ import org.slf4j.LoggerFactory;
 
       case TASK_ID:
         return getTaskId();
+
+      case GATEWAY_ID:
+        return getGatewayId();
 
       }
       throw new IllegalStateException();
@@ -2281,6 +2334,8 @@ import org.slf4j.LoggerFactory;
         return isSetExperimentId();
       case TASK_ID:
         return isSetTaskId();
+      case GATEWAY_ID:
+        return isSetGatewayId();
       }
       throw new IllegalStateException();
     }
@@ -2313,6 +2368,15 @@ import org.slf4j.LoggerFactory;
         if (!(this_present_taskId && that_present_taskId))
           return false;
         if (!this.taskId.equals(that.taskId))
+          return false;
+      }
+
+      boolean this_present_gatewayId = true && this.isSetGatewayId();
+      boolean that_present_gatewayId = true && that.isSetGatewayId();
+      if (this_present_gatewayId || that_present_gatewayId) {
+        if (!(this_present_gatewayId && that_present_gatewayId))
+          return false;
+        if (!this.gatewayId.equals(that.gatewayId))
           return false;
       }
 
@@ -2352,6 +2416,16 @@ import org.slf4j.LoggerFactory;
           return lastComparison;
         }
       }
+      lastComparison = Boolean.valueOf(isSetGatewayId()).compareTo(other.isSetGatewayId());
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+      if (isSetGatewayId()) {
+        lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayId, other.gatewayId);
+        if (lastComparison != 0) {
+          return lastComparison;
+        }
+      }
       return 0;
     }
 
@@ -2387,6 +2461,14 @@ import org.slf4j.LoggerFactory;
         sb.append(this.taskId);
       }
       first = false;
+      if (!first) sb.append(", ");
+      sb.append("gatewayId:");
+      if (this.gatewayId == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.gatewayId);
+      }
+      first = false;
       sb.append(")");
       return sb.toString();
     }
@@ -2398,6 +2480,9 @@ import org.slf4j.LoggerFactory;
       }
       if (taskId == null) {
         throw new org.apache.thrift.protocol.TProtocolException("Required field 'taskId' was not present! Struct: " + toString());
+      }
+      if (gatewayId == null) {
+        throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayId' was not present! Struct: " + toString());
       }
       // check for sub-struct validity
     }
@@ -2452,6 +2537,14 @@ import org.slf4j.LoggerFactory;
                 org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
               }
               break;
+            case 3: // GATEWAY_ID
+              if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+                struct.gatewayId = iprot.readString();
+                struct.setGatewayIdIsSet(true);
+              } else { 
+                org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+              }
+              break;
             default:
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
           }
@@ -2477,6 +2570,11 @@ import org.slf4j.LoggerFactory;
           oprot.writeString(struct.taskId);
           oprot.writeFieldEnd();
         }
+        if (struct.gatewayId != null) {
+          oprot.writeFieldBegin(GATEWAY_ID_FIELD_DESC);
+          oprot.writeString(struct.gatewayId);
+          oprot.writeFieldEnd();
+        }
         oprot.writeFieldStop();
         oprot.writeStructEnd();
       }
@@ -2496,6 +2594,7 @@ import org.slf4j.LoggerFactory;
         TTupleProtocol oprot = (TTupleProtocol) prot;
         oprot.writeString(struct.experimentId);
         oprot.writeString(struct.taskId);
+        oprot.writeString(struct.gatewayId);
       }
 
       @Override
@@ -2505,6 +2604,8 @@ import org.slf4j.LoggerFactory;
         struct.setExperimentIdIsSet(true);
         struct.taskId = iprot.readString();
         struct.setTaskIdIsSet(true);
+        struct.gatewayId = iprot.readString();
+        struct.setGatewayIdIsSet(true);
       }
     }
 

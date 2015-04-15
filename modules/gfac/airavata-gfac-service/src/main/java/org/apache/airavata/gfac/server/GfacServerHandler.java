@@ -246,7 +246,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
      */
     public boolean submitJob(String experimentId, String taskId, String gatewayId) throws TException {
         requestCount++;
-        logger.info("-----------------------------------------------------" + requestCount+"-----------------------------------------------------");
+        logger.info("-----------------------------------------------------" + requestCount + "-----------------------------------------------------");
         logger.infoId(experimentId, "GFac Received submit job request for the Experiment: {} TaskId: {}", experimentId, taskId);
         GFac gfac = getGfac();
         InputHandlerWorker inputHandlerWorker = new InputHandlerWorker(gfac, experimentId, taskId, gatewayId);
@@ -255,17 +255,17 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
         logger.debugId(experimentId, "Submitted job to the Gfac Implementation, experiment {}, task {}, gateway " +
                 "{}", experimentId, taskId, gatewayId);
 
-        GFacThreadPoolExecutor.getFixedThreadPool().execute(inputHandlerWorker);
+        GFacThreadPoolExecutor.getThreadPool().execute(inputHandlerWorker);
 
         // we immediately return when we have a threadpool
         return true;
     }
 
-    public boolean cancelJob(String experimentId, String taskId) throws TException {
+    public boolean cancelJob(String experimentId, String taskId, String gatewayId) throws TException {
         logger.infoId(experimentId, "GFac Received cancel job request for Experiment: {} TaskId: {} ", experimentId, taskId);
         GFac gfac = getGfac();
         try {
-            if (gfac.cancel(experimentId, taskId, ServerSettings.getDefaultUserGateway())) {
+            if (gfac.cancel(experimentId, taskId, gatewayId)) {
                 logger.debugId(experimentId, "Successfully cancelled job, experiment {} , task {}", experimentId, taskId);
                 return true;
             } else {
@@ -395,11 +395,12 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                     TBase messageEvent = message.getEvent();
                     byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
                     ThriftUtils.createThriftFromBytes(bytes, event);
-                    cancelJob(event.getExperimentId(), event.getTaskId());
+                    cancelJob(event.getExperimentId(), event.getTaskId(), event.getGatewayId());
                     System.out.println(" Message Received with message id '" + message.getMessageId()
                             + "' and with message type '" + message.getType());
                 } catch (TException e) {
                     logger.error(e.getMessage(), e); //nobody is listening so nothing to throw
+                    rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
                 }
             }
         }

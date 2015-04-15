@@ -54,6 +54,8 @@ import org.slf4j.LoggerFactory;
 
   private static final org.apache.thrift.protocol.TField EXPERIMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField TASK_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("taskId", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField TOKEN_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("tokenId", org.apache.thrift.protocol.TType.STRING, (short)4);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -63,11 +65,15 @@ import org.slf4j.LoggerFactory;
 
   private String experimentId; // required
   private String taskId; // required
+  private String gatewayId; // required
+  private String tokenId; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     EXPERIMENT_ID((short)1, "experimentId"),
-    TASK_ID((short)2, "taskId");
+    TASK_ID((short)2, "taskId"),
+    GATEWAY_ID((short)3, "gatewayId"),
+    TOKEN_ID((short)4, "tokenId");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -86,6 +92,10 @@ import org.slf4j.LoggerFactory;
           return EXPERIMENT_ID;
         case 2: // TASK_ID
           return TASK_ID;
+        case 3: // GATEWAY_ID
+          return GATEWAY_ID;
+        case 4: // TOKEN_ID
+          return TOKEN_ID;
         default:
           return null;
       }
@@ -133,6 +143,10 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.TASK_ID, new org.apache.thrift.meta_data.FieldMetaData("taskId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.TOKEN_ID, new org.apache.thrift.meta_data.FieldMetaData("tokenId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(TaskTerminateEvent.class, metaDataMap);
   }
@@ -142,11 +156,15 @@ import org.slf4j.LoggerFactory;
 
   public TaskTerminateEvent(
     String experimentId,
-    String taskId)
+    String taskId,
+    String gatewayId,
+    String tokenId)
   {
     this();
     this.experimentId = experimentId;
     this.taskId = taskId;
+    this.gatewayId = gatewayId;
+    this.tokenId = tokenId;
   }
 
   /**
@@ -159,6 +177,12 @@ import org.slf4j.LoggerFactory;
     if (other.isSetTaskId()) {
       this.taskId = other.taskId;
     }
+    if (other.isSetGatewayId()) {
+      this.gatewayId = other.gatewayId;
+    }
+    if (other.isSetTokenId()) {
+      this.tokenId = other.tokenId;
+    }
   }
 
   public TaskTerminateEvent deepCopy() {
@@ -169,6 +193,8 @@ import org.slf4j.LoggerFactory;
   public void clear() {
     this.experimentId = null;
     this.taskId = null;
+    this.gatewayId = null;
+    this.tokenId = null;
   }
 
   public String getExperimentId() {
@@ -217,6 +243,52 @@ import org.slf4j.LoggerFactory;
     }
   }
 
+  public String getGatewayId() {
+    return this.gatewayId;
+  }
+
+  public void setGatewayId(String gatewayId) {
+    this.gatewayId = gatewayId;
+  }
+
+  public void unsetGatewayId() {
+    this.gatewayId = null;
+  }
+
+  /** Returns true if field gatewayId is set (has been assigned a value) and false otherwise */
+  public boolean isSetGatewayId() {
+    return this.gatewayId != null;
+  }
+
+  public void setGatewayIdIsSet(boolean value) {
+    if (!value) {
+      this.gatewayId = null;
+    }
+  }
+
+  public String getTokenId() {
+    return this.tokenId;
+  }
+
+  public void setTokenId(String tokenId) {
+    this.tokenId = tokenId;
+  }
+
+  public void unsetTokenId() {
+    this.tokenId = null;
+  }
+
+  /** Returns true if field tokenId is set (has been assigned a value) and false otherwise */
+  public boolean isSetTokenId() {
+    return this.tokenId != null;
+  }
+
+  public void setTokenIdIsSet(boolean value) {
+    if (!value) {
+      this.tokenId = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case EXPERIMENT_ID:
@@ -235,6 +307,22 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case GATEWAY_ID:
+      if (value == null) {
+        unsetGatewayId();
+      } else {
+        setGatewayId((String)value);
+      }
+      break;
+
+    case TOKEN_ID:
+      if (value == null) {
+        unsetTokenId();
+      } else {
+        setTokenId((String)value);
+      }
+      break;
+
     }
   }
 
@@ -245,6 +333,12 @@ import org.slf4j.LoggerFactory;
 
     case TASK_ID:
       return getTaskId();
+
+    case GATEWAY_ID:
+      return getGatewayId();
+
+    case TOKEN_ID:
+      return getTokenId();
 
     }
     throw new IllegalStateException();
@@ -261,6 +355,10 @@ import org.slf4j.LoggerFactory;
       return isSetExperimentId();
     case TASK_ID:
       return isSetTaskId();
+    case GATEWAY_ID:
+      return isSetGatewayId();
+    case TOKEN_ID:
+      return isSetTokenId();
     }
     throw new IllegalStateException();
   }
@@ -293,6 +391,24 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_taskId && that_present_taskId))
         return false;
       if (!this.taskId.equals(that.taskId))
+        return false;
+    }
+
+    boolean this_present_gatewayId = true && this.isSetGatewayId();
+    boolean that_present_gatewayId = true && that.isSetGatewayId();
+    if (this_present_gatewayId || that_present_gatewayId) {
+      if (!(this_present_gatewayId && that_present_gatewayId))
+        return false;
+      if (!this.gatewayId.equals(that.gatewayId))
+        return false;
+    }
+
+    boolean this_present_tokenId = true && this.isSetTokenId();
+    boolean that_present_tokenId = true && that.isSetTokenId();
+    if (this_present_tokenId || that_present_tokenId) {
+      if (!(this_present_tokenId && that_present_tokenId))
+        return false;
+      if (!this.tokenId.equals(that.tokenId))
         return false;
     }
 
@@ -332,6 +448,26 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetGatewayId()).compareTo(other.isSetGatewayId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetGatewayId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayId, other.gatewayId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetTokenId()).compareTo(other.isSetTokenId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetTokenId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.tokenId, other.tokenId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -367,6 +503,22 @@ import org.slf4j.LoggerFactory;
       sb.append(this.taskId);
     }
     first = false;
+    if (!first) sb.append(", ");
+    sb.append("gatewayId:");
+    if (this.gatewayId == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.gatewayId);
+    }
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("tokenId:");
+    if (this.tokenId == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.tokenId);
+    }
+    first = false;
     sb.append(")");
     return sb.toString();
   }
@@ -379,6 +531,14 @@ import org.slf4j.LoggerFactory;
 
     if (!isSetTaskId()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'taskId' is unset! Struct:" + toString());
+    }
+
+    if (!isSetGatewayId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayId' is unset! Struct:" + toString());
+    }
+
+    if (!isSetTokenId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'tokenId' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -434,6 +594,22 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 3: // GATEWAY_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.gatewayId = iprot.readString();
+              struct.setGatewayIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 4: // TOKEN_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.tokenId = iprot.readString();
+              struct.setTokenIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -457,6 +633,16 @@ import org.slf4j.LoggerFactory;
         oprot.writeString(struct.taskId);
         oprot.writeFieldEnd();
       }
+      if (struct.gatewayId != null) {
+        oprot.writeFieldBegin(GATEWAY_ID_FIELD_DESC);
+        oprot.writeString(struct.gatewayId);
+        oprot.writeFieldEnd();
+      }
+      if (struct.tokenId != null) {
+        oprot.writeFieldBegin(TOKEN_ID_FIELD_DESC);
+        oprot.writeString(struct.tokenId);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -476,6 +662,8 @@ import org.slf4j.LoggerFactory;
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeString(struct.experimentId);
       oprot.writeString(struct.taskId);
+      oprot.writeString(struct.gatewayId);
+      oprot.writeString(struct.tokenId);
     }
 
     @Override
@@ -485,6 +673,10 @@ import org.slf4j.LoggerFactory;
       struct.setExperimentIdIsSet(true);
       struct.taskId = iprot.readString();
       struct.setTaskIdIsSet(true);
+      struct.gatewayId = iprot.readString();
+      struct.setGatewayIdIsSet(true);
+      struct.tokenId = iprot.readString();
+      struct.setTokenIdIsSet(true);
     }
   }
 
