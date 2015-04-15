@@ -255,7 +255,12 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
         logger.debugId(experimentId, "Submitted job to the Gfac Implementation, experiment {}, task {}, gateway " +
                 "{}", experimentId, taskId, gatewayId);
 
-        GFacThreadPoolExecutor.getFixedThreadPool().execute(inputHandlerWorker);
+        try {
+            GFacThreadPoolExecutor.getFixedThreadPool().execute(inputHandlerWorker);
+        } catch (ApplicationSettingsException e) {
+            logger.error(e.getMessage(), e);
+            throw new TException(e);
+        }
 
         // we immediately return when we have a threadpool
         return true;
