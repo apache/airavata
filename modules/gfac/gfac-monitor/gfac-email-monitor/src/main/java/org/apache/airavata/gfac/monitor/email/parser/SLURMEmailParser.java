@@ -40,6 +40,10 @@ public class SLURMEmailParser implements EmailParser {
     private static final String REGEX = "[A-Z]*\\s[a-zA-Z]*_[a-z]*=(?<" + JOBID
             + ">\\d*)\\s[a-zA-Z]*=[a-zA-Z0-9-]*\\s(?<" + STATUS + ">[]a-zA-Z]*),.*";
 
+    public static final String BEGAN = "Began";
+    public static final String ENDED = "Ended";
+    public static final String FAILED = "Failed";
+
     @Override
     public JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException{
         JobStatusResult jobStatusResult = new JobStatusResult();
@@ -49,10 +53,6 @@ public class SLURMEmailParser implements EmailParser {
         if (matcher.find()) {
             jobStatusResult.setJobId(matcher.group(JOBID));
             jobStatusResult.setState(getJobState(matcher.group(STATUS)));
-            // TODO remove following test lines
-            String jobId = matcher.group(JOBID);
-            String status = matcher.group(STATUS);
-//            log.info("SLURM " + status + " message received -> " + jobId);
             return jobStatusResult;
         } else {
             log.error("No matched found for subject -> " + subject);
@@ -62,11 +62,11 @@ public class SLURMEmailParser implements EmailParser {
 
     private JobState getJobState(String state) {
         switch (state.trim()) {
-            case "Began":
+            case BEGAN:
                 return JobState.QUEUED;
-            case "Ended":
+            case ENDED:
                 return JobState.COMPLETE;
-            case "Failed":
+            case FAILED:
                 return JobState.FAILED;
             default:
                 log.error("Job State " + state + " isn't handle by SLURM parser");
