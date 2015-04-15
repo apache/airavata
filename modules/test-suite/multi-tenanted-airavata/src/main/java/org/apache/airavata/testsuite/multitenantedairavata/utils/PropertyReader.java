@@ -31,7 +31,6 @@ import java.util.Properties;
 public class PropertyReader {
     private final static Logger logger = LoggerFactory.getLogger(PropertyReader.class);
     private static Properties airavataClientProperties = new Properties();
-    private static Properties testFrameworkroperties = new Properties();
 
     public PropertyReader() {
         try {
@@ -43,22 +42,15 @@ public class PropertyReader {
 
     protected void loadProperties() throws IOException {
         URL airavataURL = PropertyFileType.class.getClassLoader().getResource(TestFrameworkConstants.AIRAVATA_CLIENT_PROPERTIES);
-        URL frameworkPropUrl = PropertyFileType.class.getClassLoader().getResource(TestFrameworkConstants.TEST_FREAMEWORK_PROPERTIES);
         if (airavataURL != null){
             airavataClientProperties.load(airavataURL.openStream());
         }
-        if (frameworkPropUrl != null){
-            testFrameworkroperties.load(frameworkPropUrl.openStream());
-        }
-
     }
 
     public String readProperty (String propertyName, PropertyFileType type){
         switch (type){
             case AIRAVATA_CLIENT:
                 return airavataClientProperties.getProperty(propertyName);
-            case TEST_FRAMEWORK:
-                return testFrameworkroperties.getProperty(propertyName);
         }
         return null;
     }

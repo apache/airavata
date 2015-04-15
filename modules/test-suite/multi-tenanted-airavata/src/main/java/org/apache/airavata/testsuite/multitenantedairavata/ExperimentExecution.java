@@ -65,22 +65,30 @@ public class ExperimentExecution {
     private PrintWriter resultWriter;
     private String testUser;
     private List<String> gatewaysToAvoid;
+    private TestFrameworkProps properties;
 
     public ExperimentExecution(Airavata.Client airavata,
-                               Map<String, String> tokenMap ) throws Exception {
+                               Map<String, String> tokenMap,
+                               TestFrameworkProps props) throws Exception {
         this.airavata = airavata;
         this.csTokens = tokenMap;
         this.appInterfaceMap = getApplicationMap(tokenMap);
         this.propertyReader = new PropertyReader();
+        this.properties = props;
         FrameworkUtils frameworkUtils = FrameworkUtils.getInstance();
-        testUser = frameworkUtils.getTestUserName();
-        gatewaysToAvoid = frameworkUtils.getGatewayListToAvoid();
+        testUser = props.getTestUserName();
+        gatewaysToAvoid = frameworkUtils.getGatewayListToAvoid(properties.getSkippedGateways());
         this.projectsMap = getProjects(tokenMap);
         this.experimentsWithTokens = new HashMap<String, String>();
         this.experimentsWithGateway = new HashMap<String, String>();
-        String resultFileLocation = propertyReader.readProperty(TestFrameworkConstants.FrameworkPropertiesConstants.RESULT_WRITE_LOCATION, PropertyFileType.TEST_FRAMEWORK);
-        String resultFileName = getResultFileName();
-        File resultFile = new File(resultFileLocation + resultFileName);
+        String resultFileLocation = properties.getResultFileLoc();
+        String resultFileName = resultFileLocation + getResultFileName();
+
+        File resultFolder = new File(resultFileLocation);
+        if (!resultFolder.exists()){
+            resultFolder.mkdir();
+        }
+        File resultFile = new File(resultFileName);
         resultWriter = new PrintWriter(resultFile, "UTF-8");
         resultWriter.println("Test Framework Results");
         resultWriter.println("========================================");
@@ -228,12 +236,15 @@ public class ExperimentExecution {
                             System.out.println("################ Experiment : " + expId + " FAILED ###################");
                             Experiment experiment = airavata.getExperiment(expId);
                             List<ErrorDetails> errors = experiment.getErrors();
-                            for (ErrorDetails errorDetails : errors) {
-                                System.out.println(errorDetails.getActualErrorMessage());
-                                resultWriter.println("Actual Error : " + j + " : " + errorDetails.getActualErrorMessage());
-                                resultWriter.println("User Friendly Message : " + j + " : " + errorDetails.getUserFriendlyMessage());
-                                resultWriter.println("Corrective Action : " + j + " : " + errorDetails.getCorrectiveAction());
+                            if (errors != null && !errors.isEmpty()){
+                                for (ErrorDetails errorDetails : errors) {
+                                    System.out.println(errorDetails.getActualErrorMessage());
+                                    resultWriter.println("Actual Error : " + j + " : " + errorDetails.getActualErrorMessage());
+                                    resultWriter.println("User Friendly Message : " + j + " : " + errorDetails.getUserFriendlyMessage());
+                                    resultWriter.println("Corrective Action : " + j + " : " + errorDetails.getCorrectiveAction());
+                                }
                             }
+
                             resultWriter.println("End of Results for Experiment : " + expId );
                             resultWriter.println("=====================================================================");
                             resultWriter.println();
@@ -272,6 +283,14 @@ public class ExperimentExecution {
 
     public void createAmberExperiment () throws Exception{
         try {
+            TestFrameworkProps.Application[] applications = properties.getApplications();
+            Map<String, String> userGivenAmberInputs = new HashMap<>();
+            for (TestFrameworkProps.Application application : applications){
+                if (application.getName().equals(TestFrameworkConstants.AppcatalogConstants.AMBER_APP_NAME)){
+                    userGivenAmberInputs = application.getInputs();
+                }
+            }
+
             for (String gatewayId : csTokens.keySet()){
                 String token = csTokens.get(gatewayId);
                 Map<String, String> appsWithNames = appInterfaceMap.get(gatewayId);
@@ -280,20 +299,13 @@ public class ExperimentExecution {
                     List<OutputDataObjectType> appOutputs = airavata.getApplicationOutputs(appId);
                     String appName = appsWithNames.get(appId);
                     if (appName.equals(TestFrameworkConstants.AppcatalogConstants.AMBER_APP_NAME)){
-                        String heatRSTFile = propertyReader.readProperty(TestFrameworkConstants.AppcatalogConstants.AMBER_HEAT_RST_LOCATION, PropertyFileType.TEST_FRAMEWORK);
-                        String prodInFile = propertyReader.readProperty(TestFrameworkConstants.AppcatalogConstants.AMBER_PROD_IN_LOCATION, PropertyFileType.TEST_FRAMEWORK);
-                        String prmTopFile = propertyReader.readProperty(TestFrameworkConstants.AppcatalogConstants.AMBER_PRMTOP_LOCATION, PropertyFileType.TEST_FRAMEWORK);
-
-                        for (InputDataObjectType inputDataObjectType : applicationInputs) {
-                            if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
-                                inputDataObjectType.setValue(heatRSTFile);
-                            } else if (inputDataObjectType.getName().equalsIgnoreCase("Production_Control_File")) {
-                                inputDataObjectType.setValue(prodInFile);
-                            } else if (inputDataObjectType.getName().equalsIgnoreCase("Parameter_Topology_File")) {
-                                inputDataObjectType.setValue(prmTopFile);
+                        for (String inputName : userGivenAmberInputs.keySet()){
+                            for (InputDataObjectType inputDataObjectType : applicationInputs) {
+                                if (inputDataObjectType.getName().equalsIgnoreCase(inputName)) {
+                                    inputDataObjectType.setValue(userGivenAmberInputs.get(inputName));
+                                }
                             }
                         }
-
                         List<Project> projectsPerGateway = projectsMap.get(gatewayId);
                         String projectID = null;
                         if (projectsPerGateway != null && !projectsPerGateway.isEmpty()){

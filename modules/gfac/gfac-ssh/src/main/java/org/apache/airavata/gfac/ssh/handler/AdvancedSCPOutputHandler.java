@@ -108,7 +108,7 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                 } catch (ApplicationSettingsException e) {
                     log.error(e.getMessage());
                     try {
-         				GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+         				GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
          			} catch (GFacException e1) {
          				 log.error(e1.getLocalizedMessage());
          			}
@@ -189,7 +189,7 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
            registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
         } catch (SSHApiException e) {
             try {
-				GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+				GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
 			} catch (GFacException e1) {
 				 log.error(e1.getLocalizedMessage());
 			}
@@ -198,7 +198,7 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
             throw new GFacHandlerException(e);
         } catch (Exception e) {
         	 try {
- 				GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+ 				GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
  			} catch (GFacException e1) {
  				 log.error(e1.getLocalizedMessage());
  			}

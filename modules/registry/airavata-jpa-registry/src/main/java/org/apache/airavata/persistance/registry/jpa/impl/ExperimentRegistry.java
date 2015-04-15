@@ -1268,12 +1268,16 @@ public class ExperimentRegistry {
 
     public String addDataTransferDetails(DataTransferDetails transferDetails, String taskId) throws RegistryException {
         try {
+            if (transferDetails.getTransferDescription() == null){
+                throw new RegistryException("Data transfer description cannot be empty");
+            }
             ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = workflowNode.getTaskDetail(taskId);
             DataTransferDetailResource resource = (DataTransferDetailResource) taskDetail.create(ResourceType.DATA_TRANSFER_DETAIL);
             resource.setTaskDetailResource(taskDetail);
             resource.setTransferId(getDataTransferID(taskId));
+
             resource.setTransferDescription(transferDetails.getTransferDescription());
             resource.setCreationTime(AiravataUtils.getTime(transferDetails.getCreationTime()));
             resource.save();

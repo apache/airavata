@@ -1,0 +1,63 @@
+{
+    "gcount": 1,
+    "gname": "testGateway",
+    "gdomain": ".airavata.org",
+    "testUserName": "testUser",
+    "testProjectName": "test.project",
+    "sshPubKeyLoc": "/Users/chathuri/.ssh/id_dsa.pub",
+    "sshPrivateKeyLoc": "/Users/chathuri/.ssh/id_dsa",
+    "sshPassword": "",
+    "sshUsername": "ogce",
+    "tokenFileLoc": "/tmp/",
+    "resultFileLoc": "/tmp/test_framework_results/",
+    "skippedGateways": "default,php_reference_gateway,ultrascan,umass",
+    "resources": [
+        {
+            "name": "trestles.sdsc.xsede.org",
+            "loginUser": "ogce"
+
+        },
+        {
+            "name": "stampede.tacc.xsede.org",
+            "loginUser": "ogce"
+
+        },
+        {
+            "name": "bigred2.uits.iu.edu",
+            "loginUser": "cpelikan"
+
+        }
+    ],
+    "applications": [
+        {
+            "name": "amber_sander",
+            "inputs": {
+                "heatRst": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/02_Heat.rst",
+                "prodIn": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/03_Prod.in",
+                "prmtop": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/prmtop"
+            }
+        }
+    ],
+    "errors": [
+        {
+            "name": "badinputs",
+            "application": "amber_sander",
+            "errorFeeds": {
+                "heatRst": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/02_Heat.rst",
+                "prodIn": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/03_Prod.in",
+                "prmtop": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/prmtop"
+            }
+        },
+        {
+            "name": "error.configuration",
+            "application": "amber_sander",
+            "errorFeeds": {
+                "projectId": "sds128",
+                "queueName": "normal",
+                "walltime": 10,
+                "hostName": "trestles.sdsc.xsede.org"
+            }
+
+        }
+    ]
+}

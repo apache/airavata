@@ -67,7 +67,7 @@ public class SSHInputHandler extends AbstractHandler {
                 } catch (ApplicationSettingsException e) {
                     log.error(e.getMessage());
                     try {
-         				GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+         				GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
          			} catch (GFacException e1) {
          				 log.error(e1.getLocalizedMessage());
          			}
@@ -136,7 +136,7 @@ public class SSHInputHandler extends AbstractHandler {
             status.setTransferState(TransferState.FAILED);
             detail.setTransferStatus(status);
             try {
-                GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE);
+                GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE);
                 registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
             } catch (Exception e1) {
                 throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
