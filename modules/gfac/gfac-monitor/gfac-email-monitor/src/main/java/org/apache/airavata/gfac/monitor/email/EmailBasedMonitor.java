@@ -209,12 +209,14 @@ public class EmailBasedMonitor implements Runnable{
         if (resultState == JobState.COMPLETE) {
             GFacThreadPoolExecutor.getFixedThreadPool().submit(new OutHandlerWorker(jEC, BetterGfacImpl.getMonitorPublisher()));
         }else if (resultState == JobState.QUEUED) {
-            // TODO - publish queued rabbitmq message
+            // nothing special thing to do, update the status change to rabbit mq at the end of this method.
         }else if (resultState == JobState.FAILED) {
-            // TODO - handle failed scenario
             jobMonitorMap.remove(jobStatusResult.getJobId());
             log.info("Job failed email received , removed job from job monitoring");
-//            monitorPublisher.publish(jEC.getJobDetails().getJobStatus());
+        }else if (resultState == JobState.CANCELED) {
+            jobMonitorMap.remove(jobStatusResult.getJobId());
+            log.info("Job canceled mail received, removed job from job monitoring");
+            
         }
         publishJobStatusChange(jEC);
     }
