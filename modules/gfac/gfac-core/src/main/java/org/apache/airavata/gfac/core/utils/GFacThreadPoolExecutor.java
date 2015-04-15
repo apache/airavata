@@ -41,12 +41,13 @@ public class GFacThreadPoolExecutor {
         return threadPool;
     }
 
-    public static ExecutorService getFixedThreadPool() {
+    public static ExecutorService getFixedThreadPool() throws ApplicationSettingsException {
         if(threadPool ==null){
             try {
                 threadPool = Executors.newFixedThreadPool(Integer.parseInt(ServerSettings.getSetting(GFAC_THREAD_POOL_SIZE)));
             } catch (ApplicationSettingsException e) {
                 logger.error("Error reading " + GFAC_THREAD_POOL_SIZE+ " property");
+                throw e;
             }
         }
         return threadPool;

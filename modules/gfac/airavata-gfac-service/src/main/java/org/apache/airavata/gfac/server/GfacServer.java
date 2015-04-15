@@ -23,6 +23,7 @@ package org.apache.airavata.gfac.server;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.gfac.core.utils.GFacThreadPoolExecutor;
 import org.apache.airavata.gfac.cpi.GfacService;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
@@ -109,6 +110,7 @@ public class GfacServer implements IServer{
 			setStatus(IServer.ServerStatus.STOPING);
 			server.stop();
 		}
+		GFacThreadPoolExecutor.getFixedThreadPool().shutdownNow();
 
 	}
 
