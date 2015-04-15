@@ -1202,6 +1202,8 @@ class TaskTerminateEvent {
 
   public $experimentId = null;
   public $taskId = null;
+  public $gatewayId = null;
+  public $tokenId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -1214,6 +1216,14 @@ class TaskTerminateEvent {
           'var' => 'taskId',
           'type' => TType::STRING,
           ),
+        3 => array(
+          'var' => 'gatewayId',
+          'type' => TType::STRING,
+          ),
+        4 => array(
+          'var' => 'tokenId',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -1222,6 +1232,12 @@ class TaskTerminateEvent {
       }
       if (isset($vals['taskId'])) {
         $this->taskId = $vals['taskId'];
+      }
+      if (isset($vals['gatewayId'])) {
+        $this->gatewayId = $vals['gatewayId'];
+      }
+      if (isset($vals['tokenId'])) {
+        $this->tokenId = $vals['tokenId'];
       }
     }
   }
@@ -1259,6 +1275,20 @@ class TaskTerminateEvent {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 3:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->tokenId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -1280,6 +1310,16 @@ class TaskTerminateEvent {
     if ($this->taskId !== null) {
       $xfer += $output->writeFieldBegin('taskId', TType::STRING, 2);
       $xfer += $output->writeString($this->taskId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gatewayId !== null) {
+      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 3);
+      $xfer += $output->writeString($this->gatewayId);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->tokenId !== null) {
+      $xfer += $output->writeFieldBegin('tokenId', TType::STRING, 4);
+      $xfer += $output->writeString($this->tokenId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
