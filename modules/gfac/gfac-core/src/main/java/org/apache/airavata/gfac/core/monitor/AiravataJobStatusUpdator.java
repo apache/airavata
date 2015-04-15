@@ -90,9 +90,11 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener {
             details = new JobDetails();
         }
         org.apache.airavata.model.workspace.experiment.JobStatus status = new org.apache.airavata.model.workspace.experiment.JobStatus();
-        if(!JobState.CANCELED.equals(details.getJobStatus().getJobState())&&
-                !JobState.CANCELING.equals(details.getJobStatus().getJobState())) {
-            status.setJobState(state);
+        if(JobState.CANCELED.equals(details.getJobStatus().getJobState())||
+                JobState.CANCELING.equals(details.getJobStatus().getJobState())) {
+            status.setJobState(details.getJobStatus().getJobState());
+        }else{
+        	 status.setJobState(state);
         }
         status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
         details.setJobStatus(status);
