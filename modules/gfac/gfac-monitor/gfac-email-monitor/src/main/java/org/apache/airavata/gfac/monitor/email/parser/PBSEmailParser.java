@@ -40,6 +40,9 @@ public class PBSEmailParser implements EmailParser {
     private static final String REGEX = "[a-zA-Z: ]*(?<" + JOBID + ">[a-zA-Z0-9-\\.]*)\\s+.*\\s+.*\\s+(?<"
             + STATUS + ">[a-zA-Z\\ ]*)";
     private static final String REGEX_EXIT_STATUS = "Exit_status=(?<" + EXIT_STATUS + ">[\\d]+)";
+    public static final String BEGUN_EXECUTION = "Begun execution";
+    public static final String EXECUTION_TERMINATED = "Execution terminated";
+    public static final String ABORTED_BY_PBS_SERVER = "Aborted by PBS Server";
 
     @Override
     public JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException {
@@ -65,18 +68,19 @@ public class PBSEmailParser implements EmailParser {
 
     private JobState getJobState(String statusLine, String content) {
         switch (statusLine) {
-            case "Begun execution":
+            case BEGUN_EXECUTION:
                 return JobState.QUEUED;
-            case "Execution terminated":
+            case EXECUTION_TERMINATED:
                 int exitStatus = getExitStatus(content);
-                switch (exitStatus) {
-                    case 0:
-                        return JobState.COMPLETE;
-                    case 1:
-                        return JobState.FAILED;
-                    default:
-                        return JobState.UNKNOWN;
+                if (exitStatus == 0) {
+                    return JobState.COMPLETE;
+                } else if (exitStatus == 271) {
+                    return JobState.CANCELED;
+                } else {
+                    return JobState.FAILED;
                 }
+            case ABORTED_BY_PBS_SERVER:
+                return JobState.FAILED;
             default:
                 return JobState.UNKNOWN;
         }
