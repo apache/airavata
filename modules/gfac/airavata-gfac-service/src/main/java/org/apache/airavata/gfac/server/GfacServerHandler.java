@@ -265,7 +265,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
         logger.infoId(experimentId, "GFac Received cancel job request for Experiment: {} TaskId: {} ", experimentId, taskId);
         GFac gfac = getGfac();
         try {
-            if (gfac.cancel(experimentId, taskId, ServerSettings.getDefaultUserGateway())) {
+            if (gfac.cancel(experimentId, taskId, gatewayId)) {
                 logger.debugId(experimentId, "Successfully cancelled job, experiment {} , task {}", experimentId, taskId);
                 return true;
             } else {
