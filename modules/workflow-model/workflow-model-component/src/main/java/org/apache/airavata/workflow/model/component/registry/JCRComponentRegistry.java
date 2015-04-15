@@ -50,11 +50,15 @@ public class JCRComponentRegistry extends ComponentRegistry {
     public List<ComponentReference> getComponentReferenceList() {
         List<ComponentReference> tree = new ArrayList<ComponentReference>();
         try {
-            List<ApplicationInterfaceDescription> allApplicationInterfaces = client.getAllApplicationInterfaces(gatewayId);
-        	for (ApplicationInterfaceDescription interfaceDescription : allApplicationInterfaces) {
-        		JCRComponentReference jcr = new JCRComponentReference(interfaceDescription.getApplicationName(),interfaceDescription);
-                tree.add(jcr);
-			}
+            if (client.isGatewayExist(gatewayId)) {
+                List<ApplicationInterfaceDescription> allApplicationInterfaces = client.getAllApplicationInterfaces(gatewayId);
+                for (ApplicationInterfaceDescription interfaceDescription : allApplicationInterfaces) {
+                    JCRComponentReference jcr = new JCRComponentReference(interfaceDescription.getApplicationName(), interfaceDescription);
+                    tree.add(jcr);
+                }
+            } else {
+                log.error("Gateway {} Id is not exits", gatewayId);
+            }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
 		}
