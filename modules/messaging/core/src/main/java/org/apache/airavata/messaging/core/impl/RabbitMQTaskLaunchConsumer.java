@@ -181,7 +181,7 @@ public class RabbitMQTaskLaunchConsumer {
                                     + "' and with message type '" + message.getMessageType() + "'  for experimentId: " +
                                     taskTerminateEvent.getExperimentId() + "and taskId: " + taskTerminateEvent.getTaskId());
                             event = taskTerminateEvent;
-                            gatewayId = null;
+                            gatewayId = taskTerminateEvent.getGatewayId();
                         }
                         System.out.println("*deliveryTag:"+deliveryTag);
                         MessageContext messageContext = new MessageContext(event, message.getMessageType(), message.getMessageId(), gatewayId,deliveryTag);
