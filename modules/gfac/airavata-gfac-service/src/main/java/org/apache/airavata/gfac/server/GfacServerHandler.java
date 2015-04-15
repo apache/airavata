@@ -266,7 +266,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
         return true;
     }
 
-    public boolean cancelJob(String experimentId, String taskId) throws TException {
+    public boolean cancelJob(String experimentId, String taskId, String gatewayId) throws TException {
         logger.infoId(experimentId, "GFac Received cancel job request for Experiment: {} TaskId: {} ", experimentId, taskId);
         GFac gfac = getGfac();
         try {
@@ -400,7 +400,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                     TBase messageEvent = message.getEvent();
                     byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
                     ThriftUtils.createThriftFromBytes(bytes, event);
-                    cancelJob(event.getExperimentId(), event.getTaskId());
+                    cancelJob(event.getExperimentId(), event.getTaskId(), event.getGatewayId());
                     System.out.println(" Message Received with message id '" + message.getMessageId()
                             + "' and with message type '" + message.getType());
                 } catch (TException e) {
