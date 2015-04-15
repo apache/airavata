@@ -46,15 +46,15 @@ public class XBayaMenu implements XBayaComponent,XBayaExecutionModeListener{
 
 	private EditMenuItem editMenuItem;
 
-	private ViewMenuItem viewMenuItem;
+//	private ViewMenuItem viewMenuItem;
 
 	private RunMenuItem runMenuItem;
 
 	private RegistryMenuItem registryMenuItem;
 
-    private AmazonEC2MenuItem amazonEC2MenuItem;
+//    private AmazonEC2MenuItem amazonEC2MenuItem;
     
-    private ApplicationMenuItem applicationMenuItem;
+//    private ApplicationMenuItem applicationMenuItem;
 
 //	private ToolsMenuItem toolsMenuItem;
 
@@ -77,12 +77,12 @@ public class XBayaMenu implements XBayaComponent,XBayaExecutionModeListener{
 	private void initMenu() {
 		xBayaMenuItem = new XBayaMenuItem(getEngine(),getToolBar());
 		editMenuItem = new EditMenuItem(getEngine());
-        amazonEC2MenuItem = new AmazonEC2MenuItem(getEngine());
-		viewMenuItem = new ViewMenuItem(getEngine());
+//        amazonEC2MenuItem = new AmazonEC2MenuItem(getEngine());
+//		viewMenuItem = new ViewMenuItem(getEngine());
 		runMenuItem = new RunMenuItem(getEngine(), getToolBar());
 		registryMenuItem = new RegistryMenuItem(getEngine(),getToolBar());
 //		toolsMenuItem = new ToolsMenuItem(getEngine());
-		applicationMenuItem = new ApplicationMenuItem(getEngine());
+//		applicationMenuItem = new ApplicationMenuItem(getEngine());
 		createMenuBar();
 		executionModeChanged(getEngine().getConfiguration());
 	}
@@ -103,12 +103,12 @@ public class XBayaMenu implements XBayaComponent,XBayaExecutionModeListener{
         this.menuBar = new JMenuBar();
         menuBar.add(xBayaMenuItem.getMenu());
         menuBar.add(editMenuItem.getMenu());
-        menuBar.add(viewMenuItem.getMenu());
+//        menuBar.add(viewMenuItem.getMenu());
         menuBar.add(runMenuItem.getMenu());
 //        menuBar.add(toolsMenuItem.getMenu());
         menuBar.add(registryMenuItem.getMenu());
-        menuBar.add(amazonEC2MenuItem.getMenu());
-        menuBar.add(applicationMenuItem.getMenu());
+//        menuBar.add(amazonEC2MenuItem.getMenu());
+//        menuBar.add(applicationMenuItem.getMenu());
         // Space before Help
         this.menuBar.add(Box.createHorizontalGlue());
 
