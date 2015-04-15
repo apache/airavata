@@ -36,8 +36,7 @@ import org.slf4j.LoggerFactory;
 public class RabbitMQTaskLaunchPublisher implements Publisher{
     private final static Logger log = LoggerFactory.getLogger(RabbitMQTaskLaunchPublisher.class);
     private  String launchTask;
-    private  String cancelTask;
-
+    
     private RabbitMQProducer rabbitMQProducer;
 
     public RabbitMQTaskLaunchPublisher() throws Exception {
@@ -45,7 +44,6 @@ public class RabbitMQTaskLaunchPublisher implements Publisher{
         try {
             brokerUrl = ServerSettings.getSetting(MessagingConstants.RABBITMQ_BROKER_URL);
             launchTask = ServerSettings.getLaunchQueueName();
-            cancelTask = ServerSettings.getCancelQueueName();
         } catch (ApplicationSettingsException e) {
             String message = "Failed to get read the required properties from airavata to initialize rabbitmq";
             log.error(message, e);
@@ -64,12 +62,7 @@ public class RabbitMQTaskLaunchPublisher implements Publisher{
             message.setMessageId(msgCtx.getMessageId());
             message.setMessageType(msgCtx.getType());
             message.setUpdatedTime(msgCtx.getUpdatedTime().getTime());
-            String routingKey = null;
-            if (msgCtx.getType().equals(MessageType.LAUNCHTASK)){
-                routingKey = launchTask;
-            }else if(msgCtx.getType().equals(MessageType.TERMINATETASK)){
-                routingKey = cancelTask;
-            }
+            String routingKey = launchTask;
             byte[] messageBody = ThriftUtils.serializeThriftObject(message);
             rabbitMQProducer.sendToWorkerQueue(messageBody, routingKey);
             log.info("Successfully published to launch queue ...");

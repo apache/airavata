@@ -531,9 +531,14 @@ public class BetterGfacImpl implements GFac,Watcher {
         // We need to check whether this job is submitted as a part of a large workflow. If yes,
         // we need to setup workflow tracking listener.
         try {
-            // we cannot call GFacUtils.getZKExperimentStateValue because experiment might be running in some other node
-            String expPath = GFacUtils.findExperimentEntry(jobExecutionContext.getExperimentID(), zk);
-            int stateVal = GFacUtils.getZKExperimentStateValue(zk, expPath);   // this is the original state came, if we query again it might be different,so we preserve this state in the environment
+        	// we cannot call GFacUtils.getZKExperimentStateValue because experiment might be running in some other node
+//            String expPath = GFacUtils.findExperimentEntry(jobExecutionContext.getExperimentID(), zk);
+//            int stateVal = 0;
+//            if(expPath != null){
+//            Stat exists = zk.exists(expPath + File.separator + "operation", false);
+//            zk.getData(expPath + File.separator + "operation", this, exists);
+//            stateVal = GFacUtils.getZKExperimentStateValue(zk, expPath);   // this is the original state came, if we query again it might be different,so we preserve this state in the environment
+//            }
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
                     , GfacExperimentState.ACCEPTED));                  // immediately we get the request we update the status
             String workflowInstanceID = null;
@@ -544,15 +549,15 @@ public class BetterGfacImpl implements GFac,Watcher {
             }
             // Register log event listener. This is required in all scenarios.
             jobExecutionContext.getNotificationService().registerListener(new LoggingListener());
-            if (stateVal < 2) {
-                // In this scenario We do everything from the beginning
-                log.info("Job is not yet submitted, so nothing much to do except changing the registry entry " +
-                        " and stop the execution chain");
-            } else if (stateVal >= 8) {
-                log.error("This experiment is almost finished, so cannot cancel this experiment");
-                ZKUtil.deleteRecursive(zk,
-                        AiravataZKUtils.getExpZnodePath(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID()));
-            } else {
+//            if (stateVal < 2) {
+//                // In this scenario We do everything from the beginning
+//                log.info("Job is not yet submitted, so nothing much to do except changing the registry entry " +
+//                        " and stop the execution chain");
+//            } else if (stateVal >= 8) {
+//                log.error("This experiment is almost finished, so cannot cancel this experiment");
+//                ZKUtil.deleteRecursive(zk,
+//                        AiravataZKUtils.getExpZnodePath(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID()));
+//            } else {
                 log.info("Job is in a position to perform a proper cancellation");
                 try {
                     Scheduler.schedule(jobExecutionContext);
@@ -599,15 +604,15 @@ public class BetterGfacImpl implements GFac,Watcher {
                     jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
                     throw new GFacException(e.getMessage(), e);
                 }
-            }
+//            }
             return true;
-        } catch (ApplicationSettingsException e) {
-            log.error("Error occured while cancelling job for experiment : " + jobExecutionContext.getExperimentID(), e);
-            throw new GFacException(e.getMessage(), e);
-        } catch (KeeperException e) {
-            log.error("Error occured while cancelling job for experiment : " + jobExecutionContext.getExperimentID(), e);
-            throw new GFacException(e.getMessage(), e);
-        } catch (InterruptedException e) {
+//        } catch (ApplicationSettingsException e) {
+//            log.error("Error occured while cancelling job for experiment : " + jobExecutionContext.getExperimentID(), e);
+//            throw new GFacException(e.getMessage(), e);
+//        } catch (KeeperException e) {
+//            log.error("Error occured while cancelling job for experiment : " + jobExecutionContext.getExperimentID(), e);
+//            throw new GFacException(e.getMessage(), e);
+        } catch (Exception e) {
             log.error("Error occured while cancelling job for experiment : " + jobExecutionContext.getExperimentID(), e);
             throw new GFacException(e.getMessage(), e);
         }
