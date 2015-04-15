@@ -21,6 +21,7 @@
 package org.apache.airavata.gfac.monitor.email;
 
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.logger.AiravataLogger;
 import org.apache.airavata.common.logger.AiravataLoggerFactory;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -54,7 +55,6 @@ import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class EmailBasedMonitor implements Runnable{
-
     private static final AiravataLogger log = AiravataLoggerFactory.getLogger(EmailBasedMonitor.class);
 
     private static final String PBS_CONSULT_SDSC_EDU = "pbsconsult@sdsc.edu";
@@ -207,7 +207,11 @@ public class EmailBasedMonitor implements Runnable{
         JobState resultState = jobStatusResult.getState();
         jEC.getJobDetails().setJobStatus(new JobStatus(resultState));
         if (resultState == JobState.COMPLETE) {
-            GFacThreadPoolExecutor.getFixedThreadPool().submit(new OutHandlerWorker(jEC, BetterGfacImpl.getMonitorPublisher()));
+            try {
+                GFacThreadPoolExecutor.getFixedThreadPool().submit(new OutHandlerWorker(jEC, BetterGfacImpl.getMonitorPublisher()));
+            } catch (ApplicationSettingsException e) {
+                log.error(e.getMessage(), e);
+            }
         }else if (resultState == JobState.QUEUED) {
             // TODO - publish queued rabbitmq message
         }else if (resultState == JobState.FAILED) {
