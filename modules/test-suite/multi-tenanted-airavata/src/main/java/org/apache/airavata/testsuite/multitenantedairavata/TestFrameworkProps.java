@@ -21,6 +21,228 @@
 
 package org.apache.airavata.testsuite.multitenantedairavata;
 
-public class TestFrameworkProps {
+import java.util.Map;
 
+public class TestFrameworkProps {
+    private int gcount;
+    private String gname;
+    private String gdomain;
+    private String testUserName;
+    private String testProjectName;
+    private String sshPubKeyLoc;
+    private String sshPrivateKeyLoc;
+    private String sshPassword;
+    private String sshUsername;
+    private String tokenFileLoc;
+    private String resultFileLoc;
+    private String skippedGateways;
+    private Resource[] resources;
+    private Application[] applications;
+    private Error[] errors;
+
+    public TestFrameworkProps() {
+    }
+
+    public int getGcount() {
+        return gcount;
+    }
+
+    public void setGcount(int gcount) {
+        this.gcount = gcount;
+    }
+
+    public String getGname() {
+        return gname;
+    }
+
+    public void setGname(String gname) {
+        this.gname = gname;
+    }
+
+    public String getGdomain() {
+        return gdomain;
+    }
+
+    public void setGdomain(String gdomain) {
+        this.gdomain = gdomain;
+    }
+
+    public String getTestUserName() {
+        return testUserName;
+    }
+
+    public void setTestUserName(String testUserName) {
+        this.testUserName = testUserName;
+    }
+
+    public String getTestProjectName() {
+        return testProjectName;
+    }
+
+    public void setTestProjectName(String testProjectName) {
+        this.testProjectName = testProjectName;
+    }
+
+    public String getSshPubKeyLoc() {
+        return sshPubKeyLoc;
+    }
+
+    public void setSshPubKeyLoc(String sshPubKeyLoc) {
+        this.sshPubKeyLoc = sshPubKeyLoc;
+    }
+
+    public String getSshPrivateKeyLoc() {
+        return sshPrivateKeyLoc;
+    }
+
+    public void setSshPrivateKeyLoc(String sshPrivateKeyLoc) {
+        this.sshPrivateKeyLoc = sshPrivateKeyLoc;
+    }
+
+    public String getSshPassword() {
+        return sshPassword;
+    }
+
+    public void setSshPassword(String sshPassword) {
+        this.sshPassword = sshPassword;
+    }
+
+    public String getSshUsername() {
+        return sshUsername;
+    }
+
+    public void setSshUsername(String sshUsername) {
+        this.sshUsername = sshUsername;
+    }
+
+    public String getTokenFileLoc() {
+        return tokenFileLoc;
+    }
+
+    public void setTokenFileLoc(String tokenFileLoc) {
+        this.tokenFileLoc = tokenFileLoc;
+    }
+
+    public String getResultFileLoc() {
+        return resultFileLoc;
+    }
+
+    public void setResultFileLoc(String resultFileLoc) {
+        this.resultFileLoc = resultFileLoc;
+    }
+
+    public String getSkippedGateways() {
+        return skippedGateways;
+    }
+
+    public void setSkippedGateways(String skippedGateways) {
+        this.skippedGateways = skippedGateways;
+    }
+
+    public Resource[] getResources() {
+        return resources;
+    }
+
+    public void setResources(Resource[] resources) {
+        this.resources = resources;
+    }
+
+    public Application[] getApplications() {
+        return applications;
+    }
+
+    public void setApplications(Application[] applications) {
+        this.applications = applications;
+    }
+
+    public Error[] getErrors() {
+        return errors;
+    }
+
+    public void setErrors(Error[] errors) {
+        this.errors = errors;
+    }
+
+    public class Resource {
+        private String name;
+        private String loginUser;
+
+        public Resource() {
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getLoginUser() {
+            return loginUser;
+        }
+
+        public void setLoginUser(String loginUser) {
+            this.loginUser = loginUser;
+        }
+    }
+
+    public class Application {
+        private String name;
+        private Map<String, String> inputs;
+
+        public Application() {
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public Map<String, String> getInputs() {
+            return inputs;
+        }
+
+        public void setInputs(Map<String, String> inputs) {
+            this.inputs = inputs;
+        }
+    }
+
+    public class Error {
+        private String name;
+        private String application;
+        private Map<String, String> errorFeeds;
+
+        public Error() {
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getApplication() {
+            return application;
+        }
+
+        public void setApplication(String application) {
+            this.application = application;
+        }
+
+        public Map<String, String> getErrorFeeds() {
+            return errorFeeds;
+        }
+
+        public void setErrorFeeds(Map<String, String> errorFeeds) {
+            this.errorFeeds = errorFeeds;
+        }
+    }
 }
+
+

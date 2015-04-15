@@ -66,7 +66,7 @@ public class OutHandlerWorker implements Runnable {
             //FIXME this is a case where the output retrieving fails even if the job execution was a success. Thus updating the task status
             monitorPublisher.publish(new TaskStatusChangeRequestEvent(TaskState.FAILED, taskIdentifier));
             try {
-                GFacUtils.saveErrorDetails(monitorID.getJobExecutionContext(), e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+                GFacUtils.saveErrorDetails(monitorID.getJobExecutionContext(),  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
             } catch (GFacException e1) {
                 logger.error("Error while persisting error details", e);
             }

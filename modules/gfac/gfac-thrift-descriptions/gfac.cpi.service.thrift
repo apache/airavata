@@ -61,5 +61,6 @@ service GfacService {
      *
     **/
   bool cancelJob (1: required string experimentId,
-                  2: required string taskId)
+                  2: required string taskId,
+                  3: required string gatewayId)
 }

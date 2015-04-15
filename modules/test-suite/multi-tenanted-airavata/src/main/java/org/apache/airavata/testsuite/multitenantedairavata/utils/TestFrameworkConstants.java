@@ -24,6 +24,7 @@ package org.apache.airavata.testsuite.multitenantedairavata.utils;
 public class TestFrameworkConstants {
     public static final String AIRAVATA_CLIENT_PROPERTIES = "airavata-client.properties";
     public static final String TEST_FREAMEWORK_PROPERTIES = "test-framework.properties";
+    public static final String TEST_FREAMEWORK_JSON = "test-framework.json";
 
     public static final class AiravataClientConstants {
         public static final String THRIFT_SERVER_HOST = "thrift.server.host";
