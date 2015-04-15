@@ -53,36 +53,23 @@ import org.slf4j.LoggerFactory;
 public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
 
     private XBayaEngine engine;
-
     private JMenu runMenu;
-    
 //    private JMenuItem launchDynamicWorkflowItem;
-
     private JMenuItem launchXBayaInterpreterItem;
-
     private JMenuItem configMonitorItem;
-
     private JMenuItem resumeMonitoringItem;
-
     private JMenuItem pauseMonitoringItem;
-
     private JMenuItem resetMonitoringItem;
 
     private static final Logger logger = LoggerFactory.getLogger(RunMenuItem.class);
-
 	private static final String EXECUTE_ACTIONS = "run_actions";
 	private static final String EXECUTE_MONITOR_ACTIONS = "monitor_actions";
 
     private XBayaToolBar toolBar;
-
 	private ToolbarButton toolbarButtonRunWorkflow;
-
 	private ToolbarButton toolbarButtonPauseMonitor;
-
 	private ToolbarButton toolbarButtonResumeMonitor;
-
 	private JMenuItem stopWorkflowItem;
-
 	private ToolbarButton toolbarButtonStopWorkflow;
     
     /**
@@ -115,11 +102,11 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
     private void createWorkflowMenu() {
 //        this.launchDynamicWorkflowItem = createLaunchDynamicWorkflowItem();
         createLaunchXBayaInterpreterItem();
-        this.configMonitorItem = createConfigMonitoring();
-        this.resumeMonitoringItem = createResumeMonitoring();
-        this.pauseMonitoringItem = createPauseMonitoring();
-        this.resetMonitoringItem = createResetMonitoring();
-        stopWorkflowItem = createStopWorkflow();
+//        this.configMonitorItem = createConfigMonitoring();
+//        this.resumeMonitoringItem = createResumeMonitoring();
+//        this.pauseMonitoringItem = createPauseMonitoring();
+//        this.resetMonitoringItem = createResetMonitoring();
+//        stopWorkflowItem = createStopWorkflow();
         
         runMenu = new JMenu("Run");
         runMenu.setMnemonic(KeyEvent.VK_R);
@@ -128,14 +115,14 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
 //        runMenu.add(launchDynamicWorkflowItem);
         
         runMenu.addSeparator();
-        runMenu.add(stopWorkflowItem);
+//        runMenu.add(stopWorkflowItem);
 
         runMenu.addSeparator();
         
-        runMenu.add(this.resumeMonitoringItem);
-        runMenu.add(this.pauseMonitoringItem);
-        runMenu.add(this.resetMonitoringItem);
-        runMenu.add(this.configMonitorItem);
+//        runMenu.add(this.resumeMonitoringItem);
+//        runMenu.add(this.pauseMonitoringItem);
+//        runMenu.add(this.resetMonitoringItem);
+//        runMenu.add(this.configMonitorItem);
         
         runMenu.addMenuListener(new MenuListener(){
 			@Override
@@ -144,12 +131,12 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
 			public void menuDeselected(MenuEvent e) {}
 			@Override
 			public void menuSelected(MenuEvent e) {
-				stopWorkflowItem.setEnabled(isWorkflowRunning());
+//				stopWorkflowItem.setEnabled(isWorkflowRunning());
 			}
         });
         
         setupMonitors();
-        startStopButtonStateUpdater();
+//        startStopButtonStateUpdater();
         executionModeChanged(engine.getConfiguration());
     }
 
@@ -296,7 +283,7 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
      */
     public void eventReceived(Event event) {
         Event.Type type = event.getType();
-        if (type.equals(Event.Type.MONITOR_CONFIGURATION_CHANGED)) {
+/*        if (type.equals(Event.Type.MONITOR_CONFIGURATION_CHANGED)) {
 //            MonitorConfiguration configuration = this.engine.getMonitor().getConfiguration();
 //            boolean valid = configuration.isValid();
             boolean valid = true;
@@ -313,7 +300,7 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
             resetMonitoringItem.setVisible(false);
         }
         toolbarButtonPauseMonitor.setEnabled(pauseMonitoringItem.isVisible());
-        toolbarButtonResumeMonitor.setEnabled(resumeMonitoringItem.isVisible());
+        toolbarButtonResumeMonitor.setEnabled(resumeMonitoringItem.isVisible());*/
     }
 
 	public XBayaToolBar getToolBar() {
@@ -334,8 +321,8 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
 
 	@Override
 	public void executionModeChanged(XBayaConfiguration config) {
-		toolbarButtonRunWorkflow.setVisible(config.getXbayaExecutionMode()==XBayaExecutionMode.IDE);
-		toolbarButtonStopWorkflow.setVisible(config.getXbayaExecutionMode()==XBayaExecutionMode.IDE);
+//		toolbarButtonRunWorkflow.setVisible(config.getXbayaExecutionMode()==XBayaExecutionMode.IDE);
+//		toolbarButtonStopWorkflow.setVisible(config.getXbayaExecutionMode()==XBayaExecutionMode.IDE);
 	}
 	
 	private void startStopButtonStateUpdater() {
