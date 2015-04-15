@@ -57,7 +57,7 @@ public class JCRComponentRegistry extends ComponentRegistry {
                     tree.add(jcr);
                 }
             } else {
-                log.error("Gateway {} Id is not exits", gatewayId);
+                log.error("Gateway {} Id is not exist", gatewayId);
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
