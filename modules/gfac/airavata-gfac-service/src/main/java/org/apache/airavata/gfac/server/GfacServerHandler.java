@@ -246,7 +246,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
      */
     public boolean submitJob(String experimentId, String taskId, String gatewayId) throws TException {
         requestCount++;
-        logger.info("-----------------------------------------------------" + requestCount+"-----------------------------------------------------");
+        logger.info("-----------------------------------------------------" + requestCount + "-----------------------------------------------------");
         logger.infoId(experimentId, "GFac Received submit job request for the Experiment: {} TaskId: {}", experimentId, taskId);
         GFac gfac = getGfac();
         InputHandlerWorker inputHandlerWorker = new InputHandlerWorker(gfac, experimentId, taskId, gatewayId);
@@ -255,12 +255,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
         logger.debugId(experimentId, "Submitted job to the Gfac Implementation, experiment {}, task {}, gateway " +
                 "{}", experimentId, taskId, gatewayId);
 
-        try {
-            GFacThreadPoolExecutor.getFixedThreadPool().execute(inputHandlerWorker);
-        } catch (ApplicationSettingsException e) {
-            logger.error(e.getMessage(), e);
-            throw new TException(e);
-        }
+        GFacThreadPoolExecutor.getThreadPool().execute(inputHandlerWorker);
 
         // we immediately return when we have a threadpool
         return true;
@@ -405,6 +400,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                             + "' and with message type '" + message.getType());
                 } catch (TException e) {
                     logger.error(e.getMessage(), e); //nobody is listening so nothing to throw
+                    rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
                 }
             }
         }
