@@ -59,17 +59,19 @@ public class GatewayRegister {
     private String testUser;
     private String testProject;
     private List<String> gatewaysToAvoid;
+    private TestFrameworkProps properties;
 
-    public GatewayRegister(Airavata.Client client) throws Exception{
+    public GatewayRegister(Airavata.Client client, TestFrameworkProps props) throws Exception{
         try {
             this.airavata = client;
             this.tokenMap = new HashMap<String, String>();
             this.projectMap = new HashMap<String, String>();
             propertyReader = new PropertyReader();
-            testUser = propertyReader.readProperty(TestFrameworkConstants.FrameworkPropertiesConstants.TEST_USER, PropertyFileType.TEST_FRAMEWORK);
-            testProject = propertyReader.readProperty(TestFrameworkConstants.FrameworkPropertiesConstants.TEST_PROJECT, PropertyFileType.TEST_FRAMEWORK);
+            properties = props;
+            testUser = properties.getTestUserName();
+            testProject = properties.getTestProjectName();
             FrameworkUtils frameworkUtils = FrameworkUtils.getInstance();
-            gatewaysToAvoid = frameworkUtils.getGatewayListToAvoid();
+            gatewaysToAvoid = frameworkUtils.getGatewayListToAvoid(properties.getSkippedGateways());
         }catch (Exception e){
             logger.error("Error while initializing setup step", e);
             throw new Exception("Error while initializing setup step", e);
@@ -79,9 +81,9 @@ public class GatewayRegister {
     public void createGateways() throws Exception{
         try {
             // read gateway count from properties file
-            gatewayCount = Integer.valueOf(propertyReader.readProperty(TestFrameworkConstants.FrameworkPropertiesConstants.NUMBER_OF_GATEWAYS, PropertyFileType.TEST_FRAMEWORK));
-            String genericGatewayName = propertyReader.readProperty(TestFrameworkConstants.GatewayConstants.GENERIC_GATEWAY_NAME, PropertyFileType.TEST_FRAMEWORK);
-            String genericGatewayDomain = propertyReader.readProperty(TestFrameworkConstants.GatewayConstants.GENERIC_GATEWAY_DOMAIN, PropertyFileType.TEST_FRAMEWORK);
+            gatewayCount = properties.getGcount();
+            String genericGatewayName = properties.getGname();
+            String genericGatewayDomain = properties.getGdomain();
             for (int i = 0; i < gatewayCount; i++){
                 Gateway gateway = new Gateway();
                 String gatewayId = genericGatewayName + (i + 1);
@@ -121,7 +123,7 @@ public class GatewayRegister {
     public void registerSSHKeys () throws Exception{
         try {
             // write tokens to file
-            String tokenWriteLocation = propertyReader.readProperty(TestFrameworkConstants.FrameworkPropertiesConstants.TOKEN_WRITE_LOCATION, PropertyFileType.TEST_FRAMEWORK);
+            String tokenWriteLocation = properties.getTokenFileLoc();
             String fileName = tokenWriteLocation + File.separator + TestFrameworkConstants.CredentialStoreConstants.TOKEN_FILE_NAME;
 
             PrintWriter tokenWriter = new PrintWriter(fileName, "UTF-8");
@@ -131,9 +133,9 @@ public class GatewayRegister {
             String jdbcDriver = propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.CS_JBDC_DRIVER, PropertyFileType.AIRAVATA_CLIENT);
             String userName = propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.CS_DB_USERNAME, PropertyFileType.AIRAVATA_CLIENT);
             String password = propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.CS_DB_PWD, PropertyFileType.AIRAVATA_CLIENT);
-            String privateKeyPath = propertyReader.readProperty(TestFrameworkConstants.FrameworkPropertiesConstants.SSH_PRIKEY_LOCATION, PropertyFileType.TEST_FRAMEWORK);
-            String pubKeyPath = propertyReader.readProperty(TestFrameworkConstants.FrameworkPropertiesConstants.SSH_PUBKEY_LOCATION, PropertyFileType.TEST_FRAMEWORK);
-            String keyPassword = propertyReader.readProperty(TestFrameworkConstants.FrameworkPropertiesConstants.SSH_PWD, PropertyFileType.TEST_FRAMEWORK);
+            String privateKeyPath = properties.getSshPrivateKeyLoc();
+            String pubKeyPath = properties.getSshPubKeyLoc();
+            String keyPassword = properties.getSshPassword();
             DBUtil dbUtil = new DBUtil(jdbcURL, userName, password, jdbcDriver);
             SSHCredentialWriter writer = new SSHCredentialWriter(dbUtil);
             List<Gateway> allGateways = airavata.getAllGateways();

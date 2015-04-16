@@ -38,43 +38,26 @@ import java.util.*;
 public class ComputeResourceRegister {
     private Airavata.Client airavata;
     private List<String> computeResourceIds;
-    private PropertyReader propertyReader;
     private Map<String, String> loginNamesWithResourceMap;
     private Map<String, String> loginNamesWithResourceIds;
     private final static Logger logger = LoggerFactory.getLogger(ComputeResourceRegister.class);
+    private TestFrameworkProps properties;
 
-    public ComputeResourceRegister(Airavata.Client airavata) throws Exception {
+    public ComputeResourceRegister(Airavata.Client airavata, TestFrameworkProps props) throws Exception {
         this.airavata = airavata;
+        this.properties = props;
         computeResourceIds = new ArrayList<String>();
-        propertyReader = new PropertyReader();
         loginNamesWithResourceMap = getLoginNamesMap();
 
     }
 
     public Map<String, String> getLoginNamesMap() throws Exception {
         loginNamesWithResourceMap = new HashMap<String, String>();
-        List<String> loginNameList = new ArrayList<String>();
-        List<String> computerResources = new ArrayList<String>();
-        String loginNames = propertyReader.readProperty(TestFrameworkConstants.FrameworkPropertiesConstants.LOGIN_USERNAME_LIST, PropertyFileType.TEST_FRAMEWORK);
-        if (loginNames != null && !loginNames.isEmpty()){
-            String[] names = loginNames.split(",");
-            loginNameList = Arrays.asList(names);
-        }
-        String clist = propertyReader.readProperty(TestFrameworkConstants.FrameworkPropertiesConstants.COMPUTE_RESOURCE_LIST, PropertyFileType.TEST_FRAMEWORK);
-        if (clist != null && !clist.isEmpty()) {
-            String[] resources = clist.split(",");
-            computerResources = Arrays.asList(resources);
-        }
-
-        if (computerResources.size() == loginNameList.size()){
-            for (int i=0; i < computerResources.size(); i++){
-                loginNamesWithResourceMap.put(computerResources.get(i), loginNameList.get(i));
+        TestFrameworkProps.Resource[] resourcesWithloginName = properties.getResources();
+        if (resourcesWithloginName != null){
+            for (TestFrameworkProps.Resource resource : resourcesWithloginName){
+                loginNamesWithResourceMap.put(resource.getName(), resource.getLoginUser());
             }
-        }else {
-           logger.error("Each compute resource should have a login user name. Please check whether you specified them correctly " +
-                   "in test-framework.properties files..");
-            throw new Exception("Each compute resource should have a login user name. Please check whether you specified them correctly " +
-                    "in test-framework.properties files..");
         }
         return loginNamesWithResourceMap;
     }

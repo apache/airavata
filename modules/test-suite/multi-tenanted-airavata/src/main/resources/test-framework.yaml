@@ -1,0 +1,49 @@
+gcount: 10
+gname: testGateway
+gdomain: .airavata.org
+testUserName: testUser
+testProjectName : test.project
+sshPubKeyLoc : /Users/chathuri/.ssh/id_dsa.pub
+sshPrivateKeyLoc: /Users/chathuri/.ssh/id_dsa
+sshPassword: password
+sshUsername: ogce
+tokenFileLoc : /tmp/
+resultFileLoc : /tmp/test_framework_results/
+skippedGateways : defaultphp_reference_gatewayultrascanumass
+resources :
+        -name : trestles.sdsc.xsede.org
+        loginUser : ogce
+        -name : stampede.tacc.xsede.org
+        loginUser : ogce
+        -name : bigred2.uits.iu.edu
+        loginUser : cgateway
+
+applications :
+    -name :amber
+      inputs : 
+          heatRst : /Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/02_Heat.rst
+          prodIn : /Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/03_Prod.in
+          prmtop : /Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/prmtop
+      
+    
+
+errors :
+    name :badinputs
+        application : amber
+        errorFeeds :
+            heatRst : /Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/02_Heat.rst
+            prodIn : /Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/03_Prod.in
+            prmtop : /Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/prmtop
+        
+    
+    name :error.configuration
+        application : amber
+        errorFeeds :
+            projectId : sds128
+            queueName : normal
+            walltime : 10
+            hostName : trestles.sdsc.xsede.org
+        
+    
+
+

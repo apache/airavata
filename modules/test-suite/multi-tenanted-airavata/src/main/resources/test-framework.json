@@ -1,0 +1,66 @@
+{
+    "gcount": 1,
+    "gname": "testGateway",
+    "gdomain": ".airavata.org",
+    "testUserName": "testUser",
+    "testProjectName": "test.project",
+    "sshPubKeyLoc": "/Users/chathuri/Desktop/ssh_gw111/id_rsa.pub",
+    "sshPrivateKeyLoc": "/Users/chathuri/Desktop/ssh_gw111/id_rsa",
+    "sshPassword": "ultrascan",
+    "sshUsername": "ogce",
+    "tokenFileLoc": "/tmp/",
+    "resultFileLoc": "/tmp/test_framework_results/",
+    "skippedGateways": "default,php_reference_gateway,ultrascan,umass",
+    "injectErrors" : true,
+    "resources": [
+        {
+            "name": "trestles.sdsc.xsede.org",
+            "loginUser": "ogce"
+
+        },
+        {
+            "name": "stampede.tacc.xsede.org",
+            "loginUser": "ogce"
+
+        },
+        {
+            "name": "bigred2.uits.iu.edu",
+            "loginUser": "cgateway"
+
+        }
+    ],
+    "applications": [
+        {
+            "name": "amber_sander",
+            "inputs": {
+                "heatRst": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/02_Heat.rst",
+                "prodIn": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/03_Prod.in",
+                "prmtop": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/prmtop"
+            }
+        }
+    ],
+    "errors": [
+        {
+            "name": "badinputs",
+            "application": "amber_sander",
+            "resoureName": "stampede.tacc.xsede.org",
+            "errorFeeds": {
+                "heatRst": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES1/02_Heat.rst",
+                "prodIn": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES1/03_Prod.in",
+                "prmtop": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES1/prmtop"
+            }
+        },
+        {
+            "name": "error.configuration",
+            "application": "amber_sander",
+            "resoureName": "stampede.tacc.xsede.org",
+            "errorFeeds": {
+                "projectId": "TG-STA110014S",
+                "queueName": "normal",
+                "walltime": 1,
+                "hostName": "trestles.sdsc.xsede.org"
+            }
+
+        }
+    ]
+}

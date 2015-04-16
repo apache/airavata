@@ -200,7 +200,10 @@ public class ErrorDetailResource extends AbstractResource {
                 errorDetail.setNodeId(workflowNodeDetail.getNodeId());
             }
             errorDetail.setCreationTime(creationTime);
-            errorDetail.setActualErrorMsg(actualErrorMsg.toCharArray());
+            if (actualErrorMsg != null){
+                errorDetail.setActualErrorMsg(actualErrorMsg.toCharArray());
+            }
+
             errorDetail.setUserFriendlyErrorMsg(userFriendlyErrorMsg);
             errorDetail.setTransientPersistent(transientPersistent);
             errorDetail.setErrorCategory(errorCategory);
