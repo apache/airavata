@@ -4,13 +4,14 @@
     "gdomain": ".airavata.org",
     "testUserName": "testUser",
     "testProjectName": "test.project",
-    "sshPubKeyLoc": "/Users/chathuri/.ssh/id_dsa.pub",
-    "sshPrivateKeyLoc": "/Users/chathuri/.ssh/id_dsa",
-    "sshPassword": "",
+    "sshPubKeyLoc": "/Users/chathuri/Desktop/ssh_gw111/id_rsa.pub",
+    "sshPrivateKeyLoc": "/Users/chathuri/Desktop/ssh_gw111/id_rsa",
+    "sshPassword": "ultrascan",
     "sshUsername": "ogce",
     "tokenFileLoc": "/tmp/",
     "resultFileLoc": "/tmp/test_framework_results/",
     "skippedGateways": "default,php_reference_gateway,ultrascan,umass",
+    "injectErrors" : true,
     "resources": [
         {
             "name": "trestles.sdsc.xsede.org",
@@ -24,7 +25,7 @@
         },
         {
             "name": "bigred2.uits.iu.edu",
-            "loginUser": "cpelikan"
+            "loginUser": "cgateway"
 
         }
     ],
@@ -42,15 +43,17 @@
         {
             "name": "badinputs",
             "application": "amber_sander",
+            "resoureName": "stampede.tacc.xsede.org",
             "errorFeeds": {
-                "heatRst": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/02_Heat.rst",
-                "prodIn": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/03_Prod.in",
-                "prmtop": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/prmtop"
+                "heatRst": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES1/02_Heat.rst",
+                "prodIn": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES1/03_Prod.in",
+                "prmtop": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES1/prmtop"
             }
         },
         {
             "name": "error.configuration",
             "application": "amber_sander",
+            "resoureName": "stampede.tacc.xsede.org",
             "errorFeeds": {
                 "projectId": "sds128",
                 "queueName": "normal",

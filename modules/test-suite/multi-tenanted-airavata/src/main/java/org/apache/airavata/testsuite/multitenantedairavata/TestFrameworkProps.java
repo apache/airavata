@@ -36,6 +36,7 @@ public class TestFrameworkProps {
     private String tokenFileLoc;
     private String resultFileLoc;
     private String skippedGateways;
+    private boolean injectErrors;
     private Resource[] resources;
     private Application[] applications;
     private Error[] errors;
@@ -163,6 +164,14 @@ public class TestFrameworkProps {
         this.errors = errors;
     }
 
+    public boolean isInjectErrors() {
+        return injectErrors;
+    }
+
+    public void setInjectErrors(boolean injectErrors) {
+        this.injectErrors = injectErrors;
+    }
+
     public class Resource {
         private String name;
         private String loginUser;
@@ -214,9 +223,18 @@ public class TestFrameworkProps {
     public class Error {
         private String name;
         private String application;
+        private String resoureName;
         private Map<String, String> errorFeeds;
 
         public Error() {
+        }
+
+        public String getResoureName() {
+            return resoureName;
+        }
+
+        public void setResoureName(String resoureName) {
+            this.resoureName = resoureName;
         }
 
         public String getName() {

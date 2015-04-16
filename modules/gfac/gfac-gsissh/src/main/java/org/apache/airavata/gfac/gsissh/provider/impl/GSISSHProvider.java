@@ -55,6 +55,8 @@ import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 
@@ -132,7 +134,9 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
             log.error(error);
             jobDetails.setJobID("none");
             GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
-            GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+            StringWriter errors = new StringWriter();
+            e.printStackTrace(new PrintWriter(errors));
+            GFacUtils.saveErrorDetails(jobExecutionContext,  errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
             throw new GFacProviderException(error, e);
         } finally {
             log.info("Saving data for future recovery: ");

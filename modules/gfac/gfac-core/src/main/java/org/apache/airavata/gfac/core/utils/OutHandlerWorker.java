@@ -33,6 +33,9 @@ import org.apache.airavata.model.workspace.experiment.TaskState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 public class OutHandlerWorker implements Runnable {
     private final static Logger logger = LoggerFactory.getLogger(OutHandlerWorker.class);
 
@@ -66,7 +69,9 @@ public class OutHandlerWorker implements Runnable {
             //FIXME this is a case where the output retrieving fails even if the job execution was a success. Thus updating the task status
             monitorPublisher.publish(new TaskStatusChangeRequestEvent(TaskState.FAILED, taskIdentifier));
             try {
-                GFacUtils.saveErrorDetails(monitorID.getJobExecutionContext(),  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+                StringWriter errors = new StringWriter();
+                e.printStackTrace(new PrintWriter(errors));
+                GFacUtils.saveErrorDetails(monitorID.getJobExecutionContext(),  errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
             } catch (GFacException e1) {
                 logger.error("Error while persisting error details", e);
             }

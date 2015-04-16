@@ -54,6 +54,16 @@ public class TestFrameworkConstants {
         public static final String TEST_PROJECT = "test.project";
     }
 
+    public static final class ErrorTypeConstants {
+        public static final String BADINPUTS = "badinputs";
+        public static final String ERROR_CONFIG = "error.configuration";
+        public static final String ALLOCATION_PROJECT = "projectId";
+        public static final String QUEUE_NAME = "queueName";
+        public static final String WALLTIME = "walltime";
+        public static final String HOST_NAME = "hostName";
+
+    }
+
     public static final class GatewayConstants {
         public static final String GENERIC_GATEWAY_NAME = "generic.gateway.name";
         public static final String GENERIC_GATEWAY_DOMAIN = "generic.gateway.domain";
