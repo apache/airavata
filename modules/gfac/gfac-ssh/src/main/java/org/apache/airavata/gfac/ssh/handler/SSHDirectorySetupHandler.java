@@ -33,6 +33,8 @@ import org.apache.airavata.registry.cpi.ChildDataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Properties;
 
 public class SSHDirectorySetupHandler extends AbstractHandler {
@@ -47,7 +49,9 @@ public class SSHDirectorySetupHandler extends AbstractHandler {
         } catch (Exception e) {
             log.error(e.getMessage());
             try {
- 				GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+                StringWriter errors = new StringWriter();
+                e.printStackTrace(new PrintWriter(errors));
+ 				GFacUtils.saveErrorDetails(jobExecutionContext,  errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
  			} catch (GFacException e1) {
  				 log.error(e1.getLocalizedMessage());
  			}
@@ -92,7 +96,9 @@ public class SSHDirectorySetupHandler extends AbstractHandler {
             detail.setTransferDescription("Working directory = " + jobExecutionContext.getWorkingDir());
             try {
                 registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
-                GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE);
+                StringWriter errors = new StringWriter();
+                e.printStackTrace(new PrintWriter(errors));
+                GFacUtils.saveErrorDetails(jobExecutionContext,  errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE);
             } catch (Exception e1) {
                 throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
             }

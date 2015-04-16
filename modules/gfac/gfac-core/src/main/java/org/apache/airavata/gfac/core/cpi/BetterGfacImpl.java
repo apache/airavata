@@ -71,6 +71,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.*;
 
@@ -209,7 +211,9 @@ public class BetterGfacImpl implements GFac,Watcher {
             return submitJob(jobExecutionContext);
         } catch (Exception e) {
             log.error("Error inovoking the job with experiment ID: " + experimentID);
-            GFacUtils.saveErrorDetails(jobExecutionContext, e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
+            StringWriter errors = new StringWriter();
+            e.printStackTrace(new PrintWriter(errors));
+            GFacUtils.saveErrorDetails(jobExecutionContext, errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
             throw new GFacException(e);
         }
     }
