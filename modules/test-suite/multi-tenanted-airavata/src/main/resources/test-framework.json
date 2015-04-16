@@ -55,9 +55,9 @@
             "application": "amber_sander",
             "resoureName": "stampede.tacc.xsede.org",
             "errorFeeds": {
-                "projectId": "sds128",
+                "projectId": "TG-STA110014S",
                 "queueName": "normal",
-                "walltime": 10,
+                "walltime": 1,
                 "hostName": "trestles.sdsc.xsede.org"
             }
 
