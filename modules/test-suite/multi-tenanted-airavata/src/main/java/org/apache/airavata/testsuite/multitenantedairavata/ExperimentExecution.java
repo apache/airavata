@@ -29,7 +29,6 @@ import org.apache.airavata.messaging.core.MessagingConstants;
 import org.apache.airavata.messaging.core.impl.RabbitMQStatusConsumer;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.InvalidRequestException;
@@ -353,8 +352,8 @@ public class ExperimentExecution {
     public void createAmberWithErrorUserConfig (String gatewayId,
                                             String token,
                                             String projectId,
-                                            String appId,
-                                            String hostId) throws Exception {
+                                            String hostId,
+                                            String appId) throws Exception {
         try {
 
             TestFrameworkProps.Error[] errors = properties.getErrors();
@@ -397,7 +396,7 @@ public class ExperimentExecution {
                         }
 
                         Experiment simpleExperiment =
-                                ExperimentModelUtil.createSimpleExperiment(projectId, testUser, "AmberErrorInputs", "Amber Experiment run", appId, applicationInputs);
+                                ExperimentModelUtil.createSimpleExperiment(projectId, testUser, "AmberErrorConfigs", "Amber Experiment run", appId, applicationInputs);
                         simpleExperiment.setExperimentOutputs(appOutputs);
                         ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(hostId, 4, 1, 1, queueName, walltime, 0, 1, allocationProject);
                         UserConfigurationData userConfigurationData = new UserConfigurationData();
@@ -434,10 +433,10 @@ public class ExperimentExecution {
                 String token = csTokens.get(gatewayId);
                 Map<String, String> appsWithNames = appInterfaceMap.get(gatewayId);
                 for (String appId : appsWithNames.keySet()){
-                    List<InputDataObjectType> applicationInputs = airavata.getApplicationInputs(appId);
-                    List<OutputDataObjectType> appOutputs = airavata.getApplicationOutputs(appId);
                     String appName = appsWithNames.get(appId);
                     if (appName.equals(TestFrameworkConstants.AppcatalogConstants.AMBER_APP_NAME)){
+                        List<InputDataObjectType> applicationInputs = airavata.getApplicationInputs(appId);
+                        List<OutputDataObjectType> appOutputs = airavata.getApplicationOutputs(appId);
                         for (String inputName : userGivenAmberInputs.keySet()){
                             for (InputDataObjectType inputDataObjectType : applicationInputs) {
                                 if (inputDataObjectType.getName().equalsIgnoreCase(inputName)) {
@@ -459,36 +458,38 @@ public class ExperimentExecution {
                             for (String id : computeResources.keySet()) {
                                 String resourceName = computeResources.get(id);
                                 if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.TRESTLES_RESOURCE_NAME)) {
-//                                    ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "normal", 20, 0, 1, null);
-//                                    UserConfigurationData userConfigurationData = new UserConfigurationData();
-//                                    userConfigurationData.setAiravataAutoSchedule(false);
-//                                    userConfigurationData.setOverrideManualScheduledParams(false);
-//                                    userConfigurationData.setComputationalResourceScheduling(scheduling);
-//                                    simpleExperiment.setUserConfigurationData(userConfigurationData);
-//                                    experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
-//                                    experimentsWithTokens.put(experimentId, token);
-//                                    experimentsWithGateway.put(experimentId, gatewayId);
+                                    ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "normal", 20, 0, 1, null);
+                                    UserConfigurationData userConfigurationData = new UserConfigurationData();
+                                    userConfigurationData.setAiravataAutoSchedule(false);
+                                    userConfigurationData.setOverrideManualScheduledParams(false);
+                                    userConfigurationData.setComputationalResourceScheduling(scheduling);
+                                    simpleExperiment.setUserConfigurationData(userConfigurationData);
+                                    experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
+                                    experimentsWithTokens.put(experimentId, token);
+                                    experimentsWithGateway.put(experimentId, gatewayId);
                                 }else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.STAMPEDE_RESOURCE_NAME)) {
-//                                    ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "normal", 20, 0, 1, null);
-//                                    UserConfigurationData userConfigurationData = new UserConfigurationData();
-//                                    userConfigurationData.setAiravataAutoSchedule(false);
-//                                    userConfigurationData.setOverrideManualScheduledParams(false);
-//                                    userConfigurationData.setComputationalResourceScheduling(scheduling);
-//                                    simpleExperiment.setUserConfigurationData(userConfigurationData);
-//                                    experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
-//                                    experimentsWithTokens.put(experimentId, token);
-//                                    experimentsWithGateway.put(experimentId, gatewayId);
+                                    ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "normal", 20, 0, 1, null);
+                                    UserConfigurationData userConfigurationData = new UserConfigurationData();
+                                    userConfigurationData.setAiravataAutoSchedule(false);
+                                    userConfigurationData.setOverrideManualScheduledParams(false);
+                                    userConfigurationData.setComputationalResourceScheduling(scheduling);
+                                    simpleExperiment.setUserConfigurationData(userConfigurationData);
+                                    experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
+                                    experimentsWithTokens.put(experimentId, token);
+                                    experimentsWithGateway.put(experimentId, gatewayId);
+                                    createAmberWithErrorInputs(gatewayId, token, projectID, id, appId);
+                                    createAmberWithErrorUserConfig(gatewayId, token, projectID, id, appId);
                                     createAmberWithErrorInputs(gatewayId, token, projectID, id, appId);
                                 } else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.BR2_RESOURCE_NAME)) {
-//                                    ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "normal", 20, 0, 1, null);
-//                                    UserConfigurationData userConfigurationData = new UserConfigurationData();
-//                                    userConfigurationData.setAiravataAutoSchedule(false);
-//                                    userConfigurationData.setOverrideManualScheduledParams(false);
-//                                    userConfigurationData.setComputationalResourceScheduling(scheduling);
-//                                    simpleExperiment.setUserConfigurationData(userConfigurationData);
-//                                    experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
-//                                    experimentsWithTokens.put(experimentId, token);
-//                                    experimentsWithGateway.put(experimentId, gatewayId);
+                                    ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "normal", 20, 0, 1, null);
+                                    UserConfigurationData userConfigurationData = new UserConfigurationData();
+                                    userConfigurationData.setAiravataAutoSchedule(false);
+                                    userConfigurationData.setOverrideManualScheduledParams(false);
+                                    userConfigurationData.setComputationalResourceScheduling(scheduling);
+                                    simpleExperiment.setUserConfigurationData(userConfigurationData);
+                                    experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
+                                    experimentsWithTokens.put(experimentId, token);
+                                    experimentsWithGateway.put(experimentId, gatewayId);
                                 }
                             }
                         }
