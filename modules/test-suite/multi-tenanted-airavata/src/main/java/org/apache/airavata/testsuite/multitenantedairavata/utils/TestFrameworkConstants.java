@@ -24,6 +24,7 @@ package org.apache.airavata.testsuite.multitenantedairavata.utils;
 public class TestFrameworkConstants {
     public static final String AIRAVATA_CLIENT_PROPERTIES = "airavata-client.properties";
     public static final String TEST_FREAMEWORK_PROPERTIES = "test-framework.properties";
+    public static final String TEST_FREAMEWORK_JSON = "test-framework.json";
 
     public static final class AiravataClientConstants {
         public static final String THRIFT_SERVER_HOST = "thrift.server.host";
@@ -51,6 +52,16 @@ public class TestFrameworkConstants {
         public static final String GATEWAYS_TOSKIP = "gateways.toskip";
         public static final String TEST_USER = "test.user";
         public static final String TEST_PROJECT = "test.project";
+    }
+
+    public static final class ErrorTypeConstants {
+        public static final String BADINPUTS = "badinputs";
+        public static final String ERROR_CONFIG = "error.configuration";
+        public static final String ALLOCATION_PROJECT = "projectId";
+        public static final String QUEUE_NAME = "queueName";
+        public static final String WALLTIME = "walltime";
+        public static final String HOST_NAME = "hostName";
+
     }
 
     public static final class GatewayConstants {

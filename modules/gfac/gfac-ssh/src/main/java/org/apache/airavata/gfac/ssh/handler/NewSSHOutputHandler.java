@@ -1,5 +1,7 @@
 package org.apache.airavata.gfac.ssh.handler;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.List;
 import java.util.Properties;
 
@@ -42,7 +44,9 @@ public class NewSSHOutputHandler extends AbstractHandler{
 	        } catch (Exception e) {
 	            log.error(e.getMessage());
 	            try {
-	                GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+                    StringWriter errors = new StringWriter();
+                    e.printStackTrace(new PrintWriter(errors));
+	                GFacUtils.saveErrorDetails(jobExecutionContext,  errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
 	            } catch (GFacException e1) {
 	                log.error(e1.getLocalizedMessage());
 	            }

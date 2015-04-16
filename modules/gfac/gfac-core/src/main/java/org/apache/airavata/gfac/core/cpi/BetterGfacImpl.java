@@ -71,6 +71,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.*;
 
@@ -209,7 +211,9 @@ public class BetterGfacImpl implements GFac,Watcher {
             return submitJob(jobExecutionContext);
         } catch (Exception e) {
             log.error("Error inovoking the job with experiment ID: " + experimentID);
-            GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
+            StringWriter errors = new StringWriter();
+            e.printStackTrace(new PrintWriter(errors));
+            GFacUtils.saveErrorDetails(jobExecutionContext, errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
             throw new GFacException(e);
         }
     }
@@ -504,13 +508,13 @@ public class BetterGfacImpl implements GFac,Watcher {
             }
             return true;
         } catch (ApplicationSettingsException e) {
-            GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
+            GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
             throw new GFacException("Error launching the Job",e);
         } catch (KeeperException e) {
-            GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
+            GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
             throw new GFacException("Error launching the Job",e);
         } catch (InterruptedException e) {
-            GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
+            GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
             throw new GFacException("Error launching the Job",e);
         }
     }
@@ -521,7 +525,7 @@ public class BetterGfacImpl implements GFac,Watcher {
             jobExecutionContext = createJEC(experimentID, taskID, gatewayID);
             return cancel(jobExecutionContext);
         } catch (Exception e) {
-            GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
+            GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
             log.error("Error inovoking the job with experiment ID: " + experimentID);
             throw new GFacException(e);
         }
@@ -678,7 +682,7 @@ public class BetterGfacImpl implements GFac,Watcher {
                         jobExecutionContext.getExperimentID(),
                         jobExecutionContext.getGatewayID());
 				monitorPublisher.publish(new JobStatusChangeEvent(JobState.FAILED, jobIdentity));
-                GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
+                GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
 			} catch (NullPointerException e1) {
 				log.error("Error occured during updating the statuses of Experiments,tasks or Job statuses to failed, "
 						+ "NullPointerException occurred because at this point there might not have Job Created", e1, e);
@@ -690,7 +694,7 @@ public class BetterGfacImpl implements GFac,Watcher {
                         jobExecutionContext.getExperimentID(),
                         jobExecutionContext.getGatewayID());
 				monitorPublisher.publish(new TaskStatusChangeEvent(TaskState.FAILED, taskIdentity));
-                GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
+                GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
 
 			}
 			jobExecutionContext.setProperty(ERROR_SENT, "true");

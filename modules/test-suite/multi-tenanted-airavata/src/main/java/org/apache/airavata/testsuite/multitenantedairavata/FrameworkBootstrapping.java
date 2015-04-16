@@ -37,7 +37,7 @@ public class FrameworkBootstrapping {
     private static boolean runAll = false;
     private static boolean regApps = false;
     private static boolean expExec = false;
-    private static PropertyReader propertyReader;
+    private static TestFrameworkProps properties;
     private static Map<String, String> tokens;
     private static ExperimentExecution experimentExecution;
 
@@ -45,7 +45,7 @@ public class FrameworkBootstrapping {
         parseArguments(args);
         try {
             FrameworkSetup setup = FrameworkSetup.getInstance();
-            propertyReader = new PropertyReader();
+            properties = setup.getTestFrameworkProps();
 
             if (runAll){
                 setup.getGatewayRegister().createGateways();
@@ -57,7 +57,7 @@ public class FrameworkBootstrapping {
                 setup.getComputeResourceRegister().registerGatewayResourceProfile();
                 setup.getApplicationRegister().addApplications();
                 logger.info("Applications registered for each each gateway...");
-                experimentExecution = new ExperimentExecution(setup.getAiravata(), tokens);
+                experimentExecution = new ExperimentExecution(setup.getAiravata(), tokens, properties);
                 experimentExecution.createEchoExperiment();
                 experimentExecution.createAmberExperiment();
                 experimentExecution.launchExperiments();
@@ -74,8 +74,8 @@ public class FrameworkBootstrapping {
                 logger.info("Applications registered for each each gateway...");
             }else if (expExec){
                 tokens = readTokens();
-                experimentExecution = new ExperimentExecution(setup.getAiravata(), tokens);
-                experimentExecution.createEchoExperiment();
+                experimentExecution = new ExperimentExecution(setup.getAiravata(), tokens, setup.getTestFrameworkProps());
+//                experimentExecution.createEchoExperiment();
                 experimentExecution.createAmberExperiment();
                 experimentExecution.launchExperiments();
                 experimentExecution.monitorExperiments();
@@ -87,7 +87,7 @@ public class FrameworkBootstrapping {
 
     public static Map<String, String> readTokens () throws Exception{
         Map<String, String> tokens = new HashMap<String, String>();
-        String fileLocation = propertyReader.readProperty(TestFrameworkConstants.FrameworkPropertiesConstants.TOKEN_WRITE_LOCATION, PropertyFileType.TEST_FRAMEWORK);
+        String fileLocation = properties.getTokenFileLoc();
         String fileName = TestFrameworkConstants.CredentialStoreConstants.TOKEN_FILE_NAME;
         String path = fileLocation + File.separator + fileName;
         File tokenFile = new File(path);

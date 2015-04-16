@@ -21,9 +21,18 @@
 
 package org.apache.airavata.testsuite.multitenantedairavata;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import org.apache.airavata.api.Airavata;
+import org.apache.airavata.testsuite.multitenantedairavata.utils.TestFrameworkConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 
 public class FrameworkSetup {
     private static FrameworkSetup instance = new FrameworkSetup();
@@ -31,6 +40,7 @@ public class FrameworkSetup {
     private ComputeResourceRegister computeResourceRegister;
     private ApplicationRegister applicationRegister;
     private Airavata.Client airavata;
+    private TestFrameworkProps testFrameworkProps;
     private final static Logger logger = LoggerFactory.getLogger(FrameworkSetup.class);
 
     public static FrameworkSetup getInstance() {
@@ -41,12 +51,27 @@ public class FrameworkSetup {
         try {
             AiravataClient airavataClient = AiravataClient.getInstance();
             this.airavata = airavataClient.getAiravataClient();
-            gatewayRegister = new GatewayRegister(airavata);
-            applicationRegister = new ApplicationRegister(airavata);
-            computeResourceRegister = new ComputeResourceRegister(airavata);
+            Gson gson = new Gson();
+            testFrameworkProps = gson.fromJson(getTestFrameworkJSON(), TestFrameworkProps.class);
+
+            gatewayRegister = new GatewayRegister(airavata, testFrameworkProps);
+            applicationRegister = new ApplicationRegister(airavata, testFrameworkProps);
+            computeResourceRegister = new ComputeResourceRegister(airavata, testFrameworkProps);
         } catch (Exception e) {
             logger.error("Error while creating airavata client instance", e);
         }
+    }
+
+    private String getTestFrameworkJSON () throws IOException {
+        InputStream inputStream = FrameworkSetup.class.getClassLoader().getResourceAsStream(TestFrameworkConstants.TEST_FREAMEWORK_JSON);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        String line;
+        String content = "";
+        while ((line = reader.readLine()) != null) {
+            content += line;
+        }
+        System.out.println(content);
+        return content;
     }
 
     public GatewayRegister getGatewayRegister() {
@@ -79,5 +104,13 @@ public class FrameworkSetup {
 
     public void setComputeResourceRegister(ComputeResourceRegister computeResourceRegister) {
         this.computeResourceRegister = computeResourceRegister;
+    }
+
+    public TestFrameworkProps getTestFrameworkProps() {
+        return testFrameworkProps;
+    }
+
+    public void setTestFrameworkProps(TestFrameworkProps testFrameworkProps) {
+        this.testFrameworkProps = testFrameworkProps;
     }
 }

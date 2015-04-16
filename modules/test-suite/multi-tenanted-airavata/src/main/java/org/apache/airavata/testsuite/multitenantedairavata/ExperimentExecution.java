@@ -65,22 +65,30 @@ public class ExperimentExecution {
     private PrintWriter resultWriter;
     private String testUser;
     private List<String> gatewaysToAvoid;
+    private TestFrameworkProps properties;
 
     public ExperimentExecution(Airavata.Client airavata,
-                               Map<String, String> tokenMap ) throws Exception {
+                               Map<String, String> tokenMap,
+                               TestFrameworkProps props) throws Exception {
         this.airavata = airavata;
         this.csTokens = tokenMap;
         this.appInterfaceMap = getApplicationMap(tokenMap);
         this.propertyReader = new PropertyReader();
+        this.properties = props;
         FrameworkUtils frameworkUtils = FrameworkUtils.getInstance();
-        testUser = frameworkUtils.getTestUserName();
-        gatewaysToAvoid = frameworkUtils.getGatewayListToAvoid();
+        testUser = props.getTestUserName();
+        gatewaysToAvoid = frameworkUtils.getGatewayListToAvoid(properties.getSkippedGateways());
         this.projectsMap = getProjects(tokenMap);
         this.experimentsWithTokens = new HashMap<String, String>();
         this.experimentsWithGateway = new HashMap<String, String>();
-        String resultFileLocation = propertyReader.readProperty(TestFrameworkConstants.FrameworkPropertiesConstants.RESULT_WRITE_LOCATION, PropertyFileType.TEST_FRAMEWORK);
-        String resultFileName = getResultFileName();
-        File resultFile = new File(resultFileLocation + resultFileName);
+        String resultFileLocation = properties.getResultFileLoc();
+        String resultFileName = resultFileLocation + getResultFileName();
+
+        File resultFolder = new File(resultFileLocation);
+        if (!resultFolder.exists()){
+            resultFolder.mkdir();
+        }
+        File resultFile = new File(resultFileName);
         resultWriter = new PrintWriter(resultFile, "UTF-8");
         resultWriter.println("Test Framework Results");
         resultWriter.println("========================================");
@@ -228,12 +236,15 @@ public class ExperimentExecution {
                             System.out.println("################ Experiment : " + expId + " FAILED ###################");
                             Experiment experiment = airavata.getExperiment(expId);
                             List<ErrorDetails> errors = experiment.getErrors();
-                            for (ErrorDetails errorDetails : errors) {
-                                System.out.println(errorDetails.getActualErrorMessage());
-                                resultWriter.println("Actual Error : " + j + " : " + errorDetails.getActualErrorMessage());
-                                resultWriter.println("User Friendly Message : " + j + " : " + errorDetails.getUserFriendlyMessage());
-                                resultWriter.println("Corrective Action : " + j + " : " + errorDetails.getCorrectiveAction());
+                            if (errors != null && !errors.isEmpty()){
+                                for (ErrorDetails errorDetails : errors) {
+                                    System.out.println(errorDetails.getActualErrorMessage());
+                                    resultWriter.println("Actual Error : " + j + " : " + errorDetails.getActualErrorMessage());
+                                    resultWriter.println("User Friendly Message : " + j + " : " + errorDetails.getUserFriendlyMessage());
+                                    resultWriter.println("Corrective Action : " + j + " : " + errorDetails.getCorrectiveAction());
+                                }
                             }
+
                             resultWriter.println("End of Results for Experiment : " + expId );
                             resultWriter.println("=====================================================================");
                             resultWriter.println();
@@ -250,9 +261,9 @@ public class ExperimentExecution {
                         TBase messageEvent = message.getEvent();
                         byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
                         ThriftUtils.createThriftFromBytes(bytes, event);
-                        System.out.println(" Job ID : '" + event.getJobIdentity().getJobId()
-                                + "' with state : '" + event.getState().toString() +
-                                " for Gateway " + event.getJobIdentity().getGatewayId());
+//                        System.out.println(" Job ID : '" + event.getJobIdentity().getJobId()
+//                                + "' with state : '" + event.getState().toString() +
+//                                " for Gateway " + event.getJobIdentity().getGatewayId());
 //                        resultWriter.println("Job Status : " + event.getState().toString());
 
                     } catch (TException e) {
@@ -270,30 +281,169 @@ public class ExperimentExecution {
         return dateFormat.format(cal.getTime());
     }
 
+    public void createAmberWithErrorInputs (String gatewayId,
+                                            String token,
+                                            String projectId,
+                                            String hostId,
+                                            String appId) throws Exception {
+        try {
+            List<InputDataObjectType> applicationInputs = airavata.getApplicationInputs(appId);
+            List<OutputDataObjectType> appOutputs = airavata.getApplicationOutputs(appId);
+            TestFrameworkProps.Error[] errors = properties.getErrors();
+            for (TestFrameworkProps.Error error : errors) {
+                String name = error.getName();
+                String hostName = error.getResoureName();
+                if (name.equals(TestFrameworkConstants.ErrorTypeConstants.BADINPUTS)) {
+                    if (error.getApplication().equals(TestFrameworkConstants.AppcatalogConstants.AMBER_APP_NAME)) {
+                        Map<String, String> userGivenErrorInputs = error.getErrorFeeds();
+                        for (String inputName : userGivenErrorInputs.keySet()) {
+                            for (InputDataObjectType inputDataObjectType : applicationInputs) {
+                                if (inputDataObjectType.getName().equalsIgnoreCase(inputName)) {
+                                    inputDataObjectType.setValue(userGivenErrorInputs.get(inputName));
+                                }
+                            }
+                        }
+                        Experiment simpleExperiment =
+                                ExperimentModelUtil.createSimpleExperiment(projectId, testUser, "AmberErrorInputs", "Amber Experiment run", appId, applicationInputs);
+                        simpleExperiment.setExperimentOutputs(appOutputs);
+                        String experimentId;
+                        if (hostName.equals(TestFrameworkConstants.AppcatalogConstants.TRESTLES_RESOURCE_NAME)) {
+                            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(hostId, 4, 1, 1, "normal", 20, 0, 1, null);
+                            UserConfigurationData userConfigurationData = new UserConfigurationData();
+                            userConfigurationData.setAiravataAutoSchedule(false);
+                            userConfigurationData.setOverrideManualScheduledParams(false);
+                            userConfigurationData.setComputationalResourceScheduling(scheduling);
+                            simpleExperiment.setUserConfigurationData(userConfigurationData);
+                            experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
+                            experimentsWithTokens.put(experimentId, token);
+                            experimentsWithGateway.put(experimentId, gatewayId);
+                        } else if (hostName.equals(TestFrameworkConstants.AppcatalogConstants.STAMPEDE_RESOURCE_NAME)) {
+                            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(hostId, 4, 1, 1, "normal", 20, 0, 1, null);
+                            UserConfigurationData userConfigurationData = new UserConfigurationData();
+                            userConfigurationData.setAiravataAutoSchedule(false);
+                            userConfigurationData.setOverrideManualScheduledParams(false);
+                            userConfigurationData.setComputationalResourceScheduling(scheduling);
+                            simpleExperiment.setUserConfigurationData(userConfigurationData);
+                            experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
+                            experimentsWithTokens.put(experimentId, token);
+                            experimentsWithGateway.put(experimentId, gatewayId);
+                        } else if (hostName.equals(TestFrameworkConstants.AppcatalogConstants.BR2_RESOURCE_NAME)) {
+                            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(hostId, 4, 1, 1, "normal", 20, 0, 1, null);
+                            UserConfigurationData userConfigurationData = new UserConfigurationData();
+                            userConfigurationData.setAiravataAutoSchedule(false);
+                            userConfigurationData.setOverrideManualScheduledParams(false);
+                            userConfigurationData.setComputationalResourceScheduling(scheduling);
+                            simpleExperiment.setUserConfigurationData(userConfigurationData);
+                            experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
+                            experimentsWithTokens.put(experimentId, token);
+                            experimentsWithGateway.put(experimentId, gatewayId);
+                        }
+
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            logger.error("Error occured while creating amber experiment with bad inputs", e);
+            throw new Exception("Error occured while creating amber experiment with bad inputs", e);
+        }
+    }
+
+    public void createAmberWithErrorUserConfig (String gatewayId,
+                                            String token,
+                                            String projectId,
+                                            String hostId,
+                                            String appId) throws Exception {
+        try {
+
+            TestFrameworkProps.Error[] errors = properties.getErrors();
+            for (TestFrameworkProps.Error error : errors) {
+                String name = error.getName();
+                String hostName = error.getResoureName();
+                if (name.equals(TestFrameworkConstants.ErrorTypeConstants.ERROR_CONFIG)) {
+                    if (error.getApplication().equals(TestFrameworkConstants.AppcatalogConstants.AMBER_APP_NAME)) {
+                        List<InputDataObjectType> applicationInputs = airavata.getApplicationInputs(appId);
+                        List<OutputDataObjectType> appOutputs = airavata.getApplicationOutputs(appId);
+                        TestFrameworkProps.Application[] applications = properties.getApplications();
+                        Map<String, String> userGivenAmberInputs = new HashMap<>();
+                        for (TestFrameworkProps.Application application : applications) {
+                            if (application.getName().equals(TestFrameworkConstants.AppcatalogConstants.AMBER_APP_NAME)) {
+                                userGivenAmberInputs = application.getInputs();
+                            }
+                        }
+                        for (String inputName : userGivenAmberInputs.keySet()) {
+                            for (InputDataObjectType inputDataObjectType : applicationInputs) {
+                                if (inputDataObjectType.getName().equalsIgnoreCase(inputName)) {
+                                    inputDataObjectType.setValue(userGivenAmberInputs.get(inputName));
+                                }
+                            }
+                        }
+                        Map<String, String> errorConfigs = error.getErrorFeeds();
+                        String allocationProject = null;
+                        String queueName = null;
+                        Integer walltime = 0;
+                        String host = null;
+                        for (String configName : errorConfigs.keySet()) {
+                            if (configName.equals(TestFrameworkConstants.ErrorTypeConstants.ALLOCATION_PROJECT)) {
+                                allocationProject = errorConfigs.get(configName);
+                            } else if (configName.equals(TestFrameworkConstants.ErrorTypeConstants.QUEUE_NAME)) {
+                                queueName = errorConfigs.get(configName);
+                            } else if (configName.equals(TestFrameworkConstants.ErrorTypeConstants.WALLTIME)) {
+                                walltime = Integer.valueOf(errorConfigs.get(configName));
+                            } else if (configName.equals(TestFrameworkConstants.ErrorTypeConstants.HOST_NAME)) {
+                                host = errorConfigs.get(configName);
+                            }
+                        }
+
+                        Experiment simpleExperiment =
+                                ExperimentModelUtil.createSimpleExperiment(projectId, testUser, "AmberErrorConfigs", "Amber Experiment run", appId, applicationInputs);
+                        simpleExperiment.setExperimentOutputs(appOutputs);
+                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(hostId, 4, 1, 1, queueName, walltime, 0, 1, allocationProject);
+                        UserConfigurationData userConfigurationData = new UserConfigurationData();
+                        userConfigurationData.setAiravataAutoSchedule(false);
+                        userConfigurationData.setOverrideManualScheduledParams(false);
+                        userConfigurationData.setComputationalResourceScheduling(scheduling);
+
+                        simpleExperiment.setUserConfigurationData(userConfigurationData);
+                        String experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
+                        experimentsWithTokens.put(experimentId, token);
+                        experimentsWithGateway.put(experimentId, gatewayId);
+
+                    }
+                }
+            }
+
+        } catch (Exception e) {
+            logger.error("Error occured while creating amber experiment with bad inputs", e);
+            throw new Exception("Error occured while creating amber experiment with bad inputs", e);
+        }
+    }
+
     public void createAmberExperiment () throws Exception{
         try {
+            TestFrameworkProps.Application[] applications = properties.getApplications();
+            Map<String, String> userGivenAmberInputs = new HashMap<>();
+            for (TestFrameworkProps.Application application : applications){
+                if (application.getName().equals(TestFrameworkConstants.AppcatalogConstants.AMBER_APP_NAME)){
+                    userGivenAmberInputs = application.getInputs();
+                }
+            }
+
             for (String gatewayId : csTokens.keySet()){
                 String token = csTokens.get(gatewayId);
                 Map<String, String> appsWithNames = appInterfaceMap.get(gatewayId);
                 for (String appId : appsWithNames.keySet()){
-                    List<InputDataObjectType> applicationInputs = airavata.getApplicationInputs(appId);
-                    List<OutputDataObjectType> appOutputs = airavata.getApplicationOutputs(appId);
                     String appName = appsWithNames.get(appId);
                     if (appName.equals(TestFrameworkConstants.AppcatalogConstants.AMBER_APP_NAME)){
-                        String heatRSTFile = propertyReader.readProperty(TestFrameworkConstants.AppcatalogConstants.AMBER_HEAT_RST_LOCATION, PropertyFileType.TEST_FRAMEWORK);
-                        String prodInFile = propertyReader.readProperty(TestFrameworkConstants.AppcatalogConstants.AMBER_PROD_IN_LOCATION, PropertyFileType.TEST_FRAMEWORK);
-                        String prmTopFile = propertyReader.readProperty(TestFrameworkConstants.AppcatalogConstants.AMBER_PRMTOP_LOCATION, PropertyFileType.TEST_FRAMEWORK);
-
-                        for (InputDataObjectType inputDataObjectType : applicationInputs) {
-                            if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
-                                inputDataObjectType.setValue(heatRSTFile);
-                            } else if (inputDataObjectType.getName().equalsIgnoreCase("Production_Control_File")) {
-                                inputDataObjectType.setValue(prodInFile);
-                            } else if (inputDataObjectType.getName().equalsIgnoreCase("Parameter_Topology_File")) {
-                                inputDataObjectType.setValue(prmTopFile);
+                        List<InputDataObjectType> applicationInputs = airavata.getApplicationInputs(appId);
+                        List<OutputDataObjectType> appOutputs = airavata.getApplicationOutputs(appId);
+                        for (String inputName : userGivenAmberInputs.keySet()){
+                            for (InputDataObjectType inputDataObjectType : applicationInputs) {
+                                if (inputDataObjectType.getName().equalsIgnoreCase(inputName)) {
+                                    inputDataObjectType.setValue(userGivenAmberInputs.get(inputName));
+                                }
                             }
                         }
-
                         List<Project> projectsPerGateway = projectsMap.get(gatewayId);
                         String projectID = null;
                         if (projectsPerGateway != null && !projectsPerGateway.isEmpty()){
@@ -327,6 +477,9 @@ public class ExperimentExecution {
                                     experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
                                     experimentsWithTokens.put(experimentId, token);
                                     experimentsWithGateway.put(experimentId, gatewayId);
+                                    createAmberWithErrorInputs(gatewayId, token, projectID, id, appId);
+                                    createAmberWithErrorUserConfig(gatewayId, token, projectID, id, appId);
+                                    createAmberWithErrorInputs(gatewayId, token, projectID, id, appId);
                                 } else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.BR2_RESOURCE_NAME)) {
                                     ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "normal", 20, 0, 1, null);
                                     UserConfigurationData userConfigurationData = new UserConfigurationData();

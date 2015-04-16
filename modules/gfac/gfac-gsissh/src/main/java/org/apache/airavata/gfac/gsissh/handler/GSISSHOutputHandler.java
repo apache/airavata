@@ -68,7 +68,7 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
             }
         }  catch (Exception e) {
         	 try {
-  				GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+  				GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
   			} catch (GFacException e1) {
   				 log.error(e1.getLocalizedMessage());
   			}  
@@ -305,7 +305,7 @@ public class GSISSHOutputHandler extends AbstractRecoverableHandler {
                 detail.setTransferStatus(status);
                 detail.setTransferDescription(e.getLocalizedMessage());
                 registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
-                GFacUtils.saveErrorDetails(jobExecutionContext, e.getLocalizedMessage(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE);
+                GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE);
             } catch (Exception e1) {
                 throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
             }

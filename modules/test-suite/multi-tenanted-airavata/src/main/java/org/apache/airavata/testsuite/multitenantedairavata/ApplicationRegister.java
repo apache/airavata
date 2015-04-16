@@ -52,13 +52,13 @@ public class ApplicationRegister {
     private List<String> gatewaysToAvoid;
 
 
-    public ApplicationRegister(Airavata.Client airavata) throws Exception {
+    public ApplicationRegister(Airavata.Client airavata, TestFrameworkProps props) throws Exception {
         this.airavata = airavata;
         allGateways = getAllGateways(airavata);
         applicationInterfaceListPerGateway = new HashMap<String, String>();
         applicationDeployementListPerGateway = new HashMap<String, String>();
         FrameworkUtils frameworkUtils = FrameworkUtils.getInstance();
-        gatewaysToAvoid = frameworkUtils.getGatewayListToAvoid();
+        gatewaysToAvoid = frameworkUtils.getGatewayListToAvoid(props.getSkippedGateways());
     }
 
     public List<Gateway> getAllGateways(Airavata.Client client) throws Exception{
@@ -140,13 +140,13 @@ public class ApplicationRegister {
         List<String> appModules = new ArrayList<String>();
         appModules.add(amberModuleId);
 
-        InputDataObjectType input1 = createAppInput("Heat_Restart_File", null,
+        InputDataObjectType input1 = createAppInput("heatRst", null,
                 DataType.URI, "-c", 1, true, true,false, "Heating up the system equilibration stage - 02_Heat.rst", null);
 
-        InputDataObjectType input2 = createAppInput("Production_Control_File", null,
+        InputDataObjectType input2 = createAppInput("prodIn", null,
                 DataType.URI, "-i ", 2, true, true, false, "Constant pressure and temperature for production stage - 03_Prod.in", null);
 
-        InputDataObjectType input3 = createAppInput("Parameter_Topology_File", null,
+        InputDataObjectType input3 = createAppInput("prmtop", null,
                 DataType.URI, "-p", 3, true, true, false, "Parameter and Topology coordinates - prmtop", null);
 
         List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();

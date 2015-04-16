@@ -21,12 +21,10 @@
 
 package org.apache.airavata.testsuite.multitenantedairavata.utils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class FrameworkUtils {
-    private static PropertyReader propertyReader;
 
     private static FrameworkUtils ourInstance = new FrameworkUtils();
 
@@ -35,20 +33,10 @@ public class FrameworkUtils {
     }
 
     public FrameworkUtils() {
-        propertyReader = new PropertyReader();
     }
 
-    public List<String> getGatewayListToAvoid (){
-        String listOfGateways = propertyReader.readProperty(TestFrameworkConstants.FrameworkPropertiesConstants.GATEWAYS_TOSKIP, PropertyFileType.TEST_FRAMEWORK);
-        String[] gateways = listOfGateways.split(",");
+    public List<String> getGatewayListToAvoid (String gatewayList){
+        String[] gateways = gatewayList.split(",");
         return Arrays.asList(gateways);
-    }
-
-    public String getTestUserName (){
-        return propertyReader.readProperty(TestFrameworkConstants.FrameworkPropertiesConstants.TEST_USER, PropertyFileType.TEST_FRAMEWORK);
-    }
-
-    public String getTesProjectName (){
-        return propertyReader.readProperty(TestFrameworkConstants.FrameworkPropertiesConstants.TEST_PROJECT, PropertyFileType.TEST_FRAMEWORK);
     }
 }
