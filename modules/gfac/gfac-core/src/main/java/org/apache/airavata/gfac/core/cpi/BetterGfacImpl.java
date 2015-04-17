@@ -990,6 +990,13 @@ public class BetterGfacImpl implements GFac,Watcher {
                             jobExecutionContext.getExperimentID(),
                             jobExecutionContext.getGatewayID());
                     monitorPublisher.publish(new TaskStatusChangeRequestEvent(TaskState.FAILED, taskIdentity));
+                    try {
+                        StringWriter errors = new StringWriter();
+                        e.printStackTrace(new PrintWriter(errors));
+                        GFacUtils.saveErrorDetails(jobExecutionContext,  errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+                    } catch (GFacException e1) {
+                        log.error(e1.getLocalizedMessage());
+                    }
                     throw new GFacException(e);
                 }
             }else{
@@ -1068,7 +1075,14 @@ public class BetterGfacImpl implements GFac,Watcher {
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
                     , GfacExperimentState.INHANDLERSINVOKED));
         } catch (Exception e) {
-            throw new GFacException("Error invoking ZK", e);
+            try {
+                StringWriter errors = new StringWriter();
+                e.printStackTrace(new PrintWriter(errors));
+                GFacUtils.saveErrorDetails(jobExecutionContext,  errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+            } catch (GFacException e1) {
+                log.error(e1.getLocalizedMessage());
+            }
+            throw new GFacException("Error while re-invoking output handlers", e);
         }
     }
 
@@ -1113,16 +1127,44 @@ public class BetterGfacImpl implements GFac,Watcher {
                     GFacUtils.updatePluginState(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.COMPLETED);
                 }
             } catch (ClassNotFoundException e) {
+                try {
+                    StringWriter errors = new StringWriter();
+                    e.printStackTrace(new PrintWriter(errors));
+                    GFacUtils.saveErrorDetails(jobExecutionContext,  errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+                } catch (GFacException e1) {
+                    log.error(e1.getLocalizedMessage());
+                }
                 log.error(e.getMessage());
                 throw new GFacException("Cannot load handler class " + handlerClassName, e);
             } catch (InstantiationException e) {
+                try {
+                    StringWriter errors = new StringWriter();
+                    e.printStackTrace(new PrintWriter(errors));
+                    GFacUtils.saveErrorDetails(jobExecutionContext,  errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+                } catch (GFacException e1) {
+                    log.error(e1.getLocalizedMessage());
+                }
                 log.error(e.getMessage());
                 throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
             } catch (IllegalAccessException e) {
+                try {
+                    StringWriter errors = new StringWriter();
+                    e.printStackTrace(new PrintWriter(errors));
+                    GFacUtils.saveErrorDetails(jobExecutionContext,  errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+                } catch (GFacException e1) {
+                    log.error(e1.getLocalizedMessage());
+                }
                 log.error(e.getMessage());
                 throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
             } catch (Exception e) {
                 // TODO: Better error reporting.
+                try {
+                    StringWriter errors = new StringWriter();
+                    e.printStackTrace(new PrintWriter(errors));
+                    GFacUtils.saveErrorDetails(jobExecutionContext,  errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+                } catch (GFacException e1) {
+                    log.error(e1.getLocalizedMessage());
+                }
                 throw new GFacException("Error Executing a OutFlow Handler", e);
             }
         }

@@ -56,7 +56,7 @@
             "resoureName": "stampede.tacc.xsede.org",
             "errorFeeds": {
                 "projectId": "TG-STA110014S",
-                "queueName": "normal",
+                "queueName": "normal1",
                 "walltime": 1,
                 "hostName": "trestles.sdsc.xsede.org"
             }
