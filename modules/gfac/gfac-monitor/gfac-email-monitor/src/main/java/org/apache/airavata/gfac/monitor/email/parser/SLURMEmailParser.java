@@ -35,8 +35,6 @@ public class SLURMEmailParser implements EmailParser {
 
     private static final Logger log = LoggerFactory.getLogger(SLURMEmailParser.class);
 
-    private static final String JOBID = "jobId";
-    private static final String STATUS = "status";
     private static final String REGEX = "[A-Z]*\\s[a-zA-Z]*_[a-z]*=(?<" + JOBID
             + ">\\d*)\\s[a-zA-Z]*=[a-zA-Z0-9-]*\\s(?<" + STATUS + ">[]a-zA-Z]*),.*";
 
