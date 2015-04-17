@@ -65,17 +65,23 @@ public class FrameworkBootstrapping {
             }else if (regApps){
                 setup.getGatewayRegister().createGateways();
                 logger.info("Gateways created...");
+                System.out.println("Gateways created...");
                 setup.getGatewayRegister().registerSSHKeys();
                 logger.info("Registered SSH keys to each gateway...");
+                System.out.println("Registered SSH keys to each gateway...");
 //                tokens = readTokens();
                 setup.getComputeResourceRegister().addComputeResources();
+                logger.info("Compute resources saved...");
+                System.out.println("Compute resources saved...");
                 setup.getComputeResourceRegister().registerGatewayResourceProfile();
+                logger.info("Gateway Profiles saved...");
+                System.out.println("Gateway Profiles saved...");
                 setup.getApplicationRegister().addApplications();
                 logger.info("Applications registered for each each gateway...");
             }else if (expExec){
                 tokens = readTokens();
                 experimentExecution = new ExperimentExecution(setup.getAiravata(), tokens, setup.getTestFrameworkProps());
-//                experimentExecution.createEchoExperiment();
+                experimentExecution.createEchoExperiment();
                 experimentExecution.createAmberExperiment();
                 experimentExecution.launchExperiments();
                 experimentExecution.monitorExperiments();

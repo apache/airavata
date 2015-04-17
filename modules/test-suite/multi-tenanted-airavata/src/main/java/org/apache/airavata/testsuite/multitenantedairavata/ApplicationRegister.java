@@ -72,6 +72,7 @@ public class ApplicationRegister {
 
     public void addApplications () throws Exception{
         Map<String, String> allComputeResourceNames = airavata.getAllComputeResourceNames();
+        System.out.println("All compute resources :" + allComputeResourceNames.size());
         for (String resourceId : allComputeResourceNames.keySet()){
             String resourceName = allComputeResourceNames.get(resourceId);
             if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.STAMPEDE_RESOURCE_NAME)){
