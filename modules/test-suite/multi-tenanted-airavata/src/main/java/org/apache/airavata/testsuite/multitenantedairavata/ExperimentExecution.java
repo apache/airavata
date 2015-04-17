@@ -211,7 +211,6 @@ public class ExperimentExecution {
                         String expId = event.getExperimentId();
                         String gatewayId = event.getGatewayId();
 
-                        resultWriter.println();
                         if (expState.equals(ExperimentState.COMPLETED)) {
                             resultWriter.println("Results for experiment : " + expId + " of gateway Id : " + gatewayId);
                             resultWriter.println("=====================================================================");
@@ -227,7 +226,6 @@ public class ExperimentExecution {
                             }
                             resultWriter.println("End of Results for Experiment : " + expId );
                             resultWriter.println("=====================================================================");
-                            resultWriter.println();
                         } else if (expState.equals(ExperimentState.FAILED)) {
                             resultWriter.println("Results for experiment : " + expId + " of gateway Id : " + gatewayId);
                             resultWriter.println("=====================================================================");
@@ -247,7 +245,6 @@ public class ExperimentExecution {
 
                             resultWriter.println("End of Results for Experiment : " + expId );
                             resultWriter.println("=====================================================================");
-                            resultWriter.println();
                         }
                         System.out.println(" Experiment Id : '" + expId
                                 + "' with state : '" + event.getState().toString() +
@@ -479,7 +476,6 @@ public class ExperimentExecution {
                                     experimentsWithGateway.put(experimentId, gatewayId);
                                     createAmberWithErrorInputs(gatewayId, token, projectID, id, appId);
                                     createAmberWithErrorUserConfig(gatewayId, token, projectID, id, appId);
-                                    createAmberWithErrorInputs(gatewayId, token, projectID, id, appId);
                                 } else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.BR2_RESOURCE_NAME)) {
                                     ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "normal", 20, 0, 1, null);
                                     UserConfigurationData userConfigurationData = new UserConfigurationData();
@@ -487,9 +483,9 @@ public class ExperimentExecution {
                                     userConfigurationData.setOverrideManualScheduledParams(false);
                                     userConfigurationData.setComputationalResourceScheduling(scheduling);
                                     simpleExperiment.setUserConfigurationData(userConfigurationData);
-                                    experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
-                                    experimentsWithTokens.put(experimentId, token);
-                                    experimentsWithGateway.put(experimentId, gatewayId);
+//                                    experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
+//                                    experimentsWithTokens.put(experimentId, token);
+//                                    experimentsWithGateway.put(experimentId, gatewayId);
                                 }
                             }
                         }
@@ -566,9 +562,9 @@ public class ExperimentExecution {
                                             userConfigurationData.setOverrideManualScheduledParams(false);
                                             userConfigurationData.setComputationalResourceScheduling(scheduling);
                                             simpleExperiment.setUserConfigurationData(userConfigurationData);
-                                            experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
-                                            experimentsWithTokens.put(experimentId, token);
-                                            experimentsWithGateway.put(experimentId, gatewayId);
+//                                            experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
+//                                            experimentsWithTokens.put(experimentId, token);
+//                                            experimentsWithGateway.put(experimentId, gatewayId);
                                         }
                                     }
                                 }
