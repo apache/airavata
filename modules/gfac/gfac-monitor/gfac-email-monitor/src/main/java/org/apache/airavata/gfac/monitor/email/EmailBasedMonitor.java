@@ -206,21 +206,33 @@ public class EmailBasedMonitor implements Runnable{
     private void process(JobStatusResult jobStatusResult, JobExecutionContext jEC){
         JobState resultState = jobStatusResult.getState();
         jEC.getJobDetails().setJobStatus(new JobStatus(resultState));
+        boolean runOutHandlers = false;
+        // TODO - Handle all other valid JobStates
         if (resultState == JobState.COMPLETE) {
+            jobMonitorMap.remove(jobStatusResult.getJobId());
+            runOutHandlers = true;
+            log.debug("Job Complete email received , removed job from job monitoring");
+        }else if (resultState == JobState.QUEUED) {
+            // nothing special thing to do, update the status change to rabbit mq at the end of this method.
+        }else if (resultState == JobState.ACTIVE) {
+            // nothing special thing to do, update the status change to rabbit mq at the end of this method.
+        }else if (resultState == JobState.FAILED) {
+            jobMonitorMap.remove(jobStatusResult.getJobId());
+            runOutHandlers = true;
+            log.debug("Job failed email received , removed job from job monitoring");
+        }else if (resultState == JobState.CANCELED) {
+            jobMonitorMap.remove(jobStatusResult.getJobId());
+            runOutHandlers = true;
+            log.debug("Job canceled mail received, removed job from job monitoring");
+            
+        }
+
+        if (runOutHandlers) {
             try {
                 GFacThreadPoolExecutor.getFixedThreadPool().submit(new OutHandlerWorker(jEC, BetterGfacImpl.getMonitorPublisher()));
             } catch (ApplicationSettingsException e) {
                 log.error(e.getMessage(), e);
             }
-        }else if (resultState == JobState.QUEUED) {
-            // nothing special thing to do, update the status change to rabbit mq at the end of this method.
-        }else if (resultState == JobState.FAILED) {
-            jobMonitorMap.remove(jobStatusResult.getJobId());
-            log.info("Job failed email received , removed job from job monitoring");
-        }else if (resultState == JobState.CANCELED) {
-            jobMonitorMap.remove(jobStatusResult.getJobId());
-            log.info("Job canceled mail received, removed job from job monitoring");
-            
         }
         publishJobStatusChange(jEC);
     }
