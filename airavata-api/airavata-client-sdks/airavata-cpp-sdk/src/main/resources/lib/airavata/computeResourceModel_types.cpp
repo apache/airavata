@@ -461,8 +461,8 @@ void swap(BatchQueue &a, BatchQueue &b) {
   swap(a.__isset, b.__isset);
 }
 
-const char* EmailMonitorProperty::ascii_fingerprint = "1991A6BD46E68BF843F10524459D65B1";
-const uint8_t EmailMonitorProperty::binary_fingerprint[16] = {0x19,0x91,0xA6,0xBD,0x46,0xE6,0x8B,0xF8,0x43,0xF1,0x05,0x24,0x45,0x9D,0x65,0xB1};
+const char* EmailMonitorProperty::ascii_fingerprint = "218FF2099E03B9AC08A5A47A15F4294E";
+const uint8_t EmailMonitorProperty::binary_fingerprint[16] = {0x21,0x8F,0xF2,0x09,0x9E,0x03,0xB9,0xAC,0x08,0xA5,0xA4,0x7A,0x15,0xF4,0x29,0x4E};
 
 uint32_t EmailMonitorProperty::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -480,6 +480,7 @@ uint32_t EmailMonitorProperty::read(::apache::thrift::protocol::TProtocol* iprot
   bool isset_password = false;
   bool isset_folderName = false;
   bool isset_storeProtocol = false;
+  bool isset_senderEmailAddress = false;
 
   while (true)
   {
@@ -531,6 +532,14 @@ uint32_t EmailMonitorProperty::read(::apache::thrift::protocol::TProtocol* iprot
           xfer += iprot->skip(ftype);
         }
         break;
+      case 6:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->senderEmailAddress);
+          isset_senderEmailAddress = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -549,6 +558,8 @@ uint32_t EmailMonitorProperty::read(::apache::thrift::protocol::TProtocol* iprot
   if (!isset_folderName)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_storeProtocol)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_senderEmailAddress)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
@@ -577,6 +588,10 @@ uint32_t EmailMonitorProperty::write(::apache::thrift::protocol::TProtocol* opro
   xfer += oprot->writeI32((int32_t)this->storeProtocol);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("senderEmailAddress", ::apache::thrift::protocol::T_STRING, 6);
+  xfer += oprot->writeString(this->senderEmailAddress);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -589,6 +604,7 @@ void swap(EmailMonitorProperty &a, EmailMonitorProperty &b) {
   swap(a.password, b.password);
   swap(a.folderName, b.folderName);
   swap(a.storeProtocol, b.storeProtocol);
+  swap(a.senderEmailAddress, b.senderEmailAddress);
 }
 
 const char* SCPDataMovement::ascii_fingerprint = "63CAE6EE336A7DBD91CCCD6E22628F4A";
@@ -1062,8 +1078,8 @@ void swap(LOCALDataMovement &a, LOCALDataMovement &b) {
   swap(a.dataMovementInterfaceId, b.dataMovementInterfaceId);
 }
 
-const char* SSHJobSubmission::ascii_fingerprint = "C2237B7244CABB71130AEE137701206F";
-const uint8_t SSHJobSubmission::binary_fingerprint[16] = {0xC2,0x23,0x7B,0x72,0x44,0xCA,0xBB,0x71,0x13,0x0A,0xEE,0x13,0x77,0x01,0x20,0x6F};
+const char* SSHJobSubmission::ascii_fingerprint = "200BDE51156682BAC37E8B5DAD03D6D3";
+const uint8_t SSHJobSubmission::binary_fingerprint[16] = {0x20,0x0B,0xDE,0x51,0x15,0x66,0x82,0xBA,0xC3,0x7E,0x8B,0x5D,0xAD,0x03,0xD6,0xD3};
 
 uint32_t SSHJobSubmission::read(::apache::thrift::protocol::TProtocol* iprot) {
 

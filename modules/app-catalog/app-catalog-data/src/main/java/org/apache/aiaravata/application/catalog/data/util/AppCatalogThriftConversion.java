@@ -359,6 +359,7 @@ public class AppCatalogThriftConversion {
         monitorProperty.setHost(resource.getHost());
         monitorProperty.setEmailAddress(resource.getEmailAddress());
         monitorProperty.setPassword(resource.getPassword());
+        monitorProperty.setSenderEmailAddress(resource.getSenderEmailAddress());
         if (resource.getProtocol() != null){
             monitorProperty.setStoreProtocol(EmailProtocol.valueOf(resource.getProtocol()));
         }

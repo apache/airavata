@@ -67,6 +67,7 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField PASSWORD_FIELD_DESC = new org.apache.thrift.protocol.TField("password", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField FOLDER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("folderName", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField STORE_PROTOCOL_FIELD_DESC = new org.apache.thrift.protocol.TField("storeProtocol", org.apache.thrift.protocol.TType.I32, (short)5);
+  private static final org.apache.thrift.protocol.TField SENDER_EMAIL_ADDRESS_FIELD_DESC = new org.apache.thrift.protocol.TField("senderEmailAddress", org.apache.thrift.protocol.TType.STRING, (short)6);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -79,6 +80,7 @@ import org.slf4j.LoggerFactory;
   private String password; // required
   private String folderName; // required
   private EmailProtocol storeProtocol; // required
+  private String senderEmailAddress; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -90,7 +92,8 @@ import org.slf4j.LoggerFactory;
      * 
      * @see EmailProtocol
      */
-    STORE_PROTOCOL((short)5, "storeProtocol");
+    STORE_PROTOCOL((short)5, "storeProtocol"),
+    SENDER_EMAIL_ADDRESS((short)6, "senderEmailAddress");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -115,6 +118,8 @@ import org.slf4j.LoggerFactory;
           return FOLDER_NAME;
         case 5: // STORE_PROTOCOL
           return STORE_PROTOCOL;
+        case 6: // SENDER_EMAIL_ADDRESS
+          return SENDER_EMAIL_ADDRESS;
         default:
           return null;
       }
@@ -168,6 +173,8 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.STORE_PROTOCOL, new org.apache.thrift.meta_data.FieldMetaData("storeProtocol", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, EmailProtocol.class)));
+    tmpMap.put(_Fields.SENDER_EMAIL_ADDRESS, new org.apache.thrift.meta_data.FieldMetaData("senderEmailAddress", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(EmailMonitorProperty.class, metaDataMap);
   }
@@ -182,7 +189,8 @@ import org.slf4j.LoggerFactory;
     String emailAddress,
     String password,
     String folderName,
-    EmailProtocol storeProtocol)
+    EmailProtocol storeProtocol,
+    String senderEmailAddress)
   {
     this();
     this.host = host;
@@ -190,6 +198,7 @@ import org.slf4j.LoggerFactory;
     this.password = password;
     this.folderName = folderName;
     this.storeProtocol = storeProtocol;
+    this.senderEmailAddress = senderEmailAddress;
   }
 
   /**
@@ -211,6 +220,9 @@ import org.slf4j.LoggerFactory;
     if (other.isSetStoreProtocol()) {
       this.storeProtocol = other.storeProtocol;
     }
+    if (other.isSetSenderEmailAddress()) {
+      this.senderEmailAddress = other.senderEmailAddress;
+    }
   }
 
   public EmailMonitorProperty deepCopy() {
@@ -225,6 +237,7 @@ import org.slf4j.LoggerFactory;
     this.folderName = "INBOX";
 
     this.storeProtocol = null;
+    this.senderEmailAddress = null;
   }
 
   public String getHost() {
@@ -350,6 +363,29 @@ import org.slf4j.LoggerFactory;
     }
   }
 
+  public String getSenderEmailAddress() {
+    return this.senderEmailAddress;
+  }
+
+  public void setSenderEmailAddress(String senderEmailAddress) {
+    this.senderEmailAddress = senderEmailAddress;
+  }
+
+  public void unsetSenderEmailAddress() {
+    this.senderEmailAddress = null;
+  }
+
+  /** Returns true if field senderEmailAddress is set (has been assigned a value) and false otherwise */
+  public boolean isSetSenderEmailAddress() {
+    return this.senderEmailAddress != null;
+  }
+
+  public void setSenderEmailAddressIsSet(boolean value) {
+    if (!value) {
+      this.senderEmailAddress = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case HOST:
@@ -392,6 +428,14 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case SENDER_EMAIL_ADDRESS:
+      if (value == null) {
+        unsetSenderEmailAddress();
+      } else {
+        setSenderEmailAddress((String)value);
+      }
+      break;
+
     }
   }
 
@@ -411,6 +455,9 @@ import org.slf4j.LoggerFactory;
 
     case STORE_PROTOCOL:
       return getStoreProtocol();
+
+    case SENDER_EMAIL_ADDRESS:
+      return getSenderEmailAddress();
 
     }
     throw new IllegalStateException();
@@ -433,6 +480,8 @@ import org.slf4j.LoggerFactory;
       return isSetFolderName();
     case STORE_PROTOCOL:
       return isSetStoreProtocol();
+    case SENDER_EMAIL_ADDRESS:
+      return isSetSenderEmailAddress();
     }
     throw new IllegalStateException();
   }
@@ -492,6 +541,15 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_storeProtocol && that_present_storeProtocol))
         return false;
       if (!this.storeProtocol.equals(that.storeProtocol))
+        return false;
+    }
+
+    boolean this_present_senderEmailAddress = true && this.isSetSenderEmailAddress();
+    boolean that_present_senderEmailAddress = true && that.isSetSenderEmailAddress();
+    if (this_present_senderEmailAddress || that_present_senderEmailAddress) {
+      if (!(this_present_senderEmailAddress && that_present_senderEmailAddress))
+        return false;
+      if (!this.senderEmailAddress.equals(that.senderEmailAddress))
         return false;
     }
 
@@ -561,6 +619,16 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetSenderEmailAddress()).compareTo(other.isSetSenderEmailAddress());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetSenderEmailAddress()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.senderEmailAddress, other.senderEmailAddress);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -620,6 +688,14 @@ import org.slf4j.LoggerFactory;
       sb.append(this.storeProtocol);
     }
     first = false;
+    if (!first) sb.append(", ");
+    sb.append("senderEmailAddress:");
+    if (this.senderEmailAddress == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.senderEmailAddress);
+    }
+    first = false;
     sb.append(")");
     return sb.toString();
   }
@@ -644,6 +720,10 @@ import org.slf4j.LoggerFactory;
 
     if (!isSetStoreProtocol()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'storeProtocol' is unset! Struct:" + toString());
+    }
+
+    if (!isSetSenderEmailAddress()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'senderEmailAddress' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -723,6 +803,14 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 6: // SENDER_EMAIL_ADDRESS
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.senderEmailAddress = iprot.readString();
+              struct.setSenderEmailAddressIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -761,6 +849,11 @@ import org.slf4j.LoggerFactory;
         oprot.writeI32(struct.storeProtocol.getValue());
         oprot.writeFieldEnd();
       }
+      if (struct.senderEmailAddress != null) {
+        oprot.writeFieldBegin(SENDER_EMAIL_ADDRESS_FIELD_DESC);
+        oprot.writeString(struct.senderEmailAddress);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -783,6 +876,7 @@ import org.slf4j.LoggerFactory;
       oprot.writeString(struct.password);
       oprot.writeString(struct.folderName);
       oprot.writeI32(struct.storeProtocol.getValue());
+      oprot.writeString(struct.senderEmailAddress);
     }
 
     @Override
@@ -798,6 +892,8 @@ import org.slf4j.LoggerFactory;
       struct.setFolderNameIsSet(true);
       struct.storeProtocol = EmailProtocol.findByValue(iprot.readI32());
       struct.setStoreProtocolIsSet(true);
+      struct.senderEmailAddress = iprot.readString();
+      struct.setSenderEmailAddressIsSet(true);
     }
   }
 

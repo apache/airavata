@@ -383,7 +383,8 @@ public class SSHProvider extends AbstractProvider {
             if (monitorMode != null && monitorMode == MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR) {
                 EmailMonitorProperty emailMonitorProp = sshJobSubmission.getEmailMonitorProperty();
                 if (emailMonitorProp != null) {
-                    EmailBasedMonitor emailBasedMonitor = EmailMonitorFactory.getEmailBasedMonitor(emailMonitorProp);
+                    EmailBasedMonitor emailBasedMonitor = EmailMonitorFactory.getEmailBasedMonitor(emailMonitorProp,
+                            sshJobSubmission.getResourceJobManager().getResourceJobManagerType());
                     emailBasedMonitor.addToJobMonitorMap(jobExecutionContext);
                     return;
                 }

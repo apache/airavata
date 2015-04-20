@@ -235,7 +235,8 @@ struct EmailMonitorProperty {
     2: required string emailAddress,
     3: required string password,
     4: required string folderName = "INBOX",
-    5: required EmailProtocol storeProtocol
+    5: required EmailProtocol storeProtocol,
+    6: required string senderEmailAddress
 }
 
 /**

@@ -48,6 +48,9 @@ public class EmailMonitorProperty {
     @Column(name = "EMAIL_PROTOCOL")
     private String emailProtocol;
 
+    @Column(name = "SENDER_EMAIL_ADDRESS")
+    private String senderEmailAddress;
+
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "JOB_SUBMISSION_INTERFACE_ID")
     private SshJobSubmission submissionInterface;
@@ -107,5 +110,13 @@ public class EmailMonitorProperty {
 
     public void setSubmissionInterface(SshJobSubmission submissionInterface) {
         this.submissionInterface = submissionInterface;
+    }
+
+    public String getSenderEmailAddress() {
+        return senderEmailAddress;
+    }
+
+    public void setSenderEmailAddress(String senderEmailAddress) {
+        this.senderEmailAddress = senderEmailAddress;
     }
 }

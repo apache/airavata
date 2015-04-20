@@ -32,15 +32,15 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class LonestarEmailParser implements EmailParser {
-    private static final Logger log = LoggerFactory.getLogger(LonestarEmailParser.class);
+public class LSFEmailParser implements EmailParser {
+    private static final Logger log = LoggerFactory.getLogger(LSFEmailParser.class);
     //root@c312-206.ls4.tacc.utexas.edu
     private static final String SIGNAL = "signal";
     private static final String LONESTAR_REGEX = "Job (?<" + JOBID + ">\\d+) \\(.*\\) (?<" + STATUS
             + ">.*)\\s[a-zA-Z =]+(?<" + EXIT_STATUS + ">\\d+)\\sSignal[ ]*=[ ]*(?<" + SIGNAL + ">[a-zA-z]*)";
 
     @Override
-    public JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException {
+    public JobStatusResult parseEmail(Message message, String senderEmailAddress) throws MessagingException, AiravataException {
         JobStatusResult jobStatusResult = new JobStatusResult();
         try {
             String content = ((String) message.getContent());
