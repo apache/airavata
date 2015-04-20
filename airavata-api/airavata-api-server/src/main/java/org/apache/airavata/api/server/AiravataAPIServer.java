@@ -220,12 +220,12 @@ public class AiravataAPIServer implements IServer, Watcher{
             RegistryInitUtil.stopDerbyInServerMode();
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         } catch (InterruptedException e) {
-            logger.error(e.getMessage());
+            logger.debug(e.getMessage());
             setStatus(ServerStatus.FAILED);
             RegistryInitUtil.stopDerbyInServerMode();
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         } catch (KeeperException e) {
-            logger.error(e.getMessage());
+            logger.debug(e.getMessage());
             setStatus(ServerStatus.FAILED);
             RegistryInitUtil.stopDerbyInServerMode();
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
