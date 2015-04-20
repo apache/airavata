@@ -45,6 +45,7 @@ public class EmailPropertyResource extends AbstractResource {
 	private String password;
     private String folderName;
     private String protocol;
+    private String senderEmailAddress;
     private SshJobSubmissionResource sshJobSubmissionResource;
 
 	@Override
@@ -210,6 +211,7 @@ public class EmailPropertyResource extends AbstractResource {
 			emailMonitorProperty.setFolderName(folderName);
             emailMonitorProperty.setPassword(password);
 			emailMonitorProperty.setHost(host);
+            emailMonitorProperty.setSenderEmailAddress(senderEmailAddress);
             if (monitorProperty == null) {
 				em.persist(emailMonitorProperty);
 			} else {
@@ -305,5 +307,13 @@ public class EmailPropertyResource extends AbstractResource {
 
     public void setSshJobSubmissionResource(SshJobSubmissionResource sshJobSubmissionResource) {
         this.sshJobSubmissionResource = sshJobSubmissionResource;
+    }
+
+    public String getSenderEmailAddress() {
+        return senderEmailAddress;
+    }
+
+    public void setSenderEmailAddress(String senderEmailAddress) {
+        this.senderEmailAddress = senderEmailAddress;
     }
 }

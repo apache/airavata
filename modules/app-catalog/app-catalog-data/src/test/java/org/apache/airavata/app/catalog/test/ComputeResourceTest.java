@@ -249,6 +249,7 @@ public class ComputeResourceTest {
             emailMonitorProperty.setEmailAddress("test");
             emailMonitorProperty.setPassword("aaa");
             emailMonitorProperty.setHost("testHost");
+            emailMonitorProperty.setSenderEmailAddress("testSender@scigpa.org");
             jobSubmission.setEmailMonitorProperty(emailMonitorProperty);
 //            String jobManagerID = appcatalog.getComputeResource().addResourceJobManager(jobManager);
 //            jobManager.setResourceJobManagerId(jobManagerID);

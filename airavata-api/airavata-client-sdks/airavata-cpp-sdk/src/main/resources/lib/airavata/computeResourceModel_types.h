@@ -331,10 +331,10 @@ void swap(BatchQueue &a, BatchQueue &b);
 class EmailMonitorProperty {
  public:
 
-  static const char* ascii_fingerprint; // = "1991A6BD46E68BF843F10524459D65B1";
-  static const uint8_t binary_fingerprint[16]; // = {0x19,0x91,0xA6,0xBD,0x46,0xE6,0x8B,0xF8,0x43,0xF1,0x05,0x24,0x45,0x9D,0x65,0xB1};
+  static const char* ascii_fingerprint; // = "218FF2099E03B9AC08A5A47A15F4294E";
+  static const uint8_t binary_fingerprint[16]; // = {0x21,0x8F,0xF2,0x09,0x9E,0x03,0xB9,0xAC,0x08,0xA5,0xA4,0x7A,0x15,0xF4,0x29,0x4E};
 
-  EmailMonitorProperty() : host(), emailAddress(), password(), folderName("INBOX"), storeProtocol((EmailProtocol::type)0) {
+  EmailMonitorProperty() : host(), emailAddress(), password(), folderName("INBOX"), storeProtocol((EmailProtocol::type)0), senderEmailAddress() {
   }
 
   virtual ~EmailMonitorProperty() throw() {}
@@ -344,6 +344,7 @@ class EmailMonitorProperty {
   std::string password;
   std::string folderName;
   EmailProtocol::type storeProtocol;
+  std::string senderEmailAddress;
 
   void __set_host(const std::string& val) {
     host = val;
@@ -365,6 +366,10 @@ class EmailMonitorProperty {
     storeProtocol = val;
   }
 
+  void __set_senderEmailAddress(const std::string& val) {
+    senderEmailAddress = val;
+  }
+
   bool operator == (const EmailMonitorProperty & rhs) const
   {
     if (!(host == rhs.host))
@@ -376,6 +381,8 @@ class EmailMonitorProperty {
     if (!(folderName == rhs.folderName))
       return false;
     if (!(storeProtocol == rhs.storeProtocol))
+      return false;
+    if (!(senderEmailAddress == rhs.senderEmailAddress))
       return false;
     return true;
   }
@@ -657,8 +664,8 @@ typedef struct _SSHJobSubmission__isset {
 class SSHJobSubmission {
  public:
 
-  static const char* ascii_fingerprint; // = "C2237B7244CABB71130AEE137701206F";
-  static const uint8_t binary_fingerprint[16]; // = {0xC2,0x23,0x7B,0x72,0x44,0xCA,0xBB,0x71,0x13,0x0A,0xEE,0x13,0x77,0x01,0x20,0x6F};
+  static const char* ascii_fingerprint; // = "200BDE51156682BAC37E8B5DAD03D6D3";
+  static const uint8_t binary_fingerprint[16]; // = {0x20,0x0B,0xDE,0x51,0x15,0x66,0x82,0xBA,0xC3,0x7E,0x8B,0x5D,0xAD,0x03,0xD6,0xD3};
 
   SSHJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), alternativeSSHHostName(), sshPort(22), monitorMode((MonitorMode::type)0) {
   }

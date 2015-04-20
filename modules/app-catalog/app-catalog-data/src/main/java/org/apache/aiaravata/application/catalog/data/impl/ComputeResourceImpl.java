@@ -194,6 +194,8 @@ public class ComputeResourceImpl implements ComputeResource {
                 emailPropertyResource.setPassword(emailMonitorProperty.getPassword());
                 emailPropertyResource.setEmailAddress(emailMonitorProperty.getEmailAddress());
                 emailPropertyResource.setFolderName(emailMonitorProperty.getFolderName());
+                emailPropertyResource.setSenderEmailAddress(emailMonitorProperty.getSenderEmailAddress());
+
                 if (emailMonitorProperty.getStoreProtocol() != null){
                     emailPropertyResource.setProtocol(emailMonitorProperty.getStoreProtocol().toString());
                 }

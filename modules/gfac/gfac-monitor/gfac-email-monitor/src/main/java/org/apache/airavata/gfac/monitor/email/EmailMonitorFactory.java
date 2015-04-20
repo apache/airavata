@@ -21,6 +21,7 @@
 package org.apache.airavata.gfac.monitor.email;
 
 import org.apache.airavata.model.appcatalog.computeresource.EmailMonitorProperty;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,13 +31,14 @@ public class EmailMonitorFactory {
     private static Map<String, EmailBasedMonitor> emailMonitors = new HashMap<String, EmailBasedMonitor>();
 
 
-    public static EmailBasedMonitor getEmailBasedMonitor(EmailMonitorProperty emailMonitorProp) {
+    public static EmailBasedMonitor getEmailBasedMonitor(EmailMonitorProperty emailMonitorProp,
+                                                         ResourceJobManagerType resourceJobManagerType) {
         String key = getKey(emailMonitorProp);
         EmailBasedMonitor monitor = emailMonitors.get(key);
         if (monitor == null) {
             synchronized (emailMonitors){
                 if (monitor == null) {
-                    monitor = new EmailBasedMonitor(emailMonitorProp);
+                    monitor = new EmailBasedMonitor(emailMonitorProp, resourceJobManagerType);
                     emailMonitors.put(key, monitor);
                     new Thread(monitor).start();
                 }

@@ -633,6 +633,7 @@ public class AppCatalogJPAUtils {
             emailPropertyResource.setPassword(o.getPassword());
             emailPropertyResource.setHost(o.getHost());
             emailPropertyResource.setProtocol(o.getEmailProtocol());
+            emailPropertyResource.setSenderEmailAddress(o.getSenderEmailAddress());
         }
         return emailPropertyResource;
     }

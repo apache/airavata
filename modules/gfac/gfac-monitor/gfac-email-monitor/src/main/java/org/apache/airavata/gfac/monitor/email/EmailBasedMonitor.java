@@ -30,11 +30,12 @@ import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.utils.GFacThreadPoolExecutor;
 import org.apache.airavata.gfac.core.utils.OutHandlerWorker;
 import org.apache.airavata.gfac.monitor.email.parser.EmailParser;
-import org.apache.airavata.gfac.monitor.email.parser.LonestarEmailParser;
+import org.apache.airavata.gfac.monitor.email.parser.LSFEmailParser;
 import org.apache.airavata.gfac.monitor.email.parser.PBSEmailParser;
 import org.apache.airavata.gfac.monitor.email.parser.SLURMEmailParser;
 import org.apache.airavata.model.appcatalog.computeresource.EmailMonitorProperty;
 import org.apache.airavata.model.appcatalog.computeresource.EmailProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeRequestEvent;
 import org.apache.airavata.model.workspace.experiment.JobState;
@@ -68,11 +69,13 @@ public class EmailBasedMonitor implements Runnable{
     private Folder emailFolder;
 //    private String host, emailAddress, password, folderName, mailStoreProtocol;
     private Properties properties;
+    private final ResourceJobManagerType RESOURCE_JOB_MONITOR_TYPE;
 
     private Map<String, JobExecutionContext> jobMonitorMap = new ConcurrentHashMap<String, JobExecutionContext>();
 
-    public EmailBasedMonitor(EmailMonitorProperty emailMonitorProp) {
+    public EmailBasedMonitor(EmailMonitorProperty emailMonitorProp, ResourceJobManagerType type) {
         this.emailMonitorProperty = emailMonitorProp;
+        RESOURCE_JOB_MONITOR_TYPE = type;
         init();
     }
 
@@ -110,20 +113,20 @@ public class EmailBasedMonitor implements Runnable{
         Address fromAddress = message.getFrom()[0];
         EmailParser emailParser;
         String addressStr = fromAddress.toString();
-        switch (addressStr) {
-            case PBS_CONSULT_SDSC_EDU:
+        switch (RESOURCE_JOB_MONITOR_TYPE) {
+            case PBS:
                 emailParser = new PBSEmailParser();
                 break;
-            case SLURM_BATCH_STAMPEDE:
+            case SLURM:
                 emailParser = new SLURMEmailParser();
                 break;
-            case LONESTAR_ADDRESS:
-                emailParser = new LonestarEmailParser();
+            case LSF:
+                emailParser = new LSFEmailParser();
                 break;
             default:
-                throw new AiravataException("Un-handle address type for email monitoring -->  " + addressStr);
+                throw new AiravataException("Un-handle resource job manager type: "+ RESOURCE_JOB_MONITOR_TYPE + " for email monitoring -->  " + addressStr);
         }
-        return emailParser.parseEmail(message);
+        return emailParser.parseEmail(message, emailMonitorProperty.getSenderEmailAddress());
     }
 
     @Override

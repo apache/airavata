@@ -625,6 +625,7 @@ class EmailMonitorProperty:
    - password
    - folderName
    - storeProtocol
+   - senderEmailAddress
   """
 
   thrift_spec = (
@@ -634,14 +635,16 @@ class EmailMonitorProperty:
     (3, TType.STRING, 'password', None, None, ), # 3
     (4, TType.STRING, 'folderName', None, "INBOX", ), # 4
     (5, TType.I32, 'storeProtocol', None, None, ), # 5
+    (6, TType.STRING, 'senderEmailAddress', None, None, ), # 6
   )
 
-  def __init__(self, host=None, emailAddress=None, password=None, folderName=thrift_spec[4][4], storeProtocol=None,):
+  def __init__(self, host=None, emailAddress=None, password=None, folderName=thrift_spec[4][4], storeProtocol=None, senderEmailAddress=None,):
     self.host = host
     self.emailAddress = emailAddress
     self.password = password
     self.folderName = folderName
     self.storeProtocol = storeProtocol
+    self.senderEmailAddress = senderEmailAddress
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -677,6 +680,11 @@ class EmailMonitorProperty:
           self.storeProtocol = iprot.readI32();
         else:
           iprot.skip(ftype)
+      elif fid == 6:
+        if ftype == TType.STRING:
+          self.senderEmailAddress = iprot.readString();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -707,6 +715,10 @@ class EmailMonitorProperty:
       oprot.writeFieldBegin('storeProtocol', TType.I32, 5)
       oprot.writeI32(self.storeProtocol)
       oprot.writeFieldEnd()
+    if self.senderEmailAddress is not None:
+      oprot.writeFieldBegin('senderEmailAddress', TType.STRING, 6)
+      oprot.writeString(self.senderEmailAddress)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -721,6 +733,8 @@ class EmailMonitorProperty:
       raise TProtocol.TProtocolException(message='Required field folderName is unset!')
     if self.storeProtocol is None:
       raise TProtocol.TProtocolException(message='Required field storeProtocol is unset!')
+    if self.senderEmailAddress is None:
+      raise TProtocol.TProtocolException(message='Required field senderEmailAddress is unset!')
     return
 
 
