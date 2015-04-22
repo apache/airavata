@@ -20,11 +20,10 @@
 */
 package org.apache.airavata.orchestrator.core.validator;
 
-import org.apache.airavata.model.error.ValidatorResult;
+import org.apache.airavata.model.error.ValidationResults;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
-import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 
 /**
  * This is the interface to implement a validation logic, users can implement their validation
@@ -43,5 +42,5 @@ public interface JobMetadataValidator {
      * @param taskID
      * @return
      */
-    ValidatorResult validate(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID);
+    ValidationResults validate(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID);
 }

@@ -200,26 +200,43 @@ public class RegisterSampleApplications {
             System.out.println("\n #### Registering XSEDE Computational Resources #### \n");
 
             //Register Stampede
+            List<BatchQueue> stampedeQueues = new ArrayList<>();
+            BatchQueue normalQueue = createBatchQueue("normal", "Normal Queue", 2880, 256, 4000, 50, 0);
+            BatchQueue developmentQueue = createBatchQueue("development", "Development Queue", 120, 16, 4000, 1, 0);
+            stampedeQueues.add(normalQueue);
+            stampedeQueues.add(developmentQueue);
             stampedeResourceId = registerComputeHost("stampede.tacc.xsede.org", "TACC Stampede Cluster",
-                    ResourceJobManagerType.SLURM, "push", "/usr/bin", SecurityProtocol.SSH_KEYS, 22, null);
+                    ResourceJobManagerType.SLURM, "push", "/usr/bin", SecurityProtocol.SSH_KEYS, 22, null, stampedeQueues);
+
             System.out.println("Stampede Resource Id is " + stampedeResourceId);
 
             //Register Trestles
+            List<BatchQueue> trestlesQueues = new ArrayList<>();
+            BatchQueue normalQueue_tr = createBatchQueue("normal", "Normal Queue", 2880, 32, 32, 50, 0);
+            BatchQueue sharedQueue_tr = createBatchQueue("shared", "Shared Queue", 2880, 4, 32, 50, 0);
+            trestlesQueues.add(normalQueue_tr);
+            trestlesQueues.add(sharedQueue_tr);
             trestlesResourceId = registerComputeHost("trestles.sdsc.xsede.org", "SDSC Trestles Cluster",
-                    ResourceJobManagerType.PBS, "push", "/opt/torque/bin/", SecurityProtocol.SSH_KEYS, 22, null);
+                    ResourceJobManagerType.PBS, "push", "/opt/torque/bin/", SecurityProtocol.SSH_KEYS, 22, null, trestlesQueues);
             System.out.println("Trestles Resource Id is " + trestlesResourceId);
 
             //Register BigRedII
+            List<BatchQueue> br2Queues = new ArrayList<>();
+            BatchQueue normalQueue_br2 = createBatchQueue("normal", "Normal Queue", 2880, 340, 2048, 50, 0);
+            BatchQueue serial_br2 = createBatchQueue("serial", "Normal Queue", 10080, 340, 2048, 50, 0);
+            br2Queues.add(normalQueue_br2);
+            br2Queues.add(serial_br2);
             bigredResourceId = registerComputeHost("bigred2.uits.iu.edu", "IU BigRed II Cluster",
-                    ResourceJobManagerType.PBS, "push", "/opt/torque/torque-4.2.3.1/bin/", SecurityProtocol.SSH_KEYS, 22, "aprun -n");
+                    ResourceJobManagerType.PBS, "push", "/opt/torque/torque-4.2.3.1/bin/", SecurityProtocol.SSH_KEYS, 22, "aprun -n", br2Queues);
             System.out.println("BigredII Resource Id is " + bigredResourceId);
 
             fsdResourceId = registerUnicoreEndpoint("fsd-cloud15.zam.kfa-juelich.de", "interop host", JobSubmissionProtocol.UNICORE, SecurityProtocol.GSI);
             System.out.println("FSd Resource Id: "+fsdResourceId);
 
             //Register Alamo
+            List<BatchQueue> alamoQueues = new ArrayList<>();
             alamoResourceId = registerComputeHost("alamo.uthscsa.edu", "Alamo Cluster",
-                    ResourceJobManagerType.PBS, "push", "/usr/bin/", SecurityProtocol.SSH_KEYS, 22, "/usr/bin/mpiexec -np");
+                    ResourceJobManagerType.PBS, "push", "/usr/bin/", SecurityProtocol.SSH_KEYS, 22, "/usr/bin/mpiexec -np", alamoQueues);
             System.out.println("Alamo Cluster " + alamoResourceId);
             
 
@@ -234,8 +251,9 @@ public class RegisterSampleApplications {
             System.out.println("\n #### Registering Non-XSEDE Computational Resources #### \n");
 
             //Register LSF resource
+            List<BatchQueue> lsfQueues = new ArrayList<>();
             lsfResourceId = registerComputeHost("ghpcc06.umassrc.org", "LSF Cluster",
-                    ResourceJobManagerType.LSF, "push", "source /etc/bashrc;/lsf/9.1/linux2.6-glibc2.3-x86_64/bin", SecurityProtocol.SSH_KEYS, 22, "mpiexec");
+                    ResourceJobManagerType.LSF, "push", "source /etc/bashrc;/lsf/9.1/linux2.6-glibc2.3-x86_64/bin", SecurityProtocol.SSH_KEYS, 22, "mpiexec", lsfQueues);
             System.out.println("LSF Resource Id is " + lsfResourceId);
 
         } catch (TException e) {
@@ -1307,16 +1325,35 @@ public class RegisterSampleApplications {
         }
     }
 
-    
+    public BatchQueue createBatchQueue (String queuename,
+                                        String queueDesc,
+                                        int maxRunTime,
+                                        int maxNodes,
+                                        int maxProcessors,
+                                        int maxJobsInQueue,
+                                        int maxMemory){
+        BatchQueue batchQueue = new BatchQueue();
+        batchQueue.setQueueName(queuename);
+        batchQueue.setQueueDescription(queueDesc);
+        batchQueue.setMaxMemory(maxMemory);
+        batchQueue.setMaxJobsInQueue(maxJobsInQueue);
+        batchQueue.setMaxNodes(maxNodes);
+        batchQueue.setMaxRunTime(maxRunTime);
+        batchQueue.setMaxProcessors(maxProcessors);
+        return batchQueue;
+    }
     
     public String registerComputeHost(String hostName, String hostDesc,
                                              ResourceJobManagerType resourceJobManagerType,
                                              String monitoringEndPoint, String jobMangerBinPath,
-                                             SecurityProtocol securityProtocol, int portNumber, String jobManagerCommand) throws TException {
+                                             SecurityProtocol securityProtocol,
+                                             int portNumber,
+                                             String jobManagerCommand,
+                                             List<BatchQueue> batchQueues) throws TException {
 
         ComputeResourceDescription computeResourceDescription = RegisterSampleApplicationsUtils.
                 createComputeResourceDescription(hostName, hostDesc, null, null);
-
+        computeResourceDescription.setBatchQueues(batchQueues);
         String computeResourceId = airavataClient.registerComputeResource(computeResourceDescription);
 
         if (computeResourceId.isEmpty()) throw new AiravataClientException();
