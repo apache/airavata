@@ -22,10 +22,7 @@ package org.apache.airavata.common.utils;
 
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.apache.zookeeper.server.ServerCnxnFactory;
 import org.apache.zookeeper.server.ServerConfig;
@@ -41,12 +38,17 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-public class AiravataZKUtils {
+public class AiravataZKUtils implements Watcher {
     private final static Logger logger = LoggerFactory.getLogger(AiravataZKUtils.class);
 
     public static final String ZK_EXPERIMENT_STATE_NODE = "state";
 
     public static final String DELIVERY_TAG_POSTFIX = "-deliveryTag";
+
+    @Override
+    public void process(WatchedEvent event) {
+
+    }
 
     public static String getExpZnodePath(String experimentId, String taskId) throws ApplicationSettingsException {
         return ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE) +

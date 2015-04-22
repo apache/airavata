@@ -347,28 +347,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 						break;
 					case Expired:
 					case Disconnected:
-						try {
-							zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this);
-							synchronized (mutex) {
-								mutex.wait(); // waiting for the syncConnected event
-							}
-							String airavataServerHostPort = ServerSettings
-									.getSetting(Constants.ORCHESTRATOR_SERVER_HOST)
-									+ ":"
-									+ ServerSettings
-									.getSetting(Constants.ORCHESTRATOR_SERVER_PORT);
-							String OrchServer = ServerSettings
-									.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_ORCHESTRATOR_SERVER_NODE);
-							registerOrchestratorService(airavataServerHostPort, OrchServer);
-						} catch (IOException e) {
-							e.printStackTrace();
-						} catch (ApplicationSettingsException e) {
-							e.printStackTrace();
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						} catch (KeeperException e) {
-							e.printStackTrace();
-						}
+						log.info("ZK Connection is "+ state.toString());
 						break;
 				}
 				if (watchedEvent.getPath() != null

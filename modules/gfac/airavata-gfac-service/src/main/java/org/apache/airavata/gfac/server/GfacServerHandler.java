@@ -195,21 +195,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                     mutex.notify();
                     break;
                 case Expired:case Disconnected:
-                    try {
-                        zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this);
-                        synchronized (mutex) {
-                            mutex.wait();  // waiting for the syncConnected event
-                        }
-                        storeServerConfig();
-                    } catch (IOException e) {
-                        logger.error(e.getMessage(), e);
-                    } catch (ApplicationSettingsException e) {
-                        logger.error(e.getMessage(), e);
-                    } catch (InterruptedException e) {
-                        logger.error(e.getMessage(), e);
-                    } catch (KeeperException e) {
-                        logger.error(e.getMessage(), e);
-                    }
+                   logger.info("ZK Connection is "+ state.toString());
             }
         }
     }

@@ -1006,21 +1006,24 @@ public class GFacUtils {
 			JobExecutionContext jobExecutionContext, String className,
 			GfacPluginState state) throws ApplicationSettingsException,
 			KeeperException, InterruptedException {
-		String expState = AiravataZKUtils.getExpZnodeHandlerPath(
-				jobExecutionContext.getExperimentID(), jobExecutionContext
-						.getTaskData().getTaskID(), className);
+		if(zk.getState().isConnected()) {
+			String expState = AiravataZKUtils.getExpZnodeHandlerPath(
+					jobExecutionContext.getExperimentID(), jobExecutionContext
+							.getTaskData().getTaskID(), className);
 
-		Stat exists = zk.exists(expState + File.separator
-				+ AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false);
-		if (exists != null) {
-			zk.setData(expState + File.separator
-					+ AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE,
-					String.valueOf(state.getValue()).getBytes(),
-					exists.getVersion());
-		} else {
-			createPluginZnode(zk, jobExecutionContext, className, state);
+			Stat exists = zk.exists(expState + File.separator
+					+ AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false);
+			if (exists != null) {
+				zk.setData(expState + File.separator
+								+ AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE,
+						String.valueOf(state.getValue()).getBytes(),
+						exists.getVersion());
+			} else {
+				createPluginZnode(zk, jobExecutionContext, className, state);
+			}
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	public static String getPluginState(ZooKeeper zk,

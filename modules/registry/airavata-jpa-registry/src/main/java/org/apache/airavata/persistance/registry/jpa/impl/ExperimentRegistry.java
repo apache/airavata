@@ -71,6 +71,7 @@ public class ExperimentRegistry {
             experimentResource.setExecutionUser(experiment.getUserName());
             GatewayResource gateway = (GatewayResource)ResourceUtils.getGateway(gatewayId);
             experimentResource.setGateway(gateway);
+            experimentResource.setGatewayExecutionId(experiment.getGatewayExecutionId());
             experimentResource.setEnableEmailNotifications(experiment.isEnableEmailNotification());
             if (!workerResource.isProjectExists(experiment.getProjectID())) {
                 logger.error("Project does not exist in the system..");
@@ -1190,6 +1191,8 @@ public class ExperimentRegistry {
             jobDetail.setJobDescription(jobDetails.getJobDescription());
             jobDetail.setCreationTime(AiravataUtils.getTime(jobDetails.getCreationTime()));
             jobDetail.setComputeResourceConsumed(jobDetails.getComputeResourceConsumed());
+            jobDetail.setWorkingDir(jobDetails.getWorkingDir());
+            jobDetail.setJobName(jobDetails.getJobName());
             jobDetail.save();
             JobStatus jobStatus = jobDetails.getJobStatus();
             if (jobStatus != null) {
@@ -1235,6 +1238,8 @@ public class ExperimentRegistry {
             jobDetail.setJobDescription(jobDetails.getJobDescription());
             jobDetail.setCreationTime(AiravataUtils.getTime(jobDetails.getCreationTime()));
             jobDetail.setComputeResourceConsumed(jobDetails.getComputeResourceConsumed());
+            jobDetail.setJobName(jobDetails.getJobName());
+            jobDetail.setWorkingDir(jobDetails.getWorkingDir());
             jobDetail.save();
             JobStatus jobStatus = jobDetails.getJobStatus();
             if (jobStatus != null) {
@@ -1620,6 +1625,7 @@ public class ExperimentRegistry {
             existingExperiment.setExpName(experiment.getName());
             existingExperiment.setExecutionUser(experiment.getUserName());
             existingExperiment.setGateway(gatewayResource);
+            existingExperiment.setGatewayExecutionId(experiment.getGatewayExecutionId());
             if (!workerResource.isProjectExists(experiment.getProjectID())) {
                 logger.error("Project does not exist in the system..");
                 throw new Exception("Project does not exist in the system, Please create the project first...");
