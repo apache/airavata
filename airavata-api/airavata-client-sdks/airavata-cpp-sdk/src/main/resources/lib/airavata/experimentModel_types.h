@@ -1122,22 +1122,23 @@ class ErrorDetails {
 void swap(ErrorDetails &a, ErrorDetails &b);
 
 typedef struct _JobDetails__isset {
-  _JobDetails__isset() : creationTime(false), jobStatus(false), applicationStatus(false), errors(false), computeResourceConsumed(false), jobName(false) {}
+  _JobDetails__isset() : creationTime(false), jobStatus(false), applicationStatus(false), errors(false), computeResourceConsumed(false), jobName(false), workingDir(false) {}
   bool creationTime;
   bool jobStatus;
   bool applicationStatus;
   bool errors;
   bool computeResourceConsumed;
   bool jobName;
+  bool workingDir;
 } _JobDetails__isset;
 
 class JobDetails {
  public:
 
-  static const char* ascii_fingerprint; // = "827E1049FA5B4D33C335B59DE49B8F88";
-  static const uint8_t binary_fingerprint[16]; // = {0x82,0x7E,0x10,0x49,0xFA,0x5B,0x4D,0x33,0xC3,0x35,0xB5,0x9D,0xE4,0x9B,0x8F,0x88};
+  static const char* ascii_fingerprint; // = "114EFEA8CA07DC82CC947D9F47547394";
+  static const uint8_t binary_fingerprint[16]; // = {0x11,0x4E,0xFE,0xA8,0xCA,0x07,0xDC,0x82,0xCC,0x94,0x7D,0x9F,0x47,0x54,0x73,0x94};
 
-  JobDetails() : jobID("DO_NOT_SET_AT_CLIENTS"), jobDescription(), creationTime(0), computeResourceConsumed(), jobName() {
+  JobDetails() : jobID("DO_NOT_SET_AT_CLIENTS"), jobDescription(), creationTime(0), computeResourceConsumed(), jobName(), workingDir() {
   }
 
   virtual ~JobDetails() throw() {}
@@ -1150,6 +1151,7 @@ class JobDetails {
   std::vector<ErrorDetails>  errors;
   std::string computeResourceConsumed;
   std::string jobName;
+  std::string workingDir;
 
   _JobDetails__isset __isset;
 
@@ -1191,6 +1193,11 @@ class JobDetails {
     __isset.jobName = true;
   }
 
+  void __set_workingDir(const std::string& val) {
+    workingDir = val;
+    __isset.workingDir = true;
+  }
+
   bool operator == (const JobDetails & rhs) const
   {
     if (!(jobID == rhs.jobID))
@@ -1220,6 +1227,10 @@ class JobDetails {
     if (__isset.jobName != rhs.__isset.jobName)
       return false;
     else if (__isset.jobName && !(jobName == rhs.jobName))
+      return false;
+    if (__isset.workingDir != rhs.__isset.workingDir)
+      return false;
+    else if (__isset.workingDir && !(workingDir == rhs.workingDir))
       return false;
     return true;
   }
@@ -1329,8 +1340,8 @@ typedef struct _TaskDetails__isset {
 class TaskDetails {
  public:
 
-  static const char* ascii_fingerprint; // = "88276CFCC9B30CA0B93A5931F93CACC4";
-  static const uint8_t binary_fingerprint[16]; // = {0x88,0x27,0x6C,0xFC,0xC9,0xB3,0x0C,0xA0,0xB9,0x3A,0x59,0x31,0xF9,0x3C,0xAC,0xC4};
+  static const char* ascii_fingerprint; // = "B7529305C4CBCDA0A164DA14865F0E67";
+  static const uint8_t binary_fingerprint[16]; // = {0xB7,0x52,0x93,0x05,0xC4,0xCB,0xCD,0xA0,0xA1,0x64,0xDA,0x14,0x86,0x5F,0x0E,0x67};
 
   TaskDetails() : taskID("DO_NOT_SET_AT_CLIENTS"), creationTime(0), applicationId(), applicationVersion(), applicationDeploymentId(), enableEmailNotification(0) {
   }
@@ -1528,8 +1539,8 @@ typedef struct _WorkflowNodeDetails__isset {
 class WorkflowNodeDetails {
  public:
 
-  static const char* ascii_fingerprint; // = "940AB958A2909A83261C2016BD466838";
-  static const uint8_t binary_fingerprint[16]; // = {0x94,0x0A,0xB9,0x58,0xA2,0x90,0x9A,0x83,0x26,0x1C,0x20,0x16,0xBD,0x46,0x68,0x38};
+  static const char* ascii_fingerprint; // = "EB2D51CB4EF4984664FB9C47591EFA8D";
+  static const uint8_t binary_fingerprint[16]; // = {0xEB,0x2D,0x51,0xCB,0x4E,0xF4,0x98,0x46,0x64,0xFB,0x9C,0x47,0x59,0x1E,0xFA,0x8D};
 
   WorkflowNodeDetails() : nodeInstanceId("DO_NOT_SET_AT_CLIENTS"), creationTime(0), nodeName("SINGLE_APP_NODE"), executionUnit((ExecutionUnit::type)1), executionUnitData() {
     executionUnit = (ExecutionUnit::type)1;
@@ -1747,13 +1758,14 @@ class ValidationResults {
 void swap(ValidationResults &a, ValidationResults &b);
 
 typedef struct _Experiment__isset {
-  _Experiment__isset() : creationTime(false), description(false), applicationId(false), applicationVersion(false), workflowTemplateId(false), workflowTemplateVersion(false), enableEmailNotification(false), emailAddresses(false), userConfigurationData(false), workflowExecutionInstanceId(false), experimentInputs(false), experimentOutputs(false), experimentStatus(false), stateChangeList(false), workflowNodeDetailsList(false), errors(false) {}
+  _Experiment__isset() : creationTime(false), description(false), applicationId(false), applicationVersion(false), workflowTemplateId(false), workflowTemplateVersion(false), gatewayExecutionId(false), enableEmailNotification(false), emailAddresses(false), userConfigurationData(false), workflowExecutionInstanceId(false), experimentInputs(false), experimentOutputs(false), experimentStatus(false), stateChangeList(false), workflowNodeDetailsList(false), errors(false) {}
   bool creationTime;
   bool description;
   bool applicationId;
   bool applicationVersion;
   bool workflowTemplateId;
   bool workflowTemplateVersion;
+  bool gatewayExecutionId;
   bool enableEmailNotification;
   bool emailAddresses;
   bool userConfigurationData;
@@ -1769,10 +1781,10 @@ typedef struct _Experiment__isset {
 class Experiment {
  public:
 
-  static const char* ascii_fingerprint; // = "AAB7BCD0F1CB7A0198FEF5DB532788A8";
-  static const uint8_t binary_fingerprint[16]; // = {0xAA,0xB7,0xBC,0xD0,0xF1,0xCB,0x7A,0x01,0x98,0xFE,0xF5,0xDB,0x53,0x27,0x88,0xA8};
+  static const char* ascii_fingerprint; // = "2826868ECEA08F4F71C71DEAD5A3270F";
+  static const uint8_t binary_fingerprint[16]; // = {0x28,0x26,0x86,0x8E,0xCE,0xA0,0x8F,0x4F,0x71,0xC7,0x1D,0xEA,0xD5,0xA3,0x27,0x0F};
 
-  Experiment() : experimentID("DO_NOT_SET_AT_CLIENTS"), projectID("DEFAULT"), creationTime(0), userName(), name(), description(), applicationId(), applicationVersion(), workflowTemplateId(), workflowTemplateVersion(), enableEmailNotification(0), workflowExecutionInstanceId() {
+  Experiment() : experimentID("DO_NOT_SET_AT_CLIENTS"), projectID("DEFAULT"), creationTime(0), userName(), name(), description(), applicationId(), applicationVersion(), workflowTemplateId(), workflowTemplateVersion(), gatewayExecutionId(), enableEmailNotification(0), workflowExecutionInstanceId() {
   }
 
   virtual ~Experiment() throw() {}
@@ -1787,6 +1799,7 @@ class Experiment {
   std::string applicationVersion;
   std::string workflowTemplateId;
   std::string workflowTemplateVersion;
+  std::string gatewayExecutionId;
   bool enableEmailNotification;
   std::vector<std::string>  emailAddresses;
   UserConfigurationData userConfigurationData;
@@ -1844,6 +1857,11 @@ class Experiment {
   void __set_workflowTemplateVersion(const std::string& val) {
     workflowTemplateVersion = val;
     __isset.workflowTemplateVersion = true;
+  }
+
+  void __set_gatewayExecutionId(const std::string& val) {
+    gatewayExecutionId = val;
+    __isset.gatewayExecutionId = true;
   }
 
   void __set_enableEmailNotification(const bool val) {
@@ -1929,6 +1947,10 @@ class Experiment {
     if (__isset.workflowTemplateVersion != rhs.__isset.workflowTemplateVersion)
       return false;
     else if (__isset.workflowTemplateVersion && !(workflowTemplateVersion == rhs.workflowTemplateVersion))
+      return false;
+    if (__isset.gatewayExecutionId != rhs.__isset.gatewayExecutionId)
+      return false;
+    else if (__isset.gatewayExecutionId && !(gatewayExecutionId == rhs.gatewayExecutionId))
       return false;
     if (__isset.enableEmailNotification != rhs.__isset.enableEmailNotification)
       return false;
