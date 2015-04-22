@@ -179,14 +179,14 @@ public class SSHProvider extends AbstractProvider {
                     log.error(error);
                     jobDetails.setJobID("none");
                     GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
-                    GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+                    GFacUtils.saveErrorDetails(jobExecutionContext,  error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
                     throw new GFacProviderException(error, e);
                 } catch (Exception e) {
                     String error = "Error submitting the job to host " + jobExecutionContext.getHostName() + " message: " + e.getMessage();
                     log.error(error);
                     jobDetails.setJobID("none");
                     GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
-                    GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+                    GFacUtils.saveErrorDetails(jobExecutionContext,  error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
                     throw new GFacProviderException(error, e);
                 }
             } catch (GFacException e) {
