@@ -186,21 +186,6 @@ public class ComputeResourceImpl implements ComputeResource {
                 resource.setMonitorMode(sshJobSubmission.getMonitorMode().toString());
             }
             resource.save();
-            EmailMonitorProperty emailMonitorProperty = sshJobSubmission.getEmailMonitorProperty();
-            if (emailMonitorProperty != null){
-                EmailPropertyResource emailPropertyResource = new EmailPropertyResource();
-                emailPropertyResource.setJobSubmissionInterfaceId(submissionId);
-                emailPropertyResource.setHost(emailMonitorProperty.getHost());
-                emailPropertyResource.setPassword(emailMonitorProperty.getPassword());
-                emailPropertyResource.setEmailAddress(emailMonitorProperty.getEmailAddress());
-                emailPropertyResource.setFolderName(emailMonitorProperty.getFolderName());
-                emailPropertyResource.setSenderEmailAddress(emailMonitorProperty.getSenderEmailAddress());
-
-                if (emailMonitorProperty.getStoreProtocol() != null){
-                    emailPropertyResource.setProtocol(emailMonitorProperty.getStoreProtocol().toString());
-                }
-                emailPropertyResource.save();
-            }
         	return submissionId;
         }catch (Exception e) {
             logger.error("Error while saving SSH Job Submission...", e);

@@ -33,8 +33,6 @@ import org.apache.airavata.gfac.monitor.email.parser.EmailParser;
 import org.apache.airavata.gfac.monitor.email.parser.LSFEmailParser;
 import org.apache.airavata.gfac.monitor.email.parser.PBSEmailParser;
 import org.apache.airavata.gfac.monitor.email.parser.SLURMEmailParser;
-import org.apache.airavata.model.appcatalog.computeresource.EmailMonitorProperty;
-import org.apache.airavata.model.appcatalog.computeresource.EmailProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeRequestEvent;
@@ -48,9 +46,10 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
+import javax.mail.search.AndTerm;
 import javax.mail.search.FlagTerm;
 import javax.mail.search.ReceivedDateTerm;
-import javax.validation.constraints.NotNull;
+import javax.mail.search.SearchTerm;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -63,7 +62,8 @@ public class EmailBasedMonitor implements Runnable{
     private static final AiravataLogger log = AiravataLoggerFactory.getLogger(EmailBasedMonitor.class);
 
     public static final int COMPARISON = 6; // after and equal
-    private final EmailMonitorProperty emailMonitorProperty;
+    public static final String IMAPS = "imaps";
+    public static final String POP3 = "pop3";
     private boolean stopMonitoring = false;
 
     private Session session ;
@@ -72,17 +72,26 @@ public class EmailBasedMonitor implements Runnable{
     private Properties properties;
     private final ResourceJobManagerType RESOURCE_JOB_MONITOR_TYPE;
     private Map<String, JobExecutionContext> jobMonitorMap = new ConcurrentHashMap<String, JobExecutionContext>();
+    private String host, emailAddress, password, storeProtocol, folderName ;
+    private Date monitorStartDate;
 
-    public EmailBasedMonitor(EmailMonitorProperty emailMonitorProp, ResourceJobManagerType type) {
-        this.emailMonitorProperty = emailMonitorProp;
+    public EmailBasedMonitor(ResourceJobManagerType type) throws AiravataException {
         RESOURCE_JOB_MONITOR_TYPE = type;
         init();
     }
 
-    private void init() {
+    private void init() throws AiravataException {
+        host = ServerSettings.getEmailBasedMonitorHost();
+        emailAddress = ServerSettings.getEmailBasedMonitorAddress();
+        password = ServerSettings.getEmailBasedMonitorPassword();
+        storeProtocol = ServerSettings.getEmailBasedMonitorStoreProtocol();
+        folderName = ServerSettings.getEmailBasedMonitorFolderName();
+        if (!(storeProtocol.equals(IMAPS) || storeProtocol.equals(POP3))) {
+            throw new AiravataException("Unsupported store protocol , expected " +
+                    IMAPS + " or " + POP3 + " but found " + storeProtocol);
+        }
         properties = new Properties();
-        properties.put("mail.store.protocol", emailMonitorProperty.getStoreProtocol());
-
+        properties.put("mail.store.protocol", storeProtocol);
     }
 
     public void addToJobMonitorMap(JobExecutionContext jobExecutionContext) {
@@ -111,34 +120,28 @@ public class EmailBasedMonitor implements Runnable{
             default:
                 throw new AiravataException("Un-handle resource job manager type: "+ RESOURCE_JOB_MONITOR_TYPE + " for email monitoring -->  " + addressStr);
         }
-        return emailParser.parseEmail(message, emailMonitorProperty.getSenderEmailAddress());
+        return emailParser.parseEmail(message);
     }
 
     @Override
     public void run() {
         try {
             session = Session.getDefaultInstance(properties);
-            store = session.getStore(getProtocol(emailMonitorProperty.getStoreProtocol()));
-            store.connect(emailMonitorProperty.getHost(), emailMonitorProperty.getEmailAddress(),
-                    emailMonitorProperty.getPassword());
-            emailFolder = store.getFolder(emailMonitorProperty.getFolderName());
-            emailFolder.open(Folder.READ_WRITE);
+            store = session.getStore(storeProtocol);
+            store.connect(host, emailAddress, password);
+            emailFolder = store.getFolder(folderName);
             // first time we search for all unread messages.
-            Date preDate = Calendar.getInstance().getTime();
-            Date nextDate;
-            processMessages(emailFolder.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false)));
-            // then we search message continuously from prevDate to present.
+            SearchTerm unseenBefore = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
             while (!(stopMonitoring || ServerSettings.isStopAllThreads())) {
                 if (!store.isConnected()) {
                     store.connect();
-                    emailFolder = store.getFolder(emailMonitorProperty.getFolderName());
-                    emailFolder.open(Folder.READ_WRITE);
+                    emailFolder = store.getFolder(folderName);
                 }
                 Thread.sleep(ServerSettings.getEmailMonitorPeriod());// sleep a bit - get rest till job finishes
-                nextDate = Calendar.getInstance().getTime();
-                Message[] searchMessages = emailFolder.search(new ReceivedDateTerm(COMPARISON, preDate));
+                emailFolder.open(Folder.READ_WRITE);
+                Message[] searchMessages = emailFolder.search(unseenBefore);
                 processMessages(searchMessages);
-                preDate = nextDate; // this is a critical line
+                emailFolder.close(false);
             }
         } catch (MessagingException e) {
             log.error("Couldn't connect to the store ", e);
@@ -211,16 +214,6 @@ public class EmailBasedMonitor implements Runnable{
         }
     }
 
-    private String getProtocol(EmailProtocol storeProtocol) throws AiravataException {
-        switch (storeProtocol) {
-            case IMAPS:
-                return "imaps";
-            case POP3:
-                return "pop3";
-            default:
-                throw new AiravataException("Unhandled Email store protocol ");
-        }
-    }
     private void process(JobStatusResult jobStatusResult, JobExecutionContext jEC){
         JobState resultState = jobStatusResult.getState();
         jEC.getJobDetails().setJobStatus(new JobStatus(resultState));
@@ -291,5 +284,9 @@ public class EmailBasedMonitor implements Runnable{
 
     public void stopMonitoring() {
         stopMonitoring = true;
+    }
+
+    public void setDate(Date date) {
+        this.monitorStartDate = date;
     }
 }

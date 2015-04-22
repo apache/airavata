@@ -43,7 +43,7 @@ public class SLURMEmailParser implements EmailParser {
     public static final String FAILED = "Failed";
 
     @Override
-    public JobStatusResult parseEmail(Message message, String senderEmailAddress) throws MessagingException, AiravataException{
+    public JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException{
         JobStatusResult jobStatusResult = new JobStatusResult();
         String subject = message.getSubject();
         Pattern pattern = Pattern.compile(REGEX);

@@ -32,7 +32,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.apache.airavata.model.appcatalog.computeresource.EmailMonitorProperty;
 import org.apache.openjpa.persistence.DataCache;
 
 @DataCache

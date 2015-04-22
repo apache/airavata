@@ -31,5 +31,5 @@ public interface EmailParser {
     static final String JOBID = "jobId";
     static final String EXIT_STATUS = "exitStatus";
 
-    JobStatusResult parseEmail(Message message, String senderEmailAddress) throws MessagingException, AiravataException;
+    JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException;
 }
