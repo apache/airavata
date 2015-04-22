@@ -30,11 +30,13 @@ import org.apache.airavata.orchestrator.core.job.JobSubmitter;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
 import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
@@ -118,42 +120,52 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
     public ValidationResults validateExperiment(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID) throws OrchestratorException,LaunchValidationException {
         org.apache.airavata.model.error.ValidationResults validationResults = new org.apache.airavata.model.error.ValidationResults();
         validationResults.setValidationState(true); // initially making it to success, if atleast one failed them simply mark it failed.
+        String errorMsg = "Validation Errors : ";
         if (this.orchestratorConfiguration.isEnableValidation()) {
             List<String> validatorClzzez = this.orchestratorContext.getOrchestratorConfiguration().getValidatorClasses();
-            ValidatorResult vResult = null;
             for (String validator : validatorClzzez) {
                 try {
                     Class<? extends JobMetadataValidator> vClass = Class.forName(validator.trim()).asSubclass(JobMetadataValidator.class);
                     JobMetadataValidator jobMetadataValidator = vClass.newInstance();
-                    vResult = jobMetadataValidator.validate(experiment, workflowNodeDetail, taskID);
-                    if (vResult.isResult()) {
+                    validationResults = jobMetadataValidator.validate(experiment, workflowNodeDetail, taskID);
+                    if (validationResults.isValidationState()) {
                         logger.info("Validation of " + validator + " is SUCCESSFUL");
                     } else {
-                        logger.error("Validation of " + validator + " is FAILED:[error]" + vResult.getErrorDetails());
-                        //todo we need to store this message to registry
+                        List<ValidatorResult> validationResultList = validationResults.getValidationResultList();
+                        for (ValidatorResult result : validationResultList){
+                            if (!result.isResult()){
+                                String validationError = result.getErrorDetails();
+                                if (validationError != null){
+                                    errorMsg += validationError + " ";
+                                }
+                            }
+                        }
+                        logger.error("Validation of " + validator + " for experiment Id " + experiment.getExperimentID() + " is FAILED:[error]. " + errorMsg);
                         validationResults.setValidationState(false);
-                        // we do not return immediately after the first failure
+                        try {
+                            ErrorDetails details = new ErrorDetails();
+                            details.setActualErrorMessage(errorMsg);
+                            details.setCorrectiveAction(CorrectiveAction.RETRY_SUBMISSION);
+                            details.setActionableGroup(ActionableGroup.GATEWAYS_ADMINS);
+                            details.setCreationTime(Calendar.getInstance().getTimeInMillis());
+                            details.setErrorCategory(ErrorCategory.APPLICATION_FAILURE);
+                            orchestratorContext.getNewRegistry().add(ChildDataType.ERROR_DETAIL, details,
+                                    taskID.getTaskID());
+                        } catch (RegistryException e) {
+                            logger.error("Error while saving error details to registry", e);
+                        }
+                        break;
                     }
                 } catch (ClassNotFoundException e) {
                     logger.error("Error loading the validation class: ", validator, e);
-                    vResult = new ValidatorResult();
-                    vResult.setResult(false);
-                    vResult.setErrorDetails("Error loading the validation class: " + e.getMessage());
                     validationResults.setValidationState(false);
                 } catch (InstantiationException e) {
                     logger.error("Error loading the validation class: ", validator, e);
-                    vResult = new ValidatorResult();
-                    vResult.setResult(false);
-                    vResult.setErrorDetails("Error loading the validation class: " + e.getMessage());
                     validationResults.setValidationState(false);
                 } catch (IllegalAccessException e) {
                     logger.error("Error loading the validation class: ", validator, e);
-                    vResult = new ValidatorResult();
-                    vResult.setResult(false);
-                    vResult.setErrorDetails("Error loading the validation class: " + e.getMessage());
                     validationResults.setValidationState(false);
                 }
-                validationResults.addToValidationResultList(vResult);
             }
         }
         if(validationResults.isValidationState()){
@@ -162,7 +174,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             //atleast one validation has failed, so we throw an exception
             LaunchValidationException launchValidationException = new LaunchValidationException();
             launchValidationException.setValidationResult(validationResults);
-            launchValidationException.setErrorMessage("Validation failed refer the validationResults list for detail error");
+            launchValidationException.setErrorMessage("Validation failed refer the validationResults list for detail error. Validation errors : " + errorMsg);
             throw launchValidationException;
         }
     }

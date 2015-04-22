@@ -53,6 +53,7 @@ public class ExperimentResource extends AbstractResource {
     private String workflowTemplateVersion;
     private String workflowExecutionId;
     private boolean enableEmailNotifications;
+    private String gatewayExecutionId;
 
     /**
      *
@@ -132,6 +133,14 @@ public class ExperimentResource extends AbstractResource {
 
     public void setEnableEmailNotifications(boolean enableEmailNotifications) {
         this.enableEmailNotifications = enableEmailNotifications;
+    }
+
+    public String getGatewayExecutionId() {
+        return gatewayExecutionId;
+    }
+
+    public void setGatewayExecutionId(String gatewayExecutionId) {
+        this.gatewayExecutionId = gatewayExecutionId;
     }
 
     /**
@@ -583,6 +592,7 @@ public class ExperimentResource extends AbstractResource {
             experiment.setWorkflowTemplateVersion(workflowTemplateVersion);
             experiment.setWorkflowExecutionId(workflowExecutionId);
             experiment.setAllowNotification(enableEmailNotifications);
+            experiment.setGatewayExecutionId(gatewayExecutionId);
             if (existingExp != null) {
                 existingExp.setGateway(gateway);
                 existingExp.setGatewayId(gateway.getGateway_id());
@@ -599,6 +609,7 @@ public class ExperimentResource extends AbstractResource {
                 existingExp.setWorkflowTemplateVersion(workflowTemplateVersion);
                 existingExp.setWorkflowExecutionId(workflowExecutionId);
                 existingExp.setAllowNotification(enableEmailNotifications);
+                existingExp.setGatewayExecutionId(gatewayExecutionId);
                 experiment = em.merge(existingExp);
             } else {
                 em.persist(experiment);

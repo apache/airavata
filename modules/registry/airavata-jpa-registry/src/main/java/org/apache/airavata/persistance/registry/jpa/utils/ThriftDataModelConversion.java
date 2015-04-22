@@ -121,6 +121,7 @@ public class ThriftDataModelConversion {
             experiment.setApplicationVersion(experimentResource.getApplicationVersion());
             experiment.setWorkflowTemplateId(experimentResource.getWorkflowTemplateId());
             experiment.setEnableEmailNotification(experimentResource.isEnableEmailNotifications());
+            experiment.setGatewayExecutionId(experimentResource.getGatewayExecutionId());
             if (experiment.isEnableEmailNotification()){
                 List<NotificationEmailResource> notificationEmails = experimentResource.getNotificationEmails();
                 experiment.setEmailAddresses(getEmailAddresses(notificationEmails));
@@ -560,6 +561,8 @@ public class ThriftDataModelConversion {
             jobDetails.setCreationTime(jobDetailResource.getCreationTime().getTime());
             StatusResource jobStatus = jobDetailResource.getJobStatus();
             jobDetails.setJobStatus(getJobStatus(jobStatus));
+            jobDetails.setJobName(jobDetailResource.getJobName());
+            jobDetails.setWorkingDir(jobDetailResource.getWorkingDir());
             StatusResource applicationStatus = jobDetailResource.getApplicationStatus();
             jobDetails.setApplicationStatus(getApplicationStatus(applicationStatus));
             List<ErrorDetailResource> errorDetails = jobDetailResource.getErrorDetails();

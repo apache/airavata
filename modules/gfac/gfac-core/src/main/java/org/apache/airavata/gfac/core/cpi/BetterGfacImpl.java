@@ -941,7 +941,7 @@ public class BetterGfacImpl implements GFac,Watcher {
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
                     , GfacExperimentState.INHANDLERSINVOKED));
         } catch (Exception e) {
-            throw new GFacException("Error invoking ZK", e);
+            throw new GFacException("Error Invoking Handlers:"+e.getMessage(), e);
         }
     }
 

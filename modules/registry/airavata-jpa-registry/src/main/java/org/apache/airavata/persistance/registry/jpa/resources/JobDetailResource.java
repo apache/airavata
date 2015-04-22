@@ -44,6 +44,24 @@ public class JobDetailResource extends AbstractResource {
     private String jobDescription;
     private Timestamp creationTime;
     private String computeResourceConsumed;
+    private String jobName;
+    private String workingDir;
+
+    public String getJobName() {
+        return jobName;
+    }
+
+    public void setJobName(String jobName) {
+        this.jobName = jobName;
+    }
+
+    public String getWorkingDir() {
+        return workingDir;
+    }
+
+    public void setWorkingDir(String workingDir) {
+        this.workingDir = workingDir;
+    }
 
     public String getJobId() {
         return jobId;
@@ -266,6 +284,8 @@ public class JobDetailResource extends AbstractResource {
             jobDetail.setTask(taskDetail);
             jobDetail.setTaskId(taskDetailResource.getTaskId());
             jobDetail.setCreationTime(creationTime);
+            jobDetail.setJobName(jobName);
+            jobDetail.setWorkingDir(workingDir);
             if (jobDescription != null) {
                 jobDetail.setJobDescription(jobDescription.toCharArray());
             }
@@ -279,6 +299,8 @@ public class JobDetailResource extends AbstractResource {
                     existingJobDetail.setJobDescription(jobDescription.toCharArray());
                 }
                 existingJobDetail.setComputeResourceConsumed(computeResourceConsumed);
+                existingJobDetail.setJobName(jobName);
+                existingJobDetail.setWorkingDir(workingDir);
                 jobDetail = em.merge(existingJobDetail);
             } else {
                 em.persist(jobDetail);
