@@ -20,26 +20,38 @@
 */
 package org.apache.airavata.orchestrator.core.validator.impl;
 
+import org.apache.airavata.model.error.ValidationResults;
 import org.apache.airavata.model.error.ValidatorResult;
-import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.workspace.experiment.ExperimentState;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ExperimentStatusValidator implements JobMetadataValidator {
     private static Logger log = LoggerFactory.getLogger(ExperimentStatusValidator.class);
 
-    public ValidatorResult validate(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID) {
+    public ValidationResults validate(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID) {
         String error = "During the validation step experiment status should be CREATED, But this experiment status is : ";
+        ValidationResults validationResults = new ValidationResults();
+        validationResults.setValidationState(true);
         ValidatorResult validatorResult = new ValidatorResult();
+        List<ValidatorResult> validatorResultList = new ArrayList<ValidatorResult>();
         if (!experiment.getExperimentStatus().getExperimentState().equals(ExperimentState.CREATED)) {
             error += experiment.getExperimentStatus().getExperimentState().toString();
             log.error(error);
             validatorResult.setErrorDetails(error);
-            validatorResult.setResult(false);;
-            return validatorResult;
+            validatorResult.setResult(false);
+            validationResults.setValidationState(false);
         }
         validatorResult.setResult(true);
-        return validatorResult;
+        validatorResultList.add(validatorResult);
+        validationResults.setValidationResultList(validatorResultList);
+        return validationResults;
     }
 }
