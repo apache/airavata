@@ -23,6 +23,7 @@ package org.apache.airavata.gfac.ssh.provider.impl;
 
 import org.airavata.appcatalog.cpi.AppCatalog;
 import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.ExecutionMode;
@@ -49,7 +50,15 @@ import org.apache.airavata.gsi.ssh.impl.StandardOutReader;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+<<<<<<< HEAD
 import org.apache.airavata.model.appcatalog.computeresource.*;
+=======
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+>>>>>>> bbb43ffb4ae8fef5041cb8fe9076b4244482c499
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
@@ -385,12 +394,14 @@ public class SSHProvider extends AbstractRecoverableProvider {
             SSHJobSubmission sshJobSubmission = jobExecutionContext.getAppCatalog().getComputeResource().getSSHJobSubmission(jobSubmissionInterfaceId);
             MonitorMode monitorMode = sshJobSubmission.getMonitorMode();
             if (monitorMode != null && monitorMode == MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR) {
-                EmailMonitorProperty emailMonitorProp = sshJobSubmission.getEmailMonitorProperty();
-                if (emailMonitorProp != null) {
-                    EmailBasedMonitor emailBasedMonitor = EmailMonitorFactory.getEmailBasedMonitor(emailMonitorProp);
+                try {
+                    EmailBasedMonitor emailBasedMonitor = EmailMonitorFactory.getEmailBasedMonitor(
+                            sshJobSubmission.getResourceJobManager().getResourceJobManagerType());
                     emailBasedMonitor.addToJobMonitorMap(jobExecutionContext);
-                    return;
+                } catch (AiravataException e) {
+                    log.error("Couldn't active email monitoring, Error while initializing Email Based Monitor", e);
                 }
+                return;
             }
         }
 

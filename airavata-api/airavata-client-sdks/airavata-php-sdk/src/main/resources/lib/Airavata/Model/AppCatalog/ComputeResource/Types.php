@@ -107,15 +107,6 @@ final class MonitorMode {
   );
 }
 
-final class EmailProtocol {
-  const POP3 = 0;
-  const IMAPS = 1;
-  static public $__names = array(
-    0 => 'POP3',
-    1 => 'IMAPS',
-  );
-}
-
 final class DataMovementProtocol {
   const LOCAL = 0;
   const SCP = 1;
@@ -511,158 +502,6 @@ class BatchQueue {
     if ($this->maxMemory !== null) {
       $xfer += $output->writeFieldBegin('maxMemory', TType::I32, 7);
       $xfer += $output->writeI32($this->maxMemory);
-      $xfer += $output->writeFieldEnd();
-    }
-    $xfer += $output->writeFieldStop();
-    $xfer += $output->writeStructEnd();
-    return $xfer;
-  }
-
-}
-
-class EmailMonitorProperty {
-  static $_TSPEC;
-
-  public $host = null;
-  public $emailAddress = null;
-  public $password = null;
-  public $folderName = "INBOX";
-  public $storeProtocol = null;
-
-  public function __construct($vals=null) {
-    if (!isset(self::$_TSPEC)) {
-      self::$_TSPEC = array(
-        1 => array(
-          'var' => 'host',
-          'type' => TType::STRING,
-          ),
-        2 => array(
-          'var' => 'emailAddress',
-          'type' => TType::STRING,
-          ),
-        3 => array(
-          'var' => 'password',
-          'type' => TType::STRING,
-          ),
-        4 => array(
-          'var' => 'folderName',
-          'type' => TType::STRING,
-          ),
-        5 => array(
-          'var' => 'storeProtocol',
-          'type' => TType::I32,
-          ),
-        );
-    }
-    if (is_array($vals)) {
-      if (isset($vals['host'])) {
-        $this->host = $vals['host'];
-      }
-      if (isset($vals['emailAddress'])) {
-        $this->emailAddress = $vals['emailAddress'];
-      }
-      if (isset($vals['password'])) {
-        $this->password = $vals['password'];
-      }
-      if (isset($vals['folderName'])) {
-        $this->folderName = $vals['folderName'];
-      }
-      if (isset($vals['storeProtocol'])) {
-        $this->storeProtocol = $vals['storeProtocol'];
-      }
-    }
-  }
-
-  public function getName() {
-    return 'EmailMonitorProperty';
-  }
-
-  public function read($input)
-  {
-    $xfer = 0;
-    $fname = null;
-    $ftype = 0;
-    $fid = 0;
-    $xfer += $input->readStructBegin($fname);
-    while (true)
-    {
-      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
-      if ($ftype == TType::STOP) {
-        break;
-      }
-      switch ($fid)
-      {
-        case 1:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->host);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 2:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->emailAddress);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 3:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->password);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 4:
-          if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->folderName);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 5:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->storeProtocol);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        default:
-          $xfer += $input->skip($ftype);
-          break;
-      }
-      $xfer += $input->readFieldEnd();
-    }
-    $xfer += $input->readStructEnd();
-    return $xfer;
-  }
-
-  public function write($output) {
-    $xfer = 0;
-    $xfer += $output->writeStructBegin('EmailMonitorProperty');
-    if ($this->host !== null) {
-      $xfer += $output->writeFieldBegin('host', TType::STRING, 1);
-      $xfer += $output->writeString($this->host);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->emailAddress !== null) {
-      $xfer += $output->writeFieldBegin('emailAddress', TType::STRING, 2);
-      $xfer += $output->writeString($this->emailAddress);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->password !== null) {
-      $xfer += $output->writeFieldBegin('password', TType::STRING, 3);
-      $xfer += $output->writeString($this->password);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->folderName !== null) {
-      $xfer += $output->writeFieldBegin('folderName', TType::STRING, 4);
-      $xfer += $output->writeString($this->folderName);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->storeProtocol !== null) {
-      $xfer += $output->writeFieldBegin('storeProtocol', TType::I32, 5);
-      $xfer += $output->writeI32($this->storeProtocol);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
@@ -1232,7 +1071,6 @@ class SSHJobSubmission {
   public $alternativeSSHHostName = null;
   public $sshPort = 22;
   public $monitorMode = null;
-  public $emailMonitorProperty = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -1262,11 +1100,6 @@ class SSHJobSubmission {
           'var' => 'monitorMode',
           'type' => TType::I32,
           ),
-        7 => array(
-          'var' => 'emailMonitorProperty',
-          'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\AppCatalog\ComputeResource\EmailMonitorProperty',
-          ),
         );
     }
     if (is_array($vals)) {
@@ -1287,9 +1120,6 @@ class SSHJobSubmission {
       }
       if (isset($vals['monitorMode'])) {
         $this->monitorMode = $vals['monitorMode'];
-      }
-      if (isset($vals['emailMonitorProperty'])) {
-        $this->emailMonitorProperty = $vals['emailMonitorProperty'];
       }
     }
   }
@@ -1356,14 +1186,6 @@ class SSHJobSubmission {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 7:
-          if ($ftype == TType::STRUCT) {
-            $this->emailMonitorProperty = new \Airavata\Model\AppCatalog\ComputeResource\EmailMonitorProperty();
-            $xfer += $this->emailMonitorProperty->read($input);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -1408,14 +1230,6 @@ class SSHJobSubmission {
     if ($this->monitorMode !== null) {
       $xfer += $output->writeFieldBegin('monitorMode', TType::I32, 6);
       $xfer += $output->writeI32($this->monitorMode);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->emailMonitorProperty !== null) {
-      if (!is_object($this->emailMonitorProperty)) {
-        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
-      }
-      $xfer += $output->writeFieldBegin('emailMonitorProperty', TType::STRUCT, 7);
-      $xfer += $this->emailMonitorProperty->write($output);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

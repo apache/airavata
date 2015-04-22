@@ -1277,10 +1277,10 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
         } catch (RegistryException e1) {
-            logger.errorId(airavataExperimentId, "Error while retrieving projects", e1);
+            logger.errorId(airavataExperimentId, "Error while instantiate the registry instance", e1);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving projects. More info : " + e1.getMessage());
+            exception.setMessage("Error while instantiate the registry instance. More info : " + e1.getMessage());
             throw exception;
         }
     	Experiment experiment = getExperiment(airavataExperimentId);
