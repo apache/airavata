@@ -53,7 +53,7 @@ public class GfacInternalStatusUpdator implements AbstractActivityListener, Watc
         MonitorID monitorID = statusChangeRequest.getMonitorID();
         String experimentNode = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
         String experimentPath = experimentNode + File.separator + ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME)
-                + File.separator + statusChangeRequest.getMonitorID().getExperimentID() + "+" + monitorID.getTaskID();
+                + File.separator + statusChangeRequest.getMonitorID().getExperimentID();
         Stat exists = null;
         try {
             if (!zk.getState().isConnected()) {
@@ -63,7 +63,7 @@ public class GfacInternalStatusUpdator implements AbstractActivityListener, Watc
                     mutex.wait();
                 }
             }
-            exists = zk.exists(experimentPath, false);// this znode is created by orchestrator so it has to exist at this level
+            exists = zk.exists(experimentPath, false);
             if (exists == null) {
                 logger.error("ZK path: " + experimentPath + " does not exists !!");
                 logger.error("Zookeeper is in an inconsistent state !!! ");

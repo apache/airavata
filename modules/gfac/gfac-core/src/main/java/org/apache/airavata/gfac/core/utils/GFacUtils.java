@@ -1164,10 +1164,7 @@ public class GFacUtils {
 		String newExpNode = experimentPath + File.separator + experimentID;
 		Stat exists1 = zk.exists(newExpNode, false);
 		String experimentEntry = GFacUtils.findExperimentEntry(experimentID, zk);
-		if (exists1 != null) {
-			log.error("This request is wrong because its already running in the same instance");
-			return false;
-		} else if (experimentEntry == null) {  // this means this is a very new experiment
+		if (experimentEntry == null) {  // this means this is a very new experiment
 			// are going to create a new node
 			log.info("This is a new Job, so creating all the experiment docs from the scratch");
 
@@ -1184,46 +1181,57 @@ public class GFacUtils {
 							.valueOf(GfacExperimentState.LAUNCHED.getValue())
 							.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
 					CreateMode.PERSISTENT);
+
+			if(zk.exists(s,false)!=null){
+				log.info("Created the node: "+s+" successfully !");
+			}else{
+				log.error("Error creating node: "+s+" successfully !");
+			}
+
 			String s1 = zk.create(newExpNode + File.separator + "operation", "submit".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
 					CreateMode.PERSISTENT);
 			zk.exists(s1, true);// we want to know when this node get deleted
-			String s2 = zk.create(newExpNode + AiravataZKUtils.DELIVERY_TAG_POSTFIX, longToBytes(deliveryTag), ZooDefs.Ids.OPEN_ACL_UNSAFE,  // here we store the value of delivery message
+			zk.create(newExpNode + AiravataZKUtils.DELIVERY_TAG_POSTFIX, longToBytes(deliveryTag), ZooDefs.Ids.OPEN_ACL_UNSAFE,  // here we store the value of delivery message
 					CreateMode.PERSISTENT);
 		} else {
 			log.error("ExperimentID: " + experimentID + " taskID: " + taskID
 					+ " was running by some Gfac instance,but it failed");
-			log.info("This is an old Job, so copying data from old experiment location");
-			zk.create(newExpNode,
-					zk.getData(experimentEntry, false, exists1),
-					ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-
-			List<String> children = zk.getChildren(experimentEntry,
-					false);
-			for (String childNode1 : children) {
-				String level1 = experimentEntry + File.separator
-						+ childNode1;
-				Stat exists2 = zk.exists(level1, false); // no need to check exists
-				String newLeve1 = newExpNode + File.separator + childNode1;
-				log.info("Creating new znode: " + newLeve1); // these has to be info logs
-				zk.create(newLeve1, zk.getData(level1, false, exists2),
+			if(newExpNode.equals(experimentEntry)){
+				log.info("Re-launch experiment came to the same GFac instance");
+			}else {
+				log.info("Re-launch experiment came to a new GFac instance so we are moving data to new gfac node");
+				zk.create(newExpNode,
+						zk.getData(experimentEntry, false, exists1),
 						ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-				for (String childNode2 : zk.getChildren(level1, false)) {
-					String level2 = level1 + File.separator + childNode2;
-					Stat exists3 = zk.exists(level2, false); // no need to check exists
-					String newLeve2 = newLeve1 + File.separator
-							+ childNode2;
-					log.info("Creating new znode: " + newLeve2);
-					zk.create(newLeve2, zk.getData(level2, false, exists3),
-							ZooDefs.Ids.OPEN_ACL_UNSAFE,
-							CreateMode.PERSISTENT);
+
+				List<String> children = zk.getChildren(experimentEntry,
+						false);
+				for (String childNode1 : children) {
+					String level1 = experimentEntry + File.separator
+							+ childNode1;
+					Stat exists2 = zk.exists(level1, false); // no need to check exists
+					String newLeve1 = newExpNode + File.separator + childNode1;
+					log.info("Creating new znode: " + newLeve1); // these has to be info logs
+					zk.create(newLeve1, zk.getData(level1, false, exists2),
+							ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+					for (String childNode2 : zk.getChildren(level1, false)) {
+						String level2 = level1 + File.separator + childNode2;
+						Stat exists3 = zk.exists(level2, false); // no need to check exists
+						String newLeve2 = newLeve1 + File.separator
+								+ childNode2;
+						log.info("Creating new znode: " + newLeve2);
+						zk.create(newLeve2, zk.getData(level2, false, exists3),
+								ZooDefs.Ids.OPEN_ACL_UNSAFE,
+								CreateMode.PERSISTENT);
+					}
 				}
+				// After all the files are successfully transfered we delete the
+				// old experiment,otherwise we do
+				// not delete a single file
+				log.info("After a successful copying of experiment data for an old experiment we delete the old data");
+				log.info("Deleting experiment data: " + experimentEntry);
+				ZKUtil.deleteRecursive(zk, experimentEntry);
 			}
-			// After all the files are successfully transfered we delete the
-			// old experiment,otherwise we do
-			// not delete a single file
-			log.info("After a successful copying of experiment data for an old experiment we delete the old data");
-			log.info("Deleting experiment data: " + experimentEntry);
-			ZKUtil.deleteRecursive(zk, experimentEntry);
 		}
 		return true;
 	}

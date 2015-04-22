@@ -21,9 +21,9 @@
 
 package org.apache.airavata.gfac.ssh.provider.impl;
 
+import org.airavata.appcatalog.cpi.AppCatalog;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.ExecutionMode;
 import org.apache.airavata.gfac.GFacException;
@@ -33,7 +33,7 @@ import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.handler.ThreadedHandler;
 import org.apache.airavata.gfac.core.notification.events.StartExecutionEvent;
-import org.apache.airavata.gfac.core.provider.AbstractProvider;
+import org.apache.airavata.gfac.core.provider.AbstractRecoverableProvider;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.monitor.email.EmailBasedMonitor;
@@ -49,16 +49,13 @@ import org.apache.airavata.gsi.ssh.impl.StandardOutReader;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
-import org.apache.airavata.model.appcatalog.computeresource.EmailMonitorProperty;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
-import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.xmlbeans.XmlException;
+import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -69,7 +66,7 @@ import java.util.*;
 /**
  * Execute application using remote SSH
  */
-public class SSHProvider extends AbstractProvider {
+public class SSHProvider extends AbstractRecoverableProvider {
     private static final Logger log = LoggerFactory.getLogger(SSHProvider.class);
     private Cluster cluster;
     private String jobID = null;
@@ -142,6 +139,7 @@ public class SSHProvider extends AbstractProvider {
             }
         } else {
             try {
+                StringBuffer data = new StringBuffer();
                 jobExecutionContext.getNotifier().publish(new StartExecutionEvent());
                 JobDetails jobDetails = new JobDetails();
                 String hostAddress = jobExecutionContext.getHostName();
@@ -173,21 +171,27 @@ public class SSHProvider extends AbstractProvider {
                         jobDetails.setJobID(jobID);
                         GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SUBMITTED);
                     }
+                    data.append("jobDesc=").append(jobDescriptor.toXML());
+                    data.append(",jobId=").append(jobDetails.getJobID());
                     delegateToMonitorHandlers(jobExecutionContext);
                 } catch (SSHApiException e) {
                     String error = "Error submitting the job to host " + jobExecutionContext.getHostName() + " message: " + e.getMessage();
                     log.error(error);
                     jobDetails.setJobID("none");
                     GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
-                    GFacUtils.saveErrorDetails(jobExecutionContext,  error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+                    GFacUtils.saveErrorDetails(jobExecutionContext, error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
                     throw new GFacProviderException(error, e);
                 } catch (Exception e) {
                     String error = "Error submitting the job to host " + jobExecutionContext.getHostName() + " message: " + e.getMessage();
                     log.error(error);
                     jobDetails.setJobID("none");
                     GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
-                    GFacUtils.saveErrorDetails(jobExecutionContext,  error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+                    GFacUtils.saveErrorDetails(jobExecutionContext, error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
                     throw new GFacProviderException(error, e);
+                } finally {
+                    log.info("Saving data for future recovery: ");
+                    log.info(data.toString());
+                    GFacUtils.savePluginData(jobExecutionContext, data, this.getClass().getName());
                 }
             } catch (GFacException e) {
                 throw new GFacProviderException(e.getMessage(), e);
@@ -233,7 +237,7 @@ public class SSHProvider extends AbstractProvider {
                 GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
                 StringWriter errors = new StringWriter();
                 e.printStackTrace(new PrintWriter(errors));
-                GFacUtils.saveErrorDetails(jobExecutionContext,  errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+                GFacUtils.saveErrorDetails(jobExecutionContext, errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
                 throw new GFacProviderException(error, e);
             } catch (Exception e) {
                 String error = "Error submitting the job to host " + jobExecutionContext.getHostName() + " message: " + e.getMessage();
@@ -242,7 +246,7 @@ public class SSHProvider extends AbstractProvider {
                 GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
                 StringWriter errors = new StringWriter();
                 e.printStackTrace(new PrintWriter(errors));
-                GFacUtils.saveErrorDetails(jobExecutionContext,  errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+                GFacUtils.saveErrorDetails(jobExecutionContext, errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
                 throw new GFacProviderException(error, e);
             }
             // we know this host is type GsiSSHHostType
@@ -376,7 +380,7 @@ public class SSHProvider extends AbstractProvider {
     }
 
     public void delegateToMonitorHandlers(JobExecutionContext jobExecutionContext) throws GFacHandlerException, AppCatalogException {
-        if (jobExecutionContext.getPreferredJobSubmissionProtocol()== JobSubmissionProtocol.SSH) {
+        if (jobExecutionContext.getPreferredJobSubmissionProtocol() == JobSubmissionProtocol.SSH) {
             String jobSubmissionInterfaceId = jobExecutionContext.getPreferredJobSubmissionInterface().getJobSubmissionInterfaceId();
             SSHJobSubmission sshJobSubmission = jobExecutionContext.getAppCatalog().getComputeResource().getSSHJobSubmission(jobSubmissionInterfaceId);
             MonitorMode monitorMode = sshJobSubmission.getMonitorMode();
@@ -408,7 +412,74 @@ public class SSHProvider extends AbstractProvider {
             log.error("No Daemon handler is configured in gfac-config.xml, either pull or push, so monitoring will not invoked" +
                     ", execution is configured as asynchronous, so Outhandler will not be invoked");
         }
-
     }
 
+
+    public void recover(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
+        // have to implement the logic to recover a gfac failure
+        initialize(jobExecutionContext);
+        if(hpcType) {
+            log.info("Invoking Recovering for the Experiment: " + jobExecutionContext.getExperimentID());
+            String hostName = jobExecutionContext.getHostName();
+            String jobId = "";
+            String jobDesc = "";
+            String jobName = "";
+            try {
+                String pluginData = GFacUtils.getPluginData(jobExecutionContext, this.getClass().getName());
+                String[] split = pluginData.split(",");
+                if (split.length < 2) {
+                    this.execute(jobExecutionContext);
+                    return;
+                }
+                jobDesc = split[0].substring(8);
+                jobId = split[1].substring(6);
+                try {
+                    JobDescriptor jobDescriptor = JobDescriptor.fromXML(jobDesc);
+                    jobName = jobDescriptor.getJobName();
+                } catch (XmlException e) {
+                    log.error(e.getMessage(), e);
+                    log.error("Cannot parse plugin data stored, but trying to recover");
+
+                }
+                log.info("Following data have recovered: ");
+                log.info("Job Description: " + jobDesc);
+                log.info("Job Id: " + jobId);
+                if (jobName.isEmpty() || jobId.isEmpty() || "none".equals(jobId) ||
+                        "".equals(jobId)) {
+                    log.info("Cannot recover data so submitting the job again !!!");
+                    this.execute(jobExecutionContext);
+                    return;
+                }
+            } catch (ApplicationSettingsException e) {
+                log.error("Error while  recovering provider", e);
+            } catch (KeeperException e) {
+                log.error("Error while  recovering provider", e);
+            } catch (InterruptedException e) {
+                log.error("Error while  recovering provider", e);
+            }
+            try {
+                // Now we are we have enough data to recover
+                JobDetails jobDetails = new JobDetails();
+                jobDetails.setJobDescription(jobDesc);
+                jobDetails.setJobID(jobId);
+                jobDetails.setJobName(jobName);
+                jobExecutionContext.setJobDetails(jobDetails);
+                if (jobExecutionContext.getSecurityContext(hostName) == null) {
+                    try {
+                        GFACSSHUtils.addSecurityContext(jobExecutionContext);
+                    } catch (ApplicationSettingsException e) {
+                        log.error(e.getMessage());
+                        throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
+                    }
+                }
+                delegateToMonitorHandlers(jobExecutionContext);
+            } catch (Exception e) {
+                log.error("Error while recover the job", e);
+                throw new GFacProviderException("Error delegating already ran job to Monitoring", e);
+            }
+        }else{
+            log.info("We do not handle non hpc recovery so we simply run the Job directly");
+            this.execute(jobExecutionContext);
+        }
+    }
 }

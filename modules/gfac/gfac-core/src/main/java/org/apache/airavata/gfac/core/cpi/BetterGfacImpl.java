@@ -662,6 +662,7 @@ public class BetterGfacImpl implements GFac,Watcher {
 				log.info("ExperimentId: " + experimentID + " taskId: " + jobExecutionContext.getTaskData().getTaskID());
 			}
 		} catch (Exception e) {
+            log.error(e.getMessage(),e);
 			try {
 				// we make the experiment as failed due to exception scenario
 				monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.FAILED));
@@ -796,7 +797,7 @@ public class BetterGfacImpl implements GFac,Watcher {
         if (provider != null) {
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKING));
             String plState = GFacUtils.getPluginState(zk, jobExecutionContext, provider.getClass().getName());
-            if (Integer.valueOf(plState) >= GfacPluginState.INVOKED.getValue()) {    // this will make sure if a plugin crashes it will not launch from the scratch, but plugins have to save their invoked state
+            if (plState!=null && Integer.valueOf(plState) >= GfacPluginState.INVOKED.getValue()) {    // this will make sure if a plugin crashes it will not launch from the scratch, but plugins have to save their invoked state
                 if (provider instanceof GFacRecoverableProvider) {
                     GFacUtils.createPluginZnode(zk, jobExecutionContext, provider.getClass().getName());
                     ((GFacRecoverableProvider) provider).recover(jobExecutionContext);
