@@ -106,15 +106,6 @@ struct MonitorMode {
 
 extern const std::map<int, const char*> _MonitorMode_VALUES_TO_NAMES;
 
-struct EmailProtocol {
-  enum type {
-    POP3 = 0,
-    IMAPS = 1
-  };
-};
-
-extern const std::map<int, const char*> _EmailProtocol_VALUES_TO_NAMES;
-
 struct DataMovementProtocol {
   enum type {
     LOCAL = 0,
@@ -326,78 +317,6 @@ class BatchQueue {
 };
 
 void swap(BatchQueue &a, BatchQueue &b);
-
-
-class EmailMonitorProperty {
- public:
-
-  static const char* ascii_fingerprint; // = "218FF2099E03B9AC08A5A47A15F4294E";
-  static const uint8_t binary_fingerprint[16]; // = {0x21,0x8F,0xF2,0x09,0x9E,0x03,0xB9,0xAC,0x08,0xA5,0xA4,0x7A,0x15,0xF4,0x29,0x4E};
-
-  EmailMonitorProperty() : host(), emailAddress(), password(), folderName("INBOX"), storeProtocol((EmailProtocol::type)0), senderEmailAddress() {
-  }
-
-  virtual ~EmailMonitorProperty() throw() {}
-
-  std::string host;
-  std::string emailAddress;
-  std::string password;
-  std::string folderName;
-  EmailProtocol::type storeProtocol;
-  std::string senderEmailAddress;
-
-  void __set_host(const std::string& val) {
-    host = val;
-  }
-
-  void __set_emailAddress(const std::string& val) {
-    emailAddress = val;
-  }
-
-  void __set_password(const std::string& val) {
-    password = val;
-  }
-
-  void __set_folderName(const std::string& val) {
-    folderName = val;
-  }
-
-  void __set_storeProtocol(const EmailProtocol::type val) {
-    storeProtocol = val;
-  }
-
-  void __set_senderEmailAddress(const std::string& val) {
-    senderEmailAddress = val;
-  }
-
-  bool operator == (const EmailMonitorProperty & rhs) const
-  {
-    if (!(host == rhs.host))
-      return false;
-    if (!(emailAddress == rhs.emailAddress))
-      return false;
-    if (!(password == rhs.password))
-      return false;
-    if (!(folderName == rhs.folderName))
-      return false;
-    if (!(storeProtocol == rhs.storeProtocol))
-      return false;
-    if (!(senderEmailAddress == rhs.senderEmailAddress))
-      return false;
-    return true;
-  }
-  bool operator != (const EmailMonitorProperty &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const EmailMonitorProperty & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-};
-
-void swap(EmailMonitorProperty &a, EmailMonitorProperty &b);
 
 typedef struct _SCPDataMovement__isset {
   _SCPDataMovement__isset() : alternativeSCPHostName(false), sshPort(true) {}
@@ -654,18 +573,17 @@ class LOCALDataMovement {
 void swap(LOCALDataMovement &a, LOCALDataMovement &b);
 
 typedef struct _SSHJobSubmission__isset {
-  _SSHJobSubmission__isset() : alternativeSSHHostName(false), sshPort(true), monitorMode(false), emailMonitorProperty(false) {}
+  _SSHJobSubmission__isset() : alternativeSSHHostName(false), sshPort(true), monitorMode(false) {}
   bool alternativeSSHHostName;
   bool sshPort;
   bool monitorMode;
-  bool emailMonitorProperty;
 } _SSHJobSubmission__isset;
 
 class SSHJobSubmission {
  public:
 
-  static const char* ascii_fingerprint; // = "200BDE51156682BAC37E8B5DAD03D6D3";
-  static const uint8_t binary_fingerprint[16]; // = {0x20,0x0B,0xDE,0x51,0x15,0x66,0x82,0xBA,0xC3,0x7E,0x8B,0x5D,0xAD,0x03,0xD6,0xD3};
+  static const char* ascii_fingerprint; // = "A62183DAA7AFF027173705420A9D99D0";
+  static const uint8_t binary_fingerprint[16]; // = {0xA6,0x21,0x83,0xDA,0xA7,0xAF,0xF0,0x27,0x17,0x37,0x05,0x42,0x0A,0x9D,0x99,0xD0};
 
   SSHJobSubmission() : jobSubmissionInterfaceId("DO_NOT_SET_AT_CLIENTS"), securityProtocol((SecurityProtocol::type)0), alternativeSSHHostName(), sshPort(22), monitorMode((MonitorMode::type)0) {
   }
@@ -678,7 +596,6 @@ class SSHJobSubmission {
   std::string alternativeSSHHostName;
   int32_t sshPort;
   MonitorMode::type monitorMode;
-  EmailMonitorProperty emailMonitorProperty;
 
   _SSHJobSubmission__isset __isset;
 
@@ -709,11 +626,6 @@ class SSHJobSubmission {
     __isset.monitorMode = true;
   }
 
-  void __set_emailMonitorProperty(const EmailMonitorProperty& val) {
-    emailMonitorProperty = val;
-    __isset.emailMonitorProperty = true;
-  }
-
   bool operator == (const SSHJobSubmission & rhs) const
   {
     if (!(jobSubmissionInterfaceId == rhs.jobSubmissionInterfaceId))
@@ -733,10 +645,6 @@ class SSHJobSubmission {
     if (__isset.monitorMode != rhs.__isset.monitorMode)
       return false;
     else if (__isset.monitorMode && !(monitorMode == rhs.monitorMode))
-      return false;
-    if (__isset.emailMonitorProperty != rhs.__isset.emailMonitorProperty)
-      return false;
-    else if (__isset.emailMonitorProperty && !(emailMonitorProperty == rhs.emailMonitorProperty))
       return false;
     return true;
   }

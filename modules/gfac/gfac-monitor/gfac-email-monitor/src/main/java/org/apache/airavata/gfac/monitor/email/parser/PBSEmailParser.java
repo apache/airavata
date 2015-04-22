@@ -45,8 +45,9 @@ public class PBSEmailParser implements EmailParser {
     public static final String ABORTED_BY_PBS_SERVER = "Aborted by PBS Server";
 
     @Override
-    public JobStatusResult parseEmail(Message message, String senderEmailAddress) throws MessagingException, AiravataException {
+    public JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException {
         JobStatusResult jobStatusResult = new JobStatusResult();
+//        log.info("Parsing -> " + message.getSubject());
         try {
             String content = ((String) message.getContent());
             Pattern pattern = Pattern.compile(REGEX);

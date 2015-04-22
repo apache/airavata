@@ -33,7 +33,6 @@ import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
 import org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
-import org.apache.airavata.model.appcatalog.computeresource.EmailMonitorProperty;
 import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
@@ -344,26 +343,8 @@ public class AppCatalogThriftConversion {
     	sshJobSubmission.setSshPort(submission.getSshPort());
         if (submission.getMonitorMode() != null){
             sshJobSubmission.setMonitorMode(MonitorMode.valueOf(submission.getMonitorMode()));
-            EmailPropertyResource emailPropertyResource = new EmailPropertyResource();
-            if (emailPropertyResource.isExists(sshJobSubmission.getJobSubmissionInterfaceId())){
-                EmailPropertyResource emailResource = (EmailPropertyResource)emailPropertyResource.get(submission.getJobSubmissionInterfaceId());
-                sshJobSubmission.setEmailMonitorProperty(getEmailMonitorProperty(emailResource));
-            }
         }
         return sshJobSubmission;
-    }
-
-    public static EmailMonitorProperty getEmailMonitorProperty (EmailPropertyResource resource) throws AppCatalogException {
-        EmailMonitorProperty monitorProperty = new EmailMonitorProperty();
-        monitorProperty.setFolderName(resource.getFolderName());
-        monitorProperty.setHost(resource.getHost());
-        monitorProperty.setEmailAddress(resource.getEmailAddress());
-        monitorProperty.setPassword(resource.getPassword());
-        monitorProperty.setSenderEmailAddress(resource.getSenderEmailAddress());
-        if (resource.getProtocol() != null){
-            monitorProperty.setStoreProtocol(EmailProtocol.valueOf(resource.getProtocol()));
-        }
-        return monitorProperty;
     }
 
     public static UnicoreJobSubmission getUnicoreJobSubmissionDescription (UnicoreJobSubmissionResource submission) throws AppCatalogException {

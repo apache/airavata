@@ -40,7 +40,7 @@ public class LSFEmailParser implements EmailParser {
             + ">.*)\\s[a-zA-Z =]+(?<" + EXIT_STATUS + ">\\d+)\\sSignal[ ]*=[ ]*(?<" + SIGNAL + ">[a-zA-z]*)";
 
     @Override
-    public JobStatusResult parseEmail(Message message, String senderEmailAddress) throws MessagingException, AiravataException {
+    public JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException {
         JobStatusResult jobStatusResult = new JobStatusResult();
         try {
             String content = ((String) message.getContent());

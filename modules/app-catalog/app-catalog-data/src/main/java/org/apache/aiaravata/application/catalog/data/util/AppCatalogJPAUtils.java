@@ -25,7 +25,6 @@ import org.apache.aiaravata.application.catalog.data.model.*;
 import org.apache.aiaravata.application.catalog.data.resources.*;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -172,13 +171,6 @@ public class AppCatalogJPAUtils {
 					logger.error("Object should be a Ssh Job Submission.", new IllegalArgumentException());
 					throw new IllegalArgumentException("Object should be a Ssh Job Submission.");
 				}
-            case EMAIL_MONITOR_PROPERTY:
-                if (o instanceof EmailMonitorProperty){
-                    return createEmailPropertyResource((EmailMonitorProperty) o);
-                }else{
-                    logger.error("Object should be a Ssh Job Submission.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a Ssh Job Submission.");
-                }
             case SCP_DATA_MOVEMENT:
 				if (o instanceof ScpDataMovement){
 					return createScpDataMovement((ScpDataMovement) o);
@@ -621,21 +613,6 @@ public class AppCatalogJPAUtils {
             }
         }
         return sshJobSubmissionResource;
-    }
-
-    private static Resource createEmailPropertyResource(EmailMonitorProperty o) {
-        EmailPropertyResource emailPropertyResource = new EmailPropertyResource();
-        if (o != null) {
-            emailPropertyResource.setJobSubmissionInterfaceId(o.getJobSubmissionId());
-            emailPropertyResource.setSshJobSubmissionResource((SshJobSubmissionResource) createSshJobSubmission(o.getSubmissionInterface()));
-            emailPropertyResource.setEmailAddress(o.getEmailAddress());
-            emailPropertyResource.setFolderName(o.getFolderName());
-            emailPropertyResource.setPassword(o.getPassword());
-            emailPropertyResource.setHost(o.getHost());
-            emailPropertyResource.setProtocol(o.getEmailProtocol());
-            emailPropertyResource.setSenderEmailAddress(o.getSenderEmailAddress());
-        }
-        return emailPropertyResource;
     }
 
     private static Resource createScpDataMovement(ScpDataMovement o) {
