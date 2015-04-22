@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.orchestrator.core.util;
 
+import org.apache.airavata.model.error.ValidationResults;
 import org.apache.airavata.model.error.ValidatorResult;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
@@ -32,18 +33,22 @@ import org.slf4j.LoggerFactory;
 public class TestValidator implements JobMetadataValidator {
     private final static Logger logger = LoggerFactory.getLogger(TestValidator.class);
 
-    public ValidatorResult validate(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID) {
+    public ValidationResults validate(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID) {
+        ValidationResults validationResults = new ValidationResults();
+        validationResults.setValidationState(true);
         if (experiment.getProjectID() == null) {
             logger.error("Project ID is not set");
             ValidatorResult validatorResult = new ValidatorResult(false);
             validatorResult.setErrorDetails("Project ID is not set");
-            return validatorResult;
+            validationResults.addToValidationResultList(validatorResult);
+            validationResults.setValidationState(false);
         } else if (experiment.getExperimentID() == null) {
             logger.error("This experiment is wrong, no experimentID set");
-             ValidatorResult validatorResult = new ValidatorResult(false);
+            ValidatorResult validatorResult = new ValidatorResult(false);
             validatorResult.setErrorDetails("This experiment is wrong, no experimentID set");
-            return validatorResult;
+            validationResults.addToValidationResultList(validatorResult);
+            validationResults.setValidationState(false);
         }
-        return new ValidatorResult(true);
+        return validationResults;
     }
 }

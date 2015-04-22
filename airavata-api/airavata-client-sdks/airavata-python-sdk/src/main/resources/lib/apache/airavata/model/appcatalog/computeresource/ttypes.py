@@ -252,24 +252,6 @@ class MonitorMode:
     "XSEDE_AMQP_SUBSCRIBE": 2,
   }
 
-class EmailProtocol:
-  """
-  Email protocol
-
-  """
-  POP3 = 0
-  IMAPS = 1
-
-  _VALUES_TO_NAMES = {
-    0: "POP3",
-    1: "IMAPS",
-  }
-
-  _NAMES_TO_VALUES = {
-    "POP3": 0,
-    "IMAPS": 1,
-  }
-
 class DataMovementProtocol:
   """
   Enumeration of data movement supported by Airavata
@@ -594,133 +576,6 @@ class BatchQueue:
   def validate(self):
     if self.queueName is None:
       raise TProtocol.TProtocolException(message='Required field queueName is unset!')
-    return
-
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class EmailMonitorProperty:
-  """
-  Email Monitoring Properties
-
-  host : email host address
-  emailAddress : address which should get email notification
-  password : password to access email address
-  folderName : email folder name default is INBOX
-  storeProtocol : type of store protocol
-
-
-  Attributes:
-   - host
-   - emailAddress
-   - password
-   - folderName
-   - storeProtocol
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'host', None, None, ), # 1
-    (2, TType.STRING, 'emailAddress', None, None, ), # 2
-    (3, TType.STRING, 'password', None, None, ), # 3
-    (4, TType.STRING, 'folderName', None, "INBOX", ), # 4
-    (5, TType.I32, 'storeProtocol', None, None, ), # 5
-  )
-
-  def __init__(self, host=None, emailAddress=None, password=None, folderName=thrift_spec[4][4], storeProtocol=None,):
-    self.host = host
-    self.emailAddress = emailAddress
-    self.password = password
-    self.folderName = folderName
-    self.storeProtocol = storeProtocol
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.host = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRING:
-          self.emailAddress = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRING:
-          self.password = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 4:
-        if ftype == TType.STRING:
-          self.folderName = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 5:
-        if ftype == TType.I32:
-          self.storeProtocol = iprot.readI32();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('EmailMonitorProperty')
-    if self.host is not None:
-      oprot.writeFieldBegin('host', TType.STRING, 1)
-      oprot.writeString(self.host)
-      oprot.writeFieldEnd()
-    if self.emailAddress is not None:
-      oprot.writeFieldBegin('emailAddress', TType.STRING, 2)
-      oprot.writeString(self.emailAddress)
-      oprot.writeFieldEnd()
-    if self.password is not None:
-      oprot.writeFieldBegin('password', TType.STRING, 3)
-      oprot.writeString(self.password)
-      oprot.writeFieldEnd()
-    if self.folderName is not None:
-      oprot.writeFieldBegin('folderName', TType.STRING, 4)
-      oprot.writeString(self.folderName)
-      oprot.writeFieldEnd()
-    if self.storeProtocol is not None:
-      oprot.writeFieldBegin('storeProtocol', TType.I32, 5)
-      oprot.writeI32(self.storeProtocol)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    if self.host is None:
-      raise TProtocol.TProtocolException(message='Required field host is unset!')
-    if self.emailAddress is None:
-      raise TProtocol.TProtocolException(message='Required field emailAddress is unset!')
-    if self.password is None:
-      raise TProtocol.TProtocolException(message='Required field password is unset!')
-    if self.folderName is None:
-      raise TProtocol.TProtocolException(message='Required field folderName is unset!')
-    if self.storeProtocol is None:
-      raise TProtocol.TProtocolException(message='Required field storeProtocol is unset!')
     return
 
 
@@ -1216,7 +1071,6 @@ class SSHJobSubmission:
    - alternativeSSHHostName
    - sshPort
    - monitorMode
-   - emailMonitorProperty
   """
 
   thrift_spec = (
@@ -1227,17 +1081,15 @@ class SSHJobSubmission:
     (4, TType.STRING, 'alternativeSSHHostName', None, None, ), # 4
     (5, TType.I32, 'sshPort', None, 22, ), # 5
     (6, TType.I32, 'monitorMode', None, None, ), # 6
-    (7, TType.STRUCT, 'emailMonitorProperty', (EmailMonitorProperty, EmailMonitorProperty.thrift_spec), None, ), # 7
   )
 
-  def __init__(self, jobSubmissionInterfaceId=thrift_spec[1][4], securityProtocol=None, resourceJobManager=None, alternativeSSHHostName=None, sshPort=thrift_spec[5][4], monitorMode=None, emailMonitorProperty=None,):
+  def __init__(self, jobSubmissionInterfaceId=thrift_spec[1][4], securityProtocol=None, resourceJobManager=None, alternativeSSHHostName=None, sshPort=thrift_spec[5][4], monitorMode=None,):
     self.jobSubmissionInterfaceId = jobSubmissionInterfaceId
     self.securityProtocol = securityProtocol
     self.resourceJobManager = resourceJobManager
     self.alternativeSSHHostName = alternativeSSHHostName
     self.sshPort = sshPort
     self.monitorMode = monitorMode
-    self.emailMonitorProperty = emailMonitorProperty
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -1279,12 +1131,6 @@ class SSHJobSubmission:
           self.monitorMode = iprot.readI32();
         else:
           iprot.skip(ftype)
-      elif fid == 7:
-        if ftype == TType.STRUCT:
-          self.emailMonitorProperty = EmailMonitorProperty()
-          self.emailMonitorProperty.read(iprot)
-        else:
-          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -1318,10 +1164,6 @@ class SSHJobSubmission:
     if self.monitorMode is not None:
       oprot.writeFieldBegin('monitorMode', TType.I32, 6)
       oprot.writeI32(self.monitorMode)
-      oprot.writeFieldEnd()
-    if self.emailMonitorProperty is not None:
-      oprot.writeFieldBegin('emailMonitorProperty', TType.STRUCT, 7)
-      self.emailMonitorProperty.write(oprot)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()

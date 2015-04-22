@@ -20,43 +20,30 @@
 */
 package org.apache.airavata.gfac.monitor.email;
 
-import org.apache.airavata.model.appcatalog.computeresource.EmailMonitorProperty;
+import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public class EmailMonitorFactory {
 
-    private static Map<String, EmailBasedMonitor> emailMonitors = new HashMap<String, EmailBasedMonitor>();
+    private static EmailBasedMonitor emailBasedMonitor;
+    private static Date startMonitorDate = Calendar.getInstance().getTime();
 
-
-    public static EmailBasedMonitor getEmailBasedMonitor(EmailMonitorProperty emailMonitorProp) {
-        String key = getKey(emailMonitorProp);
-        EmailBasedMonitor monitor = emailMonitors.get(key);
-        if (monitor == null) {
-            synchronized (emailMonitors){
-                if (monitor == null) {
-                    monitor = new EmailBasedMonitor(emailMonitorProp);
-                    emailMonitors.put(key, monitor);
-                    new Thread(monitor).start();
+    public static EmailBasedMonitor getEmailBasedMonitor(ResourceJobManagerType resourceJobManagerType) throws AiravataException {
+        if (emailBasedMonitor == null) {
+            synchronized (EmailMonitorFactory.class){
+                if (emailBasedMonitor == null) {
+                    emailBasedMonitor = new EmailBasedMonitor(resourceJobManagerType);
+                    emailBasedMonitor.setDate(startMonitorDate);
+                    new Thread(emailBasedMonitor).start();
                 }
             }
         }
-        return monitor;
-    }
-
-    public static void stopAllMonitors() {
-        for (EmailBasedMonitor emailBasedMonitor : emailMonitors.values()) {
-            emailBasedMonitor.stopMonitoring();
-        }
-    }
-
-    private static String getKey(EmailMonitorProperty emailMonitorProp) {
-        StringBuffer sb = new StringBuffer(emailMonitorProp.getHost().trim());
-        sb.append("_").append(emailMonitorProp.getStoreProtocol().name());
-        sb.append("_").append(emailMonitorProp.getEmailAddress().trim());
-        sb.append("_").append(emailMonitorProp.getFolderName().trim());
-        return sb.toString();
+        return emailBasedMonitor;
     }
 
 }

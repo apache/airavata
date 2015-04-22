@@ -38,7 +38,6 @@
         <class>org.apache.aiaravata.application.catalog.data.model.GridftpDataMovement</class>
         <class>org.apache.aiaravata.application.catalog.data.model.GridftpEndpoint</class>
         <class>org.apache.aiaravata.application.catalog.data.model.SshJobSubmission</class>
-        <class>org.apache.aiaravata.application.catalog.data.model.EmailMonitorProperty</class>
         <class>org.apache.aiaravata.application.catalog.data.model.ApplicationModule</class>
         <class>org.apache.aiaravata.application.catalog.data.model.ApplicationDeployment</class>
         <class>org.apache.aiaravata.application.catalog.data.model.ModuleLoadCmd</class>

@@ -47,6 +47,7 @@ public class PBSEmailParser implements EmailParser {
     @Override
     public JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException {
         JobStatusResult jobStatusResult = new JobStatusResult();
+//        log.info("Parsing -> " + message.getSubject());
         try {
             String content = ((String) message.getContent());
             Pattern pattern = Pattern.compile(REGEX);

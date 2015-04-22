@@ -1569,6 +1569,7 @@ class JobDetails:
    - errors
    - computeResourceConsumed
    - jobName
+   - workingDir
   """
 
   thrift_spec = (
@@ -1581,9 +1582,10 @@ class JobDetails:
     (6, TType.LIST, 'errors', (TType.STRUCT,(ErrorDetails, ErrorDetails.thrift_spec)), None, ), # 6
     (7, TType.STRING, 'computeResourceConsumed', None, None, ), # 7
     (8, TType.STRING, 'jobName', None, None, ), # 8
+    (9, TType.STRING, 'workingDir', None, None, ), # 9
   )
 
-  def __init__(self, jobID=thrift_spec[1][4], jobDescription=None, creationTime=None, jobStatus=None, applicationStatus=None, errors=None, computeResourceConsumed=None, jobName=None,):
+  def __init__(self, jobID=thrift_spec[1][4], jobDescription=None, creationTime=None, jobStatus=None, applicationStatus=None, errors=None, computeResourceConsumed=None, jobName=None, workingDir=None,):
     self.jobID = jobID
     self.jobDescription = jobDescription
     self.creationTime = creationTime
@@ -1592,6 +1594,7 @@ class JobDetails:
     self.errors = errors
     self.computeResourceConsumed = computeResourceConsumed
     self.jobName = jobName
+    self.workingDir = workingDir
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -1650,6 +1653,11 @@ class JobDetails:
           self.jobName = iprot.readString();
         else:
           iprot.skip(ftype)
+      elif fid == 9:
+        if ftype == TType.STRING:
+          self.workingDir = iprot.readString();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -1694,6 +1702,10 @@ class JobDetails:
     if self.jobName is not None:
       oprot.writeFieldBegin('jobName', TType.STRING, 8)
       oprot.writeString(self.jobName)
+      oprot.writeFieldEnd()
+    if self.workingDir is not None:
+      oprot.writeFieldBegin('workingDir', TType.STRING, 9)
+      oprot.writeString(self.workingDir)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -2529,6 +2541,7 @@ class Experiment:
    - applicationVersion
    - workflowTemplateId
    - workflowTemplateVersion
+   - gatewayExecutionId
    - enableEmailNotification
    - emailAddresses
    - userConfigurationData
@@ -2553,19 +2566,20 @@ class Experiment:
     (8, TType.STRING, 'applicationVersion', None, None, ), # 8
     (9, TType.STRING, 'workflowTemplateId', None, None, ), # 9
     (10, TType.STRING, 'workflowTemplateVersion', None, None, ), # 10
-    (11, TType.BOOL, 'enableEmailNotification', None, None, ), # 11
-    (12, TType.LIST, 'emailAddresses', (TType.STRING,None), None, ), # 12
-    (13, TType.STRUCT, 'userConfigurationData', (UserConfigurationData, UserConfigurationData.thrift_spec), None, ), # 13
-    (14, TType.STRING, 'workflowExecutionInstanceId', None, None, ), # 14
-    (15, TType.LIST, 'experimentInputs', (TType.STRUCT,(apache.airavata.model.appcatalog.appinterface.ttypes.InputDataObjectType, apache.airavata.model.appcatalog.appinterface.ttypes.InputDataObjectType.thrift_spec)), None, ), # 15
-    (16, TType.LIST, 'experimentOutputs', (TType.STRUCT,(apache.airavata.model.appcatalog.appinterface.ttypes.OutputDataObjectType, apache.airavata.model.appcatalog.appinterface.ttypes.OutputDataObjectType.thrift_spec)), None, ), # 16
-    (17, TType.STRUCT, 'experimentStatus', (ExperimentStatus, ExperimentStatus.thrift_spec), None, ), # 17
-    (18, TType.LIST, 'stateChangeList', (TType.STRUCT,(WorkflowNodeStatus, WorkflowNodeStatus.thrift_spec)), None, ), # 18
-    (19, TType.LIST, 'workflowNodeDetailsList', (TType.STRUCT,(WorkflowNodeDetails, WorkflowNodeDetails.thrift_spec)), None, ), # 19
-    (20, TType.LIST, 'errors', (TType.STRUCT,(ErrorDetails, ErrorDetails.thrift_spec)), None, ), # 20
+    (11, TType.STRING, 'gatewayExecutionId', None, None, ), # 11
+    (12, TType.BOOL, 'enableEmailNotification', None, None, ), # 12
+    (13, TType.LIST, 'emailAddresses', (TType.STRING,None), None, ), # 13
+    (14, TType.STRUCT, 'userConfigurationData', (UserConfigurationData, UserConfigurationData.thrift_spec), None, ), # 14
+    (15, TType.STRING, 'workflowExecutionInstanceId', None, None, ), # 15
+    (16, TType.LIST, 'experimentInputs', (TType.STRUCT,(apache.airavata.model.appcatalog.appinterface.ttypes.InputDataObjectType, apache.airavata.model.appcatalog.appinterface.ttypes.InputDataObjectType.thrift_spec)), None, ), # 16
+    (17, TType.LIST, 'experimentOutputs', (TType.STRUCT,(apache.airavata.model.appcatalog.appinterface.ttypes.OutputDataObjectType, apache.airavata.model.appcatalog.appinterface.ttypes.OutputDataObjectType.thrift_spec)), None, ), # 17
+    (18, TType.STRUCT, 'experimentStatus', (ExperimentStatus, ExperimentStatus.thrift_spec), None, ), # 18
+    (19, TType.LIST, 'stateChangeList', (TType.STRUCT,(WorkflowNodeStatus, WorkflowNodeStatus.thrift_spec)), None, ), # 19
+    (20, TType.LIST, 'workflowNodeDetailsList', (TType.STRUCT,(WorkflowNodeDetails, WorkflowNodeDetails.thrift_spec)), None, ), # 20
+    (21, TType.LIST, 'errors', (TType.STRUCT,(ErrorDetails, ErrorDetails.thrift_spec)), None, ), # 21
   )
 
-  def __init__(self, experimentID=thrift_spec[1][4], projectID=thrift_spec[2][4], creationTime=None, userName=None, name=None, description=None, applicationId=None, applicationVersion=None, workflowTemplateId=None, workflowTemplateVersion=None, enableEmailNotification=None, emailAddresses=None, userConfigurationData=None, workflowExecutionInstanceId=None, experimentInputs=None, experimentOutputs=None, experimentStatus=None, stateChangeList=None, workflowNodeDetailsList=None, errors=None,):
+  def __init__(self, experimentID=thrift_spec[1][4], projectID=thrift_spec[2][4], creationTime=None, userName=None, name=None, description=None, applicationId=None, applicationVersion=None, workflowTemplateId=None, workflowTemplateVersion=None, gatewayExecutionId=None, enableEmailNotification=None, emailAddresses=None, userConfigurationData=None, workflowExecutionInstanceId=None, experimentInputs=None, experimentOutputs=None, experimentStatus=None, stateChangeList=None, workflowNodeDetailsList=None, errors=None,):
     self.experimentID = experimentID
     self.projectID = projectID
     self.creationTime = creationTime
@@ -2576,6 +2590,7 @@ class Experiment:
     self.applicationVersion = applicationVersion
     self.workflowTemplateId = workflowTemplateId
     self.workflowTemplateVersion = workflowTemplateVersion
+    self.gatewayExecutionId = gatewayExecutionId
     self.enableEmailNotification = enableEmailNotification
     self.emailAddresses = emailAddresses
     self.userConfigurationData = userConfigurationData
@@ -2647,11 +2662,16 @@ class Experiment:
         else:
           iprot.skip(ftype)
       elif fid == 11:
+        if ftype == TType.STRING:
+          self.gatewayExecutionId = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 12:
         if ftype == TType.BOOL:
           self.enableEmailNotification = iprot.readBool();
         else:
           iprot.skip(ftype)
-      elif fid == 12:
+      elif fid == 13:
         if ftype == TType.LIST:
           self.emailAddresses = []
           (_etype94, _size91) = iprot.readListBegin()
@@ -2661,18 +2681,18 @@ class Experiment:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 13:
+      elif fid == 14:
         if ftype == TType.STRUCT:
           self.userConfigurationData = UserConfigurationData()
           self.userConfigurationData.read(iprot)
         else:
           iprot.skip(ftype)
-      elif fid == 14:
+      elif fid == 15:
         if ftype == TType.STRING:
           self.workflowExecutionInstanceId = iprot.readString();
         else:
           iprot.skip(ftype)
-      elif fid == 15:
+      elif fid == 16:
         if ftype == TType.LIST:
           self.experimentInputs = []
           (_etype100, _size97) = iprot.readListBegin()
@@ -2683,7 +2703,7 @@ class Experiment:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 16:
+      elif fid == 17:
         if ftype == TType.LIST:
           self.experimentOutputs = []
           (_etype106, _size103) = iprot.readListBegin()
@@ -2694,13 +2714,13 @@ class Experiment:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 17:
+      elif fid == 18:
         if ftype == TType.STRUCT:
           self.experimentStatus = ExperimentStatus()
           self.experimentStatus.read(iprot)
         else:
           iprot.skip(ftype)
-      elif fid == 18:
+      elif fid == 19:
         if ftype == TType.LIST:
           self.stateChangeList = []
           (_etype112, _size109) = iprot.readListBegin()
@@ -2711,7 +2731,7 @@ class Experiment:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 19:
+      elif fid == 20:
         if ftype == TType.LIST:
           self.workflowNodeDetailsList = []
           (_etype118, _size115) = iprot.readListBegin()
@@ -2722,7 +2742,7 @@ class Experiment:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 20:
+      elif fid == 21:
         if ftype == TType.LIST:
           self.errors = []
           (_etype124, _size121) = iprot.readListBegin()
@@ -2783,59 +2803,63 @@ class Experiment:
       oprot.writeFieldBegin('workflowTemplateVersion', TType.STRING, 10)
       oprot.writeString(self.workflowTemplateVersion)
       oprot.writeFieldEnd()
+    if self.gatewayExecutionId is not None:
+      oprot.writeFieldBegin('gatewayExecutionId', TType.STRING, 11)
+      oprot.writeString(self.gatewayExecutionId)
+      oprot.writeFieldEnd()
     if self.enableEmailNotification is not None:
-      oprot.writeFieldBegin('enableEmailNotification', TType.BOOL, 11)
+      oprot.writeFieldBegin('enableEmailNotification', TType.BOOL, 12)
       oprot.writeBool(self.enableEmailNotification)
       oprot.writeFieldEnd()
     if self.emailAddresses is not None:
-      oprot.writeFieldBegin('emailAddresses', TType.LIST, 12)
+      oprot.writeFieldBegin('emailAddresses', TType.LIST, 13)
       oprot.writeListBegin(TType.STRING, len(self.emailAddresses))
       for iter127 in self.emailAddresses:
         oprot.writeString(iter127)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.userConfigurationData is not None:
-      oprot.writeFieldBegin('userConfigurationData', TType.STRUCT, 13)
+      oprot.writeFieldBegin('userConfigurationData', TType.STRUCT, 14)
       self.userConfigurationData.write(oprot)
       oprot.writeFieldEnd()
     if self.workflowExecutionInstanceId is not None:
-      oprot.writeFieldBegin('workflowExecutionInstanceId', TType.STRING, 14)
+      oprot.writeFieldBegin('workflowExecutionInstanceId', TType.STRING, 15)
       oprot.writeString(self.workflowExecutionInstanceId)
       oprot.writeFieldEnd()
     if self.experimentInputs is not None:
-      oprot.writeFieldBegin('experimentInputs', TType.LIST, 15)
+      oprot.writeFieldBegin('experimentInputs', TType.LIST, 16)
       oprot.writeListBegin(TType.STRUCT, len(self.experimentInputs))
       for iter128 in self.experimentInputs:
         iter128.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.experimentOutputs is not None:
-      oprot.writeFieldBegin('experimentOutputs', TType.LIST, 16)
+      oprot.writeFieldBegin('experimentOutputs', TType.LIST, 17)
       oprot.writeListBegin(TType.STRUCT, len(self.experimentOutputs))
       for iter129 in self.experimentOutputs:
         iter129.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.experimentStatus is not None:
-      oprot.writeFieldBegin('experimentStatus', TType.STRUCT, 17)
+      oprot.writeFieldBegin('experimentStatus', TType.STRUCT, 18)
       self.experimentStatus.write(oprot)
       oprot.writeFieldEnd()
     if self.stateChangeList is not None:
-      oprot.writeFieldBegin('stateChangeList', TType.LIST, 18)
+      oprot.writeFieldBegin('stateChangeList', TType.LIST, 19)
       oprot.writeListBegin(TType.STRUCT, len(self.stateChangeList))
       for iter130 in self.stateChangeList:
         iter130.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.workflowNodeDetailsList is not None:
-      oprot.writeFieldBegin('workflowNodeDetailsList', TType.LIST, 19)
+      oprot.writeFieldBegin('workflowNodeDetailsList', TType.LIST, 20)
       oprot.writeListBegin(TType.STRUCT, len(self.workflowNodeDetailsList))
       for iter131 in self.workflowNodeDetailsList:
         iter131.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.errors is not None:
-      oprot.writeFieldBegin('errors', TType.LIST, 20)
+      oprot.writeFieldBegin('errors', TType.LIST, 21)
       oprot.writeListBegin(TType.STRUCT, len(self.errors))
       for iter132 in self.errors:
         iter132.write(oprot)

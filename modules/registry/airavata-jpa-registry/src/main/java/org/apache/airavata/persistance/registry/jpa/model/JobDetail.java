@@ -45,7 +45,10 @@ public class JobDetail implements Serializable {
     private Timestamp creationTime;
     @Column(name = "COMPUTE_RESOURCE_CONSUMED")
     private String computeResourceConsumed;
-
+    @Column(name = "JOBNAME")
+    private String jobName;
+    @Column(name = "WORKING_DIR")
+    private String workingDir;
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "TASK_ID")
@@ -97,5 +100,21 @@ public class JobDetail implements Serializable {
 
     public void setComputeResourceConsumed(String computeResourceConsumed) {
         this.computeResourceConsumed = computeResourceConsumed;
+    }
+
+    public String getJobName() {
+        return jobName;
+    }
+
+    public void setJobName(String jobName) {
+        this.jobName = jobName;
+    }
+
+    public String getWorkingDir() {
+        return workingDir;
+    }
+
+    public void setWorkingDir(String workingDir) {
+        this.workingDir = workingDir;
     }
 }
