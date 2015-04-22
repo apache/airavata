@@ -166,8 +166,8 @@ public class CreateLaunchExperiment {
 //                final String expId = createExperimentForSSHHost(airavata);
 //                final String expId = createEchoExperimentForFSD(airavataClient);
 //                final String expId = createMPIExperimentForFSD(airavataClient);
-//               final String expId = createEchoExperimentForStampede(airavataClient);
-                final String expId = createEchoExperimentForTrestles(airavataClient);
+               final String expId = createEchoExperimentForStampede(airavataClient);
+//                final String expId = createEchoExperimentForTrestles(airavataClient);
 //                final String expId = createExperimentEchoForLocalHost(airavataClient);
 //                final String expId = createExperimentWRFTrestles(airavataClient);
 //                final String expId = createExperimentForBR2(airavataClient);
