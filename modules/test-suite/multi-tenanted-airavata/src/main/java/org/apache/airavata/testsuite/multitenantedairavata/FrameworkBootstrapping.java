@@ -21,14 +21,15 @@
 
 package org.apache.airavata.testsuite.multitenantedairavata;
 
-import org.apache.airavata.testsuite.multitenantedairavata.utils.PropertyFileType;
-import org.apache.airavata.testsuite.multitenantedairavata.utils.PropertyReader;
 import org.apache.airavata.testsuite.multitenantedairavata.utils.TestFrameworkConstants;
 import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -81,10 +82,11 @@ public class FrameworkBootstrapping {
             }else if (expExec){
                 tokens = readTokens();
                 experimentExecution = new ExperimentExecution(setup.getAiravata(), tokens, setup.getTestFrameworkProps());
-                experimentExecution.createEchoExperiment();
-                experimentExecution.createAmberExperiment();
-                experimentExecution.launchExperiments();
-                experimentExecution.monitorExperiments();
+                experimentExecution.createUltrascanExperiment();
+//                experimentExecution.createEchoExperiment();
+//                experimentExecution.createAmberExperiment();
+//                experimentExecution.launchExperiments();
+//                experimentExecution.monitorExperiments();
             }
         } catch (Exception e) {
             logger.error("Error occured while set up", e);

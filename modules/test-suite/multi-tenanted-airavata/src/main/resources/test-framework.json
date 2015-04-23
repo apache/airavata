@@ -24,6 +24,16 @@
 
         },
         {
+            "name": "gordon.sdsc.edu",
+            "loginUser": "us3"
+
+        },
+        {
+            "name": "alamo.uthscsa.edu",
+            "loginUser": "us3"
+
+        },
+        {
             "name": "bigred2.uits.iu.edu",
             "loginUser": "cgateway"
 
@@ -36,6 +46,14 @@
                 "heatRst": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/02_Heat.rst",
                 "prodIn": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/03_Prod.in",
                 "prmtop": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/prmtop"
+            }
+        },
+        {
+            "name": "ultrascan",
+            "inputs": {
+                "input": "/Users/chathuri/dev/airavata/source/php/inputs/hpcinput.tar",
+                "mgroupcount": "-mgroupcount=1",
+                "walltime": "-walltime=60"
             }
         }
     ],

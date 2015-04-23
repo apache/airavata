@@ -77,6 +77,8 @@ public class ComputeResourceRegister {
         String stampedeResourceId = null;
         String trestlesResourceId = null;
         String bigredResourceId = null;
+        String gordenResourceId = null;
+        String alamoResourceId = null;
         try {
             for (String resourceName : loginNamesWithResourceMap.keySet()) {
                 if (resourceName.contains("stampede")) {
@@ -94,11 +96,23 @@ public class ComputeResourceRegister {
                     bigredResourceId = registerComputeHost("bigred2.uits.iu.edu", "IU BigRed II Cluster",
                             ResourceJobManagerType.PBS, "push", "/opt/torque/torque-5.0.1/bin/", SecurityProtocol.SSH_KEYS, 22, "aprun -n");
                     System.out.println("BigredII Resource Id is " + bigredResourceId);
+                } else if (resourceName.contains("gorden")) {
+                    //Register BigRedII
+                    gordenResourceId = registerComputeHost("gordon.sdsc.edu", "SDSC Gorden Cluster",
+                            ResourceJobManagerType.PBS, "push", "/opt/torque/bin/", SecurityProtocol.SSH_KEYS, 22, "mpirun_rsh -hostfile $PBS_NODEFILE -np");
+                    System.out.println("BigredII Resource Id is " + bigredResourceId);
+                } else if (resourceName.contains("alamo")) {
+                    //Register BigRedII
+                    alamoResourceId = registerComputeHost("alamo.uthscsa.edu", "TACC alamo Cluster",
+                            ResourceJobManagerType.PBS, "push", "/usr/bin/", SecurityProtocol.SSH_KEYS, 22, " /usr/bin/mpiexec -np");
+                    System.out.println("BigredII Resource Id is " + bigredResourceId);
                 }
             }
             computeResourceIds.add(stampedeResourceId);
             computeResourceIds.add(trestlesResourceId);
             computeResourceIds.add(bigredResourceId);
+            computeResourceIds.add(gordenResourceId);
+            computeResourceIds.add(alamoResourceId);
         }catch (Exception e) {
             logger.error("Error occured while adding compute resources", e);
             throw new Exception("Error occured while adding compute resources", e);
@@ -162,27 +176,52 @@ public class ComputeResourceRegister {
 
     public void registerGatewayResourceProfile() throws Exception{
         try {
-            ComputeResourcePreference stampedeResourcePreferences = null;
-            ComputeResourcePreference trestlesResourcePreferences = null;
-            ComputeResourcePreference bigRedResourcePreferences = null;
+            ComputeResourcePreference stampedeOGCEResourcePreferences = null;
+            ComputeResourcePreference stampedeUS3ResourcePreferences = null;
+            ComputeResourcePreference trestlesOGCEResourcePreferences = null;
+            ComputeResourcePreference trestlesUS3ResourcePreferences = null;
+            ComputeResourcePreference bigRedCgatewayResourcePreferences = null;
+            ComputeResourcePreference gordenUS3ResourcePreference = null;
+            ComputeResourcePreference alamoUS3ResourcePreference = null;
 
             loginNamesWithResourceIds = getLoginNamesWithResourceIDs();
 
             List<GatewayResourceProfile> allGatewayComputeResources = airavata.getAllGatewayComputeResources();
             for (GatewayResourceProfile gatewayResourceProfile : allGatewayComputeResources) {
                 for (String resourceId : loginNamesWithResourceIds.keySet()) {
-                    if (resourceId.contains("stampede")) {
-                        stampedeResourcePreferences = createComputeResourcePreference(resourceId, "TG-STA110014S", false, null,
-                                JobSubmissionProtocol.SSH, DataMovementProtocol.SCP, "/scratch/01437/ogce/gta-work-dirs", loginNamesWithResourceIds.get(resourceId));
-                        airavata.addGatewayComputeResourcePreference(gatewayResourceProfile.getGatewayID(), resourceId, stampedeResourcePreferences);
+                    String loginUserName = loginNamesWithResourceIds.get(resourceId);
+                    if (resourceId.contains("stampede") ) {
+                        if (loginUserName.equals("ogce")){
+                            stampedeOGCEResourcePreferences = createComputeResourcePreference(resourceId, "TG-STA110014S", false, null,
+                                    JobSubmissionProtocol.SSH, DataMovementProtocol.SCP, "/scratch/01437/ogce/gta-work-dirs", loginUserName);
+                            airavata.addGatewayComputeResourcePreference(gatewayResourceProfile.getGatewayID(), resourceId, stampedeOGCEResourcePreferences);
+                        }else if (loginUserName.equals("us3")){
+                            stampedeUS3ResourcePreferences = createComputeResourcePreference(resourceId, "TG-MCB070039N", false, null,
+                                    JobSubmissionProtocol.SSH, DataMovementProtocol.SCP, "/scratch/01623/us3/jobs/", loginUserName);
+                            airavata.addGatewayComputeResourcePreference(gatewayResourceProfile.getGatewayID(), resourceId, stampedeUS3ResourcePreferences);
+                        }
                     }else if (resourceId.contains("trestles")){
-                        trestlesResourcePreferences = createComputeResourcePreference(resourceId, "sds128", false, null, JobSubmissionProtocol.SSH,
-                                DataMovementProtocol.SCP, "/oasis/scratch/trestles/ogce/temp_project/gta-work-dirs", loginNamesWithResourceIds.get(resourceId));
-                        airavata.addGatewayComputeResourcePreference(gatewayResourceProfile.getGatewayID(), resourceId, trestlesResourcePreferences);
-                    }else if (resourceId.contains("bigred2")){
-                        bigRedResourcePreferences = createComputeResourcePreference(resourceId, "TG-STA110014S", false, null, null, null,
-                                "/N/dc2/scratch/cgateway/gta-work-dirs", loginNamesWithResourceIds.get(resourceId));
-                        airavata.addGatewayComputeResourcePreference(gatewayResourceProfile.getGatewayID(), resourceId, bigRedResourcePreferences);
+                        if (loginUserName.equals("ogce")){
+                            trestlesOGCEResourcePreferences = createComputeResourcePreference(resourceId, "sds128", false, null, JobSubmissionProtocol.SSH,
+                                    DataMovementProtocol.SCP, "/oasis/scratch/trestles/ogce/temp_project/gta-work-dirs", loginUserName);
+                            airavata.addGatewayComputeResourcePreference(gatewayResourceProfile.getGatewayID(), resourceId, trestlesOGCEResourcePreferences);
+                        }else if (loginUserName.equals("us3")){
+                            trestlesUS3ResourcePreferences = createComputeResourcePreference(resourceId, "uot111", false, null, JobSubmissionProtocol.SSH,
+                                    DataMovementProtocol.SCP, "/oasis/projects/nsf/uot111/us3/airavata-workdirs/", loginUserName);
+                            airavata.addGatewayComputeResourcePreference(gatewayResourceProfile.getGatewayID(), resourceId, trestlesUS3ResourcePreferences);
+                        }
+                    }else if (resourceId.contains("bigred2") && loginUserName.equals("cgateway")){
+                        bigRedCgatewayResourcePreferences = createComputeResourcePreference(resourceId, "TG-STA110014S", false, null, null, null,
+                                "/N/dc2/scratch/cgateway/gta-work-dirs", loginUserName);
+                        airavata.addGatewayComputeResourcePreference(gatewayResourceProfile.getGatewayID(), resourceId, bigRedCgatewayResourcePreferences);
+                    }else if (resourceId.contains("gorden") && loginUserName.equals("us3")){
+                        gordenUS3ResourcePreference = createComputeResourcePreference(resourceId, "uot111", false, null, JobSubmissionProtocol.SSH,
+                                DataMovementProtocol.SCP, "/home/us3/gordon/work/airavata", loginUserName);
+                        airavata.addGatewayComputeResourcePreference(gatewayResourceProfile.getGatewayID(), resourceId, gordenUS3ResourcePreference);
+                    }else if (resourceId.contains("alamo") && loginUserName.equals("us3")){
+                        alamoUS3ResourcePreference = createComputeResourcePreference(resourceId, null, false, "batch", JobSubmissionProtocol.SSH,
+                                DataMovementProtocol.SCP, "/home/us3/work/airavata", loginUserName);
+                        airavata.addGatewayComputeResourcePreference(gatewayResourceProfile.getGatewayID(), resourceId, alamoUS3ResourcePreference);
                     }
                 }
             }

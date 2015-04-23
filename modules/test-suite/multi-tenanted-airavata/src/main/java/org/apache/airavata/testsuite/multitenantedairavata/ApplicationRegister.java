@@ -49,6 +49,8 @@ public class ApplicationRegister {
     private String stampedeResourceId;
     private String trestlesResourceId;
     private String br2ResourceId;
+    private String gordenResourceId;
+    private String alamoResourceId;
     private List<String> gatewaysToAvoid;
 
 
@@ -81,11 +83,16 @@ public class ApplicationRegister {
                 trestlesResourceId = resourceId;
             }else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.BR2_RESOURCE_NAME)){
                 br2ResourceId = resourceId;
+            }else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.GORDEN_RESOURCE_NAME)){
+                gordenResourceId = resourceId;
+            }else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.ALAMO_RESOURCE_NAME)){
+                alamoResourceId = resourceId;
             }
         }
-        addAmberApplication();
-        addEchoApplication();
-        addLAMMPSApplication();
+        addUltrascanApplication();
+//        addAmberApplication();
+//        addEchoApplication();
+//        addLAMMPSApplication();
     }
 
     protected void addAmberApplication () throws Exception{
@@ -135,6 +142,92 @@ public class ApplicationRegister {
         }
 
 
+    }
+
+    protected void addUltrascanApplication () throws Exception{
+        for (Gateway gateway : allGateways) {
+            boolean isgatewayValid = true;
+            for (String ovoidGateway : gatewaysToAvoid){
+                if (gateway.getGatewayId().equals(ovoidGateway)){
+                    isgatewayValid = false;
+                    break;
+                }
+            }
+            if (isgatewayValid) {
+                // add amber module
+                String ultrascanModuleId = airavata.registerApplicationModule(gateway.getGatewayId(),
+                        createApplicationModule(TestFrameworkConstants.AppcatalogConstants.ULTRASCAN, "1.0", TestFrameworkConstants.AppcatalogConstants.ULTRASCAN_DESCRIPTION));
+                System.out.println("Ultrascan module Id " + ultrascanModuleId);
+
+                // add amber interface
+                String ultrascanInterfaceId = registerUltrascanInterface(gateway, ultrascanModuleId);
+                applicationInterfaceListPerGateway.put(ultrascanInterfaceId, gateway.getGatewayId());
+
+                // add amber deployment
+                ApplicationDeploymentDescription ultrascanStampedeDeployment = createApplicationDeployment(ultrascanModuleId, stampedeResourceId,
+                        "/home1/01623/us3/bin/us_mpi_analysis", ApplicationParallelismType.MPI,
+                        TestFrameworkConstants.AppcatalogConstants.ULTRASCAN_DESCRIPTION, null, null, null);
+                String ultrascanStampedeAppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(), ultrascanStampedeDeployment);
+
+                String ultrascanTrestlesAppDeployId = airavata.registerApplicationDeployment(gateway.getGatewayId(),
+                        createApplicationDeployment(ultrascanModuleId, trestlesResourceId,
+                                "/home/us3/trestles/bin/us_mpi_analysis", ApplicationParallelismType.MPI,
+                                TestFrameworkConstants.AppcatalogConstants.ULTRASCAN_DESCRIPTION, null, null, null));
+
+                String ultrascanGordenAppDepId = airavata.registerApplicationDeployment(gateway.getGatewayId(),
+                        createApplicationDeployment(ultrascanModuleId,gordenResourceId,
+                                "/home/us3/gordon/bin/us_mpi_analysis", ApplicationParallelismType.MPI,
+                                TestFrameworkConstants.AppcatalogConstants.ULTRASCAN_DESCRIPTION, null, null, null));
+
+                List<String> alamoModules = new ArrayList<>();
+                alamoModules.add("module load intel/2015/64");
+                alamoModules.add("module load openmpi/intel/1.8.4");
+                alamoModules.add("module load qt4/4.8.6");
+                alamoModules.add("module load ultrascan3/3.3");
+                String ultrascanAlamoAppId = airavata.registerApplicationDeployment(gateway.getGatewayId(),
+                        createApplicationDeployment(ultrascanModuleId,alamoResourceId,
+                                "/home/us3/bin/us_mpi_analysis", ApplicationParallelismType.OPENMP,
+                                TestFrameworkConstants.AppcatalogConstants.ULTRASCAN_DESCRIPTION, alamoModules, null, null));
+
+                applicationDeployementListPerGateway.put(ultrascanStampedeAppDeployId, gateway.getGatewayId());
+                applicationDeployementListPerGateway.put(ultrascanTrestlesAppDeployId, gateway.getGatewayId());
+                applicationDeployementListPerGateway.put(ultrascanGordenAppDepId, gateway.getGatewayId());
+                applicationDeployementListPerGateway.put(ultrascanAlamoAppId, gateway.getGatewayId());
+            }
+        }
+    }
+
+    private String registerUltrascanInterface(Gateway gateway, String ultrascanModuleId) throws org.apache.thrift.TException {
+        List<String> appModules = new ArrayList<String>();
+        appModules.add(ultrascanModuleId);
+
+        InputDataObjectType input1 = createAppInput("input", null,
+                DataType.URI, null, 1, true, true,false, "Input tar file", null);
+
+        InputDataObjectType input2 = createAppInput("mgroupcount", "-mgroupcount=1",
+                DataType.STRING, null, 3, true, true,false, "mgroupcount", null);
+
+        InputDataObjectType input3 = createAppInput("walltime", "-walltime=60",
+                DataType.STRING, null, 2, true, true,false, "walltime", null);
+        List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
+        applicationInputs.add(input1);
+        applicationInputs.add(input2);
+        applicationInputs.add(input3);
+
+        OutputDataObjectType output1 = createAppOutput("ultrascanOutput", "analysis-results.tar", DataType.URI, true, false, null);
+        output1.setLocation("output");
+        OutputDataObjectType output2 = createAppOutput("STDOUT", null, DataType.STDOUT, true, false, null);
+        OutputDataObjectType output3 = createAppOutput("STDERR", null, DataType.STDERR, true, false, null);
+        List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
+        applicationOutputs.add(output1);
+        applicationOutputs.add(output2);
+        applicationOutputs.add(output3);
+
+        String ultrascanAppId = airavata.registerApplicationInterface(gateway.getGatewayId(),
+                createApplicationInterfaceDescription(TestFrameworkConstants.AppcatalogConstants.ULTRASCAN, TestFrameworkConstants.AppcatalogConstants.ULTRASCAN_DESCRIPTION,
+                        appModules, applicationInputs, applicationOutputs));
+        System.out.println("Ultrascan Application Interface Id " + ultrascanAppId);
+        return ultrascanAppId;
     }
 
     private String registerAmberInterface(Gateway gateway, String amberModuleId) throws org.apache.thrift.TException {
