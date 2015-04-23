@@ -40,6 +40,7 @@ import org.apache.airavata.gsi.ssh.impl.GSISSHAbstractCluster;
 import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
@@ -168,15 +169,6 @@ public class GFACGSISSHUtils {
         JobDescriptor jobDescriptor = new JobDescriptor();
         TaskDetails taskData = jobExecutionContext.getTaskData();
         ResourceJobManager resourceJobManager = jobExecutionContext.getResourceJobManager();
-        Map<JobManagerCommand, String> jobManagerCommands = resourceJobManager.getJobManagerCommands();
-        if (jobManagerCommands != null && !jobManagerCommands.isEmpty()) {
-            for (JobManagerCommand command : jobManagerCommands.keySet()) {
-                if (command == JobManagerCommand.SUBMISSION) {
-                    String commandVal = jobManagerCommands.get(command);
-                    jobDescriptor.setJobSubmitter(commandVal);
-                }
-            }
-        }
         try {
 			if(ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_ENABLE).equalsIgnoreCase("true")){
 				jobDescriptor.setMailOptions(ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_FLAGS));
@@ -346,6 +338,21 @@ public class GFACGSISSHUtils {
         if (postJobCommands != null) {
             for (String postJobCommand : postJobCommands) {
                 jobDescriptor.addPostJobCommand(parseCommand(postJobCommand, jobExecutionContext));
+            }
+        }
+
+        ApplicationParallelismType parallelism = appDepDescription.getParallelism();
+        if (parallelism != null){
+            if (parallelism == ApplicationParallelismType.MPI || parallelism == ApplicationParallelismType.OPENMP || parallelism == ApplicationParallelismType.OPENMP_MPI){
+                Map<JobManagerCommand, String> jobManagerCommands = resourceJobManager.getJobManagerCommands();
+                if (jobManagerCommands != null && !jobManagerCommands.isEmpty()) {
+                    for (JobManagerCommand command : jobManagerCommands.keySet()) {
+                        if (command == JobManagerCommand.SUBMISSION) {
+                            String commandVal = jobManagerCommands.get(command);
+                            jobDescriptor.setJobSubmitter(commandVal);
+                        }
+                    }
+                }
             }
         }
         return jobDescriptor;

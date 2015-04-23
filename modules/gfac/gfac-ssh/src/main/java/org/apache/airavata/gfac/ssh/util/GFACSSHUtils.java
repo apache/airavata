@@ -45,6 +45,7 @@ import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
@@ -207,7 +208,7 @@ public class GFACSSHUtils {
             AppCatalog appCatalog = jobExecutionContext.getAppCatalog();
             JobSubmissionInterface preferredJobSubmissionInterface = jobExecutionContext.getPreferredJobSubmissionInterface();
             SSHJobSubmission sshJobSubmission = appCatalog.getComputeResource().getSSHJobSubmission(preferredJobSubmissionInterface.getJobSubmissionInterfaceId());
-            
+
             Cluster pbsCluster = null;
             String key=sshAuth.getKey();
             boolean recreate = false;
@@ -281,16 +282,8 @@ public class GFACSSHUtils {
     public static JobDescriptor createJobDescriptor(JobExecutionContext jobExecutionContext, Cluster cluster) {
         JobDescriptor jobDescriptor = new JobDescriptor();
         TaskDetails taskData = jobExecutionContext.getTaskData();
-        ResourceJobManager resourceJobManager = jobExecutionContext.getResourceJobManager();
-        Map<JobManagerCommand, String> jobManagerCommands = resourceJobManager.getJobManagerCommands();
-        if (jobManagerCommands != null && !jobManagerCommands.isEmpty()) {
-            for (JobManagerCommand command : jobManagerCommands.keySet()) {
-                if (command == JobManagerCommand.SUBMISSION) {
-                    String commandVal = jobManagerCommands.get(command);
-                    jobDescriptor.setJobSubmitter(commandVal);
-                }
-            }
-        }
+
+
         try {
 			if(ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_ENABLE).equalsIgnoreCase("true")) {
                 String flags = ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_FLAGS);
@@ -321,7 +314,7 @@ public class GFACSSHUtils {
 			 logger.error("ApplicationSettingsException : " +e.getLocalizedMessage());
 		}
         // this is common for any application descriptor
-        
+
         jobDescriptor.setCallBackIp(ServerSettings.getIp());
         jobDescriptor.setCallBackPort(ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.GFAC_SERVER_PORT, "8950"));
         jobDescriptor.setInputDirectory(jobExecutionContext.getInputDir());
@@ -407,6 +400,9 @@ public class GFACSSHUtils {
         jobDescriptor.setAllEnvExport(true);
         jobDescriptor.setOwner(((PBSCluster) cluster).getServerInfo().getUserName());
 
+        ResourceJobManager resourceJobManager = jobExecutionContext.getResourceJobManager();
+
+
         ComputationalResourceScheduling taskScheduling = taskData.getTaskScheduling();
         if (taskScheduling != null) {
             int totalNodeCount = taskScheduling.getNodeCount();
@@ -464,6 +460,21 @@ public class GFACSSHUtils {
         if (postJobCommands != null) {
             for (String postJobCommand : postJobCommands) {
                 jobDescriptor.addPostJobCommand(parseCommand(postJobCommand, jobExecutionContext));
+            }
+        }
+
+        ApplicationParallelismType parallelism = appDepDescription.getParallelism();
+        if (parallelism != null){
+            if (parallelism == ApplicationParallelismType.MPI || parallelism == ApplicationParallelismType.OPENMP || parallelism == ApplicationParallelismType.OPENMP_MPI){
+                Map<JobManagerCommand, String> jobManagerCommands = resourceJobManager.getJobManagerCommands();
+                if (jobManagerCommands != null && !jobManagerCommands.isEmpty()) {
+                    for (JobManagerCommand command : jobManagerCommands.keySet()) {
+                        if (command == JobManagerCommand.SUBMISSION) {
+                            String commandVal = jobManagerCommands.get(command);
+                            jobDescriptor.setJobSubmitter(commandVal);
+                        }
+                    }
+                }
             }
         }
         return jobDescriptor;
