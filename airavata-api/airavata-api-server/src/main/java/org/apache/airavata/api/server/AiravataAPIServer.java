@@ -48,13 +48,11 @@ import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AiravataAPIServer implements IServer, Watcher{
+public class AiravataAPIServer implements IServer{
 
     private final static Logger logger = LoggerFactory.getLogger(AiravataAPIServer.class);
 	private static final String SERVER_NAME = "Airavata API Server";
 	private static final String SERVER_VERSION = "1.0";
-    private ZooKeeper zk;
-    private static Integer mutex = -1;
 
     private ServerStatus status;
 
@@ -108,7 +106,7 @@ public class AiravataAPIServer implements IServer, Watcher{
 					}
 				}
 			}.start();
-            storeServerConfig();
+//            storeServerConfig();
         } catch (TTransportException e) {
             logger.error(e.getMessage());
             setStatus(ServerStatus.FAILED);
@@ -116,127 +114,6 @@ public class AiravataAPIServer implements IServer, Watcher{
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
     }
-
-    public void storeServerConfig() throws AiravataSystemException{
-        try {
-            String zkhostPort = AiravataZKUtils.getZKhostPort();
-            String airavataServerHostPort = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.API_SERVER_HOST)
-                    + ":" + ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.API_SERVER_PORT);
-            String experimentCatalogJDBCURL = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.REGISTRY_JDBC_URL);
-            String appCatalogJDBCURL = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.APPCATALOG_JDBC_URL);
-            String rabbitMqBrokerURL = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.RABBITMQ_BROKER_URL);
-            String rabbitMqExchange = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.RABBITMQ_EXCHANGE);
-            String rabbitMq = rabbitMqBrokerURL + File.separator + rabbitMqExchange;
-            zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this);   // no watcher is required, this will only use to store some data
-            String apiServer = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_API_SERVER_NODE, "/airavata-server");
-            String OrchServer = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_ORCHESTRATOR_SERVER_NODE, "/orchestrator-server");
-            String gfacServer = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_GFAC_SERVER_NODE, "/gfac-server");
-            String gfacExperiments = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
-            String experimentCatalog = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_EXPERIMENT_CATALOG, "/experiment-catalog");
-            String appCatalog = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_APPCATALOG, "/app-catalog");
-            String rabbitMQ = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_RABBITMQ, "/rabbitMq");
-            Stat zkStat = zk.exists(experimentCatalog, false);
-            if (zkStat == null) {
-                zk.create(experimentCatalog, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                        CreateMode.PERSISTENT);
-            }
-            String exCatalogInstantNode = experimentCatalog + File.separator + String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
-            zkStat = zk.exists(exCatalogInstantNode, false);
-            if (zkStat == null) {
-                zk.create(exCatalogInstantNode,
-                        experimentCatalogJDBCURL.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                        CreateMode.EPHEMERAL);      // other component will watch these childeren creation deletion to monitor the status of the node
-                logger.info("Successfully created experiment-catalog node");
-            }
-            zkStat = zk.exists(appCatalog, false);
-            if (zkStat == null) {
-                zk.create(appCatalog, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                        CreateMode.PERSISTENT);
-            }
-            String appCatalogInstantNode = appCatalog + File.separator + String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
-            zkStat = zk.exists(appCatalogInstantNode, false);
-            if (zkStat == null) {
-                zk.create(appCatalogInstantNode,
-                        appCatalogJDBCURL.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                        CreateMode.EPHEMERAL);      // other component will watch these childeren creation deletion to monitor the status of the node
-                logger.info("Successfully created app-catalog node");
-            }
-            if (getStatus().equals(ServerStatus.STARTED)) {
-                zkStat = zk.exists(apiServer, false);
-                if (zkStat == null) {
-                    zk.create(apiServer, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                            CreateMode.PERSISTENT);
-                }
-                String instantNode = apiServer + File.separator + String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
-                zkStat = zk.exists(instantNode, false);
-                if (zkStat == null) {
-                    zk.create(instantNode,
-                            airavataServerHostPort.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                            CreateMode.EPHEMERAL);      // other component will watch these childeren creation deletion to monitor the status of the node
-                    logger.info("Successfully created airavata-server node");
-                }
-
-                zkStat = zk.exists(OrchServer, false);
-                if (zkStat == null) {
-                    zk.create(OrchServer, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                            CreateMode.PERSISTENT);
-                    logger.info("Successfully created orchestrator-server node");
-                }
-                zkStat = zk.exists(gfacServer, false);
-                if (zkStat == null) {
-                    zk.create(gfacServer, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                            CreateMode.PERSISTENT);
-                    logger.info("Successfully created gfac-server node");
-                }
-                zkStat = zk.exists(gfacServer, false);
-                if (zkStat == null) {
-                    zk.create(gfacExperiments, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                            CreateMode.PERSISTENT);
-                    logger.info("Successfully created gfac-server node");
-                }
-                zkStat = zk.exists(rabbitMQ, false);
-                if (zkStat == null) {
-                    zk.create(rabbitMQ, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                            CreateMode.PERSISTENT);
-                }
-                String rabbitMqInstantNode = rabbitMQ + File.separator + String.valueOf(new Random().nextInt(Integer.MAX_VALUE));
-                zkStat = zk.exists(rabbitMqInstantNode, false);
-                if (zkStat == null) {
-                    zk.create(rabbitMqInstantNode,
-                            rabbitMq.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                            CreateMode.EPHEMERAL);      // other component will watch these childeren creation deletion to monitor the status of the node
-                    logger.info("Successfully created rabbitMQ node");
-                }
-                logger.info("Finished starting ZK: " + zk);
-            }
-        } catch (ApplicationSettingsException e) {
-            logger.error(e.getMessage());
-            setStatus(ServerStatus.FAILED);
-            RegistryInitUtil.stopDerbyInServerMode();
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-        } catch (IOException e) {
-            logger.error(e.getMessage());
-            setStatus(ServerStatus.FAILED);
-            RegistryInitUtil.stopDerbyInServerMode();
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-        } catch (InterruptedException e) {
-            logger.debug(e.getMessage());
-            setStatus(ServerStatus.FAILED);
-            RegistryInitUtil.stopDerbyInServerMode();
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-        } catch (KeeperException e) {
-            logger.debug(e.getMessage());
-            setStatus(ServerStatus.FAILED);
-            RegistryInitUtil.stopDerbyInServerMode();
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            setStatus(ServerStatus.FAILED);
-            RegistryInitUtil.stopDerbyInServerMode();
-            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
-        }
-    }
-
     public static void main(String[] args) {
     	try {
 			AiravataAPIServer server = new AiravataAPIServer();
@@ -294,19 +171,4 @@ public class AiravataAPIServer implements IServer, Watcher{
 	public String getVersion() {
 		return SERVER_VERSION;
 	}
-
-    @Override
-    synchronized public void process(WatchedEvent watchedEvent) {
-        logger.info(watchedEvent.getPath());
-        synchronized (mutex) {
-            Event.KeeperState state = watchedEvent.getState();
-            logger.info(state.name());
-            switch(state){
-                case SyncConnected:
-                    mutex.notify();
-                case Expired:case Disconnected:
-                    logger.info("ZK Connection is "+ state.toString());
-            }
-        }
-    }
 }
