@@ -50,15 +50,11 @@ import org.apache.airavata.gsi.ssh.impl.StandardOutReader;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
-<<<<<<< HEAD
-import org.apache.airavata.model.appcatalog.computeresource.*;
-=======
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
->>>>>>> bbb43ffb4ae8fef5041cb8fe9076b4244482c499
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
