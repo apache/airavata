@@ -200,7 +200,7 @@ public class RegisterSampleApplications {
             System.out.println("\n #### Registering XSEDE Computational Resources #### \n");
 
             //Register Stampede
-            List<BatchQueue> stampedeQueues = new ArrayList<>();
+            List<BatchQueue> stampedeQueues = new ArrayList<BatchQueue>();
             BatchQueue normalQueue = createBatchQueue("normal", "Normal Queue", 2880, 256, 4000, 50, 0);
             BatchQueue developmentQueue = createBatchQueue("development", "Development Queue", 120, 16, 4000, 1, 0);
             stampedeQueues.add(normalQueue);
@@ -211,7 +211,7 @@ public class RegisterSampleApplications {
             System.out.println("Stampede Resource Id is " + stampedeResourceId);
 
             //Register Trestles
-            List<BatchQueue> trestlesQueues = new ArrayList<>();
+            List<BatchQueue> trestlesQueues = new ArrayList<BatchQueue>();
             BatchQueue normalQueue_tr = createBatchQueue("normal", "Normal Queue", 2880, 32, 32, 50, 0);
             BatchQueue sharedQueue_tr = createBatchQueue("shared", "Shared Queue", 2880, 4, 32, 50, 0);
             trestlesQueues.add(normalQueue_tr);
@@ -221,7 +221,7 @@ public class RegisterSampleApplications {
             System.out.println("Trestles Resource Id is " + trestlesResourceId);
 
             //Register BigRedII
-            List<BatchQueue> br2Queues = new ArrayList<>();
+            List<BatchQueue> br2Queues = new ArrayList<BatchQueue>();
             BatchQueue normalQueue_br2 = createBatchQueue("normal", "Normal Queue", 2880, 340, 2048, 50, 0);
             BatchQueue serial_br2 = createBatchQueue("serial", "Normal Queue", 10080, 340, 2048, 50, 0);
             br2Queues.add(normalQueue_br2);
@@ -234,7 +234,7 @@ public class RegisterSampleApplications {
             System.out.println("FSd Resource Id: "+fsdResourceId);
 
             //Register Alamo
-            List<BatchQueue> alamoQueues = new ArrayList<>();
+            List<BatchQueue> alamoQueues = new ArrayList<BatchQueue>();
             alamoResourceId = registerComputeHost("alamo.uthscsa.edu", "Alamo Cluster",
                     ResourceJobManagerType.PBS, "push", "/usr/bin/", SecurityProtocol.SSH_KEYS, 22, "/usr/bin/mpiexec -np", alamoQueues);
             System.out.println("Alamo Cluster " + alamoResourceId);
@@ -251,7 +251,7 @@ public class RegisterSampleApplications {
             System.out.println("\n #### Registering Non-XSEDE Computational Resources #### \n");
 
             //Register LSF resource
-            List<BatchQueue> lsfQueues = new ArrayList<>();
+            List<BatchQueue> lsfQueues = new ArrayList<BatchQueue>();
             lsfResourceId = registerComputeHost("ghpcc06.umassrc.org", "LSF Cluster",
                     ResourceJobManagerType.LSF, "push", "source /etc/bashrc;/lsf/9.1/linux2.6-glibc2.3-x86_64/bin", SecurityProtocol.SSH_KEYS, 22, "mpiexec", lsfQueues);
             System.out.println("LSF Resource Id is " + lsfResourceId);
