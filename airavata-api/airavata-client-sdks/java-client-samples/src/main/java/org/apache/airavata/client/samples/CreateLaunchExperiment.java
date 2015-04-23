@@ -58,10 +58,10 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_GATEWAY = "php_reference_gateway";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_9cbcfae4-616b-4bef-aa41-d3cd2bec6002";
+    private static String echoAppId = "Echo_4d075102-3591-4ad5-a218-c7e63471ba4a";
     private static String mpiAppId = "HelloMPI_bfd56d58-6085-4b7f-89fc-646576830518";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
-    private static String amberAppId = "Amber_ee7e3e85-9dfd-459c-9f45-aca223192f5f";
+    private static String amberAppId = "Amber_6da3c39f-c435-413a-bb90-f14f87e8d6c3";
     private static String gromacsAppId = "GROMACS_05622038-9edd-4cb1-824e-0b7cb993364b";
     private static String espressoAppId = "ESPRESSO_10cc2820-5d0b-4c63-9546-8a8b595593c1";
     private static String lammpsAppId = "LAMMPS_2472685b-8acf-497e-aafe-cc66fe5f4cb6";
@@ -162,11 +162,11 @@ public class CreateLaunchExperiment {
     public static void createAndLaunchExp() throws TException {
         List<String> experimentIds = new ArrayList<String>();
         try {
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 1; i++) {
 //                final String expId = createExperimentForSSHHost(airavata);
 //                final String expId = createEchoExperimentForFSD(airavataClient);
 //                final String expId = createMPIExperimentForFSD(airavataClient);
-//               final String expId = createEchoExperimentForStampede(airavataClient);
+               final String expId = createEchoExperimentForStampede(airavataClient);
 //                final String expId = createEchoExperimentForTrestles(airavataClient);
 //                final String expId = createExperimentEchoForLocalHost(airavataClient);
 //                final String expId = createExperimentWRFTrestles(airavataClient);
@@ -174,7 +174,7 @@ public class CreateLaunchExperiment {
 //                final String expId = createExperimentForBR2Amber(airavataClient);
 //                final String expId = createExperimentWRFStampede(airavataClient);
 //                final String expId = createExperimentForStampedeAmber(airavataClient);
-                String expId = createExperimentForTrestlesAmber(airavataClient);
+//                String expId = createExperimentForTrestlesAmber(airavataClient);
 //                final String expId = createExperimentGROMACSStampede(airavataClient);
 //                final String expId = createExperimentESPRESSOStampede(airavataClient);
 //                final String expId = createExperimentLAMMPSStampede(airavataClient);
@@ -1323,11 +1323,11 @@ public class CreateLaunchExperiment {
 //			}
             for (InputDataObjectType inputDataObjectType : exInputs) {
                 if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
-                    inputDataObjectType.setValue("/Users/lginnali/Downloads/02_Heat.rst");
+                    inputDataObjectType.setValue("/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/02_Heat.rst");
                 } else if (inputDataObjectType.getName().equalsIgnoreCase("Production_Control_File")) {
-                    inputDataObjectType.setValue("/Users/lginnali/Downloads/03_Prod.in");
+                    inputDataObjectType.setValue("/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/03_Prod.in");
                 } else if (inputDataObjectType.getName().equalsIgnoreCase("Parameter_Topology_File")) {
-                    inputDataObjectType.setValue("/Users/lginnali/Downloads/prmtop");
+                    inputDataObjectType.setValue("/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/prmtop");
                 }
             }
 
@@ -1388,11 +1388,11 @@ public class CreateLaunchExperiment {
 //			}
             for (InputDataObjectType inputDataObjectType : exInputs) {
                 if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
-                    inputDataObjectType.setValue("/Users/lginnali/Downloads/02_Heat.rst");
+                    inputDataObjectType.setValue("/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/02_Heat.rst");
                 } else if (inputDataObjectType.getName().equalsIgnoreCase("Production_Control_File")) {
-                    inputDataObjectType.setValue("/Users/lginnali/Downloads/03_Prod.in");
+                    inputDataObjectType.setValue("/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/03_Prod.in");
                 } else if (inputDataObjectType.getName().equalsIgnoreCase("Parameter_Topology_File")) {
-                    inputDataObjectType.setValue("/Users/lginnali/Downloads/prmtop");
+                    inputDataObjectType.setValue("/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/prmtop");
                 }
             }
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(amberAppId);
