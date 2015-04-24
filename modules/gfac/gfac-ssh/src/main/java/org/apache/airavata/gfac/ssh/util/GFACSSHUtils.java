@@ -318,10 +318,10 @@ public class GFACSSHUtils {
                     }
                 }
             }
-            if (emailIds != null && !emailIds.isEmpty()) {
-                logger.info("Email list: " + emailIds);
-                jobDescriptor.setMailAddress(emailIds);
-            }
+        }
+        if (emailIds != null && !emailIds.isEmpty()) {
+            logger.info("Email list: " + emailIds);
+            jobDescriptor.setMailAddress(emailIds);
         }
         // this is common for any application descriptor
 
