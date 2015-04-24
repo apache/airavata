@@ -203,8 +203,10 @@ public class EmailBasedMonitor implements Runnable{
                 } catch (MessagingException e1) {
                     log.error("Error printing envelop of the email");
                 }
+                unreadMessages.add(message);
             } catch (MessagingException e) {
                 log.error("Error while retrieving sender address from message : " + message.toString());
+                unreadMessages.add(message);
             }
         }
         if (!processedMessages.isEmpty()) {
