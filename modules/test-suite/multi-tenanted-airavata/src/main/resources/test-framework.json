@@ -12,15 +12,16 @@
     "resultFileLoc": "/tmp/test_framework_results/",
     "skippedGateways": "default,php_reference_gateway,ultrascan,umass",
     "injectErrors" : true,
+    "numberOfIterations" : 10,
     "resources": [
         {
             "name": "trestles.sdsc.xsede.org",
-            "loginUser": "ogce"
+            "loginUser": "us3"
 
         },
         {
             "name": "stampede.tacc.xsede.org",
-            "loginUser": "ogce"
+            "loginUser": "us3"
 
         },
         {
@@ -49,7 +50,7 @@
             }
         },
         {
-            "name": "ultrascan",
+            "name": "Ultrascan",
             "inputs": {
                 "input": "/Users/chathuri/dev/airavata/source/php/inputs/hpcinput.tar",
                 "mgroupcount": "-mgroupcount=1",

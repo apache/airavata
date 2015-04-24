@@ -96,7 +96,7 @@ public class ComputeResourceRegister {
                     bigredResourceId = registerComputeHost("bigred2.uits.iu.edu", "IU BigRed II Cluster",
                             ResourceJobManagerType.PBS, "push", "/opt/torque/torque-5.0.1/bin/", SecurityProtocol.SSH_KEYS, 22, "aprun -n");
                     System.out.println("BigredII Resource Id is " + bigredResourceId);
-                } else if (resourceName.contains("gorden")) {
+                } else if (resourceName.contains("gordon")) {
                     //Register BigRedII
                     gordenResourceId = registerComputeHost("gordon.sdsc.edu", "SDSC Gorden Cluster",
                             ResourceJobManagerType.PBS, "push", "/opt/torque/bin/", SecurityProtocol.SSH_KEYS, 22, "mpirun_rsh -hostfile $PBS_NODEFILE -np");
@@ -142,6 +142,7 @@ public class ComputeResourceRegister {
         SSHJobSubmission sshJobSubmission = new SSHJobSubmission();
         sshJobSubmission.setResourceJobManager(resourceJobManager);
         sshJobSubmission.setSecurityProtocol(securityProtocol);
+//        sshJobSubmission.setMonitorMode(MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR);
         sshJobSubmission.setSshPort(portNumber);
         airavata.addSSHJobSubmissionDetails(computeResourceId, 1, sshJobSubmission);
 
@@ -214,7 +215,7 @@ public class ComputeResourceRegister {
                         bigRedCgatewayResourcePreferences = createComputeResourcePreference(resourceId, "TG-STA110014S", false, null, null, null,
                                 "/N/dc2/scratch/cgateway/gta-work-dirs", loginUserName);
                         airavata.addGatewayComputeResourcePreference(gatewayResourceProfile.getGatewayID(), resourceId, bigRedCgatewayResourcePreferences);
-                    }else if (resourceId.contains("gorden") && loginUserName.equals("us3")){
+                    }else if (resourceId.contains("gordon") && loginUserName.equals("us3")){
                         gordenUS3ResourcePreference = createComputeResourcePreference(resourceId, "uot111", false, null, JobSubmissionProtocol.SSH,
                                 DataMovementProtocol.SCP, "/home/us3/gordon/work/airavata", loginUserName);
                         airavata.addGatewayComputeResourcePreference(gatewayResourceProfile.getGatewayID(), resourceId, gordenUS3ResourcePreference);
