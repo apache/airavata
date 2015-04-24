@@ -37,8 +37,8 @@ public class PBSEmailParser implements EmailParser {
     private static final Logger log = LoggerFactory.getLogger(PBSEmailParser.class);
 
 
-    private static final String REGEX = "[a-zA-Z: ]*(?<" + JOBID + ">[a-zA-Z0-9-\\.]*)\\s+.*\\s+.*\\s+(?<"
-            + STATUS + ">[a-zA-Z\\ ]*)";
+    private static final String REGEX = "[a-zA-Z ]*:[ ]*(?<" +  JOBID + ">[a-zA-Z0-9-\\.]*)\\s+[a-zA-Z ]*:[ ]*(?<"+
+            JOBNAME + ">[a-zA-Z0-9-\\.]*)\\s+.*\\s+(?<" + STATUS + ">[a-zA-Z\\ ]*)";
     private static final String REGEX_EXIT_STATUS = "Exit_status=(?<" + EXIT_STATUS + ">[\\d]+)";
     public static final String BEGUN_EXECUTION = "Begun execution";
     public static final String EXECUTION_TERMINATED = "Execution terminated";
@@ -54,6 +54,7 @@ public class PBSEmailParser implements EmailParser {
             Matcher matcher = pattern.matcher(content);
             if (matcher.find()) {
                 jobStatusResult.setJobId(matcher.group(JOBID));
+                jobStatusResult.setJobName(matcher.group(JOBNAME));
                 String statusLine = matcher.group(STATUS);
                 jobStatusResult.setState(getJobState(statusLine, content));
                 return jobStatusResult;
