@@ -154,8 +154,14 @@ public class EmailBasedMonitor implements Runnable{
                     emailFolder = store.getFolder(folderName);
                 }
                 Thread.sleep(ServerSettings.getEmailMonitorPeriod());// sleep a bit - get rest till job finishes
+                log.info("Retrieving unseen emails");
                 emailFolder.open(Folder.READ_WRITE);
                 Message[] searchMessages = emailFolder.search(unseenBefore);
+                if (searchMessages == null || searchMessages.length == 0) {
+                    log.info("No new email messages");
+                } else {
+                    log.info(searchMessages.length + " new email/s received");
+                }
                 processMessages(searchMessages);
                 emailFolder.close(false);
             }
