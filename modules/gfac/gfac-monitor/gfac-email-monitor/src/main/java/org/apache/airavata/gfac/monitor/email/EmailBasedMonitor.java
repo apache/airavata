@@ -124,6 +124,7 @@ public class EmailBasedMonitor implements Runnable{
         switch (addressStr) {
             case "pbsconsult@sdsc.edu":
             case "adm@trident.bigred2.uits.iu.edu":
+            case "root <adm@trident.bigred2.uits.iu.edu>":
                 return ResourceJobManagerType.PBS;
             case "slurm@batch1.stampede.tacc.utexas.edu":
                 return ResourceJobManagerType.SLURM;
