@@ -214,6 +214,7 @@ public class BetterGfacImpl implements GFac,Watcher {
             StringWriter errors = new StringWriter();
             e.printStackTrace(new PrintWriter(errors));
             GFacUtils.saveErrorDetails(jobExecutionContext, errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
+            closeZK(jobExecutionContext);
             throw new GFacException(e);
         }
     }
@@ -508,13 +509,16 @@ public class BetterGfacImpl implements GFac,Watcher {
             }
             return true;
         } catch (ApplicationSettingsException e) {
-            GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
-            throw new GFacException("Error launching the Job",e);
+            GFacUtils.saveErrorDetails(jobExecutionContext, e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+            closeZK(jobExecutionContext);
+            throw new GFacException("Error launching the Job", e);
         } catch (KeeperException e) {
-            GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
-            throw new GFacException("Error launching the Job",e);
+            GFacUtils.saveErrorDetails(jobExecutionContext, e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+            closeZK(jobExecutionContext);
+            throw new GFacException("Error launching the Job", e);
         } catch (InterruptedException e) {
             GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
+            closeZK(jobExecutionContext);
             throw new GFacException("Error launching the Job",e);
         }
     }
@@ -526,6 +530,7 @@ public class BetterGfacImpl implements GFac,Watcher {
             return cancel(jobExecutionContext);
         } catch (Exception e) {
             GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
+            closeZK(jobExecutionContext);
             log.error("Error inovoking the job with experiment ID: " + experimentID);
             throw new GFacException(e);
         }
@@ -606,6 +611,7 @@ public class BetterGfacImpl implements GFac,Watcher {
                     }
                     jobExecutionContext.setProperty(ERROR_SENT, "true");
                     jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
+                    closeZK(jobExecutionContext);
                     throw new GFacException(e.getMessage(), e);
                 }
 //            }
@@ -618,6 +624,7 @@ public class BetterGfacImpl implements GFac,Watcher {
 //            throw new GFacException(e.getMessage(), e);
         } catch (Exception e) {
             log.error("Error occured while cancelling job for experiment : " + jobExecutionContext.getExperimentID(), e);
+            closeZK(jobExecutionContext);
             throw new GFacException(e.getMessage(), e);
         }
     }
@@ -700,7 +707,8 @@ public class BetterGfacImpl implements GFac,Watcher {
 			}
 			jobExecutionContext.setProperty(ERROR_SENT, "true");
 			jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
-			throw new GFacException(e.getMessage(), e);
+            closeZK(jobExecutionContext);
+            throw new GFacException(e.getMessage(), e);
 		}
     }
 
@@ -772,7 +780,8 @@ public class BetterGfacImpl implements GFac,Watcher {
 			}
 			jobExecutionContext.setProperty(ERROR_SENT, "true");
 			jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
-			throw new GFacException(e.getMessage(), e);
+            closeZK(jobExecutionContext);
+            throw new GFacException(e.getMessage(), e);
 		}
     }
 
@@ -999,6 +1008,8 @@ public class BetterGfacImpl implements GFac,Watcher {
                         log.error(e1.getLocalizedMessage());
                     }
                     throw new GFacException(e);
+                }finally {
+                    closeZK(jobExecutionContext);
                 }
             }else{
                 log.info("Experiment execution is cancelled, so OutHandler invocation is going to stop");
@@ -1019,6 +1030,16 @@ public class BetterGfacImpl implements GFac,Watcher {
                 jobExecutionContext.getGatewayID());
         monitorPublisher.publish(new TaskStatusChangeEvent(TaskState.COMPLETED, taskIdentity));
         monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.COMPLETED));
+    }
+
+    private void closeZK(JobExecutionContext jobExecutionContext) {
+        try {
+            if(jobExecutionContext.getZk()!=null) {
+                jobExecutionContext.getZk().close();
+            }
+        } catch (InterruptedException e) {
+            log.error(e.getMessage(), e);
+        }
     }
 
     /**
@@ -1167,6 +1188,8 @@ public class BetterGfacImpl implements GFac,Watcher {
                     log.error(e1.getLocalizedMessage());
                 }
                 throw new GFacException("Error Executing a OutFlow Handler", e);
+            }finally {
+                closeZK(jobExecutionContext);
             }
         }
         monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.OUTHANDLERSINVOKED));
