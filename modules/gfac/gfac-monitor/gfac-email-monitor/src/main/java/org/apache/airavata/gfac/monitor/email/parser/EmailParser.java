@@ -29,6 +29,7 @@ import javax.mail.MessagingException;
 public interface EmailParser {
     static final String STATUS = "status";
     static final String JOBID = "jobId";
+    static final String JOBNAME = "jobName";
     static final String EXIT_STATUS = "exitStatus";
 
     JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException;

@@ -91,12 +91,16 @@ public class EmailBasedMonitor implements Runnable{
     }
 
     public void addToJobMonitorMap(JobExecutionContext jobExecutionContext) {
-        addToJobMonitorMap(jobExecutionContext.getJobDetails().getJobID(), jobExecutionContext);
+        String monitorId = jobExecutionContext.getJobDetails().getJobID();
+        if (monitorId == null || monitorId.isEmpty()) {
+            monitorId = jobExecutionContext.getJobDetails().getJobName();
+        }
+        addToJobMonitorMap(monitorId, jobExecutionContext);
     }
 
-    public void addToJobMonitorMap(String jobId, JobExecutionContext jobExecutionContext) {
-        log.info("Added Job Id : " + jobId + " to email based monitor map");
-        jobMonitorMap.put(jobId, jobExecutionContext);
+    public void addToJobMonitorMap(String monitorId, JobExecutionContext jobExecutionContext) {
+        log.info("Added monitor Id : " + monitorId + " to email based monitor map");
+        jobMonitorMap.put(monitorId, jobExecutionContext);
     }
 
     private JobStatusResult parse(Message message) throws MessagingException, AiravataException {
@@ -180,6 +184,9 @@ public class EmailBasedMonitor implements Runnable{
             try {
                 JobStatusResult jobStatusResult = parse(message);
                 JobExecutionContext jEC = jobMonitorMap.get(jobStatusResult.getJobId());
+                if (jEC == null) {
+                    jEC = jobMonitorMap.get(jobStatusResult.getJobName());
+                }
                 if (jEC != null) {
                     process(jobStatusResult, jEC);
                     processedMessages.add(message);

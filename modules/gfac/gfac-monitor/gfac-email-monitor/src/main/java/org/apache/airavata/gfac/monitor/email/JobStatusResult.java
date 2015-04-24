@@ -26,6 +26,16 @@ public class JobStatusResult {
     private JobState state;
     private String jobId;
 
+    public String getJobName() {
+        return jobName;
+    }
+
+    public void setJobName(String jobName) {
+        this.jobName = jobName;
+    }
+
+    private String jobName;
+
     public JobState getState() {
         return state;
     }
@@ -42,3 +52,4 @@ public class JobStatusResult {
         this.jobId = jobId;
     }
 }
+

@@ -35,8 +35,8 @@ public class SLURMEmailParser implements EmailParser {
 
     private static final Logger log = LoggerFactory.getLogger(SLURMEmailParser.class);
 
-    private static final String REGEX = "[A-Z]*\\s[a-zA-Z]*_[a-z]*=(?<" + JOBID
-            + ">\\d*)\\s[a-zA-Z]*=[a-zA-Z0-9-]*\\s(?<" + STATUS + ">[]a-zA-Z]*),.*";
+    private static final String REGEX = "[A-Z]*\\s[a-zA-Z]*_[a-z]*=(?<" + JOBID + ">\\d*)[ ]*[a-zA-Z]*=(?<"+
+            JOBNAME + ">[a-zA-Z0-9-]*)[ ]*(?<" + STATUS + ">[]a-zA-Z]*),.*";
 
     public static final String BEGAN = "Began";
     public static final String ENDED = "Ended";
@@ -50,6 +50,7 @@ public class SLURMEmailParser implements EmailParser {
         Matcher matcher = pattern.matcher(subject);
         if (matcher.find()) {
             jobStatusResult.setJobId(matcher.group(JOBID));
+            jobStatusResult.setJobName(matcher.group(JOBNAME));
             jobStatusResult.setState(getJobState(matcher.group(STATUS)));
             return jobStatusResult;
         } else {
