@@ -134,37 +134,30 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 			
 //            setGatewayName(ServerSettings.getDefaultUserGateway());
             setAiravataUserName(ServerSettings.getDefaultUser());
-			try {
-				zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this); // no watcher is
-															// required, this
-															// will only use to
-															// store some data
-				String OrchServer = ServerSettings
-						.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_ORCHESTRATOR_SERVER_NODE);
-				synchronized (mutex) {
-					mutex.wait(); // waiting for the syncConnected event
+			if(!ServerSettings.isGFacPassiveMode()) {
+				try {
+					zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this); // no watcher is
+					// required, this
+					// will only use to
+					// store some data
+					String OrchServer = ServerSettings
+							.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_ORCHESTRATOR_SERVER_NODE);
+					synchronized (mutex) {
+						mutex.wait(); // waiting for the syncConnected event
+					}
+					registerOrchestratorService(airavataServerHostPort, OrchServer);
+					// creating a watch in orchestrator to monitor the gfac
+					// instances
+					zk.getChildren(ServerSettings.getSetting(
+									Constants.ZOOKEEPER_GFAC_SERVER_NODE, "/gfac-server"),
+							this);
+					log.info("Finished starting ZK: " + zk);
+				} catch (IOException|InterruptedException|KeeperException e) {
+					log.error(e.getMessage(), e);
+					throw new OrchestratorException("Error while initializing orchestrator service, Error in Zookeeper", e);
 				}
-                registerOrchestratorService(airavataServerHostPort, OrchServer);
-				// creating a watch in orchestrator to monitor the gfac
-				// instances
-				zk.getChildren(ServerSettings.getSetting(
-						Constants.ZOOKEEPER_GFAC_SERVER_NODE, "/gfac-server"),
-						this);
-				log.info("Finished starting ZK: " + zk);
-			} catch (IOException e) {
-                log.error(e.getMessage(), e);
-                throw new OrchestratorException("Error while initializing orchestrator service", e);
-			} catch (InterruptedException e) {
-                log.error(e.getMessage(), e);
-                throw new OrchestratorException("Error while initializing orchestrator service", e);
-			} catch (KeeperException e) {
-                log.error(e.getMessage(), e);
-                throw new OrchestratorException("Error while initializing orchestrator service", e);
 			}
-		} catch (ApplicationSettingsException e) {
-            log.error(e.getMessage(), e);
-            throw new OrchestratorException("Error while initializing orchestrator service", e);
-		}catch (AiravataException e) {
+		} catch (AiravataException e) {
             log.error(e.getMessage(), e);
             throw new OrchestratorException("Error while initializing orchestrator service", e);
 		}
