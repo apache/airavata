@@ -85,8 +85,8 @@ public class FrameworkBootstrapping {
                 experimentExecution.createUltrascanExperiment();
 //                experimentExecution.createEchoExperiment();
 //                experimentExecution.createAmberExperiment();
-//                experimentExecution.launchExperiments();
-//                experimentExecution.monitorExperiments();
+                experimentExecution.launchExperiments();
+                experimentExecution.monitorExperiments();
             }
         } catch (Exception e) {
             logger.error("Error occured while set up", e);
