@@ -279,40 +279,50 @@ public class GFACSSHUtils {
     }
 
 
-    public static JobDescriptor createJobDescriptor(JobExecutionContext jobExecutionContext, Cluster cluster) {
+    public static JobDescriptor createJobDescriptor(JobExecutionContext jobExecutionContext, Cluster cluster) throws AppCatalogException, ApplicationSettingsException {
         JobDescriptor jobDescriptor = new JobDescriptor();
         TaskDetails taskData = jobExecutionContext.getTaskData();
 
 
-        try {
-			if(ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_ENABLE).equalsIgnoreCase("true")) {
-                String flags = ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_FLAGS);
-                if (flags != null && jobExecutionContext.getApplicationContext().getComputeResourceDescription().getHostName().equals("stampede.tacc.xsede.org")) {
-                    flags = "ALL";
-                }
-                jobDescriptor.setMailOptions(flags);
+        // set email based job monitoring email  address if monitor mode is JOB_EMAIL_NOTIFICATION_MONITOR
+        boolean addJobNotifMail = isEmailBasedJobMonitor(jobExecutionContext);
+        String emailIds = null;
+        if (addJobNotifMail) {
+            emailIds = ServerSettings.getEmailBasedMonitorAddress();
+        }
+        // add all configured job notification email addresses.
+        if (ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_ENABLE).equalsIgnoreCase("true")) {
+            String flags = ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_FLAGS);
+            if (flags != null && jobExecutionContext.getApplicationContext().getComputeResourceDescription().getHostName().equals("stampede.tacc.xsede.org")) {
+                flags = "ALL";
+            }
+            jobDescriptor.setMailOptions(flags);
 
-                String emailids = ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_EMAILIDS);
-
-                if (taskData.isEnableEmailNotification()) {
-                    List<String> emailList = jobExecutionContext.getTaskData().getEmailAddresses();
-                    String elist = GFacUtils.listToCsv(emailList, ',');
-                    if (elist != null && !elist.isEmpty()) {
-                        if (emailids != null && !emailids.isEmpty()) {
-                            emailids = emailids + "," + elist;
-                        } else {
-                            emailids = elist;
-                        }
-                    }
-                }
-                if (emailids != null && !emailids.isEmpty()) {
-                    logger.info("Email list: " + emailids);
-                    jobDescriptor.setMailAddress(emailids);
+            String userJobNotifEmailIds = ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_EMAILIDS);
+            if (userJobNotifEmailIds != null && !userJobNotifEmailIds.isEmpty()) {
+                if (emailIds != null && !emailIds.isEmpty()) {
+                    emailIds += (", " + userJobNotifEmailIds);
+                } else {
+                    emailIds = userJobNotifEmailIds;
                 }
             }
-        } catch (ApplicationSettingsException e) {
-			 logger.error("ApplicationSettingsException : " +e.getLocalizedMessage());
-		}
+
+            if (taskData.isEnableEmailNotification()) {
+                List<String> emailList = jobExecutionContext.getTaskData().getEmailAddresses();
+                String elist = GFacUtils.listToCsv(emailList, ',');
+                if (elist != null && !elist.isEmpty()) {
+                    if (emailIds != null && !emailIds.isEmpty()) {
+                        emailIds = emailIds + "," + elist;
+                    } else {
+                        emailIds = elist;
+                    }
+                }
+            }
+            if (emailIds != null && !emailIds.isEmpty()) {
+                logger.info("Email list: " + emailIds);
+                jobDescriptor.setMailAddress(emailIds);
+            }
+        }
         // this is common for any application descriptor
 
         jobDescriptor.setCallBackIp(ServerSettings.getIp());
@@ -478,6 +488,17 @@ public class GFACSSHUtils {
             }
         }
         return jobDescriptor;
+    }
+
+    public static boolean isEmailBasedJobMonitor(JobExecutionContext jobExecutionContext) throws AppCatalogException {
+        if (jobExecutionContext.getPreferredJobSubmissionProtocol() == JobSubmissionProtocol.SSH) {
+            String jobSubmissionInterfaceId = jobExecutionContext.getPreferredJobSubmissionInterface().getJobSubmissionInterfaceId();
+            SSHJobSubmission sshJobSubmission = jobExecutionContext.getAppCatalog().getComputeResource().getSSHJobSubmission(jobSubmissionInterfaceId);
+            MonitorMode monitorMode = sshJobSubmission.getMonitorMode();
+            return monitorMode != null && monitorMode == MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR;
+        } else {
+            return false;
+        }
     }
 
     private static int generateJobName() {

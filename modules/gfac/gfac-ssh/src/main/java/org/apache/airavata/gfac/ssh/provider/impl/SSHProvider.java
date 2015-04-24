@@ -395,7 +395,7 @@ public class SSHProvider extends AbstractRecoverableProvider {
                             sshJobSubmission.getResourceJobManager().getResourceJobManagerType());
                     emailBasedMonitor.addToJobMonitorMap(jobExecutionContext);
                 } catch (AiravataException e) {
-                    log.error("Couldn't active email monitoring, Error while initializing Email Based Monitor", e);
+                    throw new GFacHandlerException("Error while activating email job monitoring ", e);
                 }
                 return;
             }
