@@ -1182,7 +1182,7 @@ public class GFacUtils {
 
 			String s1 = zk.create(newExpNode + File.separator + "operation", "submit".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
 					CreateMode.PERSISTENT);
-			zk.exists(s1, true);// we want to know when this node get deleted
+			zk.exists(s1, false);// we want to know when this node get deleted
 			zk.create(newExpNode + AiravataZKUtils.DELIVERY_TAG_POSTFIX, longToBytes(deliveryTag), ZooDefs.Ids.OPEN_ACL_UNSAFE,  // here we store the value of delivery message
 					CreateMode.PERSISTENT);
 		} else {

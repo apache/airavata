@@ -245,7 +245,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
             if (executionType == ExecutionType.SINGLE_APP) {
                 //its an single application execution experiment
                 log.debugId(experimentId, "Launching single application experiment {}.", experimentId);
-                OrchestratorServerThreadPoolExecutor.getFixedThreadPool().execute(new SingleAppExperimentRunner(experimentId, token));
+                OrchestratorServerThreadPoolExecutor.getCachedThreadPool().execute(new SingleAppExperimentRunner(experimentId, token));
             } else if (executionType == ExecutionType.WORKFLOW) {
                 //its a workflow execution experiment
                 log.debugId(experimentId, "Launching workflow experiment {}.", experimentId);

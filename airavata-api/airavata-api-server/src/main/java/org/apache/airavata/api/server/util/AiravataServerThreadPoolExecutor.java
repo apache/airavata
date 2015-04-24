@@ -35,14 +35,14 @@ public class AiravataServerThreadPoolExecutor {
 
     private static ExecutorService threadPool;
 
-    public static ExecutorService getThreadPool() {
+    public static ExecutorService getCachedThreadPool() {
         if(threadPool ==null){
             threadPool = Executors.newCachedThreadPool();
         }
         return threadPool;
     }
 
-    public static ExecutorService getFixedThreadPool() {
+    public static ExecutorService client() {
         if(threadPool ==null){
             try {
                 threadPool = Executors.newFixedThreadPool(Integer.parseInt(ServerSettings.getSetting(AIRAVATA_SERVER_THREAD_POOL_SIZE)));

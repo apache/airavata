@@ -61,7 +61,7 @@ public class CreateLaunchExperiment {
     private static String echoAppId = "Echo_418d87fe-c720-4079-acd9-7e78aaa6cf76";
     private static String mpiAppId = "HelloMPI_bfd56d58-6085-4b7f-89fc-646576830518";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
-    private static String amberAppId = "Amber_3864a9dc-de75-4bd1-8e8e-a0d1c006a35c";
+    private static String amberAppId = "Amber_dda3d2bb-e128-4814-9ade-7de9070169be";
     private static String gromacsAppId = "GROMACS_05622038-9edd-4cb1-824e-0b7cb993364b";
     private static String espressoAppId = "ESPRESSO_10cc2820-5d0b-4c63-9546-8a8b595593c1";
     private static String lammpsAppId = "LAMMPS_2472685b-8acf-497e-aafe-cc66fe5f4cb6";

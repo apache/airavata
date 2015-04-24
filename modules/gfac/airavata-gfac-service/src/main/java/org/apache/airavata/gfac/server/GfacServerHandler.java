@@ -192,6 +192,16 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                     break;
                 case Expired:case Disconnected:
                    logger.info("ZK Connection is "+ state.toString());
+                    try {
+                        zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this);
+                    } catch (IOException e) {
+                        logger.error(e.getMessage(), e);
+                    } catch (ApplicationSettingsException e) {
+                        logger.error(e.getMessage(), e);
+                    }
+//                    synchronized (mutex) {
+//                        mutex.wait();  // waiting for the syncConnected event
+//                    }
             }
         }
     }
@@ -291,7 +301,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
 
     private GFac getGfac() throws TException {
         try {
-            return new BetterGfacImpl(registry, appCatalog, zk, publisher);
+            return new BetterGfacImpl(registry, appCatalog, new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this), publisher);
         } catch (Exception e) {
             throw new TException("Error initializing gfac instance", e);
         }
