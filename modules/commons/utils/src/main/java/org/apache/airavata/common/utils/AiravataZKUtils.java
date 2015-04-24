@@ -50,14 +50,14 @@ public class AiravataZKUtils implements Watcher {
 
     }
 
-    public static String getExpZnodePath(String experimentId, String taskId) throws ApplicationSettingsException {
+    public static String getExpZnodePath(String experimentId) throws ApplicationSettingsException {
         return ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE) +
                 File.separator +
                 ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME) + File.separator
                 + experimentId;
     }
 
-    public static String getExpZnodeHandlerPath(String experimentId, String taskId, String className) throws ApplicationSettingsException {
+    public static String getExpZnodeHandlerPath(String experimentId, String className) throws ApplicationSettingsException {
         return ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE) +
                 File.separator +
                 ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME) + File.separator
@@ -73,26 +73,26 @@ public class AiravataZKUtils implements Watcher {
         return Integer.parseInt(ServerSettings.getSetting(Constants.ZOOKEEPER_TIMEOUT,"30000"));
     }
 
-    public static String getExpStatePath(String experimentId, String taskId) throws ApplicationSettingsException {
-        return AiravataZKUtils.getExpZnodePath(experimentId, taskId) +
+    public static String getExpStatePath(String experimentId) throws ApplicationSettingsException {
+        return AiravataZKUtils.getExpZnodePath(experimentId) +
                 File.separator +
                 "state";
     }
 
-    public static String getExpTokenId(ZooKeeper zk, String expId, String tId) throws ApplicationSettingsException,
+    public static String getExpTokenId(ZooKeeper zk, String expId) throws ApplicationSettingsException,
             KeeperException, InterruptedException {
-        Stat exists = zk.exists(getExpZnodePath(expId, tId), false);
+        Stat exists = zk.exists(getExpZnodePath(expId), false);
         if (exists != null) {
-            return new String(zk.getData(getExpZnodePath(expId, tId), false, exists));
+            return new String(zk.getData(getExpZnodePath(expId), false, exists));
         }
         return null;
     }
 
-    public static String getExpState(ZooKeeper zk, String expId, String tId) throws ApplicationSettingsException,
+    public static String getExpState(ZooKeeper zk, String expId) throws ApplicationSettingsException,
             KeeperException, InterruptedException {
-        Stat exists = zk.exists(getExpStatePath(expId, tId), false);
+        Stat exists = zk.exists(getExpStatePath(expId), false);
         if (exists != null) {
-            return new String(zk.getData(getExpStatePath(expId, tId), false, exists));
+            return new String(zk.getData(getExpStatePath(expId), false, exists));
         }
         return null;
     }

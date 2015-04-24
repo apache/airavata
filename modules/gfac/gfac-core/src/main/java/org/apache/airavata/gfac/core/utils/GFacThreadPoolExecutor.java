@@ -34,7 +34,7 @@ public class GFacThreadPoolExecutor {
 
     private static ExecutorService threadPool;
 
-    public static ExecutorService getThreadPool() {
+    public static ExecutorService getCachedThreadPool() {
         if(threadPool ==null){
             threadPool = Executors.newCachedThreadPool();
         }

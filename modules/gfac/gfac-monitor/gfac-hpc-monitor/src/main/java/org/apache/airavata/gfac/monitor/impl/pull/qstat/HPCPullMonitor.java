@@ -197,7 +197,7 @@ public class HPCPullMonitor extends PullMonitor {
                                 sendNotification(iMonitorID);
                                 logger.info("To avoid timing issues we sleep sometime and try to retrieve output files");
                                 Thread.sleep(10000);
-                                GFacThreadPoolExecutor.getThreadPool().execute(new OutHandlerWorker(gfac, iMonitorID, publisher));
+                                GFacThreadPoolExecutor.getCachedThreadPool().execute(new OutHandlerWorker(gfac, iMonitorID, publisher));
                                 break;
                             }
                         }
@@ -225,7 +225,7 @@ public class HPCPullMonitor extends PullMonitor {
                                     sendNotification(iMonitorID);
                                     logger.info("To avoid timing issues we sleep sometime and try to retrieve output files");
                                     Thread.sleep(10000);
-                                    GFacThreadPoolExecutor.getThreadPool().execute(new OutHandlerWorker(gfac, iMonitorID, publisher));
+                                    GFacThreadPoolExecutor.getCachedThreadPool().execute(new OutHandlerWorker(gfac, iMonitorID, publisher));
                                     break;
                                 }
                             }
@@ -250,7 +250,7 @@ public class HPCPullMonitor extends PullMonitor {
                             removeList.add(iMonitorID);
                             logger.info("PULL Notification is complete: marking the Job as ************COMPLETE************ experiment {}, task {}, job name {} .",
                                     iMonitorID.getExperimentID(), iMonitorID.getTaskID(), iMonitorID.getJobName());
-                            GFacThreadPoolExecutor.getThreadPool().execute(new OutHandlerWorker(gfac, iMonitorID, publisher));
+                            GFacThreadPoolExecutor.getCachedThreadPool().execute(new OutHandlerWorker(gfac, iMonitorID, publisher));
                         }
                         iMonitorID.setStatus(jobStatuses.get(iMonitorID.getJobID() + "," + iMonitorID.getJobName()));    //IMPORTANT this is not a simple setter we have a logic
                         iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
@@ -288,7 +288,7 @@ public class HPCPullMonitor extends PullMonitor {
                                 sendNotification(iMonitorID);
 //                                CommonUtils.removeMonitorFromQueue(take, iMonitorID);
                                 removeList.add(iMonitorID);
-                                GFacThreadPoolExecutor.getThreadPool().execute(new OutHandlerWorker(gfac, iMonitorID, publisher));
+                                GFacThreadPoolExecutor.getCachedThreadPool().execute(new OutHandlerWorker(gfac, iMonitorID, publisher));
                             } else {
                                 iMonitorID.setFailedCount(0);
                             }

@@ -110,7 +110,7 @@ public class GfacServer implements IServer{
 			setStatus(IServer.ServerStatus.STOPING);
 			server.stop();
 		}
-		GFacThreadPoolExecutor.getThreadPool().shutdownNow();
+		GFacThreadPoolExecutor.getCachedThreadPool().shutdownNow();
 
 	}
 
