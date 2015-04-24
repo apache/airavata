@@ -20,9 +20,7 @@
 */
 package org.apache.airavata.gfac.monitor.email;
 
-import org.apache.aiaravata.application.catalog.data.model.ResourceJobManager;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.logger.AiravataLogger;
 import org.apache.airavata.common.logger.AiravataLoggerFactory;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -260,11 +258,7 @@ public class EmailBasedMonitor implements Runnable{
         }
 
         if (runOutHandlers) {
-            try {
-                GFacThreadPoolExecutor.getFixedThreadPool().submit(new OutHandlerWorker(jEC, BetterGfacImpl.getMonitorPublisher()));
-            } catch (ApplicationSettingsException e) {
-                log.error(e.getMessage(), e);
-            }
+                GFacThreadPoolExecutor.getCachedThreadPool().execute(new OutHandlerWorker(jEC, BetterGfacImpl.getMonitorPublisher()));
         }
         publishJobStatusChange(jEC);
     }

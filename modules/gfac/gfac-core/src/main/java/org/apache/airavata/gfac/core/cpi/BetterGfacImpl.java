@@ -306,7 +306,7 @@ public class BetterGfacImpl implements GFac,Watcher {
         jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
         jobExecutionContext.setGfac(this);
         jobExecutionContext.setZk(zk);
-        jobExecutionContext.setCredentialStoreToken(AiravataZKUtils.getExpTokenId(zk, experimentID, taskID));
+        jobExecutionContext.setCredentialStoreToken(AiravataZKUtils.getExpTokenId(zk, experimentID));
 
         // handle job submission protocol
         List<JobSubmissionInterface> jobSubmissionInterfaces = computeResource.getJobSubmissionInterfaces();
@@ -500,7 +500,7 @@ public class BetterGfacImpl implements GFac,Watcher {
             } else if (stateVal >= 8) {
                 log.info("There is nothing to recover in this job so we do not re-submit");
                 ZKUtil.deleteRecursive(zk,
-                        AiravataZKUtils.getExpZnodePath(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID()));
+                        AiravataZKUtils.getExpZnodePath(jobExecutionContext.getExperimentID()));
             } else {
                 // Now we know this is an old Job, so we have to handle things gracefully
                 log.info("Re-launching the job in GFac because this is re-submitted to GFac");
