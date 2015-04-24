@@ -154,8 +154,14 @@ public class EmailBasedMonitor implements Runnable{
                     emailFolder = store.getFolder(folderName);
                 }
                 Thread.sleep(ServerSettings.getEmailMonitorPeriod());// sleep a bit - get rest till job finishes
+                log.info("Retrieving unseen emails");
                 emailFolder.open(Folder.READ_WRITE);
                 Message[] searchMessages = emailFolder.search(unseenBefore);
+                if (searchMessages == null || searchMessages.length == 0) {
+                    log.info("No new email messages");
+                } else {
+                    log.info(searchMessages.length + " new email/s received");
+                }
                 processMessages(searchMessages);
                 emailFolder.close(false);
             }
@@ -201,8 +207,10 @@ public class EmailBasedMonitor implements Runnable{
                 } catch (MessagingException e1) {
                     log.error("Error printing envelop of the email");
                 }
+                unreadMessages.add(message);
             } catch (MessagingException e) {
                 log.error("Error while retrieving sender address from message : " + message.toString());
+                unreadMessages.add(message);
             }
         }
         if (!processedMessages.isEmpty()) {
@@ -237,29 +245,34 @@ public class EmailBasedMonitor implements Runnable{
         JobState resultState = jobStatusResult.getState();
         jEC.getJobDetails().setJobStatus(new JobStatus(resultState));
         boolean runOutHandlers = false;
+        String jobDetails = "JobName : " + jobStatusResult.getJobName() + ", JobId : " + jobStatusResult.getJobId();
         // TODO - Handle all other valid JobStates
         if (resultState == JobState.COMPLETE) {
             jobMonitorMap.remove(jobStatusResult.getJobId());
             runOutHandlers = true;
-            log.debug("Job Complete email received , removed job from job monitoring");
+            log.info("Job Complete email received , removed job from job monitoring. " + jobDetails);
         }else if (resultState == JobState.QUEUED) {
             // nothing special thing to do, update the status change to rabbit mq at the end of this method.
+            log.info("Job Queued email received, " + jobDetails);
         }else if (resultState == JobState.ACTIVE) {
             // nothing special thing to do, update the status change to rabbit mq at the end of this method.
+            log.info("Job Active email received, " + jobDetails);
         }else if (resultState == JobState.FAILED) {
             jobMonitorMap.remove(jobStatusResult.getJobId());
             runOutHandlers = true;
-            log.debug("Job failed email received , removed job from job monitoring");
+            log.info("Job failed email received , removed job from job monitoring. " + jobDetails);
         }else if (resultState == JobState.CANCELED) {
             jobMonitorMap.remove(jobStatusResult.getJobId());
             runOutHandlers = true;
-            log.debug("Job canceled mail received, removed job from job monitoring");
+            log.info("Job canceled mail received, removed job from job monitoring. " + jobDetails);
             
         }
 
         if (runOutHandlers) {
-                GFacThreadPoolExecutor.getCachedThreadPool().execute(new OutHandlerWorker(jEC, BetterGfacImpl.getMonitorPublisher()));
+            log.info("Calling Out Handler chain of " + jobDetails);
+            GFacThreadPoolExecutor.getCachedThreadPool().execute(new OutHandlerWorker(jEC, BetterGfacImpl.getMonitorPublisher()));
         }
+        log.info("Publishing status changes to amqp. " + jobDetails);
         publishJobStatusChange(jEC);
     }
 
