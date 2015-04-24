@@ -301,7 +301,7 @@ public class GFACSSHUtils {
             String userJobNotifEmailIds = ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_EMAILIDS);
             if (userJobNotifEmailIds != null && !userJobNotifEmailIds.isEmpty()) {
                 if (emailIds != null && !emailIds.isEmpty()) {
-                    emailIds += (", " + userJobNotifEmailIds);
+                    emailIds += ("," + userJobNotifEmailIds);
                 } else {
                     emailIds = userJobNotifEmailIds;
                 }
