@@ -20,7 +20,6 @@
  */
 package org.apache.airavata.gfac.core.utils;
 
-import edu.uiuc.ncsa.security.delegation.services.Server;
 import org.airavata.appcatalog.cpi.AppCatalog;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
@@ -42,7 +41,6 @@ import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.workspace.experiment.*;
-import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.registry.cpi.CompositeIdentifier;
 import org.apache.airavata.registry.cpi.Registry;
@@ -901,8 +899,7 @@ public class GFacUtils {
 			throws ApplicationSettingsException, KeeperException,
 			InterruptedException {
 		String expState = AiravataZKUtils.getExpState(zk, jobExecutionContext
-				.getExperimentID(), jobExecutionContext.getTaskData()
-				.getTaskID());
+				.getExperimentID());
 		return GfacExperimentState.findByValue(Integer.parseInt(expState));
 	}
 
@@ -911,8 +908,7 @@ public class GFacUtils {
 			throws ApplicationSettingsException, KeeperException,
 			InterruptedException {
 		String expState = AiravataZKUtils.getExpState(zk, jobExecutionContext
-				.getExperimentID(), jobExecutionContext.getTaskData()
-				.getTaskID());
+				.getExperimentID());
 		if (expState == null) {
 			return -1;
 		}
@@ -933,8 +929,7 @@ public class GFacUtils {
 			throws ApplicationSettingsException, KeeperException,
 			InterruptedException {
 		String expState = AiravataZKUtils.getExpZnodeHandlerPath(
-				jobExecutionContext.getExperimentID(), jobExecutionContext
-						.getTaskData().getTaskID(), className);
+				jobExecutionContext.getExperimentID(), className);
 		Stat exists = zk.exists(expState, false);
 		if (exists == null) {
 			zk.create(expState, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
@@ -970,8 +965,7 @@ public class GFacUtils {
 			GfacPluginState state) throws ApplicationSettingsException,
 			KeeperException, InterruptedException {
 		String expState = AiravataZKUtils.getExpZnodeHandlerPath(
-				jobExecutionContext.getExperimentID(), jobExecutionContext
-						.getTaskData().getTaskID(), className);
+				jobExecutionContext.getExperimentID(), className);
 		Stat exists = zk.exists(expState, false);
 		if (exists == null) {
 			zk.create(expState, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
@@ -1008,8 +1002,7 @@ public class GFacUtils {
 			KeeperException, InterruptedException {
 		if(zk.getState().isConnected()) {
 			String expState = AiravataZKUtils.getExpZnodeHandlerPath(
-					jobExecutionContext.getExperimentID(), jobExecutionContext
-							.getTaskData().getTaskID(), className);
+					jobExecutionContext.getExperimentID(), className);
 
 			Stat exists = zk.exists(expState + File.separator
 					+ AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false);
@@ -1030,8 +1023,7 @@ public class GFacUtils {
 			JobExecutionContext jobExecutionContext, String className) {
 		try {
 			String expState = AiravataZKUtils.getExpZnodeHandlerPath(
-					jobExecutionContext.getExperimentID(), jobExecutionContext
-							.getTaskData().getTaskID(), className);
+					jobExecutionContext.getExperimentID(), className);
 
 			Stat exists = zk.exists(expState + File.separator
 					+ AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false);
@@ -1176,7 +1168,7 @@ public class GFacUtils {
 						expParent.getVersion());
 			}
 
-            String token = AiravataZKUtils.getExpTokenId(zk, experimentID, taskID);
+            String token = AiravataZKUtils.getExpTokenId(zk, experimentID);
             String s = zk.create(newExpNode + File.separator + "state", String
 							.valueOf(GfacExperimentState.LAUNCHED.getValue())
 							.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
@@ -1333,7 +1325,6 @@ public class GFacUtils {
 				String expZnodeHandlerPath = AiravataZKUtils
 						.getExpZnodeHandlerPath(
 								jobExecutionContext.getExperimentID(),
-								jobExecutionContext.getTaskData().getTaskID(),
 								className);
 				Stat exists = zk.exists(expZnodeHandlerPath, false);
 				zk.setData(expZnodeHandlerPath, data.toString().getBytes(),
@@ -1352,7 +1343,6 @@ public class GFacUtils {
 			String expZnodeHandlerPath = AiravataZKUtils
 					.getExpZnodeHandlerPath(
 							jobExecutionContext.getExperimentID(),
-							jobExecutionContext.getTaskData().getTaskID(),
 							className);
 			Stat exists = zk.exists(expZnodeHandlerPath, false);
 			return new String(jobExecutionContext.getZk().getData(
