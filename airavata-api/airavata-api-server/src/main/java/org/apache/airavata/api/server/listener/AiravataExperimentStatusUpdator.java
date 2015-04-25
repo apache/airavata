@@ -128,22 +128,26 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
     }
 
     private void cleanup(WorkflowNodeStatusChangeEvent nodeStatus, String experimentNode, String experimentPath) throws KeeperException, InterruptedException, AiravataException {
-        int count =0;
+        int count = 0;
         long deliveryTag = AiravataZKUtils.getDeliveryTag(nodeStatus.getWorkflowNodeIdentity().getExperimentId(), zk, experimentNode, ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME));
         if (ServerSettings.isGFacPassiveMode()) {
-            while(!consumer.isOpen() && count<3){
+            while (!consumer.isOpen() && count < 3) {
                 try {
                     consumer.reconnect();
                 } catch (AiravataException e) {
                     count++;
                 }
             }
-            if(consumer.isOpen()){
+            if (consumer.isOpen()) {
                 consumer.sendAck(deliveryTag);
             }
         }
-        ZKUtil.deleteRecursive(zk, experimentPath + AiravataZKUtils.DELIVERY_TAG_POSTFIX);
-        ZKUtil.deleteRecursive(zk, experimentPath);
+        if (zk.exists(experimentPath + AiravataZKUtils.DELIVERY_TAG_POSTFIX, false) != null) {
+            ZKUtil.deleteRecursive(zk, experimentPath + AiravataZKUtils.DELIVERY_TAG_POSTFIX);
+        }
+        if (zk.exists(experimentPath, false) != null) {
+            ZKUtil.deleteRecursive(zk, experimentPath);
+        }
     }
 
     public  ExperimentState updateExperimentStatus(String experimentId, ExperimentState state) throws Exception {
