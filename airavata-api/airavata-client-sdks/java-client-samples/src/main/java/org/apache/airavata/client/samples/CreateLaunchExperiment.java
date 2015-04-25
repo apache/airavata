@@ -58,7 +58,7 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_GATEWAY = "php_reference_gateway";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_418d87fe-c720-4079-acd9-7e78aaa6cf76";
+    private static String echoAppId = "Echo_a3c69094-2591-47d9-b5c4-e14c9fa5abf5";
     private static String mpiAppId = "HelloMPI_bfd56d58-6085-4b7f-89fc-646576830518";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
     private static String amberAppId = "Amber_dda3d2bb-e128-4814-9ade-7de9070169be";
@@ -167,13 +167,13 @@ public class CreateLaunchExperiment {
 //                final String expId = createEchoExperimentForFSD(airavataClient);
 //                final String expId = createMPIExperimentForFSD(airavataClient);
 //               final String expId = createEchoExperimentForStampede(airavataClient);
-//                final String expId = createEchoExperimentForTrestles(airavataClient);
+                final String expId = createEchoExperimentForTrestles(airavataClient);
 //                final String expId = createExperimentEchoForLocalHost(airavataClient);
 //                final String expId = createExperimentWRFTrestles(airavataClient);
 //                final String expId = createExperimentForBR2(airavataClient);
 //                final String expId = createExperimentForBR2Amber(airavataClient);
 //                final String expId = createExperimentWRFStampede(airavataClient);
-                final String expId = createExperimentForStampedeAmber(airavataClient);
+//                final String expId = createExperimentForStampedeAmber(airavataClient);
 //                String expId = createExperimentForTrestlesAmber(airavataClient);
 //                final String expId = createExperimentGROMACSStampede(airavataClient);
 //                final String expId = createExperimentESPRESSOStampede(airavataClient);

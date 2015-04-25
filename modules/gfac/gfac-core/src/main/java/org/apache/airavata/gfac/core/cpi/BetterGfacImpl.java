@@ -100,6 +100,8 @@ public class BetterGfacImpl implements GFac,Watcher {
 
     private boolean cancelled = false;
 
+    private static Integer mutex = -1;
+
     /**
      * Constructor for GFac
      *
@@ -956,6 +958,18 @@ public class BetterGfacImpl implements GFac,Watcher {
     }
 
     public void invokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
+        try {
+            jobExecutionContext.setZk(new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(),this));
+            synchronized (mutex) {
+                mutex.wait();  // waiting for the syncConnected event
+            }
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        } catch (ApplicationSettingsException e) {
+            log.error(e.getMessage(), e);
+        } catch (InterruptedException e) {
+            log.error(e.getMessage(), e);
+        }
         GFacConfiguration gFacConfiguration = jobExecutionContext.getGFacConfiguration();
         List<GFacHandlerConfig> handlers = null;
         if (gFacConfiguration != null) {
@@ -1109,6 +1123,14 @@ public class BetterGfacImpl implements GFac,Watcher {
     }
 
     public void reInvokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
+        try {
+            jobExecutionContext.setZk(new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(),this));
+
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        } catch (ApplicationSettingsException e) {
+            log.error(e.getMessage(), e);
+        }
         GFacConfiguration gFacConfiguration = jobExecutionContext.getGFacConfiguration();
         List<GFacHandlerConfig> handlers = null;
         if (gFacConfiguration != null) {
@@ -1253,10 +1275,32 @@ public class BetterGfacImpl implements GFac,Watcher {
 
     public void process(WatchedEvent watchedEvent) {
         log.info(watchedEvent.getPath());
-        if(Event.EventType.NodeDataChanged.equals(watchedEvent.getType())){
+        if (Event.EventType.NodeDataChanged.equals(watchedEvent.getType())) {
             // node data is changed, this means node is cancelled.
-            log.info("Experiment is cancelled with this path:"+watchedEvent.getPath());
+            log.info("Experiment is cancelled with this path:" + watchedEvent.getPath());
             this.cancelled = true;
+        }
+        synchronized (mutex) {
+            Event.KeeperState state = watchedEvent.getState();
+            log.info(state.name());
+            switch (state) {
+                case SyncConnected:
+                    mutex.notify();
+                    break;
+                case Expired:
+                case Disconnected:
+                    log.info("ZK Connection is " + state.toString());
+                    try {
+                        zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this);
+                    } catch (IOException e) {
+                        log.error(e.getMessage(), e);
+                    } catch (ApplicationSettingsException e) {
+                        log.error(e.getMessage(), e);
+                    }
+//                    synchronized (mutex) {
+//                        mutex.wait();  // waiting for the syncConnected event
+//                    }
+            }
         }
     }
 }
