@@ -138,8 +138,12 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
                     count++;
                 }
             }
-            if (consumer.isOpen()) {
-                consumer.sendAck(deliveryTag);
+            try {
+                if (consumer.isOpen()) {
+                    consumer.sendAck(deliveryTag);
+                }
+            }catch (Exception e){
+                logger.error("Error sending the Ack ! If the worker pick this again airavata should gracefully handle !");
             }
         }
         if (zk.exists(experimentPath + AiravataZKUtils.DELIVERY_TAG_POSTFIX, false) != null) {
