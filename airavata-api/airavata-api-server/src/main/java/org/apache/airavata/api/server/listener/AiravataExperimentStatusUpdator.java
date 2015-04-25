@@ -129,21 +129,23 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
 
     private void cleanup(WorkflowNodeStatusChangeEvent nodeStatus, String experimentNode, String experimentPath) throws KeeperException, InterruptedException, AiravataException {
         int count = 0;
-        long deliveryTag = AiravataZKUtils.getDeliveryTag(nodeStatus.getWorkflowNodeIdentity().getExperimentId(), zk, experimentNode, ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME));
-        if (ServerSettings.isGFacPassiveMode()) {
-            while (!consumer.isOpen() && count < 3) {
+        long deliv  eryTag = AiravataZKUtils.getDeliveryTag(nodeStatus.getWorkflowNodeIdentity().getExperimentId(), zk, experimentNode, ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME));
+        if(deliveryTag>0) {
+            if (ServerSettings.isGFacPassiveMode()) {
+                while (!consumer.isOpen() && count < 3) {
+                    try {
+                        consumer.reconnect();
+                    } catch (AiravataException e) {
+                        count++;
+                    }
+                }
                 try {
-                    consumer.reconnect();
-                } catch (AiravataException e) {
-                    count++;
+                    if (consumer.isOpen()) {
+                        consumer.sendAck(deliveryTag);
+                    }
+                } catch (Exception e) {
+                    logger.error("Error sending the Ack ! If the worker pick this again airavata should gracefully handle !");
                 }
-            }
-            try {
-                if (consumer.isOpen()) {
-                    consumer.sendAck(deliveryTag);
-                }
-            }catch (Exception e){
-                logger.error("Error sending the Ack ! If the worker pick this again airavata should gracefully handle !");
             }
         }
         if (zk.exists(experimentPath + AiravataZKUtils.DELIVERY_TAG_POSTFIX, false) != null) {

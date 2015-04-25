@@ -203,12 +203,12 @@ public class AiravataZKUtils implements Watcher {
 
     public static long getDeliveryTag(String experimentID, ZooKeeper zk, String experimentNode,
                                       String pickedChild) throws KeeperException, InterruptedException,AiravataException {
-        String experimentPath = experimentNode + File.separator + pickedChild;
-        String deliveryTagPath = experimentPath + File.separator + experimentID
+        String deliveryTagPath = experimentNode + File.separator + pickedChild + File.separator + experimentID
                 + DELIVERY_TAG_POSTFIX;
         Stat exists = zk.exists(deliveryTagPath, false);
         if(exists==null) {
-            throw new AiravataException("Cannot find delivery Tag for this experiment");
+            logger.error("Cannot find delivery Tag in path:" + deliveryTagPath + " for this experiment");
+            return -1;
         }
         return bytesToLong(zk.getData(deliveryTagPath, false, exists));
     }
