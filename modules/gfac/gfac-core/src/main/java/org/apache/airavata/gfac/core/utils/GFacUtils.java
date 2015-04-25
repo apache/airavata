@@ -1217,6 +1217,15 @@ public class GFacUtils {
 								CreateMode.PERSISTENT);
 					}
 				}
+
+
+				String oldDeliveryTag = experimentEntry + AiravataZKUtils.DELIVERY_TAG_POSTFIX;
+				Stat exists = zk.exists(oldDeliveryTag, false);
+				if(exists!=null) {
+					zk.create(newExpNode + AiravataZKUtils.DELIVERY_TAG_POSTFIX,
+							zk.getData(oldDeliveryTag,null,exists),ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+					ZKUtil.deleteRecursive(zk,oldDeliveryTag);
+				}
 				// After all the files are successfully transfered we delete the
 				// old experiment,otherwise we do
 				// not delete a single file
