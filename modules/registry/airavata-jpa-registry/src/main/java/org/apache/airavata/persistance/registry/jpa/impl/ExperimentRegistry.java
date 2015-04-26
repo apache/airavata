@@ -35,6 +35,7 @@ import org.apache.airavata.persistance.registry.jpa.utils.ThriftDataModelConvers
 import org.apache.airavata.registry.cpi.CompositeIdentifier;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.RegistryModelType;
+import org.apache.airavata.registry.cpi.ResultOrderType;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.airavata.registry.cpi.utils.StatusType;
 
@@ -2795,7 +2796,33 @@ public class ExperimentRegistry {
         }
     }
 
+    /**
+     * To search experiments of user with the given filter criteria. All the matching results will be sent.
+     * Results are not ordered in any order
+     * @param filters
+     * @return
+     * @throws RegistryException
+     */
     public List<ExperimentSummary> searchExperiments(Map<String, String> filters) throws RegistryException {
+        return searchExperimentsWithPagination(filters, -1, -1, null, null);
+    }
+
+
+    /**
+     * To search the experiments of user with the given filter criteria and retrieve the results with
+     * pagination support. Results can be ordered based on an identifier (i.e column) either ASC or
+     * DESC.
+     *
+     * @param filters
+     * @param limit
+     * @param offset
+     * @param orderByIdentifier
+     * @param resultOrderType
+     * @return
+     * @throws RegistryException
+     */
+    public List<ExperimentSummary> searchExperimentsWithPagination(Map<String, String> filters, int limit,
+        int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
         Map<String, String> fil = new HashMap<String, String>();
         if (filters != null && filters.size() != 0) {
             List<ExperimentSummary> experimentSummaries = new ArrayList<ExperimentSummary>();
@@ -2827,7 +2854,8 @@ public class ExperimentRegistry {
                 if (fil.containsKey(AbstractResource.ExperimentConstants.APPLICATION_ID)) {
                     return searchExperimentsByApplication(fil);
                 } else {
-                    List<ExperimentResource> experimentResources = workerResource.searchExperiments(fil);
+                    List<ExperimentResource> experimentResources = workerResource
+                            .searchExperimentsWithPagination(fil, limit, offset, orderByIdentifier, resultOrderType);
                     if (experimentResources != null && !experimentResources.isEmpty()) {
                         for (ExperimentResource ex : experimentResources) {
                             experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
@@ -2907,5 +2935,4 @@ public class ExperimentRegistry {
             throw new RegistryException(e);
         }
     }
-
 }

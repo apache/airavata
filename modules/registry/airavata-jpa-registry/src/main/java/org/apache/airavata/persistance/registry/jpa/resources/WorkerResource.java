@@ -26,6 +26,7 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
+import org.apache.airavata.registry.cpi.ResultOrderType;
 import org.apache.airavata.registry.cpi.utils.StatusType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -451,7 +452,33 @@ public class WorkerResource extends AbstractResource {
 		remove(ResourceType.EXPERIMENT, experimentId);
 	}
 
+    /**
+     * To search projects of user with the given filter criteria. All the matching results will be sent.
+     * Results are not ordered in any order
+     * @param filters
+     * @return
+     * @throws RegistryException
+     */
     public List<ProjectResource> searchProjects (Map<String, String> filters) throws RegistryException{
+        return searchProjectsWithPagination(filters, -1, -1, null, null);
+    }
+
+    /**
+     * To search the projects of user with the given filter criteria and retrieve the results with
+     * pagination support. Results can be ordered based on an identifier (i.e column) either ASC or
+     * DESC. But in the current implementation ordering is only supported based on the project
+     * creation time
+     *
+     * @param filters
+     * @param limit
+     * @param offset
+     * @param orderByIdentifier
+     * @param resultOrderType
+     * @return
+     * @throws RegistryException
+     */
+    public List<ProjectResource> searchProjectsWithPagination(Map<String, String> filters, int limit,
+        int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
         List<ProjectResource> result = new ArrayList<ProjectResource>();
         EntityManager em = null;
         try {
@@ -472,13 +499,30 @@ public class WorkerResource extends AbstractResource {
                 }
             }
             query = query.substring(0, query.length() - 5);
+
+            //ordering
+            if( orderByIdentifier != null && resultOrderType != null
+                    && orderByIdentifier.equals(ProjectConstants.CREATION_TIME)){
+                String order = (resultOrderType == ResultOrderType.ASC) ? "ASC" : "DESC";
+                query += " ORDER BY p." + ProjectConstants.CREATION_TIME + " " + order;
+            }
+
             em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
-            Query q = em.createQuery(query);
+            Query q;
+
+            //pagination
+            if(offset>=0 && limit >=0){
+                q = em.createQuery(query).setFirstResult(offset).setMaxResults(limit);
+            }else{
+                q = em.createQuery(query);
+            }
+
             List resultList = q.getResultList();
             for (Object o : resultList) {
                 Project project = (Project) o;
-                ProjectResource projectResource = (ProjectResource) Utils.getResource(ResourceType.PROJECT, project);
+                ProjectResource projectResource =
+                        (ProjectResource) Utils.getResource(ResourceType.PROJECT, project);
                 result.add(projectResource);
             }
             em.getTransaction().commit();
@@ -497,7 +541,33 @@ public class WorkerResource extends AbstractResource {
         return result;
     }
 
+    /**
+     * To search experiments of user with the given filter criteria. All the matching results will be sent.
+     * Results are not ordered in any order
+     * @param filters
+     * @return
+     * @throws RegistryException
+     */
     public List<ExperimentResource> searchExperiments (Map<String, String> filters) throws RegistryException{
+        return searchExperimentsWithPagination(filters, -1, -1, null, null);
+    }
+
+    /**
+     * To search the experiments of user with the given filter criteria and retrieve the results with
+     * pagination support. Results can be ordered based on an identifier (i.e column) either ASC or
+     * DESC. But in the current implementation ordering is only supported based on creationTime
+     *
+     * @param filters
+     * @param limit
+     * @param offset
+     * @param orderByIdentifier
+     * @param resultOrderType
+     * @return
+     * @throws RegistryException
+     */
+    public List<ExperimentResource> searchExperimentsWithPagination(Map<String, String> filters, int limit,
+        int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
+
         List<ExperimentResource> result = new ArrayList<ExperimentResource>();
         EntityManager em = null;
         try {
@@ -518,13 +588,30 @@ public class WorkerResource extends AbstractResource {
                 }
             }
             query = query.substring(0, query.length() - 5);
+
+            //ordering
+            if( orderByIdentifier != null && resultOrderType != null
+                    && orderByIdentifier.equals(ExperimentConstants.CREATION_TIME)){
+                String order = (resultOrderType == ResultOrderType.ASC) ? "ASC" : "DESC";
+                query += " ORDER BY e." + ExperimentConstants.CREATION_TIME + " " + order;
+            }
+
             em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
-            Query q = em.createQuery(query);
+            Query q;
+
+            //pagination
+            if(offset>=0 && limit >=0){
+                q = em.createQuery(query).setFirstResult(offset).setMaxResults(limit);
+            }else{
+                q = em.createQuery(query);
+            }
+
             List resultList = q.getResultList();
             for (Object o : resultList) {
                 Experiment experiment = (Experiment) o;
-                ExperimentResource experimentResource = (ExperimentResource) Utils.getResource(ResourceType.EXPERIMENT, experiment);
+                ExperimentResource experimentResource =
+                        (ExperimentResource) Utils.getResource(ResourceType.EXPERIMENT, experiment);
                 result.add(experimentResource);
             }
             em.getTransaction().commit();

@@ -20,12 +20,12 @@
  */
 package org.apache.airavata.persistance.registry.jpa.resources;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.registry.cpi.RegistryException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractResource implements Resource {
 	// table names
@@ -94,6 +94,7 @@ public abstract class AbstractResource implements Resource {
 		public static final String PROJECT_NAME = "project_name";
 		public static final String PROJECT_ID = "project_id";
 		public static final String DESCRIPTION = "description";
+        public static final String CREATION_TIME = "creationTime";
 	}
 
     // Project table
