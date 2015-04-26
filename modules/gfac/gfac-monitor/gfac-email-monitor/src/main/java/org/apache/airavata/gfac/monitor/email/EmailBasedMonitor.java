@@ -43,6 +43,7 @@ import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.search.FlagTerm;
@@ -97,7 +98,7 @@ public class EmailBasedMonitor implements Runnable{
     }
 
     public void addToJobMonitorMap(String monitorId, JobExecutionContext jobExecutionContext) {
-        log.info("Added monitor Id : " + monitorId + " to email based monitor map");
+        log.info("[EJM]: Added monitor Id : " + monitorId + " to email based monitor map");
         jobMonitorMap.put(monitorId, jobExecutionContext);
     }
 
@@ -117,7 +118,7 @@ public class EmailBasedMonitor implements Runnable{
                 emailParser = new LSFEmailParser();
                 break;
             default:
-                throw new AiravataException("Un-handle resource job manager type: " + jobMonitorType.toString() +" for email monitoring -->  " + addressStr);
+                throw new AiravataException("[EJM]: Un-handle resource job manager type: " + jobMonitorType.toString() +" for email monitoring -->  " + addressStr);
         }
         return emailParser.parseEmail(message);
     }
@@ -134,7 +135,7 @@ public class EmailBasedMonitor implements Runnable{
 //            case "lsf":
 //                return ResourceJobManagerType.LSF;
             default:
-                throw new AiravataException("Couldn't identify Resource job manager type from address " + addressStr);
+                throw new AiravataException("[EJM]: Couldn't identify Resource job manager type from address " + addressStr);
         }
 
     }
@@ -154,29 +155,29 @@ public class EmailBasedMonitor implements Runnable{
                     emailFolder = store.getFolder(folderName);
                 }
                 Thread.sleep(ServerSettings.getEmailMonitorPeriod());// sleep a bit - get rest till job finishes
-                log.info("Retrieving unseen emails");
+                log.info("[EJM]: Retrieving unseen emails");
                 emailFolder.open(Folder.READ_WRITE);
                 Message[] searchMessages = emailFolder.search(unseenBefore);
                 if (searchMessages == null || searchMessages.length == 0) {
-                    log.info("No new email messages");
+                    log.info("[EJM]: No new email messages");
                 } else {
-                    log.info(searchMessages.length + " new email/s received");
+                    log.info("[EJM]: "+searchMessages.length + " new email/s received");
                 }
                 processMessages(searchMessages);
                 emailFolder.close(false);
             }
         } catch (MessagingException e) {
-            log.error("Couldn't connect to the store ", e);
+            log.error("[EJM]: Couldn't connect to the store ", e);
         } catch (InterruptedException e) {
-            log.error("Interrupt exception while sleep ", e);
+            log.error("[EJM]: Interrupt exception while sleep ", e);
         } catch (AiravataException e) {
-            log.error("UnHandled arguments ", e);
+            log.error("[EJM]: UnHandled arguments ", e);
         } finally {
             try {
                 emailFolder.close(false);
                 store.close();
             } catch (MessagingException e) {
-                log.error("Store close operation failed, couldn't close store", e);
+                log.error("[EJM]: Store close operation failed, couldn't close store", e);
             }
         }
     }
@@ -201,15 +202,15 @@ public class EmailBasedMonitor implements Runnable{
 //                  log.info("JobExecutionContext is not found for job Id " + jobStatusResult.getJobId());
                 }
             } catch (AiravataException e) {
-                log.error("Error parsing email message =====================================>", e);
+                log.error("[EJM]: Error parsing email message =====================================>", e);
                 try {
                     writeEnvelopeOnError(message);
                 } catch (MessagingException e1) {
-                    log.error("Error printing envelop of the email");
+                    log.error("[EJM]: Error printing envelop of the email");
                 }
                 unreadMessages.add(message);
             } catch (MessagingException e) {
-                log.error("Error while retrieving sender address from message : " + message.toString());
+                log.error("[EJM]: Error while retrieving sender address from message : " + message.toString());
                 unreadMessages.add(message);
             }
         }
@@ -250,29 +251,29 @@ public class EmailBasedMonitor implements Runnable{
         if (resultState == JobState.COMPLETE) {
             jobMonitorMap.remove(jobStatusResult.getJobId());
             runOutHandlers = true;
-            log.info("Job Complete email received , removed job from job monitoring. " + jobDetails);
+            log.info("[EJM]: Job Complete email received , removed job from job monitoring. " + jobDetails);
         }else if (resultState == JobState.QUEUED) {
             // nothing special thing to do, update the status change to rabbit mq at the end of this method.
-            log.info("Job Queued email received, " + jobDetails);
+            log.info("[EJM]: Job Queued email received, " + jobDetails);
         }else if (resultState == JobState.ACTIVE) {
             // nothing special thing to do, update the status change to rabbit mq at the end of this method.
-            log.info("Job Active email received, " + jobDetails);
+            log.info("[EJM]: Job Active email received, " + jobDetails);
         }else if (resultState == JobState.FAILED) {
             jobMonitorMap.remove(jobStatusResult.getJobId());
             runOutHandlers = true;
-            log.info("Job failed email received , removed job from job monitoring. " + jobDetails);
+            log.info("[EJM]: Job failed email received , removed job from job monitoring. " + jobDetails);
         }else if (resultState == JobState.CANCELED) {
             jobMonitorMap.remove(jobStatusResult.getJobId());
             runOutHandlers = true;
-            log.info("Job canceled mail received, removed job from job monitoring. " + jobDetails);
+            log.info("[EJM]: Job canceled mail received, removed job from job monitoring. " + jobDetails);
             
         }
 
         if (runOutHandlers) {
-            log.info("Calling Out Handler chain of " + jobDetails);
+            log.info("[EJM]: Calling Out Handler chain of " + jobDetails);
             GFacThreadPoolExecutor.getCachedThreadPool().execute(new OutHandlerWorker(jEC, BetterGfacImpl.getMonitorPublisher()));
         }
-        log.info("Publishing status changes to amqp. " + jobDetails);
+        log.info("[EJM]: Publishing status changes to amqp. " + jobDetails);
         publishJobStatusChange(jEC);
     }
 
@@ -286,7 +287,7 @@ public class EmailBasedMonitor implements Runnable{
         jobStatus.setJobIdentity(jobIdentity);
         jobStatus.setState(jobExecutionContext.getJobDetails().getJobStatus().getJobState());
         // we have this JobStatus class to handle amqp monitoring
-        log.debugId(jobStatus.getJobIdentity().getJobId(), "Published job status change request, " +
+        log.debugId(jobStatus.getJobIdentity().getJobId(), "[EJM]: Published job status change request, " +
                         "experiment {} , task {}", jobStatus.getJobIdentity().getExperimentId(),
                 jobStatus.getJobIdentity().getTaskId());
 

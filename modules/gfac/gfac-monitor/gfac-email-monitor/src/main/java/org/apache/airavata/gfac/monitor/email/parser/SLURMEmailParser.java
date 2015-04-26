@@ -54,7 +54,7 @@ public class SLURMEmailParser implements EmailParser {
             jobStatusResult.setState(getJobState(matcher.group(STATUS)));
             return jobStatusResult;
         } else {
-            log.error("No matched found for subject -> " + subject);
+            log.error("[EJM]: No matched found for subject -> " + subject);
         }
         return jobStatusResult;
     }
@@ -68,7 +68,7 @@ public class SLURMEmailParser implements EmailParser {
             case FAILED:
                 return JobState.FAILED;
             default:
-                log.error("Job State " + state + " isn't handle by SLURM parser");
+                log.error("[EJM]: Job State " + state + " isn't handle by SLURM parser");
                 return JobState.UNKNOWN;
 
         }
