@@ -59,11 +59,11 @@ public class PBSEmailParser implements EmailParser {
                 jobStatusResult.setState(getJobState(statusLine, content));
                 return jobStatusResult;
             } else {
-                log.error("No matched found for content => \n" + content);
+                log.error("[EJM]: No matched found for content => \n" + content);
             }
 
         } catch (IOException e) {
-            throw new AiravataException("Error while reading content of the email message");
+            throw new AiravataException("[EJM]: Error while reading content of the email message");
         }
         return jobStatusResult;
     }
