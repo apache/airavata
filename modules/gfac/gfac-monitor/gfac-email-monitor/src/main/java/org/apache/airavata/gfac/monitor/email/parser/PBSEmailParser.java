@@ -37,8 +37,8 @@ public class PBSEmailParser implements EmailParser {
     private static final Logger log = LoggerFactory.getLogger(PBSEmailParser.class);
 
 
-    private static final String REGEX = "[a-zA-Z: ]*(?<" + JOBID + ">[a-zA-Z0-9-\\.]*)\\s+.*\\s+.*\\s+(?<"
-            + STATUS + ">[a-zA-Z\\ ]*)";
+    private static final String REGEX = "[a-zA-Z ]*:[ ]*(?<" +  JOBID + ">[a-zA-Z0-9-\\.]*)\\s+[a-zA-Z ]*:[ ]*(?<"+
+            JOBNAME + ">[a-zA-Z0-9-\\.]*)\\s+.*\\s+(?<" + STATUS + ">[a-zA-Z\\ ]*)";
     private static final String REGEX_EXIT_STATUS = "Exit_status=(?<" + EXIT_STATUS + ">[\\d]+)";
     public static final String BEGUN_EXECUTION = "Begun execution";
     public static final String EXECUTION_TERMINATED = "Execution terminated";
@@ -47,12 +47,14 @@ public class PBSEmailParser implements EmailParser {
     @Override
     public JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException {
         JobStatusResult jobStatusResult = new JobStatusResult();
+//        log.info("Parsing -> " + message.getSubject());
         try {
             String content = ((String) message.getContent());
             Pattern pattern = Pattern.compile(REGEX);
             Matcher matcher = pattern.matcher(content);
             if (matcher.find()) {
                 jobStatusResult.setJobId(matcher.group(JOBID));
+                jobStatusResult.setJobName(matcher.group(JOBNAME));
                 String statusLine = matcher.group(STATUS);
                 jobStatusResult.setState(getJobState(statusLine, content));
                 return jobStatusResult;
@@ -69,10 +71,11 @@ public class PBSEmailParser implements EmailParser {
     private JobState getJobState(String statusLine, String content) {
         switch (statusLine) {
             case BEGUN_EXECUTION:
-                return JobState.QUEUED;
+                return JobState.ACTIVE;
             case EXECUTION_TERMINATED:
                 int exitStatus = getExitStatus(content);
                 if (exitStatus == 0) {
+                    // TODO - Remove rabbitmq client script line from the script.
                     return JobState.COMPLETE;
                 } else if (exitStatus == 271) {
                     return JobState.CANCELED;

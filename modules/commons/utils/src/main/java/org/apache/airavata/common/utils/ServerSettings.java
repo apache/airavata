@@ -69,7 +69,12 @@ public class ServerSettings extends ApplicationSettings {
 
     // email based monitoring configurations
     private static final String EMAIL_BASED_MONITORING_PERIOD = "email.based.monitoring.period";
-
+    private static final String EMAIL_BASED_MONITOR_HOST = "email.based.monitor.host";
+    private static final String EMAIL_BASED_MONITOR_ADDRESS = "email.based.monitor.address";
+    private static final String EMAIL_BASED_MONITOR_PASSWORD = "email.based.monitor.password";
+    private static final String EMAIL_BASED_MONITOR_FOLDER_NAME = "email.based.monitor.folder.name";
+    private static final String EMAIL_BASED_MONITOR_STORE_PROTOCOL = "email.based.monitor.store.protocol";
+    private static final String ENABLE_EMAIL_BASED_MONITORING = "enable.email.based.monitoring";
 
     private static boolean stopAllThreads = false;
     private static boolean emailBaseNotificationEnable;
@@ -217,10 +222,34 @@ public class ServerSettings extends ApplicationSettings {
         return getSetting(WORKFLOW_PARSER);
     }
 
+
     public static int getEmailMonitorPeriod() throws ApplicationSettingsException {
         return Integer.valueOf(getSetting(EMAIL_BASED_MONITORING_PERIOD, "100000"));
 
     }
 
+    public static String getEmailBasedMonitorHost() throws ApplicationSettingsException {
+        return getSetting(EMAIL_BASED_MONITOR_HOST);
+    }
+
+    public static String getEmailBasedMonitorAddress() throws ApplicationSettingsException {
+        return getSetting(EMAIL_BASED_MONITOR_ADDRESS);
+    }
+
+    public static String getEmailBasedMonitorPassword() throws ApplicationSettingsException {
+        return getSetting(EMAIL_BASED_MONITOR_PASSWORD);
+    }
+
+    public static String getEmailBasedMonitorFolderName() throws ApplicationSettingsException {
+        return getSetting(EMAIL_BASED_MONITOR_FOLDER_NAME);
+    }
+
+    public static String getEmailBasedMonitorStoreProtocol() throws ApplicationSettingsException {
+        return getSetting(EMAIL_BASED_MONITOR_STORE_PROTOCOL);
+    }
+
+    public static boolean isEmailBasedNotificationEnable() {
+        return Boolean.valueOf(getSetting(ENABLE_EMAIL_BASED_MONITORING, "false"));
+    }
 
 }

@@ -156,7 +156,7 @@ public class RegisterSampleData {
             applicationInputs.add(input1);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("gaussian.out",
-                    "", DataType.URI, true,true);
+                    "", DataType.URI, true,true, null);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -204,7 +204,7 @@ public class RegisterSampleData {
             applicationInputs.add(input7);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Diskoutputfile_with_dir",
-                    "", DataType.URI, true,false);
+                    "", DataType.URI, true,false, null);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -308,7 +308,7 @@ public class RegisterSampleData {
             applicationInputs.add(input1);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Output",
-                    "", DataType.STRING, true, false);
+                    "", DataType.STRING, true, false, null);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -340,7 +340,7 @@ public class RegisterSampleData {
             applicationInputs.add(input2);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Result",
-                    "0", DataType.STRING, true,false);
+                    "0", DataType.STRING, true,false, null);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -372,7 +372,7 @@ public class RegisterSampleData {
             applicationInputs.add(input2);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Result",
-                    "0", DataType.STRING,true,false);
+                    "0", DataType.STRING,true,false, null);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -404,7 +404,7 @@ public class RegisterSampleData {
             applicationInputs.add(input2);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Result",
-                    "0", DataType.STRING, true,false);
+                    "0", DataType.STRING, true,false, null);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);

@@ -34,14 +34,14 @@ public class GFacThreadPoolExecutor {
 
     private static ExecutorService threadPool;
 
-    public static ExecutorService getThreadPool() {
+    public static ExecutorService getCachedThreadPool() {
         if(threadPool ==null){
             threadPool = Executors.newCachedThreadPool();
         }
         return threadPool;
     }
 
-    public static ExecutorService getFixedThreadPool() throws ApplicationSettingsException {
+    public static ExecutorService client() throws ApplicationSettingsException {
         if(threadPool ==null){
             try {
                 threadPool = Executors.newFixedThreadPool(Integer.parseInt(ServerSettings.getSetting(GFAC_THREAD_POOL_SIZE)));

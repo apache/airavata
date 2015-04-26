@@ -181,7 +181,7 @@ public class RegisterUS3Application {
             applicationInputs.add(input1);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("output",
-                    "", DataType.URI, true, false);
+                    "", DataType.URI, true, false, null);
 
 //            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("stdout",
 //                    "", DataType.URI);

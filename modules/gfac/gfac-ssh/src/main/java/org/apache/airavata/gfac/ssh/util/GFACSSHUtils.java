@@ -45,6 +45,7 @@ import org.apache.airavata.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
 import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
@@ -207,7 +208,7 @@ public class GFACSSHUtils {
             AppCatalog appCatalog = jobExecutionContext.getAppCatalog();
             JobSubmissionInterface preferredJobSubmissionInterface = jobExecutionContext.getPreferredJobSubmissionInterface();
             SSHJobSubmission sshJobSubmission = appCatalog.getComputeResource().getSSHJobSubmission(preferredJobSubmissionInterface.getJobSubmissionInterfaceId());
-            
+
             Cluster pbsCluster = null;
             String key=sshAuth.getKey();
             boolean recreate = false;
@@ -278,50 +279,52 @@ public class GFACSSHUtils {
     }
 
 
-    public static JobDescriptor createJobDescriptor(JobExecutionContext jobExecutionContext, Cluster cluster) {
+    public static JobDescriptor createJobDescriptor(JobExecutionContext jobExecutionContext, Cluster cluster) throws AppCatalogException, ApplicationSettingsException {
         JobDescriptor jobDescriptor = new JobDescriptor();
         TaskDetails taskData = jobExecutionContext.getTaskData();
-        ResourceJobManager resourceJobManager = jobExecutionContext.getResourceJobManager();
-        Map<JobManagerCommand, String> jobManagerCommands = resourceJobManager.getJobManagerCommands();
-        if (jobManagerCommands != null && !jobManagerCommands.isEmpty()) {
-            for (JobManagerCommand command : jobManagerCommands.keySet()) {
-                if (command == JobManagerCommand.SUBMISSION) {
-                    String commandVal = jobManagerCommands.get(command);
-                    jobDescriptor.setJobSubmitter(commandVal);
+
+
+        // set email based job monitoring email  address if monitor mode is JOB_EMAIL_NOTIFICATION_MONITOR
+        boolean addJobNotifMail = isEmailBasedJobMonitor(jobExecutionContext);
+        String emailIds = null;
+        if (addJobNotifMail) {
+            emailIds = ServerSettings.getEmailBasedMonitorAddress();
+        }
+        // add all configured job notification email addresses.
+        if (ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_ENABLE).equalsIgnoreCase("true")) {
+            String flags = ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_FLAGS);
+            if (flags != null && jobExecutionContext.getApplicationContext().getComputeResourceDescription().getHostName().equals("stampede.tacc.xsede.org")) {
+                flags = "ALL";
+            }
+            jobDescriptor.setMailOptions(flags);
+
+            String userJobNotifEmailIds = ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_EMAILIDS);
+            if (userJobNotifEmailIds != null && !userJobNotifEmailIds.isEmpty()) {
+                if (emailIds != null && !emailIds.isEmpty()) {
+                    emailIds += ("," + userJobNotifEmailIds);
+                } else {
+                    emailIds = userJobNotifEmailIds;
+                }
+            }
+
+            if (taskData.isEnableEmailNotification()) {
+                List<String> emailList = jobExecutionContext.getTaskData().getEmailAddresses();
+                String elist = GFacUtils.listToCsv(emailList, ',');
+                if (elist != null && !elist.isEmpty()) {
+                    if (emailIds != null && !emailIds.isEmpty()) {
+                        emailIds = emailIds + "," + elist;
+                    } else {
+                        emailIds = elist;
+                    }
                 }
             }
         }
-        try {
-			if(ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_ENABLE).equalsIgnoreCase("true")) {
-                String flags = ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_FLAGS);
-                if (flags != null && jobExecutionContext.getApplicationContext().getComputeResourceDescription().getHostName().equals("stampede.tacc.xsede.org")) {
-                    flags = "ALL";
-                }
-                jobDescriptor.setMailOptions(flags);
-
-                String emailids = ServerSettings.getSetting(ServerSettings.JOB_NOTIFICATION_EMAILIDS);
-
-                if (taskData.isEnableEmailNotification()) {
-                    List<String> emailList = jobExecutionContext.getTaskData().getEmailAddresses();
-                    String elist = GFacUtils.listToCsv(emailList, ',');
-                    if (elist != null && !elist.isEmpty()) {
-                        if (emailids != null && !emailids.isEmpty()) {
-                            emailids = emailids + "," + elist;
-                        } else {
-                            emailids = elist;
-                        }
-                    }
-                }
-                if (emailids != null && !emailids.isEmpty()) {
-                    logger.info("Email list: " + emailids);
-                    jobDescriptor.setMailAddress(emailids);
-                }
-            }
-        } catch (ApplicationSettingsException e) {
-			 logger.error("ApplicationSettingsException : " +e.getLocalizedMessage());
-		}
+        if (emailIds != null && !emailIds.isEmpty()) {
+            logger.info("Email list: " + emailIds);
+            jobDescriptor.setMailAddress(emailIds);
+        }
         // this is common for any application descriptor
-        
+
         jobDescriptor.setCallBackIp(ServerSettings.getIp());
         jobDescriptor.setCallBackPort(ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.GFAC_SERVER_PORT, "8950"));
         jobDescriptor.setInputDirectory(jobExecutionContext.getInputDir());
@@ -407,6 +410,9 @@ public class GFACSSHUtils {
         jobDescriptor.setAllEnvExport(true);
         jobDescriptor.setOwner(((PBSCluster) cluster).getServerInfo().getUserName());
 
+        ResourceJobManager resourceJobManager = jobExecutionContext.getResourceJobManager();
+
+
         ComputationalResourceScheduling taskScheduling = taskData.getTaskScheduling();
         if (taskScheduling != null) {
             int totalNodeCount = taskScheduling.getNodeCount();
@@ -466,7 +472,33 @@ public class GFACSSHUtils {
                 jobDescriptor.addPostJobCommand(parseCommand(postJobCommand, jobExecutionContext));
             }
         }
+
+        ApplicationParallelismType parallelism = appDepDescription.getParallelism();
+        if (parallelism != null){
+            if (parallelism == ApplicationParallelismType.MPI || parallelism == ApplicationParallelismType.OPENMP || parallelism == ApplicationParallelismType.OPENMP_MPI){
+                Map<JobManagerCommand, String> jobManagerCommands = resourceJobManager.getJobManagerCommands();
+                if (jobManagerCommands != null && !jobManagerCommands.isEmpty()) {
+                    for (JobManagerCommand command : jobManagerCommands.keySet()) {
+                        if (command == JobManagerCommand.SUBMISSION) {
+                            String commandVal = jobManagerCommands.get(command);
+                            jobDescriptor.setJobSubmitter(commandVal);
+                        }
+                    }
+                }
+            }
+        }
         return jobDescriptor;
+    }
+
+    public static boolean isEmailBasedJobMonitor(JobExecutionContext jobExecutionContext) throws AppCatalogException {
+        if (jobExecutionContext.getPreferredJobSubmissionProtocol() == JobSubmissionProtocol.SSH) {
+            String jobSubmissionInterfaceId = jobExecutionContext.getPreferredJobSubmissionInterface().getJobSubmissionInterfaceId();
+            SSHJobSubmission sshJobSubmission = jobExecutionContext.getAppCatalog().getComputeResource().getSSHJobSubmission(jobSubmissionInterfaceId);
+            MonitorMode monitorMode = sshJobSubmission.getMonitorMode();
+            return monitorMode != null && monitorMode == MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR;
+        } else {
+            return false;
+        }
     }
 
     private static int generateJobName() {

@@ -66,11 +66,6 @@
             <artifactId>airavata-orchestrator-stubs</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.apache.airavata</groupId>-->
-            <!--<artifactId>airavata-workflow-engine</artifactId>-->
-            <!--<version>${project.version}</version>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-messaging-core</artifactId>
@@ -86,12 +81,12 @@
             <artifactId>slf4j-log4j12</artifactId>
             <version>${org.slf4j.version}</version>
         </dependency>
-        <!-- zookeeper dependencies -->
-        <dependency>
-        	<groupId>org.apache.zookeeper</groupId>
-        	<artifactId>zookeeper</artifactId>
-        	<version>3.4.0</version>
-        </dependency>
+        <!--&lt;!&ndash; zookeeper dependencies &ndash;&gt;-->
+        <!--<dependency>-->
+        	<!--<groupId>org.apache.zookeeper</groupId>-->
+        	<!--<artifactId>zookeeper</artifactId>-->
+        	<!--<version>3.4.0</version>-->
+        <!--</dependency>-->
         
     </dependencies>
 

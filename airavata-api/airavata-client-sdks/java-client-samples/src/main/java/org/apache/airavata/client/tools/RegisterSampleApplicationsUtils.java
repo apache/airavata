@@ -150,17 +150,18 @@ public class RegisterSampleApplicationsUtils {
     }
 
     public static OutputDataObjectType createAppOutput(String inputName,
-                                                       String value,
-                                                       DataType type,
-                                                       boolean isRequired,
-                                                       boolean requiredToCMD) {
+                                                   String value,
+                                                   DataType type,
+                                                   boolean isRequired,
+                                                   boolean requiredToCMD,
+                                                   String argument) {
         OutputDataObjectType outputDataObjectType = new OutputDataObjectType();
-//        outputDataObjectType.setIsEmpty(false);
         if (inputName != null) outputDataObjectType.setName(inputName);
         if (value != null) outputDataObjectType.setValue(value);
         if (type != null) outputDataObjectType.setType(type);
         outputDataObjectType.setIsRequired(isRequired);
         outputDataObjectType.setRequiredToAddedToCommandLine(requiredToCMD);
+        outputDataObjectType.setApplicationArgument(argument);
         return outputDataObjectType;
     }
 

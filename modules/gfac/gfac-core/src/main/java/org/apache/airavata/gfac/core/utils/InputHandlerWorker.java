@@ -51,7 +51,6 @@ public class InputHandlerWorker implements Runnable {
             gfac.submitJob(experimentId, taskId, gatewayId);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            Thread.currentThread().interrupt();
         }
     }
 }

@@ -457,6 +457,7 @@ public class Utils {
             experimentResource.setWorkflowTemplateVersion(o.getWorkflowTemplateVersion());
             experimentResource.setWorkflowExecutionId(o.getWorkflowExecutionId());
             experimentResource.setEnableEmailNotifications(o.isAllowNotification());
+            experimentResource.setGatewayExecutionId(o.getGatewayExecutionId());
         }
 
         return experimentResource;
@@ -669,6 +670,9 @@ public class Utils {
             jobDetailResource.setJobId(o.getJobId());
             jobDetailResource.setCreationTime(o.getCreationTime());
             jobDetailResource.setComputeResourceConsumed(o.getComputeResourceConsumed());
+            jobDetailResource.setJobName(o.getJobName());
+            jobDetailResource.setWorkingDir(o.getWorkingDir());
+
         }
 
         return jobDetailResource;
