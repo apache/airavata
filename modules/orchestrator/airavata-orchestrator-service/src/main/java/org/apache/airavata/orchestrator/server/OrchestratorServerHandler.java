@@ -140,6 +140,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 					// required, this
 					// will only use to
 					// store some data
+					log.info("Waiting for zookeeper to connect to the server");
+
 					String OrchServer = ServerSettings
 							.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_ORCHESTRATOR_SERVER_NODE);
 					synchronized (mutex) {

@@ -71,6 +71,7 @@ public class OrchestratorRecoveryHandler implements Watcher {
     public void recover() throws OrchestratorException, ApplicationSettingsException, IOException, KeeperException, InterruptedException {
         String zkhostPort = AiravataZKUtils.getZKhostPort();
         zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this);
+        log.info("Waiting for zookeeper to connect to the server");
         synchronized (mutex) {
             mutex.wait();
         }

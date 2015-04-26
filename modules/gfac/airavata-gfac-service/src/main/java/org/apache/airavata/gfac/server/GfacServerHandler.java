@@ -102,6 +102,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
             zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this);   // no watcher is required, this will only use to store some data
             gfacServer = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NODE, "/gfac-server");
             gfacExperiments = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
+            logger.info("Waiting for zookeeper to connect to the server");
             synchronized (mutex) {
                 mutex.wait();  // waiting for the syncConnected event
             }

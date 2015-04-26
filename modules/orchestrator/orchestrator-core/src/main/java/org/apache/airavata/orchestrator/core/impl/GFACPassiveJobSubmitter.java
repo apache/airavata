@@ -107,6 +107,7 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
             if (zk == null || !zk.getState().isConnected()) {
                 String zkhostPort = AiravataZKUtils.getZKhostPort();
                 zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this);
+                logger.info("Waiting for zookeeper to connect to the server");
                 synchronized (mutex) {
                     mutex.wait();
                 }
@@ -157,6 +158,7 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
             if (zk == null || !zk.getState().isConnected()) {
                 String zkhostPort = AiravataZKUtils.getZKhostPort();
                 zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this);
+                logger.info("Waiting for zookeeper to connect to the server");
                 synchronized (mutex) {
                     mutex.wait();
                 }
