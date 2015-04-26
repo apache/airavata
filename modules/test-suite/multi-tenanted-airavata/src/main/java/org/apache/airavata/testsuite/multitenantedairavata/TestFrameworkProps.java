@@ -40,8 +40,18 @@ public class TestFrameworkProps {
     private Resource[] resources;
     private Application[] applications;
     private Error[] errors;
+    private int numberOfIterations;
+
 
     public TestFrameworkProps() {
+    }
+
+    public int getNumberOfIterations() {
+        return numberOfIterations;
+    }
+
+    public void setNumberOfIterations(int numberOfIterations) {
+        this.numberOfIterations = numberOfIterations;
     }
 
     public int getGcount() {

@@ -87,7 +87,6 @@ cd <xsl:text>   </xsl:text><xsl:value-of select="ns:workingDirectory"/><xsl:text
     <xsl:text>&#xa;</xsl:text>
     <xsl:value-of select="."/><xsl:text>   </xsl:text>
 </xsl:for-each>
-    ~/rabbitmq-java-client-bin-3.3.5/runjava.sh com.rabbitmq.examples.SimpleProducer amqp://<xsl:value-of select="ns:callBackIp"/><xsl:text> </xsl:text><xsl:value-of select="ns:userName"/>,<xsl:value-of select="ns:jobName"/><xsl:text> </xsl:text><xsl:value-of select="$quote"/><xsl:value-of select="$quote"/><xsl:text> </xsl:text><xsl:value-of select="ns:callBackPort"/>
 </xsl:template>
 
 </xsl:stylesheet>

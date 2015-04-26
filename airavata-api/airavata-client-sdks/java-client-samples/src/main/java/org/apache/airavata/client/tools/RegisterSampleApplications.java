@@ -28,8 +28,8 @@ import java.util.*;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
-import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
 import org.apache.airavata.model.appcatalog.appinterface.*;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
@@ -63,7 +63,7 @@ public class RegisterSampleApplications {
  // unicore service endpoint url
 //    private static final String unicoreEndPointURL = "https://fsd-cloud15.zam.kfa-juelich.de:7000/INTEROP1/services/BESFactory?res=default_bes_factory";
     private static final String unicoreEndPointURL = "https://deisa-unic.fz-juelich.de:9111/FZJ_JUROPA/services/BESFactory?res=default_bes_factory";
-    
+
     //Appplication Names
     private static final String echoName = "Echo";
     private static final String amberName = "Amber";
@@ -81,7 +81,7 @@ public class RegisterSampleApplications {
     private static final String gamessName = "Gamess";
     private static final String stressMemName = "StressMem";
     private static final String ultrascanName = "Ultrascan";
-   
+
     //Appplication Descriptions
     private static final String echoDescription = "A Simple Echo Application";
     private static final String amberDescription = "Assisted Model Building with Energy Refinement MD Package";
@@ -98,7 +98,7 @@ public class RegisterSampleApplications {
     private static final String gaussianDescription = "Grid Chem Gaussian Application";
     private static final String gamessDescription = "A Gamess Application";
     private static final String ultrascanDescription = "Ultrascan Application";
-    
+
     //App Module Id's
     private static String echoModuleId;
     private static String amberModuleId;
@@ -200,28 +200,45 @@ public class RegisterSampleApplications {
             System.out.println("\n #### Registering XSEDE Computational Resources #### \n");
 
             //Register Stampede
+            List<BatchQueue> stampedeQueues = new ArrayList<BatchQueue>();
+            BatchQueue normalQueue = createBatchQueue("normal", "Normal Queue", 2880, 256, 4000, 50, 0);
+            BatchQueue developmentQueue = createBatchQueue("development", "Development Queue", 120, 16, 4000, 1, 0);
+            stampedeQueues.add(normalQueue);
+            stampedeQueues.add(developmentQueue);
             stampedeResourceId = registerComputeHost("stampede.tacc.xsede.org", "TACC Stampede Cluster",
-                    ResourceJobManagerType.SLURM, "push", "/usr/bin", SecurityProtocol.SSH_KEYS, 22, null);
+                    ResourceJobManagerType.SLURM, "push", "/usr/bin", SecurityProtocol.SSH_KEYS, 22, "ibrun", stampedeQueues);
+
             System.out.println("Stampede Resource Id is " + stampedeResourceId);
 
             //Register Trestles
+            List<BatchQueue> trestlesQueues = new ArrayList<BatchQueue>();
+            BatchQueue normalQueue_tr = createBatchQueue("normal", "Normal Queue", 2880, 32, 32, 50, 0);
+            BatchQueue sharedQueue_tr = createBatchQueue("shared", "Shared Queue", 2880, 4, 32, 50, 0);
+            trestlesQueues.add(normalQueue_tr);
+            trestlesQueues.add(sharedQueue_tr);
             trestlesResourceId = registerComputeHost("trestles.sdsc.xsede.org", "SDSC Trestles Cluster",
-                    ResourceJobManagerType.PBS, "push", "/opt/torque/bin/", SecurityProtocol.SSH_KEYS, 22, null);
+                    ResourceJobManagerType.PBS, "push", "/opt/torque/bin/", SecurityProtocol.SSH_KEYS, 22, "mpirun -np", trestlesQueues);
             System.out.println("Trestles Resource Id is " + trestlesResourceId);
 
             //Register BigRedII
+            List<BatchQueue> br2Queues = new ArrayList<BatchQueue>();
+            BatchQueue normalQueue_br2 = createBatchQueue("normal", "Normal Queue", 2880, 340, 2048, 50, 0);
+            BatchQueue serial_br2 = createBatchQueue("serial", "Normal Queue", 10080, 340, 2048, 50, 0);
+            br2Queues.add(normalQueue_br2);
+            br2Queues.add(serial_br2);
             bigredResourceId = registerComputeHost("bigred2.uits.iu.edu", "IU BigRed II Cluster",
-                    ResourceJobManagerType.PBS, "push", "/opt/torque/torque-4.2.3.1/bin/", SecurityProtocol.SSH_KEYS, 22, "aprun -n");
+                    ResourceJobManagerType.PBS, "push", "/opt/torque/torque-4.2.3.1/bin/", SecurityProtocol.SSH_KEYS, 22, "aprun -n", br2Queues);
             System.out.println("BigredII Resource Id is " + bigredResourceId);
 
             fsdResourceId = registerUnicoreEndpoint("fsd-cloud15.zam.kfa-juelich.de", "interop host", JobSubmissionProtocol.UNICORE, SecurityProtocol.GSI);
             System.out.println("FSd Resource Id: "+fsdResourceId);
 
             //Register Alamo
+            List<BatchQueue> alamoQueues = new ArrayList<BatchQueue>();
             alamoResourceId = registerComputeHost("alamo.uthscsa.edu", "Alamo Cluster",
-                    ResourceJobManagerType.PBS, "push", "/usr/bin/", SecurityProtocol.SSH_KEYS, 22, "/usr/bin/mpiexec -np");
+                    ResourceJobManagerType.PBS, "push", "/usr/bin/", SecurityProtocol.SSH_KEYS, 22, "/usr/bin/mpiexec -np", alamoQueues);
             System.out.println("Alamo Cluster " + alamoResourceId);
-            
+
 
         } catch (TException e) {
             e.printStackTrace();
@@ -234,8 +251,9 @@ public class RegisterSampleApplications {
             System.out.println("\n #### Registering Non-XSEDE Computational Resources #### \n");
 
             //Register LSF resource
+            List<BatchQueue> lsfQueues = new ArrayList<BatchQueue>();
             lsfResourceId = registerComputeHost("ghpcc06.umassrc.org", "LSF Cluster",
-                    ResourceJobManagerType.LSF, "push", "source /etc/bashrc;/lsf/9.1/linux2.6-glibc2.3-x86_64/bin", SecurityProtocol.SSH_KEYS, 22, "mpiexec");
+                    ResourceJobManagerType.LSF, "push", "source /etc/bashrc;/lsf/9.1/linux2.6-glibc2.3-x86_64/bin", SecurityProtocol.SSH_KEYS, 22, "mpiexec", lsfQueues);
             System.out.println("LSF Resource Id is " + lsfResourceId);
 
         } catch (TException e) {
@@ -243,17 +261,17 @@ public class RegisterSampleApplications {
         }
 
     }
-    
+
     public static String registerUnicoreEndpoint(String hostName, String hostDesc, JobSubmissionProtocol protocol, SecurityProtocol securityProtocol) throws TException {
-		
+
 		ComputeResourceDescription computeResourceDescription = RegisterSampleApplicationsUtils
 				.createComputeResourceDescription(hostName, hostDesc, null, null);
-		
+
 		fsdResourceId = airavataClient.registerComputeResource(computeResourceDescription);
-		
+
 		if (fsdResourceId.isEmpty())
 			throw new AiravataClientException();
-		
+
 		System.out.println("FSD Compute ResourceID: "+fsdResourceId);
 		JobSubmissionInterface jobSubmission = RegisterSampleApplicationsUtils.createJobSubmissionInterface(fsdResourceId, protocol, 2);
 		UnicoreJobSubmission ucrJobSubmission = new UnicoreJobSubmission();
@@ -261,12 +279,12 @@ public class RegisterSampleApplications {
 		ucrJobSubmission.setUnicoreEndPointURL(unicoreEndPointURL);
 //		ucrJobSubmission.setAuthenticationMode(AuthenticationMode.MYPROXY_ISSUED);
 		jobSubmission.setJobSubmissionProtocol(JobSubmissionProtocol.UNICORE);
-		
+
 		airavataClient.addUNICOREJobSubmissionDetails(fsdResourceId, 0, ucrJobSubmission);
-		
+
 		return jobSubmission.getJobSubmissionInterfaceId();
 	}
-    
+
     public void registerAppModules() {
         try {
             System.out.println("\n #### Registering Application Modules #### \n");
@@ -276,12 +294,12 @@ public class RegisterSampleApplications {
                     RegisterSampleApplicationsUtils.createApplicationModule(
                             echoName, "1.0", echoDescription));
             System.out.println("Echo Module Id " + echoModuleId);
-            
+
             mpiModuleId = airavataClient.registerApplicationModule(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(
                             mpiName, "1.0", mpiDescription));
             System.out.println("MPI Module Id " + mpiModuleId);
-            
+
 
             //Register Amber
             amberModuleId = airavataClient.registerApplicationModule(DEFAULT_GATEWAY,
@@ -382,12 +400,12 @@ public class RegisterSampleApplications {
 
         //Registering BigRed II Apps
         registerBigRedApps();
-        
+
         //Registering FSD Apps
         registerFSDApps();
 
         registerLSFApps();
-        
+
         //Registering Alamo Apps
         registerAlamoApps();
 
@@ -401,7 +419,7 @@ public class RegisterSampleApplications {
 
         //Registering Echo
         registerEchoInterface();
-        
+
         //Registering MPI
         registerMPIInterface();
 
@@ -434,7 +452,7 @@ public class RegisterSampleApplications {
         registerTinkerMonteInterface();
 
         registerGaussianInterface();
-        
+
         // Register Ultrascan
         registerUltrascanInterface();
 
@@ -456,19 +474,19 @@ public class RegisterSampleApplications {
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("gams_output",
-                    "", DataType.URI, true, false));
+                    "", DataType.URI, true, false, null));
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("dat_file",
-                    "", DataType.URI, true, true));
+                    "", DataType.URI, true, true, null));
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("trj_file",
-                    "", DataType.URI, false, true));
+                    "", DataType.URI, false, true, null));
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("rst_file",
-                    "", DataType.URI, false, true));
+                    "", DataType.URI, false, true, null));
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("f10_file",
-                    "", DataType.URI, false, true));
+                    "", DataType.URI, false, true, null));
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("STDOUT",
-                    "", DataType.STDOUT, false, true));
+                    "", DataType.STDOUT, false, true, null));
             applicationOutputs.add(RegisterSampleApplicationsUtils.createAppOutput("STDERR",
-                    "", DataType.STDERR, false, true));
+                    "", DataType.STDERR, false, true, null));
 
             gamessInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("gamess", "gamess",
@@ -495,9 +513,9 @@ public class RegisterSampleApplications {
             applicationInputs.add(input1);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("STDOUT",
-                    "", DataType.STDOUT, false, false);
+                    "", DataType.STDOUT, false, false, null);
             OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("STDERR",
-                    "", DataType.STDERR, false, false);
+                    "", DataType.STDERR, false, false, null);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -522,24 +540,24 @@ public class RegisterSampleApplications {
 
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Input_to_Echo", "",
-                    DataType.STRING, null, 1, false, false,false, "A test string to Echo", null);
-            
+                    DataType.STRING, null, 1, false, true,false, "A test string to Echo", null);
+
 //            InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("Input_to_Echo2", "",
 //                    DataType.URI, null, 2, false, false,false, "A sample input remote file", null);
 //
 //            InputDataObjectType input3 = RegisterSampleApplicationsUtils.createAppInput("Input_to_Echo3", "file:///tmp/test.txt",
 //                    DataType.URI, null, 3,false, false, false, "A sample input local file", null);
 
-            
+
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
 //            applicationInputs.add(input2); applicationInputs.add(input3);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Output",
-                    "", DataType.STDOUT, true, false);
+                    "", DataType.STDOUT, true, false, null);
 
             OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("Echoed_Error",
-                    "", DataType.STDERR, true, false);
+                    "", DataType.STDERR, true, false, null);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -560,27 +578,27 @@ public class RegisterSampleApplications {
     public void registerMPIInterface() {
         try {
             System.out.println("#### Registering MPI Interface #### \n");
-            
+
             List<String> appModules = new ArrayList<String>();
             appModules.add(mpiModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Sample_Input", "",
                     DataType.STRING, null, 1,true, false, false, "An optional MPI source file", null);
-            
+
             InputDataObjectType input11 = RegisterSampleApplicationsUtils.createAppInput("US3INPUT", "",
                     DataType.URI, null, 1,true, false, false, "Input US3 file", null);
-            
+
             InputDataObjectType input12 = RegisterSampleApplicationsUtils.createAppInput("US3INPUTARG", "",
                     DataType.STRING, null, 1,true, false, false, "Input US3 Arg", null);
 
-            
+
             InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("NumberOfProcesses", "",
                     DataType.INTEGER, null, 2,false, true, false, "Number Of Processes", null);
-            
-            
+
+
             InputDataObjectType input3 = RegisterSampleApplicationsUtils.createAppInput("ProcessesPerHost", "",
                     DataType.INTEGER, null, 3,false, true, false, "Processes per host", null);
-            
+
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
@@ -588,21 +606,21 @@ public class RegisterSampleApplications {
             applicationInputs.add(input3);
             applicationInputs.add(input11);
             applicationInputs.add(input12);
-            
+
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("STDOutput",
-                    "", DataType.STDOUT, true, true);
+                    "", DataType.STDOUT, true, true, null);
             OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("STDErr",
-                    "", DataType.STDERR, true, true);
-            
+                    "", DataType.STDERR, true, true, null);
+
             OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("US3OUT",
-                    "", DataType.STRING, true, false);
+                    "", DataType.STRING, true, false, null);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
             applicationOutputs.add(output2);
             applicationOutputs.add(output3);
- 
-            
+
+
             mpiInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(mpiName, mpiDescription,
                             appModules, applicationInputs, applicationOutputs));
@@ -613,7 +631,7 @@ public class RegisterSampleApplications {
         }
     }
 
-    
+
     public void registerAmberInterface() {
         try {
             System.out.println("#### Registering Amber Interface #### \n");
@@ -622,25 +640,25 @@ public class RegisterSampleApplications {
             appModules.add(amberModuleId);
 
             InputDataObjectType input1 = RegisterSampleApplicationsUtils.createAppInput("Heat_Restart_File", null,
-                    DataType.URI, null, 1, true, true,false, "Heating up the system equilibration stage - 02_Heat.rst", null);
+                    DataType.URI, "-c", 1, true, true, false, "Heating up the system equilibration stage - 02_Heat.rst", null);
 
             InputDataObjectType input2 = RegisterSampleApplicationsUtils.createAppInput("Production_Control_File", null,
-                    DataType.URI, null, 2,true, true, false, "Constant pressure and temperature for production stage - 03_Prod.in", null);
+                    DataType.URI, "-i ", 2, true, true, false, "Constant pressure and temperature for production stage - 03_Prod.in", null);
 
             InputDataObjectType input3 = RegisterSampleApplicationsUtils.createAppInput("Parameter_Topology_File", null,
-                    DataType.URI, null, 3,true, true, false, "Parameter and Topology coordinates - prmtop", null);
+                    DataType.URI, "-p", 3, true, true, false, "Parameter and Topology coordinates - prmtop", null);
 
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
             applicationInputs.add(input2);
             applicationInputs.add(input3);
 
-            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("AMBER_Execution_Summary","03_Prod.info",DataType.URI, true, true);
-            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("AMBER_Execution_log","03_Prod.out",DataType.URI, true, true);
-            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("AMBER_Trajectory_file","03_Prod.mdcrd",DataType.URI, true, true);
-            OutputDataObjectType output4 = RegisterSampleApplicationsUtils.createAppOutput("AMBER_Restart_file","03_Prod.rst",DataType.URI, true, true);
-            OutputDataObjectType output5 = RegisterSampleApplicationsUtils.createAppOutput("STDOUT",null,DataType.STDOUT, true, true);
-            OutputDataObjectType output6 = RegisterSampleApplicationsUtils.createAppOutput("STDERR",null,DataType.STDERR, true, true);
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("AMBER_Execution_Summary", "03_Prod.info", DataType.URI, true, true, "-inf");
+            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("AMBER_Execution_log", "03_Prod.out", DataType.URI, true, true, "-o");
+            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("AMBER_Trajectory_file", "03_Prod.mdcrd", DataType.URI, true, true, "-x");
+            OutputDataObjectType output4 = RegisterSampleApplicationsUtils.createAppOutput("AMBER_Restart_file", "03_Prod.rst", DataType.URI, true, true, " -r");
+            OutputDataObjectType output5 = RegisterSampleApplicationsUtils.createAppOutput("STDOUT", null, DataType.STDOUT, true, false, null);
+            OutputDataObjectType output6 = RegisterSampleApplicationsUtils.createAppOutput("STDERR", null, DataType.STDERR, true, false, null);
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
             applicationOutputs.add(output2);
@@ -648,7 +666,7 @@ public class RegisterSampleApplications {
             applicationOutputs.add(output4);
             applicationOutputs.add(output5);
             applicationOutputs.add(output6);
-            
+
             amberInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(amberName, amberDescription,
                             appModules, applicationInputs, applicationOutputs));
@@ -674,15 +692,15 @@ public class RegisterSampleApplications {
 
             InputDataObjectType input3 = RegisterSampleApplicationsUtils.createAppInput("Parameter_Topology_File", null,
                     DataType.URI, null, 3,true, true, false, "Parameter and Topology coordinates", null);
-            
+
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
             applicationInputs.add(input2);
             applicationInputs.add(input3);
 
-            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("STDOUT",null,DataType.STDOUT, true, true);
-            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("STDERR",null,DataType.STDERR, true, true);
-          
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("STDOUT",null,DataType.STDOUT, true, true, null);
+            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("STDERR",null,DataType.STDERR, true, true, null);
+
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -715,11 +733,11 @@ public class RegisterSampleApplications {
             applicationInputs.add(input1);
             applicationInputs.add(input2);
 
-            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("ESPRESSO_Execution_Log",null,DataType.URI, true, true);
-            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("ESPRESSO_WFC_Binary_file",null,DataType.URI, true, true);
-            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("STDOUT",null,DataType.STDOUT, true, true);
-            OutputDataObjectType output4 = RegisterSampleApplicationsUtils.createAppOutput("STDERR",null,DataType.STDERR, true, true);
-            
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("ESPRESSO_Execution_Log",null,DataType.URI, true, true, null);
+            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("ESPRESSO_WFC_Binary_file",null,DataType.URI, true, true, null);
+            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("STDOUT",null,DataType.STDOUT, true, true, null);
+            OutputDataObjectType output4 = RegisterSampleApplicationsUtils.createAppOutput("STDERR",null,DataType.STDERR, true, true, null);
+
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
             applicationOutputs.add(output2);
@@ -753,12 +771,12 @@ public class RegisterSampleApplications {
             applicationInputs.add(input1);
             applicationInputs.add(input2);
 
-            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("GROMACS_Execution_Log",null,DataType.URI, true, true);
-            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("Full_Precision_Trajectory_file",null,DataType.URI, true, true);
-            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("Portable_Energy_file",null,DataType.URI, true, true);
-            OutputDataObjectType output4 = RegisterSampleApplicationsUtils.createAppOutput("STDOUT",null,DataType.STDOUT, true, true);
-            OutputDataObjectType output5 = RegisterSampleApplicationsUtils.createAppOutput("STDERR",null,DataType.STDERR, true, true);
-        
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("GROMACS_Execution_Log",null,DataType.URI, true, true, null);
+            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("Full_Precision_Trajectory_file",null,DataType.URI, true, true, null);
+            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("Portable_Energy_file",null,DataType.URI, true, true, null);
+            OutputDataObjectType output4 = RegisterSampleApplicationsUtils.createAppOutput("STDOUT",null,DataType.STDOUT, true, true, null);
+            OutputDataObjectType output5 = RegisterSampleApplicationsUtils.createAppOutput("STDERR",null,DataType.STDERR, true, true, null);
+
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
             applicationOutputs.add(output2);
@@ -790,11 +808,11 @@ public class RegisterSampleApplications {
             List<InputDataObjectType> applicationInputs = new ArrayList<InputDataObjectType>();
             applicationInputs.add(input1);
 
-            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("LAMMPS_Simulation_Log",null,DataType.URI, true, true);
-            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("STDOUT",null,DataType.STDOUT, true, true);
-            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("STDERR",null,DataType.STDERR, true, true);
-       
-          
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("LAMMPS_Simulation_Log",null,DataType.URI, true, true, null);
+            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("STDOUT",null,DataType.STDOUT, true, true, null);
+            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("STDERR",null,DataType.STDERR, true, true, null);
+
+
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
             applicationOutputs.add(output2);
@@ -824,10 +842,10 @@ public class RegisterSampleApplications {
             applicationInputs.add(input1);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("NWChem_Execution_Log",
-                    null, DataType.URI, true, false);
-            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("STDOUT",null,DataType.STDOUT, true, true);
-            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("STDERR",null,DataType.STDERR, true, true);
-           
+                    null, DataType.URI, true, false, null);
+            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("STDOUT",null,DataType.STDOUT, true, true, null);
+            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("STDERR",null,DataType.STDERR, true, true, null);
+
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -862,10 +880,10 @@ public class RegisterSampleApplications {
             applicationInputs.add(input1);
             applicationInputs.add(input2);
 
-            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Trinity_Execution_Log",null,DataType.URI, true, true);
-            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("Trinity_FASTA_File",null,DataType.URI, true, true);
-            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("STDOUT",null,DataType.STDOUT, true, true);
-            OutputDataObjectType output4 = RegisterSampleApplicationsUtils.createAppOutput("STDERR",null,DataType.STDERR, true, true);
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Trinity_Execution_Log",null,DataType.URI, true, true, null);
+            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("Trinity_FASTA_File",null,DataType.URI, true, true, null);
+            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("STDOUT",null,DataType.STDOUT, true, true, null);
+            OutputDataObjectType output4 = RegisterSampleApplicationsUtils.createAppOutput("STDERR",null,DataType.STDERR, true, true, null);
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
@@ -906,20 +924,20 @@ public class RegisterSampleApplications {
             applicationInputs.add(input3);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("WRF_Output",
-                    "", DataType.URI, true, true);
+                    "", DataType.URI, true, true, null);
 
             OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("WRF_Execution_Log",
-                    "", DataType.URI, true, true);
-            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("STDOUT",null,DataType.STDOUT, true, true);
-            OutputDataObjectType output4 = RegisterSampleApplicationsUtils.createAppOutput("STDERR",null,DataType.STDERR, true, true);
+                    "", DataType.URI, true, true, null);
+            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("STDOUT",null,DataType.STDOUT, true, true, null);
+            OutputDataObjectType output4 = RegisterSampleApplicationsUtils.createAppOutput("STDERR",null,DataType.STDERR, true, true, null);
 
-            
+
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
             applicationOutputs.add(output2);
             applicationOutputs.add(output3);
             applicationOutputs.add(output4);
-            
+
             wrfInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription(wrfName, wrfDescription,
                             appModules, applicationInputs, applicationOutputs));
@@ -951,12 +969,12 @@ public class RegisterSampleApplications {
             applicationInputs.add(input2);
             applicationInputs.add(input3);
 
-            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("PHASTA_Execution_Log",null,DataType.URI, true, true);
-            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("PHASTA_Output_tar",null,DataType.URI, true, true);
-            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("STDOUT",null,DataType.STDOUT, true, true);
-            OutputDataObjectType output4 = RegisterSampleApplicationsUtils.createAppOutput("STDERR",null,DataType.STDERR, true, true);
+            OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("PHASTA_Execution_Log",null,DataType.URI, true, true, null);
+            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("PHASTA_Output_tar",null,DataType.URI, true, true, null);
+            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("STDOUT",null,DataType.STDOUT, true, true, null);
+            OutputDataObjectType output4 = RegisterSampleApplicationsUtils.createAppOutput("STDERR",null,DataType.STDERR, true, true, null);
 
-            
+
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
             applicationOutputs.add(output2);
@@ -1003,16 +1021,16 @@ public class RegisterSampleApplications {
             applicationInputs.add(input1);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("gaussian.out",
-                    "", DataType.URI, true, true );
-            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("STDOUT",null,DataType.STDOUT, true, true);
-            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("STDERR",null,DataType.STDERR, true, true);
+                    "", DataType.URI, true, true, null);
+            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("STDOUT",null,DataType.STDOUT, true, true, null);
+            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("STDERR",null,DataType.STDERR, true, true, null);
 
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
             applicationOutputs.add(output2);
             applicationOutputs.add(output3);
-            
+
             String addApplicationInterfaceId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("Gaussian", "Gaussian application",
                             appModules, applicationInputs, applicationOutputs));
@@ -1055,11 +1073,11 @@ public class RegisterSampleApplications {
             applicationInputs.add(input7);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("Diskoutputfile_with_dir",
-                    "", DataType.URI, false, false);
-            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("STDOUT",null,DataType.STDOUT, true, true);
-            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("STDERR",null,DataType.STDERR, true, true);
+                    "", DataType.URI, false, false, null);
+            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("STDOUT",null,DataType.STDOUT, true, true, null);
+            OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("STDERR",null,DataType.STDERR, true, true, null);
 
-            
+
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
             applicationOutputs.add(output2);
@@ -1088,10 +1106,12 @@ public class RegisterSampleApplications {
             System.out.println("Echo on stampede deployment Id " + echoAppDeployId);
 
             //Register Amber
-            String amberAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
-                    RegisterSampleApplicationsUtils.createApplicationDeployment(amberModuleId, stampedeResourceId,
-                            "/home1/01437/ogce/production/app_wrappers/amber_wrapper.sh", ApplicationParallelismType.MPI,
-                            amberDescription, null, null, null));
+            List<String> moduleLoadCMDs = new ArrayList<String>();
+            moduleLoadCMDs.add("module load amber");
+            ApplicationDeploymentDescription amberStampedeDeployment = RegisterSampleApplicationsUtils.createApplicationDeployment(amberModuleId, stampedeResourceId,
+                    "/opt/apps/intel13/mvapich2_1_9/amber/12.0/bin/sander.MPI -O", ApplicationParallelismType.MPI,
+                    amberDescription, moduleLoadCMDs, null, null);
+            String amberAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,amberStampedeDeployment);
             System.out.println("Amber on stampede deployment Id " + amberAppDeployId);
 
             //Register ESPRESSO
@@ -1168,10 +1188,12 @@ public class RegisterSampleApplications {
             System.out.println("Echo on trestles deployment Id " + echoAppDeployId);
 
             //Register Amber
+            List<String> moduleLoadCMDs = new ArrayList<String>();
+            moduleLoadCMDs.add("module load amber");
             String amberAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(amberModuleId, trestlesResourceId,
-                            "/home/ogce/production/app_wrappers/amber_wrapper.sh", ApplicationParallelismType.MPI,
-                            amberDescription, null, null, null));
+                            "/opt/amber/bin/sander.MPI -O", ApplicationParallelismType.MPI,
+                            amberDescription, moduleLoadCMDs, null, null));
             System.out.println("Amber on trestles deployment Id " + amberAppDeployId);
 
             //Register GROMACS
@@ -1247,10 +1269,14 @@ public class RegisterSampleApplications {
             System.out.println("Echo on bigredII deployment Id " + echoAppDeployId);
 
             //Register Amber
+            List<String> amberModuleLoadCMDsBr2 = new ArrayList<String>();
+            amberModuleLoadCMDsBr2.add("module load amber/gnu/mpi/12");
+            amberModuleLoadCMDsBr2.add("module swap PrgEnv-cray PrgEnv-gnu");
             String amberAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(amberModuleId, bigredResourceId,
-                            "/N/u/cgateway/BigRed2/production/app_wrappers/amber_wrapper.sh", ApplicationParallelismType.MPI,
-                            amberDescription, null, null, null));
+                            "/N/soft/cle4/amber/gnu/mpi/12/amber12/bin/sander.MPI -O", ApplicationParallelismType.MPI,
+                            amberDescription, amberModuleLoadCMDsBr2, null, null));
+
             System.out.println("Amber on bigredII deployment Id " + amberAppDeployId);
 
             //Register AutoDock
@@ -1288,18 +1314,18 @@ public class RegisterSampleApplications {
                     RegisterSampleApplicationsUtils.createApplicationDeployment(echoModuleId, fsdResourceId,
                             "/bin/echo", ApplicationParallelismType.SERIAL, echoDescription, null, null, null));
             System.out.println("Echo on FSD deployment Id: " + echoAppDeployId);
-            
+
             //Register MPI
 //            String mpiAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
 //                    RegisterSampleApplicationsUtils.createApplicationDeployment(mpiModuleId, fsdResourceId,
 //                            "/home/bes/hellompi", ApplicationParallelismType.OPENMP_MPI, mpiDescription, null, null, null));
-            
-            
+
+
             String mpiAppDeployId = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationDeployment(mpiModuleId, fsdResourceId,
                             "us_mpi_analysis", ApplicationParallelismType.MPI, mpiDescription, null, null, null));
 
-            
+
             System.out.println("MPI on FSD deployment Id: " + mpiAppDeployId);
 
         } catch (TException e) {
@@ -1307,16 +1333,35 @@ public class RegisterSampleApplications {
         }
     }
 
-    
-    
+    public BatchQueue createBatchQueue (String queuename,
+                                        String queueDesc,
+                                        int maxRunTime,
+                                        int maxNodes,
+                                        int maxProcessors,
+                                        int maxJobsInQueue,
+                                        int maxMemory){
+        BatchQueue batchQueue = new BatchQueue();
+        batchQueue.setQueueName(queuename);
+        batchQueue.setQueueDescription(queueDesc);
+        batchQueue.setMaxMemory(maxMemory);
+        batchQueue.setMaxJobsInQueue(maxJobsInQueue);
+        batchQueue.setMaxNodes(maxNodes);
+        batchQueue.setMaxRunTime(maxRunTime);
+        batchQueue.setMaxProcessors(maxProcessors);
+        return batchQueue;
+    }
+
     public String registerComputeHost(String hostName, String hostDesc,
                                              ResourceJobManagerType resourceJobManagerType,
                                              String monitoringEndPoint, String jobMangerBinPath,
-                                             SecurityProtocol securityProtocol, int portNumber, String jobManagerCommand) throws TException {
+                                             SecurityProtocol securityProtocol,
+                                             int portNumber,
+                                             String jobManagerCommand,
+                                             List<BatchQueue> batchQueues) throws TException {
 
         ComputeResourceDescription computeResourceDescription = RegisterSampleApplicationsUtils.
                 createComputeResourceDescription(hostName, hostDesc, null, null);
-
+        computeResourceDescription.setBatchQueues(batchQueues);
         String computeResourceId = airavataClient.registerComputeResource(computeResourceDescription);
 
         if (computeResourceId.isEmpty()) throw new AiravataClientException();
@@ -1334,6 +1379,7 @@ public class RegisterSampleApplications {
         sshJobSubmission.setResourceJobManager(resourceJobManager);
         sshJobSubmission.setSecurityProtocol(securityProtocol);
         sshJobSubmission.setSshPort(portNumber);
+        sshJobSubmission.setMonitorMode(MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR);
         airavataClient.addSSHJobSubmissionDetails(computeResourceId, 1, sshJobSubmission);
 
         SCPDataMovement scpDataMovement = new SCPDataMovement();
@@ -1343,11 +1389,11 @@ public class RegisterSampleApplications {
 
         return computeResourceId;
     }
-    
-    
-    
-    
-    
+
+
+
+
+
     public void registerGatewayResourceProfile() {
 
         try {
@@ -1369,13 +1415,13 @@ public class RegisterSampleApplications {
             ComputeResourcePreference lsfResourcePreferences = RegisterSampleApplicationsUtils.
                     createComputeResourcePreference(lsfResourceId, "airavata", false, null, null, null,
                             "/home/lg11w/mywork");
-            
+
             ComputeResourcePreference fsdResourcePreferences = RegisterSampleApplicationsUtils.
                     createComputeResourcePreference(fsdResourceId, null, false, null, JobSubmissionProtocol.UNICORE, DataMovementProtocol.UNICORE_STORAGE_SERVICE,null);
-            
+
             ComputeResourcePreference alamoResourcePreferences = RegisterSampleApplicationsUtils.
                     createComputeResourcePreference(alamoResourceId, null, false, null, JobSubmissionProtocol.SSH, DataMovementProtocol.SCP,"/home/us3/work/uslims3_cauma3-03896");
-          
+
             GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
             gatewayResourceProfile.setGatewayID(DEFAULT_GATEWAY);
             gatewayResourceProfile.addToComputeResourcePreferences(stampedeResourcePreferences);
@@ -1440,7 +1486,7 @@ public class RegisterSampleApplications {
             e.printStackTrace();
         }
     }
-    
+
      private void registerUltrascanInterface() {
         try {
             System.out.println("#### Registering Ultrascan Application Interface ####");
@@ -1455,13 +1501,13 @@ public class RegisterSampleApplications {
             applicationInputs.add(input1);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("output/analysis-results.tar",
-                    "", DataType.URI, true, true );
+                    "", DataType.URI, true, true, null );
 
             OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("STDOUT",
-                    "", DataType.STDOUT, true, true );
+                    "", DataType.STDOUT, true, true, null );
 
             OutputDataObjectType output3 = RegisterSampleApplicationsUtils.createAppOutput("STDERR",
-                    "", DataType.STDERR, true, true );
+                    "", DataType.STDERR, true, true, null );
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);

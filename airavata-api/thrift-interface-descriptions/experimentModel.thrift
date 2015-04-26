@@ -273,7 +273,8 @@ struct JobDetails {
     5: optional ApplicationStatus applicationStatus,
     6: optional list<ErrorDetails> errors,
     7: optional string computeResourceConsumed,
-    8: optional string jobName
+    8: optional string jobName,
+    9: optional string workingDir
 }
 
 struct DataTransferDetails {
@@ -378,16 +379,17 @@ struct Experiment {
     8: optional string applicationVersion,
     9: optional string workflowTemplateId,
     10: optional string workflowTemplateVersion,
-    11: optional bool enableEmailNotification,
-    12: optional list<string> emailAddresses,
-    13: optional UserConfigurationData userConfigurationData,
-    14: optional string workflowExecutionInstanceId,
-    15: optional list<applicationInterfaceModel.InputDataObjectType> experimentInputs,
-    16: optional list<applicationInterfaceModel.OutputDataObjectType> experimentOutputs,
-    17: optional ExperimentStatus experimentStatus,
-    18: optional list<WorkflowNodeStatus> stateChangeList,
-    19: optional list<WorkflowNodeDetails> workflowNodeDetailsList,
-    20: optional list<ErrorDetails> errors
+    11: optional string gatewayExecutionId,
+    12: optional bool enableEmailNotification,
+    13: optional list<string> emailAddresses,
+    14: optional UserConfigurationData userConfigurationData,
+    15: optional string workflowExecutionInstanceId,
+    16: optional list<applicationInterfaceModel.InputDataObjectType> experimentInputs,
+    17: optional list<applicationInterfaceModel.OutputDataObjectType> experimentOutputs,
+    18: optional ExperimentStatus experimentStatus,
+    19: optional list<WorkflowNodeStatus> stateChangeList,
+    20: optional list<WorkflowNodeDetails> workflowNodeDetailsList,
+    21: optional list<ErrorDetails> errors
 }
 
 struct ExperimentSummary {

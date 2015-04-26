@@ -22,10 +22,7 @@ package org.apache.airavata.common.utils;
 
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.ZooKeeper;
+import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.apache.zookeeper.server.ServerCnxnFactory;
 import org.apache.zookeeper.server.ServerConfig;
@@ -41,21 +38,26 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-public class AiravataZKUtils {
+public class AiravataZKUtils implements Watcher {
     private final static Logger logger = LoggerFactory.getLogger(AiravataZKUtils.class);
 
     public static final String ZK_EXPERIMENT_STATE_NODE = "state";
 
     public static final String DELIVERY_TAG_POSTFIX = "-deliveryTag";
 
-    public static String getExpZnodePath(String experimentId, String taskId) throws ApplicationSettingsException {
+    @Override
+    public void process(WatchedEvent event) {
+
+    }
+
+    public static String getExpZnodePath(String experimentId) throws ApplicationSettingsException {
         return ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE) +
                 File.separator +
                 ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME) + File.separator
                 + experimentId;
     }
 
-    public static String getExpZnodeHandlerPath(String experimentId, String taskId, String className) throws ApplicationSettingsException {
+    public static String getExpZnodeHandlerPath(String experimentId, String className) throws ApplicationSettingsException {
         return ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE) +
                 File.separator +
                 ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME) + File.separator
@@ -71,26 +73,26 @@ public class AiravataZKUtils {
         return Integer.parseInt(ServerSettings.getSetting(Constants.ZOOKEEPER_TIMEOUT,"30000"));
     }
 
-    public static String getExpStatePath(String experimentId, String taskId) throws ApplicationSettingsException {
-        return AiravataZKUtils.getExpZnodePath(experimentId, taskId) +
+    public static String getExpStatePath(String experimentId) throws ApplicationSettingsException {
+        return AiravataZKUtils.getExpZnodePath(experimentId) +
                 File.separator +
                 "state";
     }
 
-    public static String getExpTokenId(ZooKeeper zk, String expId, String tId) throws ApplicationSettingsException,
+    public static String getExpTokenId(ZooKeeper zk, String expId) throws ApplicationSettingsException,
             KeeperException, InterruptedException {
-        Stat exists = zk.exists(getExpZnodePath(expId, tId), false);
+        Stat exists = zk.exists(getExpZnodePath(expId), false);
         if (exists != null) {
-            return new String(zk.getData(getExpZnodePath(expId, tId), false, exists));
+            return new String(zk.getData(getExpZnodePath(expId), false, exists));
         }
         return null;
     }
 
-    public static String getExpState(ZooKeeper zk, String expId, String tId) throws ApplicationSettingsException,
+    public static String getExpState(ZooKeeper zk, String expId) throws ApplicationSettingsException,
             KeeperException, InterruptedException {
-        Stat exists = zk.exists(getExpStatePath(expId, tId), false);
+        Stat exists = zk.exists(getExpStatePath(expId), false);
         if (exists != null) {
-            return new String(zk.getData(getExpStatePath(expId, tId), false, exists));
+            return new String(zk.getData(getExpStatePath(expId), false, exists));
         }
         return null;
     }
@@ -201,12 +203,12 @@ public class AiravataZKUtils {
 
     public static long getDeliveryTag(String experimentID, ZooKeeper zk, String experimentNode,
                                       String pickedChild) throws KeeperException, InterruptedException,AiravataException {
-        String experimentPath = experimentNode + File.separator + pickedChild;
-        String deliveryTagPath = experimentPath + File.separator + experimentID
+        String deliveryTagPath = experimentNode + File.separator + pickedChild + File.separator + experimentID
                 + DELIVERY_TAG_POSTFIX;
         Stat exists = zk.exists(deliveryTagPath, false);
         if(exists==null) {
-            throw new AiravataException("Cannot find delivery Tag for this experiment");
+            logger.error("Cannot find delivery Tag in path:" + deliveryTagPath + " for this experiment");
+            return -1;
         }
         return bytesToLong(zk.getData(deliveryTagPath, false, exists));
     }

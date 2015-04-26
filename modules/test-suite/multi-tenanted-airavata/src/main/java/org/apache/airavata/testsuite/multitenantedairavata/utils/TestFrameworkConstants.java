@@ -72,6 +72,7 @@ public class TestFrameworkConstants {
     public static final class AppcatalogConstants {
         public static final String AMBER_APP_NAME = "amber_sander";
         public static final String ECHO_NAME = "Echo";
+        public static final String ULTRASCAN = "Ultrascan";
         public static final String ESPRESSO_NAME = "ESPRESSO";
         public static final String GROMACS_NAME = "GROMACS";
         public static final String LAMMPS_NAME = "LAMMPS";
@@ -85,6 +86,7 @@ public class TestFrameworkConstants {
 
         public static final String ECHO_DESCRIPTION = "A Simple Echo Application";
         public static final String AMBER_DESCRIPTION = "Assisted Model Building with Energy Refinement MD Package";
+        public static final String ULTRASCAN_DESCRIPTION = "Ultrascan application";
         public static final String ESPRESSO_DESCRIPTION = "Nanoscale electronic-structure calculations and materials modeling";
         public static final String GROMACS_DESCRIPTION = "GROMACS Molecular Dynamics Package";
         public static final String LAMMPS_DESCRIPTION = "Large-scale Atomic/Molecular Massively Parallel Simulator";
@@ -99,6 +101,8 @@ public class TestFrameworkConstants {
         public static final String STAMPEDE_RESOURCE_NAME = "stampede.tacc.xsede.org";
         public static final String TRESTLES_RESOURCE_NAME = "trestles.sdsc.xsede.org";
         public static final String BR2_RESOURCE_NAME = "bigred2.uits.iu.edu";
+        public static final String GORDEN_RESOURCE_NAME = "gordon.sdsc.edu";
+        public static final String ALAMO_RESOURCE_NAME = "alamo.uthscsa.edu";
 
 
         public static final String AMBER_HEAT_RST_LOCATION = "02_Heat.rst_location";

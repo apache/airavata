@@ -29,6 +29,7 @@ import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
 import org.apache.airavata.gfac.core.monitor.state.GfacExperimentStateChangeRequest;
+import org.apache.airavata.gfac.core.states.GfacExperimentState;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.impl.RabbitMQProducer;
@@ -53,40 +54,42 @@ public class GfacInternalStatusUpdator implements AbstractActivityListener, Watc
         MonitorID monitorID = statusChangeRequest.getMonitorID();
         String experimentNode = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
         String experimentPath = experimentNode + File.separator + ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME)
-                + File.separator + statusChangeRequest.getMonitorID().getExperimentID() + "+" + monitorID.getTaskID();
+                + File.separator + statusChangeRequest.getMonitorID().getExperimentID();
         Stat exists = null;
-        try {
-            if (!zk.getState().isConnected()) {
-                String zkhostPort = AiravataZKUtils.getZKhostPort();
-                zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this);
-                synchronized (mutex) {
-                    mutex.wait();
+        if(!(GfacExperimentState.COMPLETED.equals(statusChangeRequest.getState()) || GfacExperimentState.FAILED.equals(statusChangeRequest.getState()))) {
+            try {
+                if (!zk.getState().isConnected()) {
+                    String zkhostPort = AiravataZKUtils.getZKhostPort();
+                    zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this);
+                    synchronized (mutex) {
+                        mutex.wait();
+                    }
                 }
+                exists = zk.exists(experimentPath, false);
+                if (exists == null) {
+                    logger.error("ZK path: " + experimentPath + " does not exists !!");
+                    logger.error("Zookeeper is in an inconsistent state !!! ");
+                    return;
+                }
+            } catch (KeeperException e) {
+                logger.error("Error while updating zk", e);
+                throw new Exception(e.getMessage(), e);
+            } catch (InterruptedException e) {
+                logger.error("Error while updating zk", e);
+                throw new Exception(e.getMessage(), e);
+            } catch (IOException e) {
+                logger.error("Error while updating zk", e);
+                throw new Exception(e.getMessage(), e);
             }
-            exists = zk.exists(experimentPath, false);// this znode is created by orchestrator so it has to exist at this level
-            if (exists == null) {
-                logger.error("ZK path: " + experimentPath + " does not exists !!");
-                logger.error("Zookeeper is in an inconsistent state !!! ");
-                return;
+            Stat state = zk.exists(experimentPath + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false);
+            if (state == null) {
+                // state znode has to be created
+                zk.create(experimentPath + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE,
+                        String.valueOf(statusChangeRequest.getState().getValue()).getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+            } else {
+                zk.setData(experimentPath + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE,
+                        String.valueOf(statusChangeRequest.getState().getValue()).getBytes(), state.getVersion());
             }
-        } catch (KeeperException e) {
-            logger.error("Error while updating zk", e);
-            throw new Exception(e.getMessage(), e);
-        } catch (InterruptedException e) {
-            logger.error("Error while updating zk", e);
-            throw new Exception(e.getMessage(), e);
-        } catch (IOException e) {
-            logger.error("Error while updating zk", e);
-            throw new Exception(e.getMessage(), e);
-        }
-        Stat state = zk.exists(experimentPath + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false);
-        if (state == null) {
-            // state znode has to be created
-            zk.create(experimentPath + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE,
-                    String.valueOf(statusChangeRequest.getState().getValue()).getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-        } else {
-            zk.setData(experimentPath + File.separator + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE,
-                    String.valueOf(statusChangeRequest.getState().getValue()).getBytes(), state.getVersion());
         }
         switch (statusChangeRequest.getState()) {
             case COMPLETED:

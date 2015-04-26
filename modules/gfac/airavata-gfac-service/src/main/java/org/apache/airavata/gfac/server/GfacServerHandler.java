@@ -21,7 +21,6 @@
 package org.apache.airavata.gfac.server;
 
 import com.google.common.eventbus.EventBus;
-import edu.uiuc.ncsa.security.delegation.services.Server;
 import org.airavata.appcatalog.cpi.AppCatalog;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
@@ -29,7 +28,6 @@ import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.logger.AiravataLogger;
 import org.apache.airavata.common.logger.AiravataLoggerFactory;
-import org.apache.airavata.common.utils.*;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.MonitorPublisher;
@@ -61,8 +59,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.locks.Lock;
 
 
@@ -195,21 +191,17 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                     mutex.notify();
                     break;
                 case Expired:case Disconnected:
+                   logger.info("ZK Connection is "+ state.toString());
                     try {
                         zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this);
-                        synchronized (mutex) {
-                            mutex.wait();  // waiting for the syncConnected event
-                        }
-                        storeServerConfig();
                     } catch (IOException e) {
                         logger.error(e.getMessage(), e);
                     } catch (ApplicationSettingsException e) {
                         logger.error(e.getMessage(), e);
-                    } catch (InterruptedException e) {
-                        logger.error(e.getMessage(), e);
-                    } catch (KeeperException e) {
-                        logger.error(e.getMessage(), e);
                     }
+//                    synchronized (mutex) {
+//                        mutex.wait();  // waiting for the syncConnected event
+//                    }
             }
         }
     }
@@ -255,7 +247,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
         logger.debugId(experimentId, "Submitted job to the Gfac Implementation, experiment {}, task {}, gateway " +
                 "{}", experimentId, taskId, gatewayId);
 
-        GFacThreadPoolExecutor.getThreadPool().execute(inputHandlerWorker);
+        GFacThreadPoolExecutor.getCachedThreadPool().execute(inputHandlerWorker);
 
         // we immediately return when we have a threadpool
         return true;
@@ -309,7 +301,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
 
     private GFac getGfac() throws TException {
         try {
-            return new BetterGfacImpl(registry, appCatalog, zk, publisher);
+            return new BetterGfacImpl(registry, appCatalog, new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this), publisher);
         } catch (Exception e) {
             throw new TException("Error initializing gfac instance", e);
         }
@@ -374,7 +366,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
 
                     try {
                         GFacUtils.createExperimentEntryForPassive(event.getExperimentId(), event.getTaskId(), zk, experimentNode, nodeName, event.getTokenId(), message.getDeliveryTag());
-                        AiravataZKUtils.getExpStatePath(event.getExperimentId(), event.getTaskId());
+                        AiravataZKUtils.getExpStatePath(event.getExperimentId());
                         submitJob(event.getExperimentId(), event.getTaskId(), event.getGatewayId());
                     } catch (KeeperException e) {
                         logger.error(nodeName + " was interrupted.");

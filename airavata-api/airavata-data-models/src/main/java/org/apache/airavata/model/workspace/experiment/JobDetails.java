@@ -60,6 +60,7 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField ERRORS_FIELD_DESC = new org.apache.thrift.protocol.TField("errors", org.apache.thrift.protocol.TType.LIST, (short)6);
   private static final org.apache.thrift.protocol.TField COMPUTE_RESOURCE_CONSUMED_FIELD_DESC = new org.apache.thrift.protocol.TField("computeResourceConsumed", org.apache.thrift.protocol.TType.STRING, (short)7);
   private static final org.apache.thrift.protocol.TField JOB_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("jobName", org.apache.thrift.protocol.TType.STRING, (short)8);
+  private static final org.apache.thrift.protocol.TField WORKING_DIR_FIELD_DESC = new org.apache.thrift.protocol.TField("workingDir", org.apache.thrift.protocol.TType.STRING, (short)9);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -75,6 +76,7 @@ import org.slf4j.LoggerFactory;
   private List<ErrorDetails> errors; // optional
   private String computeResourceConsumed; // optional
   private String jobName; // optional
+  private String workingDir; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -85,7 +87,8 @@ import org.slf4j.LoggerFactory;
     APPLICATION_STATUS((short)5, "applicationStatus"),
     ERRORS((short)6, "errors"),
     COMPUTE_RESOURCE_CONSUMED((short)7, "computeResourceConsumed"),
-    JOB_NAME((short)8, "jobName");
+    JOB_NAME((short)8, "jobName"),
+    WORKING_DIR((short)9, "workingDir");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -116,6 +119,8 @@ import org.slf4j.LoggerFactory;
           return COMPUTE_RESOURCE_CONSUMED;
         case 8: // JOB_NAME
           return JOB_NAME;
+        case 9: // WORKING_DIR
+          return WORKING_DIR;
         default:
           return null;
       }
@@ -158,7 +163,7 @@ import org.slf4j.LoggerFactory;
   // isset id assignments
   private static final int __CREATIONTIME_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.JOB_STATUS,_Fields.APPLICATION_STATUS,_Fields.ERRORS,_Fields.COMPUTE_RESOURCE_CONSUMED,_Fields.JOB_NAME};
+  private _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.JOB_STATUS,_Fields.APPLICATION_STATUS,_Fields.ERRORS,_Fields.COMPUTE_RESOURCE_CONSUMED,_Fields.JOB_NAME,_Fields.WORKING_DIR};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -178,6 +183,8 @@ import org.slf4j.LoggerFactory;
     tmpMap.put(_Fields.COMPUTE_RESOURCE_CONSUMED, new org.apache.thrift.meta_data.FieldMetaData("computeResourceConsumed", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.JOB_NAME, new org.apache.thrift.meta_data.FieldMetaData("jobName", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.WORKING_DIR, new org.apache.thrift.meta_data.FieldMetaData("workingDir", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(JobDetails.class, metaDataMap);
@@ -228,6 +235,9 @@ import org.slf4j.LoggerFactory;
     if (other.isSetJobName()) {
       this.jobName = other.jobName;
     }
+    if (other.isSetWorkingDir()) {
+      this.workingDir = other.workingDir;
+    }
   }
 
   public JobDetails deepCopy() {
@@ -246,6 +256,7 @@ import org.slf4j.LoggerFactory;
     this.errors = null;
     this.computeResourceConsumed = null;
     this.jobName = null;
+    this.workingDir = null;
   }
 
   public String getJobID() {
@@ -446,6 +457,29 @@ import org.slf4j.LoggerFactory;
     }
   }
 
+  public String getWorkingDir() {
+    return this.workingDir;
+  }
+
+  public void setWorkingDir(String workingDir) {
+    this.workingDir = workingDir;
+  }
+
+  public void unsetWorkingDir() {
+    this.workingDir = null;
+  }
+
+  /** Returns true if field workingDir is set (has been assigned a value) and false otherwise */
+  public boolean isSetWorkingDir() {
+    return this.workingDir != null;
+  }
+
+  public void setWorkingDirIsSet(boolean value) {
+    if (!value) {
+      this.workingDir = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case JOB_ID:
@@ -512,6 +546,14 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case WORKING_DIR:
+      if (value == null) {
+        unsetWorkingDir();
+      } else {
+        setWorkingDir((String)value);
+      }
+      break;
+
     }
   }
 
@@ -541,6 +583,9 @@ import org.slf4j.LoggerFactory;
     case JOB_NAME:
       return getJobName();
 
+    case WORKING_DIR:
+      return getWorkingDir();
+
     }
     throw new IllegalStateException();
   }
@@ -568,6 +613,8 @@ import org.slf4j.LoggerFactory;
       return isSetComputeResourceConsumed();
     case JOB_NAME:
       return isSetJobName();
+    case WORKING_DIR:
+      return isSetWorkingDir();
     }
     throw new IllegalStateException();
   }
@@ -654,6 +701,15 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_jobName && that_present_jobName))
         return false;
       if (!this.jobName.equals(that.jobName))
+        return false;
+    }
+
+    boolean this_present_workingDir = true && this.isSetWorkingDir();
+    boolean that_present_workingDir = true && that.isSetWorkingDir();
+    if (this_present_workingDir || that_present_workingDir) {
+      if (!(this_present_workingDir && that_present_workingDir))
+        return false;
+      if (!this.workingDir.equals(that.workingDir))
         return false;
     }
 
@@ -753,6 +809,16 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetWorkingDir()).compareTo(other.isSetWorkingDir());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetWorkingDir()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.workingDir, other.workingDir);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -841,6 +907,16 @@ import org.slf4j.LoggerFactory;
         sb.append("null");
       } else {
         sb.append(this.jobName);
+      }
+      first = false;
+    }
+    if (isSetWorkingDir()) {
+      if (!first) sb.append(", ");
+      sb.append("workingDir:");
+      if (this.workingDir == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.workingDir);
       }
       first = false;
     }
@@ -980,6 +1056,14 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 9: // WORKING_DIR
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.workingDir = iprot.readString();
+              struct.setWorkingDirIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1050,6 +1134,13 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldEnd();
         }
       }
+      if (struct.workingDir != null) {
+        if (struct.isSetWorkingDir()) {
+          oprot.writeFieldBegin(WORKING_DIR_FIELD_DESC);
+          oprot.writeString(struct.workingDir);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1088,7 +1179,10 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetJobName()) {
         optionals.set(5);
       }
-      oprot.writeBitSet(optionals, 6);
+      if (struct.isSetWorkingDir()) {
+        optionals.set(6);
+      }
+      oprot.writeBitSet(optionals, 7);
       if (struct.isSetCreationTime()) {
         oprot.writeI64(struct.creationTime);
       }
@@ -1113,6 +1207,9 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetJobName()) {
         oprot.writeString(struct.jobName);
       }
+      if (struct.isSetWorkingDir()) {
+        oprot.writeString(struct.workingDir);
+      }
     }
 
     @Override
@@ -1122,7 +1219,7 @@ import org.slf4j.LoggerFactory;
       struct.setJobIDIsSet(true);
       struct.jobDescription = iprot.readString();
       struct.setJobDescriptionIsSet(true);
-      BitSet incoming = iprot.readBitSet(6);
+      BitSet incoming = iprot.readBitSet(7);
       if (incoming.get(0)) {
         struct.creationTime = iprot.readI64();
         struct.setCreationTimeIsSet(true);
@@ -1158,6 +1255,10 @@ import org.slf4j.LoggerFactory;
       if (incoming.get(5)) {
         struct.jobName = iprot.readString();
         struct.setJobNameIsSet(true);
+      }
+      if (incoming.get(6)) {
+        struct.workingDir = iprot.readString();
+        struct.setWorkingDirIsSet(true);
       }
     }
   }

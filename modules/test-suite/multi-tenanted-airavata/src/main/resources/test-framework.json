@@ -12,15 +12,26 @@
     "resultFileLoc": "/tmp/test_framework_results/",
     "skippedGateways": "default,php_reference_gateway,ultrascan,umass",
     "injectErrors" : true,
+    "numberOfIterations" : 10,
     "resources": [
         {
             "name": "trestles.sdsc.xsede.org",
-            "loginUser": "ogce"
+            "loginUser": "us3"
 
         },
         {
             "name": "stampede.tacc.xsede.org",
-            "loginUser": "ogce"
+            "loginUser": "us3"
+
+        },
+        {
+            "name": "gordon.sdsc.edu",
+            "loginUser": "us3"
+
+        },
+        {
+            "name": "alamo.uthscsa.edu",
+            "loginUser": "us3"
 
         },
         {
@@ -36,6 +47,14 @@
                 "heatRst": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/02_Heat.rst",
                 "prodIn": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/03_Prod.in",
                 "prmtop": "/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/prmtop"
+            }
+        },
+        {
+            "name": "Ultrascan",
+            "inputs": {
+                "input": "/Users/chathuri/dev/airavata/source/php/inputs/hpcinput.tar",
+                "mgroupcount": "-mgroupcount=1",
+                "walltime": "-walltime=60"
             }
         }
     ],

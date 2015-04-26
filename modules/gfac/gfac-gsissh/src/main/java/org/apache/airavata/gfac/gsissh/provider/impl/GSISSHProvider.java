@@ -22,6 +22,7 @@ package org.apache.airavata.gfac.gsissh.provider.impl;
 
 import org.airavata.appcatalog.cpi.AppCatalog;
 import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.ExecutionMode;
@@ -43,7 +44,6 @@ import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.EmailMonitorProperty;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
@@ -150,13 +150,14 @@ public class GSISSHProvider extends AbstractRecoverableProvider {
         if (jobExecutionContext.getPreferredJobSubmissionProtocol() == JobSubmissionProtocol.SSH) {
             MonitorMode monitorMode = sshJobSubmission.getMonitorMode();
             if (monitorMode != null && monitorMode == MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR) {
-                EmailMonitorProperty emailMonitorProp = sshJobSubmission.getEmailMonitorProperty();
-                if (emailMonitorProp != null) {
-                    EmailMonitorFactory emailMonitorFactory = new EmailMonitorFactory();
-                    EmailBasedMonitor emailBasedMonitor = emailMonitorFactory.getEmailBasedMonitor(emailMonitorProp);
+                try {
+                    EmailBasedMonitor emailBasedMonitor = EmailMonitorFactory.getEmailBasedMonitor(
+                            sshJobSubmission.getResourceJobManager().getResourceJobManagerType());
                     emailBasedMonitor.addToJobMonitorMap(jobExecutionContext);
-                    return;
+                } catch (AiravataException e) {
+                    throw new GFacHandlerException("Error while activating email job monitoring ", e);
                 }
+                return;
             }
         }
 

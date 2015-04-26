@@ -213,32 +213,6 @@ enum MonitorMode {
 }
 
 /**
-* Email protocol
-**/
-enum EmailProtocol{
-    POP3,
-    IMAPS
-}
-
-
-/**
-* Email Monitoring Properties
-*
-* host : email host address
-* emailAddress : address which should get email notification
-* password : password to access email address
-* folderName : email folder name default is INBOX
-* storeProtocol : type of store protocol
-**/
-struct EmailMonitorProperty {
-    1: required string host,
-    2: required string emailAddress,
-    3: required string password,
-    4: required string folderName = "INBOX",
-    5: required EmailProtocol storeProtocol
-}
-
-/**
  * Enumeration of data movement supported by Airavata
  *
  * SCP:
@@ -348,7 +322,6 @@ struct SSHJobSubmission {
     4: optional string alternativeSSHHostName,
     5: optional i32 sshPort = 22,
     6: optional MonitorMode monitorMode,
-    7: optional EmailMonitorProperty emailMonitorProperty
 }
 
 struct GlobusJobSubmission {

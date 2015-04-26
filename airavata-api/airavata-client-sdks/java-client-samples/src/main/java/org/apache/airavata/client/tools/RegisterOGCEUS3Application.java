@@ -181,7 +181,7 @@ public class RegisterOGCEUS3Application {
             applicationInputs.add(input1);
 
             OutputDataObjectType output1 = RegisterSampleApplicationsUtils.createAppOutput("output",
-                    "", DataType.URI, true, false);
+                    "", DataType.URI, true, false, null);
 
 //            OutputDataObjectType output2 = RegisterSampleApplicationsUtils.createAppOutput("stdout",
 //                    "", DataType.URI);
@@ -190,7 +190,7 @@ public class RegisterOGCEUS3Application {
 
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
-  
+
             ultrascanAppId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("ultrascan", "ultrascan application",
                             appModules, applicationInputs, applicationOutputs));
