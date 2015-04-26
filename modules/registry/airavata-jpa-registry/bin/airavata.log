@@ -1,8 +1,0 @@
-2014-06-28 01:14:45,167 [main] INFO  org.apache.airavata.common.utils.ApplicationSettings  - Settings loaded from jar:file:/home/supun/Projects/airavata/modules/configuration/client/target/airavata-client-configuration-0.13-SNAPSHOT.jar!/airavata-client.properties
-2014-06-28 01:15:12,077 [main] INFO  org.apache.airavata.persistance.registry.jpa.util.Initialize  - New Database created for Registry
-2014-12-19 22:36:21,197 [main] INFO  org.apache.airavata.common.utils.ApplicationSettings  - Settings loaded from jar:file:/home/supun/Projects/airavata/modules/configuration/client/target/airavata-client-configuration-0.14-SNAPSHOT.jar!/airavata-client.properties
-2014-12-19 22:36:58,450 [main] INFO  org.apache.airavata.persistance.registry.jpa.util.Initialize  - New Database created for Registry
-2015-01-06 04:25:20,025 [main] INFO  org.apache.airavata.common.utils.ApplicationSettings  - Settings loaded from jar:file:/home/supun/Projects/airavata/modules/configuration/client/target/airavata-client-configuration-0.14-SNAPSHOT.jar!/airavata-client.properties
-2015-01-06 04:25:47,018 [main] INFO  org.apache.airavata.persistance.registry.jpa.util.Initialize  - New Database created for Registry
-2015-04-18 01:18:17,329 [main] INFO  org.apache.airavata.common.utils.ApplicationSettings  - Settings loaded from jar:file:/home/supun/airavata/modules/configuration/client/target/airavata-client-configuration-0.15-SNAPSHOT.jar!/airavata-client.properties
-2015-04-18 01:18:40,413 [main] INFO  org.apache.airavata.persistance.registry.jpa.util.Initialize  - New Database created for Registry
