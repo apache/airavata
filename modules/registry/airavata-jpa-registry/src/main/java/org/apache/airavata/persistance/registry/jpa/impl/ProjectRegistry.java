@@ -21,19 +21,19 @@
 
 package org.apache.airavata.persistance.registry.jpa.impl;
 
-import java.util.*;
-
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
 import org.apache.airavata.persistance.registry.jpa.utils.ThriftDataModelConversion;
 import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.cpi.ResultOrderType;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 public class ProjectRegistry {
     private GatewayResource gatewayResource;
@@ -49,7 +49,8 @@ public class ProjectRegistry {
         if (!gatewayResource.isExists(ResourceType.GATEWAY_WORKER, user.getUserName())){
             workerResource = ResourceUtils.addGatewayWorker(gatewayResource, user);
         }else {
-            workerResource = (WorkerResource)ResourceUtils.getWorker(gatewayResource.getGatewayId(), user.getUserName());
+            workerResource = (WorkerResource)ResourceUtils.getWorker(gatewayResource.getGatewayId(),
+                    user.getUserName());
         }
     }
 
@@ -71,7 +72,8 @@ public class ProjectRegistry {
             WorkerResource worker = new WorkerResource(project.getOwner(), workerResource.getGateway());
             projectResource.setWorker(worker);
             projectResource.save();
-            ProjectUserResource resource = (ProjectUserResource)projectResource.create(ResourceType.PROJECT_USER);
+            ProjectUserResource resource = (ProjectUserResource)projectResource.create(
+                    ResourceType.PROJECT_USER);
             resource.setProjectId(project.getProjectID());
             resource.setUserName(project.getOwner());
             resource.save();
@@ -86,7 +88,8 @@ public class ProjectRegistry {
             List<String> sharedUsers = project.getSharedUsers();
             if (sharedUsers != null && !sharedUsers.isEmpty()){
                 for (String username : sharedUsers){
-                    ProjectUserResource pr = (ProjectUserResource)projectResource.create(ResourceType.PROJECT_USER);
+                    ProjectUserResource pr = (ProjectUserResource)projectResource.
+                            create(ResourceType.PROJECT_USER);
                     pr.setUserName(username);
                     pr.save();
                 }
@@ -114,12 +117,14 @@ public class ProjectRegistry {
             if (!gatewayResource.isExists(ResourceType.GATEWAY_WORKER, user.getUserName())){
                 workerResource = ResourceUtils.addGatewayWorker(gatewayResource, user);
             }else {
-                workerResource = (WorkerResource)ResourceUtils.getWorker(gatewayResource.getGatewayName(), user.getUserName());
+                workerResource = (WorkerResource)ResourceUtils.getWorker(
+                        gatewayResource.getGatewayName(), user.getUserName());
             }
             WorkerResource worker = new WorkerResource(project.getOwner(), gatewayResource);
             existingProject.setWorker(worker);
             existingProject.save();
-            ProjectUserResource resource = (ProjectUserResource)existingProject.create(ResourceType.PROJECT_USER);
+            ProjectUserResource resource = (ProjectUserResource)existingProject.create(
+                    ResourceType.PROJECT_USER);
             resource.setProjectId(projectId);
             resource.setUserName(project.getOwner());
             resource.save();
@@ -134,7 +139,8 @@ public class ProjectRegistry {
             List<String> sharedUsers = project.getSharedUsers();
             if (sharedUsers != null && !sharedUsers.isEmpty()){
                 for (String username : sharedUsers){
-                    ProjectUserResource pr = (ProjectUserResource)existingProject.create(ResourceType.PROJECT_USER);
+                    ProjectUserResource pr = (ProjectUserResource)existingProject.create(
+                            ResourceType.PROJECT_USER);
                     pr.setUserName(username);
                     pr.save();
                 }
@@ -178,7 +184,32 @@ public class ProjectRegistry {
         return projects;
     }
 
+    /**
+     * To search projects of user with the given filter criteria. All the matching results will be sent.
+     * Results are not ordered in any order
+     * @param filters
+     * @return
+     * @throws RegistryException
+     */
     public List<Project> searchProjects (Map<String, String> filters) throws RegistryException{
+        return searchProjectsWithPagination(filters, -1, -1, null, null);
+    }
+
+    /**
+     * To search the projects of user with the given filter criteria and retrieve the results with
+     * pagination support. Results can be ordered based on an identifier (i.e column) either ASC or
+     * DESC.
+     *
+     * @param filters
+     * @param limit
+     * @param offset
+     * @param orderByIdentifier
+     * @param resultOrderType
+     * @return
+     * @throws RegistryException
+     */
+    public List<Project> searchProjectsWithPagination(Map<String, String> filters, int limit,
+        int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
         Map<String, String> fil = new HashMap<String, String>();
         if (filters != null && filters.size() != 0){
             List<Project> projects = new ArrayList<Project>();
@@ -194,7 +225,8 @@ public class ProjectRegistry {
                         fil.put(AbstractResource.ProjectConstants.GATEWAY_ID, filters.get(field));
                     }
                 }
-                List<ProjectResource> projectResources = workerResource.searchProjects(fil);
+                List<ProjectResource> projectResources = workerResource
+                        .searchProjectsWithPagination(fil, limit, offset, orderByIdentifier, resultOrderType);
                 if (projectResources != null && !projectResources.isEmpty()){
                     for (ProjectResource pr : projectResources){
                         projects.add(ThriftDataModelConversion.getProject(pr));
@@ -203,7 +235,7 @@ public class ProjectRegistry {
                 return projects;
             }catch (Exception e){
                 logger.error("Error while retrieving project from registry", e);
-               throw new RegistryException(e);
+                throw new RegistryException(e);
             }
         }
         return null;
