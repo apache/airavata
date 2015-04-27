@@ -21,12 +21,7 @@
 
 package org.apache.airavata.api.server.handler;
 
-import org.airavata.appcatalog.cpi.AppCatalog;
-import org.airavata.appcatalog.cpi.AppCatalogException;
-import org.airavata.appcatalog.cpi.ApplicationDeployment;
-import org.airavata.appcatalog.cpi.ComputeResource;
-import org.airavata.appcatalog.cpi.GwyResourceProfile;
-import org.airavata.appcatalog.cpi.WorkflowCatalog;
+import org.airavata.appcatalog.cpi.*;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.aiaravata.application.catalog.data.resources.*;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogThriftConversion;
@@ -50,38 +45,18 @@ import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
-import org.apache.airavata.model.error.AiravataClientConnectException;
-import org.apache.airavata.model.error.AiravataClientException;
-import org.apache.airavata.model.error.AiravataErrorType;
-import org.apache.airavata.model.error.AiravataSystemException;
-import org.apache.airavata.model.error.ExperimentNotFoundException;
-import org.apache.airavata.model.error.InvalidRequestException;
-import org.apache.airavata.model.error.ProjectNotFoundException;
+import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
-import org.apache.airavata.model.workspace.experiment.DataTransferDetails;
-import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.model.workspace.experiment.ExperimentState;
-import org.apache.airavata.model.workspace.experiment.ExperimentStatus;
-import org.apache.airavata.model.workspace.experiment.ExperimentSummary;
-import org.apache.airavata.model.workspace.experiment.JobDetails;
-import org.apache.airavata.model.workspace.experiment.JobStatus;
-import org.apache.airavata.model.workspace.experiment.TaskDetails;
-import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
-import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
+import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.orchestrator.client.OrchestratorClientFactory;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService.Client;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.ChildDataType;
-import org.apache.airavata.registry.cpi.ParentDataType;
-import org.apache.airavata.registry.cpi.Registry;
-import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.airavata.registry.cpi.RegistryModelType;
+import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.thrift.TException;
 
@@ -343,10 +318,34 @@ public class AiravataServerHandler implements Airavata.Iface {
     /**
      * Get all Project by user
      *
+     * @param gatewayId
+     *    The identifier for the requested gateway.
      * @param userName
+     *    The identifier of the user
+     * @deprecated  Instead use getAllUserProjectsWithPagination method
      */
+    @Deprecated
     @Override
     public List<Project> getAllUserProjects(String gatewayId, String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return getAllUserProjectsWithPagination(gatewayId, userName, -1, -1);
+    }
+
+    /**
+     * Get all Project by user with pagination. Results will be ordered based
+     * on creation time DESC
+     *
+     * @param gatewayId
+     *    The identifier for the requested gateway.
+     * @param userName
+     *    The identifier of the user
+     * @param limit
+     *    The amount results to be fetched
+     * @param offset
+     *    The starting point of the results to be fetched
+     **/
+    @Override
+    public List<Project> getAllUserProjectsWithPagination(String gatewayId, String userName,
+                                                          int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -371,7 +370,8 @@ public class AiravataServerHandler implements Airavata.Iface {
             Map<String, String> filters = new HashMap<String, String>();
             filters.put(Constants.FieldConstants.ProjectConstants.OWNER, userName);
             filters.put(Constants.FieldConstants.ProjectConstants.GATEWAY_ID, gatewayId);
-            List<Object> list = registry.search(RegistryModelType.PROJECT,filters);
+            List<Object> list = registry.search(RegistryModelType.PROJECT, filters, limit, offset,
+                    Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
             if (list != null && !list.isEmpty()){
                 for (Object o : list){
                     projects.add((Project) o);
@@ -387,10 +387,43 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    /**
+     * Get all Project for user by project name
+     *
+     * @param gatewayId
+     *    The identifier for the requested gateway.
+     * @param userName
+     *    The identifier of the user
+     * @param projectName
+     *    The name of the project on which the results to be fetched
+     * @deprecated Instead use searchProjectsByProjectNameWithPagination
+     */
+    @Deprecated
+    @Override
     public List<Project> searchProjectsByProjectName(String gatewayId, String userName, String projectName) throws InvalidRequestException,
                                                                                                  AiravataClientException,
                                                                                                  AiravataSystemException,
                                                                                                  TException {
+        return searchProjectsByProjectNameWithPagination(gatewayId, userName, projectName, -1, -1);
+    }
+
+    /**
+     * Get all Project for user by project name with pagination. Results will be ordered based
+     * on creation time DESC
+     *
+     * @param gatewayId
+     *    The identifier for the requested gateway.
+     * @param userName
+     *    The identifier of the user
+     * @param projectName
+     *    The name of the project on which the results to be fetched
+     * @param limit
+     *    The amount results to be fetched
+     * @param offset
+     *    The starting point of the results to be fetched
+     */
+    @Override
+    public List<Project> searchProjectsByProjectNameWithPagination(String gatewayId, String userName, String projectName, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -416,7 +449,8 @@ public class AiravataServerHandler implements Airavata.Iface {
             filters.put(Constants.FieldConstants.ProjectConstants.OWNER, userName);
             filters.put(Constants.FieldConstants.ProjectConstants.GATEWAY_ID, gatewayId);
             filters.put(Constants.FieldConstants.ProjectConstants.PROJECT_NAME, projectName);
-            List<Object> results = registry.search(RegistryModelType.PROJECT, filters);
+            List<Object> results = registry.search(RegistryModelType.PROJECT, filters, limit, offset,
+                    Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
             for (Object object : results) {
                 projects.add((Project)object);
             }
@@ -430,10 +464,42 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    /**
+     * Get all Project for user by project description
+     * @param gatewayId
+     *    The identifier for the requested gateway.
+     * @param userName
+     *    The identifier of the user
+     * @param description
+     *    The description to be matched
+     * @deprecated Instead use searchProjectsByProjectDescWithPagination
+     */
+    @Deprecated
+    @Override
     public List<Project> searchProjectsByProjectDesc(String gatewayId, String userName, String description) throws InvalidRequestException,
                                                                                                  AiravataClientException,
                                                                                                  AiravataSystemException,
                                                                                                  TException {
+        return searchProjectsByProjectDescWithPagination(gatewayId, userName, description, -1, -1);
+    }
+
+    /**
+     * Search and get all Projects for user by project description with pagination. Results
+     * will be ordered based on creation time DESC
+     *
+     * @param gatewayId
+     *    The identifier for the requested gateway.
+     * @param userName
+     *    The identifier of the user
+     * @param description
+     *    The description to be matched
+     * @param limit
+     *    The amount results to be fetched
+     * @param offset
+     *    The starting point of the results to be fetched
+     */
+    @Override
+    public List<Project> searchProjectsByProjectDescWithPagination(String gatewayId, String userName, String description, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -459,7 +525,8 @@ public class AiravataServerHandler implements Airavata.Iface {
             filters.put(Constants.FieldConstants.ProjectConstants.OWNER, userName);
             filters.put(Constants.FieldConstants.ProjectConstants.GATEWAY_ID, gatewayId);
             filters.put(Constants.FieldConstants.ProjectConstants.DESCRIPTION, description);
-            List<Object> results = registry.search(RegistryModelType.PROJECT, filters);
+            List<Object> results = registry.search(RegistryModelType.PROJECT, filters, limit, offset,
+                    Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
             for (Object object : results) {
                 projects.add((Project)object);
             }
@@ -473,10 +540,45 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    /**
+     * Search Experiments by experiment name
+     *
+     * @param gatewayId
+     *       Identifier of the requested gateway
+     * @param userName
+     *       Username of the requested user
+     * @param expName
+     *       Experiment name to be matched
+     * @deprecated
+     *       Instead use searchExperimentsByNameWithPagination
+     *
+     */
+    @Deprecated
+    @Override
     public List<ExperimentSummary> searchExperimentsByName(String gatewayId, String userName, String expName) throws InvalidRequestException,
                                                                                                    AiravataClientException,
                                                                                                    AiravataSystemException,
                                                                                                    TException {
+        return searchExperimentsByNameWithPagination(gatewayId, userName, expName, -1, -1);
+    }
+
+    /**
+     * Search Experiments by experiment name with pagination. Results will be sorted
+     * based on creation time DESC
+     *
+     * @param gatewayId
+     *       Identifier of the requested gateway
+     * @param userName
+     *       Username of the requested user
+     * @param expName
+     *       Experiment name to be matched
+     * @param limit
+     *       Amount of results to be fetched
+     * @param offset
+     *       The starting point of the results to be fetched
+     */
+    @Override
+    public List<ExperimentSummary> searchExperimentsByNameWithPagination(String gatewayId, String userName, String expName, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -502,7 +604,8 @@ public class AiravataServerHandler implements Airavata.Iface {
             filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
             filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);
             filters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME, expName);
-            List<Object> results = registry.search(RegistryModelType.EXPERIMENT, filters);
+            List<Object> results = registry.search(RegistryModelType.EXPERIMENT, filters, limit,
+                    offset, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             for (Object object : results) {
                 summaries.add((ExperimentSummary) object);
             }
@@ -516,10 +619,44 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    /**
+     * Search Experiments by experiment name
+     *
+     * @param gatewayId
+     *       Identifier of the requested gateway
+     * @param userName
+     *       Username of the requested user
+     * @param description
+     *       Experiment description to be matched
+     * @deprecated
+     *       Instead use searchExperimentsByDescWithPagination
+     */
+    @Deprecated
+    @Override
     public List<ExperimentSummary> searchExperimentsByDesc(String gatewayId, String userName, String description) throws InvalidRequestException,
                                                                                                        AiravataClientException,
                                                                                                        AiravataSystemException,
                                                                                                        TException {
+        return searchExperimentsByDescWithPagination(gatewayId, userName, description, -1, -1);
+    }
+
+    /**
+     * Search Experiments by experiment name with pagination. Results will be sorted
+     * based on creation time DESC
+     *
+     * @param gatewayId
+     *       Identifier of the requested gateway
+     * @param userName
+     *       Username of the requested user
+     * @param description
+     *       Experiment description to be matched
+     * @param limit
+     *       Amount of results to be fetched
+     * @param offset
+     *       The starting point of the results to be fetched
+     */
+    @Override
+    public List<ExperimentSummary> searchExperimentsByDescWithPagination(String gatewayId, String userName, String description, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -545,7 +682,8 @@ public class AiravataServerHandler implements Airavata.Iface {
             filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
             filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);
             filters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_DESC, description);
-            List<Object> results = registry.search(RegistryModelType.EXPERIMENT, filters);
+            List<Object> results = registry.search(RegistryModelType.EXPERIMENT, filters, limit,
+                    offset, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             for (Object object : results) {
                 summaries.add((ExperimentSummary) object);
             }
@@ -559,7 +697,41 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    /**
+     * Search Experiments by application id
+     *
+     * @param gatewayId
+     *       Identifier of the requested gateway
+     * @param userName
+     *       Username of the requested user
+     * @param applicationId
+     *       Application id to be matched
+     * @deprecated
+     *       Instead use searchExperimentsByApplication
+     */
+    @Deprecated
+    @Override
     public List<ExperimentSummary> searchExperimentsByApplication(String gatewayId, String userName, String applicationId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return searchExperimentsByApplicationWithPagination(gatewayId, userName, applicationId, -1, -1);
+    }
+
+    /**
+     * Search Experiments by application id with pagination. Results will be sorted
+     * based on creation time DESC
+     *
+     * @param gatewayId
+     *       Identifier of the requested gateway
+     * @param userName
+     *       Username of the requested user
+     * @param applicationId
+     *       Application id to be matched
+     * @param limit
+     *       Amount of results to be fetched
+     * @param offset
+     *       The starting point of the results to be fetched
+     */
+    @Override
+    public List<ExperimentSummary> searchExperimentsByApplicationWithPagination(String gatewayId, String userName, String applicationId, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -585,7 +757,8 @@ public class AiravataServerHandler implements Airavata.Iface {
             filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
             filters.put(Constants.FieldConstants.ExperimentConstants.APPLICATION_ID, applicationId);
             filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);
-            List<Object> results = registry.search(RegistryModelType.EXPERIMENT, filters);
+            List<Object> results = registry.search(RegistryModelType.EXPERIMENT, filters, limit,
+                    offset, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             for (Object object : results) {
                 summaries.add((ExperimentSummary) object);
             }
@@ -599,8 +772,41 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    /**
+     * Search Experiments by experiment status
+     *
+     * @param gatewayId
+     *       Identifier of the requested gateway
+     * @param userName
+     *       Username of the requested user
+     * @param experimentState
+     *       Experiment state to be matched
+     * @deprecated
+     *       Instead use searchExperimentsByStatusWithPagination
+     */
+    @Deprecated
     @Override
     public List<ExperimentSummary> searchExperimentsByStatus(String gatewayId, String userName, ExperimentState experimentState) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return searchExperimentsByStatusWithPagination(gatewayId, userName, experimentState, -1, -1);
+    }
+
+    /**
+     * Search Experiments by experiment status with pagination. Results will be sorted
+     * based on creation time DESC
+     *
+     * @param gatewayId
+     *       Identifier of the requested gateway
+     * @param userName
+     *       Username of the requested user
+     * @param experimentState
+     *       Experiement state to be matched
+     * @param limit
+     *       Amount of results to be fetched
+     * @param offset
+     *       The starting point of the results to be fetched
+     */
+    @Override
+    public List<ExperimentSummary> searchExperimentsByStatusWithPagination(String gatewayId, String userName, ExperimentState experimentState, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -626,7 +832,8 @@ public class AiravataServerHandler implements Airavata.Iface {
             filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
             filters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_STATUS, experimentState.toString());
             filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);
-            List<Object> results = registry.search(RegistryModelType.EXPERIMENT, filters);
+            List<Object> results = registry.search(RegistryModelType.EXPERIMENT, filters, limit,
+                    offset, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             for (Object object : results) {
                 summaries.add((ExperimentSummary) object);
             }
@@ -640,8 +847,45 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
+    /**
+     * Search Experiments by experiment creation time
+     *
+     * @param gatewayId
+     *       Identifier of the requested gateway
+     * @param userName
+     *       Username of the requested user
+     * @param fromTime
+     *       Start time of the experiments creation time
+     * @param toTime
+     *       End time of the  experiement creation time
+     * @deprecated
+     *       Instead use searchExperimentsByCreationTime
+     */
+    @Deprecated
     @Override
     public List<ExperimentSummary> searchExperimentsByCreationTime(String gatewayId, String userName, long fromTime, long toTime) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return searchExperimentsByCreationTimeWithPagination(gatewayId, userName, fromTime, toTime, -1, -1);
+    }
+
+    /**
+     * Search Experiments by experiment creation time with pagination. Results will be sorted
+     * based on creation time DESC
+     *
+     * @param gatewayId
+     *       Identifier of the requested gateway
+     * @param userName
+     *       Username of the requested user
+     * @param fromTime
+     *       Start time of the experiments creation time
+     * @param toTime
+     *       End time of the  experiement creation time
+     * @param limit
+     *       Amount of results to be fetched
+     * @param offset
+     *       The starting point of the results to be fetched
+     */
+    @Override
+    public List<ExperimentSummary> searchExperimentsByCreationTimeWithPagination(String gatewayId, String userName, long fromTime, long toTime, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -668,7 +912,8 @@ public class AiravataServerHandler implements Airavata.Iface {
             filters.put(Constants.FieldConstants.ExperimentConstants.FROM_DATE, String.valueOf(fromTime));
             filters.put(Constants.FieldConstants.ExperimentConstants.TO_DATE, String.valueOf(toTime));
             filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);
-            List<Object> results = registry.search(RegistryModelType.EXPERIMENT, filters);
+            List<Object> results = registry.search(RegistryModelType.EXPERIMENT, filters, limit,
+                    offset, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             for (Object object : results) {
                 summaries.add((ExperimentSummary) object);
             }
@@ -686,13 +931,34 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Get all Experiments within a Project
      *
      * @param projectId
+     *       Identifier of the project
+     * @deprecated
+     *       Instead use getAllExperimentsInProjectWithPagination
      */
+    @Deprecated
     @Override
     public List<Experiment> getAllExperimentsInProject(String projectId) throws InvalidRequestException,
                                                                                 AiravataClientException,
                                                                                 AiravataSystemException,
                                                                                 ProjectNotFoundException,
                                                                                 TException {
+        return getAllExperimentsInProjectWithPagination(projectId, -1, -1);
+    }
+
+    /**
+     * Get all Experiments within project with pagination. Results will be sorted
+     * based on creation time DESC
+     *
+     * @param projectId
+     *       Identifier of the project
+     * @param limit
+     *       Amount of results to be fetched
+     * @param offset
+     *       The starting point of the results to be fetched
+     */
+    @Override
+    public List<Experiment> getAllExperimentsInProjectWithPagination(String projectId, int limit, int offset)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, ProjectNotFoundException, TException {
         if (!validateString(projectId)){
             logger.error("Project id cannot be empty. Please provide a valid project ID...");
             AiravataSystemException exception = new AiravataSystemException();
@@ -709,7 +975,9 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw exception;
             }
             List<Experiment> experiments = new ArrayList<Experiment>();
-            List<Object> list = registry.get(RegistryModelType.EXPERIMENT, Constants.FieldConstants.ExperimentConstants.PROJECT_ID, projectId);
+            List<Object> list = registry.get(RegistryModelType.EXPERIMENT,
+                    Constants.FieldConstants.ExperimentConstants.PROJECT_ID, projectId, limit, offset,
+                    Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             if (list != null && !list.isEmpty()) {
                 for (Object o : list) {
                     experiments.add((Experiment) o);
@@ -728,10 +996,34 @@ public class AiravataServerHandler implements Airavata.Iface {
     /**
      * Get all Experiments by user
      *
+     * @param gatewayId
+     *       Identifier of the requesting gateway
      * @param userName
+     *       Username of the requested user
+     * @deprecated
+     *       Instead use getAllUserExperimentsWithPagination
      */
+    @Deprecated
     @Override
     public List<Experiment> getAllUserExperiments(String gatewayId, String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        return getAllUserExperimentsWithPagination(gatewayId, userName, -1, -1);
+    }
+
+    /**
+     * Get all Experiments by user pagination. Results will be sorted
+     * based on creation time DESC
+     *
+     * @param gatewayId
+     *       Identifier of the requesting gateway
+     * @param userName
+     *       Username of the requested user
+     * @param limit
+     *       Amount of results to be fetched
+     * @param offset
+     *       The starting point of the results to be fetched
+     */
+    @Override
+    public List<Experiment> getAllUserExperimentsWithPagination(String gatewayId, String userName, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -753,10 +1045,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
             List<Experiment> experiments = new ArrayList<Experiment>();
             registry = RegistryFactory.getRegistry(gatewayId);
-            Map<String, String> filters = new HashMap<String, String>();
-            filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
-            filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);
-            List<Object> list = registry.search(RegistryModelType.EXPERIMENT, filters);
+            List<Object> list = registry.get(RegistryModelType.EXPERIMENT,
+                    Constants.FieldConstants.ExperimentConstants.USER_NAME, userName, limit, offset,
+                    Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             if (list != null && !list.isEmpty()){
                 for (Object o : list){
                     experiments.add((Experiment)o);

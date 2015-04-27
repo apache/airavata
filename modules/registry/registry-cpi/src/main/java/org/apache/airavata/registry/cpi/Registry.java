@@ -103,6 +103,23 @@ public interface Registry {
     public List<Object> get(RegistryModelType dataType, String fieldName, Object value) throws RegistryException;
 
     /**
+     * This method is to retrieve list of objects according to a given criteria with pagination and ordering
+     *
+     * @param dataType  Data type is a predefined type which the programmer should choose according to the object he
+     *                  is going to save in to registry
+     * @param fieldName FieldName is the field that filtering should be done. For example, if we want to retrieve all
+     *                  the experiments for a given user, filterBy will be "userName"
+     * @param value     value for the filtering field. In the experiment case, value for "userName" can be "admin"
+     * @param limit     Size of the results to be returned
+     * @param offset    Start position of the results to be retrieved
+     * @param orderByIdentifier     Named of the column in which the ordering is based
+     * @param resultOrderType       Type of ordering i.e ASC or DESC
+     * @return
+     * @throws RegistryException
+     */
+    public List<Object> get(RegistryModelType dataType, String fieldName, Object value, int limit,
+                            int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException ;
+    /**
      * This method is to retrieve list of objects according to a given criteria
      * @param dataType Data type is a predefined type which the programmer should choose according to the object he
      *                 is going to save in to registry
@@ -123,7 +140,7 @@ public interface Registry {
      * @param resultOrderType    The type of ordering (i.e ASC or DESC) that has to be used when retrieving the results
      * @return List of objects according to the given criteria
      */
-    public List<Object> searchWithPagination(RegistryModelType dataType, Map<String, String> filters,
+    public List<Object> search(RegistryModelType dataType, Map<String, String> filters,
                                              int limit, int offset, Object orderByIdentifier,
                                              ResultOrderType resultOrderType) throws RegistryException;
 

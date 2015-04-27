@@ -114,9 +114,19 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getAllUserProjects\n");
   }
 
+  void getAllUserProjectsWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset) {
+    // Your implementation goes here
+    printf("getAllUserProjectsWithPagination\n");
+  }
+
   void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& projectName) {
     // Your implementation goes here
     printf("searchProjectsByProjectName\n");
+  }
+
+  void searchProjectsByProjectNameWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset) {
+    // Your implementation goes here
+    printf("searchProjectsByProjectNameWithPagination\n");
   }
 
   void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description) {
@@ -124,9 +134,19 @@ class AiravataHandler : virtual public AiravataIf {
     printf("searchProjectsByProjectDesc\n");
   }
 
+  void searchProjectsByProjectDescWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) {
+    // Your implementation goes here
+    printf("searchProjectsByProjectDescWithPagination\n");
+  }
+
   void searchExperimentsByName(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& expName) {
     // Your implementation goes here
     printf("searchExperimentsByName\n");
+  }
+
+  void searchExperimentsByNameWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset) {
+    // Your implementation goes here
+    printf("searchExperimentsByNameWithPagination\n");
   }
 
   void searchExperimentsByDesc(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description) {
@@ -134,9 +154,19 @@ class AiravataHandler : virtual public AiravataIf {
     printf("searchExperimentsByDesc\n");
   }
 
+  void searchExperimentsByDescWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) {
+    // Your implementation goes here
+    printf("searchExperimentsByDescWithPagination\n");
+  }
+
   void searchExperimentsByApplication(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& applicationId) {
     // Your implementation goes here
     printf("searchExperimentsByApplication\n");
+  }
+
+  void searchExperimentsByApplicationWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset) {
+    // Your implementation goes here
+    printf("searchExperimentsByApplicationWithPagination\n");
   }
 
   void searchExperimentsByStatus(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState) {
@@ -144,9 +174,19 @@ class AiravataHandler : virtual public AiravataIf {
     printf("searchExperimentsByStatus\n");
   }
 
+  void searchExperimentsByStatusWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState, const int32_t limit, const int32_t offset) {
+    // Your implementation goes here
+    printf("searchExperimentsByStatusWithPagination\n");
+  }
+
   void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime) {
     // Your implementation goes here
     printf("searchExperimentsByCreationTime\n");
+  }
+
+  void searchExperimentsByCreationTimeWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset) {
+    // Your implementation goes here
+    printf("searchExperimentsByCreationTimeWithPagination\n");
   }
 
   void getAllExperimentsInProject(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& projectId) {
@@ -154,9 +194,19 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getAllExperimentsInProject\n");
   }
 
+  void getAllExperimentsInProjectWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& projectId, const int32_t limit, const int32_t offset) {
+    // Your implementation goes here
+    printf("getAllExperimentsInProjectWithPagination\n");
+  }
+
   void getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& gatewayId, const std::string& userName) {
     // Your implementation goes here
     printf("getAllUserExperiments\n");
+  }
+
+  void getAllUserExperimentsWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset) {
+    // Your implementation goes here
+    printf("getAllUserExperimentsWithPagination\n");
   }
 
   void createExperiment(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment) {
