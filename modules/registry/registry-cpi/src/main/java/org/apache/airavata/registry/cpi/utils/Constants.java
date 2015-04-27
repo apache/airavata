@@ -29,6 +29,7 @@ public class Constants {
             public static final String OWNER = "owner";
             public static final String PROJECT_NAME = "name";
             public static final String DESCRIPTION = "description";
+            public static final String CREATION_TIME = "creationTime";
         }
 
         public final class ExperimentConstants {

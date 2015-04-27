@@ -38,15 +38,25 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print '  Project getProject(string projectId)'
   print '  bool deleteProject(string projectId)'
   print '   getAllUserProjects(string gatewayId, string userName)'
+  print '   getAllUserProjectsWithPagination(string gatewayId, string userName, i32 limit, i32 offset)'
   print '   searchProjectsByProjectName(string gatewayId, string userName, string projectName)'
+  print '   searchProjectsByProjectNameWithPagination(string gatewayId, string userName, string projectName, i32 limit, i32 offset)'
   print '   searchProjectsByProjectDesc(string gatewayId, string userName, string description)'
+  print '   searchProjectsByProjectDescWithPagination(string gatewayId, string userName, string description, i32 limit, i32 offset)'
   print '   searchExperimentsByName(string gatewayId, string userName, string expName)'
+  print '   searchExperimentsByNameWithPagination(string gatewayId, string userName, string expName, i32 limit, i32 offset)'
   print '   searchExperimentsByDesc(string gatewayId, string userName, string description)'
+  print '   searchExperimentsByDescWithPagination(string gatewayId, string userName, string description, i32 limit, i32 offset)'
   print '   searchExperimentsByApplication(string gatewayId, string userName, string applicationId)'
+  print '   searchExperimentsByApplicationWithPagination(string gatewayId, string userName, string applicationId, i32 limit, i32 offset)'
   print '   searchExperimentsByStatus(string gatewayId, string userName, ExperimentState experimentState)'
+  print '   searchExperimentsByStatusWithPagination(string gatewayId, string userName, ExperimentState experimentState, i32 limit, i32 offset)'
   print '   searchExperimentsByCreationTime(string gatewayId, string userName, i64 fromTime, i64 toTime)'
+  print '   searchExperimentsByCreationTimeWithPagination(string gatewayId, string userName, i64 fromTime, i64 toTime, i32 limit, i32 offset)'
   print '   getAllExperimentsInProject(string projectId)'
+  print '   getAllExperimentsInProjectWithPagination(string projectId, i32 limit, i32 offset)'
   print '   getAllUserExperiments(string gatewayId, string userName)'
+  print '   getAllUserExperimentsWithPagination(string gatewayId, string userName, i32 limit, i32 offset)'
   print '  string createExperiment(string gatewayId, Experiment experiment)'
   print '  Experiment getExperiment(string airavataExperimentId)'
   print '  void updateExperiment(string airavataExperimentId, Experiment experiment)'
@@ -280,11 +290,23 @@ elif cmd == 'getAllUserProjects':
     sys.exit(1)
   pp.pprint(client.getAllUserProjects(args[0],args[1],))
 
+elif cmd == 'getAllUserProjectsWithPagination':
+  if len(args) != 4:
+    print 'getAllUserProjectsWithPagination requires 4 args'
+    sys.exit(1)
+  pp.pprint(client.getAllUserProjectsWithPagination(args[0],args[1],eval(args[2]),eval(args[3]),))
+
 elif cmd == 'searchProjectsByProjectName':
   if len(args) != 3:
     print 'searchProjectsByProjectName requires 3 args'
     sys.exit(1)
   pp.pprint(client.searchProjectsByProjectName(args[0],args[1],args[2],))
+
+elif cmd == 'searchProjectsByProjectNameWithPagination':
+  if len(args) != 5:
+    print 'searchProjectsByProjectNameWithPagination requires 5 args'
+    sys.exit(1)
+  pp.pprint(client.searchProjectsByProjectNameWithPagination(args[0],args[1],args[2],eval(args[3]),eval(args[4]),))
 
 elif cmd == 'searchProjectsByProjectDesc':
   if len(args) != 3:
@@ -292,11 +314,23 @@ elif cmd == 'searchProjectsByProjectDesc':
     sys.exit(1)
   pp.pprint(client.searchProjectsByProjectDesc(args[0],args[1],args[2],))
 
+elif cmd == 'searchProjectsByProjectDescWithPagination':
+  if len(args) != 5:
+    print 'searchProjectsByProjectDescWithPagination requires 5 args'
+    sys.exit(1)
+  pp.pprint(client.searchProjectsByProjectDescWithPagination(args[0],args[1],args[2],eval(args[3]),eval(args[4]),))
+
 elif cmd == 'searchExperimentsByName':
   if len(args) != 3:
     print 'searchExperimentsByName requires 3 args'
     sys.exit(1)
   pp.pprint(client.searchExperimentsByName(args[0],args[1],args[2],))
+
+elif cmd == 'searchExperimentsByNameWithPagination':
+  if len(args) != 5:
+    print 'searchExperimentsByNameWithPagination requires 5 args'
+    sys.exit(1)
+  pp.pprint(client.searchExperimentsByNameWithPagination(args[0],args[1],args[2],eval(args[3]),eval(args[4]),))
 
 elif cmd == 'searchExperimentsByDesc':
   if len(args) != 3:
@@ -304,11 +338,23 @@ elif cmd == 'searchExperimentsByDesc':
     sys.exit(1)
   pp.pprint(client.searchExperimentsByDesc(args[0],args[1],args[2],))
 
+elif cmd == 'searchExperimentsByDescWithPagination':
+  if len(args) != 5:
+    print 'searchExperimentsByDescWithPagination requires 5 args'
+    sys.exit(1)
+  pp.pprint(client.searchExperimentsByDescWithPagination(args[0],args[1],args[2],eval(args[3]),eval(args[4]),))
+
 elif cmd == 'searchExperimentsByApplication':
   if len(args) != 3:
     print 'searchExperimentsByApplication requires 3 args'
     sys.exit(1)
   pp.pprint(client.searchExperimentsByApplication(args[0],args[1],args[2],))
+
+elif cmd == 'searchExperimentsByApplicationWithPagination':
+  if len(args) != 5:
+    print 'searchExperimentsByApplicationWithPagination requires 5 args'
+    sys.exit(1)
+  pp.pprint(client.searchExperimentsByApplicationWithPagination(args[0],args[1],args[2],eval(args[3]),eval(args[4]),))
 
 elif cmd == 'searchExperimentsByStatus':
   if len(args) != 3:
@@ -316,11 +362,23 @@ elif cmd == 'searchExperimentsByStatus':
     sys.exit(1)
   pp.pprint(client.searchExperimentsByStatus(args[0],args[1],eval(args[2]),))
 
+elif cmd == 'searchExperimentsByStatusWithPagination':
+  if len(args) != 5:
+    print 'searchExperimentsByStatusWithPagination requires 5 args'
+    sys.exit(1)
+  pp.pprint(client.searchExperimentsByStatusWithPagination(args[0],args[1],eval(args[2]),eval(args[3]),eval(args[4]),))
+
 elif cmd == 'searchExperimentsByCreationTime':
   if len(args) != 4:
     print 'searchExperimentsByCreationTime requires 4 args'
     sys.exit(1)
   pp.pprint(client.searchExperimentsByCreationTime(args[0],args[1],eval(args[2]),eval(args[3]),))
+
+elif cmd == 'searchExperimentsByCreationTimeWithPagination':
+  if len(args) != 6:
+    print 'searchExperimentsByCreationTimeWithPagination requires 6 args'
+    sys.exit(1)
+  pp.pprint(client.searchExperimentsByCreationTimeWithPagination(args[0],args[1],eval(args[2]),eval(args[3]),eval(args[4]),eval(args[5]),))
 
 elif cmd == 'getAllExperimentsInProject':
   if len(args) != 1:
@@ -328,11 +386,23 @@ elif cmd == 'getAllExperimentsInProject':
     sys.exit(1)
   pp.pprint(client.getAllExperimentsInProject(args[0],))
 
+elif cmd == 'getAllExperimentsInProjectWithPagination':
+  if len(args) != 3:
+    print 'getAllExperimentsInProjectWithPagination requires 3 args'
+    sys.exit(1)
+  pp.pprint(client.getAllExperimentsInProjectWithPagination(args[0],eval(args[1]),eval(args[2]),))
+
 elif cmd == 'getAllUserExperiments':
   if len(args) != 2:
     print 'getAllUserExperiments requires 2 args'
     sys.exit(1)
   pp.pprint(client.getAllUserExperiments(args[0],args[1],))
+
+elif cmd == 'getAllUserExperimentsWithPagination':
+  if len(args) != 4:
+    print 'getAllUserExperimentsWithPagination requires 4 args'
+    sys.exit(1)
+  pp.pprint(client.getAllUserExperimentsWithPagination(args[0],args[1],eval(args[2]),eval(args[3]),))
 
 elif cmd == 'createExperiment':
   if len(args) != 2:

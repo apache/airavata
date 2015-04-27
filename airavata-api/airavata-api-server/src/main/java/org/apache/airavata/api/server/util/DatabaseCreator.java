@@ -23,7 +23,10 @@ package org.apache.airavata.api.server.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.*;
 import java.util.StringTokenizer;
 
@@ -33,6 +36,7 @@ import java.util.StringTokenizer;
  * properties files.
  */
 public class DatabaseCreator {
+    private final static Logger logger = LoggerFactory.getLogger(DatabaseCreator.class);
 
     public enum DatabaseType {
         derby("(?i).*derby.*"), mysql("(?i).*mysql.*"), other("");
@@ -257,6 +261,15 @@ public class DatabaseCreator {
 
         try {
             InputStream is = DatabaseCreator.class.getClassLoader().getResourceAsStream(dbscriptName);
+            if(is == null) {
+                logger.info("Script file not found at " + dbscriptName + ". Uses default database script file");
+                DatabaseType databaseType = DatabaseCreator.getDatabaseType(conn);
+                if(databaseType.equals(DatabaseType.derby)){
+                    is = DatabaseCreator.class.getClassLoader().getResourceAsStream("registry-derby.sql");
+                }else if(databaseType.equals(DatabaseType.derby)){
+                    is = DatabaseCreator.class.getClassLoader().getResourceAsStream("registry-mysql.sql");
+                }
+            }
             reader = new BufferedReader(new InputStreamReader(is));
             String line;
             while ((line = reader.readLine()) != null) {
