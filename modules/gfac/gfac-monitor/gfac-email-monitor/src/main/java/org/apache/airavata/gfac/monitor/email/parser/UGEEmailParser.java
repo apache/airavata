@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,6 +40,8 @@ public class UGEEmailParser implements EmailParser{
     public static final String STARTED = "Started";
     public static final String COMPLETE = "Complete";
     public static final String FAILED = "Failed";
+    private static final String REGEX_EXIT_STATUS = "Exit Status[ ]*=[ ]*(?<" + EXIT_STATUS + ">[\\d]+)";
+
 
     @Override
     public JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException {
@@ -47,27 +50,50 @@ public class UGEEmailParser implements EmailParser{
         String subject = message.getSubject();
         Pattern pattern = Pattern.compile(REGEX);
         Matcher matcher = pattern.matcher(subject);
-        if (matcher.find()) {
-            jobStatusResult.setJobId(matcher.group(JOBID));
-            jobStatusResult.setJobName(matcher.group(JOBNAME));
-            jobStatusResult.setState(getJobState(matcher.group(STATUS)));
-        } else {
-            log.error("[EJM]: No matched found for subject => \n" + subject);
+        try {
+            if (matcher.find()) {
+                jobStatusResult.setJobId(matcher.group(JOBID));
+                jobStatusResult.setJobName(matcher.group(JOBNAME));
+                String content = (String) message.getContent();
+                jobStatusResult.setState(getJobState(matcher.group(STATUS), content));
+            } else {
+                log.error("[EJM]: No matched found for subject => \n" + subject);
+            }
+        } catch (IOException e) {
+            throw new AiravataException("[EJM]: Error while reading content of the email message");
         }
         return jobStatusResult;
     }
 
-    private JobState getJobState(String status) {
+    private JobState getJobState(String status, String content) {
         switch (status) {
             case STARTED:
                 return JobState.ACTIVE;
             case COMPLETE:
-                return JobState.COMPLETE;
+                int exitStatus = getExitStatus(content);
+                if (exitStatus == 0) {
+                    return JobState.COMPLETE;
+                } else {
+                    log.info("[EJM]: Job returns with Exit Status = " + exitStatus + "  , Marked as Failed");
+                    return JobState.FAILED;
+                }
             case FAILED:
                 return JobState.FAILED;
             default:
                 return JobState.UNKNOWN;
 
         }
+    }
+
+    private int getExitStatus(String content) {
+        Pattern statusPattern = Pattern.compile(REGEX_EXIT_STATUS);
+        Matcher statusMatcher = statusPattern.matcher(content);
+        if (statusMatcher.find()) {
+            String group = statusMatcher.group(EXIT_STATUS);
+            if (group != null && !group.trim().isEmpty()) {
+                return Integer.valueOf(group.trim());
+            }
+        }
+        return -1;
     }
 }
