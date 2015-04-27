@@ -29,4 +29,5 @@ public class JPAConstants {
 	public static final String KEY_DERBY_START_ENABLE = "start.derby.server.mode";
     public static final String VALIDATION_QUERY = "validationQuery";
     public static final String JPA_CACHE_SIZE = "jpa.cache.size";
+    public static final String ENABLE_CACHING = "cache.enable";
 }
