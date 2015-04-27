@@ -164,7 +164,30 @@ public class ProjectRegistry {
         return null;
     }
 
+    /**
+     * Get list of projects of the user
+     * @param fieldName
+     * @param value
+     * @return
+     * @throws RegistryException
+     */
     public List<Project> getProjectList (String fieldName, Object value) throws RegistryException{
+        return getProjectList(fieldName, value, -1, -1, null, null);
+    }
+
+    /**
+     * Get projects list with pagination and result ordering
+     * @param fieldName
+     * @param value
+     * @param limit
+     * @param offset
+     * @param orderByIdentifier
+     * @param resultOrderType
+     * @return
+     * @throws RegistryException
+     */
+    public List<Project> getProjectList (String fieldName, Object value, int limit, int offset,
+                                         Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException{
         List<Project> projects = new ArrayList<Project>();
         try {
             if (fieldName.equals(Constants.FieldConstants.ProjectConstants.OWNER)){
@@ -179,7 +202,7 @@ public class ProjectRegistry {
             }
         }catch (Exception e){
             logger.error("Error while retrieving project from registry", e);
-           throw new RegistryException(e);
+            throw new RegistryException(e);
         }
         return projects;
     }
@@ -192,7 +215,7 @@ public class ProjectRegistry {
      * @throws RegistryException
      */
     public List<Project> searchProjects (Map<String, String> filters) throws RegistryException{
-        return searchProjectsWithPagination(filters, -1, -1, null, null);
+        return searchProjects(filters, -1, -1, null, null);
     }
 
     /**
@@ -208,8 +231,8 @@ public class ProjectRegistry {
      * @return
      * @throws RegistryException
      */
-    public List<Project> searchProjectsWithPagination(Map<String, String> filters, int limit,
-        int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
+    public List<Project> searchProjects(Map<String, String> filters, int limit,
+            int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
         Map<String, String> fil = new HashMap<String, String>();
         if (filters != null && filters.size() != 0){
             List<Project> projects = new ArrayList<Project>();
@@ -226,7 +249,7 @@ public class ProjectRegistry {
                     }
                 }
                 List<ProjectResource> projectResources = workerResource
-                        .searchProjectsWithPagination(fil, limit, offset, orderByIdentifier, resultOrderType);
+                        .searchProjects(fil, limit, offset, orderByIdentifier, resultOrderType);
                 if (projectResources != null && !projectResources.isEmpty()){
                     for (ProjectResource pr : projectResources){
                         projects.add(ThriftDataModelConversion.getProject(pr));

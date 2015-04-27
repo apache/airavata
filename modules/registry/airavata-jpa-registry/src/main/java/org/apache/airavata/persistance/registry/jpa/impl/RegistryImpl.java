@@ -454,6 +454,51 @@ public class RegistryImpl implements Registry {
     }
 
     /**
+     * This method is to retrieve list of objects according to a given criteria with pagination and ordering
+     *
+     * @param dataType  Data type is a predefined type which the programmer should choose according to the object he
+     *                  is going to save in to registry
+     * @param fieldName FieldName is the field that filtering should be done. For example, if we want to retrieve all
+     *                  the experiments for a given user, filterBy will be "userName"
+     * @param value     value for the filtering field. In the experiment case, value for "userName" can be "admin"
+     * @param limit     Size of the results to be returned
+     * @param offset    Start position of the results to be retrieved
+     * @param orderByIdentifier     Named of the column in which the ordering is based
+     * @param resultOrderType       Type of ordering i.e ASC or DESC
+     * @return
+     * @throws RegistryException
+     */
+    @Override
+    public List<Object> get(RegistryModelType dataType, String fieldName, Object value, int limit,
+                            int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
+        try {
+            List<Object> result = new ArrayList<Object>();
+            switch (dataType) {
+                case PROJECT:
+                    List<Project> projectList = projectRegistry
+                            .getProjectList(fieldName, value, limit, offset, orderByIdentifier, resultOrderType);
+                    for (Project project : projectList ){
+                        result.add(project);
+                    }
+                    return result;
+                case EXPERIMENT:
+                    List<Experiment> experimentList = experimentRegistry.getExperimentList(fieldName, value,
+                            limit, offset, orderByIdentifier, resultOrderType);
+                    for (Experiment experiment : experimentList) {
+                        result.add(experiment);
+                    }
+                    return result;
+                default:
+                    logger.error("Unsupported data type...", new UnsupportedOperationException());
+                    throw new UnsupportedOperationException();
+            }
+        } catch (Exception e) {
+            logger.error("Error while retrieving the resource " + dataType.toString(), new RegistryException(e));
+            throw new RegistryException("Error while retrieving the resource " + dataType.toString(), e);
+        }
+    }
+
+    /**
      * This method is to retrieve list of objects according to a given criteria
      * @param dataType Data type is a predefined type which the programmer should choose according to the object he
      *                 is going to save in to registry
@@ -462,7 +507,7 @@ public class RegistryImpl implements Registry {
      */
     @Override
     public List<Object> search(RegistryModelType dataType, Map<String, String> filters) throws RegistryException {
-        return searchWithPagination(dataType, filters, -1, -1, null, null);
+        return search(dataType, filters, -1, -1, null, null);
     }
 
     /**
@@ -478,23 +523,23 @@ public class RegistryImpl implements Registry {
      * @return List of objects according to the given criteria
      */
     @Override
-    public List<Object> searchWithPagination(RegistryModelType dataType, Map<String, String> filters, int limit,
+    public List<Object> search(RegistryModelType dataType, Map<String, String> filters, int limit,
         int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
         try {
             List<Object> result = new ArrayList<Object>();
             switch (dataType) {
                 case PROJECT:
                     List<Project> projectList
-                            = projectRegistry.searchProjectsWithPagination(filters, limit, offset,
-                            orderByIdentifier, resultOrderType );
+                            = projectRegistry.searchProjects(filters, limit, offset,
+                            orderByIdentifier, resultOrderType);
                     for (Project project : projectList ){
                         result.add(project);
                     }
                     return result;
                 case EXPERIMENT:
                     List<ExperimentSummary> experimentSummaries = experimentRegistry
-                            .searchExperimentsWithPagination(filters, limit, offset, orderByIdentifier,
-                                    resultOrderType );
+                            .searchExperiments(filters, limit, offset, orderByIdentifier,
+                                    resultOrderType);
                     for (ExperimentSummary ex : experimentSummaries){
                         result.add(ex);
                     }

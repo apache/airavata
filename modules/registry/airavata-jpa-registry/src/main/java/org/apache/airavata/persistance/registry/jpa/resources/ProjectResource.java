@@ -20,21 +20,22 @@
 */
 package org.apache.airavata.persistance.registry.jpa.resources;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.cpi.ResultOrderType;
+import org.apache.airavata.registry.cpi.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProjectResource extends AbstractResource {
     private final static Logger logger = LoggerFactory.getLogger(ProjectResource.class);
@@ -182,6 +183,7 @@ public class ProjectResource extends AbstractResource {
      * @param type child resource type
      * @return list of child resources
      */
+    @Override
     public List<Resource> get(ResourceType type) throws RegistryException{
         List<Resource> resourceList = new ArrayList<Resource>();
         EntityManager em = null;
@@ -209,6 +211,99 @@ public class ProjectResource extends AbstractResource {
                 QueryGenerator generator = new QueryGenerator(PROJECT_USER);
                 generator.setParameter(ProjectUserConstants.PROJECT_ID, id);
                 Query q = generator.selectQuery(em);
+                List<?> results = q.getResultList();
+                if (results.size() != 0) {
+                    for (Object result : results) {
+                        ProjectUser projectUser = (ProjectUser) result;
+                        ProjectUserResource pr = (ProjectUserResource)
+                                Utils.getResource(ResourceType.PROJECT_USER, projectUser);
+                        resourceList.add(pr);
+                    }
+                }
+                em.getTransaction().commit();
+                em.close();
+            } else {
+                logger.error("Unsupported resource type for project resource.", new IllegalArgumentException());
+                throw new IllegalArgumentException("Unsupported resource type for project resource.");
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+        return resourceList;
+    }
+
+    /**
+     * Get results with pagination and ordering
+     *
+     * @param type
+     * @param limit
+     * @param offset
+     * @param orderByIdentifier
+     * @return
+     * @throws RegistryException
+     */
+    public List<Resource> get(ResourceType type, int limit, int offset, Object orderByIdentifier,
+                              ResultOrderType resultOrderType) throws RegistryException{
+        List<Resource> resourceList = new ArrayList<Resource>();
+        EntityManager em = null;
+        try {
+            if (type == ResourceType.EXPERIMENT) {
+                em = ResourceUtils.getEntityManager();
+                em.getTransaction().begin();
+                QueryGenerator generator = new QueryGenerator(EXPERIMENT);
+                generator.setParameter(ExperimentConstants.PROJECT_ID, id);
+                Query q;
+                //ordering - supported only by CREATION_TIME
+                if(orderByIdentifier != null && resultOrderType != null
+                        && orderByIdentifier.equals(Constants.FieldConstants.ExperimentConstants.CREATION_TIME)) {
+                    q = generator.selectQuery(em, ExperimentConstants.CREATION_TIME, resultOrderType);
+                }else{
+                    q = generator.selectQuery(em);
+                }
+
+                //pagination
+                if(limit>0 && offset>=0){
+                    q.setFirstResult(offset);
+                    q.setMaxResults(limit);
+                }
+                List<?> results = q.getResultList();
+                if (results.size() != 0) {
+                    for (Object result : results) {
+                        Experiment experiment = (Experiment) result;
+                        ExperimentResource experimentResource = (ExperimentResource)
+                                Utils.getResource(ResourceType.EXPERIMENT, experiment);
+                        resourceList.add(experimentResource);
+                    }
+                }
+                em.getTransaction().commit();
+                em.close();
+            } else if (type == ResourceType.PROJECT_USER) {
+                em = ResourceUtils.getEntityManager();
+                em.getTransaction().begin();
+                QueryGenerator generator = new QueryGenerator(PROJECT_USER);
+                generator.setParameter(ProjectUserConstants.PROJECT_ID, id);
+                Query q;
+                //ordering - only supported only by CREATION_TIME
+                if(orderByIdentifier != null && resultOrderType != null
+                        && orderByIdentifier.equals(Constants.FieldConstants.ProjectConstants.CREATION_TIME)) {
+                    q = generator.selectQuery(em, ProjectConstants.CREATION_TIME, resultOrderType);
+                }else{
+                    q = generator.selectQuery(em);
+                }
+
+                //pagination
+                if(limit>0 && offset>=0){
+                    q.setFirstResult(offset);
+                    q.setMaxResults(limit);
+                }
                 List<?> results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
@@ -403,6 +498,16 @@ public class ProjectResource extends AbstractResource {
 		}
 		return result;
 	}
+
+    public List<ExperimentResource> getExperiments(int limit, int offset, Object orderByIdentifier,
+                                                   ResultOrderType resultOrderType) throws RegistryException{
+        List<Resource> list = get(ResourceType.EXPERIMENT, limit, offset, orderByIdentifier, resultOrderType);
+        List<ExperimentResource> result=new ArrayList<ExperimentResource>();
+        for (Resource resource : list) {
+            result.add((ExperimentResource) resource);
+        }
+        return result;
+    }
 
     /**
      *

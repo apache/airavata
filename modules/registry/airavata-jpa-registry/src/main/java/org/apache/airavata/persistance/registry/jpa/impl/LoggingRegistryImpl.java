@@ -61,12 +61,17 @@ public class LoggingRegistryImpl implements Registry {
     }
 
     @Override
+    public List<Object> get(RegistryModelType dataType, String fieldName, Object value, int limit, int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
+        return null;
+    }
+
+    @Override
     public List<Object> search(RegistryModelType dataType, Map<String, String> filters) throws RegistryException {
         return null;
     }
 
     @Override
-    public List<Object> searchWithPagination(RegistryModelType dataType, Map<String, String> filters, int limit, int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
+    public List<Object> search(RegistryModelType dataType, Map<String, String> filters, int limit, int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
         return null;
     }
 

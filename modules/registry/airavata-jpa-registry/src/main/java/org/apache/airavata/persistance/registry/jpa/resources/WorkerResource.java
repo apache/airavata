@@ -21,12 +21,14 @@
 
 package org.apache.airavata.persistance.registry.jpa.resources;
 
+import org.apache.airavata.model.workspace.experiment.ExperimentState;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 import org.apache.airavata.registry.cpi.ResultOrderType;
+import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.airavata.registry.cpi.utils.StatusType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -220,11 +222,28 @@ public class WorkerResource extends AbstractResource {
 //	}
 
     /**
+     * Method get all results of the given child resource type
      *
      * @param type child resource type
      * @return list of child resources
      */
     public List<Resource> get(ResourceType type) throws RegistryException{
+        return get(type, -1, -1, null, null);
+    }
+
+    /**
+     * Method get all results of the given child resource type with paginaltion and ordering
+     *
+     * @param type child resource type
+     * @param limit
+     * @param offset
+     * @param orderByIdentifier
+     * @param resultOrderType
+     * @return list of child resources
+     * @throws RegistryException
+     */
+    public List<Resource> get(ResourceType type, int limit, int offset, Object orderByIdentifier,
+                              ResultOrderType resultOrderType) throws RegistryException{
         List<Resource> result = new ArrayList<Resource>();
         EntityManager em = null;
         try {
@@ -239,9 +258,21 @@ public class WorkerResource extends AbstractResource {
                     Gateway gatewayModel = em.find(Gateway.class, gateway.getGatewayId());
                     generator.setParameter("users", users);
                     generator.setParameter("gateway", gatewayModel);
-//                generator.setParameter(ProjectConstants.USERNAME, getUser());
-//                generator.setParameter(ProjectConstants.GATEWAY_NAME, gateway.getGatewayName());
-                    q = generator.selectQuery(em);
+
+                    //ordering - only supported only by CREATION_TIME
+                    if(orderByIdentifier != null && resultOrderType != null
+                            && orderByIdentifier.equals(Constants.FieldConstants.ProjectConstants.CREATION_TIME)) {
+                        q = generator.selectQuery(em, ProjectConstants.CREATION_TIME, resultOrderType);
+                    }else{
+                        q = generator.selectQuery(em);
+                    }
+
+                    //pagination
+                    if(limit>0 && offset>=0){
+                        q.setFirstResult(offset);
+                        q.setMaxResults(limit);
+                    }
+
                     for (Object o : q.getResultList()) {
                         Project project = (Project) o;
                         ProjectResource projectResource = (ProjectResource) Utils.getResource(ResourceType.PROJECT, project);
@@ -251,12 +282,26 @@ public class WorkerResource extends AbstractResource {
                 case EXPERIMENT:
                     generator = new QueryGenerator(EXPERIMENT);
                     generator.setParameter(ExperimentConstants.EXECUTION_USER, getUser());
-                    q = generator.selectQuery(em);
+
+                    //ordering - only supported only by CREATION_TIME
+                    if(orderByIdentifier != null && resultOrderType != null
+                            && orderByIdentifier.equals(Constants.FieldConstants.ProjectConstants.CREATION_TIME)) {
+                        q = generator.selectQuery(em, ExperimentConstants.CREATION_TIME, resultOrderType);
+                    }else{
+                        q = generator.selectQuery(em);
+                    }
+
+                    //pagination
+                    if(limit>0 && offset>=0){
+                        q.setFirstResult(offset);
+                        q.setMaxResults(limit);
+                    }
                     for (Object o : q.getResultList()) {
                         Experiment experiment = (Experiment) o;
                         ExperimentResource experimentResource = (ExperimentResource) Utils.getResource(ResourceType.EXPERIMENT, experiment);
                         result.add(experimentResource);
                     }
+
                     break;
                 default:
                     logger.error("Unsupported resource type for worker resource.", new IllegalArgumentException());
@@ -396,17 +441,28 @@ public class WorkerResource extends AbstractResource {
 	}
 
     /**
-     *
+     * Get projects list of user
      * @return  list of projects for the user
      */
     public List<ProjectResource> getProjects() throws RegistryException{
-		List<ProjectResource> result=new ArrayList<ProjectResource>();
-		List<Resource> list = get(ResourceType.PROJECT);
-		for (Resource resource : list) {
-			result.add((ProjectResource) resource);
-		}
-		return result;
+		return getProjects(-1, -1, null, null);
 	}
+
+
+    /**
+     * Get projects list of user with pagination and ordering
+     *
+     * @return  list of projects for the user
+     */
+    public List<ProjectResource> getProjects(int limit, int offset, Object orderByIdentifier,
+                                             ResultOrderType resultOrderType) throws RegistryException{
+        List<ProjectResource> result=new ArrayList<ProjectResource>();
+        List<Resource> list = get(ResourceType.PROJECT, limit, offset, orderByIdentifier, resultOrderType);
+        for (Resource resource : list) {
+            result.add((ProjectResource) resource);
+        }
+        return result;
+    }
 
     /**
      *
@@ -432,17 +488,31 @@ public class WorkerResource extends AbstractResource {
 //    }
 
     /**
-     *
+     * Method to get list of expeirments of user
      * @return list of experiments for the user
      */
 	public List<ExperimentResource> getExperiments() throws RegistryException{
-		List<ExperimentResource> result=new ArrayList<ExperimentResource>();
-		List<Resource> list = get(ResourceType.EXPERIMENT);
-		for (Resource resource : list) {
-			result.add((ExperimentResource) resource);
-		}
-		return result;
+		return getExperiments(-1, -1, null, null);
 	}
+
+    /**
+     * Method to get list of experiments of user with pagination and ordering
+     * @param limit
+     * @param offset
+     * @param orderByIdentifier
+     * @param resultOrderType
+     * @return
+     * @throws RegistryException
+     */
+    public List<ExperimentResource> getExperiments(int limit, int offset, Object orderByIdentifier,
+                                                   ResultOrderType resultOrderType) throws RegistryException{
+        List<ExperimentResource> result=new ArrayList<ExperimentResource>();
+        List<Resource> list = get(ResourceType.EXPERIMENT, limit, offset, orderByIdentifier, resultOrderType);
+        for (Resource resource : list) {
+            result.add((ExperimentResource) resource);
+        }
+        return result;
+    }
 
     /**
      *
@@ -460,7 +530,7 @@ public class WorkerResource extends AbstractResource {
      * @throws RegistryException
      */
     public List<ProjectResource> searchProjects (Map<String, String> filters) throws RegistryException{
-        return searchProjectsWithPagination(filters, -1, -1, null, null);
+        return searchProjects(filters, -1, -1, null, null);
     }
 
     /**
@@ -477,8 +547,8 @@ public class WorkerResource extends AbstractResource {
      * @return
      * @throws RegistryException
      */
-    public List<ProjectResource> searchProjectsWithPagination(Map<String, String> filters, int limit,
-        int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
+    public List<ProjectResource> searchProjects(Map<String, String> filters, int limit,
+             int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
         List<ProjectResource> result = new ArrayList<ProjectResource>();
         EntityManager em = null;
         try {
@@ -502,7 +572,7 @@ public class WorkerResource extends AbstractResource {
 
             //ordering
             if( orderByIdentifier != null && resultOrderType != null
-                    && orderByIdentifier.equals(ProjectConstants.CREATION_TIME)){
+                    && orderByIdentifier.equals(Constants.FieldConstants.ProjectConstants.CREATION_TIME)){
                 String order = (resultOrderType == ResultOrderType.ASC) ? "ASC" : "DESC";
                 query += " ORDER BY p." + ProjectConstants.CREATION_TIME + " " + order;
             }
@@ -549,7 +619,7 @@ public class WorkerResource extends AbstractResource {
      * @throws RegistryException
      */
     public List<ExperimentResource> searchExperiments (Map<String, String> filters) throws RegistryException{
-        return searchExperimentsWithPagination(filters, -1, -1, null, null);
+        return searchExperiments(filters, -1, -1, null, null);
     }
 
     /**
@@ -565,8 +635,8 @@ public class WorkerResource extends AbstractResource {
      * @return
      * @throws RegistryException
      */
-    public List<ExperimentResource> searchExperimentsWithPagination(Map<String, String> filters, int limit,
-        int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
+    public List<ExperimentResource> searchExperiments(Map<String, String> filters, int limit,
+                                                      int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
 
         List<ExperimentResource> result = new ArrayList<ExperimentResource>();
         EntityManager em = null;
@@ -578,6 +648,8 @@ public class WorkerResource extends AbstractResource {
                     if (field.equals(ExperimentConstants.EXECUTION_USER)) {
                         query += "e." + field + "= '" + filterVal + "' AND ";
                     }else if (field.equals(ExperimentConstants.GATEWAY_ID)) {
+                        query += "e." + field + "= '" + filterVal + "' AND ";
+                    } else if (field.equals(ExperimentConstants.PROJECT_ID)) {
                         query += "e." + field + "= '" + filterVal + "' AND ";
                     } else {
                         if (filterVal.contains("*")){
@@ -591,7 +663,7 @@ public class WorkerResource extends AbstractResource {
 
             //ordering
             if( orderByIdentifier != null && resultOrderType != null
-                    && orderByIdentifier.equals(ExperimentConstants.CREATION_TIME)){
+                    && orderByIdentifier.equals(Constants.FieldConstants.ExperimentConstants.CREATION_TIME)){
                 String order = (resultOrderType == ResultOrderType.ASC) ? "ASC" : "DESC";
                 query += " ORDER BY e." + ExperimentConstants.CREATION_TIME + " " + order;
             }
@@ -630,17 +702,75 @@ public class WorkerResource extends AbstractResource {
         return result;
     }
 
-    public List<ExperimentResource> searchExperimentsByState (String experimentState) throws RegistryException{
+    /**
+     * Method to get experiments by state
+     * @param filters
+     * @return
+     * @throws RegistryException
+     */
+    public List<ExperimentResource> searchExperimentsByState (Map<String, String> filters) throws RegistryException{
+        return searchExperimentsByState(filters, -1, -1, null, null);
+    }
+
+    /**
+     * Method to get experiments of the given state with pagination and ordering
+     * @param filters
+     * @param limit
+     * @param offset
+     * @param orderByIdentifier
+     * @param resultOrderType
+     * @return
+     * @throws RegistryException
+     */
+    public List<ExperimentResource> searchExperimentsByState (Map<String, String> filters, int limit, int offset,
+            Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException{
         List<ExperimentResource> result = new ArrayList<ExperimentResource>();
         EntityManager em = null;
         try {
+            String experimentState = ExperimentState.valueOf(filters.get(StatusConstants.STATE)).toString();
             String query = "SELECT e FROM Status s " +
                     "JOIN s.experiment e " +
                     "WHERE s.state='" + experimentState +  "' " +
-                    "AND s.statusType='" + StatusType.EXPERIMENT + "'";
+                    "AND s.statusType='" + StatusType.EXPERIMENT + "' AND ";
+
+            filters.remove(StatusConstants.STATE);
+            if (filters.size() != 0) {
+                for (String field : filters.keySet()) {
+                    String filterVal = filters.get(field);
+                    if (field.equals(ExperimentConstants.EXECUTION_USER)) {
+                        query += "e." + field + "= '" + filterVal + "' AND ";
+                    }else if (field.equals(ExperimentConstants.GATEWAY_ID)) {
+                        query += "e." + field + "= '" + filterVal + "' AND ";
+                    } else if (field.equals(ExperimentConstants.PROJECT_ID)) {
+                        query += "e." + field + "= '" + filterVal + "' AND ";
+                    } else {
+                        if (filterVal.contains("*")){
+                            filterVal = filterVal.replaceAll("\\*", "");
+                        }
+                        query += "e." + field + " LIKE '%" + filterVal + "%' AND ";
+                    }
+                }
+            }
+            query = query.substring(0, query.length() - 5);
+
+            //ordering
+            if( orderByIdentifier != null && resultOrderType != null
+                    && orderByIdentifier.equals(Constants.FieldConstants.ExperimentConstants.CREATION_TIME)){
+                String order = (resultOrderType == ResultOrderType.ASC) ? "ASC" : "DESC";
+                query += " ORDER BY e." + ExperimentConstants.CREATION_TIME + " " + order;
+            }
+
             em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
-            Query q = em.createQuery(query);
+            Query q;
+
+            //pagination
+            if(offset>=0 && limit >=0){
+                q = em.createQuery(query).setFirstResult(offset).setMaxResults(limit);
+            }else{
+                q = em.createQuery(query);
+            }
+
             List resultList = q.getResultList();
             for (Object o : resultList) {
                 Experiment experiment = (Experiment) o;
@@ -663,16 +793,60 @@ public class WorkerResource extends AbstractResource {
         return result;
     }
 
+    /**
+     * Search experiments from creation time between interval. Returns all results
+     * @param fromTime
+     * @param toTime
+     * @return
+     * @throws RegistryException
+     */
     public List<ExperimentResource> searchExperimentsByCreationTime (Timestamp fromTime, Timestamp toTime) throws RegistryException{
+        return  searchExperimentsByCreationTime(fromTime, toTime, -1, -1, null, null);
+    }
+
+
+    /**
+     * Search experiments from creation time between interval. Results are ordered creation time DESC.
+     * Supports pagination
+     *
+     * @param fromTime
+     * @param toTime
+     * @param limit
+     * @param offset
+     * @param orderByIdentifier
+     * @param resultOrderType
+     * @return
+     * @throws RegistryException
+     */
+    public List<ExperimentResource> searchExperimentsByCreationTime(
+            Timestamp fromTime, Timestamp toTime, int limit, int offset, Object orderByIdentifier,
+            ResultOrderType resultOrderType) throws RegistryException{
+
         List<ExperimentResource> result = new ArrayList<ExperimentResource>();
         EntityManager em = null;
         try {
             String query = "SELECT e FROM Experiment e " +
                     "WHERE e.creationTime > '" + fromTime +  "' " +
                     "AND e.creationTime <'" + toTime + "'";
+
+            //ordering
+            if( orderByIdentifier != null && resultOrderType != null
+                    && orderByIdentifier.equals(Constants.FieldConstants.ExperimentConstants.CREATION_TIME)){
+                String order = (resultOrderType == ResultOrderType.ASC) ? "ASC" : "DESC";
+                query += " ORDER BY e." + ExperimentConstants.CREATION_TIME + " " + order;
+            }
+
             em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
-            Query q = em.createQuery(query);
+            Query q;
+
+            //pagination
+            if(offset>=0 && limit >=0){
+                q = em.createQuery(query).setFirstResult(offset).setMaxResults(limit);
+            }else{
+                q = em.createQuery(query);
+            }
+
             List resultList = q.getResultList();
             for (Object o : resultList) {
                 Experiment experiment = (Experiment) o;
