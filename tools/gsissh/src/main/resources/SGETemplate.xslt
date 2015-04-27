@@ -20,12 +20,7 @@
 #$ -q <xsl:value-of select="ns:queueName"/>
     </xsl:when>
     </xsl:choose>
-    <xsl:choose>
-    <xsl:when test="ns:mailOptions">
-#$ -m <xsl:value-of select="ns:mailOptions"/>
-    </xsl:when>
-    </xsl:choose>
-    <xsl:choose>
+#$ -m beas <xsl:choose>
 <xsl:when test="ns:acountString">
 #$ -A <xsl:value-of select="ns:acountString"/>
     </xsl:when>
