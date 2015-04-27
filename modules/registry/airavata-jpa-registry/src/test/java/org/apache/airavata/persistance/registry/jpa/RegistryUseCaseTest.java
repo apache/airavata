@@ -29,7 +29,6 @@ import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.ExperimentSummary;
 import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
-import org.apache.airavata.persistance.registry.jpa.resources.AbstractResource;
 import org.apache.airavata.persistance.registry.jpa.util.Initialize;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
@@ -89,7 +88,7 @@ public class RegistryUseCaseTest {
             Assert.assertEquals(updatedProject.getName(), retrievedProject.getName());
             Assert.assertEquals(updatedProject.getDescription(), retrievedProject.getDescription());
             Assert.assertNotNull(retrievedProject.getCreationTime());
-            //created users should be in the shared users list
+            //created user should be in the shared users list
             Assert.assertTrue(retrievedProject.getSharedUsers().size()==1);
 
             //creating more projects for the same user
@@ -149,8 +148,8 @@ public class RegistryUseCaseTest {
             //search projects with pagination
             filters = new HashMap<String, String>();
             filters.put(Constants.FieldConstants.ProjectConstants.OWNER, "TestUser"+TAG);
-            list = registry.searchWithPagination(RegistryModelType.PROJECT, filters, 2, 2,
-                    AbstractResource.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
+            list = registry.search(RegistryModelType.PROJECT, filters, 2, 2,
+                    Constants.FieldConstants.ProjectConstants.CREATION_TIME, ResultOrderType.DESC);
             Assert.assertTrue(list.size()==2);
             Project project1 = (Project)list.get(0);
             Project project2 = (Project)list.get(1);
@@ -236,7 +235,7 @@ public class RegistryUseCaseTest {
             experiment.addToExperimentInputs(inputDataObjectType);
 
             String experimentId2 = (String)registry.add(ParentDataType.EXPERIMENT, experiment, gatewayId);
-            Assert.assertNotNull(experimentId1);
+            Assert.assertNotNull(experimentId2);
 
             experiment = new Experiment();
             experiment.setProjectID(projectId1);
@@ -248,7 +247,7 @@ public class RegistryUseCaseTest {
             experiment.addToExperimentInputs(inputDataObjectType);
 
             String experimentId3 = (String)registry.add(ParentDataType.EXPERIMENT, experiment, gatewayId);
-            Assert.assertNotNull(experimentId1);
+            Assert.assertNotNull(experimentId3);
 
             //searching experiments by name
             Map<String, String> filters = new HashMap<String, String>();
@@ -274,8 +273,8 @@ public class RegistryUseCaseTest {
             filters = new HashMap<String, String>();
             filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, "TestUser" + TAG);
             filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);
-            list = registry.searchWithPagination(RegistryModelType.EXPERIMENT, filters, 2, 1,
-                    AbstractResource.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
+            list = registry.search(RegistryModelType.EXPERIMENT, filters, 2, 1,
+                    Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             Assert.assertTrue(list.size()==2);
             ExperimentSummary exp1 = (ExperimentSummary)list.get(0);
             ExperimentSummary exp2 = (ExperimentSummary)list.get(1);

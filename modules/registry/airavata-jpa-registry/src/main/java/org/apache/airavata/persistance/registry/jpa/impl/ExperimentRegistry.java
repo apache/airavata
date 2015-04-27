@@ -1823,6 +1823,13 @@ public class ExperimentRegistry {
         }
     }
 
+    /**
+     * Method to get matching experiment list
+     * @param fieldName
+     * @param value
+     * @return
+     * @throws RegistryException
+     */
     public List<Experiment> getExperimentList(String fieldName, Object value) throws RegistryException {
         List<Experiment> experiments = new ArrayList<Experiment>();
         try {
@@ -1830,7 +1837,6 @@ public class ExperimentRegistry {
                 WorkerResource resource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
                 resource.setUser((String) value);
                 List<ExperimentResource> resources = resource.getExperiments();
-//                List<ExperimentResource> resources = resource.getExperimentsByCaching((String)value);
                 for (ExperimentResource experimentResource : resources) {
                     Experiment experiment = ThriftDataModelConversion.getExperiment(experimentResource);
                     experiments.add(experiment);
@@ -1875,6 +1881,50 @@ public class ExperimentRegistry {
         }
         return experiments;
     }
+
+    /**
+     * Method to get matching experiment list with pagination and ordering
+     * @param fieldName
+     * @param value
+     * @param limit
+     * @param offset
+     * @param orderByIdentifier
+     * @param resultOrderType
+     * @return
+     * @throws RegistryException
+     */
+    public List<Experiment> getExperimentList(String fieldName, Object value, int limit, int offset,
+                                              Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
+        List<Experiment> experiments = new ArrayList<Experiment>();
+        try {
+            if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
+                WorkerResource resource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
+                resource.setUser((String) value);
+                List<ExperimentResource> resources = resource.getExperiments(limit, offset,
+                        orderByIdentifier, resultOrderType);
+                for (ExperimentResource experimentResource : resources) {
+                    Experiment experiment = ThriftDataModelConversion.getExperiment(experimentResource);
+                    experiments.add(experiment);
+                }
+                return experiments;
+            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.PROJECT_ID)) {
+                ProjectResource project = workerResource.getProject((String) value);
+                List<ExperimentResource> resources = project.getExperiments(limit, offset,
+                        Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
+                for (ExperimentResource resource : resources) {
+                    Experiment experiment = ThriftDataModelConversion.getExperiment(resource);
+                    experiments.add(experiment);
+                }
+                return experiments;
+            }
+            logger.error("Unsupported field name to retrieve experiment list...");
+        } catch (Exception e) {
+            logger.error("Error while getting experiment list...", e);
+            throw new RegistryException(e);
+        }
+        return experiments;
+    }
+
 
     public List<WorkflowNodeDetails> getWFNodeDetails(String fieldName, Object value) throws RegistryException {
         try {
@@ -2810,7 +2860,7 @@ public class ExperimentRegistry {
      * @throws RegistryException
      */
     public List<ExperimentSummary> searchExperiments(Map<String, String> filters) throws RegistryException {
-        return searchExperimentsWithPagination(filters, -1, -1, null, null);
+        return searchExperiments(filters, -1, -1, null, null);
     }
 
 
@@ -2827,8 +2877,8 @@ public class ExperimentRegistry {
      * @return
      * @throws RegistryException
      */
-    public List<ExperimentSummary> searchExperimentsWithPagination(Map<String, String> filters, int limit,
-        int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
+    public List<ExperimentSummary> searchExperiments(Map<String, String> filters, int limit,
+              int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
         Map<String, String> fil = new HashMap<String, String>();
         if (filters != null && filters.size() != 0) {
             List<ExperimentSummary> experimentSummaries = new ArrayList<ExperimentSummary>();
@@ -2847,7 +2897,7 @@ public class ExperimentRegistry {
                     } else if (field.equals(Constants.FieldConstants.ExperimentConstants.APPLICATION_ID)) {
                         fil.put(AbstractResource.ExperimentConstants.APPLICATION_ID, filters.get(field));
                     } else if (field.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_STATUS)) {
-                        return searchExperimentsByStatus(ExperimentState.valueOf(filters.get(field)));
+                        fil.put(AbstractResource.StatusConstants.STATE, filters.get(field));
                     } else if (field.equals(Constants.FieldConstants.ExperimentConstants.FROM_DATE)) {
                         fromTime = Long.parseLong(filters.get(field));
                     } else if (field.equals(Constants.FieldConstants.ExperimentConstants.TO_DATE)) {
@@ -2855,13 +2905,13 @@ public class ExperimentRegistry {
                     }
                 }
                 if (fromTime != 0 && toTime != 0) {
-                    return searchExperimentsByCreationTime(new Timestamp(fromTime), new Timestamp(toTime));
-                }
-                if (fil.containsKey(AbstractResource.ExperimentConstants.APPLICATION_ID)) {
-                    return searchExperimentsByApplication(fil);
+                    return searchExperimentsByCreationTime(new Timestamp(fromTime), new Timestamp(toTime)
+                            , limit, offset, orderByIdentifier, resultOrderType);
+                } else if(fil.get(AbstractResource.StatusConstants.STATE) != null ) {
+                    return searchExperimentsByStatus(fil, limit, offset, orderByIdentifier, resultOrderType);
                 } else {
                     List<ExperimentResource> experimentResources = workerResource
-                            .searchExperimentsWithPagination(fil, limit, offset, orderByIdentifier, resultOrderType);
+                            .searchExperiments(fil, limit, offset, orderByIdentifier, resultOrderType);
                     if (experimentResources != null && !experimentResources.isEmpty()) {
                         for (ExperimentResource ex : experimentResources) {
                             experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
@@ -2878,10 +2928,33 @@ public class ExperimentRegistry {
         return null;
     }
 
-    public List<ExperimentSummary> searchExperimentsByStatus(ExperimentState experimentState) throws RegistryException {
+    /**
+     * To get list of experiments of specified state
+     * @param filters
+     * @return
+     * @throws RegistryException
+     */
+    public List<ExperimentSummary> searchExperimentsByStatus(Map<String, String> filters) throws RegistryException {
+        return searchExperimentsByStatus(filters, -1, -1, null, null);
+    }
+
+    /**
+     * To get list of experiments of specified state with pagination and ordering
+     *
+     * @param filters
+     * @param limit
+     * @param offset
+     * @param orderByIdentifier
+     * @param resultOrderType
+     * @return
+     * @throws RegistryException
+     */
+    public List<ExperimentSummary> searchExperimentsByStatus(Map<String, String> filters, int limit,
+        int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
         try {
             List<ExperimentSummary> experimentSummaries = new ArrayList<ExperimentSummary>();
-            List<ExperimentResource> experimentResources = workerResource.searchExperimentsByState(experimentState.toString());
+            List<ExperimentResource> experimentResources = workerResource.searchExperimentsByState(filters, limit, offset,
+                    orderByIdentifier, resultOrderType);
             if (experimentResources != null && !experimentResources.isEmpty()) {
                 for (ExperimentResource ex : experimentResources) {
                     experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
@@ -2895,40 +2968,37 @@ public class ExperimentRegistry {
         }
     }
 
-    public List<ExperimentSummary> searchExperimentsByApplication(Map<String, String> fil) throws RegistryException {
-        try {
-            List<ExperimentSummary> experimentSummaries = new ArrayList<ExperimentSummary>();
-            List<ExperimentResource> experimentResources = workerResource.searchExperiments(fil);
-            if (experimentResources != null && !experimentResources.isEmpty()) {
-                for (ExperimentResource ex : experimentResources) {
-                    String applicationId = ex.getApplicationId();
-                    String[] splits = applicationId.split("_");
-                    if (splits.length != 0) {
-                        for (int i = 0; i < splits.length - 1; i++) {
-                            String appId = fil.get(AbstractResource.ExperimentConstants.APPLICATION_ID);
-                            if (!appId.equals("*")) {
-                                if (splits[i].contains(appId)) {
-                                    experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
-                                }
-                            } else {
-                                experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
-                            }
-                        }
-                    }
-                }
-            }
-            return experimentSummaries;
 
-        } catch (Exception e) {
-            logger.error("Error while retrieving experiment summary from registry", e);
-            throw new RegistryException(e);
-        }
+    /**
+     * Search experiements based on creation time within specified time interval.
+     * @param fromTime
+     * @param toTime
+     * @return
+     * @throws RegistryException
+     */
+    public List<ExperimentSummary> searchExperimentsByCreationTime(Timestamp fromTime, Timestamp toTime) throws RegistryException {
+        return searchExperimentsByCreationTime(fromTime, toTime, -1, -1, null, null);
     }
 
-    public List<ExperimentSummary> searchExperimentsByCreationTime(Timestamp fromTime, Timestamp toTime) throws RegistryException {
+    /**
+     * Search experiements based on creation time within specified time interval with pagination.
+     * @param fromTime
+     * @param toTime
+     * @param limit
+     * @param offset
+     * @param orderByIdentifier
+     * @param resultOrderType
+     * @return
+     * @throws RegistryException
+     */
+    public List<ExperimentSummary> searchExperimentsByCreationTime(
+            Timestamp fromTime, Timestamp toTime, int limit,
+            int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
         try {
             List<ExperimentSummary> experimentSummaries = new ArrayList<ExperimentSummary>();
-            List<ExperimentResource> experimentResources = workerResource.searchExperimentsByCreationTime(fromTime, toTime);
+            List<ExperimentResource> experimentResources
+                    = workerResource.searchExperimentsByCreationTime(fromTime, toTime, limit, offset,
+                    orderByIdentifier, resultOrderType);
             if (experimentResources != null && !experimentResources.isEmpty()) {
                 for (ExperimentResource ex : experimentResources) {
                     experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));

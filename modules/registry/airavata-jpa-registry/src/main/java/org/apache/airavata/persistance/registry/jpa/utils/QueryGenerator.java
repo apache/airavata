@@ -21,11 +21,12 @@
 
 package org.apache.airavata.persistance.registry.jpa.utils;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.airavata.registry.cpi.ResultOrderType;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.util.HashMap;
+import java.util.Map;
 
 public class QueryGenerator {
 	private String tableName;
@@ -58,10 +59,30 @@ public class QueryGenerator {
 	public void setParameter(String colName, Object matchValue){
 		addMatch(colName, matchValue);
 	}
-	
+
+    /**
+     * Select query
+     * @param entityManager
+     * @return
+     */
 	public Query selectQuery(EntityManager entityManager){
         String queryString="SELECT "+ SELECT_OBJ + " FROM " +getTableName()+" "+TABLE_OBJ;
         return generateQueryWithParameters(entityManager, queryString);
+    }
+
+    /**
+     * Select query with pagination
+     * @param entityManager
+     * @param orderByColumn
+     * @param resultOrderType
+     * @return
+     */
+    public Query selectQuery(EntityManager entityManager, String orderByColumn,
+                             ResultOrderType resultOrderType){
+        String order = (resultOrderType == ResultOrderType.ASC) ? "ASC" : "DESC";
+        String orderByClause = " ORDER BY " + SELECT_OBJ + "." + orderByColumn + " " + order;
+        String queryString="SELECT "+ SELECT_OBJ + " FROM " +getTableName()+" "+TABLE_OBJ;
+        return generateQueryWithParameters(entityManager, queryString, orderByClause);
     }
 
 //    public Query countQuery(EntityManager entityManager){
@@ -77,25 +98,31 @@ public class QueryGenerator {
 
 	private Query generateQueryWithParameters(EntityManager entityManager,
 			String queryString) {
-		Map<String,Object> queryParameters=new HashMap<String, Object>();
-		if (matches.size()>0){
-			String matchString = "";
-			int paramCount=0;
-			for (String colName : matches.keySet()) {
-				String paramName="param"+paramCount;
-				queryParameters.put(paramName, matches.get(colName));
-				if (!matchString.equals("")){
-					matchString+=" AND ";
-				}
-				matchString+=TABLE_OBJ+"."+colName+" =:"+paramName;
-				paramCount++;
-			}
-			queryString+=" WHERE "+matchString;
-		}
-		Query query = entityManager.createQuery(queryString);
-		for (String paramName : queryParameters.keySet()) {
-			query.setParameter(paramName, queryParameters.get(paramName));
-		}
-		return query;
+		return generateQueryWithParameters(entityManager, queryString, "");
 	}
+
+    private Query generateQueryWithParameters(EntityManager entityManager,
+                                              String queryString, String orderByClause) {
+        Map<String,Object> queryParameters=new HashMap<String, Object>();
+        if (matches.size()>0){
+            String matchString = "";
+            int paramCount=0;
+            for (String colName : matches.keySet()) {
+                String paramName="param"+paramCount;
+                queryParameters.put(paramName, matches.get(colName));
+                if (!matchString.equals("")){
+                    matchString+=" AND ";
+                }
+                matchString+=TABLE_OBJ+"."+colName+" =:"+paramName;
+                paramCount++;
+            }
+            queryString+=" WHERE "+matchString;
+        }
+        queryString += orderByClause;
+        Query query = entityManager.createQuery(queryString);
+        for (String paramName : queryParameters.keySet()) {
+            query.setParameter(paramName, queryParameters.get(paramName));
+        }
+        return query;
+    }
 }
