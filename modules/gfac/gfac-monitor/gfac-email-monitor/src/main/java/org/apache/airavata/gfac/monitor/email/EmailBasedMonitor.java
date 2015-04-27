@@ -166,8 +166,10 @@ public class EmailBasedMonitor implements Runnable{
             while (!(stopMonitoring || ServerSettings.isStopAllThreads())) {
                 Thread.sleep(ServerSettings.getEmailMonitorPeriod());// sleep a bit - get a rest till job finishes
                 if (jobMonitorMap.isEmpty()) {
-                    log.info("[ELM]: Job Monitor Map is empty, no need to retrieve emails");
+                    log.info("[EJM]: Job Monitor Map is empty, no need to retrieve emails");
                     continue;
+                } else {
+                    log.info("[EJM]: " + jobMonitorMap.size() + " job/s in job monitor map");
                 }
                 if (!store.isConnected()) {
                     store.connect();
