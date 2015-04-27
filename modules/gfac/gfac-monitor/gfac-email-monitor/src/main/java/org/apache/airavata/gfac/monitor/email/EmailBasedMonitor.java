@@ -136,12 +136,14 @@ public class EmailBasedMonitor implements Runnable{
                 return ResourceJobManagerType.PBS;
             case "slurm@batch1.stampede.tacc.utexas.edu": // stampede
                 return ResourceJobManagerType.SLURM;
-            case "root <root@c341-203.ls4.tacc.utexas.edu>":
-                return ResourceJobManagerType.UGE;
 //            case "lsf":
 //                return ResourceJobManagerType.LSF;
             default:
-                throw new AiravataException("[EJM]: Couldn't identify Resource job manager type from address " + addressStr);
+                if (addressStr.contains("ls4.tacc.utexas.edu>")) { // lonestar
+                    return ResourceJobManagerType.UGE;
+                } else {
+                    throw new AiravataException("[EJM]: Couldn't identify Resource job manager type from address " + addressStr);
+                }
         }
 
     }
