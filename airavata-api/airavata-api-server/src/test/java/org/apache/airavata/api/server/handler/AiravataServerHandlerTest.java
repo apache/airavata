@@ -44,7 +44,7 @@ public class AiravataServerHandlerTest {
     private final static Logger logger = LoggerFactory.getLogger(AiravataServerHandlerTest.class);
 
     private static AiravataServerHandler airavataServerHandler;
-    private static String gatewayId = "default";
+    private static String gatewayId = "php_reference_gateway";
 
     @BeforeClass
     public static void setupBeforeClass() throws Exception{
@@ -272,7 +272,7 @@ public class AiravataServerHandlerTest {
             ExperimentState experimentState = ExperimentState.findByValue(0);
             results = airavataServerHandler.searchExperimentsByStatus(
                     gatewayId, "TestUser" + TAG, experimentState);
-            Assert.assertTrue(results.size() > 0);
+            Assert.assertTrue(results.size() == 3);
             //with pagination
             results = airavataServerHandler.searchExperimentsByStatusWithPagination(
                     gatewayId, "TestUser" + TAG, experimentState, 2, 0);
@@ -281,7 +281,7 @@ public class AiravataServerHandlerTest {
             //searching based on application
             results = airavataServerHandler.searchExperimentsByApplication(
                     gatewayId, "TestUser" + TAG, "Ech");
-            Assert.assertTrue(results.size() > 0);
+            Assert.assertTrue(results.size() == 3);
             //with pagination
             results = airavataServerHandler.searchExperimentsByApplicationWithPagination(
                     gatewayId, "TestUser" + TAG, "Ech", 2, 0);
@@ -290,7 +290,7 @@ public class AiravataServerHandlerTest {
             //searching experiments by description
             results = airavataServerHandler.searchExperimentsByDesc(
                     gatewayId, "TestUser" + TAG, "exp");
-            Assert.assertTrue(results.size() > 0);
+            Assert.assertTrue(results.size() == 3);
             //with pagination
             results = airavataServerHandler.searchExperimentsByDescWithPagination(
                     gatewayId, "TestUser" + TAG, "exp", 2, 0);
