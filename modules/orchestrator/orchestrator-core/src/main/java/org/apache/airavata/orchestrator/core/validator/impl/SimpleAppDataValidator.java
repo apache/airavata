@@ -89,7 +89,7 @@ public class SimpleAppDataValidator implements JobMetadataValidator {
 
             if (batchQueues != null && !batchQueues.isEmpty()){
                 if (computationalResourceScheduling != null){
-                    String queueName = computationalResourceScheduling.getQueueName();
+                    String queueName = computationalResourceScheduling.getQueueName().trim();
                     int wallTimeLimit = computationalResourceScheduling.getWallTimeLimit();
                     ValidatorResult queueNameResult = new ValidatorResult();
 

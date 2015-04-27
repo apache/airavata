@@ -32,6 +32,7 @@ import org.apache.airavata.gfac.monitor.email.parser.EmailParser;
 import org.apache.airavata.gfac.monitor.email.parser.LSFEmailParser;
 import org.apache.airavata.gfac.monitor.email.parser.PBSEmailParser;
 import org.apache.airavata.gfac.monitor.email.parser.SLURMEmailParser;
+import org.apache.airavata.gfac.monitor.email.parser.UGEEmailParser;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeRequestEvent;
@@ -117,6 +118,9 @@ public class EmailBasedMonitor implements Runnable{
             case LSF:
                 emailParser = new LSFEmailParser();
                 break;
+            case UGE:
+                emailParser = new UGEEmailParser();
+                break;
             default:
                 throw new AiravataException("[EJM]: Un-handle resource job manager type: " + jobMonitorType.toString() +" for email monitoring -->  " + addressStr);
         }
@@ -132,6 +136,8 @@ public class EmailBasedMonitor implements Runnable{
                 return ResourceJobManagerType.PBS;
             case "slurm@batch1.stampede.tacc.utexas.edu": // stampede
                 return ResourceJobManagerType.SLURM;
+            case "root <root@c341-203.ls4.tacc.utexas.edu>":
+                return ResourceJobManagerType.UGE;
 //            case "lsf":
 //                return ResourceJobManagerType.LSF;
             default:

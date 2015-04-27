@@ -9,7 +9,7 @@
 <xsl:output method="text" />
 <xsl:template match="/ns:JobDescriptor">
     <xsl:param name="quote">"</xsl:param>
-    #! /bin/bash
+#! /bin/bash
 # Grid Engine batch job script built by Apache Airavata
 #   <xsl:choose>
     <xsl:when test="ns:shellName != ''">
@@ -21,12 +21,7 @@
 #$ -q <xsl:value-of select="ns:queueName"/>
     </xsl:when>
     </xsl:choose>
-    <xsl:choose>
-    <xsl:when test="ns:mailOptions != ''">
-#$ -m <xsl:value-of select="ns:mailOptions"/>
-    </xsl:when>
-    </xsl:choose>
-    <xsl:choose>
+#$ -m beas <xsl:choose>
     <xsl:when test="ns:mailAddress != ''">
 #$ -M <xsl:value-of select="ns:mailAddress"/>
     </xsl:when>
@@ -79,6 +74,5 @@ cd <xsl:text>   </xsl:text><xsl:value-of select="ns:workingDirectory"/><xsl:text
 <xsl:for-each select="ns:postJobCommands/ns:command">
       <xsl:value-of select="."/><xsl:text>   </xsl:text>
 </xsl:for-each>
-    ~/rabbitmq-java-client-bin-3.3.5/runjava.sh com.rabbitmq.examples.SimpleProducer amqp://<xsl:value-of select="ns:callBackIp"/><xsl:text> </xsl:text><xsl:value-of select="ns:userName"/>,<xsl:value-of select="ns:jobName"/><xsl:text> </xsl:text><xsl:value-of select="$quote"/><xsl:value-of select="$quote"/><xsl:text> </xsl:text><xsl:value-of select="ns:callBackPort"/>
 </xsl:template>
 </xsl:stylesheet>
