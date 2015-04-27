@@ -164,11 +164,15 @@ public class EmailBasedMonitor implements Runnable{
             // first time we search for all unread messages.
             SearchTerm unseenBefore = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
             while (!(stopMonitoring || ServerSettings.isStopAllThreads())) {
+                Thread.sleep(ServerSettings.getEmailMonitorPeriod());// sleep a bit - get a rest till job finishes
+                if (jobMonitorMap.isEmpty()) {
+                    log.info("[ELM]: Job Monitor Map is empty, no need to retrieve emails");
+                    continue;
+                }
                 if (!store.isConnected()) {
                     store.connect();
                     emailFolder = store.getFolder(folderName);
                 }
-                Thread.sleep(ServerSettings.getEmailMonitorPeriod());// sleep a bit - get rest till job finishes
                 log.info("[EJM]: Retrieving unseen emails");
                 emailFolder.open(Folder.READ_WRITE);
                 Message[] searchMessages = emailFolder.search(unseenBefore);
