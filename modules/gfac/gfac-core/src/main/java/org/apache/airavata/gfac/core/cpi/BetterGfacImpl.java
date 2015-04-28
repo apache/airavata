@@ -959,7 +959,10 @@ public class BetterGfacImpl implements GFac,Watcher {
 
     public void invokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
         try {
-            jobExecutionContext.setZk(new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(),this));
+            if (zk == null || !zk.getState().isConnected()){
+                zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(),this);
+            }
+            jobExecutionContext.setZk(zk);
             synchronized (mutex) {
                 mutex.wait();  // waiting for the syncConnected event
             }
@@ -1086,6 +1089,7 @@ public class BetterGfacImpl implements GFac,Watcher {
                             // if these already ran we re-run only recoverable handlers
                             log.info(handlerClassName.getClassName() + " is a recoverable handler so we recover the handler");
                             GFacUtils.createPluginZnode(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.INVOKING);
+                            handler.initProperties(handlerClassName.getProperties());
                             ((GFacRecoverableHandler) handler).recover(jobExecutionContext);
                             GFacUtils.updatePluginState(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.COMPLETED);
                         } else {
@@ -1124,7 +1128,10 @@ public class BetterGfacImpl implements GFac,Watcher {
 
     public void reInvokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
         try {
-            jobExecutionContext.setZk(new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(),this));
+            if (zk == null || !zk.getState().isConnected()){
+                zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(),this);
+            }
+            jobExecutionContext.setZk(zk);
 
         } catch (IOException e) {
             log.error(e.getMessage(), e);
