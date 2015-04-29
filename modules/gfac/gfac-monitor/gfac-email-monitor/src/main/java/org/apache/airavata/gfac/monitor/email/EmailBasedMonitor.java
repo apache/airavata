@@ -51,6 +51,7 @@ import javax.mail.search.FlagTerm;
 import javax.mail.search.SearchTerm;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -71,6 +72,7 @@ public class EmailBasedMonitor implements Runnable{
     private Map<String, JobExecutionContext> jobMonitorMap = new ConcurrentHashMap<String, JobExecutionContext>();
     private String host, emailAddress, password, storeProtocol, folderName ;
     private Date monitorStartDate;
+    private Map<ResourceJobManagerType, EmailParser> emailParserMap = new HashMap<ResourceJobManagerType, EmailParser>();
 
     public EmailBasedMonitor(ResourceJobManagerType type) throws AiravataException {
         init();
@@ -105,24 +107,28 @@ public class EmailBasedMonitor implements Runnable{
 
     private JobStatusResult parse(Message message) throws MessagingException, AiravataException {
         Address fromAddress = message.getFrom()[0];
-        EmailParser emailParser;
         String addressStr = fromAddress.toString();
         ResourceJobManagerType jobMonitorType = getJobMonitorType(addressStr);
-        switch (jobMonitorType) {
-            case PBS:
-                emailParser = new PBSEmailParser();
-                break;
-            case SLURM:
-                emailParser = new SLURMEmailParser();
-                break;
-            case LSF:
-                emailParser = new LSFEmailParser();
-                break;
-            case UGE:
-                emailParser = new UGEEmailParser();
-                break;
-            default:
-                throw new AiravataException("[EJM]: Un-handle resource job manager type: " + jobMonitorType.toString() +" for email monitoring -->  " + addressStr);
+        EmailParser emailParser = emailParserMap.get(jobMonitorType);
+        if (emailParser == null) {
+            switch (jobMonitorType) {
+                case PBS:
+                    emailParser = new PBSEmailParser();
+                    break;
+                case SLURM:
+                    emailParser = new SLURMEmailParser();
+                    break;
+                case LSF:
+                    emailParser = new LSFEmailParser();
+                    break;
+                case UGE:
+                    emailParser = new UGEEmailParser();
+                    break;
+                default:
+                    throw new AiravataException("[EJM]: Un-handle resource job manager type: " + jobMonitorType.toString() + " for email monitoring -->  " + addressStr);
+            }
+
+            emailParserMap.put(jobMonitorType, emailParser);
         }
         return emailParser.parseEmail(message);
     }
@@ -136,12 +142,14 @@ public class EmailBasedMonitor implements Runnable{
                 return ResourceJobManagerType.PBS;
             case "slurm@batch1.stampede.tacc.utexas.edu": // stampede
                 return ResourceJobManagerType.SLURM;
-            case "root <root@c341-203.ls4.tacc.utexas.edu>":
-                return ResourceJobManagerType.UGE;
 //            case "lsf":
 //                return ResourceJobManagerType.LSF;
             default:
-                throw new AiravataException("[EJM]: Couldn't identify Resource job manager type from address " + addressStr);
+                if (addressStr.contains("ls4.tacc.utexas.edu>")) { // lonestar
+                    return ResourceJobManagerType.UGE;
+                } else {
+                    throw new AiravataException("[EJM]: Couldn't identify Resource job manager type from address " + addressStr);
+                }
         }
 
     }
@@ -156,11 +164,17 @@ public class EmailBasedMonitor implements Runnable{
             // first time we search for all unread messages.
             SearchTerm unseenBefore = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
             while (!(stopMonitoring || ServerSettings.isStopAllThreads())) {
+                Thread.sleep(ServerSettings.getEmailMonitorPeriod());// sleep a bit - get a rest till job finishes
+                if (jobMonitorMap.isEmpty()) {
+                    log.info("[EJM]: Job Monitor Map is empty, no need to retrieve emails");
+                    continue;
+                } else {
+                    log.info("[EJM]: " + jobMonitorMap.size() + " job/s in job monitor map");
+                }
                 if (!store.isConnected()) {
                     store.connect();
                     emailFolder = store.getFolder(folderName);
                 }
-                Thread.sleep(ServerSettings.getEmailMonitorPeriod());// sleep a bit - get rest till job finishes
                 log.info("[EJM]: Retrieving unseen emails");
                 emailFolder.open(Folder.READ_WRITE);
                 Message[] searchMessages = emailFolder.search(unseenBefore);
@@ -272,7 +286,7 @@ public class EmailBasedMonitor implements Runnable{
             jobMonitorMap.remove(jobStatusResult.getJobId());
             runOutHandlers = true;
             log.info("[EJM]: Job canceled mail received, removed job from job monitoring. " + jobDetails);
-            
+
         }
 
         if (runOutHandlers) {
