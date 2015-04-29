@@ -56,8 +56,8 @@ public class ResourceUtils {
             properties.put("openjpa.ConnectionProperties", connectionProperties);
             properties.put("openjpa.DynamicEnhancementAgent", "true");
             properties.put("openjpa.RuntimeUnenhancedClasses", "unsupported");
-            properties.put("openjpa.DataCache","true(CacheSize=" + Utils.getJPACacheSize() + ", SoftReferenceSize=0)");
-            properties.put("openjpa.QueryCache","true(CacheSize=" + Utils.getJPACacheSize() + ", SoftReferenceSize=0)");
+            properties.put("openjpa.DataCache","" + Utils.isCachingEnabled() + "(CacheSize=" + Utils.getJPACacheSize() + ", SoftReferenceSize=0)");
+            properties.put("openjpa.QueryCache","" + Utils.isCachingEnabled() + "(CacheSize=" + Utils.getJPACacheSize() + ", SoftReferenceSize=0)");
             properties.put("openjpa.RemoteCommitProvider","sjvm");
             properties.put("openjpa.Log","DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
             properties.put("openjpa.jdbc.DBDictionary","SupportsMultipleNontransactionalResultSets=false");

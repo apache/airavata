@@ -52,10 +52,10 @@ public class LSFEmailParser implements EmailParser {
                 jobStatusResult.setState(getJobState(status, content));
                 return jobStatusResult;
             } else {
-                log.error("No matched found for content => \n" + content);
+                log.error("[EJM]: No matched found for content => \n" + content);
             }
         } catch (IOException e) {
-            throw new AiravataException("Error while reading content of the email message");
+            throw new AiravataException("i[EJM]: Error while reading content of the email message");
         }
         return jobStatusResult;
     }

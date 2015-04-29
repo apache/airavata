@@ -1,4 +1,4 @@
-/*
+package org.apache.airavata.registry.cpi;/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,17 +17,13 @@
  * specific language governing permissions and limitations
  * under the License.
  *
+*/
+
+/**
+ * Enum to specify the order type for a specific column when
+ * retrieving results
  */
-
-package org.apache.airavata.persistance.registry.jpa;
-
-public class JPAConstants {
-	public static final String KEY_JDBC_URL = "registry.jdbc.url";
-	public static final String KEY_JDBC_USER = "registry.jdbc.user";
-	public static final String KEY_JDBC_PASSWORD = "registry.jdbc.password";
-	public static final String KEY_JDBC_DRIVER = "registry.jdbc.driver";
-	public static final String KEY_DERBY_START_ENABLE = "start.derby.server.mode";
-    public static final String VALIDATION_QUERY = "validationQuery";
-    public static final String JPA_CACHE_SIZE = "jpa.cache.size";
-    public static final String ENABLE_CACHING = "cache.enable";
+public enum ResultOrderType {
+    ASC,
+    DESC
 }

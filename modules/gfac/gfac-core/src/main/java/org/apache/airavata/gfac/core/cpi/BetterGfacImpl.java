@@ -959,17 +959,10 @@ public class BetterGfacImpl implements GFac,Watcher {
     public void invokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
         String experimentPath = null;
         try {
-             experimentPath = AiravataZKUtils.getExpZnodePath(jobExecutionContext.getExperimentID());
-        } catch (ApplicationSettingsException e) {
-            log.error(e.getMessage(), e);
-            return;
-        }
-
-        try {
             jobExecutionContext.setZk(new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this));
             log.info("Waiting until zookeeper client connect to the server...");
             synchronized (mutex) {
-                mutex.wait();  // waiting for the syncConnected event
+                mutex.wait(5000);  // waiting for the syncConnected event
             }
             if (jobExecutionContext.getZk().exists(experimentPath, false) == null) {
                 log.error("Experiment is already finalized so no output handlers will be invoked");
@@ -1102,6 +1095,7 @@ public class BetterGfacImpl implements GFac,Watcher {
                             // if these already ran we re-run only recoverable handlers
                             log.info(handlerClassName.getClassName() + " is a recoverable handler so we recover the handler");
                             GFacUtils.createPluginZnode(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.INVOKING);
+                            handler.initProperties(handlerClassName.getProperties());
                             ((GFacRecoverableHandler) handler).recover(jobExecutionContext);
                             GFacUtils.updatePluginState(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.COMPLETED);
                         } else {
@@ -1140,13 +1134,6 @@ public class BetterGfacImpl implements GFac,Watcher {
 
     public void reInvokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
         String experimentPath = null;
-        try {
-            experimentPath = AiravataZKUtils.getExpZnodePath(jobExecutionContext.getExperimentID());
-        } catch (ApplicationSettingsException e) {
-            log.error(e.getMessage(), e);
-            return;
-        }
-
         try {
             jobExecutionContext.setZk(new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this));
             log.info("Waiting for zookeeper to connect to the server");

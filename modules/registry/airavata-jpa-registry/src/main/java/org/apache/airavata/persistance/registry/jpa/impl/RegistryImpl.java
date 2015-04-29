@@ -453,18 +453,48 @@ public class RegistryImpl implements Registry {
 
     }
 
+    /**
+     * This method is to retrieve list of objects according to a given criteria
+     * @param dataType Data type is a predefined type which the programmer should choose according to the object he
+     *                 is going to save in to registry
+     * @param filters filters is a map of field name and value that you need to use for search filtration
+     * @return List of objects according to the given criteria
+     */
+    @Override
     public List<Object> search(RegistryModelType dataType, Map<String, String> filters) throws RegistryException {
+        return searchWithPagination(dataType, filters, -1, -1, null, null);
+    }
+
+    /**
+     * This method is to retrieve list of objects with pagination according to a given criteria sorted
+     * according by the specified  identified and specified ordering (i.e either ASC or DESC)
+     * @param dataType Data type is a predefined type which the programmer should choose according to the object he
+     *                 is going to save in to registry
+     * @param filters            filters is a map of field name and value that you need to use for search filtration
+     * @param limit              amount of the results to be returned
+     * @param offset             offset of the results from the sorted list to be fetched from
+     * @param orderByIdentifier  identifier (i.e the column) which will be used as the basis to sort the results
+     * @param resultOrderType    The type of ordering (i.e ASC or DESC) that has to be used when retrieving the results
+     * @return List of objects according to the given criteria
+     */
+    @Override
+    public List<Object> searchWithPagination(RegistryModelType dataType, Map<String, String> filters, int limit,
+        int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
         try {
             List<Object> result = new ArrayList<Object>();
             switch (dataType) {
                 case PROJECT:
-                    List<Project> projectList = projectRegistry.searchProjects(filters);
+                    List<Project> projectList
+                            = projectRegistry.searchProjectsWithPagination(filters, limit, offset,
+                            orderByIdentifier, resultOrderType );
                     for (Project project : projectList ){
                         result.add(project);
                     }
                     return result;
                 case EXPERIMENT:
-                    List<ExperimentSummary> experimentSummaries = experimentRegistry.searchExperiments(filters);
+                    List<ExperimentSummary> experimentSummaries = experimentRegistry
+                            .searchExperimentsWithPagination(filters, limit, offset, orderByIdentifier,
+                                    resultOrderType );
                     for (ExperimentSummary ex : experimentSummaries){
                         result.add(ex);
                     }
