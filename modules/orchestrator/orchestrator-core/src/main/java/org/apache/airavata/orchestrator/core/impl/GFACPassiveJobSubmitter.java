@@ -29,6 +29,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.client.GFACInstance;
 import org.apache.airavata.gfac.client.GFacClientFactory;
+import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.cpi.GfacService;
 import org.apache.airavata.messaging.core.MessageContext;
@@ -101,17 +102,7 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
      * @throws OrchestratorException
      */
     public boolean submit(String experimentID, String taskID, String tokenId) throws OrchestratorException {
-
-        ZooKeeper zk = orchestratorContext.getZk();
         try {
-            if (zk == null || !zk.getState().isConnected()) {
-                String zkhostPort = AiravataZKUtils.getZKhostPort();
-                zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this);
-                logger.info("Waiting for zookeeper to connect to the server");
-                synchronized (mutex) {
-                    mutex.wait(5000);
-                }
-            }
             String gatewayId = null;
             CredentialReader credentialReader = GFacUtils.getCredentialReader();
             if (credentialReader != null) {
@@ -128,15 +119,6 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
             MessageContext messageContext = new MessageContext(taskSubmitEvent, MessageType.LAUNCHTASK, "LAUNCH.TASK-" + UUID.randomUUID().toString(), gatewayId);
             messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             publisher.publish(messageContext);
-        } catch (InterruptedException e) {
-            logger.error(e.getMessage(), e);
-            throw new OrchestratorException(e);
-        } catch (ApplicationSettingsException e) {
-            logger.error(e.getMessage(), e);
-            throw new OrchestratorException(e);
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-            throw new OrchestratorException(e);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new OrchestratorException(e);
@@ -211,12 +193,21 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
             logger.error(e.getMessage(), e);
             throw new OrchestratorException(e);
         }finally {
-
+            closeZK(orchestratorContext);
         }
         return false;
 
     }
 
+    private void closeZK(OrchestratorContext orchestratorContext) {
+        try {
+            if(orchestratorContext!=null && orchestratorContext.getZk()!=null) {
+                orchestratorContext.getZk().close();
+            }
+        } catch (InterruptedException e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
     synchronized public void process(WatchedEvent event) {
         logger.info(getClass().getName() + event.getPath());
         logger.info(getClass().getName()+event.getType());

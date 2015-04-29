@@ -216,10 +216,13 @@ public class BetterGfacImpl implements GFac,Watcher {
             jobExecutionContext = createJEC(experimentID, taskID, gatewayID);
             return submitJob(jobExecutionContext);
         } catch (Exception e) {
-            log.error("Error inovoking the job with experiment ID: " + experimentID);
+            log.error("Error inovoking the job with experiment ID: " + experimentID + ":"+e.getMessage());
             StringWriter errors = new StringWriter();
             e.printStackTrace(new PrintWriter(errors));
             GFacUtils.saveErrorDetails(jobExecutionContext, errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+            if(jobExecutionContext!=null){
+                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.FAILED));
+            }
             throw new GFacException(e);
         }finally {
             closeZK(jobExecutionContext);
@@ -959,6 +962,9 @@ public class BetterGfacImpl implements GFac,Watcher {
         String experimentPath = null;
         try {
             try {
+                if(jobExecutionContext.getZk()!=null){
+                    closeZK(jobExecutionContext);
+                }
                 jobExecutionContext.setZk(new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this));
                 log.info("Waiting until zookeeper client connect to the server...");
                 synchronized (mutex) {
@@ -1063,7 +1069,7 @@ public class BetterGfacImpl implements GFac,Watcher {
 
     private void closeZK(JobExecutionContext jobExecutionContext) {
         try {
-            if(jobExecutionContext.getZk()!=null) {
+            if(jobExecutionContext!=null && jobExecutionContext.getZk()!=null) {
                 jobExecutionContext.getZk().close();
             }
         } catch (InterruptedException e) {
@@ -1320,13 +1326,13 @@ public class BetterGfacImpl implements GFac,Watcher {
                 case Expired:
                 case Disconnected:
                     log.info("ZK Connection is " + state.toString());
-                    try {
-                        zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this);
-                    } catch (IOException e) {
-                        log.error(e.getMessage(), e);
-                    } catch (ApplicationSettingsException e) {
-                        log.error(e.getMessage(), e);
-                    }
+//                    try {
+//                        zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this);
+//                    } catch (IOException e) {
+//                        log.error(e.getMessage(), e);
+//                    } catch (ApplicationSettingsException e) {
+//                        log.error(e.getMessage(), e);
+//                    }
 //                    synchronized (mutex) {
 //                        mutex.wait(5000);  // waiting for the syncConnected event
 //                    }
