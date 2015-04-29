@@ -109,7 +109,7 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
                 zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this);
                 logger.info("Waiting for zookeeper to connect to the server");
                 synchronized (mutex) {
-                    mutex.wait();
+                    mutex.wait(5000);
                 }
             }
             String gatewayId = null;
@@ -160,7 +160,7 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
                 zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this);
                 logger.info("Waiting for zookeeper to connect to the server");
                 synchronized (mutex) {
-                    mutex.wait();
+                    mutex.wait(5000);
                 }
             }
             String gfacServer = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NODE, "/gfac-server");
