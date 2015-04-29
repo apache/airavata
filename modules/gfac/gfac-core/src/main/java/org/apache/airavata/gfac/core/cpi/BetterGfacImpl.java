@@ -966,6 +966,7 @@ public class BetterGfacImpl implements GFac,Watcher {
                     closeZK(jobExecutionContext);
                 }
                 jobExecutionContext.setZk(new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this));
+                zk = jobExecutionContext.getZk();
                 log.info("Waiting until zookeeper client connect to the server...");
                 synchronized (mutex) {
                     mutex.wait(5000);  // waiting for the syncConnected event
@@ -1005,7 +1006,7 @@ public class BetterGfacImpl implements GFac,Watcher {
                         Class<? extends GFacHandler> handlerClass;
                         GFacHandler handler;
                         try {
-                            GFacUtils.createPluginZnode(zk, jobExecutionContext, handlerClassName.getClassName());
+                            GFacUtils.createPluginZnode(jobExecutionContext.getZk(), jobExecutionContext, handlerClassName.getClassName());
                             handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
                             handler = handlerClass.newInstance();
                             handler.initProperties(handlerClassName.getProperties());
@@ -1148,6 +1149,7 @@ public class BetterGfacImpl implements GFac,Watcher {
         String experimentPath = null;
         try {
             jobExecutionContext.setZk(new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this));
+            zk = jobExecutionContext.getZk();
             log.info("Waiting for zookeeper to connect to the server");
             synchronized (mutex) {
                 mutex.wait(5000);  // waiting for the syncConnected event
@@ -1324,8 +1326,17 @@ public class BetterGfacImpl implements GFac,Watcher {
                     mutex.notify();
                     break;
                 case Expired:
+                    try {
+                        zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this);
+                    } catch (IOException e) {
+                        log.error(e.getMessage(), e);
+                    } catch (ApplicationSettingsException e) {
+                        log.error(e.getMessage(), e);
+                    }
+//                    synchronized (mutex) {
+//                        mutex.wait(5000);  // waiting for the syncConnected event
+//                    }
                 case Disconnected:
-                    log.info("ZK Connection is " + state.toString());
 //                    try {
 //                        zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this);
 //                    } catch (IOException e) {
@@ -1336,6 +1347,7 @@ public class BetterGfacImpl implements GFac,Watcher {
 //                    synchronized (mutex) {
 //                        mutex.wait(5000);  // waiting for the syncConnected event
 //                    }
+                    log.info("ZK Connection is " + state.toString());
             }
         }
     }
