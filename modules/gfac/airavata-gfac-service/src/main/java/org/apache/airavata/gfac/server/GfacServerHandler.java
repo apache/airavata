@@ -301,7 +301,10 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
 
     private GFac getGfac() throws TException {
         try {
-            return new BetterGfacImpl(registry, appCatalog, new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this), publisher);
+            if (zk == null || !zk.getState().isConnected()) {
+                zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this);
+            }
+            return new BetterGfacImpl(registry, appCatalog, zk, publisher);
         } catch (Exception e) {
             throw new TException("Error initializing gfac instance", e);
         }

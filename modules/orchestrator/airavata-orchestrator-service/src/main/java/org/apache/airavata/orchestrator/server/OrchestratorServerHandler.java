@@ -512,6 +512,9 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
         try {
             Experiment experiment = (Experiment) registry.get(
                     RegistryModelType.EXPERIMENT, experimentId);
+            if (zk == null || !zk.getState().isConnected()){
+                zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(),this);
+            }
             if (experiment == null) {
                 log.errorId(experimentId, "Error retrieving the Experiment by the given experimentID: {}.", experimentId);
                 throw new OrchestratorException("Error retrieving the Experiment by the given experimentID: " + experimentId);
