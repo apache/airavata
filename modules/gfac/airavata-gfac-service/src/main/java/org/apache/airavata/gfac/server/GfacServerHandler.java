@@ -102,8 +102,9 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
             zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this);   // no watcher is required, this will only use to store some data
             gfacServer = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NODE, "/gfac-server");
             gfacExperiments = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
+            logger.info("Waiting for zookeeper to connect to the server");
             synchronized (mutex) {
-                mutex.wait();  // waiting for the syncConnected event
+                mutex.wait(5000);  // waiting for the syncConnected event
             }
             storeServerConfig();
             logger.info("Finished starting ZK: " + zk);
@@ -200,7 +201,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                         logger.error(e.getMessage(), e);
                     }
 //                    synchronized (mutex) {
-//                        mutex.wait();  // waiting for the syncConnected event
+//                        mutex.wait(5000);  // waiting for the syncConnected event
 //                    }
             }
         }
@@ -301,13 +302,17 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
 
     private GFac getGfac() throws TException {
         try {
-            if (zk == null || !zk.getState().isConnected()) {
-                zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this);
-            }
-            return new BetterGfacImpl(registry, appCatalog, zk, publisher);
-        } catch (Exception e) {
-            throw new TException("Error initializing gfac instance", e);
+            return new BetterGfacImpl(registry, appCatalog,null , publisher);
+
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        } catch (ApplicationSettingsException e) {
+            logger.error(e.getMessage(), e);
+        } catch (InterruptedException e) {
+            logger.error(e.getMessage(), e);
         }
+        return null;
+
     }
 
     private static  class TestHandler implements MessageHandler{

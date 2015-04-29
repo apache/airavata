@@ -88,7 +88,6 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
 	            	}else{
 	                state = ExperimentState.EXECUTING; updateExperimentStatus = true;
 	                }
-
                     cleanup(nodeStatus, experimentNode, experimentPath);
 	                break;
 	            case INVOKED:

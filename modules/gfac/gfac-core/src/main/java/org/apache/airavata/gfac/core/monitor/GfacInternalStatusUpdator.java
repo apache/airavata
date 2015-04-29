@@ -61,8 +61,9 @@ public class GfacInternalStatusUpdator implements AbstractActivityListener, Watc
                 if (!zk.getState().isConnected()) {
                     String zkhostPort = AiravataZKUtils.getZKhostPort();
                     zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this);
+                    logger.info("Waiting for zookeeper to connect to the server");
                     synchronized (mutex) {
-                        mutex.wait();
+                        mutex.wait(5000);
                     }
                 }
                 exists = zk.exists(experimentPath, false);
