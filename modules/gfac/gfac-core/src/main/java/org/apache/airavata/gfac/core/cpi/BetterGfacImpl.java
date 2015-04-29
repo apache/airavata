@@ -964,6 +964,7 @@ public class BetterGfacImpl implements GFac,Watcher {
                 synchronized (mutex) {
                     mutex.wait(5000);  // waiting for the syncConnected event
                 }
+                experimentPath = AiravataZKUtils.getExpZnodePath(jobExecutionContext.getExperimentID());
                 if (jobExecutionContext.getZk().exists(experimentPath, false) == null) {
                     log.error("Experiment is already finalized so no output handlers will be invoked");
                     return;
