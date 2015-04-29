@@ -86,6 +86,15 @@ public class Utils {
         }
     }
 
+    public static String isCachingEnabled (){
+        try {
+            return ServerSettings.getSetting(JPAConstants.ENABLE_CACHING, "true");
+        }catch (Exception e){
+            logger.error(e.getMessage(), e);
+            return "true";
+        }
+    }
+
     public static String getDBType(){
         try{
             String jdbcURL = getJDBCURL();
