@@ -265,9 +265,11 @@ public class DatabaseCreator {
                 logger.info("Script file not found at " + dbscriptName + ". Uses default database script file");
                 DatabaseType databaseType = DatabaseCreator.getDatabaseType(conn);
                 if(databaseType.equals(DatabaseType.derby)){
-                    is = DatabaseCreator.class.getClassLoader().getResourceAsStream("registry-derby.sql");
+                    is = Thread.currentThread().getContextClassLoader()
+                            .getResourceAsStream("registry-derby.sql");
                 }else if(databaseType.equals(DatabaseType.derby)){
-                    is = DatabaseCreator.class.getClassLoader().getResourceAsStream("registry-mysql.sql");
+                    is = Thread.currentThread().getContextClassLoader()
+                            .getResourceAsStream("registry-mysql.sql");
                 }
             }
             reader = new BufferedReader(new InputStreamReader(is));
