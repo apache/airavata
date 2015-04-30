@@ -73,7 +73,7 @@ public class OrchestratorRecoveryHandler implements Watcher {
         zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this);
         log.info("Waiting for zookeeper to connect to the server");
         synchronized (mutex) {
-            mutex.wait();
+            mutex.wait(5000);
         }
         List<String> children = zk.getChildren(ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE)
                 + File.separator + gfacId, false);

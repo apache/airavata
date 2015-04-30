@@ -109,10 +109,14 @@ public class BetterGfacImpl implements GFac,Watcher {
      * @param zooKeeper
      */
     public BetterGfacImpl(Registry registry,  AppCatalog appCatalog, ZooKeeper zooKeeper,
-                          MonitorPublisher publisher) {
+                          MonitorPublisher publisher) throws ApplicationSettingsException, IOException, InterruptedException {
         this.registry = registry;
         monitorPublisher = publisher;     // This is a EventBus common for gfac
-        this.zk = zooKeeper;
+        this.zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this);
+        log.info("Waiting until zookeeper client connect to the server...");
+        synchronized (mutex) {
+            mutex.wait(5000);  // waiting for the syncConnected event
+        }
         this.appCatalog = appCatalog;
     }
 
@@ -212,12 +216,16 @@ public class BetterGfacImpl implements GFac,Watcher {
             jobExecutionContext = createJEC(experimentID, taskID, gatewayID);
             return submitJob(jobExecutionContext);
         } catch (Exception e) {
-            log.error("Error inovoking the job with experiment ID: " + experimentID);
+            log.error("Error inovoking the job with experiment ID: " + experimentID + ":"+e.getMessage());
             StringWriter errors = new StringWriter();
             e.printStackTrace(new PrintWriter(errors));
-            GFacUtils.saveErrorDetails(jobExecutionContext, errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
-            closeZK(jobExecutionContext);
+            GFacUtils.saveErrorDetails(jobExecutionContext, errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+            if(jobExecutionContext!=null){
+                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.FAILED));
+            }
             throw new GFacException(e);
+        }finally {
+            closeZK(jobExecutionContext);
         }
     }
 
@@ -512,15 +520,12 @@ public class BetterGfacImpl implements GFac,Watcher {
             return true;
         } catch (ApplicationSettingsException e) {
             GFacUtils.saveErrorDetails(jobExecutionContext, e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
-            closeZK(jobExecutionContext);
             throw new GFacException("Error launching the Job", e);
         } catch (KeeperException e) {
             GFacUtils.saveErrorDetails(jobExecutionContext, e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
-            closeZK(jobExecutionContext);
             throw new GFacException("Error launching the Job", e);
         } catch (InterruptedException e) {
-            GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
-            closeZK(jobExecutionContext);
+            GFacUtils.saveErrorDetails(jobExecutionContext, e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
             throw new GFacException("Error launching the Job",e);
         }
     }
@@ -531,8 +536,7 @@ public class BetterGfacImpl implements GFac,Watcher {
             jobExecutionContext = createJEC(experimentID, taskID, gatewayID);
             return cancel(jobExecutionContext);
         } catch (Exception e) {
-            GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR );
-            closeZK(jobExecutionContext);
+            GFacUtils.saveErrorDetails(jobExecutionContext, e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
             log.error("Error inovoking the job with experiment ID: " + experimentID);
             throw new GFacException(e);
         }
@@ -613,7 +617,6 @@ public class BetterGfacImpl implements GFac,Watcher {
                     }
                     jobExecutionContext.setProperty(ERROR_SENT, "true");
                     jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
-                    closeZK(jobExecutionContext);
                     throw new GFacException(e.getMessage(), e);
                 }
 //            }
@@ -626,8 +629,9 @@ public class BetterGfacImpl implements GFac,Watcher {
 //            throw new GFacException(e.getMessage(), e);
         } catch (Exception e) {
             log.error("Error occured while cancelling job for experiment : " + jobExecutionContext.getExperimentID(), e);
-            closeZK(jobExecutionContext);
             throw new GFacException(e.getMessage(), e);
+        }finally {
+            closeZK(jobExecutionContext);
         }
     }
 
@@ -708,9 +712,8 @@ public class BetterGfacImpl implements GFac,Watcher {
 			}
 			jobExecutionContext.setProperty(ERROR_SENT, "true");
 			jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
-            closeZK(jobExecutionContext);
             throw new GFacException(e.getMessage(), e);
-		}
+        }
     }
 
 	private void launch(JobExecutionContext jobExecutionContext) throws GFacException {
@@ -781,7 +784,6 @@ public class BetterGfacImpl implements GFac,Watcher {
 			}
 			jobExecutionContext.setProperty(ERROR_SENT, "true");
 			jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
-            closeZK(jobExecutionContext);
             throw new GFacException(e.getMessage(), e);
 		}
     }
@@ -959,85 +961,96 @@ public class BetterGfacImpl implements GFac,Watcher {
     public void invokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
         String experimentPath = null;
         try {
-            jobExecutionContext.setZk(new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this));
-            log.info("Waiting until zookeeper client connect to the server...");
-            synchronized (mutex) {
-                mutex.wait(5000);  // waiting for the syncConnected event
-            }
-            if (jobExecutionContext.getZk().exists(experimentPath, false) == null) {
-                log.error("Experiment is already finalized so no output handlers will be invoked");
-                return;
-            }
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        } catch (ApplicationSettingsException e) {
-            log.error(e.getMessage(), e);
-        } catch (InterruptedException e) {
-            log.error(e.getMessage(), e);
-        } catch (KeeperException e) {
-            log.error(e.getMessage(), e);
-        }
-
-        GFacConfiguration gFacConfiguration = jobExecutionContext.getGFacConfiguration();
-        List<GFacHandlerConfig> handlers = null;
-        if (gFacConfiguration != null) {
-            handlers = jobExecutionContext.getGFacConfiguration().getOutHandlers();
-        } else {
             try {
-                jobExecutionContext = createJEC(jobExecutionContext.getExperimentID(),
-                        jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext.getGatewayID());
-            } catch (Exception e) {
-                log.error("Error constructing job execution context during outhandler invocation");
-                throw new GFacException(e);
-            }
-        }
-        monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.OUTHANDLERSINVOKING));
-        for (GFacHandlerConfig handlerClassName : handlers) {
-            if (!isCancelled()) {
-                Class<? extends GFacHandler> handlerClass;
-                GFacHandler handler;
-                try {
-                    GFacUtils.createPluginZnode(zk, jobExecutionContext, handlerClassName.getClassName());
-                    handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
-                    handler = handlerClass.newInstance();
-                    handler.initProperties(handlerClassName.getProperties());
-                } catch (ClassNotFoundException e) {
-                    log.error(e.getMessage());
-                    throw new GFacException("Cannot load handler class " + handlerClassName, e);
-                } catch (InstantiationException e) {
-                    log.error(e.getMessage());
-                    throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
-                } catch (IllegalAccessException e) {
-                    log.error(e.getMessage());
-                    throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
-                } catch (Exception e) {
-                    throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
-                }
-                try {
-                    handler.invoke(jobExecutionContext);
-                    GFacUtils.updatePluginState(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.COMPLETED);
-                } catch (Exception e) {
-                    TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
-                            jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                            jobExecutionContext.getExperimentID(),
-                            jobExecutionContext.getGatewayID());
-                    monitorPublisher.publish(new TaskStatusChangeRequestEvent(TaskState.FAILED, taskIdentity));
-                    try {
-                        StringWriter errors = new StringWriter();
-                        e.printStackTrace(new PrintWriter(errors));
-                        GFacUtils.saveErrorDetails(jobExecutionContext, errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
-                    } catch (GFacException e1) {
-                        log.error(e1.getLocalizedMessage());
-                    }
-                    throw new GFacException(e);
-                } finally {
+                if(jobExecutionContext.getZk()!=null){
                     closeZK(jobExecutionContext);
                 }
-            } else {
-                log.info("Experiment execution is cancelled, so OutHandler invocation is going to stop");
-                break;
+                jobExecutionContext.setZk(new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this));
+                zk = jobExecutionContext.getZk();
+                log.info("Waiting until zookeeper client connect to the server...");
+                synchronized (mutex) {
+                    mutex.wait(5000);  // waiting for the syncConnected event
+                }
+                experimentPath = AiravataZKUtils.getExpZnodePath(jobExecutionContext.getExperimentID());
+                if (jobExecutionContext.getZk().exists(experimentPath, false) == null) {
+                    log.error("Experiment is already finalized so no output handlers will be invoked");
+                    return;
+                }
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
+            } catch (ApplicationSettingsException e) {
+                log.error(e.getMessage(), e);
+            } catch (InterruptedException e) {
+                log.error(e.getMessage(), e);
+            } catch (KeeperException e) {
+                log.error(e.getMessage(), e);
             }
-            monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.OUTHANDLERSINVOKED));
+
+            GFacConfiguration gFacConfiguration = jobExecutionContext.getGFacConfiguration();
+            List<GFacHandlerConfig> handlers = null;
+            if (gFacConfiguration != null) {
+                handlers = jobExecutionContext.getGFacConfiguration().getOutHandlers();
+            } else {
+                try {
+                    jobExecutionContext = createJEC(jobExecutionContext.getExperimentID(),
+                            jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext.getGatewayID());
+                } catch (Exception e) {
+                    log.error("Error constructing job execution context during outhandler invocation");
+                    throw new GFacException(e);
+                }
+            }
+            try {
+                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.OUTHANDLERSINVOKING));
+                for (GFacHandlerConfig handlerClassName : handlers) {
+                    if (!isCancelled()) {
+                        Class<? extends GFacHandler> handlerClass;
+                        GFacHandler handler;
+                        try {
+                            GFacUtils.createPluginZnode(jobExecutionContext.getZk(), jobExecutionContext, handlerClassName.getClassName());
+                            handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
+                            handler = handlerClass.newInstance();
+                            handler.initProperties(handlerClassName.getProperties());
+                        } catch (ClassNotFoundException e) {
+                            log.error(e.getMessage());
+                            throw new GFacException("Cannot load handler class " + handlerClassName, e);
+                        } catch (InstantiationException e) {
+                            log.error(e.getMessage());
+                            throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
+                        } catch (IllegalAccessException e) {
+                            log.error(e.getMessage());
+                            throw new GFacException("Cannot instantiate handler class " + handlerClassName, e);
+                        }
+                        try {
+                            handler.invoke(jobExecutionContext);
+                            GFacUtils.updatePluginState(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.COMPLETED);
+                        } catch (Exception e) {
+                            TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
+                                    jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
+                                    jobExecutionContext.getExperimentID(),
+                                    jobExecutionContext.getGatewayID());
+                            monitorPublisher.publish(new TaskStatusChangeRequestEvent(TaskState.FAILED, taskIdentity));
+                            try {
+                                StringWriter errors = new StringWriter();
+                                e.printStackTrace(new PrintWriter(errors));
+                                GFacUtils.saveErrorDetails(jobExecutionContext, errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+                            } catch (GFacException e1) {
+                                log.error(e1.getLocalizedMessage());
+                            }
+                            throw new GFacException(e);
+                        }
+                    } else {
+                        log.info("Experiment execution is cancelled, so OutHandler invocation is going to stop");
+                        break;
+                    }
+                    monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.OUTHANDLERSINVOKED));
+                }
+            } catch (Exception e) {
+                throw new GFacException("Cannot invoke OutHandlers\n" + e.getMessage(), e);
+            }
+        }catch (Exception e){
+            throw new GFacException("Cannot invoke OutHandlers\n" + e.getMessage(), e);
+        } finally{
+            closeZK(jobExecutionContext);
         }
 
         // At this point all the execution is finished so we update the task and experiment statuses.
@@ -1057,7 +1070,7 @@ public class BetterGfacImpl implements GFac,Watcher {
 
     private void closeZK(JobExecutionContext jobExecutionContext) {
         try {
-            if(jobExecutionContext.getZk()!=null) {
+            if(jobExecutionContext!=null && jobExecutionContext.getZk()!=null) {
                 jobExecutionContext.getZk().close();
             }
         } catch (InterruptedException e) {
@@ -1136,9 +1149,10 @@ public class BetterGfacImpl implements GFac,Watcher {
         String experimentPath = null;
         try {
             jobExecutionContext.setZk(new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this));
+            zk = jobExecutionContext.getZk();
             log.info("Waiting for zookeeper to connect to the server");
             synchronized (mutex) {
-                mutex.wait();  // waiting for the syncConnected event
+                mutex.wait(5000);  // waiting for the syncConnected event
             }
             if (jobExecutionContext.getZk().exists(experimentPath, false) == null) {
                 log.error("Experiment is already finalized so no output handlers will be invoked");
@@ -1312,8 +1326,6 @@ public class BetterGfacImpl implements GFac,Watcher {
                     mutex.notify();
                     break;
                 case Expired:
-                case Disconnected:
-                    log.info("ZK Connection is " + state.toString());
                     try {
                         zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this);
                     } catch (IOException e) {
@@ -1322,8 +1334,20 @@ public class BetterGfacImpl implements GFac,Watcher {
                         log.error(e.getMessage(), e);
                     }
 //                    synchronized (mutex) {
-//                        mutex.wait();  // waiting for the syncConnected event
+//                        mutex.wait(5000);  // waiting for the syncConnected event
 //                    }
+                case Disconnected:
+//                    try {
+//                        zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this);
+//                    } catch (IOException e) {
+//                        log.error(e.getMessage(), e);
+//                    } catch (ApplicationSettingsException e) {
+//                        log.error(e.getMessage(), e);
+//                    }
+//                    synchronized (mutex) {
+//                        mutex.wait(5000);  // waiting for the syncConnected event
+//                    }
+                    log.info("ZK Connection is " + state.toString());
             }
         }
     }
