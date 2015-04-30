@@ -1,13 +1,13 @@
 For detailed installation and further instructions please refer http://airavata.apache.org/:
 Documentation section in left hand panel. The website lists step by step instructions
 
-Installing  Apache Airavata 0.14
+Installing  Apache Airavata 0.15
 ------------------------------------------------
 
 Prerequisites
 -------------
-Java 1.5 or later
-Maven (tested on v 3.0.2)
+Java 1.8 or later
+Maven 3 or later
 
 Build Apache Airavata from Source
 ---------------------------------
