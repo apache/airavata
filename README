@@ -89,13 +89,6 @@ Airavata Source Distribution Directory Structure
 		│   │   ├── workflow-engine
 		│   │   ├── workflow-model-component-node
 		│   │   └── workflow-model-core
-		│   ├── ws-messenger
-		│   │   ├── commons
-		│   │   ├── distribution
-		│   │   ├── messagebox
-		│   │   ├── messagebroker
-		│   │   ├── message-monitor
-		│   │   └── samples
 		│   └── xbaya-gui
 		├── samples
 		├── tools
