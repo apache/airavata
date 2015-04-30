@@ -145,7 +145,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 					String OrchServer = ServerSettings
 							.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_ORCHESTRATOR_SERVER_NODE);
 					synchronized (mutex) {
-						mutex.wait(); // waiting for the syncConnected event
+						mutex.wait(5000); // waiting for the syncConnected event
 					}
 					registerOrchestratorService(airavataServerHostPort, OrchServer);
 					// creating a watch in orchestrator to monitor the gfac
@@ -517,6 +517,10 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
             if (zk == null || !zk.getState().isConnected()){
                 zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(),this);
             }
+			log.info("Waiting for zookeeper to connect to the server");
+			synchronized (mutex){
+				mutex.wait(5000);
+			}
             if (experiment == null) {
                 log.errorId(experimentId, "Error retrieving the Experiment by the given experimentID: {}.", experimentId);
                 throw new OrchestratorException("Error retrieving the Experiment by the given experimentID: " + experimentId);

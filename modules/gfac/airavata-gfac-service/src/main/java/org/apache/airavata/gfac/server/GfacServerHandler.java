@@ -201,7 +201,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                         logger.error(e.getMessage(), e);
                     }
 //                    synchronized (mutex) {
-//                        mutex.wait();  // waiting for the syncConnected event
+//                        mutex.wait(5000);  // waiting for the syncConnected event
 //                    }
             }
         }
@@ -302,13 +302,17 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
 
     private GFac getGfac() throws TException {
         try {
-            if (zk == null || !zk.getState().isConnected()) {
-                zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this);
-            }
-            return new BetterGfacImpl(registry, appCatalog, zk, publisher);
-        } catch (Exception e) {
-            throw new TException("Error initializing gfac instance", e);
+            return new BetterGfacImpl(registry, appCatalog,null , publisher);
+
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+        } catch (ApplicationSettingsException e) {
+            logger.error(e.getMessage(), e);
+        } catch (InterruptedException e) {
+            logger.error(e.getMessage(), e);
         }
+        return null;
+
     }
 
     private static  class TestHandler implements MessageHandler{
