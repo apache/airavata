@@ -38,13 +38,13 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SimpleAppDataValidator implements JobMetadataValidator {
-    private final static Logger logger = LoggerFactory.getLogger(SimpleAppDataValidator.class);
+public class BatchQueueValidator implements JobMetadataValidator {
+    private final static Logger logger = LoggerFactory.getLogger(BatchQueueValidator.class);
 
     private Registry registry;
     private AppCatalog appCatalog;
 
-    public SimpleAppDataValidator() {
+    public BatchQueueValidator() {
         try {
             this.registry = RegistryFactory.getDefaultRegistry();
             this.appCatalog = AppCatalogFactory.getAppCatalog();
@@ -79,7 +79,7 @@ public class SimpleAppDataValidator implements JobMetadataValidator {
             UserConfigurationData userConfigurationData = experiment.getUserConfigurationData();
             ComputationalResourceScheduling computationalResourceScheduling = userConfigurationData.getComputationalResourceScheduling();
             if (userConfigurationData.isAiravataAutoSchedule()) {
-                logger.error("We dont' support auto scheduling at this point, We will simply use user data as it is");
+                logger.error("Auto-Schedule is not yet supported. Experiment will proceed with provided scheduling information");
                 ValidatorResult validatorResult = new ValidatorResult();
                 validatorResult.setResult(false);
                 validatorResultList.add(validatorResult);
@@ -89,25 +89,39 @@ public class SimpleAppDataValidator implements JobMetadataValidator {
 
             if (batchQueues != null && !batchQueues.isEmpty()){
                 if (computationalResourceScheduling != null){
-                    String queueName = computationalResourceScheduling.getQueueName().trim();
-                    int wallTimeLimit = computationalResourceScheduling.getWallTimeLimit();
+                    String experimentQueueName = computationalResourceScheduling.getQueueName().trim();
+                    int experimentWallTimeLimit = computationalResourceScheduling.getWallTimeLimit();
                     ValidatorResult queueNameResult = new ValidatorResult();
 
+                    //Set the validation to false. Once all the queue's are looped, if nothing matches, then this gets passed.
                     queueNameResult.setResult(false);
-                    queueNameResult.setErrorDetails("Unable to find queue name from appcatalog configured queues.. Either you " +
-                            "specified a wrong queue name or you did not configure app catalog correctly...");
+                    queueNameResult.setErrorDetails("The specified queue" + experimentQueueName +
+                            "does not exist. If you believe this is an error, contact the administrator to verify App-Catalog Configurations");
                     for (BatchQueue queue : batchQueues){
-                        String configuredQname = queue.getQueueName();
-                        int maxRunTime = queue.getMaxRunTime();
-                        if (configuredQname != null && configuredQname.equals(queueName)){
-                            ValidatorResult wallTimeResult = new ValidatorResult();
-                            wallTimeResult.setResult(false);
-                            wallTimeResult.setErrorDetails("Provided walltime period exceeds max walltime configured..");
+                        String resourceQueueName = queue.getQueueName();
+                        int maxQueueRunTime = queue.getMaxRunTime();
+                        if (resourceQueueName != null && resourceQueueName.equals(experimentQueueName)){
                             queueNameResult.setResult(true);
                             queueNameResult.setErrorDetails("");
-                            if (maxRunTime != 0 && maxRunTime > wallTimeLimit){
+
+                            //Validate if the specified wall time is within allowable limit
+                            ValidatorResult wallTimeResult = new ValidatorResult();
+                            if (maxQueueRunTime == 0) {
                                 wallTimeResult.setResult(true);
-                                wallTimeResult.setErrorDetails("");
+                                wallTimeResult.setErrorDetails("Maximum wall time is not configured for the queue," +
+                                        "Validation is being skipped");
+                                logger.info("Maximum wall time is not configured for the queue" +
+                                        "Validation is being skipped");
+                            } else {
+                                if (maxQueueRunTime < experimentWallTimeLimit){
+                                    wallTimeResult.setResult(false);
+                                    wallTimeResult.setErrorDetails("Job Execution walltime " + experimentWallTimeLimit +
+                                            "exceeds the allowable walltime"  + maxQueueRunTime +
+                                            "for queue " + resourceQueueName);
+                                } else {
+                                    wallTimeResult.setResult(true);
+                                    wallTimeResult.setErrorDetails("");
+                                }
                             }
                             validatorResultList.add(wallTimeResult);
                         }
