@@ -103,13 +103,13 @@ public class JSDLGenerator implements BESConstants {
 		ApplicationContext appCtxt = context.getApplicationContext();
 		
 		if (appCtxt != null) {
-			if (appCtxt.getComputeResourcePreference().getAllocationProjectNumber() != null)
+			if (appCtxt.getComputeResourcePreference() != null && appCtxt.getComputeResourcePreference().getAllocationProjectNumber() != null)
 				JSDLUtils.addProjectName(value, appCtxt.getComputeResourcePreference().getAllocationProjectNumber());
 			
-			if (appCtxt.getApplicationInterfaceDescription().getApplicationDescription() != null)
+			if (appCtxt.getApplicationInterfaceDescription() != null && appCtxt.getApplicationInterfaceDescription().getApplicationDescription() != null)
 				JSDLUtils.getOrCreateJobIdentification(value).setDescription(appCtxt.getApplicationInterfaceDescription().getApplicationDescription());				
 			
-			if (appCtxt.getApplicationInterfaceDescription().getApplicationName() != null)
+			if (appCtxt.getApplicationInterfaceDescription() != null && appCtxt.getApplicationInterfaceDescription().getApplicationName() != null)
 				JSDLUtils.getOrCreateJobIdentification(value).setJobName(appCtxt.getApplicationInterfaceDescription().getApplicationName());
 		}
 	}
