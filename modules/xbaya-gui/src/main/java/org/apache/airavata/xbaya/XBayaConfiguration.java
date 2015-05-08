@@ -31,7 +31,6 @@ import java.util.Observable;
 import java.util.Observer;
 
 import org.apache.airavata.api.Airavata.Client;
-import org.apache.airavata.gfac.ec2.AmazonSecurityContext;
 import org.apache.airavata.model.error.AiravataClientConnectException;
 import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
@@ -141,7 +140,6 @@ public class XBayaConfiguration extends Observable implements Observer {
 
     private boolean regURLSetByCMD = false;
 
-    private AmazonSecurityContext amazonSecurityContext = null;
 
     private ContextHeaderDocument.ContextHeader contextHeader;
 
@@ -327,22 +325,6 @@ public class XBayaConfiguration extends Observable implements Observer {
      */
     public void setGPELInstanceID(URI gpelInstanceID) {
         this.gpelInstanceID = gpelInstanceID;
-    }
-
-    /**
-     * Get the AmazonSecurityContext needed for cloud job submission.
-     * @return AmazonSecurityContext
-     */
-    public AmazonSecurityContext getAmazonSecurityContext() {
-        return amazonSecurityContext;
-    }
-
-    /**
-     * Set the AmazonSecurityContext needed for cloud job submission.
-     * @param amazonSecurityContext amazon security context.
-     */
-    public void setAmazonSecurityContext(AmazonSecurityContext amazonSecurityContext) {
-        this.amazonSecurityContext = amazonSecurityContext;
     }
 
     /**

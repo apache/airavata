@@ -32,11 +32,8 @@
             </activation>
             <modules>
                 <module>gfac-core</module>
-                <module>gfac-ec2</module>
                 <module>gfac-ssh</module>
                 <module>gfac-local</module>
-                <!--<module>gfac-hadoop</module>-->
-                <!--<module>gfac-gram</module>-->
                 <module>gfac-gsissh</module>
                 <module>gfac-bes</module>
                 <module>gfac-monitor</module>
