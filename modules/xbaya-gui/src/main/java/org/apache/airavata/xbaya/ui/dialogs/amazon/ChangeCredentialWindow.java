@@ -21,11 +21,6 @@
 
 package org.apache.airavata.xbaya.ui.dialogs.amazon;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.ec2.AmazonEC2Client;
-import org.apache.airavata.gfac.ec2.EC2Provider;
-import org.apache.airavata.gfac.ec2.util.EC2ProviderUtil;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.core.amazon.AmazonCredential;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
@@ -33,12 +28,12 @@ import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 
 public class ChangeCredentialWindow {
     private XBayaEngine engine;
@@ -109,7 +104,7 @@ public class ChangeCredentialWindow {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                String accessID = ChangeCredentialWindow.this.accessKeyIDTextField.getText();
+               /* String accessID = ChangeCredentialWindow.this.accessKeyIDTextField.getText();
                 if (!"".equals(accessID)) {
                     String secretID = ChangeCredentialWindow.this.secretAccessKeyTextField.getText();
 
@@ -152,7 +147,7 @@ public class ChangeCredentialWindow {
                         hide();
                         return;
                     }
-                }
+                }*/
 
                 JOptionPane.showMessageDialog(dialog.getDialog(),"SecretKey and AccessKey can not be empty!");
             }
