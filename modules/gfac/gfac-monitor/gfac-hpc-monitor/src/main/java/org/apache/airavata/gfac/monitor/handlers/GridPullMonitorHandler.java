@@ -107,6 +107,12 @@ public class GridPullMonitorHandler extends ThreadedHandler implements Watcher{
                     monitorID.getJobID(),  monitorID.getExperimentID());
         }
     }
+
+    @Override
+    public void recover(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+        // TODO: Auto generated method body.
+    }
+
     public AuthenticationInfo getAuthenticationInfo() {
         return authenticationInfo;
     }

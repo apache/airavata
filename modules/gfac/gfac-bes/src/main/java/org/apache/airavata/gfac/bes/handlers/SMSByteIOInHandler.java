@@ -45,6 +45,11 @@ public class SMSByteIOInHandler extends AbstractSMSHandler implements GFacHandle
 		}
 
  	}
-	
-	
+
+    @Override
+    public void recover(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+        // TODO: Auto generated method body.
+    }
+
+
 }

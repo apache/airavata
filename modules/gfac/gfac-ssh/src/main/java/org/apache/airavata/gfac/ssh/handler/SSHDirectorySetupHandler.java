@@ -63,7 +63,13 @@ public class SSHDirectorySetupHandler extends AbstractHandler {
         makeDirectory(jobExecutionContext);
 
 	}
-	private void makeDirectory(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+
+    @Override
+    public void recover(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+        // TODO: Auto generated method body.
+    }
+
+    private void makeDirectory(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
 		Cluster cluster = null;
 		try{
             String hostAddress = jobExecutionContext.getHostName();

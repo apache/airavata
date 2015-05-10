@@ -41,6 +41,12 @@ public class LocalDirectorySetupHandler implements GFacHandler {
         makeFileSystemDir(jobExecutionContext.getInputDir());
         makeFileSystemDir(jobExecutionContext.getOutputDir());
     }
+
+    @Override
+    public void recover(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+        // TODO: Auto generated method body.
+    }
+
     private void makeFileSystemDir(String dir) throws GFacHandlerException {
            File f = new File(dir);
            if (f.isDirectory() && f.exists()) {

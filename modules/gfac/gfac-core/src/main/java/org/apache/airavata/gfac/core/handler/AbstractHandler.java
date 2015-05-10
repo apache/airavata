@@ -23,12 +23,22 @@ package org.apache.airavata.gfac.core.handler;
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
+import org.apache.airavata.gfac.core.states.GfacPluginState;
+import org.apache.airavata.gfac.core.utils.GFacUtils;
+import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.messaging.event.TaskIdentifier;
+import org.apache.airavata.model.messaging.event.TaskOutputChangeEvent;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 public abstract class AbstractHandler implements GFacHandler {
-	protected Registry registry = null;
+    private static final Logger logger = LoggerFactory.getLogger(AbstractHandler.class);
+    protected Registry registry = null;
 
     protected MonitorPublisher publisher = null;
 
@@ -37,6 +47,11 @@ public abstract class AbstractHandler implements GFacHandler {
     }
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+        try {
+            GFacUtils.updatePluginState(jobExecutionContext.getZk(), jobExecutionContext, this.getClass().getName(), GfacPluginState.INVOKED);
+        } catch (Exception e) {
+            logger.error("Error saving Recoverable provider state", e);
+        }
 		registry = jobExecutionContext.getRegistry();
         if(registry == null){
             try {
@@ -60,5 +75,13 @@ public abstract class AbstractHandler implements GFacHandler {
 
     public void setRegistry(Registry registry) {
         this.registry = registry;
+    }
+
+    protected void fireTaskOutputChangeEvent(JobExecutionContext jobExecutionContext, List<OutputDataObjectType> outputArray) {
+        TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
+                jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
+                jobExecutionContext.getExperimentID(),
+                jobExecutionContext.getGatewayID());
+        publisher.publish(new TaskOutputChangeEvent(outputArray, taskIdentity));
     }
 }

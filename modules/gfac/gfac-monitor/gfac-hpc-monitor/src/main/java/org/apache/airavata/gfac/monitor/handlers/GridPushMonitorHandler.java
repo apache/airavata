@@ -85,6 +85,11 @@ public class GridPushMonitorHandler extends ThreadedHandler {
         amqpMonitor.getRunningQueue().add(monitorID);
     }
 
+    @Override
+    public void recover(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+        // TODO: Auto generated method body.
+    }
+
     public AMQPMonitor getAmqpMonitor() {
         return amqpMonitor;
     }

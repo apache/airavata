@@ -33,6 +33,11 @@ public class TestProvider extends AbstractProvider {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    @Override
+    public void recover(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
+        // TODO: Auto generated method body.
+    }
+
     public void initProperties(Map<String, String> properties) throws GFacProviderException, GFacException {
         //To change body of implemented methods use File | Settings | File Templates.
     }

@@ -21,7 +21,6 @@
 
 package org.apache.airavata.gfac.ssh.provider.impl;
 
-import org.airavata.appcatalog.cpi.AppCatalog;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -34,7 +33,7 @@ import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.handler.ThreadedHandler;
 import org.apache.airavata.gfac.core.notification.events.StartExecutionEvent;
-import org.apache.airavata.gfac.core.provider.AbstractRecoverableProvider;
+import org.apache.airavata.gfac.core.provider.AbstractProvider;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.monitor.email.EmailBasedMonitor;
@@ -71,7 +70,7 @@ import java.util.*;
 /**
  * Execute application using remote SSH
  */
-public class SSHProvider extends AbstractRecoverableProvider {
+public class SSHProvider extends AbstractProvider {
     private static final Logger log = LoggerFactory.getLogger(SSHProvider.class);
     private Cluster cluster;
     private String jobID = null;

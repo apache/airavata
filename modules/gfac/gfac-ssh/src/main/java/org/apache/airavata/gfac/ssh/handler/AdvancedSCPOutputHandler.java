@@ -212,5 +212,10 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
         }
     }
 
+    @Override
+    public void recover(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+        // TODO: Auto generated method body.
+    }
+
 
 }

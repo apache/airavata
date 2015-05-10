@@ -153,6 +153,11 @@ public class SSHInputHandler extends AbstractHandler {
         jobExecutionContext.setInMessageContext(inputNew);
     }
 
+    @Override
+    public void recover(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+        // TODO: Auto generated method body.
+    }
+
     private static String stageInputFiles(Cluster cluster, JobExecutionContext jobExecutionContext, String paramValue) throws IOException, GFacException {
         int i = paramValue.lastIndexOf(File.separator);
         String substring = paramValue.substring(i + 1);

@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
-public class AppDescriptorCheckHandler implements GFacRecoverableHandler {
+public class AppDescriptorCheckHandler implements GFacHandler {
     private static final Logger logger = LoggerFactory.getLogger(AppDescriptorCheckHandler.class);
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {

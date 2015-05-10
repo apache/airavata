@@ -412,8 +412,13 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
 			throws GFacProviderException, GFacException {
 		// TODO Auto-generated method stub
 	}
-	
-	protected void waitUntilDone(FactoryClient factory, EndpointReferenceType activityEpr, JobDetails jobDetails) throws Exception {
+
+    @Override
+    public void recover(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
+        // TODO: Auto generated method body.
+    }
+
+    protected void waitUntilDone(FactoryClient factory, EndpointReferenceType activityEpr, JobDetails jobDetails) throws Exception {
 		
 		try {
 			while ((factory.getActivityStatus(activityEpr) != ActivityStateEnumeration.FINISHED)

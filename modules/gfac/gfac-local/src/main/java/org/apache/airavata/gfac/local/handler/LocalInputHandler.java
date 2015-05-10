@@ -20,9 +20,8 @@
 */
 package org.apache.airavata.gfac.local.handler;
 
-import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
-import org.apache.airavata.gfac.core.handler.AbstractRecoverableHandler;
+import org.apache.airavata.gfac.core.handler.AbstractHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
@@ -36,7 +35,7 @@ import java.util.Map;
 import java.util.Properties;
 
 
-public class LocalInputHandler extends AbstractRecoverableHandler {
+public class LocalInputHandler extends AbstractHandler {
     private static final Logger logger = LoggerFactory.getLogger(LocalInputHandler.class);
     @Override
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {

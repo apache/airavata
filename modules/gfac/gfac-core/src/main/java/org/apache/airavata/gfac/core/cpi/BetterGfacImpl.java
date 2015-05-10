@@ -43,7 +43,6 @@ import org.apache.airavata.gfac.core.notification.events.ExecutionFailEvent;
 import org.apache.airavata.gfac.core.notification.listeners.LoggingListener;
 import org.apache.airavata.gfac.core.provider.GFacProvider;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
-import org.apache.airavata.gfac.core.provider.GFacRecoverableProvider;
 import org.apache.airavata.gfac.core.states.GfacExperimentState;
 import org.apache.airavata.gfac.core.states.GfacPluginState;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
@@ -829,20 +828,16 @@ public class BetterGfacImpl implements GFac,Watcher {
         GFacProvider provider = jobExecutionContext.getProvider();
         if (provider != null) {
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKING));
-            String plState = GFacUtils.getPluginState(zk, jobExecutionContext, provider.getClass().getName());
-            if (plState!=null && Integer.valueOf(plState) >= GfacPluginState.INVOKED.getValue()) {    // this will make sure if a plugin crashes it will not launch from the scratch, but plugins have to save their invoked state
-                if (provider instanceof GFacRecoverableProvider) {
-                    GFacUtils.createPluginZnode(zk, jobExecutionContext, provider.getClass().getName());
-                    ((GFacRecoverableProvider) provider).recover(jobExecutionContext);
-                    GFacUtils.updatePluginState(zk, jobExecutionContext, provider.getClass().getName(), GfacPluginState.COMPLETED);
-                }
-            } else {
-                GFacUtils.createPluginZnode(zk, jobExecutionContext, provider.getClass().getName());
+            GfacPluginState plState = GFacUtils.getPluginState(zk, jobExecutionContext, provider.getClass().getName());
+            GFacUtils.createPluginZnode(zk, jobExecutionContext, provider.getClass().getName());
+            if (plState != null && plState == GfacPluginState.INVOKING) {    // this will make sure if a plugin crashes it will not launch from the scratch, but plugins have to save their invoked state
                 initProvider(provider, jobExecutionContext);
                 executeProvider(provider, jobExecutionContext);
                 disposeProvider(provider, jobExecutionContext);
-                GFacUtils.updatePluginState(zk, jobExecutionContext, provider.getClass().getName(), GfacPluginState.COMPLETED);
+            } else {
+                provider.recover(jobExecutionContext);
             }
+            GFacUtils.updatePluginState(zk, jobExecutionContext, provider.getClass().getName(), GfacPluginState.COMPLETED);
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKED));
         }
 
@@ -868,24 +863,21 @@ public class BetterGfacImpl implements GFac,Watcher {
         }
     }
 
+    // TODO - Did refactoring, but need to recheck the logic again.
     private void reInvokeProviderCancel(JobExecutionContext jobExecutionContext) throws GFacException, GFacProviderException, ApplicationSettingsException, InterruptedException, KeeperException {
         GFacProvider provider = jobExecutionContext.getProvider();
         if (provider != null) {
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKING));
-            String plState = GFacUtils.getPluginState(zk, jobExecutionContext, provider.getClass().getName());
-            if (Integer.valueOf(plState) >= GfacPluginState.INVOKED.getValue()) {    // this will make sure if a plugin crashes it will not launch from the scratch, but plugins have to save their invoked state
-                if (provider instanceof GFacRecoverableProvider) {
-                    GFacUtils.createPluginZnode(zk, jobExecutionContext, provider.getClass().getName());
-                    ((GFacRecoverableProvider) provider).recover(jobExecutionContext);
-                    GFacUtils.updatePluginState(zk, jobExecutionContext, provider.getClass().getName(), GfacPluginState.COMPLETED);
-                }
-            } else {
-                GFacUtils.createPluginZnode(zk, jobExecutionContext, provider.getClass().getName());
+            GfacPluginState plState = GFacUtils.getPluginState(zk, jobExecutionContext, provider.getClass().getName());
+            GFacUtils.createPluginZnode(zk, jobExecutionContext, provider.getClass().getName());
+            if (plState == GfacPluginState.UNKNOWN || plState == GfacPluginState.INVOKING) {    // this will make sure if a plugin crashes it will not launch from the scratch, but plugins have to save their invoked state
                 initProvider(provider, jobExecutionContext);
                 cancelProvider(provider, jobExecutionContext);
                 disposeProvider(provider, jobExecutionContext);
-                GFacUtils.updatePluginState(zk, jobExecutionContext, provider.getClass().getName(), GfacPluginState.COMPLETED);
+            } else {
+                provider.recover(jobExecutionContext);
             }
+            GFacUtils.updatePluginState(zk, jobExecutionContext, provider.getClass().getName(), GfacPluginState.COMPLETED);
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKED));
         }
 
@@ -1106,6 +1098,7 @@ public class BetterGfacImpl implements GFac,Watcher {
      * @param jobExecutionContext
      * @throws GFacException
      */
+    // TODO - Did refactoring, but need to recheck the logic again.
     private void reInvokeInFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
         List<GFacHandlerConfig> handlers = jobExecutionContext.getGFacConfiguration().getInHandlers();
         try {
@@ -1117,31 +1110,18 @@ public class BetterGfacImpl implements GFac,Watcher {
                 try {
                     handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
                     handler = handlerClass.newInstance();
-                    String plState = GFacUtils.getPluginState(zk, jobExecutionContext, handlerClassName.getClassName());
-                    int state = 0;
-                    try {
-                        state = Integer.valueOf(plState);
-                    } catch (NumberFormatException e) {
-
-                    }
-                    if (state >= GfacPluginState.INVOKED.getValue()) {
-                        if (handler instanceof GFacRecoverableHandler) {
-                            // if these already ran we re-run only recoverable handlers
-                            log.info(handlerClassName.getClassName() + " is a recoverable handler so we recover the handler");
-                            GFacUtils.createPluginZnode(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.INVOKING);
-                            handler.initProperties(handlerClassName.getProperties());
-                            ((GFacRecoverableHandler) handler).recover(jobExecutionContext);
-                            GFacUtils.updatePluginState(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.COMPLETED);
-                        } else {
-                            log.info(handlerClassName.getClassName() + " is not a recoverable handler so we do not run because it already ran in last-run");
-                        }
-                    } else {
+                    GfacPluginState plState = GFacUtils.getPluginState(zk, jobExecutionContext, handlerClassName.getClassName());
+                    GFacUtils.createPluginZnode(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.INVOKING);
+                    handler.initProperties(handlerClassName.getProperties());
+                    if (plState == GfacPluginState.UNKNOWN || plState == GfacPluginState.INVOKING) {
                         log.info(handlerClassName.getClassName() + " never ran so we run this is normal mode");
-                        GFacUtils.createPluginZnode(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.INVOKING);
-                        handler.initProperties(handlerClassName.getProperties());
                         handler.invoke(jobExecutionContext);
-                        GFacUtils.updatePluginState(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.COMPLETED);
+                    } else {
+                        // if these already ran we re-run only recoverable handlers
+                        log.info(handlerClassName.getClassName() + " is a recoverable handler so we recover the handler");
+                        handler.recover(jobExecutionContext);
                     }
+                    GFacUtils.updatePluginState(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.COMPLETED);
                 } catch (GFacHandlerException e) {
                     throw new GFacException("Error Executing a InFlow Handler", e.getCause());
                 } catch (ClassNotFoundException e) {
@@ -1166,6 +1146,7 @@ public class BetterGfacImpl implements GFac,Watcher {
         }
     }
 
+    // TODO - Did refactoring, but need to recheck the logic again.
     public void reInvokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
         String experimentPath = null;
         try {
@@ -1211,24 +1192,17 @@ public class BetterGfacImpl implements GFac,Watcher {
             try {
                 handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
                 handler = handlerClass.newInstance();
-                String plState = GFacUtils.getPluginState(zk, jobExecutionContext, handlerClassName.getClassName());
-                if (Integer.valueOf(plState) >= GfacPluginState.INVOKED.getValue()) {
-                    if (handler instanceof GFacRecoverableHandler) {
-                        // if these already ran we re-run only recoverable handlers
-                        log.info(handlerClassName.getClassName() + " is a recoverable handler so we recover the handler");
-                        GFacUtils.createPluginZnode(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.INVOKING);
-                        ((GFacRecoverableHandler) handler).recover(jobExecutionContext);
-                        GFacUtils.updatePluginState(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.COMPLETED);
-                    } else {
-                        log.info(handlerClassName.getClassName() + " is not a recoverable handler so we do not run because it already ran in last-run");
-                    }
-                } else {
+                GfacPluginState plState = GFacUtils.getPluginState(zk, jobExecutionContext, handlerClassName.getClassName());
+                GFacUtils.createPluginZnode(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.INVOKING);
+                if (plState == GfacPluginState.UNKNOWN || plState == GfacPluginState.INVOKING) {
                     log.info(handlerClassName.getClassName() + " never ran so we run this in normal mode");
-                    GFacUtils.createPluginZnode(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.INVOKING);
                     handler.initProperties(handlerClassName.getProperties());
                     handler.invoke(jobExecutionContext);
-                    GFacUtils.updatePluginState(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.COMPLETED);
+                } else {
+                    // if these already ran we re-run only recoverable handlers
+                    handler.recover(jobExecutionContext);
                 }
+                GFacUtils.updatePluginState(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.COMPLETED);
             } catch (ClassNotFoundException e) {
                 try {
                     StringWriter errors = new StringWriter();
