@@ -49,4 +49,12 @@ public interface GFacHandler {
      * @throws GFacHandlerException
      */
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException;
+
+
+    /**
+     * This method can be used to implement recovering part of the stateful handler
+     * If you do not want to recover an already ran handler you leave this recover method empty.
+     * @param jobExecutionContext
+     */
+    public void recover(JobExecutionContext jobExecutionContext)throws GFacHandlerException;
 }

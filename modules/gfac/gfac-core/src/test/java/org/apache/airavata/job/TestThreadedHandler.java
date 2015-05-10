@@ -21,6 +21,7 @@
 package org.apache.airavata.job;
 
 import junit.framework.Assert;
+import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.handler.ThreadedHandler;
 
@@ -30,6 +31,11 @@ public class TestThreadedHandler extends ThreadedHandler {
 
 
     public void initProperties(Properties properties) throws GFacHandlerException {
+    }
+
+    @Override
+    public void recover(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+        // TODO: Auto generated method body.
     }
 
     public void run() {

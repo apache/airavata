@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.job;
 
+import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 
@@ -28,5 +29,10 @@ import java.util.Properties;
 public class TestOutHandler extends AbstractHandler {
     public void initProperties(Properties properties) throws GFacHandlerException {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void recover(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+        // TODO: Auto generated method body.
     }
 }

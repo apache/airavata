@@ -22,7 +22,7 @@
 package org.apache.airavata.application.gaussian.handler;
 
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
-import org.apache.airavata.gfac.core.handler.AbstractRecoverableHandler;
+import org.apache.airavata.gfac.core.handler.AbstractHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
@@ -39,7 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class GaussianHandler extends AbstractRecoverableHandler {
+public class GaussianHandler extends AbstractHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GaussianHandler.class);
     public static final String LINK_SECTION = "%";

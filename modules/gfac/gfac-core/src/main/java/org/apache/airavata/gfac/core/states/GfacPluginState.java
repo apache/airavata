@@ -23,7 +23,8 @@ package org.apache.airavata.gfac.core.states;
 public enum GfacPluginState {
     INVOKING(0),
     INVOKED(1),
-    COMPLETED(2);
+    COMPLETED(2),
+    UNKNOWN(3);
 
     private final int value;
 
@@ -49,8 +50,10 @@ public enum GfacPluginState {
                 return INVOKING;
             case 1:
                 return INVOKED;
+            case 2:
+                return COMPLETED;
             default:
-                return null;
+                return UNKNOWN;
         }
     }
 }

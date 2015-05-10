@@ -24,7 +24,6 @@ import org.airavata.appcatalog.cpi.AppCatalog;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.ExecutionMode;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
@@ -32,7 +31,7 @@ import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.handler.ThreadedHandler;
 import org.apache.airavata.gfac.core.notification.events.StartExecutionEvent;
-import org.apache.airavata.gfac.core.provider.AbstractRecoverableProvider;
+import org.apache.airavata.gfac.core.provider.AbstractProvider;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
@@ -62,7 +61,7 @@ import java.util.Map;
 
 //import org.apache.airavata.schemas.gfac.GsisshHostType;
 
-public class GSISSHProvider extends AbstractRecoverableProvider {
+public class GSISSHProvider extends AbstractProvider {
     private static final Logger log = LoggerFactory.getLogger(GSISSHProvider.class);
 
     public void initProperties(Map<String, String> properties) throws GFacProviderException, GFacException {

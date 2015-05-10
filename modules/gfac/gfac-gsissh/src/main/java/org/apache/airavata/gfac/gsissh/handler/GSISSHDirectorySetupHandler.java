@@ -22,7 +22,7 @@ package org.apache.airavata.gfac.gsissh.handler;
 
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
-import org.apache.airavata.gfac.core.handler.AbstractRecoverableHandler;
+import org.apache.airavata.gfac.core.handler.AbstractHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
@@ -37,7 +37,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Properties;
 
-public class GSISSHDirectorySetupHandler extends AbstractRecoverableHandler {
+public class GSISSHDirectorySetupHandler extends AbstractHandler {
       private static final Logger log = LoggerFactory.getLogger(GSISSHDirectorySetupHandler.class);
 
 	public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {

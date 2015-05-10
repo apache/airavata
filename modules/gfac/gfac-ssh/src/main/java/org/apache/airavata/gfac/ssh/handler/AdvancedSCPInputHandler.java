@@ -23,7 +23,7 @@ package org.apache.airavata.gfac.ssh.handler;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
-import org.apache.airavata.gfac.core.handler.AbstractRecoverableHandler;
+import org.apache.airavata.gfac.core.handler.AbstractHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
@@ -57,7 +57,7 @@ import java.util.*;
  * <property name="hostName" value="gw98.iu.xsede.org"/>
  * <property name="inputPath" value="/home/airavata/outputData"/>
  */
-public class AdvancedSCPInputHandler extends AbstractRecoverableHandler {
+public class AdvancedSCPInputHandler extends AbstractHandler {
     private static final Logger log = LoggerFactory.getLogger(AdvancedSCPInputHandler.class);
     public static final String ADVANCED_SSH_AUTH = "advanced.ssh.auth";
     public static final int DEFAULT_SSH_PORT = 22;

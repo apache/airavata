@@ -24,7 +24,7 @@ package org.apache.airavata.gfac.gsissh.handler;
 //import org.apache.airavata.commons.gfac.type.MappingFactory;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
-import org.apache.airavata.gfac.core.handler.AbstractRecoverableHandler;
+import org.apache.airavata.gfac.core.handler.AbstractHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
@@ -52,7 +52,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-public class GSISSHOutputHandler extends AbstractRecoverableHandler {
+public class GSISSHOutputHandler extends AbstractHandler {
     private static final Logger log = LoggerFactory.getLogger(GSISSHOutputHandler.class);
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {

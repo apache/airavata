@@ -24,7 +24,7 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
-import org.apache.airavata.gfac.core.handler.AbstractRecoverableHandler;
+import org.apache.airavata.gfac.core.handler.AbstractHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
@@ -53,7 +53,7 @@ import java.util.Set;
  * Recoverability for this handler assumes the same input values will come in the second
  * run, and assume nobody is changing registry during the original submission and re-submission
  */
-public class GSISSHInputHandler extends AbstractRecoverableHandler {
+public class GSISSHInputHandler extends AbstractHandler {
     private static final Logger log = LoggerFactory.getLogger(GSISSHInputHandler.class);
 
 

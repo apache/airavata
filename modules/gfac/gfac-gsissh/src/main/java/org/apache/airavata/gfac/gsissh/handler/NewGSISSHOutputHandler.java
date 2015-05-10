@@ -69,7 +69,12 @@ public class NewGSISSHOutputHandler extends AbstractHandler{
 			}
 	    }
 
-	@Override
+    @Override
+    public void recover(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+        // TODO: Auto generated method body.
+    }
+
+    @Override
 	public void initProperties(Properties properties) throws GFacHandlerException {
 		// TODO Auto-generated method stub
 		

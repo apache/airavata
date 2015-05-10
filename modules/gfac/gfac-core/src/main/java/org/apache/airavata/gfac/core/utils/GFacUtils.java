@@ -900,7 +900,10 @@ public class GFacUtils {
 			InterruptedException {
 		String expState = AiravataZKUtils.getExpState(zk, jobExecutionContext
 				.getExperimentID());
-		return GfacExperimentState.findByValue(Integer.parseInt(expState));
+        if (expState == null || expState.isEmpty()) {
+            return GfacExperimentState.UNKNOWN;
+        }
+        return GfacExperimentState.findByValue(Integer.valueOf(expState));
 	}
 
 	public static int getZKExperimentStateValue(ZooKeeper zk,
@@ -1019,8 +1022,8 @@ public class GFacUtils {
 		return false;
 	}
 
-	public static String getPluginState(ZooKeeper zk,
-			JobExecutionContext jobExecutionContext, String className) {
+	public static GfacPluginState getPluginState(ZooKeeper zk,
+                                                 JobExecutionContext jobExecutionContext, String className) {
 		try {
 			String expState = AiravataZKUtils.getExpZnodeHandlerPath(
 					jobExecutionContext.getExperimentID(), className);
@@ -1028,11 +1031,12 @@ public class GFacUtils {
 			Stat exists = zk.exists(expState + File.separator
 					+ AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false);
 			if (exists != null) {
-				return new String(zk.getData(expState + File.separator
-						+ AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false,
-						exists));
-			}
-			return null; // if the node doesn't exist or any other error we
+                String stateVal = new String(zk.getData(expState + File.separator
+                                + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false,
+                        exists));
+                return GfacPluginState.findByValue(Integer.valueOf(stateVal));
+            }
+			return GfacPluginState.UNKNOWN; // if the node doesn't exist or any other error we
 							// return false
 		} catch (Exception e) {
 			log.error("Error occured while getting zk node status", e);

@@ -243,6 +243,11 @@ public class SSHOutputHandler extends AbstractHandler {
 
     }
 
+    @Override
+    public void recover(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
+        // TODO: Auto generated method body.
+    }
+
     public void initProperties(Properties properties) throws GFacHandlerException {
 
     }
