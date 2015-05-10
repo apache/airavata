@@ -40,21 +40,13 @@ public class StandardOutReader implements CommandOutput {
     public void onOutput(Channel channel) {
         try {
             StringBuffer pbsOutput = new StringBuffer("");
-//            try {
-//				Thread.sleep(1000);
-//			} catch (InterruptedException e) {
-//				e.printStackTrace();
-//			}
             InputStream inputStream =  channel.getInputStream();
             byte[] tmp = new byte[1024];
-            while (true) {
+            while (!channel.isClosed()) {
                 while (inputStream.available() > 0) {
                     int i = inputStream.read(tmp, 0, 1024);
                     if (i < 0) break;
                     pbsOutput.append(new String(tmp, 0, i));
-                }
-                if (channel.isClosed()) {
-                    break;
                 }
             }
             String output = pbsOutput.toString();
