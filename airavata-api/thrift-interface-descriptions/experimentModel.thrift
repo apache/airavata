@@ -233,8 +233,6 @@ struct QualityOfServiceParams {
     3: optional i32 numberofRetries
 }
 
-
-
 /**
  * A structure holding the experiment configuration.
  *
