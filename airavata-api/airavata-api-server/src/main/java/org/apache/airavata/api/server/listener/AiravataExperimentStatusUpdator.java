@@ -77,10 +77,11 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
             String experimentNode = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
             String experimentPath = experimentNode + File.separator + ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME)
                     + File.separator + nodeStatus.getWorkflowNodeIdentity().getExperimentId();
-	        ExperimentState state = ExperimentState.UNKNOWN;
+	        ExperimentState state;
 	        switch (nodeStatus.getState()) {
 	            case CANCELED:
 	                state = ExperimentState.CANCELED; updateExperimentStatus = true;
+                    cleanup(nodeStatus, experimentNode, experimentPath);
 	                break;
 	            case COMPLETED:
 	            	if(executionType.equals(ExecutionType.SINGLE_APP)){
