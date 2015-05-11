@@ -96,6 +96,11 @@ public class SlurmJobConfiguration implements JobManagerConfiguration{
     }
 
     @Override
+    public RawCommandInfo getJobIdMonitorCommand(String jobName, String userName) {
+        return new RawCommandInfo(this.installedPath + "squeue -n " + jobName);
+    }
+
+    @Override
     public String getBaseCancelCommand() {
         return "scancel";
     }

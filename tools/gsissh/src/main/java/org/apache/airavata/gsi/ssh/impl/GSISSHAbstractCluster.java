@@ -425,6 +425,16 @@ public class GSISSHAbstractCluster implements Cluster {
         return jobManagerConfiguration.getParser().parseJobStatus(jobID, result);
     }
 
+    @Override
+    public String getJobIdByJobName(String jobName, String userName) throws SSHApiException {
+        RawCommandInfo rawCommandInfo = jobManagerConfiguration.getJobIdMonitorCommand(jobName, userName);
+        StandardOutReader stdOutReader = new StandardOutReader();
+        CommandExecutor.executeCommand(rawCommandInfo, this.getSession(), stdOutReader);
+        String result = getOutputifAvailable(stdOutReader, "Error getting job information from the resource !",
+                jobManagerConfiguration.getJobIdMonitorCommand(jobName,userName).getCommand());
+        return jobManagerConfiguration.getParser().parseJobId(jobName, result);
+    }
+
     private static void logDebug(String message) {
         if (log.isDebugEnabled()) {
             log.debug(message);

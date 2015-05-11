@@ -56,6 +56,7 @@ import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerTy
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
+import org.apache.airavata.model.workspace.experiment.ExperimentState;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.xmlbeans.XmlException;
@@ -167,14 +168,24 @@ public class SSHProvider extends AbstractProvider {
                     jobDetails.setJobDescription(jobDescriptor.toXML());
 
                     String jobID = cluster.submitBatchJob(jobDescriptor);
-                    jobExecutionContext.setJobDetails(jobDetails);
-                    if (jobID == null) {
-                        jobDetails.setJobID("none");
-                        GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
-                    } else {
-                        jobDetails.setJobID(jobID);
+                    if (jobID != null) {
                         GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SUBMITTED);
                     }
+                    jobExecutionContext.setJobDetails(jobDetails);
+                    String verifyJobId = verifyJobSubmission(cluster, jobDetails);
+                    if (verifyJobId != null) {
+                        // JobStatus either changed from SUBMITTED to QUEUED or directly to QUEUED
+                        GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.QUEUED);
+                        if (jobID == null) {
+                            jobID = verifyJobId;
+                        }
+                    }
+                    if (jobID == null) {
+                        log.error("Couldn't find remote jobId for JobName:" + jobDetails.getJobName() + ", ExperimentId:" + jobExecutionContext.getExperimentID());
+                        GFacUtils.updateExperimentStatus(jobExecutionContext.getExperimentID(), ExperimentState.FAILED);
+                        return;
+                    }
+                    jobDetails.setJobID(jobID);
                     data.append("jobDesc=").append(jobDescriptor.toXML());
                     data.append(",jobId=").append(jobDetails.getJobID());
                     delegateToMonitorHandlers(jobExecutionContext);
@@ -201,6 +212,17 @@ public class SSHProvider extends AbstractProvider {
                 throw new GFacProviderException(e.getMessage(), e);
             }
         }
+    }
+
+    private String verifyJobSubmission(Cluster cluster, JobDetails jobDetails) {
+        String jobName = jobDetails.getJobName();
+        String jobId = null;
+        try {
+          jobId  = cluster.getJobIdByJobName(jobName, cluster.getServerInfo().getUserName());
+        } catch (SSHApiException e) {
+            log.error("Error while verifying JobId from JobName");
+        }
+        return jobId;
     }
 
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException {

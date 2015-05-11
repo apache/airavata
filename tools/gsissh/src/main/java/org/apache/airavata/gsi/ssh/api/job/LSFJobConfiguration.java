@@ -74,6 +74,11 @@ public class LSFJobConfiguration implements JobManagerConfiguration {
     }
 
     @Override
+    public RawCommandInfo getJobIdMonitorCommand(String jobName, String userName) {
+        return new RawCommandInfo(this.installedPath + "bjobs -J " + jobName);
+    }
+
+    @Override
     public String getScriptExtension() {
         return scriptExtension;
     }

@@ -56,4 +56,13 @@ public interface OutputParser {
      * @param rawOutput
      */
     public void parseJobStatuses(String userName, Map<String, JobStatus> statusMap, String rawOutput)throws SSHApiException;
+
+    /**
+     * filter the jobId value of given JobName from rawOutput
+     * @param jobName
+     * @param rawOutput
+     * @return
+     * @throws SSHApiException
+     */
+    public String parseJobId(String jobName, String rawOutput) throws SSHApiException;
 }

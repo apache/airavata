@@ -41,9 +41,12 @@ import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.registry.cpi.CompositeIdentifier;
 import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
@@ -1465,4 +1468,26 @@ public class GFacUtils {
 		buffer.flip();//need flip
 		return buffer.getLong();
 	}
+
+    public static ExperimentState updateExperimentStatus(String experimentId, ExperimentState state) throws RegistryException {
+        Registry airavataRegistry = RegistryFactory.getDefaultRegistry();
+        Experiment details = (Experiment) airavataRegistry.get(RegistryModelType.EXPERIMENT, experimentId);
+        if (details == null) {
+            details = new Experiment();
+            details.setExperimentID(experimentId);
+        }
+        org.apache.airavata.model.workspace.experiment.ExperimentStatus status = new org.apache.airavata.model.workspace.experiment.ExperimentStatus();
+        status.setExperimentState(state);
+        status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
+        if (!ExperimentState.CANCELED.equals(details.getExperimentStatus().getExperimentState()) &&
+                !ExperimentState.CANCELING.equals(details.getExperimentStatus().getExperimentState())) {
+            status.setExperimentState(state);
+        } else {
+            status.setExperimentState(details.getExperimentStatus().getExperimentState());
+        }
+        details.setExperimentStatus(status);
+        log.info("Updating the experiment status of experiment: " + experimentId + " to " + status.getExperimentState().toString());
+        airavataRegistry.update(RegistryModelType.EXPERIMENT_STATUS, status, experimentId);
+        return details.getExperimentStatus().getExperimentState();
+    }
 }
