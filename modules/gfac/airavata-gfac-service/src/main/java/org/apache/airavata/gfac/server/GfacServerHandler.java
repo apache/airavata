@@ -237,12 +237,12 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
      * @param taskId
      * @param gatewayId
      */
-    public boolean submitJob(String experimentId, String taskId, String gatewayId) throws TException {
+    public boolean submitJob(String experimentId, String taskId, String gatewayId, String tokenId) throws TException {
         requestCount++;
         logger.info("-----------------------------------------------------" + requestCount + "-----------------------------------------------------");
         logger.infoId(experimentId, "GFac Received submit job request for the Experiment: {} TaskId: {}", experimentId, taskId);
         GFac gfac = getGfac();
-        InputHandlerWorker inputHandlerWorker = new InputHandlerWorker(gfac, experimentId, taskId, gatewayId);
+        InputHandlerWorker inputHandlerWorker = new InputHandlerWorker(gfac, experimentId, taskId, gatewayId, tokenId);
 //        try {
 //            if( gfac.submitJob(experimentId, taskId, gatewayId)){
         logger.debugId(experimentId, "Submitted job to the Gfac Implementation, experiment {}, task {}, gateway " +
@@ -254,11 +254,11 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
         return true;
     }
 
-    public boolean cancelJob(String experimentId, String taskId, String gatewayId) throws TException {
+    public boolean cancelJob(String experimentId, String taskId, String gatewayId, String tokenId) throws TException {
         logger.infoId(experimentId, "GFac Received cancel job request for Experiment: {} TaskId: {} ", experimentId, taskId);
         GFac gfac = getGfac();
         try {
-            if (gfac.cancel(experimentId, taskId, gatewayId)) {
+            if (gfac.cancel(experimentId, taskId, gatewayId, tokenId)) {
                 logger.debugId(experimentId, "Successfully cancelled job, experiment {} , task {}", experimentId, taskId);
                 return true;
             } else {
@@ -375,7 +375,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                     try {
                         GFacUtils.createExperimentEntryForPassive(event.getExperimentId(), event.getTaskId(), zk, experimentNode, nodeName, event.getTokenId(), message.getDeliveryTag());
                         AiravataZKUtils.getExpStatePath(event.getExperimentId());
-                        submitJob(event.getExperimentId(), event.getTaskId(), event.getGatewayId());
+                        submitJob(event.getExperimentId(), event.getTaskId(), event.getGatewayId(), event.getTokenId());
                     } catch (KeeperException e) {
                         logger.error(nodeName + " was interrupted.");
                         rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
@@ -395,7 +395,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                     TBase messageEvent = message.getEvent();
                     byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
                     ThriftUtils.createThriftFromBytes(bytes, event);
-                    cancelJob(event.getExperimentId(), event.getTaskId(), event.getGatewayId());
+                    cancelJob(event.getExperimentId(), event.getTaskId(), event.getGatewayId(), event.getTokenId());
                     System.out.println(" Message Received with message id '" + message.getMessageId()
                             + "' and with message type '" + message.getType());
                 } catch (TException e) {

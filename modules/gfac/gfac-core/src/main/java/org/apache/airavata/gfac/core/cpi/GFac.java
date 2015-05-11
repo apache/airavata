@@ -37,7 +37,7 @@ public interface GFac {
      * @return boolean Successful acceptence of the jobExecution returns a true value
      * @throws org.apache.airavata.gfac.GFacException
      */
-    public boolean submitJob(String experimentID,String taskID, String gatewayID) throws GFacException;
+    public boolean submitJob(String experimentID,String taskID, String gatewayID, String tokenId) throws GFacException;
 
     /**
      * This method can be used in a handler to ivvoke outhandler asynchronously
@@ -58,6 +58,6 @@ public interface GFac {
      * @return Successful cancellation will return true
      * @throws GFacException
      */
-    public boolean cancel(String experimentID, String taskID, String gatewayID)throws GFacException;
+    public boolean cancel(String experimentID, String taskID, String gatewayID, String tokenId)throws GFacException;
 
 }
