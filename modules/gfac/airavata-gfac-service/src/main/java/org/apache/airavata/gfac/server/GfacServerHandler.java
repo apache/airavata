@@ -403,11 +403,22 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                     TBase messageEvent = message.getEvent();
                     byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
                     ThriftUtils.createThriftFromBytes(bytes, event);
+                    GFacUtils.setExperimentCancel(event.getExperimentId(), event.getTaskId(), zk);
+                    AiravataZKUtils.getExpStatePath(event.getExperimentId());
                     cancelJob(event.getExperimentId(), event.getTaskId(), event.getGatewayId(), event.getTokenId());
                     System.out.println(" Message Received with message id '" + message.getMessageId()
                             + "' and with message type '" + message.getType());
                 } catch (TException e) {
                     logger.error(e.getMessage(), e); //nobody is listening so nothing to throw
+                    rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
+                } catch (InterruptedException e) {
+                    logger.error(e.getMessage(), e);
+                    rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
+                } catch (ApplicationSettingsException e) {
+                    logger.error(e.getMessage(), e);
+                    rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
+                } catch (KeeperException e) {
+                    logger.error(e.getMessage(), e);
                     rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
                 }
             }
