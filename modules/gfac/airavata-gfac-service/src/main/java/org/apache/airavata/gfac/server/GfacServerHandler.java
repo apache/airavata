@@ -44,12 +44,14 @@ import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.messaging.core.MessagingConstants;
 import org.apache.airavata.messaging.core.impl.RabbitMQTaskLaunchConsumer;
-import org.apache.airavata.model.messaging.event.MessageType;
-import org.apache.airavata.model.messaging.event.TaskSubmitEvent;
-import org.apache.airavata.model.messaging.event.TaskTerminateEvent;
+import org.apache.airavata.model.messaging.event.*;
+import org.apache.airavata.model.workspace.experiment.ExperimentState;
+import org.apache.airavata.model.workspace.experiment.ExperimentStatus;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
+import org.apache.airavata.persistance.registry.jpa.model.Status;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 import org.apache.zookeeper.*;
@@ -370,8 +372,12 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                     TBase messageEvent = message.getEvent();
                     byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
                     ThriftUtils.createThriftFromBytes(bytes, event);
+                    // update experiment status to executing
+                    ExperimentStatus status = new ExperimentStatus();
+                    status.setExperimentState(ExperimentState.EXECUTING);
+                    status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
+                    registry.update(RegistryModelType.EXPERIMENT_STATUS, status, event.getExperimentId());
                     experimentNode = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
-
                     try {
                         GFacUtils.createExperimentEntryForPassive(event.getExperimentId(), event.getTaskId(), zk, experimentNode, nodeName, event.getTokenId(), message.getDeliveryTag());
                         AiravataZKUtils.getExpStatePath(event.getExperimentId());
@@ -388,6 +394,8 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                     }
                 } catch (TException e) {
                     logger.error(e.getMessage(), e); //nobody is listening so nothing to throw
+                } catch (RegistryException e) {
+                    logger.error("Error while updating experiment status", e);
                 }
             } else if (message.getType().equals(MessageType.TERMINATETASK)) {
                 try {
