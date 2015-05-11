@@ -209,10 +209,11 @@ public class BetterGfacImpl implements GFac,Watcher {
      * @return
      * @throws GFacException
      */
-    public boolean submitJob(String experimentID, String taskID, String gatewayID) throws GFacException {
+    public boolean submitJob(String experimentID, String taskID, String gatewayID, String tokenId) throws GFacException {
         JobExecutionContext jobExecutionContext = null;
         try {
             jobExecutionContext = createJEC(experimentID, taskID, gatewayID);
+            jobExecutionContext.setCredentialStoreToken(tokenId);
             return submitJob(jobExecutionContext);
         } catch (Exception e) {
             log.error("Error inovoking the job with experiment ID: " + experimentID + ":"+e.getMessage());
@@ -316,7 +317,6 @@ public class BetterGfacImpl implements GFac,Watcher {
         jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
         jobExecutionContext.setGfac(this);
         jobExecutionContext.setZk(zk);
-        jobExecutionContext.setCredentialStoreToken(AiravataZKUtils.getExpTokenId(zk, experimentID));
 
         // handle job submission protocol
         List<JobSubmissionInterface> jobSubmissionInterfaces = computeResource.getJobSubmissionInterfaces();
@@ -550,10 +550,11 @@ public class BetterGfacImpl implements GFac,Watcher {
         }
     }
 
-    public boolean cancel(String experimentID, String taskID, String gatewayID) throws GFacException {
+    public boolean cancel(String experimentID, String taskID, String gatewayID, String tokenId) throws GFacException {
         JobExecutionContext jobExecutionContext = null;
         try {
             jobExecutionContext = createJEC(experimentID, taskID, gatewayID);
+            jobExecutionContext.setCredentialStoreToken(tokenId);
             return cancel(jobExecutionContext);
         } catch (Exception e) {
             GFacUtils.saveErrorDetails(jobExecutionContext, e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);

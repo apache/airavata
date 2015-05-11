@@ -20,35 +20,31 @@
 */
 package org.apache.airavata.gfac.core.utils;
 
-import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.cpi.GFac;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.Callable;
 
 public class InputHandlerWorker implements Runnable {
     private static Logger log = LoggerFactory.getLogger(InputHandlerWorker.class);
 
     String experimentId;
-
     String taskId;
-
     String gatewayId;
+    String tokenId;
 
     GFac gfac;
-    public InputHandlerWorker(GFac gfac, String experimentId,String taskId,String gatewayId) {
+    public InputHandlerWorker(GFac gfac, String experimentId,String taskId,String gatewayId, String tokenId) {
         this.gfac = gfac;
         this.experimentId = experimentId;
         this.taskId = taskId;
         this.gatewayId = gatewayId;
+        this.tokenId = tokenId;
     }
 
     @Override
     public void run() {
         try {
-            gfac.submitJob(experimentId, taskId, gatewayId);
+            gfac.submitJob(experimentId, taskId, gatewayId, tokenId);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
         }

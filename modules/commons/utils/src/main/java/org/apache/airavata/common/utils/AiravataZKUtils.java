@@ -79,15 +79,6 @@ public class AiravataZKUtils implements Watcher {
                 "state";
     }
 
-    public static String getExpTokenId(ZooKeeper zk, String expId) throws ApplicationSettingsException,
-            KeeperException, InterruptedException {
-        Stat exists = zk.exists(getExpZnodePath(expId), false);
-        if (exists != null) {
-            return new String(zk.getData(getExpZnodePath(expId), false, exists));
-        }
-        return null;
-    }
-
     public static String getExpState(ZooKeeper zk, String expId) throws ApplicationSettingsException,
             KeeperException, InterruptedException {
         Stat exists = zk.exists(getExpStatePath(expId), false);

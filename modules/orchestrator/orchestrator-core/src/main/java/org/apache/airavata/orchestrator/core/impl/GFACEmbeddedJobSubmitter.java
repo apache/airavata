@@ -84,7 +84,7 @@ public class GFACEmbeddedJobSubmitter implements JobSubmitter {
             if(gatewayId == null || gatewayId.isEmpty()){
              gatewayId = ServerSettings.getDefaultUserGateway();
             }
-          return gfac.submitJob(experimentID, taskID, gatewayId);
+          return gfac.submitJob(experimentID, taskID, gatewayId, tokenId);
         } catch (Exception e) {
             String error = "Error launching the job : " + experimentID;
             logger.error(error);

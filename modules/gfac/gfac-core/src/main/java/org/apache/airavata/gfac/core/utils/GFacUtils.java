@@ -1166,13 +1166,7 @@ public class GFacUtils {
 
 			zk.create(newExpNode, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
 					CreateMode.PERSISTENT);
-            Stat expParent = zk.exists(newExpNode, false);
-			if (tokenId != null && expParent != null) {
-				zk.setData(newExpNode, tokenId.getBytes(),
-						expParent.getVersion());
-			}
 
-            String token = AiravataZKUtils.getExpTokenId(zk, experimentID);
             String s = zk.create(newExpNode + File.separator + "state", String
 							.valueOf(GfacExperimentState.LAUNCHED.getValue())
 							.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
