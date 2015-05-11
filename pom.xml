@@ -349,6 +349,18 @@
 				<role>committer</role>
 			</roles>
 		</developer>
+		<developer>
+   			<id>scnakandala</id>
+   			<name>Supun Nakandala</name>
+   			<email>scnakandala@apache.org</email>
+   			<timezone>+5.5</timezone>
+   			<organization>University of Moratuwa</organization>
+   			<organizationUrl>http://www.mrt.ac.lk/web/</organizationUrl>
+   			<roles>
+      				<role>committer</role>
+      				<role>PMC member</role>
+   			</roles>
+		</developer>
 	</developers>
 
 	<dependencyManagement>
