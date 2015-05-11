@@ -38,7 +38,6 @@ public class OrchestratorUtils {
 
     public static OrchestratorConfiguration loadOrchestratorConfiguration() throws OrchestratorException, IOException, NumberFormatException, ApplicationSettingsException {
         OrchestratorConfiguration orchestratorConfiguration = new OrchestratorConfiguration();
-        orchestratorConfiguration.setNewJobSubmitterClass((String) ServerSettings.getSetting(OrchestratorConstants.JOB_SUBMITTER));
         orchestratorConfiguration.setSubmitterInterval(Integer.parseInt((String) ServerSettings.getSetting(OrchestratorConstants.SUBMIT_INTERVAL)));
         orchestratorConfiguration.setThreadPoolSize(Integer.parseInt((String) ServerSettings.getSetting(OrchestratorConstants.THREAD_POOL_SIZE)));
         orchestratorConfiguration.setStartSubmitter(Boolean.valueOf(ServerSettings.getSetting(OrchestratorConstants.START_SUBMITTER)));

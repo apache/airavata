@@ -117,7 +117,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 	 * Query orchestrator server to fetch the CPI version
 	 */
 	public String getOrchestratorCPIVersion() throws TException {
-
 		return orchestrator_cpi_serviceConstants.ORCHESTRATOR_CPI_VERSION;
 	}
 
