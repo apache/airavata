@@ -32,6 +32,8 @@ public interface JobManagerConfiguration {
 
 	public RawCommandInfo getUserBasedMonitorCommand(String userName);
 
+    public RawCommandInfo getJobIdMonitorCommand(String jobName , String userName);
+
 	public String getScriptExtension();
 
 	public RawCommandInfo getSubmitCommand(String workingDirectory, String pbsFilePath);

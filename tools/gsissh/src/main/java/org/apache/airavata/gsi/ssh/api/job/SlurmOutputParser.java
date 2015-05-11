@@ -29,6 +29,8 @@ import javax.print.attribute.standard.JobState;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SlurmOutputParser implements OutputParser {
     private static final Logger log = LoggerFactory.getLogger(SlurmOutputParser.class);
@@ -185,6 +187,24 @@ public class SlurmOutputParser implements OutputParser {
             if (!found) {
                 log.error("Couldn't find the status of the Job with JobName: " + jobName + "Job Id: " + jobId);
             }
+        }
+    }
+
+    @Override
+    public String parseJobId(String jobName, String rawOutput) throws SSHApiException {
+        String regJobId = "jobId";
+        Pattern pattern = Pattern.compile("(?=(?<" + regJobId + ">\\d+)\\s+\\w+\\s+" + jobName + ")"); // regex - look ahead and match
+        if (rawOutput != null) {
+            Matcher matcher = pattern.matcher(rawOutput);
+            if (matcher.find()) {
+                return matcher.group(regJobId);
+            } else {
+                log.error("No match is found for JobName");
+                return null;
+            }
+        } else {
+            log.error("Error: RawOutput shouldn't be null");
+            return null;
         }
     }
 }

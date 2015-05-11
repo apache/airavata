@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.gsi.ssh.api.job;
 
+import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.impl.JobStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -161,6 +162,11 @@ public class SGEOutputParser implements OutputParser{
                }
             }
         }
+    }
+
+    @Override
+    public String parseJobId(String jobName, String rawOutput) throws SSHApiException {
+        return null; // TODO: Implement the parse logic ( with regex if possible ).
     }
 
 

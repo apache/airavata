@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LSFOutputParser implements OutputParser {
     private final static Logger logger = LoggerFactory.getLogger(LSFOutputParser.class);
@@ -87,6 +89,24 @@ public class LSFOutputParser implements OutputParser {
             }
             if(!found)
                 logger.error("Couldn't find the status of the Job with JobName: " + jobName + "Job Id: " + jobID.split(",")[0]);
+        }
+    }
+
+    @Override
+    public String parseJobId(String jobName, String rawOutput) throws SSHApiException {
+        String regJobId = "jobId";
+        Pattern pattern = Pattern.compile("(?=(?<" + regJobId + ">\\d+)\\s+\\w+\\s+" + jobName + ")"); // regex - look ahead and match
+        if (rawOutput != null) {
+            Matcher matcher = pattern.matcher(rawOutput);
+            if (matcher.find()) {
+                return matcher.group(regJobId);
+            } else {
+                logger.error("No match is found for JobName");
+                return null;
+            }
+        } else {
+            logger.error("Error: RawOutput shouldn't be null");
+            return null;
         }
     }
 

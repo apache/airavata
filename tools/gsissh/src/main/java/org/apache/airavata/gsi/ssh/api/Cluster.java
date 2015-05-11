@@ -113,6 +113,14 @@ public interface Cluster {
      * @throws SSHApiException throws exception during error
      */
     public JobStatus getJobStatus(String jobID) throws SSHApiException;
+    /**
+     * This will get the job status of the the job associated with this jobId
+     *
+     * @param jobName jobName of the job user want to get the status
+     * @return jobId of the given jobName
+     * @throws SSHApiException throws exception during error
+     */
+    public String getJobIdByJobName(String jobName, String userName) throws SSHApiException;
 
     /**
      * This method can be used to poll the jobstatuses based on the given
