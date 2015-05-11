@@ -43,13 +43,15 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class CreateLaunchExperiment {
 
     //FIXME: Read from a config file
-    public static final String THRIFT_SERVER_HOST = "localhost";
-    public static final int THRIFT_SERVER_PORT = 8930;
+    public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
+    public static final int THRIFT_SERVER_PORT = 9930;
 //	public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
 //	public static final int THRIFT_SERVER_PORT = 9930;
 
@@ -85,10 +87,16 @@ public class CreateLaunchExperiment {
     public static void main(String[] args) throws Exception {
         airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
         System.out.println("API version is " + airavataClient.getAPIVersion());
+        Experiment experiment = airavataClient.getExperiment("echotest_fcc7127d-73e9-4e43-bc07-07399a7c5efc");
+        long creationTime = experiment.getCreationTime();
+        Date date = new Date(creationTime);
+        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String dateFormatted = formatter.format(date);
+        System.out.println(dateFormatted);
 //        createGateway();
 //        getGateway("testGatewayId");
 //        registerApplications(); // run this only the first time
-        createAndLaunchExp();
+//        createAndLaunchExp();
     }
 
     private static String fsdResourceId;

@@ -26,6 +26,7 @@ import org.apache.airavata.model.error.ValidatorResult;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
+import org.apache.airavata.orchestrator.core.impl.GFACPassiveJobSubmitter;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
 import org.apache.airavata.registry.cpi.ChildDataType;
@@ -51,9 +52,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
     public SimpleOrchestratorImpl() throws OrchestratorException {
         try {
             try {
-                String submitterClass = this.orchestratorContext.getOrchestratorConfiguration().getNewJobSubmitterClass();
-                Class<? extends JobSubmitter> aClass = Class.forName(submitterClass.trim()).asSubclass(JobSubmitter.class);
-                jobSubmitter = aClass.newInstance();
+                // We are only going to use GFacPassiveJobSubmitter
+                jobSubmitter = new GFACPassiveJobSubmitter();
                 jobSubmitter.initialize(this.orchestratorContext);
 
             } catch (Exception e) {

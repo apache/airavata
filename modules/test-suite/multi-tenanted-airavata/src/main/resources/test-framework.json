@@ -10,7 +10,7 @@
     "sshUsername": "ogce",
     "tokenFileLoc": "/tmp/",
     "resultFileLoc": "/tmp/test_framework_results/",
-    "skippedGateways": "default,php_reference_gateway,ultrascan,umass",
+    "skippedGateways": "default,php_reference_gateway,umass",
     "injectErrors" : true,
     "numberOfIterations" : 10,
     "resources": [
@@ -52,7 +52,7 @@
         {
             "name": "Ultrascan",
             "inputs": {
-                "input": "/Users/chathuri/dev/airavata/source/php/inputs/hpcinput.tar",
+                "input": "file://chathuri@149.160.168.148:/Users/chathuri/dev/airavata/source/php/inputs/hpcinput.tar",
                 "mgroupcount": "-mgroupcount=1",
                 "walltime": "-walltime=60"
             }
