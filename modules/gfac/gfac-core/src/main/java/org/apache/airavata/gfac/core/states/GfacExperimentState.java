@@ -49,33 +49,4 @@ public enum GfacExperimentState {
         return value;
     }
 
-    /**
-     * Find a the enum type by its integer value, as defined in the Thrift IDL.
-     *
-     * @return null if the value is not found.
-     */
-    public static GfacExperimentState findByValue(int value) {
-        switch (value) {
-            case 0:
-                return INHANDLERSINVOKING;
-            case 1:
-                return INHANDLERSINVOKED;
-            case 2:
-                return PROVIDERINVOKING;
-            case 3:
-                return PROVIDERINVOKED;
-            case 4:
-                return OUTHANDLERSINVOKING;
-            case 5:
-                return OUTHANDLERSINVOKED;
-            case 6:
-                return COMPLETED;
-            case 7:
-                return FAILED;
-            case 8:
-                return UNKNOWN;
-            default:
-                return null;
-        }
-    }
 }
