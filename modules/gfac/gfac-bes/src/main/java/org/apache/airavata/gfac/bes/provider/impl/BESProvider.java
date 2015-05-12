@@ -418,6 +418,11 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
         // TODO: Auto generated method body.
     }
 
+    @Override
+    public void monitor(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
+        // TODO: Auto generated method body.
+    }
+
     protected void waitUntilDone(FactoryClient factory, EndpointReferenceType activityEpr, JobDetails jobDetails) throws Exception {
 		
 		try {

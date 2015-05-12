@@ -669,7 +669,9 @@ public class BetterGfacImpl implements GFac,Watcher {
                     break;
                 case OUTHANDLERSINVOKED:
                 case COMPLETED:
+                    GFacUtils.updateExperimentStatus(jobExecutionContext.getExperimentID(), ExperimentState.COMPLETED);
                 case FAILED:
+                    GFacUtils.updateExperimentStatus(jobExecutionContext.getExperimentID(), ExperimentState.FAILED);
                 case UNKNOWN:
                     log.info("All output handlers are invoked successfully, ExperimentId: " + experimentID + " taskId: " + jobExecutionContext.getTaskData().getTaskID());
                     break;
@@ -705,8 +707,15 @@ public class BetterGfacImpl implements GFac,Watcher {
         }
     }
 
-    private void monitorJob(JobExecutionContext jobExecutionContext) {
-        // TODO - Auto generated message.
+    private void monitorJob(JobExecutionContext jobExecutionContext) throws GFacException, GFacProviderException {
+        GFacProvider provider = jobExecutionContext.getProvider();
+        if (provider != null) {
+            provider.monitor(jobExecutionContext);
+        }
+        if (GFacUtils.isSynchronousMode(jobExecutionContext)) {
+            invokeOutFlowHandlers(jobExecutionContext);
+        }
+
     }
 
     private void launch(JobExecutionContext jobExecutionContext) throws GFacException {
@@ -1028,8 +1037,8 @@ public class BetterGfacImpl implements GFac,Watcher {
                         log.info("Experiment execution is cancelled, so OutHandler invocation is going to stop");
                         break;
                     }
-                    monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.OUTHANDLERSINVOKED));
                 }
+                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.OUTHANDLERSINVOKED));
             } catch (Exception e) {
                 throw new GFacException("Cannot invoke OutHandlers\n" + e.getMessage(), e);
             }
