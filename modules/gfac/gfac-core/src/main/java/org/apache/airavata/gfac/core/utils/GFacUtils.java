@@ -36,7 +36,7 @@ import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.states.GfacExperimentState;
-import org.apache.airavata.gfac.core.states.GfacPluginState;
+import org.apache.airavata.gfac.core.states.GfacHandlerState;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.*;
@@ -960,15 +960,15 @@ public class GFacUtils {
 		if (exists != null) {
 			zk.setData(expState + File.separator
 					+ AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE,
-					String.valueOf(GfacPluginState.INVOKING.getValue())
+					String.valueOf(GfacHandlerState.INVOKING.getValue())
 							.getBytes(), exists.getVersion());
 		}
 		return true;
 	}
 
-	public static boolean createPluginZnode(ZooKeeper zk,
-			JobExecutionContext jobExecutionContext, String className,
-			GfacPluginState state) throws ApplicationSettingsException,
+	public static boolean createHandlerZnode(ZooKeeper zk,
+                                             JobExecutionContext jobExecutionContext, String className,
+                                             GfacHandlerState state) throws ApplicationSettingsException,
 			KeeperException, InterruptedException {
 		String expState = AiravataZKUtils.getExpZnodeHandlerPath(
 				jobExecutionContext.getExperimentID(), className);
@@ -1002,9 +1002,9 @@ public class GFacUtils {
 		return true;
 	}
 
-	public static boolean updatePluginState(ZooKeeper zk,
-			JobExecutionContext jobExecutionContext, String className,
-			GfacPluginState state) throws ApplicationSettingsException,
+	public static boolean updateHandlerState(ZooKeeper zk,
+                                             JobExecutionContext jobExecutionContext, String className,
+                                             GfacHandlerState state) throws ApplicationSettingsException,
 			KeeperException, InterruptedException {
 		if(zk.getState().isConnected()) {
 			String expState = AiravataZKUtils.getExpZnodeHandlerPath(
@@ -1018,14 +1018,14 @@ public class GFacUtils {
 						String.valueOf(state.getValue()).getBytes(),
 						exists.getVersion());
 			} else {
-				createPluginZnode(zk, jobExecutionContext, className, state);
+				createHandlerZnode(zk, jobExecutionContext, className, state);
 			}
 			return true;
 		}
 		return false;
 	}
 
-	public static GfacPluginState getHandlerState(ZooKeeper zk,
+	public static GfacHandlerState getHandlerState(ZooKeeper zk,
                                                   JobExecutionContext jobExecutionContext, String className) {
 		try {
 			String expState = AiravataZKUtils.getExpZnodeHandlerPath(
@@ -1037,9 +1037,9 @@ public class GFacUtils {
                 String stateVal = new String(zk.getData(expState + File.separator
                                 + AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false,
                         exists));
-                return GfacPluginState.findByValue(Integer.valueOf(stateVal));
+                return GfacHandlerState.findByValue(Integer.valueOf(stateVal));
             }
-			return GfacPluginState.UNKNOWN; // if the node doesn't exist or any other error we
+			return GfacHandlerState.UNKNOWN; // if the node doesn't exist or any other error we
 							// return false
 		} catch (Exception e) {
 			log.error("Error occured while getting zk node status", e);
