@@ -1693,8 +1693,20 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public void terminateExperiment(String airavataExperimentId, String tokenId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
-    	Client client = getOrchestratorClient();
-    	client.terminateExperiment(airavataExperimentId, tokenId);
+        try {
+            if (!(registry.isExist(RegistryModelType.EXPERIMENT, airavataExperimentId))){
+                logger.error("Experiment does not exist.Please provide a valid experiment id...");
+                throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+            }
+            Client client = getOrchestratorClient();
+            client.terminateExperiment(airavataExperimentId, tokenId);
+        } catch (RegistryException e) {
+            logger.errorId(airavataExperimentId, "Error while cancelling the experiment...", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while cancelling the experiment. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
