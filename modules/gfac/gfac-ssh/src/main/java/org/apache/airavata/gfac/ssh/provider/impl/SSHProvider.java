@@ -169,23 +169,24 @@ public class SSHProvider extends AbstractProvider {
 
                     String jobID = cluster.submitBatchJob(jobDescriptor);
                     if (jobID != null) {
+                        jobDetails.setJobID(jobID);
                         GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SUBMITTED);
                     }
                     jobExecutionContext.setJobDetails(jobDetails);
                     String verifyJobId = verifyJobSubmission(cluster, jobDetails);
                     if (verifyJobId != null) {
                         // JobStatus either changed from SUBMITTED to QUEUED or directly to QUEUED
-                        GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.QUEUED);
                         if (jobID == null) {
                             jobID = verifyJobId;
+                            jobDetails.setJobID(jobID);
                         }
+                        GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.QUEUED);
                     }
                     if (jobID == null) {
                         log.error("Couldn't find remote jobId for JobName:" + jobDetails.getJobName() + ", ExperimentId:" + jobExecutionContext.getExperimentID());
                         GFacUtils.updateExperimentStatus(jobExecutionContext.getExperimentID(), ExperimentState.FAILED);
                         return;
                     }
-                    jobDetails.setJobID(jobID);
                     data.append("jobDesc=").append(jobDescriptor.toXML());
                     data.append(",jobId=").append(jobDetails.getJobID());
                     delegateToMonitorHandlers(jobExecutionContext);
