@@ -73,6 +73,7 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
     public void setupExperimentStatus(WorkflowNodeStatusChangeEvent nodeStatus) throws Exception{
 		try {
 			boolean updateExperimentStatus=true;
+            boolean clean= false;
 			ExecutionType executionType = DataModelUtils.getExecutionType((Experiment) airavataRegistry.get(RegistryModelType.EXPERIMENT, nodeStatus.getWorkflowNodeIdentity().getExperimentId()));
             String experimentNode = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
             String experimentPath = experimentNode + File.separator + ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME)
@@ -81,7 +82,7 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
 	        switch (nodeStatus.getState()) {
 	            case CANCELED:
 	                state = ExperimentState.CANCELED; updateExperimentStatus = true;
-                    cleanup(nodeStatus, experimentNode, experimentPath);
+                    clean = true;
 	                break;
 	            case COMPLETED:
 	            	if(executionType.equals(ExecutionType.SINGLE_APP)){
@@ -89,30 +90,30 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
 	            	}else{
 	                state = ExperimentState.EXECUTING; updateExperimentStatus = true;
 	                }
-                    cleanup(nodeStatus, experimentNode, experimentPath);
+                    clean = true;
 	                break;
 	            case INVOKED:
 	                state = ExperimentState.LAUNCHED; updateExperimentStatus = false;
 	                break;
 	            case FAILED:
 	                state = ExperimentState.FAILED; updateExperimentStatus = true;
-                    cleanup(nodeStatus,experimentNode,experimentPath);
+                    clean = true;
 	                break;
 	            case EXECUTING:
 	                state = ExperimentState.EXECUTING; updateExperimentStatus = true;
 	                break;
 	            case CANCELING:
 	                state = ExperimentState.CANCELING; updateExperimentStatus = true;
-                    cleanup(nodeStatus,experimentNode,experimentPath);
+                    clean = true;
                     break;
-	            default:
-	                return;
-	        }
-	        if (!updateExperimentStatus){
-				updateExperimentStatus=(executionType==ExecutionType.SINGLE_APP);
-	        }
-			updateExperimentStatus(nodeStatus.getWorkflowNodeIdentity().getExperimentId(), state);
-			logger.debug("Publishing experiment status for "+nodeStatus.getWorkflowNodeIdentity().getExperimentId()+":"+state.toString());
+                default:
+                    return;
+            }
+            if (!updateExperimentStatus){
+                updateExperimentStatus=(executionType==ExecutionType.SINGLE_APP);
+            }
+            updateExperimentStatus(nodeStatus.getWorkflowNodeIdentity().getExperimentId(), state);
+            logger.debug("Publishing experiment status for " + nodeStatus.getWorkflowNodeIdentity().getExperimentId() + ":" + state.toString());
             ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(state,
                                                                                 nodeStatus.getWorkflowNodeIdentity().getExperimentId(),
                                                                                 nodeStatus.getWorkflowNodeIdentity().getGatewayId());
@@ -121,7 +122,10 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
             MessageContext msgCntxt = new MessageContext(event, MessageType.EXPERIMENT, messageId, nodeStatus.getWorkflowNodeIdentity().getGatewayId());
             msgCntxt.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             publisher.publish(msgCntxt);
-		} catch (Exception e) {
+            if (clean) {
+                cleanup(nodeStatus, experimentNode, experimentPath);
+            }
+        } catch (Exception e) {
             logger.error("Error persisting data" + e.getLocalizedMessage(), e);
             throw new Exception("Error persisting experiment status..", e);
 		}
