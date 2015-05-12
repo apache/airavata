@@ -21,9 +21,8 @@
 package org.apache.airavata.gfac.core.handler;
 
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
-import org.apache.airavata.gfac.core.states.GfacPluginState;
+import org.apache.airavata.gfac.core.states.GfacHandlerState;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
-import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +34,7 @@ public class AppDescriptorCheckHandler implements GFacHandler {
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         logger.info("Invoking ApplicationDescriptorCheckHandler ...");
         try {
-            GFacUtils.updatePluginState(jobExecutionContext.getZk(), jobExecutionContext, this.getClass().getName(), GfacPluginState.INVOKED);
+            GFacUtils.updateHandlerState(jobExecutionContext.getZk(), jobExecutionContext, this.getClass().getName(), GfacHandlerState.INVOKED);
         } catch (Exception e) {
             logger.info("Error saving plugin status to ZK");
         }
