@@ -28,6 +28,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
+                <!--<module>new-dist</module>-->
                 <module>server</module>
                 <module>client</module>
                 <module>xbaya-gui</module>
