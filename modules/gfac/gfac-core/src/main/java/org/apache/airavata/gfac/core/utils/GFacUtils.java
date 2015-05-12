@@ -906,7 +906,7 @@ public class GFacUtils {
         if (expState == null || expState.isEmpty()) {
             return GfacExperimentState.UNKNOWN;
         }
-        return GfacExperimentState.valueOf(expState);
+        return GfacExperimentState.findByValue(Integer.valueOf(expState));
     }
 
 	public static int getZKExperimentStateValue(ZooKeeper zk,
