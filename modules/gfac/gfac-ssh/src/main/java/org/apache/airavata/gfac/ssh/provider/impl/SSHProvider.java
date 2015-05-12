@@ -166,24 +166,22 @@ public class SSHProvider extends AbstractProvider {
                     log.info(jobDescriptor.toXML());
 
                     jobDetails.setJobDescription(jobDescriptor.toXML());
+                    jobExecutionContext.setJobDetails(jobDetails);
 
                     String jobID = cluster.submitBatchJob(jobDescriptor);
                     if (jobID != null) {
                         GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SUBMITTED);
-                    }
-                    jobExecutionContext.setJobDetails(jobDetails);
-                    String verifyJobId = verifyJobSubmission(cluster, jobDetails);
-                    if (verifyJobId != null) {
-                        // JobStatus either changed from SUBMITTED to QUEUED or directly to QUEUED
-                        GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.QUEUED);
-                        if (jobID == null) {
+                    } else {
+                        String verifyJobId = verifyJobSubmission(cluster, jobDetails);
+                        if (verifyJobId != null) {
+                            // JobStatus either changed from SUBMITTED to QUEUED or directly to QUEUED
+                            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.QUEUED);
                             jobID = verifyJobId;
+                        } else {
+                            log.error("Couldn't find remote jobId for JobName:" + jobDetails.getJobName() + ", ExperimentId:" + jobExecutionContext.getExperimentID());
+                            GFacUtils.updateExperimentStatus(jobExecutionContext.getExperimentID(), ExperimentState.FAILED);
+                            return;
                         }
-                    }
-                    if (jobID == null) {
-                        log.error("Couldn't find remote jobId for JobName:" + jobDetails.getJobName() + ", ExperimentId:" + jobExecutionContext.getExperimentID());
-                        GFacUtils.updateExperimentStatus(jobExecutionContext.getExperimentID(), ExperimentState.FAILED);
-                        return;
                     }
                     jobDetails.setJobID(jobID);
                     data.append("jobDesc=").append(jobDescriptor.toXML());
