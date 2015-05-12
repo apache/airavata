@@ -186,7 +186,7 @@ public class SSHProvider extends AbstractProvider {
                     }
                     data.append("jobDesc=").append(jobDescriptor.toXML());
                     data.append(",jobId=").append(jobDetails.getJobID());
-                    delegateToMonitorHandlers(jobExecutionContext);
+                    monitor(jobExecutionContext);
                 } catch (SSHApiException e) {
                     String error = "Error submitting the job to host " + jobExecutionContext.getHostName() + " message: " + e.getMessage();
                     log.error(error);
@@ -403,44 +403,6 @@ public class SSHProvider extends AbstractProvider {
         return stdOutputString;
     }
 
-    public void delegateToMonitorHandlers(JobExecutionContext jobExecutionContext) throws GFacHandlerException, AppCatalogException {
-        if (jobExecutionContext.getPreferredJobSubmissionProtocol() == JobSubmissionProtocol.SSH) {
-            String jobSubmissionInterfaceId = jobExecutionContext.getPreferredJobSubmissionInterface().getJobSubmissionInterfaceId();
-            SSHJobSubmission sshJobSubmission = jobExecutionContext.getAppCatalog().getComputeResource().getSSHJobSubmission(jobSubmissionInterfaceId);
-            MonitorMode monitorMode = sshJobSubmission.getMonitorMode();
-            if (monitorMode != null && monitorMode == MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR) {
-                try {
-                    EmailBasedMonitor emailBasedMonitor = EmailMonitorFactory.getEmailBasedMonitor(
-                            sshJobSubmission.getResourceJobManager().getResourceJobManagerType());
-                    emailBasedMonitor.addToJobMonitorMap(jobExecutionContext);
-                } catch (AiravataException e) {
-                    throw new GFacHandlerException("Error while activating email job monitoring ", e);
-                }
-                return;
-            }
-        }
-
-        // if email monitor is not activeated or not configure we use pull or push monitor
-        List<ThreadedHandler> daemonHandlers = BetterGfacImpl.getDaemonHandlers();
-        if (daemonHandlers == null) {
-            daemonHandlers = BetterGfacImpl.getDaemonHandlers();
-        }
-        ThreadedHandler pullMonitorHandler = null;
-        ThreadedHandler pushMonitorHandler = null;
-        for (ThreadedHandler threadedHandler : daemonHandlers) {
-            if ("org.apache.airavata.gfac.monitor.handlers.GridPullMonitorHandler".equals(threadedHandler.getClass().getName())) {
-                pullMonitorHandler = threadedHandler;
-                pullMonitorHandler.invoke(jobExecutionContext);
-            }
-            // have to handle the GridPushMonitorHandler logic
-        }
-        if (pullMonitorHandler == null && pushMonitorHandler == null && ExecutionMode.ASYNCHRONOUS.equals(jobExecutionContext.getGFacConfiguration().getExecutionMode())) {
-            log.error("No Daemon handler is configured in gfac-config.xml, either pull or push, so monitoring will not invoked" +
-                    ", execution is configured as asynchronous, so Outhandler will not be invoked");
-        }
-    }
-
-
     public void recover(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
         // have to implement the logic to recover a gfac failure
         initialize(jobExecutionContext);
@@ -498,7 +460,7 @@ public class SSHProvider extends AbstractProvider {
                         throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
                     }
                 }
-                delegateToMonitorHandlers(jobExecutionContext);
+                monitor(jobExecutionContext);
             } catch (Exception e) {
                 log.error("Error while recover the job", e);
                 throw new GFacProviderException("Error delegating already ran job to Monitoring", e);
@@ -506,6 +468,49 @@ public class SSHProvider extends AbstractProvider {
         }else{
             log.info("We do not handle non hpc recovery so we simply run the Job directly");
             this.execute(jobExecutionContext);
+        }
+    }
+
+    @Override
+    public void monitor(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
+        if (jobExecutionContext.getPreferredJobSubmissionProtocol() == JobSubmissionProtocol.SSH) {
+            String jobSubmissionInterfaceId = jobExecutionContext.getPreferredJobSubmissionInterface().getJobSubmissionInterfaceId();
+            SSHJobSubmission sshJobSubmission = null;
+            try {
+                sshJobSubmission = jobExecutionContext.getAppCatalog().getComputeResource().getSSHJobSubmission(jobSubmissionInterfaceId);
+            } catch (AppCatalogException e) {
+                throw new GFacException("Error while reading compute resource", e);
+            }
+            MonitorMode monitorMode = sshJobSubmission.getMonitorMode();
+            if (monitorMode != null && monitorMode == MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR) {
+                try {
+                    EmailBasedMonitor emailBasedMonitor = EmailMonitorFactory.getEmailBasedMonitor(
+                            sshJobSubmission.getResourceJobManager().getResourceJobManagerType());
+                    emailBasedMonitor.addToJobMonitorMap(jobExecutionContext);
+                } catch (AiravataException e) {
+                    throw new GFacHandlerException("Error while activating email job monitoring ", e);
+                }
+                return;
+            }
+        }
+
+        // if email monitor is not activeated or not configure we use pull or push monitor
+        List<ThreadedHandler> daemonHandlers = BetterGfacImpl.getDaemonHandlers();
+        if (daemonHandlers == null) {
+            daemonHandlers = BetterGfacImpl.getDaemonHandlers();
+        }
+        ThreadedHandler pullMonitorHandler = null;
+        ThreadedHandler pushMonitorHandler = null;
+        for (ThreadedHandler threadedHandler : daemonHandlers) {
+            if ("org.apache.airavata.gfac.monitor.handlers.GridPullMonitorHandler".equals(threadedHandler.getClass().getName())) {
+                pullMonitorHandler = threadedHandler;
+                pullMonitorHandler.invoke(jobExecutionContext);
+            }
+            // have to handle the GridPushMonitorHandler logic
+        }
+        if (pullMonitorHandler == null && pushMonitorHandler == null && ExecutionMode.ASYNCHRONOUS.equals(jobExecutionContext.getGFacConfiguration().getExecutionMode())) {
+            log.error("No Daemon handler is configured in gfac-config.xml, either pull or push, so monitoring will not invoked" +
+                    ", execution is configured as asynchronous, so Outhandler will not be invoked");
         }
     }
 }

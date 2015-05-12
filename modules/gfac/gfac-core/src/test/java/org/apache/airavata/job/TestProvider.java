@@ -38,6 +38,11 @@ public class TestProvider extends AbstractProvider {
         // TODO: Auto generated method body.
     }
 
+    @Override
+    public void monitor(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
+        // TODO: Auto generated method body.
+    }
+
     public void initProperties(Map<String, String> properties) throws GFacProviderException, GFacException {
         //To change body of implemented methods use File | Settings | File Templates.
     }

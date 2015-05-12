@@ -66,4 +66,12 @@ public interface GFacProvider{
      * @param jobExecutionContext
      */
     public void recover(JobExecutionContext jobExecutionContext)throws GFacProviderException,GFacException;
+
+    /**
+     * FIXME :Added this method to make an quick fix, need to remove this monitor logic from provider and invoke separately.
+     * @param jobExecutionContext
+     * @throws GFacProviderException
+     * @throws GFacException
+     */
+    public void monitor(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException;
 }

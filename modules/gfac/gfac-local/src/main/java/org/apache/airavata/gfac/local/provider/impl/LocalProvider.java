@@ -257,6 +257,11 @@ public class LocalProvider extends AbstractProvider {
         // TODO: Auto generated method body.
     }
 
+    @Override
+    public void monitor(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
+        // TODO: Auto generated method body.
+    }
+
 
     private void buildCommand() {
         cmdList.add(jobExecutionContext.getExecutablePath());
