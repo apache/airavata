@@ -257,11 +257,6 @@
         </dependency>
         <!-- JCR Support -->
         <!-- TODO need clean up -->
-        <!--<dependency>-->
-            <!--<groupId>org.apache.airavata</groupId>-->
-            <!--<artifactId>airavata-gfac-schema-utils</artifactId>-->
-            <!--<version>${project.version}</version>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-gfac-core</artifactId>
