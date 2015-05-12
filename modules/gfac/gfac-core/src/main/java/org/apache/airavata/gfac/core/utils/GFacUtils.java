@@ -1025,8 +1025,8 @@ public class GFacUtils {
 		return false;
 	}
 
-	public static GfacPluginState getPluginState(ZooKeeper zk,
-                                                 JobExecutionContext jobExecutionContext, String className) {
+	public static GfacPluginState getHandlerState(ZooKeeper zk,
+                                                  JobExecutionContext jobExecutionContext, String className) {
 		try {
 			String expState = AiravataZKUtils.getExpZnodeHandlerPath(
 					jobExecutionContext.getExperimentID(), className);

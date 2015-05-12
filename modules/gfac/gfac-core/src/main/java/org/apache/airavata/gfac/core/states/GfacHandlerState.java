@@ -25,22 +25,15 @@ package org.apache.airavata.gfac.core.states;
 
 import org.apache.thrift.TEnum;
 
-    @SuppressWarnings("all") public enum GfacExperimentState implements TEnum {
-      LAUNCHED(0),
-      ACCEPTED(1),
-      INHANDLERSINVOKING(2),
-      INHANDLERSINVOKED(3),
-      PROVIDERINVOKING(4),
-      PROVIDERINVOKED(5),
-      OUTHANDLERSINVOKING(6),
-      OUTHANDLERSINVOKED(7),
-      COMPLETED(8),
-      FAILED(9),
-      UNKNOWN(10);
+    @SuppressWarnings("all") public enum GfacHandlerState implements TEnum {
+      INVOKING(0),
+      INVOKED(1),
+      COMPLETED(2),
+      UNKNOWN(3);
 
       private final int value;
 
-      private GfacExperimentState(int value) {
+      private GfacHandlerState(int value) {
         this.value = value;
       }
 
@@ -55,29 +48,15 @@ import org.apache.thrift.TEnum;
        * Find a the enum type by its integer value, as defined in the Thrift IDL.
        * @return null if the value is not found.
        */
-      public static GfacExperimentState findByValue(int value) {
+      public static GfacHandlerState findByValue(int value) {
         switch (value) {
           case 0:
-            return LAUNCHED;
+            return INVOKING;
           case 1:
-            return ACCEPTED;
+            return INVOKED;
           case 2:
-            return INHANDLERSINVOKING;
-          case 3:
-            return INHANDLERSINVOKED;
-          case 4:
-            return PROVIDERINVOKING;
-          case 5:
-            return PROVIDERINVOKED;
-          case 6:
-            return OUTHANDLERSINVOKING;
-          case 7:
-            return OUTHANDLERSINVOKED;
-          case 8:
             return COMPLETED;
-          case 9:
-            return FAILED;
-          case 10:
+          case 3:
             return UNKNOWN;
           default:
             return null;

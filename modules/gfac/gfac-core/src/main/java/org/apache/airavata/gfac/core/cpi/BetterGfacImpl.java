@@ -810,7 +810,7 @@ public class BetterGfacImpl implements GFac,Watcher {
         GFacProvider provider = jobExecutionContext.getProvider();
         if (provider != null) {
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKING));
-            GfacPluginState plState = GFacUtils.getPluginState(zk, jobExecutionContext, provider.getClass().getName());
+            GfacPluginState plState = GFacUtils.getHandlerState(zk, jobExecutionContext, provider.getClass().getName());
             GFacUtils.createPluginZnode(zk, jobExecutionContext, provider.getClass().getName());
             if (plState != null && plState == GfacPluginState.INVOKING) {    // this will make sure if a plugin crashes it will not launch from the scratch, but plugins have to save their invoked state
                 initProvider(provider, jobExecutionContext);
@@ -850,7 +850,7 @@ public class BetterGfacImpl implements GFac,Watcher {
         GFacProvider provider = jobExecutionContext.getProvider();
         if (provider != null) {
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKING));
-            GfacPluginState plState = GFacUtils.getPluginState(zk, jobExecutionContext, provider.getClass().getName());
+            GfacPluginState plState = GFacUtils.getHandlerState(zk, jobExecutionContext, provider.getClass().getName());
             GFacUtils.createPluginZnode(zk, jobExecutionContext, provider.getClass().getName());
             if (plState == GfacPluginState.UNKNOWN || plState == GfacPluginState.INVOKING) {    // this will make sure if a plugin crashes it will not launch from the scratch, but plugins have to save their invoked state
                 initProvider(provider, jobExecutionContext);
@@ -1092,7 +1092,7 @@ public class BetterGfacImpl implements GFac,Watcher {
                 try {
                     handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
                     handler = handlerClass.newInstance();
-                    GfacPluginState plState = GFacUtils.getPluginState(zk, jobExecutionContext, handlerClassName.getClassName());
+                    GfacPluginState plState = GFacUtils.getHandlerState(zk, jobExecutionContext, handlerClassName.getClassName());
                     GFacUtils.createPluginZnode(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.INVOKING);
                     handler.initProperties(handlerClassName.getProperties());
                     if (plState == GfacPluginState.UNKNOWN || plState == GfacPluginState.INVOKING) {
@@ -1174,7 +1174,7 @@ public class BetterGfacImpl implements GFac,Watcher {
             try {
                 handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
                 handler = handlerClass.newInstance();
-                GfacPluginState plState = GFacUtils.getPluginState(zk, jobExecutionContext, handlerClassName.getClassName());
+                GfacPluginState plState = GFacUtils.getHandlerState(zk, jobExecutionContext, handlerClassName.getClassName());
                 GFacUtils.createPluginZnode(zk, jobExecutionContext, handlerClassName.getClassName(), GfacPluginState.INVOKING);
                 if (plState == GfacPluginState.UNKNOWN || plState == GfacPluginState.INVOKING) {
                     log.info(handlerClassName.getClassName() + " never ran so we run this in normal mode");
