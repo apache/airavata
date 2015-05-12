@@ -20,8 +20,7 @@
 
 include "applicationCatalogDataModel.thrift"
 
-namespace java org.apache.airavata.gfac.workspace.experiment
-namespace php Airavata.Model.Workspace.Experiment
+namespace java org.apache.airavata.gfac.states
 
 /*
  * This file describes the definitions of the Gfac Framework level Experiment Data Structures. Each of the
@@ -38,6 +37,8 @@ const string DEFAULT_PROJECT_NAME = "DEFAULT"
 const string SINGLE_APP_NODE_NAME = "SINGLE_APP_NODE"
 
 enum GfacExperimentState {
+    LAUNCHED,
+    ACCEPTED,
     INHANDLERSINVOKING,
     INHANDLERSINVOKED,
     PROVIDERINVOKING,
@@ -46,6 +47,13 @@ enum GfacExperimentState {
     OUTHANDLERSINVOKED,
     COMPLETED,
     FAILED,
+    UNKNOWN
+}
+
+enum GfacHandlerState {
+    INVOKING,
+    INVOKED,
+    COMPLETED,
     UNKNOWN
 }
 
