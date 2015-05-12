@@ -403,7 +403,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                     TBase messageEvent = message.getEvent();
                     byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
                     ThriftUtils.createThriftFromBytes(bytes, event);
-                    GFacUtils.setExperimentCancel(event.getExperimentId(), event.getTaskId(), zk);
+                    GFacUtils.setExperimentCancel(event.getExperimentId(), event.getTaskId(), zk, experimentNode, nodeName, event.getTokenId(), message.getDeliveryTag());
                     AiravataZKUtils.getExpStatePath(event.getExperimentId());
                     cancelJob(event.getExperimentId(), event.getTaskId(), event.getGatewayId(), event.getTokenId());
                     System.out.println(" Message Received with message id '" + message.getMessageId()

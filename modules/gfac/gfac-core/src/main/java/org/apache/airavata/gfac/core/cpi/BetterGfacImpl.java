@@ -220,8 +220,16 @@ public class BetterGfacImpl implements GFac,Watcher {
             StringWriter errors = new StringWriter();
             e.printStackTrace(new PrintWriter(errors));
             GFacUtils.saveErrorDetails(jobExecutionContext, errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+            // FIXME: Here we need to update Experiment status to Failed, as we used chained update approach updating
+            // task status will cause to update Experiment status. Remove this chained update approach and fix this correctly (update experiment status)
             if(jobExecutionContext!=null){
                 monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.FAILED));
+                TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
+                        jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
+                        jobExecutionContext.getExperimentID(),
+                        jobExecutionContext.getGatewayID());
+                TaskStatusChangeRequestEvent event = new TaskStatusChangeRequestEvent(TaskState.FAILED, taskIdentity);
+                monitorPublisher.publish(event);
             }
             throw new GFacException(e);
         }finally {
@@ -565,10 +573,6 @@ public class BetterGfacImpl implements GFac,Watcher {
 
     private boolean cancel(JobExecutionContext jobExecutionContext) throws GFacException {
         try {
-            // we cannot call GFacUtils.getZKExperimentStateValue because experiment might be running in some other node
-            String expPath = GFacUtils.findExperimentEntry(jobExecutionContext.getExperimentID(), zk);
-            Stat exists = zk.exists(expPath + File.separator + "operation", false);
-            zk.getData(expPath + File.separator + "operation", this, exists);
             GfacExperimentState gfacExpState = GFacUtils.getZKExperimentState(zk, jobExecutionContext);   // this is the original state came, if we query again it might be different,so we preserve this state in the environment
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
                     , GfacExperimentState.ACCEPTED));                  // immediately we get the request we update the status
@@ -578,42 +582,14 @@ public class BetterGfacImpl implements GFac,Watcher {
             }
             // Register log event listener. This is required in all scenarios.
             jobExecutionContext.getNotificationService().registerListener(new LoggingListener());
-            if (isNewJob(gfacExpState)) {
-                log.info("Job is not yet submitted, so nothing much to do except changing the registry entry " +
-                        " and stop the execution chain");
-            } else if (isCompletedJob(gfacExpState)) {
-                log.error("This experiment is almost finished, so cannot cancel this experiment");
-                ZKUtil.deleteRecursive(zk,
-                        AiravataZKUtils.getExpZnodePath(jobExecutionContext.getExperimentID()));
-            } else {
+            if (gfacExpState == GfacExperimentState.PROVIDERINVOKING) { // we already have changed registry status, we need to handle job canceling scenario.
                 log.info("Job is in a position to perform a proper cancellation");
                 try {
                     Scheduler.schedule(jobExecutionContext);
                     invokeProviderCancel(jobExecutionContext);
-                } catch (Exception e) {
-                    try {
-                        // we make the experiment as failed due to exception scenario
-                        monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.FAILED));
-                        JobStatusChangeRequestEvent changeRequestEvent = new JobStatusChangeRequestEvent();
-                        changeRequestEvent.setState(JobState.FAILED);
-                        JobIdentifier jobIdentifier = new JobIdentifier(jobExecutionContext.getJobDetails().getJobID(),
-                                jobExecutionContext.getTaskData().getTaskID(),
-                                jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                                jobExecutionContext.getExperimentID(),
-                                jobExecutionContext.getGatewayID());
-                        changeRequestEvent.setJobIdentity(jobIdentifier);
-                        monitorPublisher.publish(changeRequestEvent);
-                    } catch (NullPointerException e1) {
-                        log.error("Error occured during updating the statuses of Experiments,tasks or Job statuses to failed, "
-                                + "NullPointerException occurred because at this point there might not have Job Created", e1, e);
-                        // Updating the task status if there's any task associated
-                        monitorPublisher.publish(new TaskStatusChangeRequestEvent(TaskState.FAILED,
-                                new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
-                                        jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                                        jobExecutionContext.getExperimentID(),
-                                        jobExecutionContext.getGatewayID())));
-
-                    }
+                } catch (GFacException e) {
+                    // we make the experiment as failed due to exception scenario
+                    monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.FAILED));
                     jobExecutionContext.setProperty(ERROR_SENT, "true");
                     jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
                     throw new GFacException(e.getMessage(), e);
@@ -794,7 +770,7 @@ public class BetterGfacImpl implements GFac,Watcher {
         GFacProvider provider = jobExecutionContext.getProvider();
         if (provider != null) {
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKING));
-            GFacUtils.createPluginZnode(zk, jobExecutionContext, provider.getClass().getName());
+            GFacUtils.createHandlerZnode(zk, jobExecutionContext, provider.getClass().getName());
             initProvider(provider, jobExecutionContext);
             executeProvider(provider, jobExecutionContext);
             disposeProvider(provider, jobExecutionContext);
@@ -811,7 +787,7 @@ public class BetterGfacImpl implements GFac,Watcher {
         if (provider != null) {
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKING));
             GfacHandlerState plState = GFacUtils.getHandlerState(zk, jobExecutionContext, provider.getClass().getName());
-            GFacUtils.createPluginZnode(zk, jobExecutionContext, provider.getClass().getName());
+            GFacUtils.createHandlerZnode(zk, jobExecutionContext, provider.getClass().getName());
             if (plState != null && plState == GfacHandlerState.INVOKING) {    // this will make sure if a plugin crashes it will not launch from the scratch, but plugins have to save their invoked state
                 initProvider(provider, jobExecutionContext);
                 executeProvider(provider, jobExecutionContext);
@@ -831,14 +807,12 @@ public class BetterGfacImpl implements GFac,Watcher {
 
     }
 
-    private void invokeProviderCancel(JobExecutionContext jobExecutionContext) throws GFacException, ApplicationSettingsException, InterruptedException, KeeperException {
+    private void invokeProviderCancel(JobExecutionContext jobExecutionContext) throws GFacException {
         GFacProvider provider = jobExecutionContext.getProvider();
         if (provider != null) {
-            monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKING));
             initProvider(provider, jobExecutionContext);
             cancelProvider(provider, jobExecutionContext);
             disposeProvider(provider, jobExecutionContext);
-            monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKED));
         }
         if (GFacUtils.isSynchronousMode(jobExecutionContext)) {
             invokeOutFlowHandlers(jobExecutionContext);
@@ -851,7 +825,7 @@ public class BetterGfacImpl implements GFac,Watcher {
         if (provider != null) {
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKING));
             GfacHandlerState plState = GFacUtils.getHandlerState(zk, jobExecutionContext, provider.getClass().getName());
-            GFacUtils.createPluginZnode(zk, jobExecutionContext, provider.getClass().getName());
+            GFacUtils.createHandlerZnode(zk, jobExecutionContext, provider.getClass().getName());
             if (plState == GfacHandlerState.UNKNOWN || plState == GfacHandlerState.INVOKING) {    // this will make sure if a plugin crashes it will not launch from the scratch, but plugins have to save their invoked state
                 initProvider(provider, jobExecutionContext);
                 cancelProvider(provider, jobExecutionContext);
@@ -923,7 +897,7 @@ public class BetterGfacImpl implements GFac,Watcher {
                     Class<? extends GFacHandler> handlerClass;
                     GFacHandler handler;
                     try {
-                        GFacUtils.createPluginZnode(zk, jobExecutionContext, handlerClassName.getClassName());
+                        GFacUtils.createHandlerZnode(zk, jobExecutionContext, handlerClassName.getClassName());
                         handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
                         handler = handlerClass.newInstance();
                         handler.initProperties(handlerClassName.getProperties());
@@ -1001,7 +975,7 @@ public class BetterGfacImpl implements GFac,Watcher {
                         Class<? extends GFacHandler> handlerClass;
                         GFacHandler handler;
                         try {
-                            GFacUtils.createPluginZnode(jobExecutionContext.getZk(), jobExecutionContext, handlerClassName.getClassName());
+                            GFacUtils.createHandlerZnode(jobExecutionContext.getZk(), jobExecutionContext, handlerClassName.getClassName());
                             handlerClass = Class.forName(handlerClassName.getClassName().trim()).asSubclass(GFacHandler.class);
                             handler = handlerClass.newInstance();
                             handler.initProperties(handlerClassName.getProperties());
