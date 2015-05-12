@@ -209,10 +209,14 @@ public class DataTransferrer {
 	
 	private String getDownloadLocation() {
 		TaskDetails taskData = jobContext.getTaskData();
-		if (taskData != null && taskData.getAdvancedOutputDataHandling() != null) {
-			String outputDataDirectory = taskData.getAdvancedOutputDataHandling().getOutputDataDir();
-			return outputDataDirectory;
-		}
-		return null;
+		//In case of third party transfer this will not work.
+//		if (taskData != null && taskData.getAdvancedOutputDataHandling() != null) {
+//			String outputDataDirectory = taskData.getAdvancedOutputDataHandling().getOutputDataDir();
+//			return outputDataDirectory;
+//		}
+		String outputDataDir = File.separator + "tmp";
+        outputDataDir = outputDataDir + File.separator + jobContext.getExperimentID();
+        (new File(outputDataDir)).mkdirs();
+		return outputDataDir;
 	}
 }

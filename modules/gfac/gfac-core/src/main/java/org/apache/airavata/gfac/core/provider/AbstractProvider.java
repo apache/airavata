@@ -45,9 +45,6 @@ public abstract class AbstractProvider implements GFacProvider{
 
     protected AbstractProvider() {                                            //todo this has to be fixed
         this.monitorPublisher = BetterGfacImpl.getMonitorPublisher();
-        if(this.monitorPublisher == null){
-            this.monitorPublisher = BetterGfacImpl.getMonitorPublisher();
-        }
     }
 
     public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {

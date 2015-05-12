@@ -34,6 +34,7 @@ import org.apache.airavata.gfac.bes.utils.JSDLGenerator;
 import org.apache.airavata.gfac.bes.utils.SecurityUtils;
 import org.apache.airavata.gfac.bes.utils.StorageCreator;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.core.notification.events.StartExecutionEvent;
 import org.apache.airavata.gfac.core.notification.events.StatusChangeEvent;
 import org.apache.airavata.gfac.core.notification.events.UnicoreJobIDEvent;
@@ -44,6 +45,8 @@ import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
+import org.apache.airavata.model.messaging.event.JobIdentifier;
+import org.apache.airavata.model.messaging.event.JobStatusChangeRequestEvent;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.xmlbeans.XmlCursor;
@@ -147,7 +150,7 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
 
             log.info(String.format("Activity Submitting to %s ... \n",
                     factoryUrl));
-            jobExecutionContext.getNotifier().publish(new StartExecutionEvent());
+            monitorPublisher.publish(new StartExecutionEvent());
             CreateActivityResponseDocument response = factory.createActivity(cad);
             log.info(String.format("Activity Submitted to %s \n", factoryUrl));
 
@@ -162,22 +165,15 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
                         .toString();
             }
             log.info("JobID: " + jobId);
-            jobDetails.setJobID(activityEpr.toString());
+            jobDetails.setJobID(jobId);
             jobDetails.setJobDescription(activityEpr.toString());
 
             jobExecutionContext.setJobDetails(jobDetails);
+            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SUBMITTED);
             log.info(formatStatusMessage(activityEpr.getAddress()
                     .getStringValue(), factory.getActivityStatus(activityEpr)
                     .toString()));
-
-            jobExecutionContext.getNotifier().publish(new UnicoreJobIDEvent(jobId));
-//            GFacUtils.saveJobStatus(jobExecutionContext, details, JobState.SUBMITTED);
-
             
-            log.info(formatStatusMessage(activityEpr.getAddress()
-                    .getStringValue(), factory.getActivityStatus(activityEpr)
-                    .toString()));
-
             waitUntilDone(factory, activityEpr, jobDetails);
 
             ActivityStatusType activityStatus = null;
@@ -196,10 +192,7 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
                 log.info(error);
   
                 JobState applicationJobStatus = JobState.FAILED;
-                String jobStatusMessage = "Status of job " + jobId + "is "
-                        + applicationJobStatus;
-                jobExecutionContext.getNotifier().publish(
-                        new StatusChangeEvent(jobStatusMessage));
+                sendNotification(jobExecutionContext,applicationJobStatus);
                 GFacUtils.updateJobStatus(jobExecutionContext, jobDetails, applicationJobStatus);
                 try {Thread.sleep(5000);} catch (InterruptedException e) {}
                 
@@ -209,16 +202,16 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
                 
             } else if (activityStatus.getState() == ActivityStateEnumeration.CANCELLED) {
                 JobState applicationJobStatus = JobState.CANCELED;
-                String jobStatusMessage = "Status of job " + jobId + "is "
-                        + applicationJobStatus;
-                jobExecutionContext.getNotifier().publish(
-                        new StatusChangeEvent(jobStatusMessage));
+                sendNotification(jobExecutionContext,applicationJobStatus);
                 GFacUtils.updateJobStatus(jobExecutionContext, jobDetails, applicationJobStatus);
                 throw new GFacProviderException(
                         jobExecutionContext.getExperimentID() + "Job Canceled");
             } else if (activityStatus.getState() == ActivityStateEnumeration.FINISHED) {
                 try {
                     Thread.sleep(5000);
+                    JobState applicationJobStatus = JobState.COMPLETE;
+                    sendNotification(jobExecutionContext,applicationJobStatus);
+                    
                 } catch (InterruptedException e) {
                 }
                 if (activityStatus.getExitCode() == 0) {
@@ -432,10 +425,8 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
 	
 	            ActivityStatusType activityStatus = getStatus(factory, activityEpr);
 	            JobState applicationJobStatus = getApplicationJobStatus(activityStatus);
-	            String jobStatusMessage = "Status of job " + jobId + "is " + applicationJobStatus;
-//	            GFacUtils.updateJobStatus(jobExecutionContext, jobDetails, applicationJobStatus);
-	
-	            jobExecutionContext.getNotifier().publish(new StatusChangeEvent(jobStatusMessage));
+	         
+	            sendNotification(jobExecutionContext,applicationJobStatus);
 	
 	            // GFacUtils.updateApplicationJobStatus(jobExecutionContext,jobId,
 	            // applicationJobStatus);
@@ -444,9 +435,24 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
 	            } catch (InterruptedException e) {}
 	            continue;
 	        }
+			return;
 		} catch(Exception e) {
 			log.error("Error monitoring job status..");
 			throw e;
 		}
 	}
+    private void sendNotification(JobExecutionContext jobExecutionContext,  JobState status) {
+        JobStatusChangeRequestEvent jobStatus = new JobStatusChangeRequestEvent();
+        JobIdentifier jobIdentity = new JobIdentifier(jobExecutionContext.getJobDetails().getJobID(),
+        		jobExecutionContext.getTaskData().getTaskID(),
+        		jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
+        		jobExecutionContext.getExperimentID(),
+        		jobExecutionContext.getGatewayID());
+        jobStatus.setJobIdentity(jobIdentity);
+        jobStatus.setState(status);
+        log.debug(jobStatus.getJobIdentity().getJobId(), "Published job status change request, " +
+                "experiment {} , task {}", jobStatus.getJobIdentity().getExperimentId(),
+        jobStatus.getJobIdentity().getTaskId());
+        monitorPublisher.publish(jobStatus);
+    }
 }

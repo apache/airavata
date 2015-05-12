@@ -207,7 +207,12 @@ public class GFACSSHUtils {
             SSHSecurityContext sshSecurityContext = new SSHSecurityContext();
             AppCatalog appCatalog = jobExecutionContext.getAppCatalog();
             JobSubmissionInterface preferredJobSubmissionInterface = jobExecutionContext.getPreferredJobSubmissionInterface();
-            SSHJobSubmission sshJobSubmission = appCatalog.getComputeResource().getSSHJobSubmission(preferredJobSubmissionInterface.getJobSubmissionInterfaceId());
+            SSHJobSubmission sshJobSubmission = null;
+			try {
+				sshJobSubmission = appCatalog.getComputeResource().getSSHJobSubmission(preferredJobSubmissionInterface.getJobSubmissionInterfaceId());
+			} catch (Exception e1) {
+				 logger.error("Not able to get SSHJobSubmission from registry");
+			}
 
             Cluster pbsCluster = null;
             String key=sshAuth.getKey();
@@ -239,25 +244,30 @@ public class GFACSSHUtils {
                 }
                 if (recreate) {
                	 JobManagerConfiguration jConfig = null;
-                 String installedParentPath = jobExecutionContext.getResourceJobManager().getJobManagerBinPath();
+               	 String installedParentPath = null;
+               	 if(jobExecutionContext.getResourceJobManager()!= null){
+               		installedParentPath = jobExecutionContext.getResourceJobManager().getJobManagerBinPath();
+               	 }
                  if (installedParentPath == null) {
                      installedParentPath = "/";
                  }
-                 String jobManager = sshJobSubmission.getResourceJobManager().getResourceJobManagerType().toString();
-                 if (jobManager == null) {
-                     logger.error("No Job Manager is configured, so we are picking pbs as the default job manager");
-                     jConfig = CommonUtils.getPBSJobManager(installedParentPath);
-                 } else {
-                     if (PBS_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
-                         jConfig = CommonUtils.getPBSJobManager(installedParentPath);
-                     } else if (SLURM_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
-                         jConfig = CommonUtils.getSLURMJobManager(installedParentPath);
-                     } else if (SUN_GRID_ENGINE_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
-                         jConfig = CommonUtils.getSGEJobManager(installedParentPath);
-                     } else if(LSF_JOB_MANAGER.equals(jobManager)) {
-                         jConfig = CommonUtils.getLSFJobManager(installedParentPath);
-                     }
-                 }
+					if (sshJobSubmission != null) {
+						String jobManager = sshJobSubmission.getResourceJobManager().getResourceJobManagerType().toString();
+						if (jobManager == null) {
+							logger.error("No Job Manager is configured, so we are picking pbs as the default job manager");
+							jConfig = CommonUtils.getPBSJobManager(installedParentPath);
+						} else {
+							if (PBS_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
+								jConfig = CommonUtils.getPBSJobManager(installedParentPath);
+							} else if (SLURM_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
+								jConfig = CommonUtils.getSLURMJobManager(installedParentPath);
+							} else if (SUN_GRID_ENGINE_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
+								jConfig = CommonUtils.getSGEJobManager(installedParentPath);
+							} else if (LSF_JOB_MANAGER.equals(jobManager)) {
+								jConfig = CommonUtils.getLSFJobManager(installedParentPath);
+							}
+						}
+					}
                     pbsCluster = new PBSCluster(sshAuth.getServerInfo(), sshAuth.getAuthenticationInfo(),jConfig);
                     key = sshAuth.getKey();
                     List<Cluster> pbsClusters = null;
