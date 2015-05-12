@@ -930,8 +930,8 @@ public class GFacUtils {
         return -1;
     }
 
-	public static boolean createPluginZnode(ZooKeeper zk,
-			JobExecutionContext jobExecutionContext, String className)
+	public static boolean createHandlerZnode(ZooKeeper zk,
+                                             JobExecutionContext jobExecutionContext, String className)
 			throws ApplicationSettingsException, KeeperException,
 			InterruptedException {
 		String expState = AiravataZKUtils.getExpZnodeHandlerPath(
@@ -1048,129 +1048,22 @@ public class GFacUtils {
 	}
 
 	// This method is dangerous because of moving the experiment data
-	public static boolean createExperimentEntryForRPC(String experimentID,
-													  String taskID, ZooKeeper zk, String experimentNode,
-													  String pickedChild, String tokenId) throws KeeperException,
-			InterruptedException {
-		String experimentPath = experimentNode + File.separator + pickedChild;
-		String newExpNode = experimentPath + File.separator + experimentID;
-        Stat exists1 = zk.exists(newExpNode, false);
-        String experimentEntry = GFacUtils.findExperimentEntry(experimentID, zk);
-        String foundExperimentPath = null;
-		if (exists1 == null && experimentEntry == null) {  // this means this is a very new experiment
-			List<String> runningGfacNodeNames = AiravataZKUtils
-					.getAllGfacNodeNames(zk); // here we take old gfac servers
-												// too
-			for (String gfacServerNode : runningGfacNodeNames) {
-				if (!gfacServerNode.equals(pickedChild)) {
-					foundExperimentPath = experimentNode + File.separator
-							+ gfacServerNode + File.separator + experimentID;
-					exists1 = zk.exists(foundExperimentPath, false);
-					if (exists1 != null) { // when the experiment is found we
-											// break the loop
-						break;
-					}
-				}
-			}
-			if (exists1 == null) { // OK this is a pretty new experiment so we
-									// are going to create a new node
-				log.info("This is a new Job, so creating all the experiment docs from the scratch");
-				zk.create(newExpNode, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
-						CreateMode.PERSISTENT);
-
-				Stat expParent = zk.exists(newExpNode, false);
-				if (tokenId != null && expParent != null) {
-					zk.setData(newExpNode, tokenId.getBytes(),
-							expParent.getVersion());
-				}
-				zk.create(newExpNode + File.separator + "state", String
-						.valueOf(GfacExperimentState.LAUNCHED.getValue())
-						.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
-						CreateMode.PERSISTENT);
-                zk.create(newExpNode + File.separator + "operation","submit".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                        CreateMode.PERSISTENT);
-
-			} else {
-				// ohhh this node exists in some other failed gfac folder, we
-				// have to move it to this gfac experiment list,safely
-				log.info("This is an old Job, so copying data from old experiment location");
-				zk.create(newExpNode,
-						zk.getData(foundExperimentPath, false, exists1),
-						ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-
-				List<String> children = zk.getChildren(foundExperimentPath,
-						false);
-				for (String childNode1 : children) {
-					String level1 = foundExperimentPath + File.separator
-							+ childNode1;
-					Stat exists2 = zk.exists(level1, false); // no need to check
-																// exists
-					String newLeve1 = newExpNode + File.separator + childNode1;
-					log.info("Creating new znode: " + newLeve1); // these has to
-																	// be info
-																	// logs
-					zk.create(newLeve1, zk.getData(level1, false, exists2),
-							ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-					for (String childNode2 : zk.getChildren(level1, false)) {
-						String level2 = level1 + File.separator + childNode2;
-						Stat exists3 = zk.exists(level2, false); // no need to
-																	// check
-																	// exists
-						String newLeve2 = newLeve1 + File.separator
-								+ childNode2;
-						log.info("Creating new znode: " + newLeve2);
-						zk.create(newLeve2, zk.getData(level2, false, exists3),
-								ZooDefs.Ids.OPEN_ACL_UNSAFE,
-								CreateMode.PERSISTENT);
-					}
-				}
-				// After all the files are successfully transfered we delete the
-				// old experiment,otherwise we do
-				// not delete a single file
-				log.info("After a successful copying of experiment data for an old experiment we delete the old data");
-				log.info("Deleting experiment data: " + foundExperimentPath);
-				ZKUtil.deleteRecursive(zk, foundExperimentPath);
-			}
-		}else if(experimentEntry != null && GFacUtils.isCancelled(experimentID,zk) ){
-            // this happens when a cancel request comes to a differnt gfac node, in this case we do not move gfac experiment
-            // node to gfac node specific location, because original request execution will fail with errors
-            log.error("This experiment is already cancelled and its already executing the cancel operation so cannot submit again !");
-            return false;
-        } else {
-            log.error("ExperimentID: " + experimentID + " taskID: " + taskID
-                    + " is already running by this Gfac instance");
-            List<String> runningGfacNodeNames = AiravataZKUtils
-                    .getAllGfacNodeNames(zk); // here we take old gfac servers
-            // too
-            for (String gfacServerNode : runningGfacNodeNames) {
-                if (!gfacServerNode.equals(pickedChild)) {
-                    foundExperimentPath = experimentNode + File.separator
-                            + gfacServerNode + File.separator + experimentID;
-                    break;
-                }
-            }
-            ZKUtil.deleteRecursive(zk, foundExperimentPath);
-        }
-        return true;
-	}
-
-	// This method is dangerous because of moving the experiment data
 	public static boolean createExperimentEntryForPassive(String experimentID,
 														  String taskID, ZooKeeper zk, String experimentNode,
 														  String pickedChild, String tokenId, long deliveryTag) throws KeeperException,
 			InterruptedException, ApplicationSettingsException {
 		String experimentPath = experimentNode + File.separator + pickedChild;
-		String newExpNode = experimentPath + File.separator + experimentID;
-		Stat exists1 = zk.exists(newExpNode, false);
-		String experimentEntry = GFacUtils.findExperimentEntry(experimentID, zk);
-		if (experimentEntry == null) {  // this means this is a very new experiment
+		String newExperimentPath = experimentPath + File.separator + experimentID;
+		Stat exists1 = zk.exists(newExperimentPath, false);
+		String oldExperimentPath = GFacUtils.findExperimentEntry(experimentID, zk);
+		if (oldExperimentPath == null) {  // this means this is a very new experiment
 			// are going to create a new node
 			log.info("This is a new Job, so creating all the experiment docs from the scratch");
 
-			zk.create(newExpNode, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
+			zk.create(newExperimentPath, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
 					CreateMode.PERSISTENT);
 
-            String s = zk.create(newExpNode + File.separator + "state", String
+            String s = zk.create(newExperimentPath + File.separator + "state", String
 							.valueOf(GfacExperimentState.LAUNCHED.getValue())
 							.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
 					CreateMode.PERSISTENT);
@@ -1180,65 +1073,49 @@ public class GFacUtils {
 			}else{
 				log.error("Error creating node: "+s+" successfully !");
 			}
-
-			String s1 = zk.create(newExpNode + File.separator + "operation", "submit".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
-					CreateMode.PERSISTENT);
-			zk.exists(s1, false);// we want to know when this node get deleted
-			zk.create(newExpNode + AiravataZKUtils.DELIVERY_TAG_POSTFIX, longToBytes(deliveryTag), ZooDefs.Ids.OPEN_ACL_UNSAFE,  // here we store the value of delivery message
+			zk.create(newExperimentPath + AiravataZKUtils.DELIVERY_TAG_POSTFIX, longToBytes(deliveryTag), ZooDefs.Ids.OPEN_ACL_UNSAFE,  // here we store the value of delivery message
 					CreateMode.PERSISTENT);
 		} else {
 			log.error("ExperimentID: " + experimentID + " taskID: " + taskID
 					+ " was running by some Gfac instance,but it failed");
-			if(newExpNode.equals(experimentEntry)){
+			if(newExperimentPath.equals(oldExperimentPath)){
 				log.info("Re-launch experiment came to the same GFac instance");
 			}else {
 				log.info("Re-launch experiment came to a new GFac instance so we are moving data to new gfac node");
-				zk.create(newExpNode,
-						zk.getData(experimentEntry, false, exists1),
-						ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-
-				List<String> children = zk.getChildren(experimentEntry,
-						false);
-				for (String childNode1 : children) {
-					String level1 = experimentEntry + File.separator
-							+ childNode1;
-					Stat exists2 = zk.exists(level1, false); // no need to check exists
-					String newLeve1 = newExpNode + File.separator + childNode1;
-					log.info("Creating new znode: " + newLeve1); // these has to be info logs
-					zk.create(newLeve1, zk.getData(level1, false, exists2),
-							ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-					for (String childNode2 : zk.getChildren(level1, false)) {
-						String level2 = level1 + File.separator + childNode2;
-						Stat exists3 = zk.exists(level2, false); // no need to check exists
-						String newLeve2 = newLeve1 + File.separator
-								+ childNode2;
-						log.info("Creating new znode: " + newLeve2);
-						zk.create(newLeve2, zk.getData(level2, false, exists3),
-								ZooDefs.Ids.OPEN_ACL_UNSAFE,
-								CreateMode.PERSISTENT);
-					}
-				}
-
-
-				String oldDeliveryTag = experimentEntry + AiravataZKUtils.DELIVERY_TAG_POSTFIX;
+				zk.create(newExperimentPath, zk.getData(oldExperimentPath, false, exists1),
+						ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT); // recursively copy children
+                copyChildren(zk, oldExperimentPath, newExperimentPath, 2); // we need to copy children up to depth 2
+				String oldDeliveryTag = oldExperimentPath + AiravataZKUtils.DELIVERY_TAG_POSTFIX;
 				Stat exists = zk.exists(oldDeliveryTag, false);
 				if(exists!=null) {
-					zk.create(newExpNode + AiravataZKUtils.DELIVERY_TAG_POSTFIX,
+					zk.create(newExperimentPath + AiravataZKUtils.DELIVERY_TAG_POSTFIX,
 							zk.getData(oldDeliveryTag,null,exists),ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
 					ZKUtil.deleteRecursive(zk,oldDeliveryTag);
 				}
-				// After all the files are successfully transfered we delete the
-				// old experiment,otherwise we do
+				// After all the files are successfully transfered we delete the // old experiment,otherwise we do
 				// not delete a single file
 				log.info("After a successful copying of experiment data for an old experiment we delete the old data");
-				log.info("Deleting experiment data: " + experimentEntry);
-				ZKUtil.deleteRecursive(zk, experimentEntry);
+				log.info("Deleting experiment data: " + oldExperimentPath);
+				ZKUtil.deleteRecursive(zk, oldExperimentPath);
 			}
 		}
 		return true;
 	}
 
-	/**
+    private static void copyChildren(ZooKeeper zk, String oldPath, String newPath, int depth) throws KeeperException, InterruptedException {
+        for (String childNode : zk.getChildren(oldPath, false)) {
+            String oldChildPath = oldPath + File.separator + childNode;
+            Stat stat = zk.exists(oldChildPath, false); // no need to check exists
+            String newChildPath = newPath + File.separator + childNode;
+            log.info("Creating new znode: " + newChildPath);
+            zk.create(newChildPath, zk.getData(oldChildPath, false, stat), ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
+            if (--depth > 0) {
+                copyChildren(zk , oldChildPath, newChildPath, depth );
+            }
+        }
+    }
+
+    /**
 	 * This will return a value if the server is down because we iterate through exisiting experiment nodes, not
 	 * through gfac-server nodes
 	 * @param experimentID
@@ -1292,12 +1169,21 @@ public class GFacUtils {
 		return null;
 	}
 
-    public static void setExperimentCancel(String experimentId,String taskId,ZooKeeper zk)throws KeeperException,
+    public static void setExperimentCancel(String experimentId, String taskId, ZooKeeper zk, String experimentNode,
+                                           String pickedChild, String tokenId, long deliveryTag)throws KeeperException,
             InterruptedException {
+        // TODO : remove this if all went well
+ /*       String experimentPath = experimentNode + File.separator + pickedChild;
+        String newExpNode = experimentPath + File.separator + experimentId;
         String experimentEntry = GFacUtils.findExperimentEntry(experimentId, zk);
-        if(experimentEntry == null){
-            log.error("Cannot find the experiment Entry, so cancel operation cannot be performed !!!");
-        }else {
+        if (experimentEntry == null) {
+            // This should be handle in validation request. Gfac shouldn't get any invalidate experiment.
+            log.error("Cannot find the experiment Entry, so cancel operation cannot be performed. " +
+                    "This happen when experiment completed and already removed from the zookeeper");
+        } else {
+            if (newExpNode.equals(experimentEntry)) {
+                log.info("Cancel experiment come to ");
+            }
             Stat operation = zk.exists(experimentEntry + File.separator + "operation", false);
             if (operation == null) { // if there is no entry, this will come when a user immediately cancel a job
                 zk.create(experimentEntry + File.separator + "operation", "cancel".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
@@ -1305,7 +1191,7 @@ public class GFacUtils {
             } else { // if user submit the job to gfac then cancel during execution
                 zk.setData(experimentEntry + File.separator + "operation", "cancel".getBytes(), operation.getVersion());
             }
-        }
+        }*/
 
     }
     public static boolean isCancelled(String experimentID, ZooKeeper zk
