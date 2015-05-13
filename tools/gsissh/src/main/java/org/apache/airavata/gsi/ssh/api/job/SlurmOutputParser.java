@@ -25,7 +25,6 @@ import org.apache.airavata.gsi.ssh.impl.JobStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.print.attribute.standard.JobState;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +33,7 @@ import java.util.regex.Pattern;
 
 public class SlurmOutputParser implements OutputParser {
     private static final Logger log = LoggerFactory.getLogger(SlurmOutputParser.class);
+    public static final int JOB_NAME_OUTPUT_LENGTH = 8;
 
     public void parseSingleJob(JobDescriptor descriptor, String rawOutput) throws SSHApiException {
         log.info(rawOutput);
@@ -193,6 +193,11 @@ public class SlurmOutputParser implements OutputParser {
     @Override
     public String parseJobId(String jobName, String rawOutput) throws SSHApiException {
         String regJobId = "jobId";
+        if (jobName == null) {
+            return null;
+        } else if(jobName.length() > JOB_NAME_OUTPUT_LENGTH) {
+            jobName = jobName.substring(0, JOB_NAME_OUTPUT_LENGTH);
+        }
         Pattern pattern = Pattern.compile("(?=(?<" + regJobId + ">\\d+)\\s+\\w+\\s+" + jobName + ")"); // regex - look ahead and match
         if (rawOutput != null) {
             Matcher matcher = pattern.matcher(rawOutput);

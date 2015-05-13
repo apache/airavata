@@ -20,7 +20,6 @@
 */
 package org.apache.airavata.gfac.gsissh.provider.impl;
 
-import org.airavata.appcatalog.cpi.AppCatalog;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -114,10 +113,10 @@ public class GSISSHProvider extends AbstractProvider {
             jobExecutionContext.setJobDetails(jobDetails);
             if (jobID == null) {
                 jobDetails.setJobID("none");
-                GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
+                GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED, monitorPublisher);
             } else {
                 jobDetails.setJobID(jobID.split("\\.")[0]);
-                GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SUBMITTED);
+                GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SUBMITTED, monitorPublisher);
             }
             data.append(",jobId=").append(jobDetails.getJobID());
 
@@ -129,7 +128,7 @@ public class GSISSHProvider extends AbstractProvider {
 		    String error = "Error submitting the job to host " + computeResourceDescription.getHostName() + " message: " + e.getMessage();
             log.error(error);
             jobDetails.setJobID("none");
-            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
+            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED, monitorPublisher);
             StringWriter errors = new StringWriter();
             e.printStackTrace(new PrintWriter(errors));
             GFacUtils.saveErrorDetails(jobExecutionContext,  errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
@@ -208,20 +207,20 @@ public class GSISSHProvider extends AbstractProvider {
                 log.error("No Job Id is set, so cannot perform the cancel operation !!!");
                 return;
             }
-            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.CANCELED);
+            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.CANCELED, monitorPublisher);
             // we know this host is type GsiSSHHostType
         } catch (SSHApiException e) {
             String error = "Error submitting the job to host " + jobExecutionContext.getHostName() + " message: " + e.getMessage();
             log.error(error);
             jobDetails.setJobID("none");
-            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
+            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED, monitorPublisher);
             GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
             throw new GFacProviderException(error, e);
         } catch (Exception e) {
             String error = "Error submitting the job to host " + jobExecutionContext.getHostName() + " message: " + e.getMessage();
             log.error(error);
             jobDetails.setJobID("none");
-            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
+            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED, monitorPublisher);
             GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
             throw new GFacProviderException(error, e);
         }

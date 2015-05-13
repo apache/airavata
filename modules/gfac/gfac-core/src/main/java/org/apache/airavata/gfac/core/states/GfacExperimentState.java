@@ -31,12 +31,13 @@ import org.apache.thrift.TEnum;
       INHANDLERSINVOKING(2),
       INHANDLERSINVOKED(3),
       PROVIDERINVOKING(4),
-      PROVIDERINVOKED(5),
-      OUTHANDLERSINVOKING(6),
-      OUTHANDLERSINVOKED(7),
-      COMPLETED(8),
-      FAILED(9),
-      UNKNOWN(10);
+      JOBSUBMITTED(5),
+      PROVIDERINVOKED(6),
+      OUTHANDLERSINVOKING(7),
+      OUTHANDLERSINVOKED(8),
+      COMPLETED(9),
+      FAILED(10),
+      UNKNOWN(11);
 
       private final int value;
 
@@ -68,16 +69,18 @@ import org.apache.thrift.TEnum;
           case 4:
             return PROVIDERINVOKING;
           case 5:
-            return PROVIDERINVOKED;
+            return JOBSUBMITTED;
           case 6:
-            return OUTHANDLERSINVOKING;
+            return PROVIDERINVOKED;
           case 7:
-            return OUTHANDLERSINVOKED;
+            return OUTHANDLERSINVOKING;
           case 8:
-            return COMPLETED;
+            return OUTHANDLERSINVOKED;
           case 9:
-            return FAILED;
+            return COMPLETED;
           case 10:
+            return FAILED;
+          case 11:
             return UNKNOWN;
           default:
             return null;
