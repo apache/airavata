@@ -702,11 +702,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
                             log.errorId(experimentId, "Error retrieving the Experiment by the given experimentID: {}", experimentId);
                             return false;
                         }
-                        ExperimentStatus status = new ExperimentStatus();
-                        status.setExperimentState(ExperimentState.LAUNCHED);
-                        status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
-                        experiment.setExperimentStatus(status);
-                        registry.update(RegistryModelType.EXPERIMENT_STATUS, status, experimentId);
                         String gatewayId = null;
                         CredentialReader credentialReader = GFacUtils.getCredentialReader();
                         if (credentialReader != null) {
