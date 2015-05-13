@@ -1092,29 +1092,6 @@ public class BetterGfacImpl implements GFac,Watcher {
 
     // TODO - Did refactoring, but need to recheck the logic again.
     public void reInvokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
-        String experimentPath = null;
-        try {
-            jobExecutionContext.setZk(new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this));
-            zk = jobExecutionContext.getZk();
-            log.info("Waiting for zookeeper to connect to the server");
-            synchronized (mutex) {
-                mutex.wait(5000);  // waiting for the syncConnected event
-            }
-            if (jobExecutionContext.getZk().exists(experimentPath, false) == null) {
-                log.error("Experiment is already finalized so no output handlers will be invoked");
-                return;
-            }
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        } catch (ApplicationSettingsException e) {
-            log.error(e.getMessage(), e);
-        } catch (InterruptedException e) {
-            log.error(e.getMessage(), e);
-        } catch (KeeperException e) {
-            log.error(e.getMessage(), e);
-        }
-
-
         GFacConfiguration gFacConfiguration = jobExecutionContext.getGFacConfiguration();
         List<GFacHandlerConfig> handlers = null;
         if (gFacConfiguration != null) {
