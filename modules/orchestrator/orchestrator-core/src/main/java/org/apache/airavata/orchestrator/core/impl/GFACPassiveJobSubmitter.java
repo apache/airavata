@@ -135,20 +135,8 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
      * @throws OrchestratorException
      */
     public boolean terminate(String experimentID, String taskID, String tokenId) throws OrchestratorException {
-        ZooKeeper zk = orchestratorContext.getZk();
+        String gatewayId = null;
         try {
-            if (zk == null || !zk.getState().isConnected()) {
-                String zkhostPort = AiravataZKUtils.getZKhostPort();
-                zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this);
-                logger.info("Waiting for zookeeper to connect to the server");
-                synchronized (mutex) {
-                    mutex.wait(5000);
-                }
-            }
-            String gfacServer = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NODE, "/gfac-server");
-            String experimentNode = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
-            List<String> children = zk.getChildren(gfacServer, this);
-            String gatewayId = null;
             CredentialReader credentialReader = GFacUtils.getCredentialReader();
             if (credentialReader != null) {
                 try {
@@ -158,45 +146,18 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
                 }
             }
             if (gatewayId == null || gatewayId.isEmpty()) {
-                gatewayId = ServerSettings.getDefaultUserGateway();
-            }
-            if (children.size() == 0) {
-                // Zookeeper data need cleaning
-                throw new OrchestratorException("There is no active GFac instance to route the request");
-            } else {
-                String pickedChild = children.get(new Random().nextInt(Integer.MAX_VALUE) % children.size());
-                // here we are not using an index because the getChildren does not return the same order everytime
-                String gfacNodeData = new String(zk.getData(gfacServer + File.separator + pickedChild, false, null));
-                logger.info("GFAC instance node data: " + gfacNodeData);
-                String[] split = gfacNodeData.split(":");
-                if (zk.exists(gfacServer + File.separator + pickedChild, false) != null) {
-                    // before submitting the job we check again the state of the node
-                	TaskTerminateEvent taskTerminateEvent = new TaskTerminateEvent(experimentID, taskID, gatewayId, tokenId);
-                    MessageContext messageContext = new MessageContext(taskTerminateEvent, MessageType.TERMINATETASK, "LAUNCH.TERMINATE-" + UUID.randomUUID().toString(), gatewayId);
-                    messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-                    publisher.publish(messageContext);
-                }
-            }
-        } catch (InterruptedException e) {
-            logger.error(e.getMessage(), e);
-            throw new OrchestratorException(e);
-        } catch (KeeperException e) {
-            logger.error(e.getMessage(), e);
-            throw new OrchestratorException(e);
-        } catch (ApplicationSettingsException e) {
-            logger.error(e.getMessage(), e);
-            throw new OrchestratorException(e);
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-            throw new OrchestratorException(e);
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw new OrchestratorException(e);
-        }finally {
-            closeZK(orchestratorContext);
-        }
-        return false;
 
+                gatewayId = ServerSettings.getDefaultUserGateway();
+
+            }
+            TaskTerminateEvent taskTerminateEvent = new TaskTerminateEvent(experimentID, taskID, gatewayId, tokenId);
+            MessageContext messageContext = new MessageContext(taskTerminateEvent, MessageType.TERMINATETASK, "LAUNCH.TERMINATE-" + UUID.randomUUID().toString(), gatewayId);
+            messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+            publisher.publish(messageContext);
+            return true;
+        } catch (Exception e) {
+            throw new OrchestratorException(e);
+        }
     }
 
     private void closeZK(OrchestratorContext orchestratorContext) {
