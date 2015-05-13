@@ -570,7 +570,8 @@ public class BetterGfacImpl implements GFac,Watcher {
             }
             // Register log event listener. This is required in all scenarios.
             jobExecutionContext.getNotificationService().registerListener(new LoggingListener());
-            if (gfacExpState == GfacExperimentState.PROVIDERINVOKING) { // we already have changed registry status, we need to handle job canceling scenario.
+            if (gfacExpState == GfacExperimentState.PROVIDERINVOKING || gfacExpState == GfacExperimentState.JOBSUBMITTED
+                    || gfacExpState == GfacExperimentState.PROVIDERINVOKED) { // we already have changed registry status, we need to handle job canceling scenario.
                 log.info("Job is in a position to perform a proper cancellation");
                 try {
                     Scheduler.schedule(jobExecutionContext);
