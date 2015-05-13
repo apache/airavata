@@ -489,8 +489,6 @@ public class BetterGfacImpl implements GFac,Watcher {
         // we need to setup workflow tracking listerner.
         try {
             String experimentEntry = GFacUtils.findExperimentEntry(jobExecutionContext.getExperimentID(), zk);
-            Stat exists = zk.exists(experimentEntry + File.separator + "operation", false);
-            zk.getData(experimentEntry + File.separator + "operation", this, exists);
             GfacExperimentState gfacExpState = GFacUtils.getZKExperimentState(zk, jobExecutionContext);   // this is the original state came, if we query again it might be different,so we preserve this state in the environment
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
                     , GfacExperimentState.ACCEPTED));                  // immediately we get the request we update the status

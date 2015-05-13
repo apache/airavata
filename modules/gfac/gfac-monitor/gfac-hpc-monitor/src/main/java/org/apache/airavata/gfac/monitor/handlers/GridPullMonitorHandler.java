@@ -87,7 +87,7 @@ public class GridPullMonitorHandler extends ThreadedHandler implements Watcher{
         hpcPullMonitor.setGfac(jobExecutionContext.getGfac());
         MonitorID monitorID = new HPCMonitorID(getAuthenticationInfo(), jobExecutionContext);
         try {
-            ZooKeeper zk = jobExecutionContext.getZk();
+           /* ZooKeeper zk = jobExecutionContext.getZk();
             try {
                 String experimentEntry = GFacUtils.findExperimentEntry(jobExecutionContext.getExperimentID(), zk);
                 String path = experimentEntry + File.separator + "operation";
@@ -99,7 +99,7 @@ public class GridPullMonitorHandler extends ThreadedHandler implements Watcher{
                 logger.error(e.getMessage(), e);
             } catch (InterruptedException e) {
                 logger.error(e.getMessage(), e);
-            }
+            }*/
             CommonUtils.addMonitortoQueue(hpcPullMonitor.getQueue(), monitorID, jobExecutionContext);
             CommonUtils.increaseZkJobCount(monitorID); // update change job count to zookeeper
         } catch (AiravataMonitorException e) {
