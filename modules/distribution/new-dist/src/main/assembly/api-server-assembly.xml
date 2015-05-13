@@ -15,146 +15,14 @@
 
 	<id>bin</id>
 	<includeBaseDirectory>true</includeBaseDirectory>
-	<baseDirectory>${archieve.name}-${version}</baseDirectory>
+	<baseDirectory>${archive.name}-${version}</baseDirectory>
 	<formats>
 		<format>tar.gz</format>
 		<format>zip</format>
 	</formats>
 
-	<fileSets>
-
-		<!-- ********************** copy release notes files ********************** -->
-		<fileSet>
-			<directory>../../../</directory>
-			<outputDirectory>.</outputDirectory>
-			<includes>
-				<include>RELEASE_NOTES</include>
-			</includes>
-		</fileSet>
-		<!-- ********************** copy licenses, readme etc. ********************** -->
-		<fileSet>
-			<directory>src/main/resources/</directory>
-			<outputDirectory>.</outputDirectory>
-			<includes>
-				<include>LICENSE</include>
-				<include>NOTICE</include>
-				<include>README</include>
-				<include>INSTALL</include>
-			</includes>
-		</fileSet>
-
-		<!-- ********************** copy database scripts ********************** -->
-		<fileSet>
-			<directory>../../ws-messenger/messagebroker/src/main/resources/database_scripts
-			</directory>
-			<outputDirectory>bin/database_scripts
-			</outputDirectory>
-			<includes>
-				<include>*sql*</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../../ws-messenger/messagebox/src/main/resources/database_scripts
-			</directory>
-			<outputDirectory>bin/database_scripts
-			</outputDirectory>
-			<includes>
-				<include>*sql*</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../../registry/airavata-jpa-registry/src/main/resources
-			</directory>
-			<outputDirectory>bin/database_scripts
-			</outputDirectory>
-			<includes>
-				<include>*sql*</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../../app-catalog/app-catalog-data/src/main/resources
-			</directory>
-			<outputDirectory>bin/database_scripts
-			</outputDirectory>
-			<includes>
-				<include>*sql*</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>src/main/resources/bin</directory>
-			<outputDirectory>bin</outputDirectory>
-			<fileMode>777</fileMode>
-			<includes>
-				<include>*.sh</include>
-				<include>*.bat</include>
-				<include>logo.txt</include>
-				<include>startNetworkServer</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>src/main/resources/samples</directory>
-			<outputDirectory>samples</outputDirectory>
-			<fileMode>777</fileMode>
-			<includes>
-				<include>*.sh</include>
-				<include>**/*.sh</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>${project.build.directory}/conf</directory>
-			<outputDirectory>bin</outputDirectory>
-			<includes>
-				<include>airavata-server.properties</include>
-				<include>zoo.cfg</include>
-				<include>registry.properties</include>
-				<include>log4j.properties</include>
-				<include>host.xml</include>
-				<include>persistence.xml</include>
-				<include>provenance.sql</include>
-				<include>gfac-config.xml</include>
-				<include>PBSTemplate.xslt</include>
-				<include>SLURMTemplate.xslt</include>
-				<include>LSFTemplate.xslt</include>
-				<include>SGETemplate.xslt</include>
-				<include>gsissh.properties</include>
-			</includes>
-		</fileSet>
-
-		<!-- ********************** Copy Axis2 startup scripts to stand alone server 
-			********************** -->
-		<fileSet>
-			<directory>src/main/resources/axis2-standalone-bin</directory>
-			<outputDirectory>bin</outputDirectory>
-			<fileMode>777</fileMode>
-			<includes>
-				<include>*.sh</include>
-				<include>*.bat</include>
-			</includes>
-		</fileSet>
-
-		<fileSet>
-			<directory>src/main/resources/conf</directory>
-			<outputDirectory>bin</outputDirectory>
-			<includes>
-				<include>**/*</include>
-			</includes>
-		</fileSet>
-
-		<!-- ********************** Copy samples ********************** -->
-		<fileSet>
-			<directory>${project.build.directory}/samples/applications
-			</directory>
-			<outputDirectory>samples</outputDirectory>
-			<includes>
-				<include>*.sh</include>
-				<include>*.bat</include>
-			</includes>
-		</fileSet>
-
-	</fileSets>
-
 	<componentDescriptors>
-		<componentDescriptor>src/assembly/api-server-component.xml</componentDescriptor>
+		<componentDescriptor>airavata-common-component.xml</componentDescriptor>
 	</componentDescriptors>
 
 	<dependencySets>
@@ -162,17 +30,8 @@
 			<outputDirectory>lib</outputDirectory>
 			<outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
 			<includes>
-				<include>org.apache.derby:derby:jar</include>
-				<include>org.apache.derby:derbytools:jar</include>
-				<include>org.apache.derby:derbynet:jar</include>
-				<include>org.apache.derby:derbyclient:jar</include>
+				<include>org.apache.airavata:*:jar</include>
 			</includes>
-		</dependencySet>
-		<dependencySet>
-			<outputDirectory>lib</outputDirectory>
-			<includes>
-				<include>*:*:jar</include>
-            </includes>
 		</dependencySet>
 
 	</dependencySets>
