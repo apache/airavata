@@ -482,14 +482,15 @@ public class ExperimentRegistry {
             }
             status.setExperimentResource(experiment);
             status.setStatusUpdateTime(AiravataUtils.getTime(experimentStatus.getTimeOfStateChange()));
-            if (experimentStatus.getExperimentState() == null) {
-                status.setState(ExperimentState.UNKNOWN.toString());
-            } else {
-                status.setState(experimentStatus.getExperimentState().toString());
+            if (status.getState() == null) {
+                status.setState(ExperimentState.UNKNOWN.name());
             }
-            status.setStatusType(StatusType.EXPERIMENT.toString());
-            status.save();
-            logger.debugId(expId, "Updated experiment {} status to {}.", expId, experimentStatus.toString());
+            if (isValidStatusTransition(ExperimentState.valueOf(status.getState()), experimentStatus.getExperimentState())) {
+                status.setState(experimentStatus.getExperimentState().toString());
+                status.setStatusType(StatusType.EXPERIMENT.toString());
+                status.save();
+                logger.debugId(expId, "Updated experiment {} status to {}.", expId, experimentStatus.toString());
+            }
         } catch (Exception e) {
             logger.errorId(expId, "Error while updating experiment status...", e);
             throw new RegistryException(e);
@@ -3011,4 +3012,46 @@ public class ExperimentRegistry {
             throw new RegistryException(e);
         }
     }
+
+    public boolean isValidStatusTransition(ExperimentState oldState, ExperimentState nextState) {
+        if (nextState == null) {
+            return false;
+        }
+        switch (oldState) {
+            case CREATED:
+                return true;
+            case VALIDATED:
+                return nextState != ExperimentState.CREATED;
+            case SCHEDULED:
+                return nextState != ExperimentState.CREATED
+                        || nextState != ExperimentState.VALIDATED;
+            case LAUNCHED:
+                return nextState != ExperimentState.CREATED
+                        || nextState != ExperimentState.VALIDATED
+                        || nextState != ExperimentState.SCHEDULED;
+            case EXECUTING:
+                return nextState != ExperimentState.CREATED
+                        || nextState != ExperimentState.VALIDATED
+                        || nextState != ExperimentState.SCHEDULED
+                        || nextState != ExperimentState.LAUNCHED;
+
+            case CANCELING:
+                return nextState == ExperimentState.CANCELING
+                        || nextState == ExperimentState.CANCELED
+                        || nextState == ExperimentState.COMPLETED
+                        || nextState == ExperimentState.FAILED;
+            case CANCELED:
+                return nextState == ExperimentState.CANCELED;
+            case COMPLETED:
+                return nextState == ExperimentState.COMPLETED;
+            case FAILED:
+                return nextState == ExperimentState.FAILED;
+            //case SUSPENDED:  // We don't change state to SUSPEND
+            case UNKNOWN:
+                return true;
+            default:
+                return false;
+        }
+    }
+ß
 }
