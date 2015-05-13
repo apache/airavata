@@ -616,8 +616,10 @@ public class BetterGfacImpl implements GFac,Watcher {
                     invokeProviderExecute(jobExecutionContext);
                     break;
                 case PROVIDERINVOKING:
-                    reInvokeProviderExecute(jobExecutionContext);
+                    reInvokeProviderExecute(jobExecutionContext, true);
                     break;
+                case JOBSUBMITTED:
+                    reInvokeProviderExecute(jobExecutionContext, false);
                 case PROVIDERINVOKED:
                     // no need to re-run the job
                     log.info("Provider does not have to be recovered because it ran successfully for experiment: " + experimentID);
@@ -772,21 +774,27 @@ public class BetterGfacImpl implements GFac,Watcher {
         }
     }
 
-    private void reInvokeProviderExecute(JobExecutionContext jobExecutionContext) throws GFacException, GFacProviderException, ApplicationSettingsException, InterruptedException, KeeperException {
+    private void reInvokeProviderExecute(JobExecutionContext jobExecutionContext, boolean submit) throws GFacException, GFacProviderException, ApplicationSettingsException, InterruptedException, KeeperException {
         GFacProvider provider = jobExecutionContext.getProvider();
         if (provider != null) {
-            monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKING));
-            GfacHandlerState plState = GFacUtils.getHandlerState(zk, jobExecutionContext, provider.getClass().getName());
-            GFacUtils.createHandlerZnode(zk, jobExecutionContext, provider.getClass().getName());
-            if (plState != null && plState == GfacHandlerState.INVOKING) {    // this will make sure if a plugin crashes it will not launch from the scratch, but plugins have to save their invoked state
-                initProvider(provider, jobExecutionContext);
-                executeProvider(provider, jobExecutionContext);
-                disposeProvider(provider, jobExecutionContext);
+            if (submit) {
+                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKING));
+                GfacHandlerState plState = GFacUtils.getHandlerState(zk, jobExecutionContext, provider.getClass().getName());
+                GFacUtils.createHandlerZnode(zk, jobExecutionContext, provider.getClass().getName());
+                if (plState != null && plState == GfacHandlerState.INVOKING) {    // this will make sure if a plugin crashes it will not launch from the scratch, but plugins have to save their invoked state
+                    initProvider(provider, jobExecutionContext);
+                    executeProvider(provider, jobExecutionContext);
+                    disposeProvider(provider, jobExecutionContext);
+                } else {
+                    provider.recover(jobExecutionContext);
+                }
+                GFacUtils.updateHandlerState(zk, jobExecutionContext, provider.getClass().getName(), GfacHandlerState.COMPLETED);
+                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKED));
             } else {
-                provider.recover(jobExecutionContext);
+                disposeProvider(provider, jobExecutionContext);
+                GFacUtils.updateHandlerState(zk, jobExecutionContext, provider.getClass().getName(), GfacHandlerState.COMPLETED);
+                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKED));
             }
-            GFacUtils.updateHandlerState(zk, jobExecutionContext, provider.getClass().getName(), GfacHandlerState.COMPLETED);
-            monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKED));
         }
 
         if (GFacUtils.isSynchronousMode(jobExecutionContext))
