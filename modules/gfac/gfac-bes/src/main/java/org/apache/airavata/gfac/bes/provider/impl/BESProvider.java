@@ -263,10 +263,12 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
 					return JobState.QUEUED;
 				} else if (status.equalsIgnoreCase("Staging-In")) {
 					return JobState.SUBMITTED;
-				} else if (status.equalsIgnoreCase("Staging-Out")
-						|| status.equalsIgnoreCase("FINISHED")) {
+				} else if (status.equalsIgnoreCase("FINISHED")) {
 					return JobState.COMPLETE;
-				} else if (status.equalsIgnoreCase("Executing")) {
+				}else if(status.equalsIgnoreCase("Staging-Out")){
+					return JobState.ACTIVE;
+				} 
+				else if (status.equalsIgnoreCase("Executing")) {
 					return JobState.ACTIVE;
 				} else if (status.equalsIgnoreCase("FAILED")) {
 					return JobState.FAILED;
@@ -419,12 +421,15 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
     protected void waitUntilDone(FactoryClient factory, EndpointReferenceType activityEpr, JobDetails jobDetails) throws Exception {
 		
 		try {
+			JobState applicationJobStatus = null;
+			
 			while ((factory.getActivityStatus(activityEpr) != ActivityStateEnumeration.FINISHED)
 	                && (factory.getActivityStatus(activityEpr) != ActivityStateEnumeration.FAILED)
-	                && (factory.getActivityStatus(activityEpr) != ActivityStateEnumeration.CANCELLED)) {
+	                && (factory.getActivityStatus(activityEpr) != ActivityStateEnumeration.CANCELLED) 
+	                && (applicationJobStatus != JobState.COMPLETE)) {
 	
 	            ActivityStatusType activityStatus = getStatus(factory, activityEpr);
-	            JobState applicationJobStatus = getApplicationJobStatus(activityStatus);
+	            applicationJobStatus = getApplicationJobStatus(activityStatus);
 	         
 	            sendNotification(jobExecutionContext,applicationJobStatus);
 	
@@ -435,7 +440,6 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
 	            } catch (InterruptedException e) {}
 	            continue;
 	        }
-			return;
 		} catch(Exception e) {
 			log.error("Error monitoring job status..");
 			throw e;
