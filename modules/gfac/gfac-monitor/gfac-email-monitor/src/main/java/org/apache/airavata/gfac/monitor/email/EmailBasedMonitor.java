@@ -285,17 +285,17 @@ public class EmailBasedMonitor implements Runnable{
             log.info("[EJM]: Job failed email received , removed job from job monitoring. " + jobDetails);
         }else if (resultState == JobState.CANCELED) {
             jobMonitorMap.remove(jobStatusResult.getJobId());
-            runOutHandlers = true;
+            runOutHandlers = false; // Do we need to run out handlers in canceled case?
             log.info("[EJM]: Job canceled mail received, removed job from job monitoring. " + jobDetails);
 
         }
+        log.info("[EJM]: Publishing status changes to amqp. " + jobDetails);
+        publishJobStatusChange(jEC);
 
         if (runOutHandlers) {
             log.info("[EJM]: Calling Out Handler chain of " + jobDetails);
             GFacThreadPoolExecutor.getCachedThreadPool().execute(new OutHandlerWorker(jEC, BetterGfacImpl.getMonitorPublisher()));
         }
-        log.info("[EJM]: Publishing status changes to amqp. " + jobDetails);
-        publishJobStatusChange(jEC);
     }
 
     private void publishJobStatusChange(JobExecutionContext jobExecutionContext) {

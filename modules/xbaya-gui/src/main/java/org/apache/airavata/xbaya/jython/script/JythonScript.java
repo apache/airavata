@@ -49,7 +49,6 @@ import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaVersion;
-import org.apache.airavata.xbaya.invoker.GenericInvoker;
 
 public class JythonScript {
 
@@ -72,8 +71,6 @@ public class JythonScript {
      * TOPIC_VARIABLE
      */
     public static final String TOPIC_VARIABLE = "topic";
-
-    private static final String INVOKER_CLASS = StringUtil.getClassName(GenericInvoker.class);
 
 //    private static final String NOTIFICATION_CLASS = StringUtil.getClassName(NotificationSender.class);
 
@@ -337,8 +334,6 @@ public class JythonScript {
         pw.println("from java.util import Properties");
         pw.println("from java.io import FileInputStream");
         pw.println("from javax.xml.namespace import QName");
-        pw.println("from " + GenericInvoker.class.getPackage().getName() + " import " + INVOKER_CLASS);
-//        pw.println("from " + NotificationSender.class.getPackage().getName() + " import " + NOTIFICATION_CLASS);
         pw.println();
     }
 
@@ -495,7 +490,7 @@ public class JythonScript {
         pw.println(TAB + id + QNAME_SUFFIX + " = QName('" + portTypeQName.getNamespaceURI() + "', '"
                 + portTypeQName.getLocalPart() + "')");
         pw.println(TAB + wsdlID + " = " + PROPERTIES_VARIABLE + "." + GET_PROPERTY_METHOD + "('" + wsdlID + "')");
-        pw.println(TAB + id + INVOKER_SUFFIX + " = " + INVOKER_CLASS + "(" + id + QNAME_SUFFIX + ", " + wsdlID + ", '"
+        pw.println(TAB + id + INVOKER_SUFFIX + " = " + "(" + id + QNAME_SUFFIX + ", " + wsdlID + ", '"
                 + id + "',");
         pw.println(TAB + TAB + MESSAGE_BOX_URL_VARIABLE + ", " + GFAC_VARIABLE + ", " + NOTIFICATION_VARIABLE + ")");
 

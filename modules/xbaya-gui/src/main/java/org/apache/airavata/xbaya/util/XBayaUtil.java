@@ -50,8 +50,6 @@ import org.apache.airavata.xbaya.ThriftClientData;
 import org.apache.airavata.xbaya.ThriftServiceType;
 import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
-import org.apache.airavata.xbaya.invoker.Invoker;
-import org.apache.airavata.xbaya.lead.LeadContextHeaderHelper;
 import org.apache.airavata.xbaya.ui.dialogs.registry.RegistryWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,52 +66,6 @@ public class XBayaUtil {
     public static final String JCR_PASS = "jcr.password";
     public static final String JCR_URL = "jcr.url";
 
-    public static LeadContextHeader buildLeadContextHeader(final XBayaEngine engine,
-           String nodeId, LeadResourceMapping resourceMapping)
-            throws URISyntaxException {
-
-        XBayaConfiguration configuration = engine.getConfiguration();
-        Workflow workflow = engine.getGUI().getWorkflow();
-
-        LeadContextHeader leadContext = buildLeadContextHeader(workflow, configuration, nodeId,
-                resourceMapping);
-
-        return leadContext;
-
-    }
-
-    /**
-     * 
-     * @param workflow
-     * @param configuration
-     * @param nodeId
-     * @param resourceMapping
-     * @return
-     * @throws URISyntaxException
-     */
-    public static LeadContextHeader buildLeadContextHeader(Workflow workflow, XBayaConfiguration configuration,
-            String nodeId, LeadResourceMapping resourceMapping)
-            throws URISyntaxException {
-        LeadContextHeaderHelper leadContextHelper = new LeadContextHeaderHelper();
-        leadContextHelper.setXBayaConfiguration(configuration);
-
-        leadContextHelper.setWorkflowInstanceID(workflow.getGPELInstanceID());
-        leadContextHelper.setWorkflowTemplateID(workflow.getUniqueWorkflowName());
-
-//        leadContextHelper.setMonitorConfiguration(monitorConfiguration);
-
-        LeadContextHeader leadContext = leadContextHelper.getLeadContextHeader();
-
-        leadContext.setNodeId(nodeId);
-
-        leadContext.setTimeStep("1");
-
-        if (resourceMapping != null) {
-            leadContext.setResourceMapping(resourceMapping);
-        }
-        return leadContext;
-
-    }
 
     public static boolean isURLExists(String URLName) {
         try {
@@ -148,65 +100,6 @@ public class XBayaUtil {
     public static void updateJCRRegistryInfo(XBayaEngine xbayaEngine) {
     	RegistryWindow window = new RegistryWindow(xbayaEngine, ThriftServiceType.API_SERVICE);
         window.show();
-	}
-   
-    /**
-     *
-     * @param inputPort
-     * @param invokerMap
-     * @return
-     * @throws WorkflowException
-     */
-	public static Object findInputFromPort(DataPort inputPort, Map<Node, Invoker>  invokerMap) throws WorkflowException {
-		Object outputVal = null;
-		Node fromNode = inputPort.getFromNode();
-		if (fromNode instanceof InputNode) {
-			outputVal = ((InputNode) fromNode).getDefaultValue();
-		} else if (fromNode instanceof ConstantNode) {
-			outputVal = ((ConstantNode) fromNode).getValue();
-		} else if (fromNode instanceof EndifNode) {
-			Invoker fromInvoker = invokerMap.get(fromNode);
-			outputVal = fromInvoker.getOutput(inputPort.getFromPort().getID());
-		} else if (fromNode instanceof InstanceNode) {
-			return ((InstanceNode) fromNode).getOutputInstanceId();
-		} else if (fromNode instanceof EndForEachNode) {
-			outputVal = "";
-			Invoker workflowInvoker = invokerMap.get(fromNode);
-			String outputName = fromNode.getOutputPort(0).getName();
-			XmlElement msgElmt = XmlConstants.BUILDER
-					.parseFragmentFromString("<temp>"
-							+ workflowInvoker.getOutput(outputName) + "</temp>");
-			Iterator valItr = msgElmt.children().iterator();
-			while (valItr.hasNext()) {
-				Object object2 = valItr.next();
-				if (object2 instanceof XmlElement) {
-					outputVal = outputVal
-							+ StringUtil.DELIMETER 
-							+ StringUtil.quoteString(((XmlElement) object2).children().iterator()
-									.next().toString());
-				}
-			}
-			outputVal = ((String) outputVal).substring(1,
-					((String) outputVal).length());
-		} else {
-			Invoker fromInvoker = invokerMap.get(fromNode);
-			try {
-				if (fromInvoker != null)
-					outputVal = fromInvoker.getOutput(inputPort.getFromPort()
-							.getName());
-
-			} catch (Exception e) {
-				// if the value is still null look it up from the inputport name
-				// because the value is set to the input port name at some point
-				// there is no harm in doing this
-				if (null == outputVal) {
-					outputVal = fromInvoker.getOutput(inputPort.getName());
-				}
-			}
-
-		}
-		return outputVal;
-
 	}
 
 	/**

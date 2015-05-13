@@ -114,10 +114,10 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
         runMenu.add(launchXBayaInterpreterItem);
 //        runMenu.add(launchDynamicWorkflowItem);
         
-        runMenu.addSeparator();
+//        runMenu.addSeparator();
 //        runMenu.add(stopWorkflowItem);
 
-        runMenu.addSeparator();
+//        runMenu.addSeparator();
         
 //        runMenu.add(this.resumeMonitoringItem);
 //        runMenu.add(this.pauseMonitoringItem);
@@ -249,7 +249,7 @@ public class RunMenuItem  implements EventListener, XBayaExecutionModeListener{
 	}
     
     private void createLaunchXBayaInterpreterItem() {
-        this.launchXBayaInterpreterItem = new JMenuItem("Run on Interpreter Server...", MenuIcons.RUN_ICON);
+        this.launchXBayaInterpreterItem = new JMenuItem("Launch Workflow to Airavata Server...", MenuIcons.RUN_ICON);
         AbstractAction action = new AbstractAction() {
         	private WorkflowInterpreterLaunchWindow window;
             public void actionPerformed(ActionEvent e) {

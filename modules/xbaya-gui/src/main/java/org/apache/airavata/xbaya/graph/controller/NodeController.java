@@ -32,7 +32,6 @@ import org.apache.airavata.workflow.model.graph.Node.NodeExecutionState;
 import org.apache.airavata.workflow.model.graph.Port;
 import org.apache.airavata.workflow.model.graph.amazon.InstanceNode;
 import org.apache.airavata.workflow.model.graph.amazon.TerminateInstanceNode;
-import org.apache.airavata.workflow.model.graph.dynamic.DynamicNode;
 import org.apache.airavata.workflow.model.graph.subworkflow.SubWorkflowNode;
 import org.apache.airavata.workflow.model.graph.system.BlockNode;
 import org.apache.airavata.workflow.model.graph.system.ConstantNode;
@@ -60,7 +59,6 @@ import org.apache.airavata.xbaya.ui.graph.NodeGUI;
 import org.apache.airavata.xbaya.ui.graph.PortGUI;
 import org.apache.airavata.xbaya.ui.graph.amazon.InstanceNodeGUI;
 import org.apache.airavata.xbaya.ui.graph.amazon.TerminateInstanceNodeGUI;
-import org.apache.airavata.xbaya.ui.graph.dynamic.DynamicNodeGUI;
 import org.apache.airavata.xbaya.ui.graph.subworkflow.SubWorkflowNodeGUI;
 import org.apache.airavata.xbaya.ui.graph.system.BlockNodeGUI;
 import org.apache.airavata.xbaya.ui.graph.system.ConstantNodeGUI;
@@ -125,8 +123,6 @@ public class NodeController {
 		GraphPieceGUI nodeGUI=null;
 		if (node instanceof SubWorkflowNode){
 		    nodeGUI=new SubWorkflowNodeGUI((SubWorkflowNode)node);
-		} else if (node instanceof DynamicNode){
-		    nodeGUI=new DynamicNodeGUI((DynamicNode)node);
 		} else if (node instanceof ConstantNode){
 		    nodeGUI=new ConstantNodeGUI((ConstantNode)node);
 		} else if (node instanceof IfNode){
