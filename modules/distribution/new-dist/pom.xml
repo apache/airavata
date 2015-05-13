@@ -31,7 +31,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<version>2.8</version>
 				<executions>
 					<execution>
 						<id>unpack</id>
@@ -55,29 +54,6 @@
 			</plugin>
 
 			<plugin>
-				<groupId>org.codehaus.gmaven</groupId>
-				<artifactId>gmaven-plugin</artifactId>
-				<version>1.4</version>
-				<executions>
-					<execution>
-						<id>generate-timestamp</id>
-						<phase>package</phase>
-						<goals>
-							<goal>execute</goal>
-						</goals>
-						<configuration>
-							<source>
-								import java.util.Date
-								import java.text.MessageFormat
-								project.properties['buildTimestamp'] =
-								MessageFormat.format("{0,date,dd-MM-yyyy}", new
-								Date())
-							</source>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
@@ -88,10 +64,10 @@
 							<goal>single</goal>
 						</goals>
 						<configuration>
-							<finalName>${archieve.name}-${project.version}</finalName>
+							<finalName>${archive.name}-${project.version}</finalName>
 							<descriptors>
 								<descriptor>src/main/assembly/api-server-assembly.xml</descriptor>
-								 <descriptor>src/main/assembly/src-assembly.xml</descriptor>
+								 <!--<descriptor>src/main/assembly/src-assembly.xml</descriptor>-->
 							</descriptors>
 							<attach>false</attach>
 						</configuration>
@@ -99,34 +75,6 @@
 				</executions>
 			</plugin>
 
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>1.7</version>
-				<executions>
-					<execution>
-						<id>attach-artifacts</id>
-						<phase>package</phase>
-						<goals>
-							<goal>attach-artifact</goal>
-						</goals>
-						<configuration>
-							<artifacts>
-								<artifact>
-									<file>${airavata.bin.zip}</file>
-									<type>zip</type>
-									<classifier>bin</classifier>
-								</artifact>
-								<artifact>
-									<file>${airavata.bin.tar.gz}</file>
-									<type>tar.gz</type>
-									<classifier>bin</classifier>
-								</artifact>
-							</artifacts>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
 
@@ -147,10 +95,6 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<archieve.name>apache-airavata-server</archieve.name>
-		<airavata.dist.name>${archieve.name}-${project.version}</airavata.dist.name>
-		<airavata.work.dir>${project.build.directory}/tests/${airavata.dist.name}</airavata.work.dir>
-		<airavata.bin.zip>${project.build.directory}/${airavata.dist.name}-bin.zip</airavata.bin.zip>
-		<airavata.bin.tar.gz>${project.build.directory}/${airavata.dist.name}-bin.tar.gz</airavata.bin.tar.gz>
+		<archive.name>apache-airavata-api-server</archive.name>
 	</properties>
 </project>

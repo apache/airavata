@@ -23,9 +23,11 @@
         <dependencySet>
             <outputDirectory>/lib</outputDirectory>
             <includes>
-                <!--<include>application:logging</include>-->
-                <!--<include>application:core</include>-->
-                <!--<include>application:utils</include>-->
+                <include>org.apache.airavata:*:jar</include>
+                <include>org.apache.derby:derby:jar</include>
+                <include>org.apache.derby:derbytools:jar</include>
+                <include>org.apache.derby:derbynet:jar</include>
+                <include>org.apache.derby:derbyclient:jar</include>
             </includes>
         </dependencySet>
     </dependencySets>
