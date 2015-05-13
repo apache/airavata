@@ -192,6 +192,14 @@ public class GFacUtils {
 	public static void saveJobStatus(JobExecutionContext jobExecutionContext,
                                      JobDetails details, JobState state, MonitorPublisher monitorPublisher) throws GFacException {
 		try {
+            // first we save job details to the registry for safe side and then save the job status.
+            Registry registry = jobExecutionContext.getRegistry();
+            JobStatus status = new JobStatus();
+            status.setJobState(state);
+            details.setJobStatus(status);
+            registry.add(ChildDataType.JOB_DETAIL, details,
+                    new CompositeIdentifier(jobExecutionContext.getTaskData()
+                            .getTaskID(), details.getJobID()));
             JobIdentifier identifier = new JobIdentifier(details.getJobID(), jobExecutionContext.getTaskData().getTaskID(),
                     jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(), jobExecutionContext.getExperimentID(),
                     jobExecutionContext.getGatewayID());
