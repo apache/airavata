@@ -634,8 +634,10 @@ public class BetterGfacImpl implements GFac,Watcher {
                 case OUTHANDLERSINVOKED:
                 case COMPLETED:
                     GFacUtils.updateExperimentStatus(jobExecutionContext.getExperimentID(), ExperimentState.COMPLETED);
+                    break;
                 case FAILED:
                     GFacUtils.updateExperimentStatus(jobExecutionContext.getExperimentID(), ExperimentState.FAILED);
+                    break;
                 case UNKNOWN:
                     log.info("All output handlers are invoked successfully, ExperimentId: " + experimentID + " taskId: " + jobExecutionContext.getTaskData().getTaskID());
                     break;
