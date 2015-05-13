@@ -59,6 +59,7 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePrefer
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
@@ -82,23 +83,13 @@ import java.util.*;
 public class BetterGfacImpl implements GFac,Watcher {
     private static final Logger log = LoggerFactory.getLogger(BetterGfacImpl.class);
     public static final String ERROR_SENT = "ErrorSent";
-
     private Registry registry;
-    private AppCatalog appCatalog;
-
     // we are not storing zk instance in to jobExecution context
     private ZooKeeper zk;
-
     private static List<ThreadedHandler> daemonHandlers = new ArrayList<ThreadedHandler>();
-
     private static File gfacConfigFile;
-
     private static List<AbstractActivityListener> activityListeners = new ArrayList<AbstractActivityListener>();
-
     private static MonitorPublisher monitorPublisher;
-
-    private boolean cancelled = false;
-
     private static Integer mutex = -1;
 
     /**
@@ -116,7 +107,6 @@ public class BetterGfacImpl implements GFac,Watcher {
         synchronized (mutex) {
             mutex.wait(5000);  // waiting for the syncConnected event
         }
-        this.appCatalog = appCatalog;
     }
 
     public static void startStatusUpdators(Registry registry, ZooKeeper zk, MonitorPublisher publisher,RabbitMQTaskLaunchConsumer rabbitMQTaskLaunchConsumer) {
@@ -499,8 +489,6 @@ public class BetterGfacImpl implements GFac,Watcher {
         // we need to setup workflow tracking listerner.
         try {
             String experimentEntry = GFacUtils.findExperimentEntry(jobExecutionContext.getExperimentID(), zk);
-            Stat exists = zk.exists(experimentEntry + File.separator + "operation", false);
-            zk.getData(experimentEntry + File.separator + "operation", this, exists);
             GfacExperimentState gfacExpState = GFacUtils.getZKExperimentState(zk, jobExecutionContext);   // this is the original state came, if we query again it might be different,so we preserve this state in the environment
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
                     , GfacExperimentState.ACCEPTED));                  // immediately we get the request we update the status
@@ -628,8 +616,10 @@ public class BetterGfacImpl implements GFac,Watcher {
                     invokeProviderExecute(jobExecutionContext);
                     break;
                 case PROVIDERINVOKING:
-                    reInvokeProviderExecute(jobExecutionContext);
+                    reInvokeProviderExecute(jobExecutionContext, true);
                     break;
+                case JOBSUBMITTED:
+                    reInvokeProviderExecute(jobExecutionContext, false);
                 case PROVIDERINVOKED:
                     // no need to re-run the job
                     log.info("Provider does not have to be recovered because it ran successfully for experiment: " + experimentID);
@@ -646,8 +636,10 @@ public class BetterGfacImpl implements GFac,Watcher {
                 case OUTHANDLERSINVOKED:
                 case COMPLETED:
                     GFacUtils.updateExperimentStatus(jobExecutionContext.getExperimentID(), ExperimentState.COMPLETED);
+                    break;
                 case FAILED:
                     GFacUtils.updateExperimentStatus(jobExecutionContext.getExperimentID(), ExperimentState.FAILED);
+                    break;
                 case UNKNOWN:
                     log.info("All output handlers are invoked successfully, ExperimentId: " + experimentID + " taskId: " + jobExecutionContext.getTaskData().getTaskID());
                     break;
@@ -706,7 +698,7 @@ public class BetterGfacImpl implements GFac,Watcher {
 			// here we do not skip handler if some handler does not have to be
 			// run again during re-run it can implement
 			// that logic in to the handler
-            if (!isCancelled()) {
+            if (!isCancelled(jobExecutionContext)) {
                 invokeInFlowHandlers(jobExecutionContext); // to keep the
                 // consistency we always
                 // try to re-run to
@@ -722,7 +714,7 @@ public class BetterGfacImpl implements GFac,Watcher {
 			// After executing the in handlers provider instance should be set
 			// to job execution context.
 			// We get the provider instance and execute it.
-            if (!isCancelled()) {
+            if (!isCancelled(jobExecutionContext)) {
                 invokeProviderExecute(jobExecutionContext);
             } else {
                 log.info("Experiment is cancelled, so launch operation is stopping immediately");
@@ -782,21 +774,27 @@ public class BetterGfacImpl implements GFac,Watcher {
         }
     }
 
-    private void reInvokeProviderExecute(JobExecutionContext jobExecutionContext) throws GFacException, GFacProviderException, ApplicationSettingsException, InterruptedException, KeeperException {
+    private void reInvokeProviderExecute(JobExecutionContext jobExecutionContext, boolean submit) throws GFacException, GFacProviderException, ApplicationSettingsException, InterruptedException, KeeperException {
         GFacProvider provider = jobExecutionContext.getProvider();
         if (provider != null) {
-            monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKING));
-            GfacHandlerState plState = GFacUtils.getHandlerState(zk, jobExecutionContext, provider.getClass().getName());
-            GFacUtils.createHandlerZnode(zk, jobExecutionContext, provider.getClass().getName());
-            if (plState != null && plState == GfacHandlerState.INVOKING) {    // this will make sure if a plugin crashes it will not launch from the scratch, but plugins have to save their invoked state
-                initProvider(provider, jobExecutionContext);
-                executeProvider(provider, jobExecutionContext);
-                disposeProvider(provider, jobExecutionContext);
+            if (submit) {
+                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKING));
+                GfacHandlerState plState = GFacUtils.getHandlerState(zk, jobExecutionContext, provider.getClass().getName());
+                GFacUtils.createHandlerZnode(zk, jobExecutionContext, provider.getClass().getName());
+                if (plState != null && plState == GfacHandlerState.INVOKING) {    // this will make sure if a plugin crashes it will not launch from the scratch, but plugins have to save their invoked state
+                    initProvider(provider, jobExecutionContext);
+                    executeProvider(provider, jobExecutionContext);
+                    disposeProvider(provider, jobExecutionContext);
+                } else {
+                    provider.recover(jobExecutionContext);
+                }
+                GFacUtils.updateHandlerState(zk, jobExecutionContext, provider.getClass().getName(), GfacHandlerState.COMPLETED);
+                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKED));
             } else {
-                provider.recover(jobExecutionContext);
+                disposeProvider(provider, jobExecutionContext);
+                GFacUtils.updateHandlerState(zk, jobExecutionContext, provider.getClass().getName(), GfacHandlerState.COMPLETED);
+                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKED));
             }
-            GFacUtils.updateHandlerState(zk, jobExecutionContext, provider.getClass().getName(), GfacHandlerState.COMPLETED);
-            monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.PROVIDERINVOKED));
         }
 
         if (GFacUtils.isSynchronousMode(jobExecutionContext))
@@ -893,7 +891,7 @@ public class BetterGfacImpl implements GFac,Watcher {
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
                     , GfacExperimentState.INHANDLERSINVOKING));
             for (GFacHandlerConfig handlerClassName : handlers) {
-                if(!isCancelled()) {
+                if(!isCancelled(jobExecutionContext)) {
                     Class<? extends GFacHandler> handlerClass;
                     GFacHandler handler;
                     try {
@@ -971,7 +969,7 @@ public class BetterGfacImpl implements GFac,Watcher {
             try {
                 monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.OUTHANDLERSINVOKING));
                 for (GFacHandlerConfig handlerClassName : handlers) {
-                    if (!isCancelled()) {
+                    if (!isCancelled(jobExecutionContext)) {
                         Class<? extends GFacHandler> handlerClass;
                         GFacHandler handler;
                         try {
@@ -1104,29 +1102,6 @@ public class BetterGfacImpl implements GFac,Watcher {
 
     // TODO - Did refactoring, but need to recheck the logic again.
     public void reInvokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
-        String experimentPath = null;
-        try {
-            jobExecutionContext.setZk(new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this));
-            zk = jobExecutionContext.getZk();
-            log.info("Waiting for zookeeper to connect to the server");
-            synchronized (mutex) {
-                mutex.wait(5000);  // waiting for the syncConnected event
-            }
-            if (jobExecutionContext.getZk().exists(experimentPath, false) == null) {
-                log.error("Experiment is already finalized so no output handlers will be invoked");
-                return;
-            }
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        } catch (ApplicationSettingsException e) {
-            log.error(e.getMessage(), e);
-        } catch (InterruptedException e) {
-            log.error(e.getMessage(), e);
-        } catch (KeeperException e) {
-            log.error(e.getMessage(), e);
-        }
-
-
         GFacConfiguration gFacConfiguration = jobExecutionContext.getGFacConfiguration();
         List<GFacHandlerConfig> handlers = null;
         if (gFacConfiguration != null) {
@@ -1254,12 +1229,18 @@ public class BetterGfacImpl implements GFac,Watcher {
     }
 
 
-    public boolean isCancelled() {
-        return cancelled;
-    }
-
-    public void setCancelled(boolean cancelled) {
-        this.cancelled = cancelled;
+    public boolean isCancelled(JobExecutionContext executionContext) throws RegistryException {
+        // we should check whether experiment is cancelled using registry
+        ExperimentStatus status = (ExperimentStatus)registry.get(RegistryModelType.EXPERIMENT_STATUS, executionContext.getExperimentID());
+        if (status != null){
+            ExperimentState experimentState = status.getExperimentState();
+            if (experimentState != null){
+                if(experimentState == ExperimentState.CANCELING || experimentState == ExperimentState.CANCELED){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public void process(WatchedEvent watchedEvent) {
@@ -1267,7 +1248,6 @@ public class BetterGfacImpl implements GFac,Watcher {
         if (Event.EventType.NodeDataChanged.equals(watchedEvent.getType())) {
             // node data is changed, this means node is cancelled.
             log.info("Experiment is cancelled with this path:" + watchedEvent.getPath());
-            this.cancelled = true;
         }
         synchronized (mutex) {
             Event.KeeperState state = watchedEvent.getState();

@@ -525,52 +525,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
                 throw new OrchestratorException("Error retrieving the Experiment by the given experimentID: " + experimentId);
             }
             ExperimentState experimentState = experiment.getExperimentStatus().getExperimentState();
-            if (experimentState.getValue()> 5 && experimentState.getValue()<10) {
-                log.errorId(experimentId, "Unable to mark experiment as Cancelled, current state {} doesn't allow to cancel the experiment {}.",
-                        experiment.getExperimentStatus().getExperimentState().toString(), experimentId);
-                throw new OrchestratorException("Unable to mark experiment as Cancelled, because current state is: "
-                        + experiment.getExperimentStatus().getExperimentState().toString());
-            }else if(experimentState.getValue()<3){
-                // when experiment status is < 3 no jobDetails object is created,
-                // so we don't have to worry, we simply have to change the status and stop the execution
-                ExperimentStatus status = new ExperimentStatus();
-                status.setExperimentState(ExperimentState.CANCELED);
-                status.setTimeOfStateChange(Calendar.getInstance()
-                        .getTimeInMillis());
-                experiment.setExperimentStatus(status);
-                registry.update(RegistryModelType.EXPERIMENT, experiment,
-                        experimentId);
-                List<String> ids = registry.getIds(
-                        RegistryModelType.WORKFLOW_NODE_DETAIL,
-                        WorkflowNodeConstants.EXPERIMENT_ID, experimentId);
-                for (String workflowNodeId : ids) {
-                    WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails) registry
-                            .get(RegistryModelType.WORKFLOW_NODE_DETAIL,
-                                    workflowNodeId);
-                    WorkflowNodeStatus workflowNodeStatus = new WorkflowNodeStatus();
-                    workflowNodeStatus.setWorkflowNodeState(WorkflowNodeState.CANCELED);
-                    workflowNodeStatus.setTimeOfStateChange(Calendar.getInstance()
-                            .getTimeInMillis());
-                    workflowNodeDetail.setWorkflowNodeStatus(workflowNodeStatus);
-                    registry.update(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeDetail,
-                            workflowNodeId);
-                    List<Object> taskDetailList = registry.get(
-                            RegistryModelType.TASK_DETAIL,
-                            TaskDetailConstants.NODE_ID, workflowNodeId);
-                    for (Object o : taskDetailList) {
-                        TaskDetails taskDetails = (TaskDetails) o;
-                        TaskStatus taskStatus = ((TaskDetails) o).getTaskStatus();
-                        taskStatus.setExecutionState(TaskState.CANCELED);
-                        taskStatus.setTimeOfStateChange(Calendar.getInstance()
-                                .getTimeInMillis());
-                        taskDetails.setTaskStatus(taskStatus);
-                        registry.update(RegistryModelType.TASK_DETAIL, o,
-                                taskDetails);
-//                        GFacUtils.setExperimentCancel(experimentId, taskDetails.getTaskID(), zk, experimentNode, nodeName, event.getTokenId(), message.getDeliveryTag());
-                    }
-                }
-            }else {
-
+            if (isCancelValid(experimentState)){
                 ExperimentStatus status = new ExperimentStatus();
                 status.setExperimentState(ExperimentState.CANCELING);
                 status.setTimeOfStateChange(Calendar.getInstance()
@@ -617,47 +572,85 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
                             taskDetails.setTaskStatus(taskStatus);
                             registry.update(RegistryModelType.TASK_DETAIL, o,
                                     taskDetails.getTaskID());
-//                            GFacUtils.setExperimentCancel(experimentId, taskDetails.getTaskID(), zk, experimentNode, nodeName, event.getTokenId(), message.getDeliveryTag());
                         }
-                        // iterate through all the generated tasks and performs the
-                        // job submisssion+monitoring
-                        // launching the experiment
                         orchestrator.cancelExperiment(experiment,
                                 workflowNodeDetail, taskDetails, tokenId);
-
-                        // after performing gfac level cancel operation
-                        // mark task cancelled
-                        taskStatus.setExecutionState(TaskState.CANCELED);
-                        taskStatus.setTimeOfStateChange(Calendar.getInstance()
-                                .getTimeInMillis());
-                        taskDetails.setTaskStatus(taskStatus);
-                        registry.update(RegistryModelType.TASK_DETAIL, o,
-                                taskDetails.getTaskID());
+                        // Status update should be done at the monitor
                     }
-                    // mark workflownode cancelled
-                    WorkflowNodeStatus workflowNodeStatus = new WorkflowNodeStatus();
-                    workflowNodeStatus.setWorkflowNodeState(WorkflowNodeState.CANCELED);
-                    workflowNodeStatus.setTimeOfStateChange(Calendar.getInstance()
-                            .getTimeInMillis());
-                    workflowNodeDetail.setWorkflowNodeStatus(workflowNodeStatus);
-                    registry.update(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeDetail,
-                            workflowNodeId);
                 }
-                // mark experiment cancelled
-                status = new ExperimentStatus();
-                status.setExperimentState(ExperimentState.CANCELED);
-                status.setTimeOfStateChange(Calendar.getInstance()
-                        .getTimeInMillis());
-                experiment.setExperimentStatus(status);
-                registry.update(RegistryModelType.EXPERIMENT, experiment,
-                        experimentId);
+            }else {
+                if (isCancelAllowed(experimentState)){
+                    // when experiment status is < 3 no jobDetails object is created,
+                    // so we don't have to worry, we simply have to change the status and stop the execution
+                    ExperimentStatus status = new ExperimentStatus();
+                    status.setExperimentState(ExperimentState.CANCELED);
+                    status.setTimeOfStateChange(Calendar.getInstance()
+                            .getTimeInMillis());
+                    experiment.setExperimentStatus(status);
+                    registry.update(RegistryModelType.EXPERIMENT, experiment,
+                            experimentId);
+                    List<String> ids = registry.getIds(
+                            RegistryModelType.WORKFLOW_NODE_DETAIL,
+                            WorkflowNodeConstants.EXPERIMENT_ID, experimentId);
+                    for (String workflowNodeId : ids) {
+                        WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails) registry
+                                .get(RegistryModelType.WORKFLOW_NODE_DETAIL,
+                                        workflowNodeId);
+                        WorkflowNodeStatus workflowNodeStatus = new WorkflowNodeStatus();
+                        workflowNodeStatus.setWorkflowNodeState(WorkflowNodeState.CANCELED);
+                        workflowNodeStatus.setTimeOfStateChange(Calendar.getInstance()
+                                .getTimeInMillis());
+                        workflowNodeDetail.setWorkflowNodeStatus(workflowNodeStatus);
+                        registry.update(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeDetail,
+                                workflowNodeId);
+                        List<Object> taskDetailList = registry.get(
+                                RegistryModelType.TASK_DETAIL,
+                                TaskDetailConstants.NODE_ID, workflowNodeId);
+                        for (Object o : taskDetailList) {
+                            TaskDetails taskDetails = (TaskDetails) o;
+                            TaskStatus taskStatus = ((TaskDetails) o).getTaskStatus();
+                            taskStatus.setExecutionState(TaskState.CANCELED);
+                            taskStatus.setTimeOfStateChange(Calendar.getInstance()
+                                    .getTimeInMillis());
+                            taskDetails.setTaskStatus(taskStatus);
+                            registry.update(RegistryModelType.TASK_DETAIL, o,
+                                    taskDetails);
+                        }
+                    }
+                }else {
+                    log.errorId(experimentId, "Unable to mark experiment as Cancelled, current state {} doesn't allow to cancel the experiment {}.",
+                            experiment.getExperimentStatus().getExperimentState().toString(), experimentId);
+                    throw new OrchestratorException("Unable to mark experiment as Cancelled, because current state is: "
+                            + experiment.getExperimentStatus().getExperimentState().toString());
+                }
             }
             log.info("Experiment: " + experimentId + " is cancelled !!!!!");
-
         } catch (Exception e) {
             throw new TException(e);
         }
         return true;
+    }
+
+    private boolean isCancelValid(ExperimentState state){
+        switch (state) {
+            case LAUNCHED:
+            case EXECUTING:
+            case CANCELING:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    private boolean isCancelAllowed(ExperimentState state){
+        switch (state) {
+            case CREATED:
+            case VALIDATED:
+            case SCHEDULED:
+                return true;
+            default:
+                return false;
+        }
     }
 
     private void launchWorkflowExperiment(String experimentId, String airavataCredStoreToken) throws TException {
@@ -709,11 +702,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
                             log.errorId(experimentId, "Error retrieving the Experiment by the given experimentID: {}", experimentId);
                             return false;
                         }
-                        ExperimentStatus status = new ExperimentStatus();
-                        status.setExperimentState(ExperimentState.LAUNCHED);
-                        status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
-                        experiment.setExperimentStatus(status);
-                        registry.update(RegistryModelType.EXPERIMENT_STATUS, status, experimentId);
                         String gatewayId = null;
                         CredentialReader credentialReader = GFacUtils.getCredentialReader();
                         if (credentialReader != null) {

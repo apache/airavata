@@ -169,7 +169,7 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
             jobDetails.setJobDescription(activityEpr.toString());
 
             jobExecutionContext.setJobDetails(jobDetails);
-            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SUBMITTED);
+            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SUBMITTED, monitorPublisher);
             log.info(formatStatusMessage(activityEpr.getAddress()
                     .getStringValue(), factory.getActivityStatus(activityEpr)
                     .toString()));

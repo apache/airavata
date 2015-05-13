@@ -23,7 +23,6 @@ package org.apache.airavata.gfac.local.provider.impl;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +35,6 @@ import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.notification.events.StartExecutionEvent;
 import org.apache.airavata.gfac.core.provider.AbstractProvider;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
-import org.apache.airavata.gfac.core.provider.utils.ProviderUtils;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.core.utils.OutputUtils;
 import org.apache.airavata.gfac.local.utils.InputStreamToFileWriter;
@@ -138,7 +136,7 @@ public class LocalProvider extends AbstractProvider {
             jobDetails.setJobDescription(jobExecutionContext.getApplicationContext()
                     .getApplicationDeploymentDescription().getAppDeploymentDescription());
             jobExecutionContext.setJobDetails(jobDetails);
-            GFacUtils.saveJobStatus(jobExecutionContext,jobDetails, JobState.SETUP);
+            GFacUtils.saveJobStatus(jobExecutionContext,jobDetails, JobState.SETUP, monitorPublisher);
         	// running cmd
             Process process = builder.start();
 
