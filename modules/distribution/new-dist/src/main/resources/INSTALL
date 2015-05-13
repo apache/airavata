@@ -1,0 +1,30 @@
+Installing  Apache Airavata 0.14
+-------------------------------
+
+Prerequisites
+-------------
+Java 1.5 or later
+Maven (tested on v 3.0.2)
+
+Build Apache Airavata from Source
+---------------------------------
+* Unzip/untar the source file or clone from git.
+* cd to project folder and type
+	$ mvn clean install
+	Note: in order to skip tests use the command
+			$ mvn clean install -Dmaven.test.skip=true
+* Alternatively, all  compressed binary distributions can be found at <PROJECT DIR>/modules/distribution/release/target/release-artifacts
+
+Running Tests
+-------------
+* Unit tests & integrations tests will run while Apache Airavata is built from source (without "-Dmaven.test.skip=true").
+* To run the test samples
+    - You can find the binary distributions at <PROJECT DIR>/modules/distribution/release/target/release-artifacts or from
+      the Apache Airavata download site.
+    - Extract the binary distributions and once the binary is unzipped, instructions to run the tests should be followed
+      from README files found within.
+
+Tutorials
+----------
+The airavata website has instructions for basic tutorials:
+* Describing and executing applications using Airavata - follow "XBAYA Quick-Start Tutorial" tutorial at https://cwiki.apache.org/confluence/display/AIRAVATA/XBAYA+Quick-Start+Tutorial

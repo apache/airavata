@@ -243,22 +243,20 @@ public class SSHProvider extends AbstractProvider {
             }
             // This installed path is a mandetory field, because this could change based on the computing resource
             if (jobDetails == null) {
-                log.error("There is not JobDetails so cancelations cannot perform !!!");
+                log.error("There is not JobDetails, Cancel request can't be performed !!!");
                 return;
             }
             try {
                 if (jobDetails.getJobID() != null) {
                     cluster.cancelJob(jobDetails.getJobID());
+                    GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.CANCELED);
                 } else {
                     log.error("No Job Id is set, so cannot perform the cancel operation !!!");
-                    return;
+                    throw new GFacProviderException("Cancel request failed to cancel job as JobId is null in Job Execution Context");
                 }
-                GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.CANCELED);
             } catch (SSHApiException e) {
                 String error = "Error submitting the job to host " + jobExecutionContext.getHostName() + " message: " + e.getMessage();
                 log.error(error);
-                jobDetails.setJobID("none");
-                GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
                 StringWriter errors = new StringWriter();
                 e.printStackTrace(new PrintWriter(errors));
                 GFacUtils.saveErrorDetails(jobExecutionContext, errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
@@ -266,8 +264,6 @@ public class SSHProvider extends AbstractProvider {
             } catch (Exception e) {
                 String error = "Error submitting the job to host " + jobExecutionContext.getHostName() + " message: " + e.getMessage();
                 log.error(error);
-                jobDetails.setJobID("none");
-                GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
                 StringWriter errors = new StringWriter();
                 e.printStackTrace(new PrintWriter(errors));
                 GFacUtils.saveErrorDetails(jobExecutionContext, errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);

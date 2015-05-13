@@ -32,7 +32,6 @@ import java.util.Observer;
 
 import org.apache.airavata.api.Airavata.Client;
 import org.apache.airavata.model.error.AiravataClientConnectException;
-import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 import org.apache.airavata.workflow.model.component.registry.JCRComponentRegistry;
 import org.apache.airavata.xbaya.core.ide.XBayaExecutionModeListener;
 import org.apache.airavata.xbaya.file.XBayaPathConstants;
@@ -139,9 +138,6 @@ public class XBayaConfiguration extends Observable implements Observer {
     private List<XBayaExecutionModeListener> xbayaExecutionModeChangeListners=new ArrayList<XBayaExecutionModeListener>();
 
     private boolean regURLSetByCMD = false;
-
-
-    private ContextHeaderDocument.ContextHeader contextHeader;
 
     private Map<ThriftServiceType, ThriftClientData> thriftClientDataList = new HashMap<ThriftServiceType, ThriftClientData>();
     
@@ -859,14 +855,6 @@ public class XBayaConfiguration extends Observable implements Observer {
 
     public void setRegURLSetByCMD(boolean regURLSetByCMD) {
         this.regURLSetByCMD = regURLSetByCMD;
-    }
-
-    public ContextHeaderDocument.ContextHeader getContextHeader() {
-        return contextHeader;
-    }
-
-    public void setContextHeader(ContextHeaderDocument.ContextHeader contextHeader) {
-        this.contextHeader = contextHeader;
     }
 
 	public Map<ThriftServiceType, ThriftClientData> getThriftClientDataList() {

@@ -566,7 +566,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
                         taskDetails.setTaskStatus(taskStatus);
                         registry.update(RegistryModelType.TASK_DETAIL, o,
                                 taskDetails);
-                        GFacUtils.setExperimentCancel(experimentId, taskDetails.getTaskID(), zk);
+//                        GFacUtils.setExperimentCancel(experimentId, taskDetails.getTaskID(), zk, experimentNode, nodeName, event.getTokenId(), message.getDeliveryTag());
                     }
                 }
             }else {
@@ -617,7 +617,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
                             taskDetails.setTaskStatus(taskStatus);
                             registry.update(RegistryModelType.TASK_DETAIL, o,
                                     taskDetails.getTaskID());
-                            GFacUtils.setExperimentCancel(experimentId, taskDetails.getTaskID(), zk);
+//                            GFacUtils.setExperimentCancel(experimentId, taskDetails.getTaskID(), zk, experimentNode, nodeName, event.getTokenId(), message.getDeliveryTag());
                         }
                         // iterate through all the generated tasks and performs the
                         // job submisssion+monitoring

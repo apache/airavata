@@ -28,7 +28,7 @@ public class XBayaVersion {
     /**
      * Version number
      */
-    public final static Version VERSION = new Version("Airavata XBaya", 0, 11,
+    public final static Version VERSION = new Version("Airavata XBaya", 0, 15,
 			null, null, null);;
 
     /**
