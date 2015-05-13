@@ -28,6 +28,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
@@ -92,13 +94,23 @@ public class DataTransferrer {
 		if(!file.exists()){
 			file.mkdirs();	
 		}
-		List<String> outPrms = extractOutParams(jobContext);
-		
-		for (String outPrm : outPrms) {
-				if("".equals(outPrm)) continue;
-				FileDownloader fileDownloader = new FileDownloader(outPrm,downloadLocation, Mode.overwrite);
+
+		Map<String, Object> output = jobContext.getOutMessageContext().getParameters();
+        Set<String> keys = output.keySet();
+        
+		for (String outPrm : keys) {
+			OutputDataObjectType actualParameter = (OutputDataObjectType) output.get(outPrm);
+				if (DataType.STDERR == actualParameter.getType()) continue;
+				if (DataType.STDOUT == actualParameter.getType()) continue;
+				
+				String value = actualParameter.getValue();
+				FileDownloader fileDownloader = new FileDownloader(value,downloadLocation, Mode.overwrite);
 				try {
 					fileDownloader.perform(storageClient);
+					String outputPath = downloadLocation + File.separator + value.substring(value.lastIndexOf('/')+1);
+					actualParameter.setValue(outputPath);
+					actualParameter.setType(DataType.URI);
+					jobContext.addOutputFile(outputPath);
 				} catch (Exception e) {
 					throw new GFacProviderException(e.getLocalizedMessage(),e);
 				}
@@ -137,6 +149,8 @@ public class DataTransferrer {
 			f1.perform(storageClient);
 			log.info("Downloading stdout and stderr..");
 			String stdoutput = readFile(stdoutLocation);
+			jobContext.addOutputFile(stdoutLocation);
+			jobContext.setStandardOutput(stdoutLocation);
 			log.info("Stdout downloaded to -> "+stdoutLocation);
 			if(UASDataStagingProcessor.isUnicoreEndpoint(jobContext)) {
 				String scriptExitCodeFName = "UNICORE_SCRIPT_EXIT_CODE";
@@ -151,6 +165,8 @@ public class DataTransferrer {
 			f1.setTo(stderrLocation);
 			f1.perform(storageClient);
 			String stderror = readFile(stderrLocation);
+			jobContext.addOutputFile(stderrLocation);
+			jobContext.setStandardError(stderrLocation);
 			log.info("Stderr downloaded to -> "+stderrLocation);
 		} catch (Exception e) {
 			throw new GFacProviderException(e.getLocalizedMessage(),e);
