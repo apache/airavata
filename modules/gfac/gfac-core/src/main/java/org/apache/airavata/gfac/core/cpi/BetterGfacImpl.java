@@ -59,6 +59,7 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePrefer
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
@@ -82,23 +83,13 @@ import java.util.*;
 public class BetterGfacImpl implements GFac,Watcher {
     private static final Logger log = LoggerFactory.getLogger(BetterGfacImpl.class);
     public static final String ERROR_SENT = "ErrorSent";
-
     private Registry registry;
-    private AppCatalog appCatalog;
-
     // we are not storing zk instance in to jobExecution context
     private ZooKeeper zk;
-
     private static List<ThreadedHandler> daemonHandlers = new ArrayList<ThreadedHandler>();
-
     private static File gfacConfigFile;
-
     private static List<AbstractActivityListener> activityListeners = new ArrayList<AbstractActivityListener>();
-
     private static MonitorPublisher monitorPublisher;
-
-    private boolean cancelled = false;
-
     private static Integer mutex = -1;
 
     /**
@@ -116,7 +107,6 @@ public class BetterGfacImpl implements GFac,Watcher {
         synchronized (mutex) {
             mutex.wait(5000);  // waiting for the syncConnected event
         }
-        this.appCatalog = appCatalog;
     }
 
     public static void startStatusUpdators(Registry registry, ZooKeeper zk, MonitorPublisher publisher,RabbitMQTaskLaunchConsumer rabbitMQTaskLaunchConsumer) {
@@ -706,7 +696,7 @@ public class BetterGfacImpl implements GFac,Watcher {
 			// here we do not skip handler if some handler does not have to be
 			// run again during re-run it can implement
 			// that logic in to the handler
-            if (!isCancelled()) {
+            if (!isCancelled(jobExecutionContext)) {
                 invokeInFlowHandlers(jobExecutionContext); // to keep the
                 // consistency we always
                 // try to re-run to
@@ -722,7 +712,7 @@ public class BetterGfacImpl implements GFac,Watcher {
 			// After executing the in handlers provider instance should be set
 			// to job execution context.
 			// We get the provider instance and execute it.
-            if (!isCancelled()) {
+            if (!isCancelled(jobExecutionContext)) {
                 invokeProviderExecute(jobExecutionContext);
             } else {
                 log.info("Experiment is cancelled, so launch operation is stopping immediately");
@@ -893,7 +883,7 @@ public class BetterGfacImpl implements GFac,Watcher {
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
                     , GfacExperimentState.INHANDLERSINVOKING));
             for (GFacHandlerConfig handlerClassName : handlers) {
-                if(!isCancelled()) {
+                if(!isCancelled(jobExecutionContext)) {
                     Class<? extends GFacHandler> handlerClass;
                     GFacHandler handler;
                     try {
@@ -971,7 +961,7 @@ public class BetterGfacImpl implements GFac,Watcher {
             try {
                 monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.OUTHANDLERSINVOKING));
                 for (GFacHandlerConfig handlerClassName : handlers) {
-                    if (!isCancelled()) {
+                    if (!isCancelled(jobExecutionContext)) {
                         Class<? extends GFacHandler> handlerClass;
                         GFacHandler handler;
                         try {
@@ -1254,12 +1244,18 @@ public class BetterGfacImpl implements GFac,Watcher {
     }
 
 
-    public boolean isCancelled() {
-        return cancelled;
-    }
-
-    public void setCancelled(boolean cancelled) {
-        this.cancelled = cancelled;
+    public boolean isCancelled(JobExecutionContext executionContext) throws RegistryException {
+        // we should check whether experiment is cancelled using registry
+        ExperimentStatus status = (ExperimentStatus)registry.get(RegistryModelType.EXPERIMENT_STATUS, executionContext.getExperimentID());
+        if (status != null){
+            ExperimentState experimentState = status.getExperimentState();
+            if (experimentState != null){
+                if(experimentState == ExperimentState.CANCELING || experimentState == ExperimentState.CANCELED){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public void process(WatchedEvent watchedEvent) {
@@ -1267,7 +1263,6 @@ public class BetterGfacImpl implements GFac,Watcher {
         if (Event.EventType.NodeDataChanged.equals(watchedEvent.getType())) {
             // node data is changed, this means node is cancelled.
             log.info("Experiment is cancelled with this path:" + watchedEvent.getPath());
-            this.cancelled = true;
         }
         synchronized (mutex) {
             Event.KeeperState state = watchedEvent.getState();
