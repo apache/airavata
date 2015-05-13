@@ -34,7 +34,6 @@ import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.workflow.model.graph.Node.NodeExecutionState;
 import org.apache.airavata.workflow.model.graph.system.DifferedInputNode;
 import org.apache.airavata.xbaya.graph.controller.NodeController;
-import org.apache.airavata.xbaya.lead.LEADTypes;
 import org.apache.airavata.xbaya.ui.XBayaGUI;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.graph.system.DifferedInputNodeGUI;
