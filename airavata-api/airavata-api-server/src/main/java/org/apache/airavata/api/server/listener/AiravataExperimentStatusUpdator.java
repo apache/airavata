@@ -169,12 +169,7 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
         org.apache.airavata.model.workspace.experiment.ExperimentStatus status = new org.apache.airavata.model.workspace.experiment.ExperimentStatus();
         status.setExperimentState(state);
         status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
-        if(!ExperimentState.CANCELED.equals(details.getExperimentStatus().getExperimentState())&&
-                !ExperimentState.CANCELING.equals(details.getExperimentStatus().getExperimentState())) {
-            status.setExperimentState(state);
-        }else{
-            status.setExperimentState(details.getExperimentStatus().getExperimentState());
-        }
+        status.setExperimentState(state);
         details.setExperimentStatus(status);
         logger.info("Updating the experiment status of experiment: " + experimentId + " to " + status.getExperimentState().toString());
         airavataRegistry.update(RegistryModelType.EXPERIMENT_STATUS, status, experimentId);
