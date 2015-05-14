@@ -47,6 +47,7 @@ import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.gsi.ssh.api.CommandExecutor;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
+import org.apache.airavata.gsi.ssh.impl.JobStatus;
 import org.apache.airavata.gsi.ssh.impl.RawCommandInfo;
 import org.apache.airavata.gsi.ssh.impl.StandardOutReader;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
@@ -166,19 +167,25 @@ public class SSHProvider extends AbstractProvider {
                         GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SUBMITTED, monitorPublisher);
                         monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
                                 , GfacExperimentState.JOBSUBMITTED));
-                    }
-                    jobExecutionContext.setJobDetails(jobDetails);
-                    String verifyJobId = verifyJobSubmission(cluster, jobDetails);
-                    if (verifyJobId != null) {
-                        // JobStatus either changed from SUBMITTED to QUEUED or directly to QUEUED
-                        if (jobID == null) {
+                        jobExecutionContext.setJobDetails(jobDetails);
+                        if (verifyJobSubmissionByJobId(cluster, jobID)) {
+                            monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
+                                    , GfacExperimentState.JOBSUBMITTED));
+                            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.QUEUED, monitorPublisher);
+                        }
+                    } else {
+                        jobExecutionContext.setJobDetails(jobDetails);
+                        String verifyJobId = verifyJobSubmission(cluster, jobDetails);
+                        if (verifyJobId != null) {
+                            // JobStatus either changed from SUBMITTED to QUEUED or directly to QUEUED
                             jobID = verifyJobId;
                             jobDetails.setJobID(jobID);
                             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
                                     , GfacExperimentState.JOBSUBMITTED));
+                            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.QUEUED, monitorPublisher);
                         }
-                        GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.QUEUED, monitorPublisher);
                     }
+
                     if (jobID == null) {
                         log.error("Couldn't find remote jobId for JobName:" + jobDetails.getJobName() + ", ExperimentId:" + jobExecutionContext.getExperimentID());
                         GFacUtils.updateExperimentStatus(jobExecutionContext.getExperimentID(), ExperimentState.FAILED);
@@ -210,6 +217,10 @@ public class SSHProvider extends AbstractProvider {
                 throw new GFacProviderException(e.getMessage(), e);
             }
         }
+    }
+
+    private boolean verifyJobSubmissionByJobId(Cluster cluster, String jobID) throws SSHApiException {
+        return cluster.getJobStatus(jobID) != null;
     }
 
     private String verifyJobSubmission(Cluster cluster, JobDetails jobDetails) {
