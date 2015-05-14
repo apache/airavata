@@ -55,7 +55,7 @@ public class AppDescriptorCheckHandler implements GFacHandler {
 
 
         logger.info("Recoverable data is saving to zk: " + data.toString());
-        GFacUtils.savePluginData(jobExecutionContext, data,this.getClass().getName());
+        GFacUtils.saveHandlerData(jobExecutionContext, data, this.getClass().getName());
     }
 
 
@@ -66,7 +66,7 @@ public class AppDescriptorCheckHandler implements GFacHandler {
 
     public void recover(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         try {
-            String s = GFacUtils.getPluginData(jobExecutionContext, this.getClass().getName());
+            String s = GFacUtils.getHandlerData(jobExecutionContext, this.getClass().getName());
             String[] split = s.split(",");                   // this is ugly code but nobody else is saving or reading this data, so this is the fastest way
             jobExecutionContext.getApplicationContext().getComputeResourcePreference().setScratchLocation(split[0]);
             jobExecutionContext.setWorkingDir(split[1]);

@@ -192,7 +192,7 @@ public class GFacUtils {
 	public static void saveJobStatus(JobExecutionContext jobExecutionContext,
                                      JobDetails details, JobState state, MonitorPublisher monitorPublisher) throws GFacException {
 		try {
-            // first we save job details to the registry for safe side and then save the job status.
+            // first we save job details to the registry for sa and then save the job status.
             Registry registry = jobExecutionContext.getRegistry();
             JobStatus status = new JobStatus();
             status.setJobState(state);
@@ -581,8 +581,8 @@ public class GFacUtils {
         return false;
     }
 
-    public static void savePluginData(JobExecutionContext jobExecutionContext,
-			StringBuffer data, String className) throws GFacHandlerException {
+    public static void saveHandlerData(JobExecutionContext jobExecutionContext,
+                                       StringBuffer data, String className) throws GFacHandlerException {
 		try {
 			ZooKeeper zk = jobExecutionContext.getZk();
 			if (zk != null) {
@@ -591,16 +591,20 @@ public class GFacUtils {
 								jobExecutionContext.getExperimentID(),
 								className);
 				Stat exists = zk.exists(expZnodeHandlerPath, false);
-				zk.setData(expZnodeHandlerPath, data.toString().getBytes(),
-						exists.getVersion());
-			}
+                if (exists != null) {
+                    zk.setData(expZnodeHandlerPath, data.toString().getBytes(),
+                            exists.getVersion());
+                } else {
+                    log.error("Saving Handler data failed, Stat is null");
+                }
+            }
 		} catch (Exception e) {
 			throw new GFacHandlerException(e);
 		}
 	}
 
-	public static String getPluginData(JobExecutionContext jobExecutionContext,
-			String className) throws ApplicationSettingsException,
+	public static String getHandlerData(JobExecutionContext jobExecutionContext,
+                                        String className) throws ApplicationSettingsException,
 			KeeperException, InterruptedException {
 		ZooKeeper zk = jobExecutionContext.getZk();
 		if (zk != null) {
