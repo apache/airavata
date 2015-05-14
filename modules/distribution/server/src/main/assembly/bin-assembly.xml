@@ -128,7 +128,7 @@
 				<include>PBSTemplate.xslt</include>
 				<include>SLURMTemplate.xslt</include>
 				<include>LSFTemplate.xslt</include>
-				<include>SGETemplate.xslt</include>
+				<include>UGETemplate.xslt</include>
 				<include>gsissh.properties</include>
 			</includes>
 		</fileSet>
