@@ -133,6 +133,7 @@ public class SSHProvider extends AbstractProvider {
                 details.setJobDescription(executable);
                 RawCommandInfo rawCommandInfo = new RawCommandInfo("/bin/chmod 755 " + executable + "; " + executable);
                 StandardOutReader jobIDReaderCommandOutput = new StandardOutReader();
+                log.info("Executing RawCommand : " + rawCommandInfo.getCommand());
                 CommandExecutor.executeCommand(rawCommandInfo, cluster.getSession(), jobIDReaderCommandOutput);
                 String stdOutputString = getOutputifAvailable(jobIDReaderCommandOutput, "Error submitting job to resource");
                 log.info("stdout=" + stdOutputString);
