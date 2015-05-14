@@ -41,6 +41,7 @@ public class UGEEmailParser implements EmailParser{
     public static final String COMPLETE = "Complete";
     public static final String FAILED = "Failed";
     private static final String REGEX_EXIT_STATUS = "Exit Status[ ]*=[ ]*(?<" + EXIT_STATUS + ">[\\d]+)";
+    public static final String ABORTED = "Aborted";
 
 
     @Override
@@ -78,6 +79,8 @@ public class UGEEmailParser implements EmailParser{
                     return JobState.FAILED;
                 }
             case FAILED:
+                return JobState.FAILED;
+            case ABORTED:
                 return JobState.FAILED;
             default:
                 return JobState.UNKNOWN;
