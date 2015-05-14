@@ -140,7 +140,7 @@ public class GFACGSISSHUtils {
                             } else if (SLURM_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
                                 jConfig = CommonUtils.getSLURMJobManager(installedParentPath);
                             } else if (SUN_GRID_ENGINE_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
-                                jConfig = CommonUtils.getSGEJobManager(installedParentPath);
+                                jConfig = CommonUtils.getUGEJobManager(installedParentPath);
                             }else if(LSF_JOB_MANAGER.equalsIgnoreCase(jobManager)) {
                                 jConfig = CommonUtils.getLSFJobManager(installedParentPath);
                             }
