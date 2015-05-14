@@ -28,9 +28,12 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class UGEOutputParser implements OutputParser{
     private static final Logger log = LoggerFactory.getLogger(PBSOutputParser.class);
+    public static final String JOB_ID = "jobId";
 
     public void parseSingleJob(JobDescriptor jobDescriptor, String rawOutput) {
         log.debug(rawOutput);
@@ -130,7 +133,11 @@ public class UGEOutputParser implements OutputParser{
 	}
 
     public JobStatus parseJobStatus(String jobID, String rawOutput) {
-       // not implemented to sun grid engine
+        Pattern pattern = Pattern.compile("job_number:[\\s]+" + jobID);
+        Matcher matcher = pattern.matcher(rawOutput);
+        if (matcher.find()) {
+            return JobStatus.Q; // fixme; return correct status.
+        }
         return JobStatus.U;
     }
 
@@ -166,7 +173,12 @@ public class UGEOutputParser implements OutputParser{
 
     @Override
     public String parseJobId(String jobName, String rawOutput) throws SSHApiException {
-        return null; // TODO: Implement the parse logic ( with regex if possible ).
+        Pattern pattern = Pattern.compile("(?<" + JOB_ID + ">\\S+)\\s+\\S+\\s+(" + jobName + ")");
+        Matcher matcher = pattern.matcher(rawOutput);
+        if (matcher.find()) {
+            return matcher.group(JOB_ID);
+        }
+        return null;
     }
 
 
