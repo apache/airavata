@@ -211,7 +211,7 @@ public class SSHProvider extends AbstractProvider {
                 } finally {
                     log.info("Saving data for future recovery: ");
                     log.info(data.toString());
-                    GFacUtils.savePluginData(jobExecutionContext, data, this.getClass().getName());
+                    GFacUtils.saveHandlerData(jobExecutionContext, data, this.getClass().getName());
                 }
             } catch (GFacException e) {
                 throw new GFacProviderException(e.getMessage(), e);
@@ -379,7 +379,7 @@ public class SSHProvider extends AbstractProvider {
             String jobDesc = "";
             String jobName = "";
             try {
-                String pluginData = GFacUtils.getPluginData(jobExecutionContext, this.getClass().getName());
+                String pluginData = GFacUtils.getHandlerData(jobExecutionContext, this.getClass().getName());
                 String[] split = pluginData.split(",");
                 if (split.length < 2) {
                     this.execute(jobExecutionContext);

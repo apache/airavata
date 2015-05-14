@@ -136,7 +136,7 @@ public class GSISSHProvider extends AbstractProvider {
         } finally {
             log.info("Saving data for future recovery: ");
             log.info(data.toString());
-            GFacUtils.savePluginData(jobExecutionContext, data, this.getClass().getName());
+            GFacUtils.saveHandlerData(jobExecutionContext, data, this.getClass().getName());
         } 
           
     }
@@ -235,7 +235,7 @@ public class GSISSHProvider extends AbstractProvider {
         String jobId = "";
         String jobDesc = "";
         try {
-            String pluginData = GFacUtils.getPluginData(jobExecutionContext, this.getClass().getName());
+            String pluginData = GFacUtils.getHandlerData(jobExecutionContext, this.getClass().getName());
             String[] split = pluginData.split(",");
             if (split.length < 2) {
                 try {

@@ -81,7 +81,7 @@ public class GSISSHInputHandler extends AbstractHandler {
                 log.info("Successfully retrieved the Security Context");
             }
 
-            String pluginData = GFacUtils.getPluginData(jobExecutionContext, this.getClass().getName());
+            String pluginData = GFacUtils.getHandlerData(jobExecutionContext, this.getClass().getName());
             if (pluginData != null) {
                 try {
                     oldIndex = Integer.parseInt(pluginData.split("\\|")[0].trim());
@@ -131,7 +131,7 @@ public class GSISSHInputHandler extends AbstractHandler {
                         detail.setTransferDescription("Input Data Staged: " + stageInputFile);
                         registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
 
-                        GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
+                        GFacUtils.saveHandlerData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
                     }
                 } // FIXME: what is the thrift model DataType equivalent for URIArray type?
 //                else if ("URIArray".equals(inputParamType.getType().getType().toString())) {

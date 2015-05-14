@@ -91,7 +91,7 @@ public class GSISSHOutputHandler extends AbstractHandler {
             }
 
             // Get the Stdouts and StdErrs
-            String pluginData = GFacUtils.getPluginData(jobExecutionContext, this.getClass().getName());
+            String pluginData = GFacUtils.getHandlerData(jobExecutionContext, this.getClass().getName());
             if (pluginData != null) {
                 try {
                     oldIndex = Integer.parseInt(pluginData.split("\\|")[0].trim());
@@ -143,7 +143,7 @@ public class GSISSHOutputHandler extends AbstractHandler {
                 }
                 
                 StringBuffer temp = new StringBuffer(data.append(localStdOutFile.getAbsolutePath()).append(",").toString());
-                GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
+                GFacUtils.saveHandlerData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
             }
             if (index < oldIndex) {
                 localStdErrFile = new File(oldFiles.get(index));
@@ -152,7 +152,7 @@ public class GSISSHOutputHandler extends AbstractHandler {
                 localStdErrFile = new File(outputDataDir + File.separator + jobExecutionContext.getApplicationName() + ".stderr");
                 cluster.scpFrom(jobExecutionContext.getStandardError(), localStdErrFile.getAbsolutePath());
                 StringBuffer temp = new StringBuffer(data.append(localStdErrFile.getAbsolutePath()).append(",").toString());
-                GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
+                GFacUtils.saveHandlerData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
             }
 
             String stdErrStr = GFacUtils.readFileToString(localStdErrFile.getAbsolutePath());
@@ -207,7 +207,7 @@ public class GSISSHOutputHandler extends AbstractHandler {
                                     String fileName = downloadFile.substring(downloadFile.lastIndexOf(File.separatorChar) + 1, downloadFile.length());
                                     localFile = outputDataDir + File.separator + fileName;
                                     StringBuffer temp = new StringBuffer(data.append(localFile).append(",").toString());
-                                    GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
+                                    GFacUtils.saveHandlerData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
                                 }
                                 jobExecutionContext.addOutputFile(localFile);
                                 outputDataObjectType1.setValue(localFile);
@@ -225,7 +225,7 @@ public class GSISSHOutputHandler extends AbstractHandler {
                                     String fileName = localStdOutFile.getName();
                                     localFile = outputDataDir + File.separator + fileName;
                                     StringBuffer temp = new StringBuffer(data.append(localFile).append(",").toString());
-                                    GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
+                                    GFacUtils.saveHandlerData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
                                 }
                                 jobExecutionContext.addOutputFile(localFile);
                                 outputDataObjectType1.setValue(localFile);
@@ -243,7 +243,7 @@ public class GSISSHOutputHandler extends AbstractHandler {
                                     String fileName = localStdErrFile.getName();
                                     localFile = outputDataDir + File.separator + fileName;
                                     StringBuffer temp = new StringBuffer(data.append(localFile).append(",").toString());
-                                    GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
+                                    GFacUtils.saveHandlerData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
                                 }
                                 jobExecutionContext.addOutputFile(localFile);
                                 outputDataObjectType1.setValue(localFile);
@@ -266,7 +266,7 @@ public class GSISSHOutputHandler extends AbstractHandler {
                             outputFile = outputDataDir + File.separator + valueList;
                             jobExecutionContext.addOutputFile(outputFile);
                             StringBuffer temp = new StringBuffer(data.append(outputFile).append(",").toString());
-                            GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
+                            GFacUtils.saveHandlerData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
                         }
                         jobExecutionContext.addOutputFile(outputFile);
                         outputDataObjectType.setValue(outputFile);
