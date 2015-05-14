@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class SGEOutputParser implements OutputParser{
+public class UGEOutputParser implements OutputParser{
     private static final Logger log = LoggerFactory.getLogger(PBSOutputParser.class);
 
     public void parseSingleJob(JobDescriptor jobDescriptor, String rawOutput) {
