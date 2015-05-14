@@ -220,7 +220,8 @@ public class SSHProvider extends AbstractProvider {
     }
 
     private boolean verifyJobSubmissionByJobId(Cluster cluster, String jobID) throws SSHApiException {
-        return cluster.getJobStatus(jobID) != null;
+        JobStatus status = cluster.getJobStatus(jobID);
+        return status != null &&  status != JobStatus.U;
     }
 
     private String verifyJobSubmission(Cluster cluster, JobDetails jobDetails) {

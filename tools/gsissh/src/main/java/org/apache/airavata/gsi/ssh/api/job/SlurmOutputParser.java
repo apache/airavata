@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 public class SlurmOutputParser implements OutputParser {
     private static final Logger log = LoggerFactory.getLogger(SlurmOutputParser.class);
     public static final int JOB_NAME_OUTPUT_LENGTH = 8;
+    public static final String STATUS = "status";
 
     public void parseSingleJob(JobDescriptor descriptor, String rawOutput) throws SSHApiException {
         log.info(rawOutput);
@@ -110,44 +111,12 @@ public class SlurmOutputParser implements OutputParser {
 
     public JobStatus parseJobStatus(String jobID, String rawOutput) throws SSHApiException {
         log.info(rawOutput);
-        String[] info = rawOutput.split("\n");
-        String lastString = info[info.length - 1];
-        if (lastString.contains("JOBID") || lastString.contains("PARTITION")) {
-            // because there's no state
-            return JobStatus.valueOf("U");
-        } else {
-            int column = 0;
-            for (String each : lastString.split(" ")) {
-                if (!each.trim().isEmpty()) {
-                    switch (column) {
-                        case 0:
-                            column++;
-                            break;
-                        case 1:
-                            column++;
-                            break;
-                        case 2:
-                            column++;
-                            break;
-                        case 3:
-                            column++;
-                            break;
-                        case 4:
-                            return JobStatus.valueOf((each));
-                        case 5:
-                            column++;
-                            break;
-                        case 6:
-                            column++;
-                            break;
-                        case 7:
-                            column++;
-                            break;
-                    }
-                }
-            }
+        Pattern pattern = Pattern.compile(jobID + "(?=\\s+\\S+\\s+\\S+\\s+\\S+\\s+(?<" + STATUS + ">\\w+))");
+        Matcher matcher = pattern.matcher(rawOutput);
+        if (matcher.find()) {
+            return JobStatus.valueOf(matcher.group(STATUS));
         }
-        return JobStatus.valueOf("U");
+        return null;
     }
 
     public void parseJobStatuses(String userName, Map<String, JobStatus> statusMap, String rawOutput) throws SSHApiException {
