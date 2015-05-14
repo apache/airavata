@@ -22,7 +22,6 @@ package org.apache.airavata.gsi.ssh.util;
 
 import org.apache.airavata.gsi.ssh.api.job.*;
 import org.apache.airavata.gsi.ssh.impl.JobStatus;
-import org.apache.airavata.gsi.ssh.impl.RawCommandInfo;
 
 public class CommonUtils {
     /**
@@ -73,7 +72,7 @@ public class CommonUtils {
     }
 
      public static JobManagerConfiguration getSGEJobManager(String installedPath) {
-        return new PBSJobConfiguration("SGETemplate.xslt", ".pbs", installedPath, new SGEOutputParser());
+        return new UGEJobConfiguration("UGETemplate.xslt", ".pbs", installedPath, new UGEOutputParser());
     }
 
     public static JobManagerConfiguration getLSFJobManager(String installedPath) {
