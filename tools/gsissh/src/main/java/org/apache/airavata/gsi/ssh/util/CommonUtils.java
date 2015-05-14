@@ -71,7 +71,7 @@ public class CommonUtils {
         return new SlurmJobConfiguration("SLURMTemplate.xslt", ".slurm", installedPath, new SlurmOutputParser());
     }
 
-     public static JobManagerConfiguration getSGEJobManager(String installedPath) {
+     public static JobManagerConfiguration getUGEJobManager(String installedPath) {
         return new UGEJobConfiguration("UGETemplate.xslt", ".pbs", installedPath, new UGEOutputParser());
     }
 
