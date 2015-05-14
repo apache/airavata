@@ -1195,7 +1195,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             if (experimentStatus != null){
                 ExperimentState experimentState = experimentStatus.getExperimentState();
                 switch (experimentState){
-                    case CREATED: case VALIDATED: case CANCELED: case FAILED: case UNKNOWN:
+                    case CREATED: case VALIDATED:case UNKNOWN:
                         registry.update(RegistryModelType.EXPERIMENT, experiment, airavataExperimentId);
                         logger.infoId(airavataExperimentId, "Successfully updated experiment {} ", experiment.getName());
                         break;
