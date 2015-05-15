@@ -554,7 +554,7 @@ public class BetterGfacImpl implements GFac,Watcher {
             return cancel(jobExecutionContext);
         } catch (Exception e) {
             GFacUtils.saveErrorDetails(jobExecutionContext, e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
-            log.error("Error inovoking the job with experiment ID: " + experimentID);
+            log.error("Error cancelling the job with experiment ID: " + experimentID);
             throw new GFacException(e);
         }
     }
