@@ -97,6 +97,7 @@ public class SlurmOutputParser implements OutputParser {
      * @return
      */
     public String parseJobSubmission(String rawOutput) throws SSHApiException {
+        // FIXME : use regex to match correct jobId;
         log.info(rawOutput);
         String[] info = rawOutput.split("\n");
         for (String anInfo : info) {

@@ -163,7 +163,7 @@ public class SSHProvider extends AbstractProvider {
                     log.info(jobDescriptor.toXML());
                     jobDetails.setJobDescription(jobDescriptor.toXML());
                     String jobID = cluster.submitBatchJob(jobDescriptor);
-                    if (jobID != null) {
+                    if (jobID != null && !jobID.isEmpty()) {
                         jobDetails.setJobID(jobID);
                         GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SUBMITTED, monitorPublisher);
                         monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
@@ -177,7 +177,7 @@ public class SSHProvider extends AbstractProvider {
                     } else {
                         jobExecutionContext.setJobDetails(jobDetails);
                         String verifyJobId = verifyJobSubmission(cluster, jobDetails);
-                        if (verifyJobId != null) {
+                        if (verifyJobId != null && !verifyJobId.isEmpty()) {
                             // JobStatus either changed from SUBMITTED to QUEUED or directly to QUEUED
                             jobID = verifyJobId;
                             jobDetails.setJobID(jobID);
@@ -187,7 +187,7 @@ public class SSHProvider extends AbstractProvider {
                         }
                     }
 
-                    if (jobID == null) {
+                    if (jobID == null || jobID.isEmpty()) {
                         log.error("Couldn't find remote jobId for JobName:" + jobDetails.getJobName() + ", ExperimentId:" + jobExecutionContext.getExperimentID());
                         GFacUtils.updateExperimentStatus(jobExecutionContext.getExperimentID(), ExperimentState.FAILED);
                         return;
