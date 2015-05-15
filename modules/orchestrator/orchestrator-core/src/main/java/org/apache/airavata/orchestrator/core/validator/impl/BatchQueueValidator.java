@@ -91,6 +91,7 @@ public class BatchQueueValidator implements JobMetadataValidator {
                 if (computationalResourceScheduling != null){
                     String experimentQueueName = computationalResourceScheduling.getQueueName().trim();
                     int experimentWallTimeLimit = computationalResourceScheduling.getWallTimeLimit();
+                    int experimentNodeCount = computationalResourceScheduling.getNodeCount();
                     ValidatorResult queueNameResult = new ValidatorResult();
 
                     //Set the validation to false. Once all the queue's are looped, if nothing matches, then this gets passed.
@@ -100,6 +101,7 @@ public class BatchQueueValidator implements JobMetadataValidator {
                     for (BatchQueue queue : batchQueues){
                         String resourceQueueName = queue.getQueueName();
                         int maxQueueRunTime = queue.getMaxRunTime();
+                        int maxNodeCount = queue.getMaxNodes();
                         if (resourceQueueName != null && resourceQueueName.equals(experimentQueueName)){
                             queueNameResult.setResult(true);
                             queueNameResult.setErrorDetails("");
@@ -123,7 +125,27 @@ public class BatchQueueValidator implements JobMetadataValidator {
                                     wallTimeResult.setErrorDetails("");
                                 }
                             }
+                            //validate max node count
+                            ValidatorResult nodeCountResult = new ValidatorResult();
+                            if (maxNodeCount == 0) {
+                                nodeCountResult.setResult(true);
+                                nodeCountResult.setErrorDetails("Max node count is not configured for the queue," +
+                                        "Validation is being skipped");
+                                logger.info("Max node count is not configured for the queue" +
+                                        "Validation is being skipped");
+                            } else {
+                                if (maxNodeCount < experimentNodeCount){
+                                    nodeCountResult.setResult(false);
+                                    nodeCountResult.setErrorDetails("Job Execution node count " + experimentNodeCount +
+                                            "exceeds the allowable node count" + maxNodeCount +
+                                            "for queue " + resourceQueueName);
+                                } else {
+                                    nodeCountResult.setResult(true);
+                                    nodeCountResult.setErrorDetails("");
+                                }
+                            }
                             validatorResultList.add(wallTimeResult);
+                            validatorResultList.add(nodeCountResult);
                         }
                     }
                     validatorResultList.add(queueNameResult);
