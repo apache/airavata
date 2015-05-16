@@ -1107,7 +1107,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             String messageId = AiravataUtils.getId("EXPERIMENT");
             MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT, messageId, gatewayId);
             messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-            publisher.publish(messageContext);
+            if(publisher!=null) {
+                publisher.publish(messageContext);
+            }
             logger.infoId(experimentId, "Created new experiment with experiment name {}", experiment.getName());
             return experimentId;
         } catch (Exception e) {
