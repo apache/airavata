@@ -260,8 +260,11 @@ public class SSHProvider extends AbstractProvider {
             }
             try {
                 if (jobDetails.getJobID() != null) {
-                    cluster.cancelJob(jobDetails.getJobID());
-                    GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.CANCELED, monitorPublisher);
+                    if (cluster.cancelJob(jobDetails.getJobID()) != null) {
+                        GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.CANCELED, monitorPublisher);
+                    } else {
+                        log.info("Job Cancel operation failed");
+                    }
                 } else {
                     log.error("No Job Id is set, so cannot perform the cancel operation !!!");
                     throw new GFacProviderException("Cancel request failed to cancel job as JobId is null in Job Execution Context");
