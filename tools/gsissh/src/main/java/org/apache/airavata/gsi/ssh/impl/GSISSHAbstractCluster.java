@@ -237,32 +237,23 @@ public class GSISSHAbstractCluster implements Cluster {
     }
 
     public synchronized JobDescriptor cancelJob(String jobID) throws SSHApiException {
-        JobStatus jobStatus = getJobStatus(jobID);
-        if (jobStatus == null || jobStatus == JobStatus.U) {
+        JobDescriptor jobDescriptorById = getJobDescriptorById(jobID);
+        if (jobDescriptorById.getStatus() == null || jobDescriptorById.getStatus().isEmpty()) {
+            return null;
+        }
+        JobStatus jobStatus = JobStatus.valueOf(jobDescriptorById.getStatus());
+        if (jobStatus == JobStatus.U || jobStatus == JobStatus.F) { // TODO: add other cases. Which lead to invalid cancel.
             log.info("Validation before cancel is failed, couldn't found job in remote host to cancel. Job may be already completed|failed|canceled");
             return null;
         }
         RawCommandInfo rawCommandInfo = jobManagerConfiguration.getCancelCommand(jobID);
-
         StandardOutReader stdOutReader = new StandardOutReader();
         log.info("Executing RawCommand : " + rawCommandInfo.getCommand());
         CommandExecutor.executeCommand(rawCommandInfo, this.getSession(), stdOutReader);
         String outputifAvailable = getOutputifAvailable(stdOutReader, "Error reading output of job submission", jobManagerConfiguration.getBaseCancelCommand());
         // this might not be the case for all teh resources, if so Cluster implementation can override this method
         // because here after cancelling we try to get the job description and return it back
-        try {
-            JobDescriptor jobById = this.getJobDescriptorById(jobID);
-            if (CommonUtils.isJobFinished(jobById)) {
-                log.debug("Job Cancel operation was successful !");
-                return jobById;
-            } else {
-                log.debug("Job Cancel operation was not successful !");
-                return null;
-            }
-        } catch (Exception e) {
-            //its ok to fail to get status when the job is gone
-            return null;
-        }
+        return jobDescriptorById;
     }
 
     public synchronized String submitBatchJobWithScript(String scriptPath, String workingDirectory) throws SSHApiException {
