@@ -41,17 +41,18 @@ public class SLURMEmailParser implements EmailParser {
     public static final String BEGAN = "Began";
     public static final String ENDED = "Ended";
     public static final String FAILED = "Failed";
+    private static final Pattern cancelledStatePattern = Pattern.compile("CANCELLED");
+    private static final Pattern pattern = Pattern.compile(REGEX);
 
     @Override
     public JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException{
         JobStatusResult jobStatusResult = new JobStatusResult();
         String subject = message.getSubject();
-        Pattern pattern = Pattern.compile(REGEX);
         Matcher matcher = pattern.matcher(subject);
         if (matcher.find()) {
             jobStatusResult.setJobId(matcher.group(JOBID));
             jobStatusResult.setJobName(matcher.group(JOBNAME));
-            jobStatusResult.setState(getJobState(matcher.group(STATUS)));
+            jobStatusResult.setState(getJobState(matcher.group(STATUS), subject));
             return jobStatusResult;
         } else {
             log.error("[EJM]: No matched found for subject -> " + subject);
@@ -59,11 +60,15 @@ public class SLURMEmailParser implements EmailParser {
         return jobStatusResult;
     }
 
-    private JobState getJobState(String state) {
+    private JobState getJobState(String state, String subject) {
         switch (state.trim()) {
             case BEGAN:
                 return JobState.ACTIVE;
             case ENDED:
+                Matcher matcher = cancelledStatePattern.matcher(subject);
+                if (matcher.find()) {
+                   return JobState.CANCELED;
+                }
                 return JobState.COMPLETE;
             case FAILED:
                 return JobState.FAILED;
