@@ -488,20 +488,12 @@ public class BetterGfacImpl implements GFac,Watcher {
         // We need to check whether this job is submitted as a part of a large workflow. If yes,
         // we need to setup workflow tracking listerner.
         try {
-            String experimentEntry = GFacUtils.findExperimentEntry(jobExecutionContext.getExperimentID(), zk);
             GfacExperimentState gfacExpState = GFacUtils.getZKExperimentState(zk, jobExecutionContext);   // this is the original state came, if we query again it might be different,so we preserve this state in the environment
-            monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
-                    , GfacExperimentState.ACCEPTED));                  // immediately we get the request we update the status
-            String workflowInstanceID = null;
-            if ((workflowInstanceID = (String) jobExecutionContext.getProperty(Constants.PROP_WORKFLOW_INSTANCE_ID)) != null) {
-                // This mean we need to register workflow tracking listener.
-                //todo implement WorkflowTrackingListener properly
-//                registerWorkflowTrackingListener(workflowInstanceID, jobExecutionContext);
-            }
             // Register log event listener. This is required in all scenarios.
-            jobExecutionContext.getNotificationService().registerListener(new LoggingListener());
             if (isNewJob(gfacExpState)) {
                 // In this scenario We do everything from the beginning
+                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
+                        , GfacExperimentState.ACCEPTED));                  // immediately we get the request we update the status
                 launch(jobExecutionContext);
             } else if (isCompletedJob(gfacExpState)) {
                 log.info("There is nothing to recover in this job so we do not re-submit");
@@ -513,15 +505,9 @@ public class BetterGfacImpl implements GFac,Watcher {
                 reLaunch(jobExecutionContext, gfacExpState);
             }
             return true;
-        } catch (ApplicationSettingsException e) {
+        } catch (Exception e) {
             GFacUtils.saveErrorDetails(jobExecutionContext, e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
             throw new GFacException("Error launching the Job", e);
-        } catch (KeeperException e) {
-            GFacUtils.saveErrorDetails(jobExecutionContext, e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
-            throw new GFacException("Error launching the Job", e);
-        } catch (InterruptedException e) {
-            GFacUtils.saveErrorDetails(jobExecutionContext, e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
-            throw new GFacException("Error launching the Job",e);
         }
     }
 
