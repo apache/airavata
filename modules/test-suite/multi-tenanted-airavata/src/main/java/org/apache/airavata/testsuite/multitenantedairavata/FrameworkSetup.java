@@ -64,6 +64,9 @@ public class FrameworkSetup {
 
     private String getTestFrameworkJSON () throws IOException {
         InputStream inputStream = FrameworkSetup.class.getClassLoader().getResourceAsStream(TestFrameworkConstants.TEST_FREAMEWORK_JSON);
+        if (inputStream == null){
+            throw new IOException("Input stream is null");
+        }
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         String line;
         String content = "";

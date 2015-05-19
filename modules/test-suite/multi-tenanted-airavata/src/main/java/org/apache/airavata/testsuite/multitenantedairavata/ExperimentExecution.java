@@ -548,16 +548,6 @@ public class ExperimentExecution {
                                         experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
                                         experimentsWithTokens.put(experimentId, token);
                                         experimentsWithGateway.put(experimentId, gatewayId);
-                                    } else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.TRESTLES_RESOURCE_NAME)) {
-                                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "normal", 30, 0, 1, null);
-                                        UserConfigurationData userConfigurationData = new UserConfigurationData();
-                                        userConfigurationData.setAiravataAutoSchedule(false);
-                                        userConfigurationData.setOverrideManualScheduledParams(false);
-                                        userConfigurationData.setComputationalResourceScheduling(scheduling);
-                                        simpleExperiment.setUserConfigurationData(userConfigurationData);
-                                        experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
-                                        experimentsWithTokens.put(experimentId, token);
-                                        experimentsWithGateway.put(experimentId, gatewayId);
                                     }else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.ALAMO_RESOURCE_NAME)) {
                                         ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "batch", 30, 0, 1, null);
                                         UserConfigurationData userConfigurationData = new UserConfigurationData();
@@ -569,6 +559,26 @@ public class ExperimentExecution {
                                         experimentsWithTokens.put(experimentId, token);
                                         experimentsWithGateway.put(experimentId, gatewayId);
                                     }else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.GORDEN_RESOURCE_NAME)) {
+                                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "normal", 30, 0, 1, null);
+                                        UserConfigurationData userConfigurationData = new UserConfigurationData();
+                                        userConfigurationData.setAiravataAutoSchedule(false);
+                                        userConfigurationData.setOverrideManualScheduledParams(false);
+                                        userConfigurationData.setComputationalResourceScheduling(scheduling);
+                                        simpleExperiment.setUserConfigurationData(userConfigurationData);
+                                        experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
+                                        experimentsWithTokens.put(experimentId, token);
+                                        experimentsWithGateway.put(experimentId, gatewayId);
+                                    }else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.COMET_RESOURCE_NAME)) {
+                                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "compute", 30, 0, 1, null);
+                                        UserConfigurationData userConfigurationData = new UserConfigurationData();
+                                        userConfigurationData.setAiravataAutoSchedule(false);
+                                        userConfigurationData.setOverrideManualScheduledParams(false);
+                                        userConfigurationData.setComputationalResourceScheduling(scheduling);
+                                        simpleExperiment.setUserConfigurationData(userConfigurationData);
+                                        experimentId = airavata.createExperiment(gatewayId, simpleExperiment);
+                                        experimentsWithTokens.put(experimentId, token);
+                                        experimentsWithGateway.put(experimentId, gatewayId);
+                                    }else if (resourceName.equals(TestFrameworkConstants.AppcatalogConstants.LONESTAR_RESOURCE_NAME)) {
                                         ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 4, 1, 1, "normal", 30, 0, 1, null);
                                         UserConfigurationData userConfigurationData = new UserConfigurationData();
                                         userConfigurationData.setAiravataAutoSchedule(false);
