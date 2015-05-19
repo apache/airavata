@@ -264,7 +264,6 @@ public class SSHProvider extends AbstractProvider {
                         GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.CANCELED, monitorPublisher);
                     } else {
                         log.info("Job Cancel operation failed");
-                        GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED, monitorPublisher);
                     }
                 } else {
                     log.error("No Job Id is set, so cannot perform the cancel operation !!!");
