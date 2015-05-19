@@ -76,7 +76,12 @@ public class SlurmOutputParser implements OutputParser {
                             column++;
                             break;
                         case 6:
-                            descriptor.setNodes(Integer.parseInt(each));
+                            try {
+                                int nodes = Integer.parseInt(each);
+                                descriptor.setNodes(nodes);
+                            }catch (Exception e){
+                                log.error("Node count read from command output is not an integer !!!");
+                            }
                             column++;
                             break;
                         case 7:
