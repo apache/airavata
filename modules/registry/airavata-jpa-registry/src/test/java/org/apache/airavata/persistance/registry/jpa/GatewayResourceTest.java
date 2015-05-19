@@ -23,6 +23,7 @@ package org.apache.airavata.persistance.registry.jpa;
 
 import static org.junit.Assert.*;
 
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
 import org.junit.After;
 import org.junit.Test;
@@ -48,7 +49,7 @@ public class GatewayResourceTest extends AbstractResourceTest {
         workerResource = super.getWorkerResource();
         userResource = super.getUserResource();
         if (gatewayResource == null) {
-            gatewayResource = (GatewayResource) ResourceUtils.getGateway("default");
+            gatewayResource = (GatewayResource) ResourceUtils.getGateway(ServerSettings.getDefaultUserGateway());
         }
         projectResource = (ProjectResource) gatewayResource.create(ResourceType.PROJECT);
         projectResource.setId("testProject");
@@ -73,7 +74,7 @@ public class GatewayResourceTest extends AbstractResourceTest {
         gatewayResource.setDomain("owner1");
         gatewayResource.save();
 
-        boolean gatewayExist = ResourceUtils.isGatewayExist("default");
+        boolean gatewayExist = ResourceUtils.isGatewayExist(ServerSettings.getDefaultUserGateway());
         assertTrue("The gateway exisits", gatewayExist);
 
     }
@@ -88,13 +89,13 @@ public class GatewayResourceTest extends AbstractResourceTest {
     
     @Test
     public void testIsExists() throws Exception {
-        assertTrue(gatewayResource.isExists(ResourceType.GATEWAY_WORKER, "admin"));
+        assertTrue(gatewayResource.isExists(ResourceType.GATEWAY_WORKER, ServerSettings.getDefaultUser()));
         assertTrue(gatewayResource.isExists(ResourceType.EXPERIMENT, "testExpID"));
     }
 
     @Test
     public void testGet() throws Exception {
-        assertNotNull(gatewayResource.get(ResourceType.GATEWAY_WORKER, "admin"));
+        assertNotNull(gatewayResource.get(ResourceType.GATEWAY_WORKER, ServerSettings.getDefaultUser()));
         assertNotNull(gatewayResource.get(ResourceType.EXPERIMENT, "testExpID"));
     }
 

@@ -20,20 +20,20 @@
 */
 package org.apache.airavata.persistance.registry.jpa.resources;
 
-import java.security.NoSuchAlgorithmException;
-import java.util.List;
-
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.SecurityUtil;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.Users;
-import org.apache.airavata.registry.cpi.utils.RegistrySettings;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.airavata.registry.cpi.RegistryException;
 
 import javax.persistence.EntityManager;
+import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 public class UserResource extends AbstractResource {
     private final static Logger logger = LoggerFactory.getLogger(UserResource.class);
@@ -120,10 +120,10 @@ public class UserResource extends AbstractResource {
             if (password != null && !password.equals("")) {
                 try {
                     user.setPassword(SecurityUtil.digestString(password,
-                            RegistrySettings.getSetting("default.registry.password.hash.method")));
+                            ServerSettings.getSetting("default.registry.password.hash.method")));
                 } catch (NoSuchAlgorithmException e) {
                     throw new RuntimeException("Error hashing default admin password. Invalid hash algorithm.", e);
-                } catch (RegistryException e) {
+                } catch (ApplicationSettingsException e) {
                     throw new RuntimeException("Error reading hash algorithm from configurations", e);
                 }
             }
@@ -131,10 +131,10 @@ public class UserResource extends AbstractResource {
                 if (password != null && !password.equals("")) {
                     try {
                         existingUser.setPassword(SecurityUtil.digestString(password,
-                                RegistrySettings.getSetting("default.registry.password.hash.method")));
+                                ServerSettings.getSetting("default.registry.password.hash.method")));
                     } catch (NoSuchAlgorithmException e) {
                         throw new RuntimeException("Error hashing default admin password. Invalid hash algorithm.", e);
-                    } catch (RegistryException e) {
+                    } catch (ApplicationSettingsException e) {
                         throw new RuntimeException("Error reading hash algorithm from configurations", e);
                     }
                 }
