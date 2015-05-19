@@ -21,6 +21,9 @@
 
 package org.apache.airavata.persistance.registry.jpa.util;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
@@ -28,7 +31,6 @@ import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
 import org.apache.airavata.persistance.registry.jpa.resources.Utils;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.airavata.registry.cpi.utils.RegistrySettings;
 import org.apache.derby.drda.NetworkServerControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,25 +97,21 @@ public class Initialize {
 
     public void initializeDB() throws SQLException{
         String jdbcUrl = null;
-        String jdbcDriver = null;
         String jdbcUser = null;
         String jdbcPassword = null;
         try{
-            jdbcDriver = RegistrySettings.getSetting("registry.jdbc.driver");
-            jdbcUrl = RegistrySettings.getSetting("registry.jdbc.url");
-            jdbcUser = RegistrySettings.getSetting("registry.jdbc.user");
-            jdbcPassword = RegistrySettings.getSetting("registry.jdbc.password");
+            AiravataUtils.setExecutionAsServer();
+            jdbcUrl = ServerSettings.getSetting("registry.jdbc.url");
+            jdbcUser = ServerSettings.getSetting("registry.jdbc.user");
+            jdbcPassword = ServerSettings.getSetting("registry.jdbc.password");
             jdbcUrl = jdbcUrl + "?" + "user=" + jdbcUser + "&" + "password=" + jdbcPassword;
-        } catch (RegistryException e) {
-            logger.error("Unable to read properties" , e);
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read properties", e);
         }
-
-
         startDerbyInServerMode();
         if(!isServerStarted(server, 20)){
            throw new RuntimeException("Derby server cound not started within five seconds...");
         }
-//      startDerbyInEmbeddedMode();
 
         Connection conn = null;
         try {
@@ -143,15 +141,15 @@ public class Initialize {
 
         try{
             GatewayResource gatewayResource = new GatewayResource();
-            gatewayResource.setGatewayId(RegistrySettings.getSetting("default.registry.gateway"));
-            gatewayResource.setGatewayName(RegistrySettings.getSetting("default.registry.gateway"));
+            gatewayResource.setGatewayId(ServerSettings.getSetting("default.registry.gateway"));
+            gatewayResource.setGatewayName(ServerSettings.getSetting("default.registry.gateway"));
             gatewayResource.setDomain("test-domain");
             gatewayResource.setEmailAddress("test-email");
             gatewayResource.save();
             
             UserResource userResource = new UserResource();
-            userResource.setUserName(RegistrySettings.getSetting("default.registry.user"));
-            userResource.setPassword(RegistrySettings.getSetting("default.registry.password"));
+            userResource.setUserName(ServerSettings.getSetting("default.registry.user"));
+            userResource.setPassword(ServerSettings.getSetting("default.registry.password"));
             userResource.save();
 
             WorkerResource workerResource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
@@ -166,8 +164,11 @@ public class Initialize {
             projectResource.save();
         
           
-        } catch (RegistryException e) {
+        } catch (ApplicationSettingsException e) {
             logger.error("Unable to read properties", e);
+            throw new SQLException(e.getMessage(), e);
+        } catch (RegistryException e) {
+            logger.error("Unable to save data to registry", e);
             throw new SQLException(e.getMessage(), e);
         }
     }

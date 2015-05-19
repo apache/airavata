@@ -21,6 +21,8 @@
 package org.apache.airavata.persistance.registry.jpa;
 
 import junit.framework.Assert;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.workspace.Project;
@@ -63,7 +65,7 @@ public class RegistryUseCaseTest {
         try {
             String TAG = System.currentTimeMillis() + "";
 
-            String gatewayId = "default";
+            String gatewayId = ServerSettings.getDefaultUserGateway();
 
             //testing the creation of a project
             Project project = new Project();
@@ -157,6 +159,8 @@ public class RegistryUseCaseTest {
         } catch (RegistryException e) {
             e.printStackTrace();
             Assert.fail();
+        } catch (ApplicationSettingsException e) {
+            e.printStackTrace();
         }
     }
 
@@ -165,7 +169,7 @@ public class RegistryUseCaseTest {
         try {
             String TAG = System.currentTimeMillis() + "";
 
-            String gatewayId = "default";
+            String gatewayId = ServerSettings.getDefaultUserGateway();
 
             //creating project
             Project project = new Project();
@@ -283,6 +287,8 @@ public class RegistryUseCaseTest {
         } catch (RegistryException e) {
             e.printStackTrace();
             Assert.fail();
+        } catch (ApplicationSettingsException e) {
+            e.printStackTrace();
         }
     }
 

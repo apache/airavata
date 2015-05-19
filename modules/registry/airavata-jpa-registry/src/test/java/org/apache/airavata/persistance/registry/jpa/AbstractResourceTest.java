@@ -21,12 +21,12 @@
 
 package org.apache.airavata.persistance.registry.jpa;
 
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
 import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
 import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
 import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 import org.apache.airavata.persistance.registry.jpa.util.Initialize;
-import org.apache.airavata.registry.cpi.utils.RegistrySettings;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -50,9 +50,9 @@ public abstract class AbstractResourceTest {
     }
     @Before
     public void setUp() throws Exception {
-        gatewayResource = (GatewayResource)ResourceUtils.getGateway("default");
-        workerResource = (WorkerResource)ResourceUtils.getWorker(gatewayResource.getGatewayName(), "admin");
-        userResource = (UserResource)ResourceUtils.getUser(RegistrySettings.getSetting("default.registry.user"));
+        gatewayResource = (GatewayResource)ResourceUtils.getGateway(ServerSettings.getDefaultUserGateway());
+        workerResource = (WorkerResource)ResourceUtils.getWorker(gatewayResource.getGatewayName(), ServerSettings.getDefaultUser());
+        userResource = (UserResource)ResourceUtils.getUser(ServerSettings.getDefaultUser());
         projectResource = workerResource.getProject("default");
     }
 

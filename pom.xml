@@ -532,6 +532,7 @@
 				<module>modules/configuration</module>
 				<module>airavata-api</module>
 				<module>modules/commons</module>
+                <module>modules/messaging</module>
 				<module>modules/gfac</module>
 				<module>modules/workflow-model</module>
 				<module>modules/registry</module>
@@ -543,8 +544,7 @@
 				<module>modules/server</module>
 				<module>modules/test-suite</module>
 				<module>modules/distribution</module>
-				<module>modules/messaging</module>
-				<module>modules/integration-tests</module>
+				<!--<module>modules/integration-tests</module>-->
 				<module>modules/workflow</module>
 				<module>modules/xbaya-gui</module>
 			</modules>

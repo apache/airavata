@@ -17,14 +17,16 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
+
 package org.apache.airavata.orchestrator.client.util;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
-import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
 import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.airavata.registry.cpi.utils.RegistrySettings;
 import org.apache.derby.drda.NetworkServerControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,27 +91,23 @@ public class Initialize {
         return false;
     }
 
-    public void initializeDB() {
+    public void initializeDB() throws SQLException{
         String jdbcUrl = null;
-        String jdbcDriver = null;
         String jdbcUser = null;
         String jdbcPassword = null;
         try{
-            jdbcDriver = RegistrySettings.getSetting("registry.jdbc.driver");
-            jdbcUrl = RegistrySettings.getSetting("registry.jdbc.url");
-            jdbcUser = RegistrySettings.getSetting("registry.jdbc.user");
-            jdbcPassword = RegistrySettings.getSetting("registry.jdbc.password");
+            AiravataUtils.setExecutionAsServer();
+            jdbcUrl = ServerSettings.getSetting("registry.jdbc.url");
+            jdbcUser = ServerSettings.getSetting("registry.jdbc.user");
+            jdbcPassword = ServerSettings.getSetting("registry.jdbc.password");
             jdbcUrl = jdbcUrl + "?" + "user=" + jdbcUser + "&" + "password=" + jdbcPassword;
-        } catch (RegistryException e) {
-            logger.error("Unable to read properties" , e);
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read properties", e);
         }
-
-
         startDerbyInServerMode();
         if(!isServerStarted(server, 20)){
            throw new RuntimeException("Derby server cound not started within five seconds...");
         }
-//      startDerbyInEmbeddedMode();
 
         Connection conn = null;
         try {
@@ -138,27 +136,36 @@ public class Initialize {
         }
 
         try{
-            GatewayResource gatewayResource = (GatewayResource)ResourceUtils.createGateway(RegistrySettings.getSetting("default.registry.gateway"));
-            gatewayResource.setGatewayName(RegistrySettings.getSetting("default.registry.gateway"));
+            GatewayResource gatewayResource = new GatewayResource();
+            gatewayResource.setGatewayId(ServerSettings.getSetting("default.registry.gateway"));
+            gatewayResource.setGatewayName(ServerSettings.getSetting("default.registry.gateway"));
             gatewayResource.setDomain("test-domain");
             gatewayResource.setEmailAddress("test-email");
             gatewayResource.save();
-
-            UserResource userResource = ResourceUtils.createUser(RegistrySettings.getSetting("default.registry.user"),RegistrySettings.getSetting("default.registry.password"));
+            
+            UserResource userResource = new UserResource();
+            userResource.setUserName(ServerSettings.getSetting("default.registry.user"));
+            userResource.setPassword(ServerSettings.getSetting("default.registry.password"));
             userResource.save();
 
             WorkerResource workerResource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
             workerResource.setUser(userResource.getUserName());
             workerResource.save();
-
-            ProjectResource resource = (ProjectResource)gatewayResource.create(ResourceType.PROJECT);
-            resource.setId("default");
-            resource.setName("default");
-            resource.setWorker(workerResource);
-            resource.save();
-
+            
+            ProjectResource projectResource = (ProjectResource)workerResource.create(ResourceType.PROJECT);
+            projectResource.setGateway(gatewayResource);
+            projectResource.setId("default");
+            projectResource.setName("default");
+            projectResource.setWorker(workerResource);
+            projectResource.save();
+        
+          
+        } catch (ApplicationSettingsException e) {
+            logger.error("Unable to read properties", e);
+            throw new SQLException(e.getMessage(), e);
         } catch (RegistryException e) {
-            logger.error("Error while saving data to registry", e);
+            logger.error("Unable to save data to registry", e);
+            throw new SQLException(e.getMessage(), e);
         }
     }
 
@@ -313,22 +320,12 @@ public class Initialize {
 
     }
 
-    private void startDerbyInEmbeddedMode(){
-        try {
-            Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
-            DriverManager.getConnection("jdbc:derby:memory:unit-testing-jpa;create=true").close();
-        } catch (ClassNotFoundException e) {
-            logger.error(e.getMessage(), e);
-        } catch (SQLException e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
-
-    public void stopDerbyServer() {
+    public void stopDerbyServer() throws SQLException{
         try {
             server.shutdown();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
+            throw new SQLException("Error while stopping derby server", e);
         }
     }
 }

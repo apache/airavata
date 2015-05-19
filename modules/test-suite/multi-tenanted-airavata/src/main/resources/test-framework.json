@@ -7,7 +7,7 @@
     "sshPubKeyLoc": "/Users/chathuri/Desktop/ssh_gw111/id_rsa.pub",
     "sshPrivateKeyLoc": "/Users/chathuri/Desktop/ssh_gw111/id_rsa",
     "sshPassword": "ultrascan",
-    "sshUsername": "ogce",
+    "sshUsername": "us3",
     "tokenFileLoc": "/tmp/",
     "resultFileLoc": "/tmp/test_framework_results/",
     "skippedGateways": "default,php_reference_gateway,umass",
@@ -35,6 +35,16 @@
 
         },
         {
+            "name": "comet.sdsc.edu",
+            "loginUser": "us3"
+
+        },
+        {
+            "name": "lonestar.tacc.utexas.edu",
+            "loginUser": "us3"
+
+        },
+        {
             "name": "bigred2.uits.iu.edu",
             "loginUser": "cgateway"
 
@@ -52,7 +62,7 @@
         {
             "name": "Ultrascan",
             "inputs": {
-                "input": "file://chathuri@149.160.168.148:/Users/chathuri/dev/airavata/source/php/inputs/hpcinput.tar",
+                "input": "file://chathuri@149.160.168.97:/Users/chathuri/dev/airavata/source/php/inputs/hpcinput.tar",
                 "mgroupcount": "-mgroupcount=1",
                 "walltime": "-walltime=60"
             }
