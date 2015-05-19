@@ -45,6 +45,8 @@ public class AiravataZKUtils implements Watcher {
 
     public static final String DELIVERY_TAG_POSTFIX = "-deliveryTag";
 
+    public static final String CANCEL_DELIVERY_TAG_POSTFIX = "-cancel-deliveryTag";
+
     @Override
     public void process(WatchedEvent event) {
 
@@ -218,5 +220,19 @@ public class AiravataZKUtils implements Watcher {
 
     public static double toDouble(byte[] bytes) {
         return ByteBuffer.wrap(bytes).getDouble();
+    }
+
+    public static long getCancelDeliveryTagIfExist(String experimentId, ZooKeeper zk, String experimentNode, String pickedChild) throws KeeperException, InterruptedException {
+
+        String cancelDeliveryTagPath = experimentNode + File.separator + pickedChild + File.separator + experimentId +
+                AiravataZKUtils.CANCEL_DELIVERY_TAG_POSTFIX;
+        Stat exists = zk.exists(cancelDeliveryTagPath, false);
+        if (exists == null) {
+            return -1; // no cancel deliverytag found
+        } else {
+            return bytesToLong(zk.getData(cancelDeliveryTagPath, false, exists));
+        }
+
+
     }
 }
