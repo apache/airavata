@@ -38,6 +38,7 @@ import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.states.GfacExperimentState;
 import org.apache.airavata.gfac.core.states.GfacHandlerState;
+import org.apache.airavata.messaging.core.impl.RabbitMQTaskLaunchConsumer;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.*;
@@ -444,11 +445,11 @@ public class GFacUtils {
 			zk.create(newExperimentPath + AiravataZKUtils.DELIVERY_TAG_POSTFIX, longToBytes(deliveryTag), ZooDefs.Ids.OPEN_ACL_UNSAFE,  // here we store the value of delivery message
 					CreateMode.PERSISTENT);
 		} else {
-			log.error("ExperimentID: " + experimentID + " taskID: " + taskID
-					+ " was running by some Gfac instance,but it failed");
-			if(newExperimentPath.equals(oldExperimentPath)){
-				log.info("Re-launch experiment came to the same GFac instance");
-			}else {
+			log.error("ExperimentID: " + experimentID + " taskID: " + taskID + " was running by some Gfac instance,but it failed");
+            removeCancelDeliveryTagNode(oldExperimentPath, zk); // remove previous cancel deliveryTagNode
+            if(newExperimentPath.equals(oldExperimentPath)){
+                log.info("Re-launch experiment came to the same GFac instance");
+            }else {
 				log.info("Re-launch experiment came to a new GFac instance so we are moving data to new gfac node");
 				zk.create(newExperimentPath, zk.getData(oldExperimentPath, false, exists1),
 						ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT); // recursively copy children
@@ -469,6 +470,13 @@ public class GFacUtils {
 		}
 		return true;
 	}
+
+    private static void removeCancelDeliveryTagNode(String experimentPath, ZooKeeper zk) throws KeeperException, InterruptedException {
+        Stat exists = zk.exists(experimentPath + AiravataZKUtils.CANCEL_DELIVERY_TAG_POSTFIX, false);
+        if (exists != null) {
+            ZKUtil.deleteRecursive(zk, experimentPath + AiravataZKUtils.CANCEL_DELIVERY_TAG_POSTFIX);
+        }
+    }
 
     private static void copyChildren(ZooKeeper zk, String oldPath, String newPath, int depth) throws KeeperException, InterruptedException {
         for (String childNode : zk.getChildren(oldPath, false)) {
@@ -537,29 +545,29 @@ public class GFacUtils {
 		return null;
 	}
 
-    public static void setExperimentCancel(String experimentId, String taskId, ZooKeeper zk, String experimentNode,
+    public static boolean setExperimentCancel(String experimentId, String taskId, ZooKeeper zk, String experimentNode,
                                            String pickedChild, String tokenId, long deliveryTag)throws KeeperException,
             InterruptedException {
-        // TODO : remove this if all went well
- /*       String experimentPath = experimentNode + File.separator + pickedChild;
+        String experimentPath = experimentNode + File.separator + pickedChild;
         String newExpNode = experimentPath + File.separator + experimentId;
         String experimentEntry = GFacUtils.findExperimentEntry(experimentId, zk);
         if (experimentEntry == null) {
             // This should be handle in validation request. Gfac shouldn't get any invalidate experiment.
             log.error("Cannot find the experiment Entry, so cancel operation cannot be performed. " +
                     "This happen when experiment completed and already removed from the zookeeper");
+            return false;
         } else {
-            if (newExpNode.equals(experimentEntry)) {
-                log.info("Cancel experiment come to ");
+            // check cancel operation is being processed for the same experiment.
+            Stat cancelState = zk.exists(experimentEntry + AiravataZKUtils.CANCEL_DELIVERY_TAG_POSTFIX, false);
+            if (cancelState != null) {
+                // another cancel operation is being processed. only one cancel operation can exist for a given experiment.
+                return false;
             }
-            Stat operation = zk.exists(experimentEntry + File.separator + "operation", false);
-            if (operation == null) { // if there is no entry, this will come when a user immediately cancel a job
-                zk.create(experimentEntry + File.separator + "operation", "cancel".getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                        CreateMode.PERSISTENT);
-            } else { // if user submit the job to gfac then cancel during execution
-                zk.setData(experimentEntry + File.separator + "operation", "cancel".getBytes(), operation.getVersion());
-            }
-        }*/
+
+            zk.create(experimentEntry + AiravataZKUtils.CANCEL_DELIVERY_TAG_POSTFIX, longToBytes(deliveryTag),
+                    ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT); // save cancel delivery tag to be acknowledge at the end.
+            return true;
+        }
 
     }
     public static boolean isCancelled(String experimentID, ZooKeeper zk

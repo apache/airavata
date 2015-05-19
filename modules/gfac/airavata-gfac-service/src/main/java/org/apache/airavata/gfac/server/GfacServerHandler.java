@@ -33,6 +33,7 @@ import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.cpi.GFac;
 import org.apache.airavata.gfac.core.utils.GFacThreadPoolExecutor;
@@ -403,21 +404,17 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                     TBase messageEvent = message.getEvent();
                     byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
                     ThriftUtils.createThriftFromBytes(bytes, event);
-                    GFacUtils.setExperimentCancel(event.getExperimentId(), event.getTaskId(), zk, experimentNode, nodeName, event.getTokenId(), message.getDeliveryTag());
-                    AiravataZKUtils.getExpStatePath(event.getExperimentId());
-                    cancelJob(event.getExperimentId(), event.getTaskId(), event.getGatewayId(), event.getTokenId());
-                    System.out.println(" Message Received with message id '" + message.getMessageId()
-                            + "' and with message type '" + message.getType());
-                } catch (TException e) {
-                    logger.error(e.getMessage(), e); //nobody is listening so nothing to throw
-                    rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
-                } catch (InterruptedException e) {
-                    logger.error(e.getMessage(), e);
-                    rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
-                } catch (ApplicationSettingsException e) {
-                    logger.error(e.getMessage(), e);
-                    rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
-                } catch (KeeperException e) {
+                    boolean saveDeliveryTagSuccess = GFacUtils.setExperimentCancel(event.getExperimentId(), event.getTaskId(), zk, experimentNode, nodeName, event.getTokenId(), message.getDeliveryTag());
+                    if (saveDeliveryTagSuccess) {
+                        cancelJob(event.getExperimentId(), event.getTaskId(), event.getGatewayId(), event.getTokenId());
+                        System.out.println(" Message Received with message id '" + message.getMessageId()
+                                + "' and with message type '" + message.getType());
+                        rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
+                    } else {
+                        throw new GFacException("Terminate Task fail to save delivery tag : " + String.valueOf(message.getDeliveryTag()) + " \n" +
+                                "This happens when another cancel operation is being processed or experiment is in one of final states, complete|failed|cancelled.");
+                    }
+                } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                     rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
                 }

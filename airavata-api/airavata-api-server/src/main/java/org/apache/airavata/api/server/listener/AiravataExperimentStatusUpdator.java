@@ -133,7 +133,8 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
 
     private void cleanup(WorkflowNodeStatusChangeEvent nodeStatus, String experimentNode, String experimentPath) throws KeeperException, InterruptedException, AiravataException {
         int count = 0;
-        long deliveryTag = AiravataZKUtils.getDeliveryTag(nodeStatus.getWorkflowNodeIdentity().getExperimentId(), zk, experimentNode, ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME));
+        long deliveryTag = AiravataZKUtils.getDeliveryTag(nodeStatus.getWorkflowNodeIdentity().getExperimentId(), zk,
+                experimentNode, ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME));
         if(deliveryTag>0) {
             if (ServerSettings.isGFacPassiveMode()) {
                 while (!consumer.isOpen() && count < 3) {
@@ -157,6 +158,30 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
         }
         if (zk.exists(experimentPath, false) != null) {
             ZKUtil.deleteRecursive(zk, experimentPath);
+        }
+
+        // ack cancel operation if exist
+        long cancelDT = AiravataZKUtils.getCancelDeliveryTagIfExist(nodeStatus.getWorkflowNodeIdentity().getExperimentId(),
+                zk, experimentNode, ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME));
+        count  = 0;
+        if (cancelDT > 0) {
+            while (!consumer.isOpen() && count < 3) {
+                try {
+                    consumer.reconnect();
+                } catch (AiravataException e) {
+                    count++;
+                }
+            }
+            try {
+                if (consumer.isOpen()) {
+                    consumer.sendAck(cancelDT);
+                }
+            } catch (Exception e) {
+                logger.error("Error sending the Ack for cancel operation, cancel experiment path : " + experimentPath);
+            }
+        }
+        if (cancelDT > 0) {
+            ZKUtil.deleteRecursive(zk, experimentPath + AiravataZKUtils.CANCEL_DELIVERY_TAG_POSTFIX);
         }
     }
 
