@@ -23,7 +23,6 @@ package org.apache.airavata.testsuite.multitenantedairavata.utils;
 
 public class TestFrameworkConstants {
     public static final String AIRAVATA_CLIENT_PROPERTIES = "airavata-client.properties";
-    public static final String TEST_FREAMEWORK_PROPERTIES = "test-framework.properties";
     public static final String TEST_FREAMEWORK_JSON = "test-framework.json";
 
     public static final class AiravataClientConstants {
@@ -103,6 +102,8 @@ public class TestFrameworkConstants {
         public static final String BR2_RESOURCE_NAME = "bigred2.uits.iu.edu";
         public static final String GORDEN_RESOURCE_NAME = "gordon.sdsc.edu";
         public static final String ALAMO_RESOURCE_NAME = "alamo.uthscsa.edu";
+        public static final String COMET_RESOURCE_NAME = "comet.sdsc.edu";
+        public static final String LONESTAR_RESOURCE_NAME = "lonestar.tacc.utexas.edu";
 
 
         public static final String AMBER_HEAT_RST_LOCATION = "02_Heat.rst_location";
