@@ -104,7 +104,6 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
 	                break;
 	            case CANCELING:
 	                state = ExperimentState.CANCELING; updateExperimentStatus = true;
-                    clean = true;
                     break;
                 default:
                     return;
