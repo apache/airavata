@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
+import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
@@ -34,6 +35,10 @@ public class HandleOutputs {
 				// FIXME: Validation of outputs based on required and optional and search based on REGEX provided in search.
 
 				if (DataType.URI == output.getType()) {
+                    // for failed jobs outputs are not generated. So we should not download outputs
+                    if (GFacUtils.isFailedJob(jobExecutionContext)){
+                       continue;
+                    }
 					String outputFile = output.getValue();
 					String fileName = outputFile.substring(outputFile.lastIndexOf(File.separatorChar) + 1, outputFile.length());
 
