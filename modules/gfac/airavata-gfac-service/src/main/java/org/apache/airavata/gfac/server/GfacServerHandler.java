@@ -416,7 +416,16 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
-                    rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
+                    if (rabbitMQTaskLaunchConsumer.isOpen()) {
+                        rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
+                    } else {
+                        try {
+                            rabbitMQTaskLaunchConsumer.reconnect();
+                            rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
+                        } catch (AiravataException e1) {
+                            logger.error("RabbitMQ reconnect attempt failed.");
+                        }
+                    }
                 }
             }
         }
