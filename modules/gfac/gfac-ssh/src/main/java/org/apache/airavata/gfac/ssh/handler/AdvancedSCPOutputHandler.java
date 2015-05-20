@@ -148,6 +148,10 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
             for (String paramName : keys) {
                 OutputDataObjectType outputDataObjectType = (OutputDataObjectType) output.get(paramName);
                 if (outputDataObjectType.getType() == DataType.URI) {
+                    // for failed jobs outputs are not generated. So we should not download outputs
+                    if (GFacUtils.isFailedJob(jobExecutionContext)){
+                        continue;
+                    }
                 	String downloadFile = outputDataObjectType.getValue();
                     if(downloadFile == null || !(new File(downloadFile).isFile())){
                         GFacUtils.saveErrorDetails(jobExecutionContext, "Empty Output returned from the application", CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);

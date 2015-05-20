@@ -756,4 +756,12 @@ public class GFacUtils {
         airavataRegistry.update(RegistryModelType.EXPERIMENT_STATUS, status, experimentId);
         return details.getExperimentStatus().getExperimentState();
     }
+
+    public static boolean isFailedJob (JobExecutionContext jec) {
+        JobStatus jobStatus = jec.getJobDetails().getJobStatus();
+        if (jobStatus.getJobState() == JobState.FAILED) {
+            return true;
+        }
+        return false;
+    }
 }
