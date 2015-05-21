@@ -77,6 +77,7 @@ public class RabbitMQStatusConsumer implements Consumer {
         try {
             ConnectionFactory connectionFactory = new ConnectionFactory();
             connectionFactory.setUri(url);
+            connectionFactory.setAutomaticRecoveryEnabled(true);
             connection = connectionFactory.newConnection();
             connection.addShutdownListener(new ShutdownListener() {
                 public void shutdownCompleted(ShutdownSignalException cause) {
@@ -85,6 +86,7 @@ public class RabbitMQStatusConsumer implements Consumer {
             log.info("connected to rabbitmq: " + connection + " for " + exchangeName);
 
             channel = connection.createChannel();
+            channel.basicQos(MessagingConstants.PREFETCH_COUNT);
             channel.exchangeDeclare(exchangeName, "topic", false);
 
         } catch (Exception e) {

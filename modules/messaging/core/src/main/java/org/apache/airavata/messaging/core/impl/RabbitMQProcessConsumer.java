@@ -70,6 +70,7 @@ public class RabbitMQProcessConsumer {
         try {
             ConnectionFactory connectionFactory = new ConnectionFactory();
             connectionFactory.setUri(url);
+            connectionFactory.setAutomaticRecoveryEnabled(true);
             connection = connectionFactory.newConnection();
             connection.addShutdownListener(new ShutdownListener() {
                 public void shutdownCompleted(ShutdownSignalException cause) {
@@ -78,6 +79,7 @@ public class RabbitMQProcessConsumer {
             log.info("connected to rabbitmq: " + connection + " for default");
 
             channel = connection.createChannel();
+            channel.basicQos(MessagingConstants.PREFETCH_COUNT);
 //            channel.exchangeDeclare(taskLaunchExchangeName, "fanout");
 
         } catch (Exception e) {
@@ -100,6 +102,7 @@ public class RabbitMQProcessConsumer {
             if (queueName == null) {
                 if (!channel.isOpen()) {
                     channel = connection.createChannel();
+                    channel.basicQos(MessagingConstants.PREFETCH_COUNT);
 //                    channel.exchangeDeclare(taskLaunchExchangeName, "fanout");
                 }
                 queueName = channel.queueDeclare().getQueue();
