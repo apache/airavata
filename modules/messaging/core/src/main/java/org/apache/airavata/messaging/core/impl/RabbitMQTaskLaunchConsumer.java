@@ -79,6 +79,7 @@ public class RabbitMQTaskLaunchConsumer {
         try {
             ConnectionFactory connectionFactory = new ConnectionFactory();
             connectionFactory.setUri(url);
+            connectionFactory.setAutomaticRecoveryEnabled(true);
             connection = connectionFactory.newConnection();
             connection.addShutdownListener(new ShutdownListener() {
                 public void shutdownCompleted(ShutdownSignalException cause) {
@@ -87,6 +88,8 @@ public class RabbitMQTaskLaunchConsumer {
             log.info("connected to rabbitmq: " + connection + " for " + taskLaunchExchangeName);
 
             channel = connection.createChannel();
+            channel.basicQos(MessagingConstants.PREFETCH_COUNT);
+
 //            channel.exchangeDeclare(taskLaunchExchangeName, "fanout");
 
         } catch (Exception e) {
@@ -130,6 +133,7 @@ public class RabbitMQTaskLaunchConsumer {
             if (queueName == null) {
                 if (!channel.isOpen()) {
                     channel = connection.createChannel();
+                    channel.basicQos(MessagingConstants.PREFETCH_COUNT);
 //                    channel.exchangeDeclare(taskLaunchExchangeName, "fanout");
                 }
                 queueName = channel.queueDeclare().getQueue();
@@ -197,7 +201,14 @@ public class RabbitMQTaskLaunchConsumer {
                         log.warn(msg, e);
                     }
                 }
+
+                @Override
+                public void handleCancel(String consumerTag) throws IOException {
+                    super.handleCancel(consumerTag);
+                    log.info("Consumer cancelled : " + consumerTag);
+                }
             });
+
             // save the name for deleting the queue
             queueDetailsMap.put(id, new QueueDetails(queueName, keys));
             return id;

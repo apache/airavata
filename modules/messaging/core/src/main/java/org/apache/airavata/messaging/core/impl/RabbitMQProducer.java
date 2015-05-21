@@ -150,6 +150,7 @@ public class RabbitMQProducer {
         try {
             ConnectionFactory connectionFactory = new ConnectionFactory();
             connectionFactory.setUri(url);
+            connectionFactory.setAutomaticRecoveryEnabled(true);
             Connection connection = connectionFactory.newConnection();
             connection.addShutdownListener(new ShutdownListener() {
                 public void shutdownCompleted(ShutdownSignalException cause) {
