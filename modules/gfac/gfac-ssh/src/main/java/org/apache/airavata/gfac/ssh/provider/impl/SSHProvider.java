@@ -270,19 +270,19 @@ public class SSHProvider extends AbstractProvider {
                     throw new GFacProviderException("Cancel request failed to cancel job as JobId is null in Job Execution Context");
                 }
             } catch (SSHApiException e) {
-                String error = "Error submitting the job to host " + jobExecutionContext.getHostName() + " message: " + e.getMessage();
+                String error = "Cancel request failed " + jobExecutionContext.getHostName() + " message: " + e.getMessage();
                 log.error(error);
                 StringWriter errors = new StringWriter();
                 e.printStackTrace(new PrintWriter(errors));
                 GFacUtils.saveErrorDetails(jobExecutionContext, errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
-                throw new GFacProviderException(error, e);
+//                throw new GFacProviderException(error, e);
             } catch (Exception e) {
-                String error = "Error submitting the job to host " + jobExecutionContext.getHostName() + " message: " + e.getMessage();
+                String error = "Cancel request failed " + jobExecutionContext.getHostName() + " message: " + e.getMessage();
                 log.error(error);
                 StringWriter errors = new StringWriter();
                 e.printStackTrace(new PrintWriter(errors));
                 GFacUtils.saveErrorDetails(jobExecutionContext, errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
-                throw new GFacProviderException(error, e);
+//                throw new GFacProviderException(error, e);
             }
             // we know this host is type GsiSSHHostType
         }
