@@ -568,6 +568,10 @@ public class BetterGfacImpl implements GFac,Watcher {
                     jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
                     throw new GFacException(e.getMessage(), e);
                 }
+            }else if (gfacExpState == GfacExperimentState.INHANDLERSINVOKING || gfacExpState == GfacExperimentState.INHANDLERSINVOKED || gfacExpState == GfacExperimentState.OUTHANDLERSINVOKING){
+                log.info("Experiment should be immedietly cancelled");
+                GFacUtils.updateExperimentStatus(jobExecutionContext.getExperimentID(), ExperimentState.CANCELED);
+
             }
             return true;
             }catch(Exception e){
@@ -684,13 +688,14 @@ public class BetterGfacImpl implements GFac,Watcher {
 			// here we do not skip handler if some handler does not have to be
 			// run again during re-run it can implement
 			// that logic in to the handler
-            if (!isCancelled(jobExecutionContext)) {
+            if (!isCancelling(jobExecutionContext)) {
                 invokeInFlowHandlers(jobExecutionContext); // to keep the
                 // consistency we always
                 // try to re-run to
                 // avoid complexity
             }else{
                 log.info("Experiment is cancelled, so launch operation is stopping immediately");
+                GFacUtils.publishTaskStatus(jobExecutionContext, monitorPublisher, TaskState.CANCELED);
                 return; // if the job is cancelled, status change is handled in cancel operation this thread simply has to be returned
             }
             // if (experimentID != null){
@@ -700,10 +705,11 @@ public class BetterGfacImpl implements GFac,Watcher {
 			// After executing the in handlers provider instance should be set
 			// to job execution context.
 			// We get the provider instance and execute it.
-            if (!isCancelled(jobExecutionContext)) {
+            if (!isCancelling(jobExecutionContext)) {
                 invokeProviderExecute(jobExecutionContext);
             } else {
                 log.info("Experiment is cancelled, so launch operation is stopping immediately");
+                GFacUtils.publishTaskStatus(jobExecutionContext, monitorPublisher, TaskState.CANCELED);
                 return;
             }
             } catch (Exception e) {
@@ -878,7 +884,7 @@ public class BetterGfacImpl implements GFac,Watcher {
             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
                     , GfacExperimentState.INHANDLERSINVOKING));
             for (GFacHandlerConfig handlerClassName : handlers) {
-                if(!isCancelled(jobExecutionContext)) {
+                if(!isCancelling(jobExecutionContext)) {
                     Class<? extends GFacHandler> handlerClass;
                     GFacHandler handler;
                     try {
@@ -956,7 +962,7 @@ public class BetterGfacImpl implements GFac,Watcher {
             try {
                 monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.OUTHANDLERSINVOKING));
                 for (GFacHandlerConfig handlerClassName : handlers) {
-                    if (!isCancelled(jobExecutionContext)) {
+                    if (!isCancelling(jobExecutionContext)) {
                         Class<? extends GFacHandler> handlerClass;
                         GFacHandler handler;
                         try {
@@ -978,11 +984,7 @@ public class BetterGfacImpl implements GFac,Watcher {
                             handler.invoke(jobExecutionContext);
                             GFacUtils.updateHandlerState(zk, jobExecutionContext, handlerClassName.getClassName(), GfacHandlerState.COMPLETED);
                         } catch (Exception e) {
-                            TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
-                                    jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                                    jobExecutionContext.getExperimentID(),
-                                    jobExecutionContext.getGatewayID());
-                            monitorPublisher.publish(new TaskStatusChangeRequestEvent(TaskState.FAILED, taskIdentity));
+                            GFacUtils.publishTaskStatus(jobExecutionContext, monitorPublisher, TaskState.FAILED);
                             try {
                                 StringWriter errors = new StringWriter();
                                 e.printStackTrace(new PrintWriter(errors));
@@ -993,6 +995,7 @@ public class BetterGfacImpl implements GFac,Watcher {
                             throw new GFacException(e);
                         }
                     } else {
+                        GFacUtils.publishTaskStatus(jobExecutionContext, monitorPublisher, TaskState.CANCELED);
                         log.info("Experiment execution is cancelled, so OutHandler invocation is going to stop");
                         break;
                     }
@@ -1222,7 +1225,21 @@ public class BetterGfacImpl implements GFac,Watcher {
         if (status != null){
             ExperimentState experimentState = status.getExperimentState();
             if (experimentState != null){
-                if(experimentState == ExperimentState.CANCELING || experimentState == ExperimentState.CANCELED){
+                if(experimentState == ExperimentState.CANCELED){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isCancelling(JobExecutionContext executionContext) throws RegistryException {
+        // check whether cancelling request came
+        ExperimentStatus status = (ExperimentStatus)registry.get(RegistryModelType.EXPERIMENT_STATUS, executionContext.getExperimentID());
+        if (status != null){
+            ExperimentState experimentState = status.getExperimentState();
+            if (experimentState != null){
+                if(experimentState == ExperimentState.CANCELING){
                     return true;
                 }
             }
