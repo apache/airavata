@@ -180,7 +180,7 @@ public class GSISSHProvider extends AbstractProvider {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void cancelJob(JobExecutionContext jobExecutionContext) throws GFacProviderException,GFacException {
+    public boolean cancelJob(JobExecutionContext jobExecutionContext) throws GFacProviderException,GFacException {
         //To change body of implemented methods use File | Settings | File Templates.
         log.info("canceling the job status in GSISSHProvider!!!!!");
         JobDetails jobDetails = jobExecutionContext.getJobDetails();
@@ -199,15 +199,17 @@ public class GSISSHProvider extends AbstractProvider {
             // This installed path is a mandetory field, because this could change based on the computing resource
             if(jobDetails == null) {
                 log.error("There is not JobDetails so cancelations cannot perform !!!");
-                return;
+                return false;
             }
             if (jobDetails.getJobID() != null) {
+                // if this operation success without any exceptions, we can assume cancel operation succeeded.
                 cluster.cancelJob(jobDetails.getJobID());
             } else {
                 log.error("No Job Id is set, so cannot perform the cancel operation !!!");
-                return;
+                return false;
             }
             GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.CANCELED, monitorPublisher);
+            return true;
             // we know this host is type GsiSSHHostType
         } catch (SSHApiException e) {
             String error = "Error submitting the job to host " + jobExecutionContext.getHostName() + " message: " + e.getMessage();

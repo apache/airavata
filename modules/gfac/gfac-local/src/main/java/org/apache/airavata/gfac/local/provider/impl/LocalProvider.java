@@ -246,7 +246,7 @@ public class LocalProvider extends AbstractProvider {
         }
     }
 
-    public void cancelJob(JobExecutionContext jobExecutionContext) throws GFacException {
+    public boolean cancelJob(JobExecutionContext jobExecutionContext) throws GFacException {
         throw new NotImplementedException();
     }
 
