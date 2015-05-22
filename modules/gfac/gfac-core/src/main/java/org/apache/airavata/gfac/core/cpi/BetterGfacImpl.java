@@ -908,6 +908,7 @@ public class BetterGfacImpl implements GFac,Watcher {
                     }
                 }else{
                     log.info("Experiment execution is cancelled, so InHandler invocation is going to stop");
+                    GFacUtils.publishTaskStatus(jobExecutionContext, monitorPublisher, TaskState.CANCELED);
                     break;
                 }
             }
@@ -962,7 +963,7 @@ public class BetterGfacImpl implements GFac,Watcher {
             try {
                 monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.OUTHANDLERSINVOKING));
                 for (GFacHandlerConfig handlerClassName : handlers) {
-                    if (!isCancelled(jobExecutionContext)) {
+                    if (!isCancel(jobExecutionContext)) {
                         Class<? extends GFacHandler> handlerClass;
                         GFacHandler handler;
                         try {
@@ -995,7 +996,10 @@ public class BetterGfacImpl implements GFac,Watcher {
                             throw new GFacException(e);
                         }
                     } else {
-                        log.info("Experiment execution is cancelled, so OutHandler invocation is going to stop");
+                        log.info("Experiment execution is cancelled, so OutHandler invocation is stopped");
+                        if (isCancelling(jobExecutionContext)) {
+                            GFacUtils.publishTaskStatus(jobExecutionContext, monitorPublisher, TaskState.CANCELED);
+                        }
                         break;
                     }
                 }
@@ -1218,30 +1222,55 @@ public class BetterGfacImpl implements GFac,Watcher {
     }
 
 
-    public boolean isCancelled(JobExecutionContext executionContext) throws RegistryException {
+    public boolean isCancelled(JobExecutionContext executionContext){
         // we should check whether experiment is cancelled using registry
-        ExperimentStatus status = (ExperimentStatus)registry.get(RegistryModelType.EXPERIMENT_STATUS, executionContext.getExperimentID());
-        if (status != null){
-            ExperimentState experimentState = status.getExperimentState();
-            if (experimentState != null){
-                if(experimentState == ExperimentState.CANCELED){
-                    return true;
+        try {
+            ExperimentStatus status = (ExperimentStatus)registry.get(RegistryModelType.EXPERIMENT_STATUS, executionContext.getExperimentID());
+            if (status != null){
+                ExperimentState experimentState = status.getExperimentState();
+                if (experimentState != null){
+                    if(experimentState == ExperimentState.CANCELED){
+                        return true;
+                    }
                 }
             }
+        } catch (RegistryException e) {
+            // on error we return false.
         }
         return false;
     }
 
-    public boolean isCancelling(JobExecutionContext executionContext) throws RegistryException {
+    public boolean isCancelling(JobExecutionContext executionContext){
         // check whether cancelling request came
-        ExperimentStatus status = (ExperimentStatus)registry.get(RegistryModelType.EXPERIMENT_STATUS, executionContext.getExperimentID());
-        if (status != null){
-            ExperimentState experimentState = status.getExperimentState();
-            if (experimentState != null){
-                if(experimentState == ExperimentState.CANCELING){
-                    return true;
+        try {
+            ExperimentStatus status = (ExperimentStatus)registry.get(RegistryModelType.EXPERIMENT_STATUS, executionContext.getExperimentID());
+            if (status != null){
+                ExperimentState experimentState = status.getExperimentState();
+                if (experimentState != null){
+                    if(experimentState == ExperimentState.CANCELING){
+                        return true;
+                    }
                 }
             }
+        } catch (RegistryException e) {
+            // on error we return false;
+        }
+        return false;
+    }
+
+    public boolean isCancel(JobExecutionContext jobExecutionContext) {
+        try {
+            ExperimentStatus status = registry.get(RegistryModelType.EXPERIMENT_STATUS, jobExecutionContext.getExperimentID());
+            if (status != null) {
+                ExperimentState experimentState = status.getExperimentState();
+                if (experimentState != null) {
+                    if (experimentState == ExperimentState.CANCELING || experimentState == ExperimentState.CANCELED) {
+                        return true;
+                    }
+                }
+            }
+        } catch (RegistryException e) {
+            // on error we return false;
         }
         return false;
     }
