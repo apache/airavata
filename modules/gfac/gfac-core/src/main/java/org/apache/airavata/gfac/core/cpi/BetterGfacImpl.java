@@ -1260,7 +1260,7 @@ public class BetterGfacImpl implements GFac,Watcher {
 
     public boolean isCancel(JobExecutionContext jobExecutionContext) {
         try {
-            ExperimentStatus status = registry.get(RegistryModelType.EXPERIMENT_STATUS, jobExecutionContext.getExperimentID());
+            ExperimentStatus status = (ExperimentStatus) registry.get(RegistryModelType.EXPERIMENT_STATUS, jobExecutionContext.getExperimentID());
             if (status != null) {
                 ExperimentState experimentState = status.getExperimentState();
                 if (experimentState != null) {
