@@ -962,7 +962,7 @@ public class BetterGfacImpl implements GFac,Watcher {
             try {
                 monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.OUTHANDLERSINVOKING));
                 for (GFacHandlerConfig handlerClassName : handlers) {
-                    if (!isCancelling(jobExecutionContext)) {
+                    if (!isCancelled(jobExecutionContext)) {
                         Class<? extends GFacHandler> handlerClass;
                         GFacHandler handler;
                         try {
@@ -995,7 +995,6 @@ public class BetterGfacImpl implements GFac,Watcher {
                             throw new GFacException(e);
                         }
                     } else {
-                        GFacUtils.publishTaskStatus(jobExecutionContext, monitorPublisher, TaskState.CANCELED);
                         log.info("Experiment execution is cancelled, so OutHandler invocation is going to stop");
                         break;
                     }
