@@ -29,8 +29,9 @@ import java.util.Map;
 
 public class TestProvider extends AbstractProvider {
 
-    public void cancelJob(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
+    public boolean cancelJob(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
         //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
     @Override

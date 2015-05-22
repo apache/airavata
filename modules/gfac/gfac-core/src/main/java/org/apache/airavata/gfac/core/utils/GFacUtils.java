@@ -545,11 +545,8 @@ public class GFacUtils {
 		return null;
 	}
 
-    public static boolean setExperimentCancel(String experimentId, String taskId, ZooKeeper zk, String experimentNode,
-                                           String pickedChild, String tokenId, long deliveryTag)throws KeeperException,
+    public static boolean setExperimentCancel(String experimentId, ZooKeeper zk, long deliveryTag) throws KeeperException,
             InterruptedException {
-        String experimentPath = experimentNode + File.separator + pickedChild;
-        String newExpNode = experimentPath + File.separator + experimentId;
         String experimentEntry = GFacUtils.findExperimentEntry(experimentId, zk);
         if (experimentEntry == null) {
             // This should be handle in validation request. Gfac shouldn't get any invalidate experiment.
@@ -761,6 +758,24 @@ public class GFacUtils {
         JobStatus jobStatus = jec.getJobDetails().getJobStatus();
         if (jobStatus.getJobState() == JobState.FAILED) {
             return true;
+        }
+        return false;
+    }
+
+    public static boolean ackCancelRequest(String experimentId, ZooKeeper zk) throws KeeperException, InterruptedException {
+        String experimentEntry = GFacUtils.findExperimentEntry(experimentId, zk);
+        String cancelNodePath = experimentEntry + AiravataZKUtils.CANCEL_DELIVERY_TAG_POSTFIX;
+        if (experimentEntry == null) {
+            // This should be handle in validation request. Gfac shouldn't get any invalidate experiment.
+            log.error("Cannot find the experiment Entry, so cancel operation cannot be performed. " +
+                    "This happen when experiment completed and already removed from the zookeeper");
+        } else {
+            // check cancel operation is being processed for the same experiment.
+            Stat cancelState = zk.exists(cancelNodePath, false);
+            if (cancelState != null) {
+                ZKUtil.deleteRecursive(zk,cancelNodePath);
+                return true;
+            }
         }
         return false;
     }

@@ -554,6 +554,7 @@ public class BetterGfacImpl implements GFac,Watcher {
             }
             // Register log event listener. This is required in all scenarios.
             jobExecutionContext.getNotificationService().registerListener(new LoggingListener());
+
             if (gfacExpState == GfacExperimentState.PROVIDERINVOKING || gfacExpState == GfacExperimentState.JOBSUBMITTED
                     || gfacExpState == GfacExperimentState.PROVIDERINVOKED) { // we already have changed registry status, we need to handle job canceling scenario.
                 log.info("Job is in a position to perform a proper cancellation");
@@ -790,7 +791,7 @@ public class BetterGfacImpl implements GFac,Watcher {
 
     }
 
-    private void invokeProviderCancel(JobExecutionContext jobExecutionContext) throws GFacException {
+    private boolean invokeProviderCancel(JobExecutionContext jobExecutionContext) throws GFacException {
         GFacProvider provider = jobExecutionContext.getProvider();
         if (provider != null) {
             initProvider(provider, jobExecutionContext);
@@ -800,6 +801,7 @@ public class BetterGfacImpl implements GFac,Watcher {
         if (GFacUtils.isSynchronousMode(jobExecutionContext)) {
             invokeOutFlowHandlers(jobExecutionContext);
         }
+        return true;
     }
 
     // TODO - Did refactoring, but need to recheck the logic again.
@@ -845,9 +847,9 @@ public class BetterGfacImpl implements GFac,Watcher {
         }
     }
 
-    private void cancelProvider(GFacProvider provider, JobExecutionContext jobExecutionContext) throws GFacException {
+    private boolean cancelProvider(GFacProvider provider, JobExecutionContext jobExecutionContext) throws GFacException {
         try {
-            provider.cancelJob(jobExecutionContext);
+            return provider.cancelJob(jobExecutionContext);
         } catch (Exception e) {
             throw new GFacException("Error while executing provider " + provider.getClass().getName() + " functionality.", e);
         }

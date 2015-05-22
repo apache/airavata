@@ -240,7 +240,7 @@ public class SSHProvider extends AbstractProvider {
 
     }
 
-    public void cancelJob(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
+    public boolean cancelJob(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
         JobDetails jobDetails = jobExecutionContext.getJobDetails();
         StringBuffer data = new StringBuffer();
         String hostAddress = jobExecutionContext.getHostName();
@@ -256,12 +256,14 @@ public class SSHProvider extends AbstractProvider {
             // This installed path is a mandetory field, because this could change based on the computing resource
             if (jobDetails == null) {
                 log.error("There is not JobDetails, Cancel request can't be performed !!!");
-                return;
+                return false;
             }
             try {
                 if (jobDetails.getJobID() != null) {
                     if (cluster.cancelJob(jobDetails.getJobID()) != null) {
+                        // if this operation success without any exceptions, we can assume cancel operation succeeded.
                         GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.CANCELED, monitorPublisher);
+                        return true;
                     } else {
                         log.info("Job Cancel operation failed");
                     }
@@ -284,7 +286,7 @@ public class SSHProvider extends AbstractProvider {
                 GFacUtils.saveErrorDetails(jobExecutionContext, errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
 //                throw new GFacProviderException(error, e);
             }
-            // we know this host is type GsiSSHHostType
+            return false;
         }
     }
 

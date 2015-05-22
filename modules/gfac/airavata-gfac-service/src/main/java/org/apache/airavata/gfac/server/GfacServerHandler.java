@@ -49,7 +49,6 @@ import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.workspace.experiment.ExperimentState;
 import org.apache.airavata.model.workspace.experiment.ExperimentStatus;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
-import org.apache.airavata.persistance.registry.jpa.model.Status;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.RegistryModelType;
@@ -399,31 +398,36 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                     logger.error("Error while updating experiment status", e);
                 }
             } else if (message.getType().equals(MessageType.TERMINATETASK)) {
+                boolean cancelSuccess = false;
+                TaskTerminateEvent event = new TaskTerminateEvent();
+                TBase messageEvent = message.getEvent();
                 try {
-                    TaskTerminateEvent event = new TaskTerminateEvent();
-                    TBase messageEvent = message.getEvent();
                     byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
                     ThriftUtils.createThriftFromBytes(bytes, event);
-                    boolean saveDeliveryTagSuccess = GFacUtils.setExperimentCancel(event.getExperimentId(), event.getTaskId(), zk, experimentNode, nodeName, event.getTokenId(), message.getDeliveryTag());
+                    boolean saveDeliveryTagSuccess = GFacUtils.setExperimentCancel(event.getExperimentId(), zk, message.getDeliveryTag());
                     if (saveDeliveryTagSuccess) {
-                        cancelJob(event.getExperimentId(), event.getTaskId(), event.getGatewayId(), event.getTokenId());
+                        cancelSuccess = cancelJob(event.getExperimentId(), event.getTaskId(), event.getGatewayId(), event.getTokenId());
                         System.out.println(" Message Received with message id '" + message.getMessageId()
                                 + "' and with message type '" + message.getType());
-                        rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
                     } else {
                         throw new GFacException("Terminate Task fail to save delivery tag : " + String.valueOf(message.getDeliveryTag()) + " \n" +
                                 "This happens when another cancel operation is being processed or experiment is in one of final states, complete|failed|cancelled.");
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
-                    if (rabbitMQTaskLaunchConsumer.isOpen()) {
-                        rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
+                }finally {
+                    if (cancelSuccess) {
+                        // if cancel success , AiravataExperimentStatusUpdator will send an ack to this message.
                     } else {
                         try {
-                            rabbitMQTaskLaunchConsumer.reconnect();
-                            rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
-                        } catch (AiravataException e1) {
-                            logger.error("RabbitMQ reconnect attempt failed.");
+                            if (GFacUtils.ackCancelRequest(event.getExperimentId(), zk)) {
+                                if (!rabbitMQTaskLaunchConsumer.isOpen()) {
+                                    rabbitMQTaskLaunchConsumer.reconnect();
+                                }
+                                rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
+                            }
+                        } catch (Exception e) {
+                            logger.error("Error while ack to cancel request, experimentId: " + event.getExperimentId());
                         }
                     }
                 }

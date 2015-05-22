@@ -403,9 +403,10 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
 	}
 
 	@Override
-	public void cancelJob(JobExecutionContext jobExecutionContext)
+	public boolean cancelJob(JobExecutionContext jobExecutionContext)
 			throws GFacProviderException, GFacException {
 		// TODO Auto-generated method stub
+        return false;
 	}
 
     @Override
