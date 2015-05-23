@@ -86,7 +86,7 @@ public class CreateLaunchExperiment {
 
     public static void main(String[] args) throws Exception {
         airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
-        System.out.println("API version is " + airavataClient.getAPIVersion());
+        System.out.println("API version is " + airavataClient.getAPIVersion(null));
         Experiment experiment = airavataClient.getExperiment("echotest_fcc7127d-73e9-4e43-bc07-07399a7c5efc");
         long creationTime = experiment.getCreationTime();
         Date date = new Date(creationTime);
