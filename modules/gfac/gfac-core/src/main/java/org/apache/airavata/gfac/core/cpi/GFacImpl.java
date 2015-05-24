@@ -264,7 +264,7 @@
 //        // setting experiment/task/workflownode related information
 //        Experiment experiment = (Experiment) registry.get(RegistryModelType.EXPERIMENT, experimentID);
 //        jobExecutionContext.setExperiment(experiment);
-//        jobExecutionContext.setExperimentID(experimentID);
+//        jobExecutionContext.setExperimentId(experimentID);
 //        jobExecutionContext.setWorkflowNodeDetails(experiment.getWorkflowNodeDetailsList().get(0));
 //        jobExecutionContext.setTaskData(taskData);
 //
@@ -339,18 +339,18 @@
 //        }catch (Exception e) {
 //            try {
 //                monitorPublisher.publish(new JobStatusChangeRequest(new MonitorID(jobExecutionContext),
-//                        new JobIdentity(jobExecutionContext.getExperimentID(),
+//                        new JobIdentity(jobExecutionContext.getExperimentId(),
 //                                jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-//                                jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext.getJobDetails().getJobID()), JobState.FAILED));
+//                                jobExecutionContext.getTaskData().getTaskId(), jobExecutionContext.getJobDetails().getJobId()), JobState.FAILED));
 //            } catch (NullPointerException e1) {
 //                log.error("Error occured during updating the statuses of Experiments,tasks or Job statuses to failed, " +
 //                        "NullPointerException occurred because at this point there might not have Job Created", e1, e);
 //                // Updating status if job id is not set
 ////				monitorPublisher
-////						.publish(new ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentID()), ExperimentState.FAILED));
+////						.publish(new ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentId()), ExperimentState.FAILED));
 //                // Updating the task status if there's any task associated
-//                monitorPublisher.publish(new TaskStatusChangedEvent(new TaskIdentity(jobExecutionContext.getExperimentID(), jobExecutionContext
-//                        .getWorkflowNodeDetails().getNodeInstanceId(), jobExecutionContext.getTaskData().getTaskID()), TaskState.FAILED));
+//                monitorPublisher.publish(new TaskStatusChangedEvent(new TaskIdentity(jobExecutionContext.getExperimentId(), jobExecutionContext
+//                        .getWorkflowNodeDetails().getNodeInstanceId(), jobExecutionContext.getTaskData().getTaskId()), TaskState.FAILED));
 //
 //            }
 //            jobExecutionContext.setProperty(ERROR_SENT, "true");
@@ -363,14 +363,14 @@
 //    private void schedule(JobExecutionContext jobExecutionContext) throws GFacException {
 //        // Scheduler will decide the execution flow of handlers and provider which handles
 //        // the job.
-//        String experimentID = jobExecutionContext.getExperimentID();
+//        String experimentID = jobExecutionContext.getExperimentId();
 //        try {
 //            Scheduler.schedule(jobExecutionContext);
 //
 //            // Executing in handlers in the order as they have configured in GFac configuration
 //            invokeInFlowHandlers(jobExecutionContext);
 ////            if (experimentID != null){
-////                registry2.changeStatus(jobExecutionContext.getExperimentID(),AiravataJobState.State.INHANDLERSDONE);
+////                registry2.changeStatus(jobExecutionContext.getExperimentId(),AiravataJobState.State.INHANDLERSDONE);
 ////            }
 ////        }catch (ClassNotFoundException e) {
 ////            log.error("Error loading the listener classes configured in airavata-server.properties",e);
@@ -502,7 +502,7 @@
 ////        // setting experiment/task/workflownode related information
 ////        Experiment experiment = (Experiment) registry.get(RegistryModelType.EXPERIMENT, experimentID);
 ////        jobExecutionContext.setExperiment(experiment);
-////        jobExecutionContext.setExperimentID(experimentID);
+////        jobExecutionContext.setExperimentId(experimentID);
 ////        jobExecutionContext.setWorkflowNodeDetails(experiment.getWorkflowNodeDetailsList().get(0));
 ////        jobExecutionContext.setTaskData(taskData);
 ////
@@ -577,18 +577,18 @@
 ////        }catch (Exception e) {
 ////            try {
 ////                monitorPublisher.publish(new JobStatusChangeRequest(new MonitorID(jobExecutionContext),
-////                        new JobIdentity(jobExecutionContext.getExperimentID(),
+////                        new JobIdentity(jobExecutionContext.getExperimentId(),
 ////                                jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-////                                jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext.getJobDetails().getJobID()), JobState.FAILED));
+////                                jobExecutionContext.getTaskData().getTaskId(), jobExecutionContext.getJobDetails().getJobId()), JobState.FAILED));
 ////            } catch (NullPointerException e1) {
 ////                log.error("Error occured during updating the statuses of Experiments,tasks or Job statuses to failed, " +
 ////                        "NullPointerException occurred because at this point there might not have Job Created", e1, e);
 ////                // Updating status if job id is not set
 //////				monitorPublisher
-//////						.publish(new ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentID()), ExperimentState.FAILED));
+//////						.publish(new ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentId()), ExperimentState.FAILED));
 ////                // Updating the task status if there's any task associated
-////                monitorPublisher.publish(new TaskStatusChangedEvent(new TaskIdentity(jobExecutionContext.getExperimentID(), jobExecutionContext
-////                        .getWorkflowNodeDetails().getNodeInstanceId(), jobExecutionContext.getTaskData().getTaskID()), TaskState.FAILED));
+////                monitorPublisher.publish(new TaskStatusChangedEvent(new TaskIdentity(jobExecutionContext.getExperimentId(), jobExecutionContext
+////                        .getWorkflowNodeDetails().getNodeInstanceId(), jobExecutionContext.getTaskData().getTaskId()), TaskState.FAILED));
 ////
 ////            }
 ////            jobExecutionContext.setProperty(ERROR_SENT, "true");
@@ -601,14 +601,14 @@
 ////    private void schedule(JobExecutionContext jobExecutionContext) throws GFacException {
 ////        // Scheduler will decide the execution flow of handlers and provider which handles
 ////        // the job.
-////        String experimentID = jobExecutionContext.getExperimentID();
+////        String experimentID = jobExecutionContext.getExperimentId();
 ////        try {
 ////            Scheduler.schedule(jobExecutionContext);
 ////
 ////            // Executing in handlers in the order as they have configured in GFac configuration
 ////            invokeInFlowHandlers(jobExecutionContext);
 //////            if (experimentID != null){
-//////                registry2.changeStatus(jobExecutionContext.getExperimentID(),AiravataJobState.State.INHANDLERSDONE);
+//////                registry2.changeStatus(jobExecutionContext.getExperimentId(),AiravataJobState.State.INHANDLERSDONE);
 //////            }
 ////
 ////            // After executing the in handlers provider instance should be set to job execution context.
@@ -625,18 +625,18 @@
 ////        } catch (Exception e) {
 ////            try {
 ////                monitorPublisher.publish(new JobStatusChangeRequest(new MonitorID(jobExecutionContext),
-////                        new JobIdentity(jobExecutionContext.getExperimentID(),
+////                        new JobIdentity(jobExecutionContext.getExperimentId(),
 ////                        jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-////                        jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext.getJobDetails().getJobID()), JobState.FAILED));
+////                        jobExecutionContext.getTaskData().getTaskId(), jobExecutionContext.getJobDetails().getJobId()), JobState.FAILED));
 ////            } catch (NullPointerException e1) {
 ////                log.error("Error occured during updating the statuses of Experiments,tasks or Job statuses to failed, " +
 ////                        "NullPointerException occurred because at this point there might not have Job Created", e1, e);
 ////                // Updating status if job id is not set
 //////				monitorPublisher
-//////						.publish(new ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentID()), ExperimentState.FAILED));
+//////						.publish(new ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentId()), ExperimentState.FAILED));
 ////				// Updating the task status if there's any task associated
-////				monitorPublisher.publish(new TaskStatusChangedEvent(new TaskIdentity(jobExecutionContext.getExperimentID(), jobExecutionContext
-////						.getWorkflowNodeDetails().getNodeInstanceId(), jobExecutionContext.getTaskData().getTaskID()), TaskState.FAILED));
+////				monitorPublisher.publish(new TaskStatusChangedEvent(new TaskIdentity(jobExecutionContext.getExperimentId(), jobExecutionContext
+////						.getWorkflowNodeDetails().getNodeInstanceId(), jobExecutionContext.getTaskData().getTaskId()), TaskState.FAILED));
 ////
 ////            }
 ////            jobExecutionContext.setProperty(ERROR_SENT, "true");
@@ -720,8 +720,8 @@
 ////         handlers = jobExecutionContext.getGFacConfiguration().getOutHandlers();
 ////        }else {
 ////            try {
-////                jobExecutionContext = createJEC(jobExecutionContext.getExperimentID(),
-////                        jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext.getGatewayID());
+////                jobExecutionContext = createJEC(jobExecutionContext.getExperimentId(),
+////                        jobExecutionContext.getTaskData().getTaskId(), jobExecutionContext.getGatewayID());
 ////            } catch (Exception e) {
 ////                log.error("Error constructing job execution context during outhandler invocation");
 ////                throw new GFacException(e);
@@ -757,13 +757,13 @@
 ////        // At this point all the execution is finished so we update the task and experiment statuses.
 ////        // Handler authors does not have to worry about updating experiment or task statuses.
 //////        monitorPublisher.publish(new
-//////                ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentID()),
+//////                ExperimentStatusChangedEvent(new ExperimentIdentity(jobExecutionContext.getExperimentId()),
 //////                ExperimentState.COMPLETED));
 ////        // Updating the task status if there's any task associated
 ////        monitorPublisher.publish(new TaskStatusChangeRequest(
-////                new TaskIdentity(jobExecutionContext.getExperimentID(),
+////                new TaskIdentity(jobExecutionContext.getExperimentId(),
 ////                        jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-////                        jobExecutionContext.getTaskData().getTaskID()), TaskState.COMPLETED
+////                        jobExecutionContext.getTaskData().getTaskId()), TaskState.COMPLETED
 ////        ));
 ////    }
 ////

@@ -47,11 +47,11 @@ public class ProjectUser implements Serializable {
     @JoinColumn(name = "USER_NAME")
     private Users user;
 
-    public String getProjectID() {
+    public String getProjectId() {
         return projectID;
     }
 
-    public void setProjectID(String projectID) {
+    public void setProjectId(String projectID) {
         this.projectID = projectID;
     }
 

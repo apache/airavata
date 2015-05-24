@@ -185,15 +185,15 @@ public class HPCPullMonitor extends PullMonitor {
                         MonitorID iMonitorID = monitorIDListIterator.next();
                         while (iterator1.hasNext()) {
                             String cancelMId = iterator1.next();
-                            if (cancelMId.equals(iMonitorID.getExperimentID() + "+" + iMonitorID.getTaskID())) {
+                            if (cancelMId.equals(iMonitorID.getExperimentId() + "+" + iMonitorID.getTaskId())) {
                                 iMonitorID.setStatus(JobState.CANCELED);
 //                                CommonUtils.removeMonitorFromQueue(take, iMonitorID);
                                 removeList.add(iMonitorID);
                                 logger.debugId(cancelMId, "Found a match in cancel monitor queue, hence moved to the " +
                                                 "completed job queue, experiment {}, task {} , job {}",
-                                        iMonitorID.getExperimentID(), iMonitorID.getTaskID(), iMonitorID.getJobID());
+                                        iMonitorID.getExperimentId(), iMonitorID.getTaskId(), iMonitorID.getJobId());
                                 logger.info("Job cancelled: marking the Job as ************CANCELLED************ experiment {}, task {}, job name {} .",
-                                        iMonitorID.getExperimentID(), iMonitorID.getTaskID(), iMonitorID.getJobName());
+                                        iMonitorID.getExperimentId(), iMonitorID.getTaskId(), iMonitorID.getJobName());
                                 sendNotification(iMonitorID);
                                 logger.info("To avoid timing issues we sleep sometime and try to retrieve output files");
                                 Thread.sleep(10000);
@@ -217,10 +217,10 @@ public class HPCPullMonitor extends PullMonitor {
 //                                    CommonUtils.removeMonitorFromQueue(take, iMonitorID);//we have to make this empty everytime we iterate, otherwise this list will accumulate and will lead to a memory leak
                                     removeList.add(iMonitorID);
                                     logger.debugId(completeId, "Push notification updated job {} status to {}. " +
-                                                    "experiment {} , task {}.", iMonitorID.getJobID(), JobState.COMPLETE.toString(),
-                                            iMonitorID.getExperimentID(), iMonitorID.getTaskID());
+                                                    "experiment {} , task {}.", iMonitorID.getJobId(), JobState.COMPLETE.toString(),
+                                            iMonitorID.getExperimentId(), iMonitorID.getTaskId());
                                     logger.info("AMQP message recieved: marking the Job as ************COMPLETE************ experiment {}, task {}, job name {} .",
-                                            iMonitorID.getExperimentID(), iMonitorID.getTaskID(), iMonitorID.getJobName());
+                                            iMonitorID.getExperimentId(), iMonitorID.getTaskId(), iMonitorID.getJobName());
 
                                     sendNotification(iMonitorID);
                                     logger.info("To avoid timing issues we sleep sometime and try to retrieve output files");
@@ -242,17 +242,17 @@ public class HPCPullMonitor extends PullMonitor {
                         currentMonitorID = iMonitorID;
                         if (!JobState.CANCELED.equals(iMonitorID.getStatus()) &&
                                 !JobState.COMPLETE.equals(iMonitorID.getStatus())) {
-                            iMonitorID.setStatus(jobStatuses.get(iMonitorID.getJobID() + "," + iMonitorID.getJobName()));    //IMPORTANT this is NOT a simple setter we have a logic
+                            iMonitorID.setStatus(jobStatuses.get(iMonitorID.getJobId() + "," + iMonitorID.getJobName()));    //IMPORTANT this is NOT a simple setter we have a logic
                         } else if (JobState.COMPLETE.equals(iMonitorID.getStatus())) {
-                            logger.debugId(iMonitorID.getJobID(), "Moved job {} to completed jobs map, experiment {}, " +
-                                    "task {}", iMonitorID.getJobID(), iMonitorID.getExperimentID(), iMonitorID.getTaskID());
+                            logger.debugId(iMonitorID.getJobId(), "Moved job {} to completed jobs map, experiment {}, " +
+                                    "task {}", iMonitorID.getJobId(), iMonitorID.getExperimentId(), iMonitorID.getTaskId());
 //                            CommonUtils.removeMonitorFromQueue(take, iMonitorID);
                             removeList.add(iMonitorID);
                             logger.info("PULL Notification is complete: marking the Job as ************COMPLETE************ experiment {}, task {}, job name {} .",
-                                    iMonitorID.getExperimentID(), iMonitorID.getTaskID(), iMonitorID.getJobName());
+                                    iMonitorID.getExperimentId(), iMonitorID.getTaskId(), iMonitorID.getJobName());
                             GFacThreadPoolExecutor.getCachedThreadPool().execute(new OutHandlerWorker(gfac, iMonitorID, publisher));
                         }
-                        iMonitorID.setStatus(jobStatuses.get(iMonitorID.getJobID() + "," + iMonitorID.getJobName()));    //IMPORTANT this is not a simple setter we have a logic
+                        iMonitorID.setStatus(jobStatuses.get(iMonitorID.getJobId() + "," + iMonitorID.getJobName()));    //IMPORTANT this is not a simple setter we have a logic
                         iMonitorID.setLastMonitored(new Timestamp((new Date()).getTime()));
                         sendNotification(iMonitorID);
                         // if the job is completed we do not have to put the job to the queue again
@@ -280,11 +280,11 @@ public class HPCPullMonitor extends PullMonitor {
                             }
                             if (stdOut != null && stdOut.size() > 0 && !stdOut.get(0).isEmpty()) { // have to be careful with this
                                 iMonitorID.setStatus(JobState.COMPLETE);
-                                logger.errorId(iMonitorID.getJobID(), "Job monitoring failed {} times, " +
+                                logger.errorId(iMonitorID.getJobId(), "Job monitoring failed {} times, " +
                                                 " Experiment {} , task {}", iMonitorID.getFailedCount(),
-                                        iMonitorID.getExperimentID(), iMonitorID.getTaskID());
+                                        iMonitorID.getExperimentId(), iMonitorID.getTaskId());
                                 logger.info("Listing directory came as complete: marking the Job as ************COMPLETE************ experiment {}, task {}, job name {} .",
-                                        iMonitorID.getExperimentID(), iMonitorID.getTaskID(), iMonitorID.getJobName());
+                                        iMonitorID.getExperimentId(), iMonitorID.getTaskId(), iMonitorID.getJobName());
                                 sendNotification(iMonitorID);
 //                                CommonUtils.removeMonitorFromQueue(take, iMonitorID);
                                 removeList.add(iMonitorID);
@@ -331,7 +331,7 @@ public class HPCPullMonitor extends PullMonitor {
                     e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                 }
             }
-            logger.error("Error handling the job with Job ID:" + currentMonitorID.getJobID());
+            logger.error("Error handling the job with Job ID:" + currentMonitorID.getJobId());
             throw new AiravataMonitorException(e);
         } catch (SSHApiException e) {
             logger.error(e.getMessage());
@@ -340,10 +340,10 @@ public class HPCPullMonitor extends PullMonitor {
                 jobStatus.setState(JobState.UNKNOWN);
                 JobIdentifier jobIdentifier = new JobIdentifier("UNKNOWN", "UNKNOWN", "UNKNOWN", "UNKNOWN", "UNKNOWN");
                 if (currentMonitorID != null){
-                    jobIdentifier.setExperimentId(currentMonitorID.getExperimentID());
-                    jobIdentifier.setTaskId(currentMonitorID.getTaskID());
+                    jobIdentifier.setExperimentId(currentMonitorID.getExperimentId());
+                    jobIdentifier.setTaskId(currentMonitorID.getTaskId());
                     jobIdentifier.setWorkflowNodeId(currentMonitorID.getWorkflowNodeID());
-                    jobIdentifier.setJobId(currentMonitorID.getJobID());
+                    jobIdentifier.setJobId(currentMonitorID.getJobId());
                     jobIdentifier.setGatewayId(currentMonitorID.getJobExecutionContext().getGatewayID());
                 }
                 jobStatus.setJobIdentity(jobIdentifier);
@@ -371,10 +371,10 @@ public class HPCPullMonitor extends PullMonitor {
 
     private void sendNotification(MonitorID iMonitorID) {
         JobStatusChangeRequestEvent jobStatus = new JobStatusChangeRequestEvent();
-        JobIdentifier jobIdentity = new JobIdentifier(iMonitorID.getJobID(),
-                iMonitorID.getTaskID(),
+        JobIdentifier jobIdentity = new JobIdentifier(iMonitorID.getJobId(),
+                iMonitorID.getTaskId(),
                 iMonitorID.getWorkflowNodeID(),
-                iMonitorID.getExperimentID(),
+                iMonitorID.getExperimentId(),
                 iMonitorID.getJobExecutionContext().getGatewayID());
         jobStatus.setJobIdentity(jobIdentity);
         jobStatus.setState(iMonitorID.getStatus());
@@ -463,7 +463,7 @@ public class HPCPullMonitor extends PullMonitor {
                 CommonUtils.removeMonitorFromQueue(userMonitorData, iMonitorId);
             } catch (AiravataMonitorException e) {
                 logger.error(e.getMessage(), e);
-                logger.error("Error deleting the monitor data: " + iMonitorId.getJobID());
+                logger.error("Error deleting the monitor data: " + iMonitorId.getJobId());
             }
         }
         removeList.clear();

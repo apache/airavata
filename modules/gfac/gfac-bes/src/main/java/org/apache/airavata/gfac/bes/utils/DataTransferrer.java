@@ -231,7 +231,7 @@ public class DataTransferrer {
 //			return outputDataDirectory;
 //		}
 		String outputDataDir = File.separator + "tmp";
-        outputDataDir = outputDataDir + File.separator + jobContext.getExperimentID();
+        outputDataDir = outputDataDir + File.separator + jobContext.getExperimentId();
         (new File(outputDataDir)).mkdirs();
 		return outputDataDir;
 	}

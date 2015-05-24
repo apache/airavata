@@ -74,7 +74,7 @@ public class NewOrchestratorTest extends BaseOrchestratorTest {
 //        Registry defaultRegistry = RegistryFactory.getDefaultRegistry();
 //        String experimentId = (String)defaultRegistry.add(ParentDataType.EXPERIMENT, simpleExperiment);
 //
-//        simpleExperiment.setExperimentID(experimentId);
+//        simpleExperiment.setExperimentId(experimentId);
 //        tasks = orchestrator.createTasks(experimentId);
 //          for(TaskDetails details:tasks) {
 //              orchestrator.launchExperiment(simpleExperiment,test, details,null);

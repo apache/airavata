@@ -774,7 +774,7 @@ class ComputationalResourceScheduling:
 
   Attributes:
    - resourceHostId
-   - totalCPUCount
+   - totalCpuCount
    - nodeCount
    - numberOfThreads
    - queueName
@@ -788,7 +788,7 @@ class ComputationalResourceScheduling:
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'resourceHostId', None, None, ), # 1
-    (2, TType.I32, 'totalCPUCount', None, None, ), # 2
+    (2, TType.I32, 'totalCpuCount', None, None, ), # 2
     (3, TType.I32, 'nodeCount', None, None, ), # 3
     (4, TType.I32, 'numberOfThreads', None, None, ), # 4
     (5, TType.STRING, 'queueName', None, None, ), # 5
@@ -799,9 +799,9 @@ class ComputationalResourceScheduling:
     (10, TType.STRING, 'chassisName', None, None, ), # 10
   )
 
-  def __init__(self, resourceHostId=None, totalCPUCount=None, nodeCount=None, numberOfThreads=None, queueName=None, wallTimeLimit=None, jobStartTime=None, totalPhysicalMemory=None, computationalProjectAccount=None, chassisName=None,):
+  def __init__(self, resourceHostId=None, totalCpuCount=None, nodeCount=None, numberOfThreads=None, queueName=None, wallTimeLimit=None, jobStartTime=None, totalPhysicalMemory=None, computationalProjectAccount=None, chassisName=None,):
     self.resourceHostId = resourceHostId
-    self.totalCPUCount = totalCPUCount
+    self.totalCpuCount = totalCpuCount
     self.nodeCount = nodeCount
     self.numberOfThreads = numberOfThreads
     self.queueName = queueName
@@ -827,7 +827,7 @@ class ComputationalResourceScheduling:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.I32:
-          self.totalCPUCount = iprot.readI32();
+          self.totalCpuCount = iprot.readI32();
         else:
           iprot.skip(ftype)
       elif fid == 3:
@@ -884,9 +884,9 @@ class ComputationalResourceScheduling:
       oprot.writeFieldBegin('resourceHostId', TType.STRING, 1)
       oprot.writeString(self.resourceHostId)
       oprot.writeFieldEnd()
-    if self.totalCPUCount is not None:
-      oprot.writeFieldBegin('totalCPUCount', TType.I32, 2)
-      oprot.writeI32(self.totalCPUCount)
+    if self.totalCpuCount is not None:
+      oprot.writeFieldBegin('totalCpuCount', TType.I32, 2)
+      oprot.writeI32(self.totalCpuCount)
       oprot.writeFieldEnd()
     if self.nodeCount is not None:
       oprot.writeFieldBegin('nodeCount', TType.I32, 3)
@@ -1227,7 +1227,7 @@ class UserConfigurationData:
    - advanceOutputDataHandling
    - qosParams
    - throttleResources
-   - userDN
+   - userDn
    - generateCert
   """
 
@@ -1241,11 +1241,11 @@ class UserConfigurationData:
     (6, TType.STRUCT, 'advanceOutputDataHandling', (AdvancedOutputDataHandling, AdvancedOutputDataHandling.thrift_spec), None, ), # 6
     (7, TType.STRUCT, 'qosParams', (QualityOfServiceParams, QualityOfServiceParams.thrift_spec), None, ), # 7
     (8, TType.BOOL, 'throttleResources', None, False, ), # 8
-    (9, TType.STRING, 'userDN', None, None, ), # 9
+    (9, TType.STRING, 'userDn', None, None, ), # 9
     (10, TType.BOOL, 'generateCert', None, False, ), # 10
   )
 
-  def __init__(self, airavataAutoSchedule=thrift_spec[1][4], overrideManualScheduledParams=thrift_spec[2][4], shareExperimentPublicly=thrift_spec[3][4], computationalResourceScheduling=None, advanceInputDataHandling=None, advanceOutputDataHandling=None, qosParams=None, throttleResources=thrift_spec[8][4], userDN=None, generateCert=thrift_spec[10][4],):
+  def __init__(self, airavataAutoSchedule=thrift_spec[1][4], overrideManualScheduledParams=thrift_spec[2][4], shareExperimentPublicly=thrift_spec[3][4], computationalResourceScheduling=None, advanceInputDataHandling=None, advanceOutputDataHandling=None, qosParams=None, throttleResources=thrift_spec[8][4], userDn=None, generateCert=thrift_spec[10][4],):
     self.airavataAutoSchedule = airavataAutoSchedule
     self.overrideManualScheduledParams = overrideManualScheduledParams
     self.shareExperimentPublicly = shareExperimentPublicly
@@ -1254,7 +1254,7 @@ class UserConfigurationData:
     self.advanceOutputDataHandling = advanceOutputDataHandling
     self.qosParams = qosParams
     self.throttleResources = throttleResources
-    self.userDN = userDN
+    self.userDn = userDn
     self.generateCert = generateCert
 
   def read(self, iprot):
@@ -1312,7 +1312,7 @@ class UserConfigurationData:
           iprot.skip(ftype)
       elif fid == 9:
         if ftype == TType.STRING:
-          self.userDN = iprot.readString();
+          self.userDn = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 10:
@@ -1362,9 +1362,9 @@ class UserConfigurationData:
       oprot.writeFieldBegin('throttleResources', TType.BOOL, 8)
       oprot.writeBool(self.throttleResources)
       oprot.writeFieldEnd()
-    if self.userDN is not None:
-      oprot.writeFieldBegin('userDN', TType.STRING, 9)
-      oprot.writeString(self.userDN)
+    if self.userDn is not None:
+      oprot.writeFieldBegin('userDn', TType.STRING, 9)
+      oprot.writeString(self.userDn)
       oprot.writeFieldEnd()
     if self.generateCert is not None:
       oprot.writeFieldBegin('generateCert', TType.BOOL, 10)
@@ -1395,7 +1395,7 @@ class UserConfigurationData:
 class ErrorDetails:
   """
   Attributes:
-   - errorID
+   - errorId
    - creationTime
    - actualErrorMessage
    - userFriendlyMessage
@@ -1408,7 +1408,7 @@ class ErrorDetails:
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'errorID', None, "DO_NOT_SET_AT_CLIENTS", ), # 1
+    (1, TType.STRING, 'errorId', None, "DO_NOT_SET_AT_CLIENTS", ), # 1
     (2, TType.I64, 'creationTime', None, None, ), # 2
     (3, TType.STRING, 'actualErrorMessage', None, None, ), # 3
     (4, TType.STRING, 'userFriendlyMessage', None, None, ), # 4
@@ -1419,8 +1419,8 @@ class ErrorDetails:
     (9, TType.LIST, 'rootCauseErrorIdList', (TType.STRING,None), None, ), # 9
   )
 
-  def __init__(self, errorID=thrift_spec[1][4], creationTime=None, actualErrorMessage=None, userFriendlyMessage=None, errorCategory=None, transientOrPersistent=thrift_spec[6][4], correctiveAction=None, actionableGroup=None, rootCauseErrorIdList=None,):
-    self.errorID = errorID
+  def __init__(self, errorId=thrift_spec[1][4], creationTime=None, actualErrorMessage=None, userFriendlyMessage=None, errorCategory=None, transientOrPersistent=thrift_spec[6][4], correctiveAction=None, actionableGroup=None, rootCauseErrorIdList=None,):
+    self.errorId = errorId
     self.creationTime = creationTime
     self.actualErrorMessage = actualErrorMessage
     self.userFriendlyMessage = userFriendlyMessage
@@ -1441,7 +1441,7 @@ class ErrorDetails:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.errorID = iprot.readString();
+          self.errorId = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 2:
@@ -1499,9 +1499,9 @@ class ErrorDetails:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('ErrorDetails')
-    if self.errorID is not None:
-      oprot.writeFieldBegin('errorID', TType.STRING, 1)
-      oprot.writeString(self.errorID)
+    if self.errorId is not None:
+      oprot.writeFieldBegin('errorId', TType.STRING, 1)
+      oprot.writeString(self.errorId)
       oprot.writeFieldEnd()
     if self.creationTime is not None:
       oprot.writeFieldBegin('creationTime', TType.I64, 2)
@@ -1542,8 +1542,8 @@ class ErrorDetails:
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.errorID is None:
-      raise TProtocol.TProtocolException(message='Required field errorID is unset!')
+    if self.errorId is None:
+      raise TProtocol.TProtocolException(message='Required field errorId is unset!')
     return
 
 
@@ -1561,7 +1561,7 @@ class ErrorDetails:
 class JobDetails:
   """
   Attributes:
-   - jobID
+   - jobId
    - jobDescription
    - creationTime
    - jobStatus
@@ -1574,7 +1574,7 @@ class JobDetails:
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'jobID', None, "DO_NOT_SET_AT_CLIENTS", ), # 1
+    (1, TType.STRING, 'jobId', None, "DO_NOT_SET_AT_CLIENTS", ), # 1
     (2, TType.STRING, 'jobDescription', None, None, ), # 2
     (3, TType.I64, 'creationTime', None, None, ), # 3
     (4, TType.STRUCT, 'jobStatus', (JobStatus, JobStatus.thrift_spec), None, ), # 4
@@ -1585,8 +1585,8 @@ class JobDetails:
     (9, TType.STRING, 'workingDir', None, None, ), # 9
   )
 
-  def __init__(self, jobID=thrift_spec[1][4], jobDescription=None, creationTime=None, jobStatus=None, applicationStatus=None, errors=None, computeResourceConsumed=None, jobName=None, workingDir=None,):
-    self.jobID = jobID
+  def __init__(self, jobId=thrift_spec[1][4], jobDescription=None, creationTime=None, jobStatus=None, applicationStatus=None, errors=None, computeResourceConsumed=None, jobName=None, workingDir=None,):
+    self.jobId = jobId
     self.jobDescription = jobDescription
     self.creationTime = creationTime
     self.jobStatus = jobStatus
@@ -1607,7 +1607,7 @@ class JobDetails:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.jobID = iprot.readString();
+          self.jobId = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 2:
@@ -1668,9 +1668,9 @@ class JobDetails:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('JobDetails')
-    if self.jobID is not None:
-      oprot.writeFieldBegin('jobID', TType.STRING, 1)
-      oprot.writeString(self.jobID)
+    if self.jobId is not None:
+      oprot.writeFieldBegin('jobId', TType.STRING, 1)
+      oprot.writeString(self.jobId)
       oprot.writeFieldEnd()
     if self.jobDescription is not None:
       oprot.writeFieldBegin('jobDescription', TType.STRING, 2)
@@ -1711,8 +1711,8 @@ class JobDetails:
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.jobID is None:
-      raise TProtocol.TProtocolException(message='Required field jobID is unset!')
+    if self.jobId is None:
+      raise TProtocol.TProtocolException(message='Required field jobId is unset!')
     if self.jobDescription is None:
       raise TProtocol.TProtocolException(message='Required field jobDescription is unset!')
     return
@@ -1732,7 +1732,7 @@ class JobDetails:
 class DataTransferDetails:
   """
   Attributes:
-   - transferID
+   - transferId
    - creationTime
    - transferDescription
    - transferStatus
@@ -1740,14 +1740,14 @@ class DataTransferDetails:
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'transferID', None, "DO_NOT_SET_AT_CLIENTS", ), # 1
+    (1, TType.STRING, 'transferId', None, "DO_NOT_SET_AT_CLIENTS", ), # 1
     (2, TType.I64, 'creationTime', None, None, ), # 2
     (3, TType.STRING, 'transferDescription', None, None, ), # 3
     (4, TType.STRUCT, 'transferStatus', (TransferStatus, TransferStatus.thrift_spec), None, ), # 4
   )
 
-  def __init__(self, transferID=thrift_spec[1][4], creationTime=None, transferDescription=None, transferStatus=None,):
-    self.transferID = transferID
+  def __init__(self, transferId=thrift_spec[1][4], creationTime=None, transferDescription=None, transferStatus=None,):
+    self.transferId = transferId
     self.creationTime = creationTime
     self.transferDescription = transferDescription
     self.transferStatus = transferStatus
@@ -1763,7 +1763,7 @@ class DataTransferDetails:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.transferID = iprot.readString();
+          self.transferId = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 2:
@@ -1792,9 +1792,9 @@ class DataTransferDetails:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('DataTransferDetails')
-    if self.transferID is not None:
-      oprot.writeFieldBegin('transferID', TType.STRING, 1)
-      oprot.writeString(self.transferID)
+    if self.transferId is not None:
+      oprot.writeFieldBegin('transferId', TType.STRING, 1)
+      oprot.writeString(self.transferId)
       oprot.writeFieldEnd()
     if self.creationTime is not None:
       oprot.writeFieldBegin('creationTime', TType.I64, 2)
@@ -1812,8 +1812,8 @@ class DataTransferDetails:
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.transferID is None:
-      raise TProtocol.TProtocolException(message='Required field transferID is unset!')
+    if self.transferId is None:
+      raise TProtocol.TProtocolException(message='Required field transferId is unset!')
     if self.transferDescription is None:
       raise TProtocol.TProtocolException(message='Required field transferDescription is unset!')
     return
@@ -1838,7 +1838,7 @@ class TaskDetails:
 
 
   Attributes:
-   - taskID
+   - taskId
    - creationTime
    - applicationId
    - applicationVersion
@@ -1858,7 +1858,7 @@ class TaskDetails:
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'taskID', None, "DO_NOT_SET_AT_CLIENTS", ), # 1
+    (1, TType.STRING, 'taskId', None, "DO_NOT_SET_AT_CLIENTS", ), # 1
     (2, TType.I64, 'creationTime', None, None, ), # 2
     (3, TType.STRING, 'applicationId', None, None, ), # 3
     (4, TType.STRING, 'applicationVersion', None, None, ), # 4
@@ -1876,8 +1876,8 @@ class TaskDetails:
     (16, TType.LIST, 'emailAddresses', (TType.STRING,None), None, ), # 16
   )
 
-  def __init__(self, taskID=thrift_spec[1][4], creationTime=None, applicationId=None, applicationVersion=None, applicationDeploymentId=None, applicationInputs=None, applicationOutputs=None, taskScheduling=None, advancedInputDataHandling=None, advancedOutputDataHandling=None, taskStatus=None, jobDetailsList=None, dataTransferDetailsList=None, errors=None, enableEmailNotification=None, emailAddresses=None,):
-    self.taskID = taskID
+  def __init__(self, taskId=thrift_spec[1][4], creationTime=None, applicationId=None, applicationVersion=None, applicationDeploymentId=None, applicationInputs=None, applicationOutputs=None, taskScheduling=None, advancedInputDataHandling=None, advancedOutputDataHandling=None, taskStatus=None, jobDetailsList=None, dataTransferDetailsList=None, errors=None, enableEmailNotification=None, emailAddresses=None,):
+    self.taskId = taskId
     self.creationTime = creationTime
     self.applicationId = applicationId
     self.applicationVersion = applicationVersion
@@ -1905,7 +1905,7 @@ class TaskDetails:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.taskID = iprot.readString();
+          self.taskId = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 2:
@@ -2032,9 +2032,9 @@ class TaskDetails:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('TaskDetails')
-    if self.taskID is not None:
-      oprot.writeFieldBegin('taskID', TType.STRING, 1)
-      oprot.writeString(self.taskID)
+    if self.taskId is not None:
+      oprot.writeFieldBegin('taskId', TType.STRING, 1)
+      oprot.writeString(self.taskId)
       oprot.writeFieldEnd()
     if self.creationTime is not None:
       oprot.writeFieldBegin('creationTime', TType.I64, 2)
@@ -2118,8 +2118,8 @@ class TaskDetails:
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.taskID is None:
-      raise TProtocol.TProtocolException(message='Required field taskID is unset!')
+    if self.taskId is None:
+      raise TProtocol.TProtocolException(message='Required field taskId is unset!')
     return
 
 
@@ -2531,8 +2531,8 @@ class Experiment:
      The verbose description of the experiment. This is an optional parameter.
 
   Attributes:
-   - experimentID
-   - projectID
+   - experimentId
+   - projectId
    - creationTime
    - userName
    - name
@@ -2556,8 +2556,8 @@ class Experiment:
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'experimentID', None, "DO_NOT_SET_AT_CLIENTS", ), # 1
-    (2, TType.STRING, 'projectID', None, "DEFAULT", ), # 2
+    (1, TType.STRING, 'experimentId', None, "DO_NOT_SET_AT_CLIENTS", ), # 1
+    (2, TType.STRING, 'projectId', None, "DEFAULT", ), # 2
     (3, TType.I64, 'creationTime', None, None, ), # 3
     (4, TType.STRING, 'userName', None, None, ), # 4
     (5, TType.STRING, 'name', None, None, ), # 5
@@ -2579,9 +2579,9 @@ class Experiment:
     (21, TType.LIST, 'errors', (TType.STRUCT,(ErrorDetails, ErrorDetails.thrift_spec)), None, ), # 21
   )
 
-  def __init__(self, experimentID=thrift_spec[1][4], projectID=thrift_spec[2][4], creationTime=None, userName=None, name=None, description=None, applicationId=None, applicationVersion=None, workflowTemplateId=None, workflowTemplateVersion=None, gatewayExecutionId=None, enableEmailNotification=None, emailAddresses=None, userConfigurationData=None, workflowExecutionInstanceId=None, experimentInputs=None, experimentOutputs=None, experimentStatus=None, stateChangeList=None, workflowNodeDetailsList=None, errors=None,):
-    self.experimentID = experimentID
-    self.projectID = projectID
+  def __init__(self, experimentId=thrift_spec[1][4], projectId=thrift_spec[2][4], creationTime=None, userName=None, name=None, description=None, applicationId=None, applicationVersion=None, workflowTemplateId=None, workflowTemplateVersion=None, gatewayExecutionId=None, enableEmailNotification=None, emailAddresses=None, userConfigurationData=None, workflowExecutionInstanceId=None, experimentInputs=None, experimentOutputs=None, experimentStatus=None, stateChangeList=None, workflowNodeDetailsList=None, errors=None,):
+    self.experimentId = experimentId
+    self.projectId = projectId
     self.creationTime = creationTime
     self.userName = userName
     self.name = name
@@ -2613,12 +2613,12 @@ class Experiment:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.experimentID = iprot.readString();
+          self.experimentId = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.projectID = iprot.readString();
+          self.projectId = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 3:
@@ -2763,13 +2763,13 @@ class Experiment:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('Experiment')
-    if self.experimentID is not None:
-      oprot.writeFieldBegin('experimentID', TType.STRING, 1)
-      oprot.writeString(self.experimentID)
+    if self.experimentId is not None:
+      oprot.writeFieldBegin('experimentId', TType.STRING, 1)
+      oprot.writeString(self.experimentId)
       oprot.writeFieldEnd()
-    if self.projectID is not None:
-      oprot.writeFieldBegin('projectID', TType.STRING, 2)
-      oprot.writeString(self.projectID)
+    if self.projectId is not None:
+      oprot.writeFieldBegin('projectId', TType.STRING, 2)
+      oprot.writeString(self.projectId)
       oprot.writeFieldEnd()
     if self.creationTime is not None:
       oprot.writeFieldBegin('creationTime', TType.I64, 3)
@@ -2869,10 +2869,10 @@ class Experiment:
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.experimentID is None:
-      raise TProtocol.TProtocolException(message='Required field experimentID is unset!')
-    if self.projectID is None:
-      raise TProtocol.TProtocolException(message='Required field projectID is unset!')
+    if self.experimentId is None:
+      raise TProtocol.TProtocolException(message='Required field experimentId is unset!')
+    if self.projectId is None:
+      raise TProtocol.TProtocolException(message='Required field projectId is unset!')
     if self.userName is None:
       raise TProtocol.TProtocolException(message='Required field userName is unset!')
     if self.name is None:
@@ -2894,8 +2894,8 @@ class Experiment:
 class ExperimentSummary:
   """
   Attributes:
-   - experimentID
-   - projectID
+   - experimentId
+   - projectId
    - creationTime
    - userName
    - name
@@ -2907,8 +2907,8 @@ class ExperimentSummary:
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'experimentID', None, None, ), # 1
-    (2, TType.STRING, 'projectID', None, None, ), # 2
+    (1, TType.STRING, 'experimentId', None, None, ), # 1
+    (2, TType.STRING, 'projectId', None, None, ), # 2
     (3, TType.I64, 'creationTime', None, None, ), # 3
     (4, TType.STRING, 'userName', None, None, ), # 4
     (5, TType.STRING, 'name', None, None, ), # 5
@@ -2918,9 +2918,9 @@ class ExperimentSummary:
     (9, TType.LIST, 'errors', (TType.STRUCT,(ErrorDetails, ErrorDetails.thrift_spec)), None, ), # 9
   )
 
-  def __init__(self, experimentID=None, projectID=None, creationTime=None, userName=None, name=None, description=None, applicationId=None, experimentStatus=None, errors=None,):
-    self.experimentID = experimentID
-    self.projectID = projectID
+  def __init__(self, experimentId=None, projectId=None, creationTime=None, userName=None, name=None, description=None, applicationId=None, experimentStatus=None, errors=None,):
+    self.experimentId = experimentId
+    self.projectId = projectId
     self.creationTime = creationTime
     self.userName = userName
     self.name = name
@@ -2940,12 +2940,12 @@ class ExperimentSummary:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.experimentID = iprot.readString();
+          self.experimentId = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.projectID = iprot.readString();
+          self.projectId = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 3:
@@ -3000,13 +3000,13 @@ class ExperimentSummary:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('ExperimentSummary')
-    if self.experimentID is not None:
-      oprot.writeFieldBegin('experimentID', TType.STRING, 1)
-      oprot.writeString(self.experimentID)
+    if self.experimentId is not None:
+      oprot.writeFieldBegin('experimentId', TType.STRING, 1)
+      oprot.writeString(self.experimentId)
       oprot.writeFieldEnd()
-    if self.projectID is not None:
-      oprot.writeFieldBegin('projectID', TType.STRING, 2)
-      oprot.writeString(self.projectID)
+    if self.projectId is not None:
+      oprot.writeFieldBegin('projectId', TType.STRING, 2)
+      oprot.writeString(self.projectId)
       oprot.writeFieldEnd()
     if self.creationTime is not None:
       oprot.writeFieldBegin('creationTime', TType.I64, 3)
@@ -3043,10 +3043,10 @@ class ExperimentSummary:
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.experimentID is None:
-      raise TProtocol.TProtocolException(message='Required field experimentID is unset!')
-    if self.projectID is None:
-      raise TProtocol.TProtocolException(message='Required field projectID is unset!')
+    if self.experimentId is None:
+      raise TProtocol.TProtocolException(message='Required field experimentId is unset!')
+    if self.projectId is None:
+      raise TProtocol.TProtocolException(message='Required field projectId is unset!')
     if self.userName is None:
       raise TProtocol.TProtocolException(message='Required field userName is unset!')
     if self.name is None:

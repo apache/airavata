@@ -136,7 +136,7 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
             String key = GFACSSHUtils.prepareSecurityContext(jobExecutionContext, authenticationInfo, this.userName, this.hostName, DEFAULT_SSH_PORT);
             pbsCluster = ((SSHSecurityContext)jobExecutionContext.getSecurityContext(key)).getPbsCluster();
             if(jobExecutionContext.getTaskData().getAdvancedOutputDataHandling() != null && !jobExecutionContext.getTaskData().getAdvancedOutputDataHandling().isPersistOutputData()){
-            outputPath = outputPath + File.separator + jobExecutionContext.getExperimentID() + "-" + jobExecutionContext.getTaskData().getTaskID()
+            outputPath = outputPath + File.separator + jobExecutionContext.getExperimentId() + "-" + jobExecutionContext.getTaskData().getTaskId()
                     + File.separator;
                 pbsCluster.makeDirectory(outputPath);
             }
@@ -194,7 +194,7 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                     outputArray.add(dataObjectType);
                 }
              }
-           registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
+           registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentId());
         } catch (SSHApiException e) {
             try {
                 StringWriter errors = new StringWriter();

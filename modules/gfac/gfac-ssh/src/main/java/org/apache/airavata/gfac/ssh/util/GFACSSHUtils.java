@@ -426,7 +426,7 @@ public class GFACSSHUtils {
         ComputationalResourceScheduling taskScheduling = taskData.getTaskScheduling();
         if (taskScheduling != null) {
             int totalNodeCount = taskScheduling.getNodeCount();
-            int totalCPUCount = taskScheduling.getTotalCPUCount();
+            int totalCPUCount = taskScheduling.getTotalCpuCount();
 
 
             if (taskScheduling.getComputationalProjectAccount() != null) {

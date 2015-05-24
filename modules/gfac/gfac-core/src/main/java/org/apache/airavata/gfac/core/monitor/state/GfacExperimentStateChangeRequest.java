@@ -32,10 +32,10 @@ public class GfacExperimentStateChangeRequest {
     private MonitorID monitorID;
 
     public GfacExperimentStateChangeRequest(MonitorID monitorID, GfacExperimentState state) {
-        setIdentity(new JobIdentifier(monitorID.getJobID(),
-                monitorID.getTaskID(),
+        setIdentity(new JobIdentifier(monitorID.getJobId(),
+                monitorID.getTaskId(),
                 monitorID.getWorkflowNodeID(),
-                monitorID.getExperimentID(),
+                monitorID.getExperimentId(),
                 monitorID.getJobExecutionContext().getGatewayID()));
         setMonitorID(monitorID);
         this.state = state;

@@ -63,7 +63,7 @@ public class ProjectRegistry {
             ProjectResource projectResource = new ProjectResource();
             projectId = getProjectId(project.getName());
             projectResource.setId(projectId);
-            project.setProjectID(projectId);
+            project.setProjectId(projectId);
             projectResource.setName(project.getName());
             projectResource.setDescription(project.getDescription());
             projectResource.setCreationTime(AiravataUtils.getTime(project.getCreationTime()));
@@ -74,7 +74,7 @@ public class ProjectRegistry {
             projectResource.save();
             ProjectUserResource resource = (ProjectUserResource)projectResource.create(
                     ResourceType.PROJECT_USER);
-            resource.setProjectId(project.getProjectID());
+            resource.setProjectId(project.getProjectId());
             resource.setUserName(project.getOwner());
             resource.save();
             List<String> sharedGroups = project.getSharedGroups();
@@ -264,7 +264,7 @@ public class ProjectRegistry {
         return null;
     }
 
-    public List<String> getProjectIDs (String fieldName, Object value) throws RegistryException{
+    public List<String> getProjectIds (String fieldName, Object value) throws RegistryException{
         List<String> projectIds = new ArrayList<String>();
         try {
             if (fieldName.equals(Constants.FieldConstants.ProjectConstants.OWNER)){

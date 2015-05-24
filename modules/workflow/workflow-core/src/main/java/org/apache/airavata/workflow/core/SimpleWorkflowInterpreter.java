@@ -111,7 +111,7 @@ class SimpleWorkflowInterpreter{
      */
     void launchWorkflow() throws Exception {
         WorkflowFactoryImpl wfFactory = WorkflowFactoryImpl.getInstance();
-        WorkflowParser workflowParser = wfFactory.getWorkflowParser(experiment.getExperimentID(), credentialToken);
+        WorkflowParser workflowParser = wfFactory.getWorkflowParser(experiment.getExperimentId(), credentialToken);
         log.debug("Initialized workflow parser");
         setWorkflowInputNodes(workflowParser.parse());
         log.debug("Parsed the workflow and got the workflow input nodes");
@@ -175,8 +175,8 @@ class SimpleWorkflowInterpreter{
     private void publishToProcessQueue(TaskDetails process) throws AiravataException {
         ProcessSubmitEvent processSubmitEvent = new ProcessSubmitEvent();
         processSubmitEvent.setCredentialToken(credentialToken);
-        processSubmitEvent.setTaskId(process.getTaskID());
-        MessageContext messageContext = new MessageContext(processSubmitEvent, MessageType.TASK, process.getTaskID(), null);
+        processSubmitEvent.setTaskId(process.getTaskId());
+        MessageContext messageContext = new MessageContext(processSubmitEvent, MessageType.TASK, process.getTaskId(), null);
         messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
         publisher.publish(messageContext);
     }
@@ -184,7 +184,7 @@ class SimpleWorkflowInterpreter{
     private TaskDetails getProcess(WorkflowNodeDetails wfNodeDetails) throws RegistryException {
         // create workflow taskDetails from workflowNodeDetails
         TaskDetails taskDetails = ExperimentModelUtil.cloneTaskFromWorkflowNodeDetails(getExperiment(), wfNodeDetails);
-        taskDetails.setTaskID(getRegistry()
+        taskDetails.setTaskId(getRegistry()
                 .add(ChildDataType.TASK_DETAIL, taskDetails, wfNodeDetails.getNodeInstanceId()).toString());
         return taskDetails;
     }
@@ -205,7 +205,7 @@ class SimpleWorkflowInterpreter{
         wfNodeDetails.setExecutionUnit(executionUnit);
         wfNodeDetails.setExecutionUnitData(executionData);
         wfNodeDetails.setNodeInstanceId((String) getRegistry()
-                .add(ChildDataType.WORKFLOW_NODE_DETAIL, wfNodeDetails, getExperiment().getExperimentID()));
+                .add(ChildDataType.WORKFLOW_NODE_DETAIL, wfNodeDetails, getExperiment().getExperimentId()));
         return wfNodeDetails;
     }
 
@@ -288,12 +288,12 @@ class SimpleWorkflowInterpreter{
      */
     private synchronized void addToProcessingQueue(ProcessContext processContext) {
         readyList.remove(processContext.getWorkflowNode().getId());
-        processingQueue.put(processContext.getTaskDetails().getTaskID(), processContext);
+        processingQueue.put(processContext.getTaskDetails().getTaskId(), processContext);
     }
 
     private synchronized void addToCompleteQueue(ProcessContext processContext) {
-        processingQueue.remove(processContext.getTaskDetails().getTaskID());
-        completeList.put(processContext.getTaskDetails().getTaskID(), processContext);
+        processingQueue.remove(processContext.getTaskDetails().getTaskId());
+        completeList.put(processContext.getTaskDetails().getTaskId(), processContext);
     }
 
 

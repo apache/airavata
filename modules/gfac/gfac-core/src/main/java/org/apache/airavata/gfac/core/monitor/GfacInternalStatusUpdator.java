@@ -54,7 +54,7 @@ public class GfacInternalStatusUpdator implements AbstractActivityListener, Watc
         MonitorID monitorID = statusChangeRequest.getMonitorID();
         String experimentNode = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
         String experimentPath = experimentNode + File.separator + ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME)
-                + File.separator + statusChangeRequest.getMonitorID().getExperimentID();
+                + File.separator + statusChangeRequest.getMonitorID().getExperimentId();
         Stat exists = null;
         if(!(GfacExperimentState.COMPLETED.equals(statusChangeRequest.getState()) || GfacExperimentState.FAILED.equals(statusChangeRequest.getState()))) {
             try {
@@ -94,11 +94,11 @@ public class GfacInternalStatusUpdator implements AbstractActivityListener, Watc
         }
         switch (statusChangeRequest.getState()) {
             case COMPLETED:
-                logger.info("Experiment Completed, So removing the ZK entry for the experiment" + monitorID.getExperimentID());
+                logger.info("Experiment Completed, So removing the ZK entry for the experiment" + monitorID.getExperimentId());
                 logger.info("Zookeeper experiment Path: " + experimentPath);
                 break;
             case FAILED:
-                logger.info("Experiment Failed, So removing the ZK entry for the experiment" + monitorID.getExperimentID());
+                logger.info("Experiment Failed, So removing the ZK entry for the experiment" + monitorID.getExperimentId());
                 logger.info("Zookeeper experiment Path: " + experimentPath);
                 break;
             default:

@@ -36,13 +36,13 @@ public class TestValidator implements JobMetadataValidator {
     public ValidationResults validate(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID) {
         ValidationResults validationResults = new ValidationResults();
         validationResults.setValidationState(true);
-        if (experiment.getProjectID() == null) {
+        if (experiment.getProjectId() == null) {
             logger.error("Project ID is not set");
             ValidatorResult validatorResult = new ValidatorResult(false);
             validatorResult.setErrorDetails("Project ID is not set");
             validationResults.addToValidationResultList(validatorResult);
             validationResults.setValidationState(false);
-        } else if (experiment.getExperimentID() == null) {
+        } else if (experiment.getExperimentId() == null) {
             logger.error("This experiment is wrong, no experimentID set");
             ValidatorResult validatorResult = new ValidatorResult(false);
             validatorResult.setErrorDetails("This experiment is wrong, no experimentID set");

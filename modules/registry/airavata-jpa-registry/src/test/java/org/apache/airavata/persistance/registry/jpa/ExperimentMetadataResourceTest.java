@@ -58,7 +58,7 @@
 //        exConfig.save();
 //
 //        workflowDataResource = experimentResource.createWorkflowInstanceResource("testWFInstance");
-//        workflowDataResource.setExperimentID("testExpID");
+//        workflowDataResource.setExperimentId("testExpID");
 //        workflowDataResource.setStatus("testStatus");
 //        workflowDataResource.setTemplateName("testWFInstance");
 //        workflowDataResource.setLastUpdatedTime(getCurrentTimestamp());

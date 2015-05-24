@@ -89,7 +89,7 @@ public class GridPullMonitorHandler extends ThreadedHandler implements Watcher{
         try {
            /* ZooKeeper zk = jobExecutionContext.getZk();
             try {
-                String experimentEntry = GFacUtils.findExperimentEntry(jobExecutionContext.getExperimentID(), zk);
+                String experimentEntry = GFacUtils.findExperimentEntry(jobExecutionContext.getExperimentId(), zk);
                 String path = experimentEntry + File.separator + "operation";
                 Stat exists = zk.exists(path, this);
                 if (exists != null) {
@@ -103,8 +103,8 @@ public class GridPullMonitorHandler extends ThreadedHandler implements Watcher{
             CommonUtils.addMonitortoQueue(hpcPullMonitor.getQueue(), monitorID, jobExecutionContext);
             CommonUtils.increaseZkJobCount(monitorID); // update change job count to zookeeper
         } catch (AiravataMonitorException e) {
-            logger.errorId(monitorID.getJobID(), "Error adding job {} monitorID object to the queue with experiment {}",
-                    monitorID.getJobID(),  monitorID.getExperimentID());
+            logger.errorId(monitorID.getJobId(), "Error adding job {} monitorID object to the queue with experiment {}",
+                    monitorID.getJobId(),  monitorID.getExperimentId());
         }
     }
 

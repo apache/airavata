@@ -66,7 +66,7 @@ public class OutHandlerWorker implements Runnable {
             gfac.invokeOutFlowHandlers(jEC);
         } catch (Exception e) {
             logger.error(e.getMessage(),e);
-            TaskIdentifier taskIdentifier = new TaskIdentifier(monitorID.getTaskID(), monitorID.getWorkflowNodeID(),monitorID.getExperimentID(), monitorID.getJobExecutionContext().getGatewayID());
+            TaskIdentifier taskIdentifier = new TaskIdentifier(monitorID.getTaskId(), monitorID.getWorkflowNodeID(),monitorID.getExperimentId(), monitorID.getJobExecutionContext().getGatewayID());
             //FIXME this is a case where the output retrieving fails even if the job execution was a success. Thus updating the task status
             monitorPublisher.publish(new TaskStatusChangeRequestEvent(TaskState.FAILED, taskIdentifier));
             try {

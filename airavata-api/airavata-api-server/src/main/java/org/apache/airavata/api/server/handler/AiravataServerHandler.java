@@ -1430,11 +1430,11 @@ public class AiravataServerHandler implements Airavata.Iface {
                     List<Object> taskDetails = registry.get(RegistryModelType.TASK_DETAIL, Constants.FieldConstants.TaskDetailConstants.NODE_ID, nodeInstanceId);
                     if (taskDetails != null && !taskDetails.isEmpty()){
                         for (Object ts : taskDetails){
-                            String taskID = ((TaskDetails) ts).getTaskID();
+                            String taskID = ((TaskDetails) ts).getTaskId();
                             List<Object> jobDetails = registry.get(RegistryModelType.JOB_DETAIL, Constants.FieldConstants.JobDetaisConstants.TASK_ID, taskID);
                             if (jobDetails != null && !jobDetails.isEmpty()){
                                 for (Object job : jobDetails){
-                                    String jobID = ((JobDetails) job).getJobID();
+                                    String jobID = ((JobDetails) job).getJobId();
                                     jobStatus.put(jobID, ((JobDetails) job).getJobStatus());
                                 }
                             }
@@ -1468,7 +1468,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                     List<Object> taskDetails = registry.get(RegistryModelType.TASK_DETAIL, Constants.FieldConstants.TaskDetailConstants.NODE_ID, nodeInstanceId);
                     if (taskDetails != null && !taskDetails.isEmpty()){
                         for (Object ts : taskDetails){
-                            String taskID = ((TaskDetails) ts).getTaskID();
+                            String taskID = ((TaskDetails) ts).getTaskId();
                             List<Object> jobDetails = registry.get(RegistryModelType.JOB_DETAIL, Constants.FieldConstants.JobDetaisConstants.TASK_ID, taskID);
                             if (jobDetails != null && !jobDetails.isEmpty()){
                                 for (Object job : jobDetails){
@@ -1505,7 +1505,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                     List<Object> taskDetails = registry.get(RegistryModelType.TASK_DETAIL, Constants.FieldConstants.TaskDetailConstants.NODE_ID, nodeInstanceId);
                     if (taskDetails != null && !taskDetails.isEmpty()){
                         for (Object ts : taskDetails){
-                            String taskID = ((TaskDetails) ts).getTaskID();
+                            String taskID = ((TaskDetails) ts).getTaskId();
                             List<Object> dataTransferDetails = registry.get(RegistryModelType.DATA_TRANSFER_DETAIL, Constants.FieldConstants.JobDetaisConstants.TASK_ID, taskID);
                             if (dataTransferDetails != null && !dataTransferDetails.isEmpty()){
                                 for (Object dataTransfer : dataTransferDetails){

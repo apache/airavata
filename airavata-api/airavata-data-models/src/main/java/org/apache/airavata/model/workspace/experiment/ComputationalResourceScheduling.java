@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ComputationalResourceScheduling");
 
   private static final org.apache.thrift.protocol.TField RESOURCE_HOST_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("resourceHostId", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField TOTAL_CPUCOUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("totalCPUCount", org.apache.thrift.protocol.TType.I32, (short)2);
+  private static final org.apache.thrift.protocol.TField TOTAL_CPU_COUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("totalCpuCount", org.apache.thrift.protocol.TType.I32, (short)2);
   private static final org.apache.thrift.protocol.TField NODE_COUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("nodeCount", org.apache.thrift.protocol.TType.I32, (short)3);
   private static final org.apache.thrift.protocol.TField NUMBER_OF_THREADS_FIELD_DESC = new org.apache.thrift.protocol.TField("numberOfThreads", org.apache.thrift.protocol.TType.I32, (short)4);
   private static final org.apache.thrift.protocol.TField QUEUE_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("queueName", org.apache.thrift.protocol.TType.STRING, (short)5);
@@ -74,7 +74,7 @@ import org.slf4j.LoggerFactory;
   }
 
   private String resourceHostId; // optional
-  private int totalCPUCount; // optional
+  private int totalCpuCount; // optional
   private int nodeCount; // optional
   private int numberOfThreads; // optional
   private String queueName; // optional
@@ -87,7 +87,7 @@ import org.slf4j.LoggerFactory;
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     RESOURCE_HOST_ID((short)1, "resourceHostId"),
-    TOTAL_CPUCOUNT((short)2, "totalCPUCount"),
+    TOTAL_CPU_COUNT((short)2, "totalCpuCount"),
     NODE_COUNT((short)3, "nodeCount"),
     NUMBER_OF_THREADS((short)4, "numberOfThreads"),
     QUEUE_NAME((short)5, "queueName"),
@@ -112,8 +112,8 @@ import org.slf4j.LoggerFactory;
       switch(fieldId) {
         case 1: // RESOURCE_HOST_ID
           return RESOURCE_HOST_ID;
-        case 2: // TOTAL_CPUCOUNT
-          return TOTAL_CPUCOUNT;
+        case 2: // TOTAL_CPU_COUNT
+          return TOTAL_CPU_COUNT;
         case 3: // NODE_COUNT
           return NODE_COUNT;
         case 4: // NUMBER_OF_THREADS
@@ -177,13 +177,13 @@ import org.slf4j.LoggerFactory;
   private static final int __JOBSTARTTIME_ISSET_ID = 4;
   private static final int __TOTALPHYSICALMEMORY_ISSET_ID = 5;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.RESOURCE_HOST_ID,_Fields.TOTAL_CPUCOUNT,_Fields.NODE_COUNT,_Fields.NUMBER_OF_THREADS,_Fields.QUEUE_NAME,_Fields.WALL_TIME_LIMIT,_Fields.JOB_START_TIME,_Fields.TOTAL_PHYSICAL_MEMORY,_Fields.COMPUTATIONAL_PROJECT_ACCOUNT,_Fields.CHASSIS_NAME};
+  private _Fields optionals[] = {_Fields.RESOURCE_HOST_ID,_Fields.TOTAL_CPU_COUNT,_Fields.NODE_COUNT,_Fields.NUMBER_OF_THREADS,_Fields.QUEUE_NAME,_Fields.WALL_TIME_LIMIT,_Fields.JOB_START_TIME,_Fields.TOTAL_PHYSICAL_MEMORY,_Fields.COMPUTATIONAL_PROJECT_ACCOUNT,_Fields.CHASSIS_NAME};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.RESOURCE_HOST_ID, new org.apache.thrift.meta_data.FieldMetaData("resourceHostId", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.TOTAL_CPUCOUNT, new org.apache.thrift.meta_data.FieldMetaData("totalCPUCount", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.TOTAL_CPU_COUNT, new org.apache.thrift.meta_data.FieldMetaData("totalCpuCount", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.NODE_COUNT, new org.apache.thrift.meta_data.FieldMetaData("nodeCount", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
@@ -216,7 +216,7 @@ import org.slf4j.LoggerFactory;
     if (other.isSetResourceHostId()) {
       this.resourceHostId = other.resourceHostId;
     }
-    this.totalCPUCount = other.totalCPUCount;
+    this.totalCpuCount = other.totalCpuCount;
     this.nodeCount = other.nodeCount;
     this.numberOfThreads = other.numberOfThreads;
     if (other.isSetQueueName()) {
@@ -240,8 +240,8 @@ import org.slf4j.LoggerFactory;
   @Override
   public void clear() {
     this.resourceHostId = null;
-    setTotalCPUCountIsSet(false);
-    this.totalCPUCount = 0;
+    setTotalCpuCountIsSet(false);
+    this.totalCpuCount = 0;
     setNodeCountIsSet(false);
     this.nodeCount = 0;
     setNumberOfThreadsIsSet(false);
@@ -280,25 +280,25 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public int getTotalCPUCount() {
-    return this.totalCPUCount;
+  public int getTotalCpuCount() {
+    return this.totalCpuCount;
   }
 
-  public void setTotalCPUCount(int totalCPUCount) {
-    this.totalCPUCount = totalCPUCount;
-    setTotalCPUCountIsSet(true);
+  public void setTotalCpuCount(int totalCpuCount) {
+    this.totalCpuCount = totalCpuCount;
+    setTotalCpuCountIsSet(true);
   }
 
-  public void unsetTotalCPUCount() {
+  public void unsetTotalCpuCount() {
     __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __TOTALCPUCOUNT_ISSET_ID);
   }
 
-  /** Returns true if field totalCPUCount is set (has been assigned a value) and false otherwise */
-  public boolean isSetTotalCPUCount() {
+  /** Returns true if field totalCpuCount is set (has been assigned a value) and false otherwise */
+  public boolean isSetTotalCpuCount() {
     return EncodingUtils.testBit(__isset_bitfield, __TOTALCPUCOUNT_ISSET_ID);
   }
 
-  public void setTotalCPUCountIsSet(boolean value) {
+  public void setTotalCpuCountIsSet(boolean value) {
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __TOTALCPUCOUNT_ISSET_ID, value);
   }
 
@@ -491,11 +491,11 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
-    case TOTAL_CPUCOUNT:
+    case TOTAL_CPU_COUNT:
       if (value == null) {
-        unsetTotalCPUCount();
+        unsetTotalCpuCount();
       } else {
-        setTotalCPUCount((Integer)value);
+        setTotalCpuCount((Integer)value);
       }
       break;
 
@@ -571,8 +571,8 @@ import org.slf4j.LoggerFactory;
     case RESOURCE_HOST_ID:
       return getResourceHostId();
 
-    case TOTAL_CPUCOUNT:
-      return Integer.valueOf(getTotalCPUCount());
+    case TOTAL_CPU_COUNT:
+      return Integer.valueOf(getTotalCpuCount());
 
     case NODE_COUNT:
       return Integer.valueOf(getNodeCount());
@@ -611,8 +611,8 @@ import org.slf4j.LoggerFactory;
     switch (field) {
     case RESOURCE_HOST_ID:
       return isSetResourceHostId();
-    case TOTAL_CPUCOUNT:
-      return isSetTotalCPUCount();
+    case TOTAL_CPU_COUNT:
+      return isSetTotalCpuCount();
     case NODE_COUNT:
       return isSetNodeCount();
     case NUMBER_OF_THREADS:
@@ -655,12 +655,12 @@ import org.slf4j.LoggerFactory;
         return false;
     }
 
-    boolean this_present_totalCPUCount = true && this.isSetTotalCPUCount();
-    boolean that_present_totalCPUCount = true && that.isSetTotalCPUCount();
-    if (this_present_totalCPUCount || that_present_totalCPUCount) {
-      if (!(this_present_totalCPUCount && that_present_totalCPUCount))
+    boolean this_present_totalCpuCount = true && this.isSetTotalCpuCount();
+    boolean that_present_totalCpuCount = true && that.isSetTotalCpuCount();
+    if (this_present_totalCpuCount || that_present_totalCpuCount) {
+      if (!(this_present_totalCpuCount && that_present_totalCpuCount))
         return false;
-      if (this.totalCPUCount != that.totalCPUCount)
+      if (this.totalCpuCount != that.totalCpuCount)
         return false;
     }
 
@@ -762,12 +762,12 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetTotalCPUCount()).compareTo(other.isSetTotalCPUCount());
+    lastComparison = Boolean.valueOf(isSetTotalCpuCount()).compareTo(other.isSetTotalCpuCount());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetTotalCPUCount()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.totalCPUCount, other.totalCPUCount);
+    if (isSetTotalCpuCount()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.totalCpuCount, other.totalCpuCount);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -881,10 +881,10 @@ import org.slf4j.LoggerFactory;
       }
       first = false;
     }
-    if (isSetTotalCPUCount()) {
+    if (isSetTotalCpuCount()) {
       if (!first) sb.append(", ");
-      sb.append("totalCPUCount:");
-      sb.append(this.totalCPUCount);
+      sb.append("totalCpuCount:");
+      sb.append(this.totalCpuCount);
       first = false;
     }
     if (isSetNodeCount()) {
@@ -1000,10 +1000,10 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // TOTAL_CPUCOUNT
+          case 2: // TOTAL_CPU_COUNT
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.totalCPUCount = iprot.readI32();
-              struct.setTotalCPUCountIsSet(true);
+              struct.totalCpuCount = iprot.readI32();
+              struct.setTotalCpuCountIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1092,9 +1092,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldEnd();
         }
       }
-      if (struct.isSetTotalCPUCount()) {
-        oprot.writeFieldBegin(TOTAL_CPUCOUNT_FIELD_DESC);
-        oprot.writeI32(struct.totalCPUCount);
+      if (struct.isSetTotalCpuCount()) {
+        oprot.writeFieldBegin(TOTAL_CPU_COUNT_FIELD_DESC);
+        oprot.writeI32(struct.totalCpuCount);
         oprot.writeFieldEnd();
       }
       if (struct.isSetNodeCount()) {
@@ -1164,7 +1164,7 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetResourceHostId()) {
         optionals.set(0);
       }
-      if (struct.isSetTotalCPUCount()) {
+      if (struct.isSetTotalCpuCount()) {
         optionals.set(1);
       }
       if (struct.isSetNodeCount()) {
@@ -1195,8 +1195,8 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetResourceHostId()) {
         oprot.writeString(struct.resourceHostId);
       }
-      if (struct.isSetTotalCPUCount()) {
-        oprot.writeI32(struct.totalCPUCount);
+      if (struct.isSetTotalCpuCount()) {
+        oprot.writeI32(struct.totalCpuCount);
       }
       if (struct.isSetNodeCount()) {
         oprot.writeI32(struct.nodeCount);
@@ -1233,8 +1233,8 @@ import org.slf4j.LoggerFactory;
         struct.setResourceHostIdIsSet(true);
       }
       if (incoming.get(1)) {
-        struct.totalCPUCount = iprot.readI32();
-        struct.setTotalCPUCountIsSet(true);
+        struct.totalCpuCount = iprot.readI32();
+        struct.setTotalCpuCountIsSet(true);
       }
       if (incoming.get(2)) {
         struct.nodeCount = iprot.readI32();

@@ -495,9 +495,9 @@ class ApplicationStatus {
 void swap(ApplicationStatus &a, ApplicationStatus &b);
 
 typedef struct _ComputationalResourceScheduling__isset {
-  _ComputationalResourceScheduling__isset() : resourceHostId(false), totalCPUCount(false), nodeCount(false), numberOfThreads(false), queueName(false), wallTimeLimit(false), jobStartTime(false), totalPhysicalMemory(false), computationalProjectAccount(false), chassisName(false) {}
+  _ComputationalResourceScheduling__isset() : resourceHostId(false), totalCpuCount(false), nodeCount(false), numberOfThreads(false), queueName(false), wallTimeLimit(false), jobStartTime(false), totalPhysicalMemory(false), computationalProjectAccount(false), chassisName(false) {}
   bool resourceHostId;
-  bool totalCPUCount;
+  bool totalCpuCount;
   bool nodeCount;
   bool numberOfThreads;
   bool queueName;
@@ -514,13 +514,13 @@ class ComputationalResourceScheduling {
   static const char* ascii_fingerprint; // = "F43E914A611D39345BCC729678C1C696";
   static const uint8_t binary_fingerprint[16]; // = {0xF4,0x3E,0x91,0x4A,0x61,0x1D,0x39,0x34,0x5B,0xCC,0x72,0x96,0x78,0xC1,0xC6,0x96};
 
-  ComputationalResourceScheduling() : resourceHostId(), totalCPUCount(0), nodeCount(0), numberOfThreads(0), queueName(), wallTimeLimit(0), jobStartTime(0), totalPhysicalMemory(0), computationalProjectAccount(), chassisName() {
+  ComputationalResourceScheduling() : resourceHostId(), totalCpuCount(0), nodeCount(0), numberOfThreads(0), queueName(), wallTimeLimit(0), jobStartTime(0), totalPhysicalMemory(0), computationalProjectAccount(), chassisName() {
   }
 
   virtual ~ComputationalResourceScheduling() throw() {}
 
   std::string resourceHostId;
-  int32_t totalCPUCount;
+  int32_t totalCpuCount;
   int32_t nodeCount;
   int32_t numberOfThreads;
   std::string queueName;
@@ -537,9 +537,9 @@ class ComputationalResourceScheduling {
     __isset.resourceHostId = true;
   }
 
-  void __set_totalCPUCount(const int32_t val) {
-    totalCPUCount = val;
-    __isset.totalCPUCount = true;
+  void __set_totalCpuCount(const int32_t val) {
+    totalCpuCount = val;
+    __isset.totalCpuCount = true;
   }
 
   void __set_nodeCount(const int32_t val) {
@@ -588,9 +588,9 @@ class ComputationalResourceScheduling {
       return false;
     else if (__isset.resourceHostId && !(resourceHostId == rhs.resourceHostId))
       return false;
-    if (__isset.totalCPUCount != rhs.__isset.totalCPUCount)
+    if (__isset.totalCpuCount != rhs.__isset.totalCpuCount)
       return false;
-    else if (__isset.totalCPUCount && !(totalCPUCount == rhs.totalCPUCount))
+    else if (__isset.totalCpuCount && !(totalCpuCount == rhs.totalCpuCount))
       return false;
     if (__isset.nodeCount != rhs.__isset.nodeCount)
       return false;
@@ -855,14 +855,14 @@ class QualityOfServiceParams {
 void swap(QualityOfServiceParams &a, QualityOfServiceParams &b);
 
 typedef struct _UserConfigurationData__isset {
-  _UserConfigurationData__isset() : shareExperimentPublicly(true), computationalResourceScheduling(false), advanceInputDataHandling(false), advanceOutputDataHandling(false), qosParams(false), throttleResources(true), userDN(false), generateCert(true) {}
+  _UserConfigurationData__isset() : shareExperimentPublicly(true), computationalResourceScheduling(false), advanceInputDataHandling(false), advanceOutputDataHandling(false), qosParams(false), throttleResources(true), userDn(false), generateCert(true) {}
   bool shareExperimentPublicly;
   bool computationalResourceScheduling;
   bool advanceInputDataHandling;
   bool advanceOutputDataHandling;
   bool qosParams;
   bool throttleResources;
-  bool userDN;
+  bool userDn;
   bool generateCert;
 } _UserConfigurationData__isset;
 
@@ -872,7 +872,7 @@ class UserConfigurationData {
   static const char* ascii_fingerprint; // = "0EA9FCA690C445780E02BCAC89B1D820";
   static const uint8_t binary_fingerprint[16]; // = {0x0E,0xA9,0xFC,0xA6,0x90,0xC4,0x45,0x78,0x0E,0x02,0xBC,0xAC,0x89,0xB1,0xD8,0x20};
 
-  UserConfigurationData() : airavataAutoSchedule(false), overrideManualScheduledParams(false), shareExperimentPublicly(false), throttleResources(false), userDN(), generateCert(false) {
+  UserConfigurationData() : airavataAutoSchedule(false), overrideManualScheduledParams(false), shareExperimentPublicly(false), throttleResources(false), userDn(), generateCert(false) {
   }
 
   virtual ~UserConfigurationData() throw() {}
@@ -885,7 +885,7 @@ class UserConfigurationData {
   AdvancedOutputDataHandling advanceOutputDataHandling;
   QualityOfServiceParams qosParams;
   bool throttleResources;
-  std::string userDN;
+  std::string userDn;
   bool generateCert;
 
   _UserConfigurationData__isset __isset;
@@ -928,9 +928,9 @@ class UserConfigurationData {
     __isset.throttleResources = true;
   }
 
-  void __set_userDN(const std::string& val) {
-    userDN = val;
-    __isset.userDN = true;
+  void __set_userDn(const std::string& val) {
+    userDn = val;
+    __isset.userDn = true;
   }
 
   void __set_generateCert(const bool val) {
@@ -968,9 +968,9 @@ class UserConfigurationData {
       return false;
     else if (__isset.throttleResources && !(throttleResources == rhs.throttleResources))
       return false;
-    if (__isset.userDN != rhs.__isset.userDN)
+    if (__isset.userDn != rhs.__isset.userDn)
       return false;
-    else if (__isset.userDN && !(userDN == rhs.userDN))
+    else if (__isset.userDn && !(userDn == rhs.userDn))
       return false;
     if (__isset.generateCert != rhs.__isset.generateCert)
       return false;
@@ -1009,12 +1009,12 @@ class ErrorDetails {
   static const char* ascii_fingerprint; // = "170CA6E79EB283F31417B9D68071DA33";
   static const uint8_t binary_fingerprint[16]; // = {0x17,0x0C,0xA6,0xE7,0x9E,0xB2,0x83,0xF3,0x14,0x17,0xB9,0xD6,0x80,0x71,0xDA,0x33};
 
-  ErrorDetails() : errorID("DO_NOT_SET_AT_CLIENTS"), creationTime(0), actualErrorMessage(), userFriendlyMessage(), errorCategory((ErrorCategory::type)0), transientOrPersistent(false), correctiveAction((CorrectiveAction::type)0), actionableGroup((ActionableGroup::type)0) {
+  ErrorDetails() : errorId("DO_NOT_SET_AT_CLIENTS"), creationTime(0), actualErrorMessage(), userFriendlyMessage(), errorCategory((ErrorCategory::type)0), transientOrPersistent(false), correctiveAction((CorrectiveAction::type)0), actionableGroup((ActionableGroup::type)0) {
   }
 
   virtual ~ErrorDetails() throw() {}
 
-  std::string errorID;
+  std::string errorId;
   int64_t creationTime;
   std::string actualErrorMessage;
   std::string userFriendlyMessage;
@@ -1026,8 +1026,8 @@ class ErrorDetails {
 
   _ErrorDetails__isset __isset;
 
-  void __set_errorID(const std::string& val) {
-    errorID = val;
+  void __set_errorId(const std::string& val) {
+    errorId = val;
   }
 
   void __set_creationTime(const int64_t val) {
@@ -1072,7 +1072,7 @@ class ErrorDetails {
 
   bool operator == (const ErrorDetails & rhs) const
   {
-    if (!(errorID == rhs.errorID))
+    if (!(errorId == rhs.errorId))
       return false;
     if (__isset.creationTime != rhs.__isset.creationTime)
       return false;
@@ -1138,12 +1138,12 @@ class JobDetails {
   static const char* ascii_fingerprint; // = "114EFEA8CA07DC82CC947D9F47547394";
   static const uint8_t binary_fingerprint[16]; // = {0x11,0x4E,0xFE,0xA8,0xCA,0x07,0xDC,0x82,0xCC,0x94,0x7D,0x9F,0x47,0x54,0x73,0x94};
 
-  JobDetails() : jobID("DO_NOT_SET_AT_CLIENTS"), jobDescription(), creationTime(0), computeResourceConsumed(), jobName(), workingDir() {
+  JobDetails() : jobId("DO_NOT_SET_AT_CLIENTS"), jobDescription(), creationTime(0), computeResourceConsumed(), jobName(), workingDir() {
   }
 
   virtual ~JobDetails() throw() {}
 
-  std::string jobID;
+  std::string jobId;
   std::string jobDescription;
   int64_t creationTime;
   JobStatus jobStatus;
@@ -1155,8 +1155,8 @@ class JobDetails {
 
   _JobDetails__isset __isset;
 
-  void __set_jobID(const std::string& val) {
-    jobID = val;
+  void __set_jobId(const std::string& val) {
+    jobId = val;
   }
 
   void __set_jobDescription(const std::string& val) {
@@ -1200,7 +1200,7 @@ class JobDetails {
 
   bool operator == (const JobDetails & rhs) const
   {
-    if (!(jobID == rhs.jobID))
+    if (!(jobId == rhs.jobId))
       return false;
     if (!(jobDescription == rhs.jobDescription))
       return false;
@@ -1259,20 +1259,20 @@ class DataTransferDetails {
   static const char* ascii_fingerprint; // = "40D4FEC20E3B334AEEBA92DA2AB9E91E";
   static const uint8_t binary_fingerprint[16]; // = {0x40,0xD4,0xFE,0xC2,0x0E,0x3B,0x33,0x4A,0xEE,0xBA,0x92,0xDA,0x2A,0xB9,0xE9,0x1E};
 
-  DataTransferDetails() : transferID("DO_NOT_SET_AT_CLIENTS"), creationTime(0), transferDescription() {
+  DataTransferDetails() : transferId("DO_NOT_SET_AT_CLIENTS"), creationTime(0), transferDescription() {
   }
 
   virtual ~DataTransferDetails() throw() {}
 
-  std::string transferID;
+  std::string transferId;
   int64_t creationTime;
   std::string transferDescription;
   TransferStatus transferStatus;
 
   _DataTransferDetails__isset __isset;
 
-  void __set_transferID(const std::string& val) {
-    transferID = val;
+  void __set_transferId(const std::string& val) {
+    transferId = val;
   }
 
   void __set_creationTime(const int64_t val) {
@@ -1291,7 +1291,7 @@ class DataTransferDetails {
 
   bool operator == (const DataTransferDetails & rhs) const
   {
-    if (!(transferID == rhs.transferID))
+    if (!(transferId == rhs.transferId))
       return false;
     if (__isset.creationTime != rhs.__isset.creationTime)
       return false;
@@ -1343,12 +1343,12 @@ class TaskDetails {
   static const char* ascii_fingerprint; // = "B7529305C4CBCDA0A164DA14865F0E67";
   static const uint8_t binary_fingerprint[16]; // = {0xB7,0x52,0x93,0x05,0xC4,0xCB,0xCD,0xA0,0xA1,0x64,0xDA,0x14,0x86,0x5F,0x0E,0x67};
 
-  TaskDetails() : taskID("DO_NOT_SET_AT_CLIENTS"), creationTime(0), applicationId(), applicationVersion(), applicationDeploymentId(), enableEmailNotification(0) {
+  TaskDetails() : taskId("DO_NOT_SET_AT_CLIENTS"), creationTime(0), applicationId(), applicationVersion(), applicationDeploymentId(), enableEmailNotification(0) {
   }
 
   virtual ~TaskDetails() throw() {}
 
-  std::string taskID;
+  std::string taskId;
   int64_t creationTime;
   std::string applicationId;
   std::string applicationVersion;
@@ -1367,8 +1367,8 @@ class TaskDetails {
 
   _TaskDetails__isset __isset;
 
-  void __set_taskID(const std::string& val) {
-    taskID = val;
+  void __set_taskId(const std::string& val) {
+    taskId = val;
   }
 
   void __set_creationTime(const int64_t val) {
@@ -1448,7 +1448,7 @@ class TaskDetails {
 
   bool operator == (const TaskDetails & rhs) const
   {
-    if (!(taskID == rhs.taskID))
+    if (!(taskId == rhs.taskId))
       return false;
     if (__isset.creationTime != rhs.__isset.creationTime)
       return false;
@@ -1784,13 +1784,13 @@ class Experiment {
   static const char* ascii_fingerprint; // = "2826868ECEA08F4F71C71DEAD5A3270F";
   static const uint8_t binary_fingerprint[16]; // = {0x28,0x26,0x86,0x8E,0xCE,0xA0,0x8F,0x4F,0x71,0xC7,0x1D,0xEA,0xD5,0xA3,0x27,0x0F};
 
-  Experiment() : experimentID("DO_NOT_SET_AT_CLIENTS"), projectID("DEFAULT"), creationTime(0), userName(), name(), description(), applicationId(), applicationVersion(), workflowTemplateId(), workflowTemplateVersion(), gatewayExecutionId(), enableEmailNotification(0), workflowExecutionInstanceId() {
+  Experiment() : experimentId("DO_NOT_SET_AT_CLIENTS"), projectId("DEFAULT"), creationTime(0), userName(), name(), description(), applicationId(), applicationVersion(), workflowTemplateId(), workflowTemplateVersion(), gatewayExecutionId(), enableEmailNotification(0), workflowExecutionInstanceId() {
   }
 
   virtual ~Experiment() throw() {}
 
-  std::string experimentID;
-  std::string projectID;
+  std::string experimentId;
+  std::string projectId;
   int64_t creationTime;
   std::string userName;
   std::string name;
@@ -1813,12 +1813,12 @@ class Experiment {
 
   _Experiment__isset __isset;
 
-  void __set_experimentID(const std::string& val) {
-    experimentID = val;
+  void __set_experimentId(const std::string& val) {
+    experimentId = val;
   }
 
-  void __set_projectID(const std::string& val) {
-    projectID = val;
+  void __set_projectId(const std::string& val) {
+    projectId = val;
   }
 
   void __set_creationTime(const int64_t val) {
@@ -1916,9 +1916,9 @@ class Experiment {
 
   bool operator == (const Experiment & rhs) const
   {
-    if (!(experimentID == rhs.experimentID))
+    if (!(experimentId == rhs.experimentId))
       return false;
-    if (!(projectID == rhs.projectID))
+    if (!(projectId == rhs.projectId))
       return false;
     if (__isset.creationTime != rhs.__isset.creationTime)
       return false;
@@ -2022,13 +2022,13 @@ class ExperimentSummary {
   static const char* ascii_fingerprint; // = "44FD485ABF32F5EB94D6F393F51241B6";
   static const uint8_t binary_fingerprint[16]; // = {0x44,0xFD,0x48,0x5A,0xBF,0x32,0xF5,0xEB,0x94,0xD6,0xF3,0x93,0xF5,0x12,0x41,0xB6};
 
-  ExperimentSummary() : experimentID(), projectID(), creationTime(0), userName(), name(), description(), applicationId() {
+  ExperimentSummary() : experimentId(), projectId(), creationTime(0), userName(), name(), description(), applicationId() {
   }
 
   virtual ~ExperimentSummary() throw() {}
 
-  std::string experimentID;
-  std::string projectID;
+  std::string experimentId;
+  std::string projectId;
   int64_t creationTime;
   std::string userName;
   std::string name;
@@ -2039,12 +2039,12 @@ class ExperimentSummary {
 
   _ExperimentSummary__isset __isset;
 
-  void __set_experimentID(const std::string& val) {
-    experimentID = val;
+  void __set_experimentId(const std::string& val) {
+    experimentId = val;
   }
 
-  void __set_projectID(const std::string& val) {
-    projectID = val;
+  void __set_projectId(const std::string& val) {
+    projectId = val;
   }
 
   void __set_creationTime(const int64_t val) {
@@ -2082,9 +2082,9 @@ class ExperimentSummary {
 
   bool operator == (const ExperimentSummary & rhs) const
   {
-    if (!(experimentID == rhs.experimentID))
+    if (!(experimentId == rhs.experimentId))
       return false;
-    if (!(projectID == rhs.projectID))
+    if (!(projectId == rhs.projectId))
       return false;
     if (__isset.creationTime != rhs.__isset.creationTime)
       return false;

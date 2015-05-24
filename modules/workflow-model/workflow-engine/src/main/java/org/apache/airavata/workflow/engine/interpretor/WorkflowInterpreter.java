@@ -201,7 +201,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 				inputDataStrings.put(dataObjectType.getName(), dataObjectType.getValue());
 			}
 			for (Node node : inputNodes) {
-                publishNodeStatusChange(WorkflowNodeState.EXECUTING,node.getID(),experiment.getExperimentID());
+                publishNodeStatusChange(WorkflowNodeState.EXECUTING,node.getID(),experiment.getExperimentId());
 				if (inputDataStrings.containsKey(node.getID())){
 					((InputNode)node).setDefaultValue(inputDataStrings.get(node.getID()));
 				} else {
@@ -212,7 +212,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 				Node node = inputNodes.get(i);
 				invokedNode.add(node);
 				node.setState(NodeExecutionState.FINISHED);
-                publishNodeStatusChange(WorkflowNodeState.INVOKED, node.getID(), experiment.getExperimentID());
+                publishNodeStatusChange(WorkflowNodeState.INVOKED, node.getID(), experiment.getExperimentId());
 				notifyViaInteractor(WorkflowExecutionMessage.NODE_STATE_CHANGED, null);
 				String portId= ((InputNode) node).getID();
 				Object portValue = ((InputNode) node).getDefaultValue();
@@ -226,7 +226,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 				workflowNode.addToNodeInputs(elem);
 				getRegistry().update(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNode, workflowNode.getNodeInstanceId());
 				updateWorkflowNodeStatus(workflowNode, WorkflowNodeState.COMPLETED);
-                publishNodeStatusChange(WorkflowNodeState.COMPLETED, node.getID(), experiment.getExperimentID());
+                publishNodeStatusChange(WorkflowNodeState.COMPLETED, node.getID(), experiment.getExperimentId());
 			}
 
 			while (this.getWorkflow().getExecutionState() != WorkflowExecutionState.STOPPED) {
@@ -236,7 +236,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
                 }
                 // ok we have paused sleep
                 if (this.getWorkflow().getExecutionState() == WorkflowExecutionState.PAUSED) {
-                	log.info("Workflow execution "+experiment.getExperimentID()+" is paused.");
+                	log.info("Workflow execution "+experiment.getExperimentId()+" is paused.");
 	                while (this.getWorkflow().getExecutionState() == WorkflowExecutionState.PAUSED) {
 	                    try {
 	                        Thread.sleep(400);
@@ -247,7 +247,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 	                if (this.getWorkflow().getExecutionState() == WorkflowExecutionState.STOPPED) {
 	                	continue;
 	                }
-	                log.info("Workflow execution "+experiment.getExperimentID()+" is resumed.");
+	                log.info("Workflow execution "+experiment.getExperimentId()+" is resumed.");
                 }
                 // get task list and execute them
                 ArrayList<Node> readyNodes = this.getReadyNodesDynamically();
@@ -279,7 +279,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
                         }
                     };
                 	updateWorkflowNodeStatus(workflowNodeDetails, WorkflowNodeState.INVOKED);
-                    publishNodeStatusChange(WorkflowNodeState.INVOKED, node.getID(), experiment.getExperimentID());
+                    publishNodeStatusChange(WorkflowNodeState.INVOKED, node.getID(), experiment.getExperimentId());
                     threadList.add(th);
                     th.start();
 					if (this.getWorkflow().getExecutionState() == WorkflowExecutionState.STEP) {
@@ -364,7 +364,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 		} finally{
         	cleanup();
 			this.getWorkflow().setExecutionState(WorkflowExecutionState.NONE);
-            ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.COMPLETED, experiment.getExperimentID(), gatewayId);
+            ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.COMPLETED, experiment.getExperimentId(), gatewayId);
             MessageContext msgCtx = new MessageContext(event, MessageType.EXPERIMENT, AiravataUtils.getId("EXPERIMENT"), gatewayId);
             msgCtx.setUpdatedTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
             publisher.publish(msgCtx);
@@ -397,7 +397,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 		}  
 		workflowNode.setExecutionUnit(executionUnit);
 		workflowNode.setExecutionUnitData(executionData);
-		workflowNode.setNodeInstanceId((String) getRegistry().add(ChildDataType.WORKFLOW_NODE_DETAIL, workflowNode, getExperiment().getExperimentID()));
+		workflowNode.setNodeInstanceId((String) getRegistry().add(ChildDataType.WORKFLOW_NODE_DETAIL, workflowNode, getExperiment().getExperimentId()));
 		nodeInstanceList.put(node, workflowNode);
 		setupNodeDetailsInput(node, workflowNode);
 		return workflowNode;
@@ -435,10 +435,10 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 				// next run
 				// even if the next run runs before the notification arrives
 				WorkflowNodeDetails workflowNodeDetails = createWorkflowNodeDetails(node);
-//				workflowNodeDetails.setNodeInstanceId((String)getRegistry().add(ChildDataType.WORKFLOW_NODE_DETAIL, workflowNodeDetails, getExperiment().getExperimentID()));
+//				workflowNodeDetails.setNodeInstanceId((String)getRegistry().add(ChildDataType.WORKFLOW_NODE_DETAIL, workflowNodeDetails, getExperiment().getExperimentId()));
 				node.setState(NodeExecutionState.EXECUTING);
 				updateWorkflowNodeStatus(workflowNodeDetails, WorkflowNodeState.EXECUTING);
-                publishNodeStatusChange(WorkflowNodeState.EXECUTING, node.getID(), experiment.getExperimentID());
+                publishNodeStatusChange(WorkflowNodeState.EXECUTING, node.getID(), experiment.getExperimentId());
 				// OutputNode node = (OutputNode) outputNode;
 				List<DataPort> inputPorts = node.getInputPorts();
 
@@ -491,7 +491,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 					}
 				}
 				node.setState(NodeExecutionState.FINISHED);
-                publishNodeStatusChange(WorkflowNodeState.COMPLETED, node.getID(), experiment.getExperimentID());
+                publishNodeStatusChange(WorkflowNodeState.COMPLETED, node.getID(), experiment.getExperimentId());
                 updateWorkflowNodeStatus(workflowNodeDetails, WorkflowNodeState.COMPLETED);
 				notifyViaInteractor(WorkflowExecutionMessage.NODE_STATE_CHANGED, null);
 			}
@@ -545,7 +545,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 		node.setState(NodeExecutionState.EXECUTING);
         invokedNode.add(node);
         updateWorkflowNodeStatus(nodeInstanceList.get(node), WorkflowNodeState.EXECUTING);
-        publishNodeStatusChange(WorkflowNodeState.EXECUTING, node.getID(), experiment.getExperimentID());
+        publishNodeStatusChange(WorkflowNodeState.EXECUTING, node.getID(), experiment.getExperimentId());
         Component component = node.getComponent();
 		if (component instanceof SubWorkflowComponent) {
 			handleSubWorkComponent(node);
@@ -645,7 +645,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 	protected void handleWSComponent(Node node) throws WorkflowException, TException, RegistryException {
         TaskDetails taskDetails = createTaskDetails(node);
         log.debug("Launching task , node = " + node.getName() + " node id = " + node.getID());
-        getOrchestratorClient().launchTask(taskDetails.getTaskID(), getCredentialStoreToken());
+        getOrchestratorClient().launchTask(taskDetails.getTaskId(), getCredentialStoreToken());
 	}
 	
 	private void addToAwaitingTaskList(String taskId, Node node){
@@ -995,8 +995,8 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 	
 	private String createInvokerForEachSingleWSNode(Node foreachWSNode, WSComponent wsComponent) throws WorkflowException, RegistryException, TException {
         TaskDetails taskDetails = createTaskDetails(foreachWSNode);
-        getOrchestratorClient().launchTask(taskDetails.getTaskID(), getCredentialStoreToken());
-		return taskDetails.getTaskID();
+        getOrchestratorClient().launchTask(taskDetails.getTaskId(), getCredentialStoreToken());
+		return taskDetails.getTaskId();
 	}
 
 	private void setupNodeDetailsInput(Node node, WorkflowNodeDetails nodeDetails){
@@ -1056,8 +1056,8 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 			throws RegistryException {
 		setupNodeDetailsInput(node, nodeInstanceList.get(node));
 		TaskDetails taskDetails = ExperimentModelUtil.cloneTaskFromWorkflowNodeDetails(experiment, nodeInstanceList.get(node));
-        taskDetails.setTaskID(getRegistry().add(ChildDataType.TASK_DETAIL, taskDetails,nodeInstanceList.get(node).getNodeInstanceId()).toString());
-        addToAwaitingTaskList(taskDetails.getTaskID(), node);
+        taskDetails.setTaskId(getRegistry().add(ChildDataType.TASK_DETAIL, taskDetails,nodeInstanceList.get(node).getNodeInstanceId()).toString());
+        addToAwaitingTaskList(taskDetails.getTaskId(), node);
 		return taskDetails;
 	}
 
@@ -1441,7 +1441,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 			setupNodeDetailsOutput(node);
 			node.setState(NodeExecutionState.FINISHED);
         	try {
-                publishNodeStatusChange(WorkflowNodeState.COMPLETED, node.getID(), experiment.getExperimentID());
+                publishNodeStatusChange(WorkflowNodeState.COMPLETED, node.getID(), experiment.getExperimentId());
                 updateWorkflowNodeStatus(nodeInstanceList.get(node), state);
 			} catch (RegistryException e) {
                 log.error(e.getMessage(), e);

@@ -43,8 +43,8 @@
 //    }
 //
 //    public JobStatusChangedEvent(MonitorID monitorID) {
-//        setIdentity(new JobIdentity(monitorID.getExperimentID(),monitorID.getWorkflowNodeID(),
-//                monitorID.getTaskID(),monitorID.getJobID()));
+//        setIdentity(new JobIdentity(monitorID.getExperimentId(),monitorID.getWorkflowNodeID(),
+//                monitorID.getTaskId(),monitorID.getJobId()));
 //    	setMonitorID(monitorID);
 //    	this.state = monitorID.getStatus();
 //    }

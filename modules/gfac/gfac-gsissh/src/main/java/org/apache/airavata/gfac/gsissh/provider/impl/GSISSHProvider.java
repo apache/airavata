@@ -112,13 +112,13 @@ public class GSISSHProvider extends AbstractProvider {
             String jobID = cluster.submitBatchJob(jobDescriptor);
             jobExecutionContext.setJobDetails(jobDetails);
             if (jobID == null) {
-                jobDetails.setJobID("none");
+                jobDetails.setJobId("none");
                 GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED, monitorPublisher);
             } else {
-                jobDetails.setJobID(jobID.split("\\.")[0]);
+                jobDetails.setJobId(jobID.split("\\.")[0]);
                 GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SUBMITTED, monitorPublisher);
             }
-            data.append(",jobId=").append(jobDetails.getJobID());
+            data.append(",jobId=").append(jobDetails.getJobId());
 
             // Now job has submitted to the resource, its up to the Provider to parse the information to daemon handler
             // to perform monitoring, daemon handlers can be accessed from anywhere
@@ -127,7 +127,7 @@ public class GSISSHProvider extends AbstractProvider {
         } catch (Exception e) {
 		    String error = "Error submitting the job to host " + computeResourceDescription.getHostName() + " message: " + e.getMessage();
             log.error(error);
-            jobDetails.setJobID("none");
+            jobDetails.setJobId("none");
             GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED, monitorPublisher);
             StringWriter errors = new StringWriter();
             e.printStackTrace(new PrintWriter(errors));
@@ -201,9 +201,9 @@ public class GSISSHProvider extends AbstractProvider {
                 log.error("There is not JobDetails so cancelations cannot perform !!!");
                 return false;
             }
-            if (jobDetails.getJobID() != null) {
+            if (jobDetails.getJobId() != null) {
                 // if this operation success without any exceptions, we can assume cancel operation succeeded.
-                cluster.cancelJob(jobDetails.getJobID());
+                cluster.cancelJob(jobDetails.getJobId());
             } else {
                 log.error("No Job Id is set, so cannot perform the cancel operation !!!");
                 return false;
@@ -214,14 +214,14 @@ public class GSISSHProvider extends AbstractProvider {
         } catch (SSHApiException e) {
             String error = "Error submitting the job to host " + jobExecutionContext.getHostName() + " message: " + e.getMessage();
             log.error(error);
-            jobDetails.setJobID("none");
+            jobDetails.setJobId("none");
             GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED, monitorPublisher);
             GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
             throw new GFacProviderException(error, e);
         } catch (Exception e) {
             String error = "Error submitting the job to host " + jobExecutionContext.getHostName() + " message: " + e.getMessage();
             log.error(error);
-            jobDetails.setJobID("none");
+            jobDetails.setJobId("none");
             GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED, monitorPublisher);
             GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
             throw new GFacProviderException(error, e);
@@ -230,7 +230,7 @@ public class GSISSHProvider extends AbstractProvider {
 
     public void recover(JobExecutionContext jobExecutionContext) throws GFacProviderException,GFacException {
         // have to implement the logic to recover a gfac failure
-        log.info("Invoking Recovering for the Experiment: " + jobExecutionContext.getExperimentID());
+        log.info("Invoking Recovering for the Experiment: " + jobExecutionContext.getExperimentId());
         ComputeResourceDescription computeResourceDescription = jobExecutionContext.getApplicationContext()
                 .getComputeResourceDescription();
         String hostName = jobExecutionContext.getHostName();
@@ -275,7 +275,7 @@ public class GSISSHProvider extends AbstractProvider {
             // Now we are we have enough data to recover
             JobDetails jobDetails = new JobDetails();
             jobDetails.setJobDescription(jobDesc);
-            jobDetails.setJobID(jobId);
+            jobDetails.setJobId(jobId);
             jobExecutionContext.setJobDetails(jobDetails);
             if (jobExecutionContext.getSecurityContext(hostName) == null) {
                 try {
@@ -323,7 +323,7 @@ public class GSISSHProvider extends AbstractProvider {
         ThreadedHandler pullMonitorHandler = null;
         ThreadedHandler pushMonitorHandler = null;
         MonitorMode monitorMode = sshJobSubmission.getMonitorMode();
-        String jobID = jobExecutionContext.getJobDetails().getJobID();
+        String jobID = jobExecutionContext.getJobDetails().getJobId();
         for (ThreadedHandler threadedHandler : daemonHandlers) {
             if ("org.apache.airavata.gfac.monitor.handlers.GridPullMonitorHandler".equals(threadedHandler.getClass().getName())) {
                 pullMonitorHandler = threadedHandler;

@@ -85,7 +85,7 @@ public class ResourceConnection {
     }
 
     public JobState getJobStatus(MonitorID monitorID) throws SSHApiException {
-        String jobID = monitorID.getJobID();
+        String jobID = monitorID.getJobId();
         //todo so currently we execute the qstat for each job but we can use user based monitoring
         //todo or we should concatenate all the commands and execute them in one go and parseSingleJob the response
         return getStatusFromString(cluster.getJobStatus(jobID).toString());
@@ -97,7 +97,7 @@ public class ResourceConnection {
         // creating a sorted map with all the jobIds and with the predefined
         // status as UNKNOWN
         for (MonitorID monitorID : monitorIDs) {
-            treeMap.put(monitorID.getJobID()+","+monitorID.getJobName(), JobStatus.U);
+            treeMap.put(monitorID.getJobId()+","+monitorID.getJobName(), JobStatus.U);
         }
         String userName = cluster.getServerInfo().getUserName();
         //todo so currently we execute the qstat for each job but we can use user based monitoring

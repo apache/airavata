@@ -244,9 +244,9 @@
 //    @Test
 //    public void testSSHProvider() throws GFacException {
 //        BetterGfacImpl gFacAPI = new BetterGfacImpl();
-//        gFacAPI.submitJob(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext.getGatewayID());
+//        gFacAPI.submitJob(jobExecutionContext.getExperimentId(), jobExecutionContext.getTaskData().getTaskId(), jobExecutionContext.getGatewayID());
 //        org.junit.Assert.assertNotNull(jobExecutionContext.getJobDetails().getJobDescription());
-//        org.junit.Assert.assertNotNull(jobExecutionContext.getJobDetails().getJobID());
+//        org.junit.Assert.assertNotNull(jobExecutionContext.getJobDetails().getJobId());
 //    }
 //
 //}

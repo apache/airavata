@@ -180,11 +180,11 @@ public class ErrorDetailResource extends AbstractResource {
             ErrorDetail errorDetail;
             if (errorId != 0) {
                 errorDetail = em.find(ErrorDetail.class, errorId);
-                errorDetail.setErrorID(errorId);
+                errorDetail.setErrorId(errorId);
             } else {
                 errorDetail = new ErrorDetail();
             }
-            errorDetail.setErrorID(errorId);
+            errorDetail.setErrorId(errorId);
             Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
             errorDetail.setExperiment(experiment);
             errorDetail.setExpId(experimentResource.getExpID());
@@ -211,7 +211,7 @@ public class ErrorDetailResource extends AbstractResource {
             errorDetail.setActionableGroup(actionableGroup);
             errorDetail.setJobId(jobId);
             em.persist(errorDetail);
-            errorId = errorDetail.getErrorID();
+            errorId = errorDetail.getErrorId();
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {

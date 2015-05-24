@@ -51,7 +51,7 @@
 //     }
 //
 //	    public void testSave() throws Exception {
-//	        dataResource.setExperimentID("testExpID");
+//	        dataResource.setExperimentId("testExpID");
 //	        dataResource.setStatus(AiravataJobState.State.CREATED.toString());
 //	        dataResource.setApplicationName(applicationName);
 //	        dataResource.save();

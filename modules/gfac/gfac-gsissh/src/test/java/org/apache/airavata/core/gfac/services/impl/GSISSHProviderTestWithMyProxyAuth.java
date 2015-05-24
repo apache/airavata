@@ -221,9 +221,9 @@
 //    @Test
 //    public void testGSISSHProvider() throws GFacException {
 //        BetterGfacImpl gFacAPI = new BetterGfacImpl();
-//        gFacAPI.submitJob(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext.getGatewayID());
+//        gFacAPI.submitJob(jobExecutionContext.getExperimentId(), jobExecutionContext.getTaskData().getTaskId(), jobExecutionContext.getGatewayID());
 //        System.out.println(jobExecutionContext.getJobDetails().getJobDescription());
-//        System.out.println(jobExecutionContext.getJobDetails().getJobID());
+//        System.out.println(jobExecutionContext.getJobDetails().getJobId());
 //    }
 //
 //}

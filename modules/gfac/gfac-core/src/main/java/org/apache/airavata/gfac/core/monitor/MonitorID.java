@@ -69,9 +69,9 @@ public class MonitorID {
         this.computeResourceDescription = monitorID.getComputeResourceDescription();
         this.jobStartedTime = new Timestamp((new Date()).getTime());
         this.userName = monitorID.getUserName();
-        this.jobID = monitorID.getJobID();
-        this.taskID = monitorID.getTaskID();
-        this.experimentID = monitorID.getExperimentID();
+        this.jobID = monitorID.getJobId();
+        this.taskID = monitorID.getTaskId();
+        this.experimentID = monitorID.getExperimentId();
         this.workflowNodeID = monitorID.getWorkflowNodeID();
         this.jobName = monitorID.getJobName();
     }
@@ -90,12 +90,12 @@ public class MonitorID {
         this.jobExecutionContext = jobExecutionContext;
         this.computeResourceDescription = jobExecutionContext.getApplicationContext().getComputeResourceDescription();
         userName = jobExecutionContext.getExperiment().getUserName();
-        taskID = jobExecutionContext.getTaskData().getTaskID();
-        experimentID = jobExecutionContext.getExperiment().getExperimentID();
+        taskID = jobExecutionContext.getTaskData().getTaskId();
+        experimentID = jobExecutionContext.getExperiment().getExperimentId();
         workflowNodeID = jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId();// at this point we only have one node todo: fix this
         try {
             jobName = jobExecutionContext.getJobDetails().getJobName();
-            jobID = jobExecutionContext.getJobDetails().getJobID();
+            jobID = jobExecutionContext.getJobDetails().getJobId();
         }catch(NullPointerException e){
             logger.error("There is not job created at this point");
             // this is not a big deal we create MonitorId before having a jobId or job Name
@@ -126,11 +126,11 @@ public class MonitorID {
         this.userName = userName;
     }
 
-    public String getJobID() {
+    public String getJobId() {
         return jobID;
     }
 
-    public void setJobID(String jobID) {
+    public void setJobId(String jobID) {
         this.jobID = jobID;
     }
 
@@ -158,19 +158,19 @@ public class MonitorID {
         this.parameters = parameters;
     }
 
-    public String getExperimentID() {
+    public String getExperimentId() {
         return experimentID;
     }
 
-    public void setExperimentID(String experimentID) {
+    public void setExperimentId(String experimentID) {
         this.experimentID = experimentID;
     }
 
-    public String getTaskID() {
+    public String getTaskId() {
         return taskID;
     }
 
-    public void setTaskID(String taskID) {
+    public void setTaskId(String taskID) {
         this.taskID = taskID;
     }
 
@@ -192,11 +192,11 @@ public class MonitorID {
         // during that case job state comes as unknown.so we handle it here.
         if (this.state != null && status.equals(JobState.UNKNOWN)) {
             this.failedCount++;
-            logger.infoId(this.getJobID(), "{} status came for job {}, Increasing the failed count to: {}.",
+            logger.infoId(this.getJobId(), "{} status came for job {}, Increasing the failed count to: {}.",
                     status.toString(), this.jobID, this.failedCount);
         }else {
             // normal scenario
-            logger.infoId(this.getJobID(), "Valid status {} came for job {}, resetting fail count to 0", status.toString(), this.jobID);
+            logger.infoId(this.getJobId(), "Valid status {} came for job {}, resetting fail count to 0", status.toString(), this.jobID);
             setFailedCount(0);
             this.state = status;
         }

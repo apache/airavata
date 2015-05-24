@@ -56,7 +56,7 @@ public class ResourceProcessor {
 					rangeType.setExact(crs.getNodeCount());
 					JSDLUtils.setTotalResourceCountRequirements(value, rangeType);
 					// set totalcpu count to -1 as we dont need that
-					crs.setTotalCPUCount(0);
+					crs.setTotalCpuCount(0);
 				}
 	
 				if(crs.getWallTimeLimit() > 0) {
@@ -68,12 +68,12 @@ public class ResourceProcessor {
 					JSDLUtils.setIndividualCPUTimeRequirements(value, cpuTime);
 				}
 				
-				if(crs.getTotalCPUCount() > 0) {
+				if(crs.getTotalCpuCount() > 0) {
 					RangeValueType rangeType = new RangeValueType();
 					rangeType.setLowerBound(Double.NaN);
 					rangeType.setUpperBound(Double.NaN);
-					rangeType.setExact(crs.getTotalCPUCount());
-					JSDLUtils.setTotalCPUCountRequirements(value, rangeType);
+					rangeType.setExact(crs.getTotalCpuCount());
+					JSDLUtils.setTotalCpuCountRequirements(value, rangeType);
 				}
 				
 			} catch (NullPointerException npe) {

@@ -64,8 +64,8 @@ public class ExperimentRegistry {
                 ResourceUtils.addUser(experiment.getUserName(), null);
             }
 
-            experimentID = getExperimentID(experiment.getName());
-            experiment.setExperimentID(experimentID);
+            experimentID = getExperimentId(experiment.getName());
+            experiment.setExperimentId(experimentID);
             ExperimentResource experimentResource = new ExperimentResource();
             experimentResource.setExpID(experimentID);
             experimentResource.setExpName(experiment.getName());
@@ -74,11 +74,11 @@ public class ExperimentRegistry {
             experimentResource.setGateway(gateway);
             experimentResource.setGatewayExecutionId(experiment.getGatewayExecutionId());
             experimentResource.setEnableEmailNotifications(experiment.isEnableEmailNotification());
-            if (!workerResource.isProjectExists(experiment.getProjectID())) {
+            if (!workerResource.isProjectExists(experiment.getProjectId())) {
                 logger.error("Project does not exist in the system..");
                 throw new Exception("Project does not exist in the system, Please create the project first...");
             }
-            ProjectResource project = workerResource.getProject(experiment.getProjectID());
+            ProjectResource project = workerResource.getProject(experiment.getProjectId());
             experimentResource.setProject(project);
             experimentResource.setCreationTime(AiravataUtils.getTime(experiment.getCreationTime()));
             experimentResource.setDescription(experiment.getDescription());
@@ -154,7 +154,7 @@ public class ExperimentRegistry {
             configData.setAiravataAutoSchedule(configurationData.isAiravataAutoSchedule());
             configData.setOverrideManualParams(configurationData.isOverrideManualScheduledParams());
             configData.setShareExp(configurationData.isShareExperimentPublicly());
-            configData.setUserDn(configurationData.getUserDN());
+            configData.setUserDn(configurationData.getUserDn());
             configData.setGenerateCert(configurationData.isGenerateCert());
             configData.save();
             ComputationalResourceScheduling resourceScheduling = configurationData.getComputationalResourceScheduling();
@@ -265,7 +265,7 @@ public class ExperimentRegistry {
                 cmsr.setExperimentResource(taskDetailResource.getWorkflowNodeDetailResource().getExperimentResource());
             }
             cmsr.setResourceHostId(resourceScheduling.getResourceHostId());
-            cmsr.setCpuCount(resourceScheduling.getTotalCPUCount());
+            cmsr.setCpuCount(resourceScheduling.getTotalCpuCount());
             cmsr.setNodeCount(resourceScheduling.getNodeCount());
             cmsr.setNumberOfThreads(resourceScheduling.getNumberOfThreads());
             cmsr.setQueueName(resourceScheduling.getQueueName());
@@ -841,7 +841,7 @@ public class ExperimentRegistry {
             List<TaskDetails> taskDetails = nodeDetails.getTaskDetailsList();
             if (taskDetails != null && !taskDetails.isEmpty()) {
                 for (TaskDetails task : taskDetails) {
-                    String taskID = task.getTaskID();
+                    String taskID = task.getTaskId();
                     if (isTaskDetailExist(taskID)) {
                         updateTaskDetails(task, taskID);
                     } else {
@@ -919,7 +919,7 @@ public class ExperimentRegistry {
             experiment = workflowNode.getExperimentResource();
             TaskDetailResource taskDetail = (TaskDetailResource) workflowNode.create(ResourceType.TASK_DETAIL);
             taskDetail.setWorkflowNodeDetailResource(workflowNode);
-            taskDetail.setTaskId(getTaskID(workflowNode.getNodeName()));
+            taskDetail.setTaskId(getTaskId(workflowNode.getNodeName()));
             taskDetail.setApplicationId(taskDetails.getApplicationId());
             taskDetail.setApplicationVersion(taskDetails.getApplicationVersion());
             taskDetail.setCreationTime(AiravataUtils.getTime(taskDetails.getCreationTime()));
@@ -961,7 +961,7 @@ public class ExperimentRegistry {
             List<JobDetails> jobDetailsList = taskDetails.getJobDetailsList();
             if (jobDetailsList != null && !jobDetailsList.isEmpty()) {
                 for (JobDetails job : jobDetailsList) {
-                    CompositeIdentifier ids = new CompositeIdentifier(taskDetail.getTaskId(), job.getJobID());
+                    CompositeIdentifier ids = new CompositeIdentifier(taskDetail.getTaskId(), job.getJobId());
                     addJobDetails(job, ids);
                 }
             }
@@ -1046,7 +1046,7 @@ public class ExperimentRegistry {
             List<JobDetails> jobDetailsList = taskDetails.getJobDetailsList();
             if (jobDetailsList != null && !jobDetailsList.isEmpty()) {
                 for (JobDetails job : jobDetailsList) {
-                    CompositeIdentifier ids = new CompositeIdentifier(taskId, job.getJobID());
+                    CompositeIdentifier ids = new CompositeIdentifier(taskId, job.getJobId());
                     updateJobDetails(job, ids);
                 }
             }
@@ -1054,7 +1054,7 @@ public class ExperimentRegistry {
             List<DataTransferDetails> dataTransferDetailsList = taskDetails.getDataTransferDetailsList();
             if (dataTransferDetailsList != null && !dataTransferDetailsList.isEmpty()) {
                 for (DataTransferDetails transferDetails : dataTransferDetailsList) {
-                    updateDataTransferDetails(transferDetails, transferDetails.getTransferID());
+                    updateDataTransferDetails(transferDetails, transferDetails.getTransferId());
                 }
             }
 
@@ -1350,7 +1350,7 @@ public class ExperimentRegistry {
             }
             schedulingResource.setExperimentResource(experiment);
             schedulingResource.setResourceHostId(scheduling.getResourceHostId());
-            schedulingResource.setCpuCount(scheduling.getTotalCPUCount());
+            schedulingResource.setCpuCount(scheduling.getTotalCpuCount());
             schedulingResource.setNodeCount(scheduling.getNodeCount());
             schedulingResource.setNumberOfThreads(scheduling.getNumberOfThreads());
             schedulingResource.setQueueName(scheduling.getQueueName());
@@ -1464,11 +1464,11 @@ public class ExperimentRegistry {
                     workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
                     taskDetail = workflowNode.getTaskDetail((String) id);
                     errorResource = (ErrorDetailResource) taskDetail.create(ResourceType.ERROR_DETAIL);
-                    if (error.getErrorID() != null && !error.getErrorID().equals(experimentModelConstants.DEFAULT_ID)) {
+                    if (error.getErrorId() != null && !error.getErrorId().equals(experimentModelConstants.DEFAULT_ID)) {
                         List<ErrorDetailResource> errorDetailList = taskDetail.getErrorDetailList();
                         if (errorDetailList != null && !errorDetailList.isEmpty()) {
                             for (ErrorDetailResource errorDetailResource : errorDetailList) {
-                                if (errorDetailResource.getErrorId() == Integer.parseInt(error.getErrorID())) {
+                                if (errorDetailResource.getErrorId() == Integer.parseInt(error.getErrorId())) {
                                     errorResource = errorDetailResource;
                                 }
                             }
@@ -1488,11 +1488,11 @@ public class ExperimentRegistry {
                     taskDetail = workflowNode.getTaskDetail((String) cid.getTopLevelIdentifier());
                     JobDetailResource jobDetail = taskDetail.getJobDetail((String) cid.getSecondLevelIdentifier());
                     errorResource = (ErrorDetailResource) jobDetail.create(ResourceType.ERROR_DETAIL);
-                    if (error.getErrorID() != null && !error.getErrorID().equals(experimentModelConstants.DEFAULT_ID)) {
+                    if (error.getErrorId() != null && !error.getErrorId().equals(experimentModelConstants.DEFAULT_ID)) {
                         List<ErrorDetailResource> errorDetailList = taskDetail.getErrorDetailList();
                         if (errorDetailList != null && !errorDetailList.isEmpty()) {
                             for (ErrorDetailResource errorDetailResource : errorDetailList) {
-                                if (errorDetailResource.getErrorId() == Integer.parseInt(error.getErrorID())) {
+                                if (errorDetailResource.getErrorId() == Integer.parseInt(error.getErrorId())) {
                                     errorResource = errorDetailResource;
                                 }
                             }
@@ -1541,12 +1541,12 @@ public class ExperimentRegistry {
         return node + "_" + UUID.randomUUID();
     }
 
-    public String getExperimentID(String experimentName) {
+    public String getExperimentId(String experimentName) {
         String exp = experimentName.replaceAll("\\s", "");
         return exp + "_" + UUID.randomUUID();
     }
 
-    public String getTaskID(String nodeName) {
+    public String getTaskId(String nodeName) {
         String node = nodeName.replaceAll("\\s", "");
         return node + "_" + UUID.randomUUID();
     }
@@ -1628,11 +1628,11 @@ public class ExperimentRegistry {
             existingExperiment.setExecutionUser(experiment.getUserName());
             existingExperiment.setGateway(gatewayResource);
             existingExperiment.setGatewayExecutionId(experiment.getGatewayExecutionId());
-            if (!workerResource.isProjectExists(experiment.getProjectID())) {
+            if (!workerResource.isProjectExists(experiment.getProjectId())) {
                 logger.error("Project does not exist in the system..");
                 throw new Exception("Project does not exist in the system, Please create the project first...");
             }
-            ProjectResource project = workerResource.getProject(experiment.getProjectID());
+            ProjectResource project = workerResource.getProject(experiment.getProjectId());
             existingExperiment.setProject(project);
             existingExperiment.setCreationTime(AiravataUtils.getTime(experiment.getCreationTime()));
             existingExperiment.setDescription(experiment.getDescription());
@@ -1701,7 +1701,7 @@ public class ExperimentRegistry {
             resource.setAiravataAutoSchedule(configData.isAiravataAutoSchedule());
             resource.setOverrideManualParams(configData.isOverrideManualScheduledParams());
             resource.setShareExp(configData.isShareExperimentPublicly());
-            resource.setUserDn(configData.getUserDN());
+            resource.setUserDn(configData.getUserDn());
             resource.setGenerateCert(configData.isGenerateCert());
             resource.save();
             ComputationalResourceScheduling resourceScheduling = configData.getComputationalResourceScheduling();
@@ -1809,7 +1809,7 @@ public class ExperimentRegistry {
                 cmsr.setExperimentResource(taskDetailResource.getWorkflowNodeDetailResource().getExperimentResource());
             }
             cmsr.setResourceHostId(resourceScheduling.getResourceHostId());
-            cmsr.setCpuCount(resourceScheduling.getTotalCPUCount());
+            cmsr.setCpuCount(resourceScheduling.getTotalCpuCount());
             cmsr.setNodeCount(resourceScheduling.getNodeCount());
             cmsr.setNumberOfThreads(resourceScheduling.getNumberOfThreads());
             cmsr.setQueueName(resourceScheduling.getQueueName());
@@ -1939,7 +1939,7 @@ public class ExperimentRegistry {
                 if (value instanceof List<?>) {
                     return getWFNodeDetails(fieldName, ((List<?>) value).get(0));
                 } else if (value instanceof TaskDetails) {
-                    TaskDetailResource taskDetailResource = getTaskDetailResource(((TaskDetails) value).getTaskID());
+                    TaskDetailResource taskDetailResource = getTaskDetailResource(((TaskDetails) value).getTaskId());
                     if (taskDetailResource != null) {
                         return Arrays.asList(new WorkflowNodeDetails[]{ThriftDataModelConversion
                                 .getWorkflowNodeDetails(taskDetailResource
@@ -2420,7 +2420,7 @@ public class ExperimentRegistry {
         }
     }
 
-    public List<String> getExperimentIDs(String fieldName, Object value) throws RegistryException {
+    public List<String> getExperimentIds(String fieldName, Object value) throws RegistryException {
         List<String> expIDs = new ArrayList<String>();
         try {
             if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY)) {
@@ -2465,7 +2465,7 @@ public class ExperimentRegistry {
         List<String> taskDetailIds = new ArrayList<String>();
         List<TaskDetails> taskDetails = getTaskDetails(fieldName, value);
         for (TaskDetails td : taskDetails) {
-            taskDetailIds.add(td.getTaskID());
+            taskDetailIds.add(td.getTaskId());
         }
         return taskDetailIds;
     }
@@ -2474,7 +2474,7 @@ public class ExperimentRegistry {
         List<String> jobIds = new ArrayList<String>();
         List<JobDetails> jobDetails = getJobDetails(fieldName, value);
         for (JobDetails jd : jobDetails) {
-            jobIds.add(jd.getJobID());
+            jobIds.add(jd.getJobId());
         }
         return jobIds;
     }
@@ -2483,7 +2483,7 @@ public class ExperimentRegistry {
         List<String> transferIds = new ArrayList<String>();
         List<DataTransferDetails> dataTransferDetails = getDataTransferDetails(fieldName, value);
         for (DataTransferDetails dtd : dataTransferDetails) {
-            transferIds.add(dtd.getTransferID());
+            transferIds.add(dtd.getTransferId());
         }
         return transferIds;
     }

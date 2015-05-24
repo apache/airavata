@@ -47,9 +47,9 @@ public class HPCMonitorID extends MonitorID {
         setComputeResourceDescription(computeResourceDescription);
         setJobStartedTime(new Timestamp((new Date()).getTime()));
         setUserName(userName);
-        setJobID(jobID);
-        setTaskID(taskID);
-        setExperimentID(experimentID);
+        setJobId(jobID);
+        setTaskId(taskID);
+        setExperimentId(experimentID);
         setWorkflowNodeID(workflowNodeID);
     }
 
@@ -91,9 +91,9 @@ public class HPCMonitorID extends MonitorID {
                 setUserName(((MyProxyAuthenticationInfo) this.authenticationInfo).getUserName());
             }
         }
-        setJobID(jobID);
-        setTaskID(taskID);
-        setExperimentID(experimentID);
+        setJobId(jobID);
+        setTaskId(taskID);
+        setExperimentId(experimentID);
         setWorkflowNodeID(workflowNodeID);
     }
 

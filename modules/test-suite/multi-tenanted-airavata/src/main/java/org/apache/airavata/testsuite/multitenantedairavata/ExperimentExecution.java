@@ -444,7 +444,7 @@ public class ExperimentExecution {
                         List<Project> projectsPerGateway = projectsMap.get(gatewayId);
                         String projectID = null;
                         if (projectsPerGateway != null && !projectsPerGateway.isEmpty()){
-                            projectID = projectsPerGateway.get(0).getProjectID();
+                            projectID = projectsPerGateway.get(0).getProjectId();
                         }
                         Experiment simpleExperiment =
                                 ExperimentModelUtil.createSimpleExperiment(projectID, testUser, "Amber Experiment", "Amber Experiment run", appId, applicationInputs);
@@ -528,7 +528,7 @@ public class ExperimentExecution {
                             List<Project> projectsPerGateway = projectsMap.get(gatewayId);
                             String projectID = null;
                             if (projectsPerGateway != null && !projectsPerGateway.isEmpty()){
-                                projectID = projectsPerGateway.get(0).getProjectID();
+                                projectID = projectsPerGateway.get(0).getProjectId();
                             }
                             Experiment simpleExperiment =
                                     ExperimentModelUtil.createSimpleExperiment(projectID, testUser, "TestFR_Ultrascan_Experiment", "Ultrascan Experiment run", appId, applicationInputs);
@@ -630,7 +630,7 @@ public class ExperimentExecution {
                                 List<Project> projectsPerGateway = projectsMap.get(gatewayId);
                                 String projectID = null;
                                 if (projectsPerGateway != null && !projectsPerGateway.isEmpty()) {
-                                    projectID = projectsPerGateway.get(0).getProjectID();
+                                    projectID = projectsPerGateway.get(0).getProjectId();
                                 }
                                 Experiment simpleExperiment =
                                         ExperimentModelUtil.createSimpleExperiment(projectID, "admin", "Echo Experiment", "Echo Experiment run", appId, applicationInputs);

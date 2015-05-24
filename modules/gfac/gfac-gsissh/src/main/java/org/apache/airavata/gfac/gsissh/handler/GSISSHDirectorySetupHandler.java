@@ -90,7 +90,7 @@ public class GSISSHDirectorySetupHandler extends AbstractHandler {
             detail.setTransferStatus(status);
             detail.setTransferDescription("Working directory = " + workingDirectory);
 
-            registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+            registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskId());
 
 		} catch (Exception e) {
 			DataTransferDetails detail = new DataTransferDetails();
@@ -99,7 +99,7 @@ public class GSISSHDirectorySetupHandler extends AbstractHandler {
 			status.setTransferState(TransferState.FAILED);
 			detail.setTransferStatus(status);
 			try {
-				registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+				registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskId());
 				GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE);
 			} catch (Exception e1) {
 				throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());

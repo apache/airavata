@@ -103,7 +103,7 @@ public class CreateLaunchExperimentUS3 {
 //            airavata.terminateExperiment(expId);
      
 //            Experiment experiment = airavata.getExperiment(expId);
-//            System.out.println("retrieved exp id : " + experiment.getExperimentID());
+//            System.out.println("retrieved exp id : " + experiment.getExperimentId());
         } catch (Exception e) {
             logger.error("Error while connecting with server", e.getMessage());
             e.printStackTrace();

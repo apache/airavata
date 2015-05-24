@@ -21,11 +21,10 @@
 
 package org.apache.airavata.gfac.bes.security;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Set;
-
+import eu.emi.security.authn.x509.X509Credential;
+import eu.emi.security.authn.x509.impl.KeyAndCertCredential;
+import eu.emi.security.authn.x509.impl.X500NameUtils;
+import eu.unicore.util.httpclient.DefaultClientConfiguration;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.store.CredentialReader;
@@ -39,10 +38,10 @@ import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.emi.security.authn.x509.X509Credential;
-import eu.emi.security.authn.x509.impl.KeyAndCertCredential;
-import eu.emi.security.authn.x509.impl.X500NameUtils;
-import eu.unicore.util.httpclient.DefaultClientConfiguration;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Properties;
+import java.util.Set;
 
 public class UNICORESecurityContext extends X509SecurityContext {
 
@@ -88,7 +87,7 @@ public class UNICORESecurityContext extends X509SecurityContext {
 		try{
 			boolean genCert = userData.isGenerateCert();
 				if(genCert) {
-					String userDN = userData.getUserDN();
+					String userDN = userData.getUserDn();
 					if (userDN == null && "".equals(userDN)){
 						log.warn("Cannot generate cert, falling back to container configured MyProxy credentials");
 						return getDefaultConfiguration(enableMessageLogging);

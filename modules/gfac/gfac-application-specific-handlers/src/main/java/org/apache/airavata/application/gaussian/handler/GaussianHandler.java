@@ -75,20 +75,20 @@ public class GaussianHandler extends AbstractHandler {
                     ComputationalResourceScheduling taskScheduling = jobExecutionContext.getTaskData().getTaskScheduling();
                     for (Map.Entry<String, String> inputConfig : configurations.entrySet()) {
                         if (inputConfig.getKey().equals(PROC_SHARED)) {
-                            taskScheduling.setTotalCPUCount(Integer.parseInt(inputConfig.getValue()));
+                            taskScheduling.setTotalCpuCount(Integer.parseInt(inputConfig.getValue()));
                         } else if (inputConfig.getKey().equals(MEM)) {
                             int userRequestedMem = Integer.parseInt(inputConfig.getValue());
                             int additionalMem = (int) (userRequestedMem * 0.2);
                             // TODO check (userRequestedMem + additionalMem)  > maxNode or Queue allowed Mem
                             taskScheduling.setTotalPhysicalMemory(userRequestedMem + additionalMem);
                         } else if (inputConfig.getKey().equals(PROC)) {
-                            taskScheduling.setTotalCPUCount(Integer.parseInt(inputConfig.getValue()));
+                            taskScheduling.setTotalCpuCount(Integer.parseInt(inputConfig.getValue()));
                         } else {
                             // TODO - handle other input configurations
                         }
                         logger.info("$$$$$$$$ " + inputConfig.getKey() + " --> " + inputConfig.getValue() + " $$$$$$$$$$$");
                     }
-                    registry.update(RegistryModelType.TASK_DETAIL, jobExecutionContext.getTaskData(), jobExecutionContext.getTaskData().getTaskID());
+                    registry.update(RegistryModelType.TASK_DETAIL, jobExecutionContext.getTaskData(), jobExecutionContext.getTaskData().getTaskId());
                 } catch (IOException e) {
                     throw new GFacHandlerException("Error while reading main input file ", e);
                 } catch (RegistryException e) {

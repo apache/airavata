@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("all") public class ErrorDetails implements org.apache.thrift.TBase<ErrorDetails, ErrorDetails._Fields>, java.io.Serializable, Cloneable, Comparable<ErrorDetails> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ErrorDetails");
 
-  private static final org.apache.thrift.protocol.TField ERROR_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("errorID", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField ERROR_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("errorId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("creationTime", org.apache.thrift.protocol.TType.I64, (short)2);
   private static final org.apache.thrift.protocol.TField ACTUAL_ERROR_MESSAGE_FIELD_DESC = new org.apache.thrift.protocol.TField("actualErrorMessage", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField USER_FRIENDLY_MESSAGE_FIELD_DESC = new org.apache.thrift.protocol.TField("userFriendlyMessage", org.apache.thrift.protocol.TType.STRING, (short)4);
@@ -68,7 +68,7 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new ErrorDetailsTupleSchemeFactory());
   }
 
-  private String errorID; // required
+  private String errorId; // required
   private long creationTime; // optional
   private String actualErrorMessage; // optional
   private String userFriendlyMessage; // optional
@@ -80,7 +80,7 @@ import org.slf4j.LoggerFactory;
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    ERROR_ID((short)1, "errorID"),
+    ERROR_ID((short)1, "errorId"),
     CREATION_TIME((short)2, "creationTime"),
     ACTUAL_ERROR_MESSAGE((short)3, "actualErrorMessage"),
     USER_FRIENDLY_MESSAGE((short)4, "userFriendlyMessage"),
@@ -180,7 +180,7 @@ import org.slf4j.LoggerFactory;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.ERROR_ID, new org.apache.thrift.meta_data.FieldMetaData("errorID", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.ERROR_ID, new org.apache.thrift.meta_data.FieldMetaData("errorId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.CREATION_TIME, new org.apache.thrift.meta_data.FieldMetaData("creationTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
@@ -204,17 +204,17 @@ import org.slf4j.LoggerFactory;
   }
 
   public ErrorDetails() {
-    this.errorID = "DO_NOT_SET_AT_CLIENTS";
+    this.errorId = "DO_NOT_SET_AT_CLIENTS";
 
     this.transientOrPersistent = false;
 
   }
 
   public ErrorDetails(
-    String errorID)
+    String errorId)
   {
     this();
-    this.errorID = errorID;
+    this.errorId = errorId;
   }
 
   /**
@@ -222,8 +222,8 @@ import org.slf4j.LoggerFactory;
    */
   public ErrorDetails(ErrorDetails other) {
     __isset_bitfield = other.__isset_bitfield;
-    if (other.isSetErrorID()) {
-      this.errorID = other.errorID;
+    if (other.isSetErrorId()) {
+      this.errorId = other.errorId;
     }
     this.creationTime = other.creationTime;
     if (other.isSetActualErrorMessage()) {
@@ -254,7 +254,7 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public void clear() {
-    this.errorID = "DO_NOT_SET_AT_CLIENTS";
+    this.errorId = "DO_NOT_SET_AT_CLIENTS";
 
     setCreationTimeIsSet(false);
     this.creationTime = 0;
@@ -268,26 +268,26 @@ import org.slf4j.LoggerFactory;
     this.rootCauseErrorIdList = null;
   }
 
-  public String getErrorID() {
-    return this.errorID;
+  public String getErrorId() {
+    return this.errorId;
   }
 
-  public void setErrorID(String errorID) {
-    this.errorID = errorID;
+  public void setErrorId(String errorId) {
+    this.errorId = errorId;
   }
 
-  public void unsetErrorID() {
-    this.errorID = null;
+  public void unsetErrorId() {
+    this.errorId = null;
   }
 
-  /** Returns true if field errorID is set (has been assigned a value) and false otherwise */
-  public boolean isSetErrorID() {
-    return this.errorID != null;
+  /** Returns true if field errorId is set (has been assigned a value) and false otherwise */
+  public boolean isSetErrorId() {
+    return this.errorId != null;
   }
 
-  public void setErrorIDIsSet(boolean value) {
+  public void setErrorIdIsSet(boolean value) {
     if (!value) {
-      this.errorID = null;
+      this.errorId = null;
     }
   }
 
@@ -516,9 +516,9 @@ import org.slf4j.LoggerFactory;
     switch (field) {
     case ERROR_ID:
       if (value == null) {
-        unsetErrorID();
+        unsetErrorId();
       } else {
-        setErrorID((String)value);
+        setErrorId((String)value);
       }
       break;
 
@@ -592,7 +592,7 @@ import org.slf4j.LoggerFactory;
   public Object getFieldValue(_Fields field) {
     switch (field) {
     case ERROR_ID:
-      return getErrorID();
+      return getErrorId();
 
     case CREATION_TIME:
       return Long.valueOf(getCreationTime());
@@ -630,7 +630,7 @@ import org.slf4j.LoggerFactory;
 
     switch (field) {
     case ERROR_ID:
-      return isSetErrorID();
+      return isSetErrorId();
     case CREATION_TIME:
       return isSetCreationTime();
     case ACTUAL_ERROR_MESSAGE:
@@ -664,12 +664,12 @@ import org.slf4j.LoggerFactory;
     if (that == null)
       return false;
 
-    boolean this_present_errorID = true && this.isSetErrorID();
-    boolean that_present_errorID = true && that.isSetErrorID();
-    if (this_present_errorID || that_present_errorID) {
-      if (!(this_present_errorID && that_present_errorID))
+    boolean this_present_errorId = true && this.isSetErrorId();
+    boolean that_present_errorId = true && that.isSetErrorId();
+    if (this_present_errorId || that_present_errorId) {
+      if (!(this_present_errorId && that_present_errorId))
         return false;
-      if (!this.errorID.equals(that.errorID))
+      if (!this.errorId.equals(that.errorId))
         return false;
     }
 
@@ -761,12 +761,12 @@ import org.slf4j.LoggerFactory;
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetErrorID()).compareTo(other.isSetErrorID());
+    lastComparison = Boolean.valueOf(isSetErrorId()).compareTo(other.isSetErrorId());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetErrorID()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.errorID, other.errorID);
+    if (isSetErrorId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.errorId, other.errorId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -871,11 +871,11 @@ import org.slf4j.LoggerFactory;
     StringBuilder sb = new StringBuilder("ErrorDetails(");
     boolean first = true;
 
-    sb.append("errorID:");
-    if (this.errorID == null) {
+    sb.append("errorId:");
+    if (this.errorId == null) {
       sb.append("null");
     } else {
-      sb.append(this.errorID);
+      sb.append(this.errorId);
     }
     first = false;
     if (isSetCreationTime()) {
@@ -956,8 +956,8 @@ import org.slf4j.LoggerFactory;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetErrorID()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'errorID' is unset! Struct:" + toString());
+    if (!isSetErrorId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'errorId' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -1001,8 +1001,8 @@ import org.slf4j.LoggerFactory;
         switch (schemeField.id) {
           case 1: // ERROR_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.errorID = iprot.readString();
-              struct.setErrorIDIsSet(true);
+              struct.errorId = iprot.readString();
+              struct.setErrorIdIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1094,9 +1094,9 @@ import org.slf4j.LoggerFactory;
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.errorID != null) {
+      if (struct.errorId != null) {
         oprot.writeFieldBegin(ERROR_ID_FIELD_DESC);
-        oprot.writeString(struct.errorID);
+        oprot.writeString(struct.errorId);
         oprot.writeFieldEnd();
       }
       if (struct.isSetCreationTime()) {
@@ -1175,7 +1175,7 @@ import org.slf4j.LoggerFactory;
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, ErrorDetails struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      oprot.writeString(struct.errorID);
+      oprot.writeString(struct.errorId);
       BitSet optionals = new BitSet();
       if (struct.isSetCreationTime()) {
         optionals.set(0);
@@ -1237,8 +1237,8 @@ import org.slf4j.LoggerFactory;
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ErrorDetails struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.errorID = iprot.readString();
-      struct.setErrorIDIsSet(true);
+      struct.errorId = iprot.readString();
+      struct.setErrorIdIsSet(true);
       BitSet incoming = iprot.readBitSet(8);
       if (incoming.get(0)) {
         struct.creationTime = iprot.readI64();

@@ -161,7 +161,7 @@ public class JobDescriptor {
         inputList.setInputArray(inputValue.toArray(new String[inputValue.size()]));
     }
 
-    public void setJobID(String jobID) {
+    public void setJobId(String jobID) {
         this.getJobDescriptorDocument().getJobDescriptor().setJobID(jobID);
     }
 
@@ -325,7 +325,7 @@ public class JobDescriptor {
         return this.getJobDescriptorDocument().getJobDescriptor().getInputs().getInputArray();
     }
 
-    public String getJobID() {
+    public String getJobId() {
         return this.getJobDescriptorDocument().getJobDescriptor().getJobID();
     }
 
@@ -383,11 +383,6 @@ public class JobDescriptor {
     public String getJobName() {
         return this.getJobDescriptorDocument().getJobDescriptor().getJobName();
     }
-
-    public String getJobId() {
-        return this.getJobDescriptorDocument().getJobDescriptor().getJobID();
-    }
-
 
     public String getVariableList() {
         return this.getJobDescriptorDocument().getJobDescriptor().getJobID();

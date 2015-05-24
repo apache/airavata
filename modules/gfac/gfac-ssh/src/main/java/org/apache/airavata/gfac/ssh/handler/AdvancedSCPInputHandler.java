@@ -121,7 +121,7 @@ public class AdvancedSCPInputHandler extends AbstractHandler {
             }
 
             // Server info
-            String parentPath = inputPath + File.separator + jobExecutionContext.getExperimentID() + File.separator + jobExecutionContext.getTaskData().getTaskID();
+            String parentPath = inputPath + File.separator + jobExecutionContext.getExperimentId() + File.separator + jobExecutionContext.getTaskData().getTaskId();
             if (index < oldIndex) {
                 parentPath = oldFiles.get(index);
                 data.append(oldFiles.get(index++)).append(","); // we get already transfered file and increment the index
@@ -166,7 +166,7 @@ public class AdvancedSCPInputHandler extends AbstractHandler {
                         status.setTransferState(TransferState.UPLOAD);
                         detail.setTransferStatus(status);
                         detail.setTransferDescription("Input Data Staged: " + stageInputFile);
-                        registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+                        registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskId());
 
                         GFacUtils.saveHandlerData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
                     }

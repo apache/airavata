@@ -52,7 +52,7 @@ public class SlurmOutputParser implements OutputParser {
                 } else {
                     switch (column) {
                         case 0:
-                            descriptor.setJobID(each);
+                            descriptor.setJobId(each);
                             column++;
                             break;
                         case 1:

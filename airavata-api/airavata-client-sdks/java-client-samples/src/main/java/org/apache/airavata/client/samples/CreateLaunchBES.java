@@ -147,7 +147,7 @@ public class CreateLaunchBES {
             Thread.sleep(10000);
             for (String exId : experimentIds) {
                 Experiment experiment = airavataClient.getExperiment(exId);
-                System.out.println(experiment.getExperimentID() + " " + experiment.getExperimentStatus().getExperimentState().name());
+                System.out.println(experiment.getExperimentId() + " " + experiment.getExperimentStatus().getExperimentState().name());
             }
 
 
@@ -252,7 +252,7 @@ public class CreateLaunchBES {
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         
                         userConfigurationData.setGenerateCert(false);
-                        userConfigurationData.setUserDN("");
+                        userConfigurationData.setUserDn("");
 
                         // set output directory 
                         AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();
@@ -324,7 +324,7 @@ public class CreateLaunchBES {
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         
                         userConfigurationData.setGenerateCert(true);
-                        userConfigurationData.setUserDN("CN=m.memon, O=Ultrascan Gateway, C=DE");
+                        userConfigurationData.setUserDn("CN=m.memon, O=Ultrascan Gateway, C=DE");
 
                         // set output directory 
                         AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();

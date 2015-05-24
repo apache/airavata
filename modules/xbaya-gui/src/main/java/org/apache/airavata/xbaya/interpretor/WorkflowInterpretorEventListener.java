@@ -180,12 +180,12 @@
 //        if (type == MonitorUtil.EventType.WORKFLOW_INVOKED) {
 //            workflowStarted(graph, forward);
 //            //todo ideally experimentID and workflowInstanceID has to be different
-//            workflowStatusUpdater.saveWorkflowData(event.getExperimentID(), event.getExperimentID(),
+//            workflowStatusUpdater.saveWorkflowData(event.getExperimentId(), event.getExperimentId(),
 //                    this.workflowInterpreterConfiguration.getWorkflow().getName());
-//            workflowStatusUpdater.workflowStarted(event.getExperimentID());
+//            workflowStatusUpdater.workflowStarted(event.getExperimentId());
 //        } else if (type == MonitorUtil.EventType.WORKFLOW_TERMINATED) {
 //            workflowFinished(graph, forward);
-//            workflowStatusUpdater.workflowFinished(event.getExperimentID());
+//            workflowStatusUpdater.workflowFinished(event.getExperimentId());
 //            try {
 //                this.unsubscribe();
 //            } catch (MonitorException e) {
@@ -198,7 +198,7 @@
 //				}
 //            } else {
 //                nodeStarted(node, forward);
-//                workflowNodeStatusUpdater.workflowNodeStarted(event.getExperimentID(), event.getNodeID()
+//                workflowNodeStatusUpdater.workflowNodeStarted(event.getExperimentId(), event.getNodeID()
 //                        , event.getMessage(), event.getWorkflowID().toASCIIString());
 //            }
 //        } else if (type == MonitorUtil.EventType.RECEIVED_RESULT
@@ -211,7 +211,7 @@
 //				}
 //        	} else {
 //                nodeFinished(node, forward);
-//                workflowNodeStatusUpdater.workflowNodeFinished(event.getExperimentID(), event.getNodeID(), event.getMessage(),
+//                workflowNodeStatusUpdater.workflowNodeFinished(event.getExperimentId(), event.getNodeID(), event.getMessage(),
 //                        event.getWorkflowID().toASCIIString());
 //            }
 //        } else if (type == EventType.RECEIVED_FAULT
@@ -219,9 +219,9 @@
 //            //Constructing NodeExecutionError with required data...
 //            logger.error(event.getMessage());
 //            NodeExecutionError nodeExecutionError = new NodeExecutionError();
-//            nodeExecutionError.setExperimentId(event.getExperimentID());
+//            nodeExecutionError.setExperimentId(event.getExperimentId());
 //            nodeExecutionError.setNodeId(event.getNodeID());
-//            nodeExecutionError.setWorkflowInstanceId(event.getExperimentID());
+//            nodeExecutionError.setWorkflowInstanceId(event.getExperimentId());
 //            nodeExecutionError.setErrorMessage(event.getMessage());
 //            nodeExecutionError.setErrorDescription(event.getMessage());
 //            nodeExecutionError.setErrorTime(event.getTimestamp());
@@ -232,7 +232,7 @@
 //				}
 //            } else {
 //                nodeFailed(node, forward);
-//                workflowNodeStatusUpdater.workflowNodeFailed(event.getExperimentID(), event.getNodeID());
+//                workflowNodeStatusUpdater.workflowNodeFailed(event.getExperimentId(), event.getNodeID());
 //            }
 //            try {
 //                this.unsubscribe();
@@ -246,17 +246,17 @@
 //				}
 //            } else {
 //                // nodeResourceMapped(node, event.getEvent(), forward);
-//                workflowNodeStatusUpdater.workflowNodeRunning(event.getExperimentID(), event.getNodeID());
+//                workflowNodeStatusUpdater.workflowNodeRunning(event.getExperimentId(), event.getNodeID());
 //            }
 //        } else if(type == MonitorUtil.EventType.LOG_INFO){
 //            // This is not very gram specific, if these data is required in other provider they have to send
 //            // the notification in info mode with ending these text, DONE,PENDING and ACTIVE
 //            if(event.getMessage().endsWith("DONE")) {
-//                workflowNodeStatusUpdater.workflowNodeStatusDone(event.getExperimentID(), event.getNodeID());
+//                workflowNodeStatusUpdater.workflowNodeStatusDone(event.getExperimentId(), event.getNodeID());
 //            } else if(event.getMessage().endsWith("PENDING")){
-//                workflowNodeStatusUpdater.workflowNodeStatusPending(event.getExperimentID(), event.getNodeID());
+//                workflowNodeStatusUpdater.workflowNodeStatusPending(event.getExperimentId(), event.getNodeID());
 //            } else if(event.getMessage().endsWith("ACTIVE")){
-//                workflowNodeStatusUpdater.workflowNodeStatusActive(event.getExperimentID(), event.getNodeID());
+//                workflowNodeStatusUpdater.workflowNodeStatusActive(event.getExperimentId(), event.getNodeID());
 //            }
 //        } else {
 //            // Ignore the rest.

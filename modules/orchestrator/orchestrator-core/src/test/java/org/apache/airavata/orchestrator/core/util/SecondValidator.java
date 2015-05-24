@@ -31,7 +31,7 @@ public class SecondValidator implements JobMetadataValidator {
     public ValidationResults validate(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID) {
         ValidationResults validationResults = new ValidationResults();
         validationResults.setValidationState(true);
-        if(taskID.getTaskID() == null) {
+        if(taskID.getTaskId() == null) {
             ValidatorResult validatorResult = new ValidatorResult(false);
             validatorResult.setErrorDetails("No taskID is set, so Validation failed");
             validationResults.addToValidationResultList(validatorResult);

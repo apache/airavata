@@ -149,11 +149,11 @@
 //
 //        jobExecutionContext.setOutMessageContext(outMessage);
 //
-//        jobExecutionContext.setExperimentID("test123");
+//        jobExecutionContext.setExperimentId("test123");
 //        jobExecutionContext.setExperiment(new Experiment("test123","project1","admin","testExp"));
-//        jobExecutionContext.setTaskData(new TaskDetails(jobExecutionContext.getExperimentID()));
+//        jobExecutionContext.setTaskData(new TaskDetails(jobExecutionContext.getExperimentId()));
 //        jobExecutionContext.setRegistry(new LoggingRegistryImpl());
-//        jobExecutionContext.setWorkflowNodeDetails(new WorkflowNodeDetails(jobExecutionContext.getExperimentID(),"none", ExecutionUnit.APPLICATION));
+//        jobExecutionContext.setWorkflowNodeDetails(new WorkflowNodeDetails(jobExecutionContext.getExperimentId(),"none", ExecutionUnit.APPLICATION));
 //
 //
 //    }

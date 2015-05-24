@@ -23,31 +23,14 @@
  */
 package org.apache.airavata.model.workspace.experiment;
 
+import org.apache.thrift.EncodingUtils;
+import org.apache.thrift.protocol.TTupleProtocol;
 import org.apache.thrift.scheme.IScheme;
 import org.apache.thrift.scheme.SchemeFactory;
 import org.apache.thrift.scheme.StandardScheme;
-
 import org.apache.thrift.scheme.TupleScheme;
-import org.apache.thrift.protocol.TTupleProtocol;
-import org.apache.thrift.protocol.TProtocolException;
-import org.apache.thrift.EncodingUtils;
-import org.apache.thrift.TException;
-import org.apache.thrift.async.AsyncMethodCallback;
-import org.apache.thrift.server.AbstractNonblockingServer.*;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.EnumMap;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.EnumSet;
-import java.util.Collections;
-import java.util.BitSet;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 /**
  * A structure holding the actual execution context decided based on user provided configuration data or system inferred
@@ -58,7 +41,7 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("all") public class TaskDetails implements org.apache.thrift.TBase<TaskDetails, TaskDetails._Fields>, java.io.Serializable, Cloneable, Comparable<TaskDetails> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TaskDetails");
 
-  private static final org.apache.thrift.protocol.TField TASK_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("taskID", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField TASK_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("taskId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("creationTime", org.apache.thrift.protocol.TType.I64, (short)2);
   private static final org.apache.thrift.protocol.TField APPLICATION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationId", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField APPLICATION_VERSION_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationVersion", org.apache.thrift.protocol.TType.STRING, (short)4);
@@ -81,7 +64,7 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new TaskDetailsTupleSchemeFactory());
   }
 
-  private String taskID; // required
+  private String taskId; // required
   private long creationTime; // optional
   private String applicationId; // optional
   private String applicationVersion; // optional
@@ -100,7 +83,7 @@ import org.slf4j.LoggerFactory;
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    TASK_ID((short)1, "taskID"),
+    TASK_ID((short)1, "taskId"),
     CREATION_TIME((short)2, "creationTime"),
     APPLICATION_ID((short)3, "applicationId"),
     APPLICATION_VERSION((short)4, "applicationVersion"),
@@ -209,7 +192,7 @@ import org.slf4j.LoggerFactory;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.TASK_ID, new org.apache.thrift.meta_data.FieldMetaData("taskID", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.TASK_ID, new org.apache.thrift.meta_data.FieldMetaData("taskId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.CREATION_TIME, new org.apache.thrift.meta_data.FieldMetaData("creationTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
@@ -252,15 +235,15 @@ import org.slf4j.LoggerFactory;
   }
 
   public TaskDetails() {
-    this.taskID = "DO_NOT_SET_AT_CLIENTS";
+    this.taskId = "DO_NOT_SET_AT_CLIENTS";
 
   }
 
   public TaskDetails(
-    String taskID)
+    String taskId)
   {
     this();
-    this.taskID = taskID;
+    this.taskId = taskId;
   }
 
   /**
@@ -268,8 +251,8 @@ import org.slf4j.LoggerFactory;
    */
   public TaskDetails(TaskDetails other) {
     __isset_bitfield = other.__isset_bitfield;
-    if (other.isSetTaskID()) {
-      this.taskID = other.taskID;
+    if (other.isSetTaskId()) {
+      this.taskId = other.taskId;
     }
     this.creationTime = other.creationTime;
     if (other.isSetApplicationId()) {
@@ -341,7 +324,7 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public void clear() {
-    this.taskID = "DO_NOT_SET_AT_CLIENTS";
+    this.taskId = "DO_NOT_SET_AT_CLIENTS";
 
     setCreationTimeIsSet(false);
     this.creationTime = 0;
@@ -362,26 +345,26 @@ import org.slf4j.LoggerFactory;
     this.emailAddresses = null;
   }
 
-  public String getTaskID() {
-    return this.taskID;
+  public String getTaskId() {
+    return this.taskId;
   }
 
-  public void setTaskID(String taskID) {
-    this.taskID = taskID;
+  public void setTaskId(String taskId) {
+    this.taskId = taskId;
   }
 
-  public void unsetTaskID() {
-    this.taskID = null;
+  public void unsetTaskId() {
+    this.taskId = null;
   }
 
-  /** Returns true if field taskID is set (has been assigned a value) and false otherwise */
-  public boolean isSetTaskID() {
-    return this.taskID != null;
+  /** Returns true if field taskId is set (has been assigned a value) and false otherwise */
+  public boolean isSetTaskId() {
+    return this.taskId != null;
   }
 
-  public void setTaskIDIsSet(boolean value) {
+  public void setTaskIdIsSet(boolean value) {
     if (!value) {
-      this.taskID = null;
+      this.taskId = null;
     }
   }
 
@@ -822,9 +805,9 @@ import org.slf4j.LoggerFactory;
     switch (field) {
     case TASK_ID:
       if (value == null) {
-        unsetTaskID();
+        unsetTaskId();
       } else {
-        setTaskID((String)value);
+        setTaskId((String)value);
       }
       break;
 
@@ -954,7 +937,7 @@ import org.slf4j.LoggerFactory;
   public Object getFieldValue(_Fields field) {
     switch (field) {
     case TASK_ID:
-      return getTaskID();
+      return getTaskId();
 
     case CREATION_TIME:
       return Long.valueOf(getCreationTime());
@@ -1013,7 +996,7 @@ import org.slf4j.LoggerFactory;
 
     switch (field) {
     case TASK_ID:
-      return isSetTaskID();
+      return isSetTaskId();
     case CREATION_TIME:
       return isSetCreationTime();
     case APPLICATION_ID:
@@ -1061,12 +1044,12 @@ import org.slf4j.LoggerFactory;
     if (that == null)
       return false;
 
-    boolean this_present_taskID = true && this.isSetTaskID();
-    boolean that_present_taskID = true && that.isSetTaskID();
-    if (this_present_taskID || that_present_taskID) {
-      if (!(this_present_taskID && that_present_taskID))
+    boolean this_present_taskId = true && this.isSetTaskId();
+    boolean that_present_taskId = true && that.isSetTaskId();
+    if (this_present_taskId || that_present_taskId) {
+      if (!(this_present_taskId && that_present_taskId))
         return false;
-      if (!this.taskID.equals(that.taskID))
+      if (!this.taskId.equals(that.taskId))
         return false;
     }
 
@@ -1221,12 +1204,12 @@ import org.slf4j.LoggerFactory;
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetTaskID()).compareTo(other.isSetTaskID());
+    lastComparison = Boolean.valueOf(isSetTaskId()).compareTo(other.isSetTaskId());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetTaskID()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.taskID, other.taskID);
+    if (isSetTaskId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.taskId, other.taskId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1401,11 +1384,11 @@ import org.slf4j.LoggerFactory;
     StringBuilder sb = new StringBuilder("TaskDetails(");
     boolean first = true;
 
-    sb.append("taskID:");
-    if (this.taskID == null) {
+    sb.append("taskId:");
+    if (this.taskId == null) {
       sb.append("null");
     } else {
-      sb.append(this.taskID);
+      sb.append(this.taskId);
     }
     first = false;
     if (isSetCreationTime()) {
@@ -1556,8 +1539,8 @@ import org.slf4j.LoggerFactory;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetTaskID()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'taskID' is unset! Struct:" + toString());
+    if (!isSetTaskId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'taskId' is unset! Struct:" + toString());
     }
 
     // check for sub-struct validity
@@ -1613,8 +1596,8 @@ import org.slf4j.LoggerFactory;
         switch (schemeField.id) {
           case 1: // TASK_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.taskID = iprot.readString();
-              struct.setTaskIDIsSet(true);
+              struct.taskId = iprot.readString();
+              struct.setTaskIdIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1821,9 +1804,9 @@ import org.slf4j.LoggerFactory;
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.taskID != null) {
+      if (struct.taskId != null) {
         oprot.writeFieldBegin(TASK_ID_FIELD_DESC);
-        oprot.writeString(struct.taskID);
+        oprot.writeString(struct.taskId);
         oprot.writeFieldEnd();
       }
       if (struct.isSetCreationTime()) {
@@ -1986,7 +1969,7 @@ import org.slf4j.LoggerFactory;
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, TaskDetails struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      oprot.writeString(struct.taskID);
+      oprot.writeString(struct.taskId);
       BitSet optionals = new BitSet();
       if (struct.isSetCreationTime()) {
         optionals.set(0);
@@ -2120,8 +2103,8 @@ import org.slf4j.LoggerFactory;
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, TaskDetails struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.taskID = iprot.readString();
-      struct.setTaskIDIsSet(true);
+      struct.taskId = iprot.readString();
+      struct.setTaskIdIsSet(true);
       BitSet incoming = iprot.readBitSet(15);
       if (incoming.get(0)) {
         struct.creationTime = iprot.readI64();

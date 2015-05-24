@@ -54,7 +54,7 @@
 //        workflowDataResource = (WorkflowDataResource) experimentResource.create(ResourceType.WORKFLOW_DATA);
 //        workflowDataResource.setWorkflowInstanceID("testWFInstance");
 //        workflowDataResource.setTemplateName("testTemplate");
-//        workflowDataResource.setExperimentID("testExpID");
+//        workflowDataResource.setExperimentId("testExpID");
 //        Timestamp timestamp = getCurrentTimestamp();
 //        workflowDataResource.setLastUpdatedTime(timestamp);
 //        workflowDataResource.save();
@@ -82,9 +82,9 @@
 //        executionErrorResource.setErrorDes("testDes");
 //        executionErrorResource.setErrorMsg("errorMsg");
 //        executionErrorResource.save();
-//        System.out.println(executionErrorResource.getErrorID());
+//        System.out.println(executionErrorResource.getErrorId());
 //
-//        assertTrue("Execution Error saved successfully", workflowDataResource.isExists(ResourceType.EXECUTION_ERROR, executionErrorResource.getErrorID()));
+//        assertTrue("Execution Error saved successfully", workflowDataResource.isExists(ResourceType.EXECUTION_ERROR, executionErrorResource.getErrorId()));
 //
 //    }
 //

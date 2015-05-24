@@ -209,7 +209,7 @@ public class CreateLaunchExperiment {
                             &&!experiment.getExperimentStatus().getExperimentState().equals(ExperimentState.CANCELED)){
                         allNotFinished = true;
                     }
-                    System.out.println(experiment.getExperimentID() + " " + experiment.getExperimentStatus().getExperimentState().name());
+                    System.out.println(experiment.getExperimentId() + " " + experiment.getExperimentStatus().getExperimentState().name());
                 }
                 System.out.println("----------------------------------------------------");
                 Thread.sleep(10000);
@@ -348,7 +348,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         
                         userConfigurationData.setGenerateCert(false);
-                        userConfigurationData.setUserDN("");
+                        userConfigurationData.setUserDn("");
 
                         // set output directory 
                         AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();
@@ -405,7 +405,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         
                         userConfigurationData.setGenerateCert(false);
-                        userConfigurationData.setUserDN("");
+                        userConfigurationData.setUserDn("");
 
                         // set output directory 
                         AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();

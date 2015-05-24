@@ -24,13 +24,13 @@
 //public class ExperimentIdentity {
 //	private String experimentID;
 //	public ExperimentIdentity(String experimentId) {
-//		setExperimentID(experimentId);
+//		setExperimentId(experimentId);
 //	}
-//	public String getExperimentID() {
+//	public String getExperimentId() {
 //		return experimentID;
 //	}
 //
-//	public void setExperimentID(String experimentID) {
+//	public void setExperimentId(String experimentID) {
 //		this.experimentID = experimentID;
 //	}
 //}

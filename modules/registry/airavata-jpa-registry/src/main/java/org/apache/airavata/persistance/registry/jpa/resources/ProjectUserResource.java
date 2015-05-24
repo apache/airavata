@@ -89,7 +89,7 @@ public class ProjectUserResource extends AbstractResource {
             em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
             ProjectUser prUser = new ProjectUser();
-            prUser.setProjectID(projectId);
+            prUser.setProjectId(projectId);
             prUser.setUserName(userName);
             Users user = em.find(Users.class, userName);
             prUser.setUser(user);
@@ -97,7 +97,7 @@ public class ProjectUserResource extends AbstractResource {
             prUser.setProject(project);
 
             if (existingPrUser != null) {
-                existingPrUser.setProjectID(projectId);
+                existingPrUser.setProjectId(projectId);
                 existingPrUser.setUserName(userName);
                 existingPrUser.setUser(user);
                 existingPrUser.setProject(project);

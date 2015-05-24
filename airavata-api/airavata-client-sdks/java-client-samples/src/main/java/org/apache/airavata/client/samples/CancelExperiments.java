@@ -49,7 +49,7 @@ public class CancelExperiments {
             String expeId = "echoExperiment_31c132fd-87ea-4781-803c-ae5f04a79baf";
             terminateExperiment(client,expeId);
 
-//            System.out.println("retrieved exp id : " + experiment.getExperimentID());
+//            System.out.println("retrieved exp id : " + experiment.getExperimentId());
         } catch (Exception e) {
             logger.error("Error while connecting with server", e.getMessage());
             e.printStackTrace();

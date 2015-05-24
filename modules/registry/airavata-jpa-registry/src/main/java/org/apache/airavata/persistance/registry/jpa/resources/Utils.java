@@ -389,7 +389,7 @@ public class Utils {
         ProjectUserResource projectUserResource = new ProjectUserResource();
         if (o != null){
             projectUserResource.setUserName(o.getUser().getUser_name());
-            projectUserResource.setProjectId(o.getProjectID());
+            projectUserResource.setProjectId(o.getProjectId());
         }
         return projectUserResource;
     }
@@ -571,7 +571,7 @@ public class Utils {
                 WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource)createWorkflowNodeDetail(o.getNodeDetails());
                 errorDetailResource.setNodeDetail(nodeDetailResource);
             }
-            errorDetailResource.setErrorId(o.getErrorID());
+            errorDetailResource.setErrorId(o.getErrorId());
             errorDetailResource.setJobId(o.getJobId());
             errorDetailResource.setCreationTime(o.getCreationTime());
             if (o.getActualErrorMsg() != null){

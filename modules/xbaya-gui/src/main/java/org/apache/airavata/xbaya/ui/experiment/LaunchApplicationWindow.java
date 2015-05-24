@@ -299,7 +299,7 @@ public class LaunchApplicationWindow {
         String owner = this.thriftClientData.getUsername();        
         if(owner.equals(""))owner="NotKnown";              
         project.setOwner(owner);
-        project.setProjectID(airavataClient.createProject(gatewayId, project));
+        project.setProjectId(airavataClient.createProject(gatewayId, project));
 //        final List<InputNode> inputNodes = GraphUtil.getInputNodes(this.workflow.getGraph());
         final List<DataPort> inputPorts = node.getInputPorts();
         final Experiment experiment = new Experiment();
@@ -314,7 +314,7 @@ public class LaunchApplicationWindow {
         }
         
         scheduling.setNodeCount(1);
-        scheduling.setTotalCPUCount(1);
+        scheduling.setTotalCpuCount(1);
         scheduling.setWallTimeLimit(15);
         scheduling.setQueueName("normal");
         UserConfigurationData userConfigurationData = new UserConfigurationData();
@@ -323,7 +323,7 @@ public class LaunchApplicationWindow {
         userConfigurationData.setComputationalResourceScheduling(scheduling);
         experiment.setUserConfigurationData(userConfigurationData);
         experiment.setName(instanceName);
-        experiment.setProjectID(project.getProjectID());
+        experiment.setProjectId(project.getProjectId());
         experiment.setUserName(thriftClientData.getUsername());
 
 //        for (int i = 0; i < inputNodes.size(); i++) {
@@ -368,16 +368,16 @@ public class LaunchApplicationWindow {
 			experiment.addToExperimentOutputs(elem );
         }
 
-        experiment.setExperimentID(airavataClient.createExperiment(gatewayId, experiment));
-        airavataClient.launchExperiment(experiment.getExperimentID(), "testToken");
+        experiment.setExperimentId(airavataClient.createExperiment(gatewayId, experiment));
+        airavataClient.launchExperiment(experiment.getExperimentId(), "testToken");
         hide();
         JOptionPane.showMessageDialog(null, "Experiment Launched. You will be alerted on completion.");
      
-        String status = airavataClient.getExperimentStatus(experiment.getExperimentID()).getExperimentState().toString().trim();      
+        String status = airavataClient.getExperimentStatus(experiment.getExperimentId()).getExperimentState().toString().trim();
         while(!status.equals("COMPLETED") && !status.equals("FAILED")){        	
         	try {
 				Thread.sleep(1000);
-				status = airavataClient.getExperimentStatus(experiment.getExperimentID()).getExperimentState().toString().trim();				
+				status = airavataClient.getExperimentStatus(experiment.getExperimentId()).getExperimentState().toString().trim();
 			} catch (InterruptedException e) {
                 logger.error(e.getMessage(), e);
 			}
@@ -394,7 +394,7 @@ public class LaunchApplicationWindow {
         	while(output.equals("")){
         		output = "";
         		fullOutput = "Experiment Completed Successfully. Output(s) are shown below:\n";
-            	List<OutputDataObjectType> outputs = airavataClient.getExperimentOutputs(experiment.getExperimentID());
+            	List<OutputDataObjectType> outputs = airavataClient.getExperimentOutputs(experiment.getExperimentId());
             	for(int i1=0; i1<outputs.size(); i1++){
             		output = outputs.get(i1).getValue();
             		fullOutput+= outputs.get(i1).getName()+": "+output+"\n";

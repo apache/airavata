@@ -752,8 +752,8 @@ uint32_t ComputationalResourceScheduling::read(::apache::thrift::protocol::TProt
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->totalCPUCount);
-          this->__isset.totalCPUCount = true;
+          xfer += iprot->readI32(this->totalCpuCount);
+          this->__isset.totalCpuCount = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -843,9 +843,9 @@ uint32_t ComputationalResourceScheduling::write(::apache::thrift::protocol::TPro
     xfer += oprot->writeString(this->resourceHostId);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.totalCPUCount) {
-    xfer += oprot->writeFieldBegin("totalCPUCount", ::apache::thrift::protocol::T_I32, 2);
-    xfer += oprot->writeI32(this->totalCPUCount);
+  if (this->__isset.totalCpuCount) {
+    xfer += oprot->writeFieldBegin("totalCpuCount", ::apache::thrift::protocol::T_I32, 2);
+    xfer += oprot->writeI32(this->totalCpuCount);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.nodeCount) {
@@ -896,7 +896,7 @@ uint32_t ComputationalResourceScheduling::write(::apache::thrift::protocol::TPro
 void swap(ComputationalResourceScheduling &a, ComputationalResourceScheduling &b) {
   using ::std::swap;
   swap(a.resourceHostId, b.resourceHostId);
-  swap(a.totalCPUCount, b.totalCPUCount);
+  swap(a.totalCpuCount, b.totalCpuCount);
   swap(a.nodeCount, b.nodeCount);
   swap(a.numberOfThreads, b.numberOfThreads);
   swap(a.queueName, b.queueName);
@@ -1286,8 +1286,8 @@ uint32_t UserConfigurationData::read(::apache::thrift::protocol::TProtocol* ipro
         break;
       case 9:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->userDN);
-          this->__isset.userDN = true;
+          xfer += iprot->readString(this->userDn);
+          this->__isset.userDn = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -1358,9 +1358,9 @@ uint32_t UserConfigurationData::write(::apache::thrift::protocol::TProtocol* opr
     xfer += oprot->writeBool(this->throttleResources);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.userDN) {
-    xfer += oprot->writeFieldBegin("userDN", ::apache::thrift::protocol::T_STRING, 9);
-    xfer += oprot->writeString(this->userDN);
+  if (this->__isset.userDn) {
+    xfer += oprot->writeFieldBegin("userDn", ::apache::thrift::protocol::T_STRING, 9);
+    xfer += oprot->writeString(this->userDn);
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.generateCert) {
@@ -1383,7 +1383,7 @@ void swap(UserConfigurationData &a, UserConfigurationData &b) {
   swap(a.advanceOutputDataHandling, b.advanceOutputDataHandling);
   swap(a.qosParams, b.qosParams);
   swap(a.throttleResources, b.throttleResources);
-  swap(a.userDN, b.userDN);
+  swap(a.userDn, b.userDn);
   swap(a.generateCert, b.generateCert);
   swap(a.__isset, b.__isset);
 }
@@ -1402,7 +1402,7 @@ uint32_t ErrorDetails::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   using ::apache::thrift::protocol::TProtocolException;
 
-  bool isset_errorID = false;
+  bool isset_errorId = false;
 
   while (true)
   {
@@ -1414,8 +1414,8 @@ uint32_t ErrorDetails::read(::apache::thrift::protocol::TProtocol* iprot) {
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->errorID);
-          isset_errorID = true;
+          xfer += iprot->readString(this->errorId);
+          isset_errorId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -1511,7 +1511,7 @@ uint32_t ErrorDetails::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   xfer += iprot->readStructEnd();
 
-  if (!isset_errorID)
+  if (!isset_errorId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
@@ -1520,8 +1520,8 @@ uint32_t ErrorDetails::write(::apache::thrift::protocol::TProtocol* oprot) const
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("ErrorDetails");
 
-  xfer += oprot->writeFieldBegin("errorID", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString(this->errorID);
+  xfer += oprot->writeFieldBegin("errorId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->errorId);
   xfer += oprot->writeFieldEnd();
 
   if (this->__isset.creationTime) {
@@ -1579,7 +1579,7 @@ uint32_t ErrorDetails::write(::apache::thrift::protocol::TProtocol* oprot) const
 
 void swap(ErrorDetails &a, ErrorDetails &b) {
   using ::std::swap;
-  swap(a.errorID, b.errorID);
+  swap(a.errorId, b.errorId);
   swap(a.creationTime, b.creationTime);
   swap(a.actualErrorMessage, b.actualErrorMessage);
   swap(a.userFriendlyMessage, b.userFriendlyMessage);
@@ -1605,7 +1605,7 @@ uint32_t JobDetails::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   using ::apache::thrift::protocol::TProtocolException;
 
-  bool isset_jobID = false;
+  bool isset_jobId = false;
   bool isset_jobDescription = false;
 
   while (true)
@@ -1618,8 +1618,8 @@ uint32_t JobDetails::read(::apache::thrift::protocol::TProtocol* iprot) {
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->jobID);
-          isset_jobID = true;
+          xfer += iprot->readString(this->jobId);
+          isset_jobId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -1709,7 +1709,7 @@ uint32_t JobDetails::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   xfer += iprot->readStructEnd();
 
-  if (!isset_jobID)
+  if (!isset_jobId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_jobDescription)
     throw TProtocolException(TProtocolException::INVALID_DATA);
@@ -1720,8 +1720,8 @@ uint32_t JobDetails::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("JobDetails");
 
-  xfer += oprot->writeFieldBegin("jobID", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString(this->jobID);
+  xfer += oprot->writeFieldBegin("jobId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->jobId);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("jobDescription", ::apache::thrift::protocol::T_STRING, 2);
@@ -1778,7 +1778,7 @@ uint32_t JobDetails::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
 void swap(JobDetails &a, JobDetails &b) {
   using ::std::swap;
-  swap(a.jobID, b.jobID);
+  swap(a.jobId, b.jobId);
   swap(a.jobDescription, b.jobDescription);
   swap(a.creationTime, b.creationTime);
   swap(a.jobStatus, b.jobStatus);
@@ -1804,7 +1804,7 @@ uint32_t DataTransferDetails::read(::apache::thrift::protocol::TProtocol* iprot)
 
   using ::apache::thrift::protocol::TProtocolException;
 
-  bool isset_transferID = false;
+  bool isset_transferId = false;
   bool isset_transferDescription = false;
 
   while (true)
@@ -1817,8 +1817,8 @@ uint32_t DataTransferDetails::read(::apache::thrift::protocol::TProtocol* iprot)
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->transferID);
-          isset_transferID = true;
+          xfer += iprot->readString(this->transferId);
+          isset_transferId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -1856,7 +1856,7 @@ uint32_t DataTransferDetails::read(::apache::thrift::protocol::TProtocol* iprot)
 
   xfer += iprot->readStructEnd();
 
-  if (!isset_transferID)
+  if (!isset_transferId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_transferDescription)
     throw TProtocolException(TProtocolException::INVALID_DATA);
@@ -1867,8 +1867,8 @@ uint32_t DataTransferDetails::write(::apache::thrift::protocol::TProtocol* oprot
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("DataTransferDetails");
 
-  xfer += oprot->writeFieldBegin("transferID", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString(this->transferID);
+  xfer += oprot->writeFieldBegin("transferId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->transferId);
   xfer += oprot->writeFieldEnd();
 
   if (this->__isset.creationTime) {
@@ -1892,7 +1892,7 @@ uint32_t DataTransferDetails::write(::apache::thrift::protocol::TProtocol* oprot
 
 void swap(DataTransferDetails &a, DataTransferDetails &b) {
   using ::std::swap;
-  swap(a.transferID, b.transferID);
+  swap(a.transferId, b.transferId);
   swap(a.creationTime, b.creationTime);
   swap(a.transferDescription, b.transferDescription);
   swap(a.transferStatus, b.transferStatus);
@@ -1913,7 +1913,7 @@ uint32_t TaskDetails::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   using ::apache::thrift::protocol::TProtocolException;
 
-  bool isset_taskID = false;
+  bool isset_taskId = false;
 
   while (true)
   {
@@ -1925,8 +1925,8 @@ uint32_t TaskDetails::read(::apache::thrift::protocol::TProtocol* iprot) {
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->taskID);
-          isset_taskID = true;
+          xfer += iprot->readString(this->taskId);
+          isset_taskId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -2132,7 +2132,7 @@ uint32_t TaskDetails::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   xfer += iprot->readStructEnd();
 
-  if (!isset_taskID)
+  if (!isset_taskId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
@@ -2141,8 +2141,8 @@ uint32_t TaskDetails::write(::apache::thrift::protocol::TProtocol* oprot) const 
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("TaskDetails");
 
-  xfer += oprot->writeFieldBegin("taskID", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString(this->taskID);
+  xfer += oprot->writeFieldBegin("taskId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->taskId);
   xfer += oprot->writeFieldEnd();
 
   if (this->__isset.creationTime) {
@@ -2275,7 +2275,7 @@ uint32_t TaskDetails::write(::apache::thrift::protocol::TProtocol* oprot) const 
 
 void swap(TaskDetails &a, TaskDetails &b) {
   using ::std::swap;
-  swap(a.taskID, b.taskID);
+  swap(a.taskId, b.taskId);
   swap(a.creationTime, b.creationTime);
   swap(a.applicationId, b.applicationId);
   swap(a.applicationVersion, b.applicationVersion);
@@ -2764,8 +2764,8 @@ uint32_t Experiment::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   using ::apache::thrift::protocol::TProtocolException;
 
-  bool isset_experimentID = false;
-  bool isset_projectID = false;
+  bool isset_experimentId = false;
+  bool isset_projectId = false;
   bool isset_userName = false;
   bool isset_name = false;
 
@@ -2779,16 +2779,16 @@ uint32_t Experiment::read(::apache::thrift::protocol::TProtocol* iprot) {
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->experimentID);
-          isset_experimentID = true;
+          xfer += iprot->readString(this->experimentId);
+          isset_experimentId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->projectID);
-          isset_projectID = true;
+          xfer += iprot->readString(this->projectId);
+          isset_projectId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -3026,9 +3026,9 @@ uint32_t Experiment::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   xfer += iprot->readStructEnd();
 
-  if (!isset_experimentID)
+  if (!isset_experimentId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_projectID)
+  if (!isset_projectId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_userName)
     throw TProtocolException(TProtocolException::INVALID_DATA);
@@ -3041,12 +3041,12 @@ uint32_t Experiment::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Experiment");
 
-  xfer += oprot->writeFieldBegin("experimentID", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString(this->experimentID);
+  xfer += oprot->writeFieldBegin("experimentId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->experimentId);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("projectID", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString(this->projectID);
+  xfer += oprot->writeFieldBegin("projectId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->projectId);
   xfer += oprot->writeFieldEnd();
 
   if (this->__isset.creationTime) {
@@ -3197,8 +3197,8 @@ uint32_t Experiment::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
 void swap(Experiment &a, Experiment &b) {
   using ::std::swap;
-  swap(a.experimentID, b.experimentID);
-  swap(a.projectID, b.projectID);
+  swap(a.experimentId, b.experimentId);
+  swap(a.projectId, b.projectId);
   swap(a.creationTime, b.creationTime);
   swap(a.userName, b.userName);
   swap(a.name, b.name);
@@ -3235,8 +3235,8 @@ uint32_t ExperimentSummary::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   using ::apache::thrift::protocol::TProtocolException;
 
-  bool isset_experimentID = false;
-  bool isset_projectID = false;
+  bool isset_experimentId = false;
+  bool isset_projectId = false;
   bool isset_userName = false;
   bool isset_name = false;
 
@@ -3250,16 +3250,16 @@ uint32_t ExperimentSummary::read(::apache::thrift::protocol::TProtocol* iprot) {
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->experimentID);
-          isset_experimentID = true;
+          xfer += iprot->readString(this->experimentId);
+          isset_experimentId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
         break;
       case 2:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->projectID);
-          isset_projectID = true;
+          xfer += iprot->readString(this->projectId);
+          isset_projectId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -3341,9 +3341,9 @@ uint32_t ExperimentSummary::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   xfer += iprot->readStructEnd();
 
-  if (!isset_experimentID)
+  if (!isset_experimentId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_projectID)
+  if (!isset_projectId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_userName)
     throw TProtocolException(TProtocolException::INVALID_DATA);
@@ -3356,12 +3356,12 @@ uint32_t ExperimentSummary::write(::apache::thrift::protocol::TProtocol* oprot) 
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("ExperimentSummary");
 
-  xfer += oprot->writeFieldBegin("experimentID", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString(this->experimentID);
+  xfer += oprot->writeFieldBegin("experimentId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->experimentId);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("projectID", ::apache::thrift::protocol::T_STRING, 2);
-  xfer += oprot->writeString(this->projectID);
+  xfer += oprot->writeFieldBegin("projectId", ::apache::thrift::protocol::T_STRING, 2);
+  xfer += oprot->writeString(this->projectId);
   xfer += oprot->writeFieldEnd();
 
   if (this->__isset.creationTime) {
@@ -3412,8 +3412,8 @@ uint32_t ExperimentSummary::write(::apache::thrift::protocol::TProtocol* oprot) 
 
 void swap(ExperimentSummary &a, ExperimentSummary &b) {
   using ::std::swap;
-  swap(a.experimentID, b.experimentID);
-  swap(a.projectID, b.projectID);
+  swap(a.experimentId, b.experimentId);
+  swap(a.projectId, b.projectId);
   swap(a.creationTime, b.creationTime);
   swap(a.userName, b.userName);
   swap(a.name, b.name);

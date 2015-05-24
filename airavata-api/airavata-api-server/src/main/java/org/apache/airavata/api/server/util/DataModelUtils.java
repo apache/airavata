@@ -48,8 +48,8 @@ public class DataModelUtils {
 				}
 			}
 		} catch (AppCatalogException e) {
-            logger.error("Error while retrieving execution type for experiment : " + experiment.getExperimentID(), e);
-            throw new Exception("Error while retrieving execution type for experiment : " + experiment.getExperimentID(), e);
+            logger.error("Error while retrieving execution type for experiment : " + experiment.getExperimentId(), e);
+            throw new Exception("Error while retrieving execution type for experiment : " + experiment.getExperimentId(), e);
 		}
 		return ExecutionType.UNKNOWN;
 	}

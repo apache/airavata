@@ -202,9 +202,9 @@ public class GFacUtils {
             details.setJobStatus(status);
             registry.add(ChildDataType.JOB_DETAIL, details,
                     new CompositeIdentifier(jobExecutionContext.getTaskData()
-                            .getTaskID(), details.getJobID()));
-            JobIdentifier identifier = new JobIdentifier(details.getJobID(), jobExecutionContext.getTaskData().getTaskID(),
-                    jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(), jobExecutionContext.getExperimentID(),
+                            .getTaskId(), details.getJobId()));
+            JobIdentifier identifier = new JobIdentifier(details.getJobId(), jobExecutionContext.getTaskData().getTaskId(),
+                    jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(), jobExecutionContext.getExperimentId(),
                     jobExecutionContext.getGatewayID());
             JobStatusChangeRequestEvent jobStatusChangeRequestEvent = new JobStatusChangeRequestEvent(state, identifier);
             monitorPublisher.publish(jobStatusChangeRequestEvent);
@@ -225,7 +225,7 @@ public class GFacUtils {
 			details.setJobStatus(status);
 			registry.update(
 					org.apache.airavata.registry.cpi.RegistryModelType.JOB_DETAIL,
-					details, details.getJobID());
+					details, details.getJobId());
 		} catch (Exception e) {
 			throw new GFacException("Error persisting job status"
 					+ e.getLocalizedMessage(), e);
@@ -245,7 +245,7 @@ public class GFacUtils {
 			details.setCreationTime(Calendar.getInstance().getTimeInMillis());
 			details.setErrorCategory(errorCatogory);
 			registry.add(ChildDataType.ERROR_DETAIL, details,
-					jobExecutionContext.getTaskData().getTaskID());
+					jobExecutionContext.getTaskData().getTaskId());
 		} catch (Exception e) {
 			throw new GFacException("Error persisting job status"
 					+ e.getLocalizedMessage(), e);
@@ -273,7 +273,7 @@ public class GFacUtils {
 			throws ApplicationSettingsException, KeeperException,
 			InterruptedException {
 		String expState = AiravataZKUtils.getExpState(zk, jobExecutionContext
-				.getExperimentID());
+				.getExperimentId());
         if (expState == null || expState.isEmpty()) {
             return GfacExperimentState.UNKNOWN;
         }
@@ -285,7 +285,7 @@ public class GFacUtils {
 			throws ApplicationSettingsException, KeeperException,
 			InterruptedException {
 		String expState = AiravataZKUtils.getExpState(zk, jobExecutionContext
-				.getExperimentID());
+				.getExperimentId());
 		if (expState == null) {
 			return -1;
 		}
@@ -306,7 +306,7 @@ public class GFacUtils {
 			throws ApplicationSettingsException, KeeperException,
 			InterruptedException {
 		String expState = AiravataZKUtils.getExpZnodeHandlerPath(
-				jobExecutionContext.getExperimentID(), className);
+				jobExecutionContext.getExperimentId(), className);
 		Stat exists = zk.exists(expState, false);
 		if (exists == null) {
 			zk.create(expState, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
@@ -342,7 +342,7 @@ public class GFacUtils {
                                              GfacHandlerState state) throws ApplicationSettingsException,
 			KeeperException, InterruptedException {
 		String expState = AiravataZKUtils.getExpZnodeHandlerPath(
-				jobExecutionContext.getExperimentID(), className);
+				jobExecutionContext.getExperimentId(), className);
 		Stat exists = zk.exists(expState, false);
 		if (exists == null) {
 			zk.create(expState, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
@@ -379,7 +379,7 @@ public class GFacUtils {
 			KeeperException, InterruptedException {
 		if(zk.getState().isConnected()) {
 			String expState = AiravataZKUtils.getExpZnodeHandlerPath(
-					jobExecutionContext.getExperimentID(), className);
+					jobExecutionContext.getExperimentId(), className);
 
 			Stat exists = zk.exists(expState + File.separator
 					+ AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false);
@@ -400,7 +400,7 @@ public class GFacUtils {
                                                   JobExecutionContext jobExecutionContext, String className) {
 		try {
 			String expState = AiravataZKUtils.getExpZnodeHandlerPath(
-					jobExecutionContext.getExperimentID(), className);
+					jobExecutionContext.getExperimentId(), className);
 
 			Stat exists = zk.exists(expState + File.separator
 					+ AiravataZKUtils.ZK_EXPERIMENT_STATE_NODE, false);
@@ -595,7 +595,7 @@ public class GFacUtils {
 			if (zk != null) {
 				String expZnodeHandlerPath = AiravataZKUtils
 						.getExpZnodeHandlerPath(
-								jobExecutionContext.getExperimentID(),
+								jobExecutionContext.getExperimentId(),
 								className);
 				Stat exists = zk.exists(expZnodeHandlerPath, false);
                 if (exists != null) {
@@ -617,7 +617,7 @@ public class GFacUtils {
 		if (zk != null) {
 			String expZnodeHandlerPath = AiravataZKUtils
 					.getExpZnodeHandlerPath(
-							jobExecutionContext.getExperimentID(),
+							jobExecutionContext.getExperimentId(),
 							className);
 			Stat exists = zk.exists(expZnodeHandlerPath, false);
 			return new String(jobExecutionContext.getZk().getData(
@@ -739,7 +739,7 @@ public class GFacUtils {
         Experiment details = (Experiment) airavataRegistry.get(RegistryModelType.EXPERIMENT, experimentId);
         if (details == null) {
             details = new Experiment();
-            details.setExperimentID(experimentId);
+            details.setExperimentId(experimentId);
         }
         org.apache.airavata.model.workspace.experiment.ExperimentStatus status = new org.apache.airavata.model.workspace.experiment.ExperimentStatus();
         status.setExperimentState(state);
@@ -783,9 +783,9 @@ public class GFacUtils {
     }
 
     public static void publishTaskStatus (JobExecutionContext jobExecutionContext, MonitorPublisher publisher, TaskState state){
-        TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
+        TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskId(),
                 jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                jobExecutionContext.getExperimentID(),
+                jobExecutionContext.getExperimentId(),
                 jobExecutionContext.getGatewayID());
         publisher.publish(new TaskStatusChangeRequestEvent(state, taskIdentity));
     }

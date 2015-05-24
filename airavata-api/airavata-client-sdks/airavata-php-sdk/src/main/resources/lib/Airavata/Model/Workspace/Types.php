@@ -112,7 +112,7 @@ class Group {
 class Project {
   static $_TSPEC;
 
-  public $projectID = "DEFAULT";
+  public $projectId = "DEFAULT";
   public $owner = null;
   public $name = null;
   public $description = null;
@@ -124,7 +124,7 @@ class Project {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
-          'var' => 'projectID',
+          'var' => 'projectId',
           'type' => TType::STRING,
           ),
         2 => array(
@@ -162,8 +162,8 @@ class Project {
         );
     }
     if (is_array($vals)) {
-      if (isset($vals['projectID'])) {
-        $this->projectID = $vals['projectID'];
+      if (isset($vals['projectId'])) {
+        $this->projectId = $vals['projectId'];
       }
       if (isset($vals['owner'])) {
         $this->owner = $vals['owner'];
@@ -207,7 +207,7 @@ class Project {
       {
         case 1:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->projectID);
+            $xfer += $input->readString($this->projectId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -287,9 +287,9 @@ class Project {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Project');
-    if ($this->projectID !== null) {
-      $xfer += $output->writeFieldBegin('projectID', TType::STRING, 1);
-      $xfer += $output->writeString($this->projectID);
+    if ($this->projectId !== null) {
+      $xfer += $output->writeFieldBegin('projectId', TType::STRING, 1);
+      $xfer += $output->writeString($this->projectId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->owner !== null) {

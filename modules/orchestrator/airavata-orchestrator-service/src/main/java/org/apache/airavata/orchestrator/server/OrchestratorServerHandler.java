@@ -433,7 +433,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 			}
 			ApplicationDeploymentDescription applicationDeploymentDescription = getAppDeployment(taskData, applicationId);
             taskData.setApplicationDeploymentId(applicationDeploymentDescription.getAppDeploymentId());
-			registry.update(RegistryModelType.TASK_DETAIL, taskData,taskData.getTaskID());
+			registry.update(RegistryModelType.TASK_DETAIL, taskData,taskData.getTaskId());
 			List<Object> workflowNodeDetailList = registry.get(RegistryModelType.WORKFLOW_NODE_DETAIL,
 							org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants.TASK_LIST, taskData);
 			if (workflowNodeDetailList != null
@@ -562,7 +562,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
                         TaskDetails taskDetails = (TaskDetails) o;
                         TaskStatus taskStatus = ((TaskDetails) o).getTaskStatus();
                         if (taskStatus.getExecutionState().getValue() > 7 && taskStatus.getExecutionState().getValue()<12) {
-                            log.error(((TaskDetails) o).getTaskID() + " Task status cannot mark as cancelled, because " +
+                            log.error(((TaskDetails) o).getTaskId() + " Task status cannot mark as cancelled, because " +
                                     "current task state is " + ((TaskDetails) o).getTaskStatus().getExecutionState().toString());
                             continue;// this continue is very useful not to process deeper loops if the upper layers have non-cancel states
                         } else {
@@ -571,7 +571,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
                                     .getTimeInMillis());
                             taskDetails.setTaskStatus(taskStatus);
                             registry.update(RegistryModelType.TASK_DETAIL, o,
-                                    taskDetails.getTaskID());
+                                    taskDetails.getTaskId());
                         }
                         orchestrator.cancelExperiment(experiment,
                                 workflowNodeDetail, taskDetails, tokenId);
@@ -721,9 +721,9 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
                         MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT, messageId, gatewayId);
                         messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
                         publisher.publish(messageContext);
-                        registry.update(RegistryModelType.TASK_DETAIL, taskData, taskData.getTaskID());
+                        registry.update(RegistryModelType.TASK_DETAIL, taskData, taskData.getTaskId());
                         //launching the experiment
-                        launchTask(taskData.getTaskID(), airavataCredStoreToken);
+                        launchTask(taskData.getTaskId(), airavataCredStoreToken);
                     }
                 }
 

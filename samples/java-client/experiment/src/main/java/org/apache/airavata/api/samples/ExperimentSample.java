@@ -70,7 +70,7 @@ public class ExperimentSample {
 
         Project project=new Project();
         project.setName("project1");
-        project.setProjectID("project1");
+        project.setProjectId("project1");
 		project.setOwner(user);
         Client client = getClient();
 		String projectId=client.createProject(project);

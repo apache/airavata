@@ -23,36 +23,19 @@
  */
 package org.apache.airavata.model.workspace.experiment;
 
+import org.apache.thrift.EncodingUtils;
+import org.apache.thrift.protocol.TTupleProtocol;
 import org.apache.thrift.scheme.IScheme;
 import org.apache.thrift.scheme.SchemeFactory;
 import org.apache.thrift.scheme.StandardScheme;
-
 import org.apache.thrift.scheme.TupleScheme;
-import org.apache.thrift.protocol.TTupleProtocol;
-import org.apache.thrift.protocol.TProtocolException;
-import org.apache.thrift.EncodingUtils;
-import org.apache.thrift.TException;
-import org.apache.thrift.async.AsyncMethodCallback;
-import org.apache.thrift.server.AbstractNonblockingServer.*;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.EnumMap;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.EnumSet;
-import java.util.Collections;
-import java.util.BitSet;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 @SuppressWarnings("all") public class JobDetails implements org.apache.thrift.TBase<JobDetails, JobDetails._Fields>, java.io.Serializable, Cloneable, Comparable<JobDetails> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("JobDetails");
 
-  private static final org.apache.thrift.protocol.TField JOB_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("jobID", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField JOB_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("jobId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField JOB_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("jobDescription", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("creationTime", org.apache.thrift.protocol.TType.I64, (short)3);
   private static final org.apache.thrift.protocol.TField JOB_STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("jobStatus", org.apache.thrift.protocol.TType.STRUCT, (short)4);
@@ -68,7 +51,7 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new JobDetailsTupleSchemeFactory());
   }
 
-  private String jobID; // required
+  private String jobId; // required
   private String jobDescription; // required
   private long creationTime; // optional
   private JobStatus jobStatus; // optional
@@ -80,7 +63,7 @@ import org.slf4j.LoggerFactory;
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    JOB_ID((short)1, "jobID"),
+    JOB_ID((short)1, "jobId"),
     JOB_DESCRIPTION((short)2, "jobDescription"),
     CREATION_TIME((short)3, "creationTime"),
     JOB_STATUS((short)4, "jobStatus"),
@@ -167,7 +150,7 @@ import org.slf4j.LoggerFactory;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.JOB_ID, new org.apache.thrift.meta_data.FieldMetaData("jobID", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.JOB_ID, new org.apache.thrift.meta_data.FieldMetaData("jobId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.JOB_DESCRIPTION, new org.apache.thrift.meta_data.FieldMetaData("jobDescription", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
@@ -191,16 +174,16 @@ import org.slf4j.LoggerFactory;
   }
 
   public JobDetails() {
-    this.jobID = "DO_NOT_SET_AT_CLIENTS";
+    this.jobId = "DO_NOT_SET_AT_CLIENTS";
 
   }
 
   public JobDetails(
-    String jobID,
+    String jobId,
     String jobDescription)
   {
     this();
-    this.jobID = jobID;
+    this.jobId = jobId;
     this.jobDescription = jobDescription;
   }
 
@@ -209,8 +192,8 @@ import org.slf4j.LoggerFactory;
    */
   public JobDetails(JobDetails other) {
     __isset_bitfield = other.__isset_bitfield;
-    if (other.isSetJobID()) {
-      this.jobID = other.jobID;
+    if (other.isSetJobId()) {
+      this.jobId = other.jobId;
     }
     if (other.isSetJobDescription()) {
       this.jobDescription = other.jobDescription;
@@ -246,7 +229,7 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public void clear() {
-    this.jobID = "DO_NOT_SET_AT_CLIENTS";
+    this.jobId = "DO_NOT_SET_AT_CLIENTS";
 
     this.jobDescription = null;
     setCreationTimeIsSet(false);
@@ -259,26 +242,26 @@ import org.slf4j.LoggerFactory;
     this.workingDir = null;
   }
 
-  public String getJobID() {
-    return this.jobID;
+  public String getJobId() {
+    return this.jobId;
   }
 
-  public void setJobID(String jobID) {
-    this.jobID = jobID;
+  public void setJobId(String jobId) {
+    this.jobId = jobId;
   }
 
-  public void unsetJobID() {
-    this.jobID = null;
+  public void unsetJobId() {
+    this.jobId = null;
   }
 
-  /** Returns true if field jobID is set (has been assigned a value) and false otherwise */
-  public boolean isSetJobID() {
-    return this.jobID != null;
+  /** Returns true if field jobId is set (has been assigned a value) and false otherwise */
+  public boolean isSetJobId() {
+    return this.jobId != null;
   }
 
-  public void setJobIDIsSet(boolean value) {
+  public void setJobIdIsSet(boolean value) {
     if (!value) {
-      this.jobID = null;
+      this.jobId = null;
     }
   }
 
@@ -484,9 +467,9 @@ import org.slf4j.LoggerFactory;
     switch (field) {
     case JOB_ID:
       if (value == null) {
-        unsetJobID();
+        unsetJobId();
       } else {
-        setJobID((String)value);
+        setJobId((String)value);
       }
       break;
 
@@ -560,7 +543,7 @@ import org.slf4j.LoggerFactory;
   public Object getFieldValue(_Fields field) {
     switch (field) {
     case JOB_ID:
-      return getJobID();
+      return getJobId();
 
     case JOB_DESCRIPTION:
       return getJobDescription();
@@ -598,7 +581,7 @@ import org.slf4j.LoggerFactory;
 
     switch (field) {
     case JOB_ID:
-      return isSetJobID();
+      return isSetJobId();
     case JOB_DESCRIPTION:
       return isSetJobDescription();
     case CREATION_TIME:
@@ -632,12 +615,12 @@ import org.slf4j.LoggerFactory;
     if (that == null)
       return false;
 
-    boolean this_present_jobID = true && this.isSetJobID();
-    boolean that_present_jobID = true && that.isSetJobID();
-    if (this_present_jobID || that_present_jobID) {
-      if (!(this_present_jobID && that_present_jobID))
+    boolean this_present_jobId = true && this.isSetJobId();
+    boolean that_present_jobId = true && that.isSetJobId();
+    if (this_present_jobId || that_present_jobId) {
+      if (!(this_present_jobId && that_present_jobId))
         return false;
-      if (!this.jobID.equals(that.jobID))
+      if (!this.jobId.equals(that.jobId))
         return false;
     }
 
@@ -729,12 +712,12 @@ import org.slf4j.LoggerFactory;
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetJobID()).compareTo(other.isSetJobID());
+    lastComparison = Boolean.valueOf(isSetJobId()).compareTo(other.isSetJobId());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetJobID()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.jobID, other.jobID);
+    if (isSetJobId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.jobId, other.jobId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -839,11 +822,11 @@ import org.slf4j.LoggerFactory;
     StringBuilder sb = new StringBuilder("JobDetails(");
     boolean first = true;
 
-    sb.append("jobID:");
-    if (this.jobID == null) {
+    sb.append("jobId:");
+    if (this.jobId == null) {
       sb.append("null");
     } else {
-      sb.append(this.jobID);
+      sb.append(this.jobId);
     }
     first = false;
     if (!first) sb.append(", ");
@@ -926,8 +909,8 @@ import org.slf4j.LoggerFactory;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetJobID()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'jobID' is unset! Struct:" + toString());
+    if (!isSetJobId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'jobId' is unset! Struct:" + toString());
     }
 
     if (!isSetJobDescription()) {
@@ -981,8 +964,8 @@ import org.slf4j.LoggerFactory;
         switch (schemeField.id) {
           case 1: // JOB_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.jobID = iprot.readString();
-              struct.setJobIDIsSet(true);
+              struct.jobId = iprot.readString();
+              struct.setJobIdIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1077,9 +1060,9 @@ import org.slf4j.LoggerFactory;
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.jobID != null) {
+      if (struct.jobId != null) {
         oprot.writeFieldBegin(JOB_ID_FIELD_DESC);
-        oprot.writeString(struct.jobID);
+        oprot.writeString(struct.jobId);
         oprot.writeFieldEnd();
       }
       if (struct.jobDescription != null) {
@@ -1158,7 +1141,7 @@ import org.slf4j.LoggerFactory;
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, JobDetails struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      oprot.writeString(struct.jobID);
+      oprot.writeString(struct.jobId);
       oprot.writeString(struct.jobDescription);
       BitSet optionals = new BitSet();
       if (struct.isSetCreationTime()) {
@@ -1215,8 +1198,8 @@ import org.slf4j.LoggerFactory;
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, JobDetails struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.jobID = iprot.readString();
-      struct.setJobIDIsSet(true);
+      struct.jobId = iprot.readString();
+      struct.setJobIdIsSet(true);
       struct.jobDescription = iprot.readString();
       struct.setJobDescriptionIsSet(true);
       BitSet incoming = iprot.readBitSet(7);

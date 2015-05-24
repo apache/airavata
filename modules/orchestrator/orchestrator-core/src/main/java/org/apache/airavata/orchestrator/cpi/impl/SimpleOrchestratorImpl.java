@@ -69,8 +69,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
 
     public boolean launchExperiment(Experiment experiment, WorkflowNodeDetails workflowNode, TaskDetails task,String tokenId) throws OrchestratorException {
         // we give higher priority to userExperimentID
-        String experimentId = experiment.getExperimentID();
-        String taskId = task.getTaskID();
+        String experimentId = experiment.getExperimentId();
+        String taskId = task.getTaskId();
         // creating monitorID to register with monitoring queue
         // this is a special case because amqp has to be in place before submitting the job
         try {
@@ -107,7 +107,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 String nodeID = (String) newRegistry.add(ChildDataType.WORKFLOW_NODE_DETAIL, iDontNeedaNode, experimentId);
 
                 TaskDetails taskDetails = ExperimentModelUtil.cloneTaskFromExperiment(experiment);
-                taskDetails.setTaskID((String) newRegistry.add(ChildDataType.TASK_DETAIL, taskDetails, nodeID));
+                taskDetails.setTaskId((String) newRegistry.add(ChildDataType.TASK_DETAIL, taskDetails, nodeID));
                 tasks.add(taskDetails);
             }
 
@@ -140,7 +140,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                                 }
                             }
                         }
-                        logger.error("Validation of " + validator + " for experiment Id " + experiment.getExperimentID() + " is FAILED:[error]. " + errorMsg);
+                        logger.error("Validation of " + validator + " for experiment Id " + experiment.getExperimentId() + " is FAILED:[error]. " + errorMsg);
                         validationResults.setValidationState(false);
                         try {
                             ErrorDetails details = new ErrorDetails();
@@ -150,7 +150,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                             details.setCreationTime(Calendar.getInstance().getTimeInMillis());
                             details.setErrorCategory(ErrorCategory.APPLICATION_FAILURE);
                             orchestratorContext.getNewRegistry().add(ChildDataType.ERROR_DETAIL, details,
-                                    taskID.getTaskID());
+                                    taskID.getTaskId());
                         } catch (RegistryException e) {
                             logger.error("Error while saving error details to registry", e);
                         }
@@ -186,11 +186,11 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
             JobState jobState = jobDetails.getJobStatus().getJobState();
             if (jobState.getValue() > 4){
                 logger.error("Cannot cancel the job, because current job state is : " + jobState.toString() +
-                "jobId: " + jobDetails.getJobID() + " Job Name: " + jobDetails.getJobName());
+                "jobId: " + jobDetails.getJobId() + " Job Name: " + jobDetails.getJobName());
                 return;
             }
         }
-        jobSubmitter.terminate(experiment.getExperimentID(),task.getTaskID(),tokenId);
+        jobSubmitter.terminate(experiment.getExperimentId(),task.getTaskId(),tokenId);
     }
 
 

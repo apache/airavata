@@ -63,7 +63,7 @@ public class NewGSISSHOutputHandler extends AbstractHandler{
 	        super.invoke(jobExecutionContext);
 	        List<OutputDataObjectType> outputArray =  HandleOutputs.handleOutputs(jobExecutionContext, cluster);
             try {
-				registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
+				registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentId());
 			} catch (RegistryException e) {
 				throw new GFacHandlerException(e);
 			}

@@ -602,11 +602,11 @@ public class RegistryImpl implements Registry {
         try {
             switch (dataType) {
                 case PROJECT:
-                    return projectRegistry.getProjectIDs(fieldName, value);
+                    return projectRegistry.getProjectIds(fieldName, value);
                 case EXPERIMENT:
-                    return experimentRegistry.getExperimentIDs(fieldName, value);
+                    return experimentRegistry.getExperimentIds(fieldName, value);
                 case EXPERIMENT_CONFIGURATION_DATA:
-                    return experimentRegistry.getExperimentIDs(fieldName, value);
+                    return experimentRegistry.getExperimentIds(fieldName, value);
                 case WORKFLOW_NODE_DETAIL:
                     return experimentRegistry.getWorkflowNodeIds(fieldName, value);
                 case TASK_DETAIL:

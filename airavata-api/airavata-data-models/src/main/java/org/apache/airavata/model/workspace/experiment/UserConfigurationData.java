@@ -65,7 +65,7 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField ADVANCE_OUTPUT_DATA_HANDLING_FIELD_DESC = new org.apache.thrift.protocol.TField("advanceOutputDataHandling", org.apache.thrift.protocol.TType.STRUCT, (short)6);
   private static final org.apache.thrift.protocol.TField QOS_PARAMS_FIELD_DESC = new org.apache.thrift.protocol.TField("qosParams", org.apache.thrift.protocol.TType.STRUCT, (short)7);
   private static final org.apache.thrift.protocol.TField THROTTLE_RESOURCES_FIELD_DESC = new org.apache.thrift.protocol.TField("throttleResources", org.apache.thrift.protocol.TType.BOOL, (short)8);
-  private static final org.apache.thrift.protocol.TField USER_DN_FIELD_DESC = new org.apache.thrift.protocol.TField("userDN", org.apache.thrift.protocol.TType.STRING, (short)9);
+  private static final org.apache.thrift.protocol.TField USER_DN_FIELD_DESC = new org.apache.thrift.protocol.TField("userDn", org.apache.thrift.protocol.TType.STRING, (short)9);
   private static final org.apache.thrift.protocol.TField GENERATE_CERT_FIELD_DESC = new org.apache.thrift.protocol.TField("generateCert", org.apache.thrift.protocol.TType.BOOL, (short)10);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
@@ -82,7 +82,7 @@ import org.slf4j.LoggerFactory;
   private AdvancedOutputDataHandling advanceOutputDataHandling; // optional
   private QualityOfServiceParams qosParams; // optional
   private boolean throttleResources; // optional
-  private String userDN; // optional
+  private String userDn; // optional
   private boolean generateCert; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -95,7 +95,7 @@ import org.slf4j.LoggerFactory;
     ADVANCE_OUTPUT_DATA_HANDLING((short)6, "advanceOutputDataHandling"),
     QOS_PARAMS((short)7, "qosParams"),
     THROTTLE_RESOURCES((short)8, "throttleResources"),
-    USER_DN((short)9, "userDN"),
+    USER_DN((short)9, "userDn"),
     GENERATE_CERT((short)10, "generateCert");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
@@ -197,7 +197,7 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, QualityOfServiceParams.class)));
     tmpMap.put(_Fields.THROTTLE_RESOURCES, new org.apache.thrift.meta_data.FieldMetaData("throttleResources", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
-    tmpMap.put(_Fields.USER_DN, new org.apache.thrift.meta_data.FieldMetaData("userDN", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.USER_DN, new org.apache.thrift.meta_data.FieldMetaData("userDn", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.GENERATE_CERT, new org.apache.thrift.meta_data.FieldMetaData("generateCert", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
@@ -250,8 +250,8 @@ import org.slf4j.LoggerFactory;
       this.qosParams = new QualityOfServiceParams(other.qosParams);
     }
     this.throttleResources = other.throttleResources;
-    if (other.isSetUserDN()) {
-      this.userDN = other.userDN;
+    if (other.isSetUserDn()) {
+      this.userDn = other.userDn;
     }
     this.generateCert = other.generateCert;
   }
@@ -274,7 +274,7 @@ import org.slf4j.LoggerFactory;
     this.qosParams = null;
     this.throttleResources = false;
 
-    this.userDN = null;
+    this.userDn = null;
     this.generateCert = false;
 
   }
@@ -459,26 +459,26 @@ import org.slf4j.LoggerFactory;
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __THROTTLERESOURCES_ISSET_ID, value);
   }
 
-  public String getUserDN() {
-    return this.userDN;
+  public String getUserDn() {
+    return this.userDn;
   }
 
-  public void setUserDN(String userDN) {
-    this.userDN = userDN;
+  public void setUserDn(String userDn) {
+    this.userDn = userDn;
   }
 
-  public void unsetUserDN() {
-    this.userDN = null;
+  public void unsetUserDn() {
+    this.userDn = null;
   }
 
-  /** Returns true if field userDN is set (has been assigned a value) and false otherwise */
-  public boolean isSetUserDN() {
-    return this.userDN != null;
+  /** Returns true if field userDn is set (has been assigned a value) and false otherwise */
+  public boolean isSetUserDn() {
+    return this.userDn != null;
   }
 
-  public void setUserDNIsSet(boolean value) {
+  public void setUserDnIsSet(boolean value) {
     if (!value) {
-      this.userDN = null;
+      this.userDn = null;
     }
   }
 
@@ -572,9 +572,9 @@ import org.slf4j.LoggerFactory;
 
     case USER_DN:
       if (value == null) {
-        unsetUserDN();
+        unsetUserDn();
       } else {
-        setUserDN((String)value);
+        setUserDn((String)value);
       }
       break;
 
@@ -616,7 +616,7 @@ import org.slf4j.LoggerFactory;
       return Boolean.valueOf(isThrottleResources());
 
     case USER_DN:
-      return getUserDN();
+      return getUserDn();
 
     case GENERATE_CERT:
       return Boolean.valueOf(isGenerateCert());
@@ -649,7 +649,7 @@ import org.slf4j.LoggerFactory;
     case THROTTLE_RESOURCES:
       return isSetThrottleResources();
     case USER_DN:
-      return isSetUserDN();
+      return isSetUserDn();
     case GENERATE_CERT:
       return isSetGenerateCert();
     }
@@ -741,12 +741,12 @@ import org.slf4j.LoggerFactory;
         return false;
     }
 
-    boolean this_present_userDN = true && this.isSetUserDN();
-    boolean that_present_userDN = true && that.isSetUserDN();
-    if (this_present_userDN || that_present_userDN) {
-      if (!(this_present_userDN && that_present_userDN))
+    boolean this_present_userDn = true && this.isSetUserDn();
+    boolean that_present_userDn = true && that.isSetUserDn();
+    if (this_present_userDn || that_present_userDn) {
+      if (!(this_present_userDn && that_present_userDn))
         return false;
-      if (!this.userDN.equals(that.userDN))
+      if (!this.userDn.equals(that.userDn))
         return false;
     }
 
@@ -855,12 +855,12 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetUserDN()).compareTo(other.isSetUserDN());
+    lastComparison = Boolean.valueOf(isSetUserDn()).compareTo(other.isSetUserDn());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetUserDN()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userDN, other.userDN);
+    if (isSetUserDn()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.userDn, other.userDn);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -954,13 +954,13 @@ import org.slf4j.LoggerFactory;
       sb.append(this.throttleResources);
       first = false;
     }
-    if (isSetUserDN()) {
+    if (isSetUserDn()) {
       if (!first) sb.append(", ");
-      sb.append("userDN:");
-      if (this.userDN == null) {
+      sb.append("userDn:");
+      if (this.userDn == null) {
         sb.append("null");
       } else {
-        sb.append(this.userDN);
+        sb.append(this.userDn);
       }
       first = false;
     }
@@ -1105,8 +1105,8 @@ import org.slf4j.LoggerFactory;
             break;
           case 9: // USER_DN
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.userDN = iprot.readString();
-              struct.setUserDNIsSet(true);
+              struct.userDn = iprot.readString();
+              struct.setUserDnIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1176,10 +1176,10 @@ import org.slf4j.LoggerFactory;
         oprot.writeBool(struct.throttleResources);
         oprot.writeFieldEnd();
       }
-      if (struct.userDN != null) {
-        if (struct.isSetUserDN()) {
+      if (struct.userDn != null) {
+        if (struct.isSetUserDn()) {
           oprot.writeFieldBegin(USER_DN_FIELD_DESC);
-          oprot.writeString(struct.userDN);
+          oprot.writeString(struct.userDn);
           oprot.writeFieldEnd();
         }
       }
@@ -1226,7 +1226,7 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetThrottleResources()) {
         optionals.set(5);
       }
-      if (struct.isSetUserDN()) {
+      if (struct.isSetUserDn()) {
         optionals.set(6);
       }
       if (struct.isSetGenerateCert()) {
@@ -1251,8 +1251,8 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetThrottleResources()) {
         oprot.writeBool(struct.throttleResources);
       }
-      if (struct.isSetUserDN()) {
-        oprot.writeString(struct.userDN);
+      if (struct.isSetUserDn()) {
+        oprot.writeString(struct.userDn);
       }
       if (struct.isSetGenerateCert()) {
         oprot.writeBool(struct.generateCert);
@@ -1296,8 +1296,8 @@ import org.slf4j.LoggerFactory;
         struct.setThrottleResourcesIsSet(true);
       }
       if (incoming.get(6)) {
-        struct.userDN = iprot.readString();
-        struct.setUserDNIsSet(true);
+        struct.userDn = iprot.readString();
+        struct.setUserDnIsSet(true);
       }
       if (incoming.get(7)) {
         struct.generateCert = iprot.readBool();

@@ -28,10 +28,18 @@ package org.apache.airavata.registry.cpi;
 public class CompositeIdentifier {
     private Object topLevelIdentifier;
     private Object secondLevelIdentifier;
+    private Object thirdLevelIdentifier;
 
     public CompositeIdentifier(Object topLevelIdentifier, Object secondLevelIdentifier) {
         this.topLevelIdentifier = topLevelIdentifier;
         this.secondLevelIdentifier = secondLevelIdentifier;
+    }
+
+    public CompositeIdentifier(Object topLevelIdentifier, Object secondLevelIdentifier,
+                               Object thirdLevelIdentifier) {
+        this.topLevelIdentifier = topLevelIdentifier;
+        this.secondLevelIdentifier = secondLevelIdentifier;
+        this.thirdLevelIdentifier = thirdLevelIdentifier;
     }
 
     public Object getTopLevelIdentifier() {
@@ -42,11 +50,18 @@ public class CompositeIdentifier {
         return secondLevelIdentifier;
     }
 
+    public Object getThirdLevelIdentifier() {
+        return thirdLevelIdentifier;
+    }
+
     @Override
     public String toString() {
-        if (topLevelIdentifier instanceof String && secondLevelIdentifier instanceof String) {
-            return topLevelIdentifier + "," + secondLevelIdentifier;
-        }else if (topLevelIdentifier instanceof String ) {
+        if (topLevelIdentifier instanceof String && secondLevelIdentifier instanceof String
+                && thirdLevelIdentifier instanceof  String) {
+            return topLevelIdentifier + "," + secondLevelIdentifier + "," + thirdLevelIdentifier;
+        }else if (topLevelIdentifier instanceof String && secondLevelIdentifier instanceof String) {
+            return topLevelIdentifier.toString() + "," + secondLevelIdentifier;
+        } else if(topLevelIdentifier instanceof  String) {
             return topLevelIdentifier.toString();
         } else {
             return secondLevelIdentifier.toString();

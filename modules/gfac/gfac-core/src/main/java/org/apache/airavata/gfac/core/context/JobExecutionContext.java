@@ -201,11 +201,11 @@ public class JobExecutionContext extends AbstractContext implements Serializable
         }
     }
 
-    public String getExperimentID() {
+    public String getExperimentId() {
         return experimentID;
     }
 
-    public void setExperimentID(String experimentID) {
+    public void setExperimentId(String experimentID) {
         this.experimentID = experimentID;
     }
 

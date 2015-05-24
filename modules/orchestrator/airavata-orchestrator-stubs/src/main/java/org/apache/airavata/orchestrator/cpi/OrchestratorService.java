@@ -1576,7 +1576,7 @@ import org.slf4j.LoggerFactory;
      * Performs a deep copy on <i>other</i>.
      */
     public launchExperiment_args(launchExperiment_args other) {
-      if (other.isSetExperimentId()) {
+      if (other.issetExperimentId()) {
         this.experimentId = other.experimentId;
       }
       if (other.isSetAiravataCredStoreToken()) {
@@ -1608,7 +1608,7 @@ import org.slf4j.LoggerFactory;
     }
 
     /** Returns true if field experimentId is set (has been assigned a value) and false otherwise */
-    public boolean isSetExperimentId() {
+    public boolean issetExperimentId() {
       return this.experimentId != null;
     }
 
@@ -1683,7 +1683,7 @@ import org.slf4j.LoggerFactory;
 
       switch (field) {
       case EXPERIMENT_ID:
-        return isSetExperimentId();
+        return issetExperimentId();
       case AIRAVATA_CRED_STORE_TOKEN:
         return isSetAiravataCredStoreToken();
       }
@@ -1703,8 +1703,8 @@ import org.slf4j.LoggerFactory;
       if (that == null)
         return false;
 
-      boolean this_present_experimentId = true && this.isSetExperimentId();
-      boolean that_present_experimentId = true && that.isSetExperimentId();
+      boolean this_present_experimentId = true && this.issetExperimentId();
+      boolean that_present_experimentId = true && that.issetExperimentId();
       if (this_present_experimentId || that_present_experimentId) {
         if (!(this_present_experimentId && that_present_experimentId))
           return false;
@@ -1737,11 +1737,11 @@ import org.slf4j.LoggerFactory;
 
       int lastComparison = 0;
 
-      lastComparison = Boolean.valueOf(isSetExperimentId()).compareTo(other.isSetExperimentId());
+      lastComparison = Boolean.valueOf(issetExperimentId()).compareTo(other.issetExperimentId());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetExperimentId()) {
+      if (issetExperimentId()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.experimentId, other.experimentId);
         if (lastComparison != 0) {
           return lastComparison;
@@ -2373,7 +2373,7 @@ import org.slf4j.LoggerFactory;
      * Performs a deep copy on <i>other</i>.
      */
     public launchTask_args(launchTask_args other) {
-      if (other.isSetTaskId()) {
+      if (other.issetTaskId()) {
         this.taskId = other.taskId;
       }
       if (other.isSetAiravataCredStoreToken()) {
@@ -2405,7 +2405,7 @@ import org.slf4j.LoggerFactory;
     }
 
     /** Returns true if field taskId is set (has been assigned a value) and false otherwise */
-    public boolean isSetTaskId() {
+    public boolean issetTaskId() {
       return this.taskId != null;
     }
 
@@ -2480,7 +2480,7 @@ import org.slf4j.LoggerFactory;
 
       switch (field) {
       case TASK_ID:
-        return isSetTaskId();
+        return issetTaskId();
       case AIRAVATA_CRED_STORE_TOKEN:
         return isSetAiravataCredStoreToken();
       }
@@ -2500,8 +2500,8 @@ import org.slf4j.LoggerFactory;
       if (that == null)
         return false;
 
-      boolean this_present_taskId = true && this.isSetTaskId();
-      boolean that_present_taskId = true && that.isSetTaskId();
+      boolean this_present_taskId = true && this.issetTaskId();
+      boolean that_present_taskId = true && that.issetTaskId();
       if (this_present_taskId || that_present_taskId) {
         if (!(this_present_taskId && that_present_taskId))
           return false;
@@ -2534,11 +2534,11 @@ import org.slf4j.LoggerFactory;
 
       int lastComparison = 0;
 
-      lastComparison = Boolean.valueOf(isSetTaskId()).compareTo(other.isSetTaskId());
+      lastComparison = Boolean.valueOf(issetTaskId()).compareTo(other.issetTaskId());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetTaskId()) {
+      if (issetTaskId()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.taskId, other.taskId);
         if (lastComparison != 0) {
           return lastComparison;
@@ -3161,7 +3161,7 @@ import org.slf4j.LoggerFactory;
      * Performs a deep copy on <i>other</i>.
      */
     public validateExperiment_args(validateExperiment_args other) {
-      if (other.isSetExperimentId()) {
+      if (other.issetExperimentId()) {
         this.experimentId = other.experimentId;
       }
     }
@@ -3189,7 +3189,7 @@ import org.slf4j.LoggerFactory;
     }
 
     /** Returns true if field experimentId is set (has been assigned a value) and false otherwise */
-    public boolean isSetExperimentId() {
+    public boolean issetExperimentId() {
       return this.experimentId != null;
     }
 
@@ -3229,7 +3229,7 @@ import org.slf4j.LoggerFactory;
 
       switch (field) {
       case EXPERIMENT_ID:
-        return isSetExperimentId();
+        return issetExperimentId();
       }
       throw new IllegalStateException();
     }
@@ -3247,8 +3247,8 @@ import org.slf4j.LoggerFactory;
       if (that == null)
         return false;
 
-      boolean this_present_experimentId = true && this.isSetExperimentId();
-      boolean that_present_experimentId = true && that.isSetExperimentId();
+      boolean this_present_experimentId = true && this.issetExperimentId();
+      boolean that_present_experimentId = true && that.issetExperimentId();
       if (this_present_experimentId || that_present_experimentId) {
         if (!(this_present_experimentId && that_present_experimentId))
           return false;
@@ -3272,11 +3272,11 @@ import org.slf4j.LoggerFactory;
 
       int lastComparison = 0;
 
-      lastComparison = Boolean.valueOf(isSetExperimentId()).compareTo(other.isSetExperimentId());
+      lastComparison = Boolean.valueOf(issetExperimentId()).compareTo(other.issetExperimentId());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetExperimentId()) {
+      if (issetExperimentId()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.experimentId, other.experimentId);
         if (lastComparison != 0) {
           return lastComparison;
@@ -3973,7 +3973,7 @@ import org.slf4j.LoggerFactory;
      * Performs a deep copy on <i>other</i>.
      */
     public terminateExperiment_args(terminateExperiment_args other) {
-      if (other.isSetExperimentId()) {
+      if (other.issetExperimentId()) {
         this.experimentId = other.experimentId;
       }
       if (other.isSetTokenId()) {
@@ -4005,7 +4005,7 @@ import org.slf4j.LoggerFactory;
     }
 
     /** Returns true if field experimentId is set (has been assigned a value) and false otherwise */
-    public boolean isSetExperimentId() {
+    public boolean issetExperimentId() {
       return this.experimentId != null;
     }
 
@@ -4080,7 +4080,7 @@ import org.slf4j.LoggerFactory;
 
       switch (field) {
       case EXPERIMENT_ID:
-        return isSetExperimentId();
+        return issetExperimentId();
       case TOKEN_ID:
         return isSetTokenId();
       }
@@ -4100,8 +4100,8 @@ import org.slf4j.LoggerFactory;
       if (that == null)
         return false;
 
-      boolean this_present_experimentId = true && this.isSetExperimentId();
-      boolean that_present_experimentId = true && that.isSetExperimentId();
+      boolean this_present_experimentId = true && this.issetExperimentId();
+      boolean that_present_experimentId = true && that.issetExperimentId();
       if (this_present_experimentId || that_present_experimentId) {
         if (!(this_present_experimentId && that_present_experimentId))
           return false;
@@ -4134,11 +4134,11 @@ import org.slf4j.LoggerFactory;
 
       int lastComparison = 0;
 
-      lastComparison = Boolean.valueOf(isSetExperimentId()).compareTo(other.isSetExperimentId());
+      lastComparison = Boolean.valueOf(issetExperimentId()).compareTo(other.issetExperimentId());
       if (lastComparison != 0) {
         return lastComparison;
       }
-      if (isSetExperimentId()) {
+      if (issetExperimentId()) {
         lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.experimentId, other.experimentId);
         if (lastComparison != 0) {
           return lastComparison;

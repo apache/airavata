@@ -78,9 +78,9 @@ public abstract class AbstractHandler implements GFacHandler {
     }
 
     protected void fireTaskOutputChangeEvent(JobExecutionContext jobExecutionContext, List<OutputDataObjectType> outputArray) {
-        TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
+        TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskId(),
                 jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                jobExecutionContext.getExperimentID(),
+                jobExecutionContext.getExperimentId(),
                 jobExecutionContext.getGatewayID());
         publisher.publish(new TaskOutputChangeEvent(outputArray, taskIdentity));
     }

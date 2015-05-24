@@ -46,11 +46,11 @@ public class ProjectUser_PK implements Serializable {
         return 1;
     }
 
-    public String getProjectID() {
+    public String getProjectId() {
         return projectID;
     }
 
-    public void setProjectID(String projectID) {
+    public void setProjectId(String projectID) {
         this.projectID = projectID;
     }
 

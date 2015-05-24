@@ -75,8 +75,8 @@ public class CommonUtils {
                         if (isEqual(host.getComputeResourceDescription(), monitorID.getComputeResourceDescription())) {
                             // ok we found right place to add this monitorID
                             host.addMonitorIDForHost(monitorID);
-                            logger.debugId(monitorID.getJobID(), "Added new job to the monitoring queue, experiment {}," +
-                                    " task {}", monitorID.getExperimentID(), monitorID.getTaskID());
+                            logger.debugId(monitorID.getJobId(), "Added new job to the monitoring queue, experiment {}," +
+                                    " task {}", monitorID.getExperimentId(), monitorID.getTaskId());
                             return;
                         }
                     }
@@ -85,8 +85,8 @@ public class CommonUtils {
                     HostMonitorData hostMonitorData = new HostMonitorData(jobExecutionContext);
                     hostMonitorData.addMonitorIDForHost(monitorID);
                     next.addHostMonitorData(hostMonitorData);
-                    logger.debugId(monitorID.getJobID(), "Added new job to the monitoring queue, experiment {}," +
-                            " task {}", monitorID.getExperimentID(), monitorID.getTaskID());
+                    logger.debugId(monitorID.getJobId(), "Added new job to the monitoring queue, experiment {}," +
+                            " task {}", monitorID.getExperimentId(), monitorID.getTaskId());
                     return;
                 }
             }
@@ -97,8 +97,8 @@ public class CommonUtils {
             userMonitorData.addHostMonitorData(hostMonitorData);
             try {
                 queue.put(userMonitorData);
-                logger.debugId(monitorID.getJobID(), "Added new job to the monitoring queue, experiment {}," +
-                        " task {}", monitorID.getExperimentID(), monitorID.getTaskID());
+                logger.debugId(monitorID.getJobId(), "Added new job to the monitoring queue, experiment {}," +
+                        " task {}", monitorID.getExperimentId(), monitorID.getTaskId());
             } catch (InterruptedException e) {
                 throw new AiravataMonitorException(e);
             }
@@ -138,13 +138,13 @@ public class CommonUtils {
                             Iterator<MonitorID> iterator2 = iHostMonitorID.getMonitorIDs().iterator();
                             while (iterator2.hasNext()) {
                                 MonitorID iMonitorID = iterator2.next();
-                                if (iMonitorID.getJobID().equals(monitorID.getJobID())
+                                if (iMonitorID.getJobId().equals(monitorID.getJobId())
                                         || iMonitorID.getJobName().equals(monitorID.getJobName())) {
                                     // OK we found the object, we cannot do list.remove(object) states of two objects
                                     // could be different, thats why we check the jobID
                                     iterator2.remove();
-                                    logger.infoId(monitorID.getJobID(), "Removed the jobId: {} JobName: {} from monitoring last " +
-                                            "status:{}", monitorID.getJobID(),monitorID.getJobName(), monitorID.getStatus().toString());
+                                    logger.infoId(monitorID.getJobId(), "Removed the jobId: {} JobName: {} from monitoring last " +
+                                            "status:{}", monitorID.getJobId(),monitorID.getJobName(), monitorID.getStatus().toString());
 
                                     return;
                                 }
@@ -153,7 +153,7 @@ public class CommonUtils {
                     }
                 }
         logger.info("Cannot find the given MonitorID in the queue with userName " +
-                monitorID.getUserName() + "  and jobID " + monitorID.getJobID());
+                monitorID.getUserName() + "  and jobID " + monitorID.getJobId());
         logger.info("This might not be an error because someone else removed this job from the queue");
     }
 

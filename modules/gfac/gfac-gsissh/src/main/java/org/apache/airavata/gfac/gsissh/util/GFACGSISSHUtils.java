@@ -282,7 +282,7 @@ public class GFACGSISSHUtils {
         ComputationalResourceScheduling taskScheduling = taskData.getTaskScheduling();
         if (taskScheduling != null) {
             int totalNodeCount = taskScheduling.getNodeCount();
-            int totalCPUCount = taskScheduling.getTotalCPUCount();
+            int totalCPUCount = taskScheduling.getTotalCpuCount();
 
 //        jobDescriptor.setJobSubmitter(applicationDeploymentType.getJobSubmitterCommand());
             if (taskScheduling.getComputationalProjectAccount() != null) {

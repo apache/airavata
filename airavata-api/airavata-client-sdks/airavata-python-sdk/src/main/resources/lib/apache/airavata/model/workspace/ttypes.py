@@ -96,7 +96,7 @@ class Group:
 class Project:
   """
   Attributes:
-   - projectID
+   - projectId
    - owner
    - name
    - description
@@ -107,7 +107,7 @@ class Project:
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'projectID', None, "DEFAULT", ), # 1
+    (1, TType.STRING, 'projectId', None, "DEFAULT", ), # 1
     (2, TType.STRING, 'owner', None, None, ), # 2
     (3, TType.STRING, 'name', None, None, ), # 3
     (4, TType.STRING, 'description', None, None, ), # 4
@@ -116,8 +116,8 @@ class Project:
     (7, TType.LIST, 'sharedGroups', (TType.STRING,None), None, ), # 7
   )
 
-  def __init__(self, projectID=thrift_spec[1][4], owner=None, name=None, description=None, creationTime=None, sharedUsers=None, sharedGroups=None,):
-    self.projectID = projectID
+  def __init__(self, projectId=thrift_spec[1][4], owner=None, name=None, description=None, creationTime=None, sharedUsers=None, sharedGroups=None,):
+    self.projectId = projectId
     self.owner = owner
     self.name = name
     self.description = description
@@ -136,7 +136,7 @@ class Project:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.projectID = iprot.readString();
+          self.projectId = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 2:
@@ -189,9 +189,9 @@ class Project:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('Project')
-    if self.projectID is not None:
-      oprot.writeFieldBegin('projectID', TType.STRING, 1)
-      oprot.writeString(self.projectID)
+    if self.projectId is not None:
+      oprot.writeFieldBegin('projectId', TType.STRING, 1)
+      oprot.writeString(self.projectId)
       oprot.writeFieldEnd()
     if self.owner is not None:
       oprot.writeFieldBegin('owner', TType.STRING, 2)
@@ -227,8 +227,8 @@ class Project:
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.projectID is None:
-      raise TProtocol.TProtocolException(message='Required field projectID is unset!')
+    if self.projectId is None:
+      raise TProtocol.TProtocolException(message='Required field projectId is unset!')
     if self.owner is None:
       raise TProtocol.TProtocolException(message='Required field owner is unset!')
     if self.name is None:

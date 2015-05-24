@@ -165,7 +165,7 @@
 //    @Test
 //    public void testLocalProvider() throws GFacException {
 //        BetterGfacImpl gFacAPI = new BetterGfacImpl();
-//        gFacAPI.submitJob(jobExecutionContext.getExperimentID(), jobExecutionContext.getTaskData().getTaskID(), jobExecutionContext.getGatewayID());
+//        gFacAPI.submitJob(jobExecutionContext.getExperimentId(), jobExecutionContext.getTaskData().getTaskId(), jobExecutionContext.getGatewayID());
 //        MessageContext outMessageContext = jobExecutionContext.getOutMessageContext();
 //        Assert.assertEquals(MappingFactory.toString((ActualParameter)outMessageContext.getParameter("echo_output")), "hello");
 //    }

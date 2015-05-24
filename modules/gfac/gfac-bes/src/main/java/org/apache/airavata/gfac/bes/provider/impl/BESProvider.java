@@ -20,24 +20,21 @@
  */
 package org.apache.airavata.gfac.bes.provider.impl;
 
-import java.util.Calendar;
-import java.util.Map;
-
+import de.fzj.unicore.bes.client.ActivityClient;
+import de.fzj.unicore.bes.client.FactoryClient;
+import de.fzj.unicore.bes.faults.UnknownActivityIdentifierFault;
+import de.fzj.unicore.uas.client.StorageClient;
+import de.fzj.unicore.wsrflite.xmlbeans.WSUtilities;
+import eu.emi.security.authn.x509.impl.X500NameUtils;
+import eu.unicore.util.httpclient.DefaultClientConfiguration;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.bes.security.UNICORESecurityContext;
 import org.apache.airavata.gfac.bes.security.X509SecurityContext;
-import org.apache.airavata.gfac.bes.utils.BESConstants;
-import org.apache.airavata.gfac.bes.utils.DataTransferrer;
-import org.apache.airavata.gfac.bes.utils.JSDLGenerator;
-import org.apache.airavata.gfac.bes.utils.SecurityUtils;
-import org.apache.airavata.gfac.bes.utils.StorageCreator;
+import org.apache.airavata.gfac.bes.utils.*;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
-import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.core.notification.events.StartExecutionEvent;
-import org.apache.airavata.gfac.core.notification.events.StatusChangeEvent;
-import org.apache.airavata.gfac.core.notification.events.UnicoreJobIDEvent;
 import org.apache.airavata.gfac.core.provider.AbstractProvider;
 import org.apache.airavata.gfac.core.provider.GFacProvider;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
@@ -51,26 +48,16 @@ import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.xmlbeans.XmlCursor;
 import org.bouncycastle.asn1.x500.style.BCStyle;
-import org.ggf.schemas.bes.x2006.x08.besFactory.ActivityStateEnumeration;
+import org.ggf.schemas.bes.x2006.x08.besFactory.*;
 import org.ggf.schemas.bes.x2006.x08.besFactory.ActivityStateEnumeration.Enum;
-import org.ggf.schemas.bes.x2006.x08.besFactory.ActivityStatusType;
-import org.ggf.schemas.bes.x2006.x08.besFactory.CreateActivityDocument;
-import org.ggf.schemas.bes.x2006.x08.besFactory.CreateActivityResponseDocument;
-import org.ggf.schemas.bes.x2006.x08.besFactory.GetActivityStatusesDocument;
-import org.ggf.schemas.bes.x2006.x08.besFactory.GetActivityStatusesResponseDocument;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionDocument;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3.x2005.x08.addressing.EndpointReferenceType;
 
-import de.fzj.unicore.bes.client.ActivityClient;
-import de.fzj.unicore.bes.client.FactoryClient;
-import de.fzj.unicore.bes.faults.UnknownActivityIdentifierFault;
-import de.fzj.unicore.uas.client.StorageClient;
-import de.fzj.unicore.wsrflite.xmlbeans.WSUtilities;
-import eu.emi.security.authn.x509.impl.X500NameUtils;
-import eu.unicore.util.httpclient.DefaultClientConfiguration;
+import java.util.Calendar;
+import java.util.Map;
 
 public class BESProvider extends AbstractProvider implements GFacProvider,
 		BESConstants {
@@ -165,7 +152,7 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
                         .toString();
             }
             log.info("JobID: " + jobId);
-            jobDetails.setJobID(jobId);
+            jobDetails.setJobId(jobId);
             jobDetails.setJobDescription(activityEpr.toString());
 
             jobExecutionContext.setJobDetails(jobDetails);
@@ -205,7 +192,7 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
                 sendNotification(jobExecutionContext,applicationJobStatus);
                 GFacUtils.updateJobStatus(jobExecutionContext, jobDetails, applicationJobStatus);
                 throw new GFacProviderException(
-                        jobExecutionContext.getExperimentID() + "Job Canceled");
+                        jobExecutionContext.getExperimentId() + "Job Canceled");
             } else if (activityStatus.getState() == ActivityStateEnumeration.FINISHED) {
                 try {
                     Thread.sleep(5000);
@@ -448,10 +435,10 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
 	}
     private void sendNotification(JobExecutionContext jobExecutionContext,  JobState status) {
         JobStatusChangeRequestEvent jobStatus = new JobStatusChangeRequestEvent();
-        JobIdentifier jobIdentity = new JobIdentifier(jobExecutionContext.getJobDetails().getJobID(),
-        		jobExecutionContext.getTaskData().getTaskID(),
+        JobIdentifier jobIdentity = new JobIdentifier(jobExecutionContext.getJobDetails().getJobId(),
+        		jobExecutionContext.getTaskData().getTaskId(),
         		jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-        		jobExecutionContext.getExperimentID(),
+        		jobExecutionContext.getExperimentId(),
         		jobExecutionContext.getGatewayID());
         jobStatus.setJobIdentity(jobIdentity);
         jobStatus.setState(status);

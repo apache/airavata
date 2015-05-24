@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("all") public class Project implements org.apache.thrift.TBase<Project, Project._Fields>, java.io.Serializable, Cloneable, Comparable<Project> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Project");
 
-  private static final org.apache.thrift.protocol.TField PROJECT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("projectID", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField PROJECT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("projectId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField OWNER_FIELD_DESC = new org.apache.thrift.protocol.TField("owner", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("name", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("description", org.apache.thrift.protocol.TType.STRING, (short)4);
@@ -66,7 +66,7 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new ProjectTupleSchemeFactory());
   }
 
-  private String projectID; // required
+  private String projectId; // required
   private String owner; // required
   private String name; // required
   private String description; // optional
@@ -76,7 +76,7 @@ import org.slf4j.LoggerFactory;
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    PROJECT_ID((short)1, "projectID"),
+    PROJECT_ID((short)1, "projectId"),
     OWNER((short)2, "owner"),
     NAME((short)3, "name"),
     DESCRIPTION((short)4, "description"),
@@ -157,7 +157,7 @@ import org.slf4j.LoggerFactory;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.PROJECT_ID, new org.apache.thrift.meta_data.FieldMetaData("projectID", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.PROJECT_ID, new org.apache.thrift.meta_data.FieldMetaData("projectId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.OWNER, new org.apache.thrift.meta_data.FieldMetaData("owner", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
@@ -178,17 +178,17 @@ import org.slf4j.LoggerFactory;
   }
 
   public Project() {
-    this.projectID = "DEFAULT";
+    this.projectId = "DEFAULT";
 
   }
 
   public Project(
-    String projectID,
+    String projectId,
     String owner,
     String name)
   {
     this();
-    this.projectID = projectID;
+    this.projectId = projectId;
     this.owner = owner;
     this.name = name;
   }
@@ -198,8 +198,8 @@ import org.slf4j.LoggerFactory;
    */
   public Project(Project other) {
     __isset_bitfield = other.__isset_bitfield;
-    if (other.isSetProjectID()) {
-      this.projectID = other.projectID;
+    if (other.isSetProjectId()) {
+      this.projectId = other.projectId;
     }
     if (other.isSetOwner()) {
       this.owner = other.owner;
@@ -227,7 +227,7 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public void clear() {
-    this.projectID = "DEFAULT";
+    this.projectId = "DEFAULT";
 
     this.owner = null;
     this.name = null;
@@ -238,26 +238,26 @@ import org.slf4j.LoggerFactory;
     this.sharedGroups = null;
   }
 
-  public String getProjectID() {
-    return this.projectID;
+  public String getProjectId() {
+    return this.projectId;
   }
 
-  public void setProjectID(String projectID) {
-    this.projectID = projectID;
+  public void setProjectId(String projectId) {
+    this.projectId = projectId;
   }
 
-  public void unsetProjectID() {
-    this.projectID = null;
+  public void unsetProjectId() {
+    this.projectId = null;
   }
 
-  /** Returns true if field projectID is set (has been assigned a value) and false otherwise */
-  public boolean isSetProjectID() {
-    return this.projectID != null;
+  /** Returns true if field projectId is set (has been assigned a value) and false otherwise */
+  public boolean isSetProjectId() {
+    return this.projectId != null;
   }
 
-  public void setProjectIDIsSet(boolean value) {
+  public void setProjectIdIsSet(boolean value) {
     if (!value) {
-      this.projectID = null;
+      this.projectId = null;
     }
   }
 
@@ -432,9 +432,9 @@ import org.slf4j.LoggerFactory;
     switch (field) {
     case PROJECT_ID:
       if (value == null) {
-        unsetProjectID();
+        unsetProjectId();
       } else {
-        setProjectID((String)value);
+        setProjectId((String)value);
       }
       break;
 
@@ -492,7 +492,7 @@ import org.slf4j.LoggerFactory;
   public Object getFieldValue(_Fields field) {
     switch (field) {
     case PROJECT_ID:
-      return getProjectID();
+      return getProjectId();
 
     case OWNER:
       return getOwner();
@@ -524,7 +524,7 @@ import org.slf4j.LoggerFactory;
 
     switch (field) {
     case PROJECT_ID:
-      return isSetProjectID();
+      return isSetProjectId();
     case OWNER:
       return isSetOwner();
     case NAME:
@@ -554,12 +554,12 @@ import org.slf4j.LoggerFactory;
     if (that == null)
       return false;
 
-    boolean this_present_projectID = true && this.isSetProjectID();
-    boolean that_present_projectID = true && that.isSetProjectID();
-    if (this_present_projectID || that_present_projectID) {
-      if (!(this_present_projectID && that_present_projectID))
+    boolean this_present_projectId = true && this.isSetProjectId();
+    boolean that_present_projectId = true && that.isSetProjectId();
+    if (this_present_projectId || that_present_projectId) {
+      if (!(this_present_projectId && that_present_projectId))
         return false;
-      if (!this.projectID.equals(that.projectID))
+      if (!this.projectId.equals(that.projectId))
         return false;
     }
 
@@ -633,12 +633,12 @@ import org.slf4j.LoggerFactory;
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetProjectID()).compareTo(other.isSetProjectID());
+    lastComparison = Boolean.valueOf(isSetProjectId()).compareTo(other.isSetProjectId());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetProjectID()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.projectID, other.projectID);
+    if (isSetProjectId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.projectId, other.projectId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -723,11 +723,11 @@ import org.slf4j.LoggerFactory;
     StringBuilder sb = new StringBuilder("Project(");
     boolean first = true;
 
-    sb.append("projectID:");
-    if (this.projectID == null) {
+    sb.append("projectId:");
+    if (this.projectId == null) {
       sb.append("null");
     } else {
-      sb.append(this.projectID);
+      sb.append(this.projectId);
     }
     first = false;
     if (!first) sb.append(", ");
@@ -788,8 +788,8 @@ import org.slf4j.LoggerFactory;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetProjectID()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'projectID' is unset! Struct:" + toString());
+    if (!isSetProjectId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'projectId' is unset! Struct:" + toString());
     }
 
     if (!isSetOwner()) {
@@ -841,8 +841,8 @@ import org.slf4j.LoggerFactory;
         switch (schemeField.id) {
           case 1: // PROJECT_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.projectID = iprot.readString();
-              struct.setProjectIDIsSet(true);
+              struct.projectId = iprot.readString();
+              struct.setProjectIdIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -928,9 +928,9 @@ import org.slf4j.LoggerFactory;
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.projectID != null) {
+      if (struct.projectId != null) {
         oprot.writeFieldBegin(PROJECT_ID_FIELD_DESC);
-        oprot.writeString(struct.projectID);
+        oprot.writeString(struct.projectId);
         oprot.writeFieldEnd();
       }
       if (struct.owner != null) {
@@ -1000,7 +1000,7 @@ import org.slf4j.LoggerFactory;
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, Project struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      oprot.writeString(struct.projectID);
+      oprot.writeString(struct.projectId);
       oprot.writeString(struct.owner);
       oprot.writeString(struct.name);
       BitSet optionals = new BitSet();
@@ -1046,8 +1046,8 @@ import org.slf4j.LoggerFactory;
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, Project struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.projectID = iprot.readString();
-      struct.setProjectIDIsSet(true);
+      struct.projectId = iprot.readString();
+      struct.setProjectIdIsSet(true);
       struct.owner = iprot.readString();
       struct.setOwnerIsSet(true);
       struct.name = iprot.readString();

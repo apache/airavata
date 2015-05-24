@@ -131,8 +131,8 @@ public class LocalProvider extends AbstractProvider {
         jobExecutionContext.getNotifier().publish(new StartExecutionEvent());
         JobDetails jobDetails = new JobDetails();
         try {
-        	jobId = jobExecutionContext.getTaskData().getTaskID();
-            jobDetails.setJobID(jobId);
+        	jobId = jobExecutionContext.getTaskData().getTaskId();
+            jobDetails.setJobId(jobId);
             jobDetails.setJobDescription(jobExecutionContext.getApplicationContext()
                     .getApplicationDeploymentDescription().getAppDeploymentDescription());
             jobExecutionContext.setJobDetails(jobDetails);
@@ -175,10 +175,10 @@ public class LocalProvider extends AbstractProvider {
 
             // updating the job status to complete because there's nothing to monitor in local jobs
 //            MonitorID monitorID = createMonitorID(jobExecutionContext);
-            JobIdentifier jobIdentity = new JobIdentifier(jobExecutionContext.getJobDetails().getJobID(),
-                    jobExecutionContext.getTaskData().getTaskID(),
+            JobIdentifier jobIdentity = new JobIdentifier(jobExecutionContext.getJobDetails().getJobId(),
+                    jobExecutionContext.getTaskData().getTaskId(),
                     jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                    jobExecutionContext.getExperimentID(),
+                    jobExecutionContext.getExperimentId(),
                     jobExecutionContext.getGatewayID());
             this.getMonitorPublisher().publish(new JobStatusChangeEvent(JobState.COMPLETE, jobIdentity));
         } catch (IOException io) {
@@ -192,8 +192,8 @@ public class LocalProvider extends AbstractProvider {
 
 //	private MonitorID createMonitorID(JobExecutionContext jobExecutionContext) {
 //		MonitorID monitorID = new MonitorID(jobExecutionContext.getApplicationContext().getHostDescription(), jobId,
-//		        jobExecutionContext.getTaskData().getTaskID(),
-//		        jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(), jobExecutionContext.getExperimentID(),
+//		        jobExecutionContext.getTaskData().getTaskId(),
+//		        jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(), jobExecutionContext.getExperimentId(),
 //		        jobExecutionContext.getExperiment().getUserName(),jobId);
 //		return monitorID;
 //	}
@@ -226,15 +226,15 @@ public class LocalProvider extends AbstractProvider {
             String stdErrStr = GFacUtils.readFileToString(jobExecutionContext.getStandardError());
 			Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
             OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr, outputArray);
-            TaskDetails taskDetails = (TaskDetails)registry.get(RegistryModelType.TASK_DETAIL, jobExecutionContext.getTaskData().getTaskID());
+            TaskDetails taskDetails = (TaskDetails)registry.get(RegistryModelType.TASK_DETAIL, jobExecutionContext.getTaskData().getTaskId());
             if (taskDetails != null){
                 taskDetails.setApplicationOutputs(outputArray);
-                registry.update(RegistryModelType.TASK_DETAIL, taskDetails, taskDetails.getTaskID());
+                registry.update(RegistryModelType.TASK_DETAIL, taskDetails, taskDetails.getTaskId());
             }
-            registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
-            TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
+            registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentId());
+            TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskId(),
                     jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                    jobExecutionContext.getExperimentID(),
+                    jobExecutionContext.getExperimentId(),
                     jobExecutionContext.getGatewayID());
             getMonitorPublisher().publish(new TaskOutputChangeEvent(outputArray, taskIdentity));
         } catch (XmlException e) {

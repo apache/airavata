@@ -60,7 +60,7 @@ public class PBSOutputParser implements OutputParser {
                     value = value.replaceAll("\t", "");
                     jobDescriptor.setVariableList(value);
                 } else if ("Job Id".equals(header)) {
-                    jobDescriptor.setJobID(value);
+                    jobDescriptor.setJobId(value);
                 } else if ("Job_Name".equals(header)) {
                     jobDescriptor.setJobName(value);
                 } else if ("Account_Name".equals(header)) {

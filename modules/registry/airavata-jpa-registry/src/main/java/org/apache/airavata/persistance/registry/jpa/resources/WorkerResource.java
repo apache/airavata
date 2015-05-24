@@ -418,7 +418,7 @@ public class WorkerResource extends AbstractResource {
 		return project;
 	}
 
-    public String getProjectID(String projectName) {
+    public String getProjectId(String projectName) {
         String pro = projectName.replaceAll("\\s", "");
         return pro + "_" + UUID.randomUUID();
     }

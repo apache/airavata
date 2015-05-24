@@ -92,7 +92,7 @@ public class SSHDirectorySetupHandler extends AbstractHandler {
             detail.setTransferStatus(status);
             detail.setTransferDescription("Working directory = " + workingDirectory);
 
-            registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+            registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskId());
 
         } catch (Exception e) {
 			DataTransferDetails detail = new DataTransferDetails();
@@ -101,7 +101,7 @@ public class SSHDirectorySetupHandler extends AbstractHandler {
             detail.setTransferStatus(status);
             detail.setTransferDescription("Working directory = " + jobExecutionContext.getWorkingDir());
             try {
-                registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+                registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskId());
                 StringWriter errors = new StringWriter();
                 e.printStackTrace(new PrintWriter(errors));
                 GFacUtils.saveErrorDetails(jobExecutionContext,  errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE);

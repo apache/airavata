@@ -47,7 +47,7 @@
 //        workflowDataResource = (WorkflowDataResource) experimentResource.create(ResourceType.WORKFLOW_DATA);
 //        workflowDataResource.setWorkflowInstanceID("testWFInstance");
 //        workflowDataResource.setTemplateName("testTemplate");
-//        workflowDataResource.setExperimentID("testExpID");
+//        workflowDataResource.setExperimentId("testExpID");
 //        Calendar calender = Calendar.getInstance();
 //        java.util.Date d = calender.getTime();
 //        Timestamp timestamp = new Timestamp(d.getTime());

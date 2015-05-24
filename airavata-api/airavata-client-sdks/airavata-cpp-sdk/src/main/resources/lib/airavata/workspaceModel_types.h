@@ -102,12 +102,12 @@ class Project {
   static const char* ascii_fingerprint; // = "AFD8090DE564134035942D450F918628";
   static const uint8_t binary_fingerprint[16]; // = {0xAF,0xD8,0x09,0x0D,0xE5,0x64,0x13,0x40,0x35,0x94,0x2D,0x45,0x0F,0x91,0x86,0x28};
 
-  Project() : projectID("DEFAULT"), owner(), name(), description(), creationTime(0) {
+  Project() : projectId("DEFAULT"), owner(), name(), description(), creationTime(0) {
   }
 
   virtual ~Project() throw() {}
 
-  std::string projectID;
+  std::string projectId;
   std::string owner;
   std::string name;
   std::string description;
@@ -117,8 +117,8 @@ class Project {
 
   _Project__isset __isset;
 
-  void __set_projectID(const std::string& val) {
-    projectID = val;
+  void __set_projectId(const std::string& val) {
+    projectId = val;
   }
 
   void __set_owner(const std::string& val) {
@@ -151,7 +151,7 @@ class Project {
 
   bool operator == (const Project & rhs) const
   {
-    if (!(projectID == rhs.projectID))
+    if (!(projectId == rhs.projectId))
       return false;
     if (!(owner == rhs.owner))
       return false;

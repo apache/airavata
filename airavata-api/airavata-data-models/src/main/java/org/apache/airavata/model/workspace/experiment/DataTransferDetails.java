@@ -23,36 +23,19 @@
  */
 package org.apache.airavata.model.workspace.experiment;
 
+import org.apache.thrift.EncodingUtils;
+import org.apache.thrift.protocol.TTupleProtocol;
 import org.apache.thrift.scheme.IScheme;
 import org.apache.thrift.scheme.SchemeFactory;
 import org.apache.thrift.scheme.StandardScheme;
-
 import org.apache.thrift.scheme.TupleScheme;
-import org.apache.thrift.protocol.TTupleProtocol;
-import org.apache.thrift.protocol.TProtocolException;
-import org.apache.thrift.EncodingUtils;
-import org.apache.thrift.TException;
-import org.apache.thrift.async.AsyncMethodCallback;
-import org.apache.thrift.server.AbstractNonblockingServer.*;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.EnumMap;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.EnumSet;
-import java.util.Collections;
-import java.util.BitSet;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 @SuppressWarnings("all") public class DataTransferDetails implements org.apache.thrift.TBase<DataTransferDetails, DataTransferDetails._Fields>, java.io.Serializable, Cloneable, Comparable<DataTransferDetails> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("DataTransferDetails");
 
-  private static final org.apache.thrift.protocol.TField TRANSFER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("transferID", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField TRANSFER_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("transferId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("creationTime", org.apache.thrift.protocol.TType.I64, (short)2);
   private static final org.apache.thrift.protocol.TField TRANSFER_DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("transferDescription", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField TRANSFER_STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("transferStatus", org.apache.thrift.protocol.TType.STRUCT, (short)4);
@@ -63,14 +46,14 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new DataTransferDetailsTupleSchemeFactory());
   }
 
-  private String transferID; // required
+  private String transferId; // required
   private long creationTime; // optional
   private String transferDescription; // required
   private TransferStatus transferStatus; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    TRANSFER_ID((short)1, "transferID"),
+    TRANSFER_ID((short)1, "transferId"),
     CREATION_TIME((short)2, "creationTime"),
     TRANSFER_DESCRIPTION((short)3, "transferDescription"),
     TRANSFER_STATUS((short)4, "transferStatus");
@@ -142,7 +125,7 @@ import org.slf4j.LoggerFactory;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.TRANSFER_ID, new org.apache.thrift.meta_data.FieldMetaData("transferID", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.TRANSFER_ID, new org.apache.thrift.meta_data.FieldMetaData("transferId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.CREATION_TIME, new org.apache.thrift.meta_data.FieldMetaData("creationTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
@@ -155,16 +138,16 @@ import org.slf4j.LoggerFactory;
   }
 
   public DataTransferDetails() {
-    this.transferID = "DO_NOT_SET_AT_CLIENTS";
+    this.transferId = "DO_NOT_SET_AT_CLIENTS";
 
   }
 
   public DataTransferDetails(
-    String transferID,
+    String transferId,
     String transferDescription)
   {
     this();
-    this.transferID = transferID;
+    this.transferId = transferId;
     this.transferDescription = transferDescription;
   }
 
@@ -173,8 +156,8 @@ import org.slf4j.LoggerFactory;
    */
   public DataTransferDetails(DataTransferDetails other) {
     __isset_bitfield = other.__isset_bitfield;
-    if (other.isSetTransferID()) {
-      this.transferID = other.transferID;
+    if (other.isSetTransferId()) {
+      this.transferId = other.transferId;
     }
     this.creationTime = other.creationTime;
     if (other.isSetTransferDescription()) {
@@ -191,7 +174,7 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public void clear() {
-    this.transferID = "DO_NOT_SET_AT_CLIENTS";
+    this.transferId = "DO_NOT_SET_AT_CLIENTS";
 
     setCreationTimeIsSet(false);
     this.creationTime = 0;
@@ -199,26 +182,26 @@ import org.slf4j.LoggerFactory;
     this.transferStatus = null;
   }
 
-  public String getTransferID() {
-    return this.transferID;
+  public String getTransferId() {
+    return this.transferId;
   }
 
-  public void setTransferID(String transferID) {
-    this.transferID = transferID;
+  public void setTransferId(String transferId) {
+    this.transferId = transferId;
   }
 
-  public void unsetTransferID() {
-    this.transferID = null;
+  public void unsetTransferId() {
+    this.transferId = null;
   }
 
-  /** Returns true if field transferID is set (has been assigned a value) and false otherwise */
-  public boolean isSetTransferID() {
-    return this.transferID != null;
+  /** Returns true if field transferId is set (has been assigned a value) and false otherwise */
+  public boolean isSetTransferId() {
+    return this.transferId != null;
   }
 
-  public void setTransferIDIsSet(boolean value) {
+  public void setTransferIdIsSet(boolean value) {
     if (!value) {
-      this.transferID = null;
+      this.transferId = null;
     }
   }
 
@@ -294,9 +277,9 @@ import org.slf4j.LoggerFactory;
     switch (field) {
     case TRANSFER_ID:
       if (value == null) {
-        unsetTransferID();
+        unsetTransferId();
       } else {
-        setTransferID((String)value);
+        setTransferId((String)value);
       }
       break;
 
@@ -330,7 +313,7 @@ import org.slf4j.LoggerFactory;
   public Object getFieldValue(_Fields field) {
     switch (field) {
     case TRANSFER_ID:
-      return getTransferID();
+      return getTransferId();
 
     case CREATION_TIME:
       return Long.valueOf(getCreationTime());
@@ -353,7 +336,7 @@ import org.slf4j.LoggerFactory;
 
     switch (field) {
     case TRANSFER_ID:
-      return isSetTransferID();
+      return isSetTransferId();
     case CREATION_TIME:
       return isSetCreationTime();
     case TRANSFER_DESCRIPTION:
@@ -377,12 +360,12 @@ import org.slf4j.LoggerFactory;
     if (that == null)
       return false;
 
-    boolean this_present_transferID = true && this.isSetTransferID();
-    boolean that_present_transferID = true && that.isSetTransferID();
-    if (this_present_transferID || that_present_transferID) {
-      if (!(this_present_transferID && that_present_transferID))
+    boolean this_present_transferId = true && this.isSetTransferId();
+    boolean that_present_transferId = true && that.isSetTransferId();
+    if (this_present_transferId || that_present_transferId) {
+      if (!(this_present_transferId && that_present_transferId))
         return false;
-      if (!this.transferID.equals(that.transferID))
+      if (!this.transferId.equals(that.transferId))
         return false;
     }
 
@@ -429,12 +412,12 @@ import org.slf4j.LoggerFactory;
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetTransferID()).compareTo(other.isSetTransferID());
+    lastComparison = Boolean.valueOf(isSetTransferId()).compareTo(other.isSetTransferId());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetTransferID()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.transferID, other.transferID);
+    if (isSetTransferId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.transferId, other.transferId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -489,11 +472,11 @@ import org.slf4j.LoggerFactory;
     StringBuilder sb = new StringBuilder("DataTransferDetails(");
     boolean first = true;
 
-    sb.append("transferID:");
-    if (this.transferID == null) {
+    sb.append("transferId:");
+    if (this.transferId == null) {
       sb.append("null");
     } else {
-      sb.append(this.transferID);
+      sb.append(this.transferId);
     }
     first = false;
     if (isSetCreationTime()) {
@@ -526,8 +509,8 @@ import org.slf4j.LoggerFactory;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetTransferID()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'transferID' is unset! Struct:" + toString());
+    if (!isSetTransferId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'transferId' is unset! Struct:" + toString());
     }
 
     if (!isSetTransferDescription()) {
@@ -578,8 +561,8 @@ import org.slf4j.LoggerFactory;
         switch (schemeField.id) {
           case 1: // TRANSFER_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.transferID = iprot.readString();
-              struct.setTransferIDIsSet(true);
+              struct.transferId = iprot.readString();
+              struct.setTransferIdIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -622,9 +605,9 @@ import org.slf4j.LoggerFactory;
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.transferID != null) {
+      if (struct.transferId != null) {
         oprot.writeFieldBegin(TRANSFER_ID_FIELD_DESC);
-        oprot.writeString(struct.transferID);
+        oprot.writeString(struct.transferId);
         oprot.writeFieldEnd();
       }
       if (struct.isSetCreationTime()) {
@@ -661,7 +644,7 @@ import org.slf4j.LoggerFactory;
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, DataTransferDetails struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      oprot.writeString(struct.transferID);
+      oprot.writeString(struct.transferId);
       oprot.writeString(struct.transferDescription);
       BitSet optionals = new BitSet();
       if (struct.isSetCreationTime()) {
@@ -682,8 +665,8 @@ import org.slf4j.LoggerFactory;
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, DataTransferDetails struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.transferID = iprot.readString();
-      struct.setTransferIDIsSet(true);
+      struct.transferId = iprot.readString();
+      struct.setTransferIdIsSet(true);
       struct.transferDescription = iprot.readString();
       struct.setTransferDescriptionIsSet(true);
       BitSet incoming = iprot.readBitSet(2);

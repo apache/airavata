@@ -24,7 +24,7 @@ public class HandleOutputs {
 	public static List<OutputDataObjectType> handleOutputs(JobExecutionContext jobExecutionContext, Cluster cluster) throws GFacHandlerException {
 		List<OutputDataObjectType> outputArray = new ArrayList<OutputDataObjectType>();
 		try {
-			String outputDataDir = File.separator + "tmp" + File.separator + jobExecutionContext.getExperimentID();
+			String outputDataDir = File.separator + "tmp" + File.separator + jobExecutionContext.getExperimentId();
 			(new File(outputDataDir)).mkdirs();
 
 			List<OutputDataObjectType> outputs = jobExecutionContext.getTaskData().getApplicationOutputs();

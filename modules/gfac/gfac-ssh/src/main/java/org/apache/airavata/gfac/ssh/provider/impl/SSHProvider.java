@@ -92,7 +92,7 @@ public class SSHProvider extends AbstractProvider {
             if (jobExecutionContext.getSecurityContext(hostAddress) == null) {
                 GFACSSHUtils.addSecurityContext(jobExecutionContext);
             }
-            taskID = jobExecutionContext.getTaskData().getTaskID();
+            taskID = jobExecutionContext.getTaskData().getTaskId();
 
             JobSubmissionProtocol preferredJobSubmissionProtocol = jobExecutionContext.getPreferredJobSubmissionProtocol();
             if (preferredJobSubmissionProtocol == JobSubmissionProtocol.SSH && resourceJobManagerType == ResourceJobManagerType.FORK) {
@@ -100,7 +100,7 @@ public class SSHProvider extends AbstractProvider {
                 cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getPbsCluster();
 
                 String remoteFile = jobExecutionContext.getWorkingDir() + File.separatorChar + Constants.EXECUTABLE_NAME;
-                details.setJobID(taskID);
+                details.setJobId(taskID);
                 details.setJobDescription(remoteFile);
                 jobExecutionContext.setJobDetails(details);
                 // FIXME : Why cluster is passed as null
@@ -164,7 +164,7 @@ public class SSHProvider extends AbstractProvider {
                     jobDetails.setJobDescription(jobDescriptor.toXML());
                     String jobID = cluster.submitBatchJob(jobDescriptor);
                     if (jobID != null && !jobID.isEmpty()) {
-                        jobDetails.setJobID(jobID);
+                        jobDetails.setJobId(jobID);
                         GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SUBMITTED, monitorPublisher);
                         monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
                                 , GfacExperimentState.JOBSUBMITTED));
@@ -180,7 +180,7 @@ public class SSHProvider extends AbstractProvider {
                         if (verifyJobId != null && !verifyJobId.isEmpty()) {
                             // JobStatus either changed from SUBMITTED to QUEUED or directly to QUEUED
                             jobID = verifyJobId;
-                            jobDetails.setJobID(jobID);
+                            jobDetails.setJobId(jobID);
                             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
                                     , GfacExperimentState.JOBSUBMITTED));
                             GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.QUEUED, monitorPublisher);
@@ -188,24 +188,24 @@ public class SSHProvider extends AbstractProvider {
                     }
 
                     if (jobID == null || jobID.isEmpty()) {
-                        log.error("Couldn't find remote jobId for JobName:" + jobDetails.getJobName() + ", ExperimentId:" + jobExecutionContext.getExperimentID());
-                        GFacUtils.updateExperimentStatus(jobExecutionContext.getExperimentID(), ExperimentState.FAILED);
+                        log.error("Couldn't find remote jobId for JobName:" + jobDetails.getJobName() + ", ExperimentId:" + jobExecutionContext.getExperimentId());
+                        GFacUtils.updateExperimentStatus(jobExecutionContext.getExperimentId(), ExperimentState.FAILED);
                         return;
                     }
                     data.append("jobDesc=").append(jobDescriptor.toXML());
-                    data.append(",jobId=").append(jobDetails.getJobID());
+                    data.append(",jobId=").append(jobDetails.getJobId());
                     monitor(jobExecutionContext);
                 } catch (SSHApiException e) {
                     String error = "Error submitting the job to host " + jobExecutionContext.getHostName() + " message: " + e.getMessage();
                     log.error(error);
-                    jobDetails.setJobID("none");
+                    jobDetails.setJobId("none");
                     GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED, monitorPublisher);
                     GFacUtils.saveErrorDetails(jobExecutionContext, error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
                     throw new GFacProviderException(error, e);
                 } catch (Exception e) {
                     String error = "Error submitting the job to host " + jobExecutionContext.getHostName() + " message: " + e.getMessage();
                     log.error(error);
-                    jobDetails.setJobID("none");
+                    jobDetails.setJobId("none");
                     GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED, monitorPublisher);
                     GFacUtils.saveErrorDetails(jobExecutionContext, error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
                     throw new GFacProviderException(error, e);
@@ -259,8 +259,8 @@ public class SSHProvider extends AbstractProvider {
                 return false;
             }
             try {
-                if (jobDetails.getJobID() != null) {
-                    if (cluster.cancelJob(jobDetails.getJobID()) != null) {
+                if (jobDetails.getJobId() != null) {
+                    if (cluster.cancelJob(jobDetails.getJobId()) != null) {
                         // if this operation success without any exceptions, we can assume cancel operation succeeded.
                         GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.CANCELED, monitorPublisher);
                         return true;
@@ -379,7 +379,7 @@ public class SSHProvider extends AbstractProvider {
         // have to implement the logic to recover a gfac failure
         initialize(jobExecutionContext);
         if(hpcType) {
-            log.info("Invoking Recovering for the Experiment: " + jobExecutionContext.getExperimentID());
+            log.info("Invoking Recovering for the Experiment: " + jobExecutionContext.getExperimentId());
             String hostName = jobExecutionContext.getHostName();
             String jobId = "";
             String jobDesc = "";
@@ -421,7 +421,7 @@ public class SSHProvider extends AbstractProvider {
                 // Now we are we have enough data to recover
                 JobDetails jobDetails = new JobDetails();
                 jobDetails.setJobDescription(jobDesc);
-                jobDetails.setJobID(jobId);
+                jobDetails.setJobId(jobId);
                 jobDetails.setJobName(jobName);
                 jobExecutionContext.setJobDetails(jobDetails);
                 if (jobExecutionContext.getSecurityContext(hostName) == null) {

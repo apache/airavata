@@ -56,7 +56,7 @@
 //        experimentMetadataResource.setMetadata("testMetadata");
 //        experimentMetadataResource.save();
 //
-//        workflowDataResource.setExperimentID("testExpID");
+//        workflowDataResource.setExperimentId("testExpID");
 //        workflowDataResource.setStatus("testStatus");
 //        workflowDataResource.setTemplateName("testWorkflowInstance");
 //

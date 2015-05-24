@@ -74,11 +74,11 @@ public class ErrorDetail implements Serializable {
     @JoinColumn(name = "NODE_INSTANCE_ID")
     private WorkflowNodeDetail nodeDetails;
 
-    public int getErrorID() {
+    public int getErrorId() {
         return errorID;
     }
 
-    public void setErrorID(int errorID) {
+    public void setErrorId(int errorID) {
         this.errorID = errorID;
     }
 

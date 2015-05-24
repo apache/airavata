@@ -77,7 +77,7 @@ public class RegistryUseCaseTest {
 
             //testing the update of a project
             Project updatedProject = new Project();
-            updatedProject.setProjectID(projectId1);
+            updatedProject.setProjectId(projectId1);
             updatedProject.setOwner("TestUser"+TAG);
             updatedProject.setName("UpdatedTestProject"+TAG);
             updatedProject.setDescription("This is an updated test project"+TAG);
@@ -85,7 +85,7 @@ public class RegistryUseCaseTest {
 
             //testing project retrieval
             Project retrievedProject = (Project)registry.get(RegistryModelType.PROJECT, projectId1);
-            Assert.assertEquals(updatedProject.getProjectID(), retrievedProject.getProjectID());
+            Assert.assertEquals(updatedProject.getProjectId(), retrievedProject.getProjectId());
             Assert.assertEquals(updatedProject.getOwner(), retrievedProject.getOwner());
             Assert.assertEquals(updatedProject.getName(), retrievedProject.getName());
             Assert.assertEquals(updatedProject.getDescription(), retrievedProject.getDescription());
@@ -187,7 +187,7 @@ public class RegistryUseCaseTest {
             ComputationalResourceScheduling scheduling = new ComputationalResourceScheduling();
             scheduling.setResourceHostId(UUID.randomUUID().toString());
             scheduling.setComputationalProjectAccount("TG-STA110014S");
-            scheduling.setTotalCPUCount(1);
+            scheduling.setTotalCpuCount(1);
             scheduling.setNodeCount(1);
             scheduling.setWallTimeLimit(15);
             scheduling.setQueueName("normal");
@@ -198,7 +198,7 @@ public class RegistryUseCaseTest {
             userConfigurationData.setComputationalResourceScheduling(scheduling);
 
             Experiment experiment = new Experiment();
-            experiment.setProjectID(projectId1);
+            experiment.setProjectId(projectId1);
             experiment.setUserName("TestUser" + TAG);
             experiment.setName("TestExperiment"+TAG);
             experiment.setDescription("Test 1 experiment");
@@ -213,7 +213,7 @@ public class RegistryUseCaseTest {
             Experiment retrievedExperiment = (Experiment)registry.get(RegistryModelType.EXPERIMENT,
                     experimentId1);
             Assert.assertNotNull(retrievedExperiment);
-            Assert.assertEquals(retrievedExperiment.getProjectID(), experiment.getProjectID());
+            Assert.assertEquals(retrievedExperiment.getProjectId(), experiment.getProjectId());
             Assert.assertEquals(retrievedExperiment.getDescription(), experiment.getDescription());
             Assert.assertEquals(retrievedExperiment.getName(), experiment.getName());
             Assert.assertEquals(retrievedExperiment.getApplicationId(), experiment.getApplicationId());
@@ -230,7 +230,7 @@ public class RegistryUseCaseTest {
 
             //creating more experiments
             experiment = new Experiment();
-            experiment.setProjectID(projectId1);
+            experiment.setProjectId(projectId1);
             experiment.setUserName("TestUser" + TAG);
             experiment.setName("TestExperiment2" + TAG);
             experiment.setDescription("Test 2 experiment");
@@ -242,7 +242,7 @@ public class RegistryUseCaseTest {
             Assert.assertNotNull(experimentId2);
 
             experiment = new Experiment();
-            experiment.setProjectID(projectId1);
+            experiment.setProjectId(projectId1);
             experiment.setUserName("TestUser" + TAG);
             experiment.setName("TestExperiment3"+TAG);
             experiment.setDescription("Test 3 experiment");

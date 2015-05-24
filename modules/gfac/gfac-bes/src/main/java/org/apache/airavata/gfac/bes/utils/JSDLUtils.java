@@ -22,27 +22,10 @@
 package org.apache.airavata.gfac.bes.utils;
 
 
-import javax.xml.namespace.QName;
-
 import org.apache.commons.httpclient.URIException;
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
-import org.ggf.schemas.jsdl.x2005.x11.jsdl.ApplicationType;
-import org.ggf.schemas.jsdl.x2005.x11.jsdl.BoundaryType;
-import org.ggf.schemas.jsdl.x2005.x11.jsdl.CPUArchitectureType;
-import org.ggf.schemas.jsdl.x2005.x11.jsdl.CandidateHostsType;
-import org.ggf.schemas.jsdl.x2005.x11.jsdl.CreationFlagEnumeration;
-import org.ggf.schemas.jsdl.x2005.x11.jsdl.DataStagingType;
-import org.ggf.schemas.jsdl.x2005.x11.jsdl.ExactType;
-import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionType;
-import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDescriptionType;
-import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobIdentificationType;
-import org.ggf.schemas.jsdl.x2005.x11.jsdl.OperatingSystemType;
-import org.ggf.schemas.jsdl.x2005.x11.jsdl.OperatingSystemTypeEnumeration;
-import org.ggf.schemas.jsdl.x2005.x11.jsdl.OperatingSystemTypeType;
-import org.ggf.schemas.jsdl.x2005.x11.jsdl.ProcessorArchitectureEnumeration;
-import org.ggf.schemas.jsdl.x2005.x11.jsdl.ResourcesType;
-import org.ggf.schemas.jsdl.x2005.x11.jsdl.SourceTargetType;
+import org.ggf.schemas.jsdl.x2005.x11.jsdl.*;
 import org.ggf.schemas.jsdl.x2005.x11.jsdlPosix.EnvironmentType;
 import org.ggf.schemas.jsdl.x2005.x11.jsdlPosix.POSIXApplicationDocument;
 import org.ggf.schemas.jsdl.x2005.x11.jsdlPosix.POSIXApplicationType;
@@ -50,6 +33,8 @@ import org.ggf.schemas.jsdl.x2006.x07.jsdlHpcpa.HPCProfileApplicationDocument;
 import org.ggf.schemas.jsdl.x2006.x07.jsdlHpcpa.HPCProfileApplicationType;
 import org.ogf.schemas.jsdl.x2007.x02.jsdlSpmd.SPMDApplicationDocument;
 import org.ogf.schemas.jsdl.x2007.x02.jsdlSpmd.SPMDApplicationType;
+
+import javax.xml.namespace.QName;
 
 
 /**
@@ -414,7 +399,7 @@ public class JSDLUtils
 	
 	
 
-	public static RangeValueType getTotalCPUCountRequirements(JobDefinitionType value) {
+	public static RangeValueType getTotalCpuCountRequirements(JobDefinitionType value) {
 		if(value != null && value.getJobDescription() != null && value.getJobDescription().isSetResources() && 
 				value.getJobDescription().getResources().isSetTotalCPUCount()){
 			return toU6RangeValue(value.getJobDescription().getResources().getTotalCPUCount());
@@ -530,7 +515,7 @@ public class JSDLUtils
 		}
 	}
 
-	public static void setTotalCPUCountRequirements(JobDefinitionType value, RangeValueType cpuCount) {
+	public static void setTotalCpuCountRequirements(JobDefinitionType value, RangeValueType cpuCount) {
 		org.ggf.schemas.jsdl.x2005.x11.jsdl.RangeValueType cpuTotalCount = getOrCreateTotalCPUCount(value);        
 		setRangeValue(cpuCount, cpuTotalCount);
 	}

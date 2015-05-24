@@ -135,7 +135,7 @@ public class AMQPMonitor extends PushMonitor {
                 }
             }
         } else {
-            throw new AiravataMonitorException("Couldn't register monitor for jobId :" + monitorID.getJobID() +
+            throw new AiravataMonitorException("Couldn't register monitor for jobId :" + monitorID.getJobId() +
                     " , ComputeResourceDescription " + computeResourceDescription.getHostName() + " doesn't has an " +
                     "IpAddress with it");
         }
@@ -174,7 +174,7 @@ public class AMQPMonitor extends PushMonitor {
         MonitorID next = null;
         while(iterator.hasNext()){
             next = iterator.next();
-            if(next.getJobID().endsWith(monitorID.getJobID())){
+            if(next.getJobId().endsWith(monitorID.getJobId())){
                 break;
             }
         }
@@ -209,10 +209,10 @@ public class AMQPMonitor extends PushMonitor {
             }
         }
         next.setStatus(monitorID.getStatus());
-        JobIdentifier jobIdentity = new JobIdentifier(next.getJobID(),
-                                                     next.getTaskID(),
+        JobIdentifier jobIdentity = new JobIdentifier(next.getJobId(),
+                                                     next.getTaskId(),
                                                      next.getWorkflowNodeID(),
-                                                     next.getExperimentID(),
+                                                     next.getExperimentId(),
                                                      next.getJobExecutionContext().getGatewayID());
         publisher.publish(new JobStatusChangeEvent(next.getStatus(),jobIdentity));
         return true;

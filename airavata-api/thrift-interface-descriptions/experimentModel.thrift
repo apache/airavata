@@ -191,7 +191,7 @@ enum CorrectiveAction {
 */
 struct ComputationalResourceScheduling {
     1: optional string resourceHostId,
-    2: optional i32 totalCPUCount,
+    2: optional i32 totalCpuCount,
     3: optional i32 nodeCount,
     4: optional i32 numberOfThreads,
     5: optional string queueName,
@@ -247,12 +247,12 @@ struct UserConfigurationData {
     6: optional AdvancedOutputDataHandling advanceOutputDataHandling,
     7: optional QualityOfServiceParams qosParams,
     8: optional bool throttleResources = 0,
-    9: optional string userDN,
+    9: optional string userDn,
     10: optional bool generateCert = 0 
 }
 
 struct ErrorDetails {
-    1: required string errorID = DEFAULT_ID,
+    1: required string errorId = DEFAULT_ID,
     2: optional i64 creationTime,
     3: optional string actualErrorMessage,
     4: optional string userFriendlyMessage,
@@ -264,7 +264,7 @@ struct ErrorDetails {
 }
 
 struct JobDetails {
-    1: required string jobID = DEFAULT_ID,
+    1: required string jobId = DEFAULT_ID,
     2: required string jobDescription,
     3: optional i64 creationTime,
     4: optional JobStatus jobStatus,
@@ -276,7 +276,7 @@ struct JobDetails {
 }
 
 struct DataTransferDetails {
-    1: required string transferID = DEFAULT_ID,
+    1: required string transferId = DEFAULT_ID,
     2: optional i64 creationTime,
     3: required string transferDescription,
     4: optional TransferStatus transferStatus,
@@ -289,7 +289,7 @@ struct DataTransferDetails {
  *
 */
 struct TaskDetails {
-    1: required string taskID = DEFAULT_ID,
+    1: required string taskId = DEFAULT_ID,
     2: optional i64 creationTime,
     3: optional string applicationId,
     4: optional string applicationVersion,
@@ -367,8 +367,8 @@ struct ValidationResults {
 */
 
 struct Experiment {
-    1: required string experimentID = DEFAULT_ID,
-    2: required string projectID = DEFAULT_PROJECT_NAME,
+    1: required string experimentId = DEFAULT_ID,
+    2: required string projectId = DEFAULT_PROJECT_NAME,
     3: optional i64 creationTime,
     4: required string userName,
     5: required string name,
@@ -391,8 +391,8 @@ struct Experiment {
 }
 
 struct ExperimentSummary {
-    1: required string experimentID,
-    2: required string projectID,
+    1: required string experimentId,
+    2: required string projectId,
     3: optional i64 creationTime,
     4: required string userName,
     5: required string name,

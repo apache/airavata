@@ -89,19 +89,19 @@
 //        Registry defaultRegistry = RegistryFactory.getDefaultRegistry();
 //        String experimentId = (String)defaultRegistry.add(ParentDataType.EXPERIMENT, simpleExperiment);
 //
-//        simpleExperiment.setExperimentID(experimentId);
+//        simpleExperiment.setExperimentId(experimentId);
 //        tasks = orchestrator.createTasks(experimentId);
 //
 //        Assert.assertTrue(orchestrator.validateExperiment(simpleExperiment, test, tasks.get(0)).isValidationState());
 //
-//        simpleExperiment.setExperimentID(null);
+//        simpleExperiment.setExperimentId(null);
 //
 //        try {
 //            orchestrator.validateExperiment(simpleExperiment, test, tasks.get(0)).isValidationState();
 //        }catch(LaunchValidationException e){
 //            Assert.assertTrue(true);
 //        }
-//        tasks.get(0).setTaskID(null);
+//        tasks.get(0).setTaskId(null);
 //        try {
 //            orchestrator.validateExperiment(simpleExperiment, test, tasks.get(0));
 //        }catch (LaunchValidationException e){

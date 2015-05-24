@@ -28,10 +28,10 @@ public class ExperimentConfigurationData {
 	 private ResourceScheduling resourceScheduling;
 	 private Map<String,Object> inputParameters;
 	 private Map<String,Object> outputParameters;
-	public String getExperimentID() {
+	public String getExperimentId() {
 		return experimentID;
 	}
-	public void setExperimentID(String experimentID) {
+	public void setExperimentId(String experimentID) {
 		this.experimentID = experimentID;
 	}
 	public String getApplicationName() {

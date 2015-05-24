@@ -108,7 +108,7 @@ public class SSHInputHandler extends AbstractHandler {
                         status.setTransferState(TransferState.UPLOAD);
                         detail.setTransferStatus(status);
                         detail.setTransferDescription("Input Data Staged: " + stageInputFile);
-                        registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+                        registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskId());
 
                         GFacUtils.saveHandlerData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
                     }
@@ -126,7 +126,7 @@ public class SSHInputHandler extends AbstractHandler {
 //                        status.setTransferState(TransferState.UPLOAD);
 //                        detail.setTransferStatus(status);
 //                        detail.setTransferDescription("Input Data Staged: " + stageInputFiles);
-//                        registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+//                        registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskId());
 //                        newFiles.add(stageInputFiles);
 //                        StringBuffer temp = new StringBuffer(data.append(stageInputFiles).append(",").toString());
 //                        GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
@@ -144,7 +144,7 @@ public class SSHInputHandler extends AbstractHandler {
                 StringWriter errors = new StringWriter();
                 e.printStackTrace(new PrintWriter(errors));
                 GFacUtils.saveErrorDetails(jobExecutionContext, errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE);
-                registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+                registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskId());
             } catch (Exception e1) {
                 throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
             }

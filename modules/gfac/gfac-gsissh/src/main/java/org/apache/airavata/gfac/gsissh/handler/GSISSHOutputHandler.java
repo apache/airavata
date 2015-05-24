@@ -107,7 +107,7 @@ public class GSISSHOutputHandler extends AbstractHandler {
                 }
             }
 
-            String timeStampedExperimentID = GFacUtils.createUniqueNameWithDate(jobExecutionContext.getExperimentID());
+            String timeStampedExperimentID = GFacUtils.createUniqueNameWithDate(jobExecutionContext.getExperimentId());
 
             TaskDetails taskData = jobExecutionContext.getTaskData();
             String outputDataDir = null;
@@ -120,7 +120,7 @@ public class GSISSHOutputHandler extends AbstractHandler {
             if (outputDataDir == null) {
                 outputDataDir = File.separator + "tmp";
             }
-            outputDataDir = outputDataDir + File.separator + jobExecutionContext.getExperimentID() + "-" + jobExecutionContext.getTaskData().getTaskID();
+            outputDataDir = outputDataDir + File.separator + jobExecutionContext.getExperimentId() + "-" + jobExecutionContext.getTaskData().getTaskId();
             (new File(outputDataDir)).mkdirs();
          	
             String stdOutStr = "";
@@ -159,12 +159,12 @@ public class GSISSHOutputHandler extends AbstractHandler {
             status.setTransferState(TransferState.STDOUT_DOWNLOAD);
             detail.setTransferStatus(status);
             detail.setTransferDescription("STDOUT:" + localStdOutFile.getAbsolutePath());
-            registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+            registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskId());
 
             status.setTransferState(TransferState.STDERROR_DOWNLOAD);
             detail.setTransferStatus(status);
             detail.setTransferDescription("STDERR:" + localStdErrFile.getAbsolutePath());
-            registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+            registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskId());
 
             //todo this is a mess we have to fix this
             List<OutputDataObjectType> outputArray = new ArrayList<OutputDataObjectType>();
@@ -296,15 +296,15 @@ public class GSISSHOutputHandler extends AbstractHandler {
             status.setTransferState(TransferState.DOWNLOAD);
             detail.setTransferStatus(status);
             detail.setTransferDescription(outputDataDir);
-            registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
-            registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
+            registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskId());
+            registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentId());
             fireTaskOutputChangeEvent(jobExecutionContext, outputArray);
         } catch (Exception e) {
             try {
                 status.setTransferState(TransferState.FAILED);
                 detail.setTransferStatus(status);
                 detail.setTransferDescription(e.getLocalizedMessage());
-                registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+                registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskId());
                 GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE);
             } catch (Exception e1) {
                 throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());

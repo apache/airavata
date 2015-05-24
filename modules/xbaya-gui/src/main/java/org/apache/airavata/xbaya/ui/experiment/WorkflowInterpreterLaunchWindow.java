@@ -325,11 +325,11 @@ public class WorkflowInterpreterLaunchWindow {
         Project project = new Project();
         project.setName("project1");
         project.setOwner(thriftClientData.getUsername());
-        project.setProjectID(airavataClient.createProject(gatewayId, project));
+        project.setProjectId(airavataClient.createProject(gatewayId, project));
         final Experiment experiment = new Experiment();
         experiment.setApplicationId(workflowModel.getTemplateId());
         experiment.setName(instanceName);
-        experiment.setProjectID(project.getProjectID());
+        experiment.setProjectId(project.getProjectId());
         experiment.setUserName(thriftClientData.getUsername());
         for (InputDataObjectType inputDataType : inputDataTypes) {
             experiment.addToExperimentInputs(inputDataType);
@@ -372,25 +372,25 @@ public class WorkflowInterpreterLaunchWindow {
         for (int i = 0; i < 20; i++) {
             experiment.setName(instanceName + "_" + i);
 
-            experiment.setExperimentID(airavataClient.createExperiment(experiment));
+            experiment.setExperimentId(airavataClient.createExperiment(experiment));
 
             try {
-                this.engine.getMonitor().subscribe(experiment.getExperimentID());
+                this.engine.getMonitor().subscribe(experiment.getExperimentId());
                 this.engine.getMonitor().fireStartMonitoring(workflow.getName());
             } catch (MonitorException e) {
-                logger.error("Error while subscribing with experiment Id : " + experiment.getExperimentID(), e);
+                logger.error("Error while subscribing with experiment Id : " + experiment.getExperimentId(), e);
             }
-            airavataClient.launchExperiment(experiment.getExperimentID(), "testToken");
+            airavataClient.launchExperiment(experiment.getExperimentId(), "testToken");
 
         }*/
-        experiment.setExperimentID(airavataClient.createExperiment(gatewayId, experiment));
+        experiment.setExperimentId(airavataClient.createExperiment(gatewayId, experiment));
         try {
-            this.engine.getMonitor().subscribe(experiment.getExperimentID());
+            this.engine.getMonitor().subscribe(experiment.getExperimentId());
             this.engine.getMonitor().fireStartMonitoring(workflow.getName());
         } catch (MonitorException e) {
-            logger.error("Error while subscribing with experiment Id : " + experiment.getExperimentID(), e);
+            logger.error("Error while subscribing with experiment Id : " + experiment.getExperimentId(), e);
         }
-        airavataClient.launchExperiment(experiment.getExperimentID(), token.getText());
+        airavataClient.launchExperiment(experiment.getExperimentId(), token.getText());
 
         clean();
         hide();

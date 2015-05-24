@@ -57,14 +57,14 @@ public class TestCreateLaunchExperiment {
 
             List<JobDetails> jobDetailsList = getJobDetails(airavata, "echoExperiment_14a83cee-5611-4e37-b90c-4444d28359b6");
             for (JobDetails job : jobDetailsList){
-//                System.out.println(experimentSummary.getExperimentID());
+//                System.out.println(experimentSummary.getExperimentId());
                 System.out.println("job description : " + job.getJobDescription());
 //                System.out.println(experimentSummary.getExperimentStatus().getExperimentState().toString());
             }
 
             List<DataTransferDetails> dataTransferDetails = getDataTransferDetails(airavata, "echoExperiment_6c32f45d-7755-4d1f-9915-69b9a6972770");
             for (DataTransferDetails dt : dataTransferDetails){
-//                System.out.println(experimentSummary.getExperimentID());
+//                System.out.println(experimentSummary.getExperimentId());
                 System.out.println("data transfer description "  + dt.getTransferDescription());
 //                System.out.println(experimentSummary.getExperimentStatus().getExperimentState().toString());
             }
@@ -82,7 +82,7 @@ public class TestCreateLaunchExperiment {
 //            List<Experiment> experiments = getExperimentsForUser(airavata, "admin");
 //            System.out.println("Experiment count : " + experiments.size());
 //            for (Experiment ex : experiments){
-//                System.out.println(ex.getExperimentID());
+//                System.out.println(ex.getExperimentId());
 //            }
 
         } catch (Exception e) {

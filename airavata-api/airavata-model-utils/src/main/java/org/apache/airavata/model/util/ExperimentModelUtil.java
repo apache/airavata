@@ -55,7 +55,7 @@ public class ExperimentModelUtil {
                                                     String applicationId,
                                                     List<InputDataObjectType> experimentInputList) {
         Experiment experiment = new Experiment();
-        experiment.setProjectID(projectID);
+        experiment.setProjectId(projectID);
         experiment.setUserName(userName);
         experiment.setName(experimentName);
         experiment.setDescription(expDescription);
@@ -77,7 +77,7 @@ public class ExperimentModelUtil {
 
         ComputationalResourceScheduling cmRS = new ComputationalResourceScheduling();
         cmRS.setResourceHostId(resourceHostId);
-        cmRS.setTotalCPUCount(cpuCount);
+        cmRS.setTotalCpuCount(cpuCount);
         cmRS.setNodeCount(nodeCount);
         cmRS.setNumberOfThreads(numberOfThreads);
         cmRS.setQueueName(queueName);

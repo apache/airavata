@@ -68,7 +68,7 @@ public class ThriftDataModelConversion {
     public static Project getProject (ProjectResource pr) throws RegistryException {
         if (pr != null) {
             Project project = new Project();
-            project.setProjectID(pr.getId());
+            project.setProjectId(pr.getId());
             project.setName(pr.getName());
             if (pr.getCreationTime()!=null) {
 				project.setCreationTime(pr.getCreationTime().getTime());
@@ -110,9 +110,9 @@ public class ThriftDataModelConversion {
         if (experimentResource != null){
             Experiment experiment = new Experiment();
             if (experimentResource.getProject()!= null){
-                experiment.setProjectID(experimentResource.getProject().getId());
+                experiment.setProjectId(experimentResource.getProject().getId());
             }
-            experiment.setExperimentID(experimentResource.getExpID());
+            experiment.setExperimentId(experimentResource.getExpID());
             experiment.setCreationTime(experimentResource.getCreationTime().getTime());
             experiment.setUserName(experimentResource.getExecutionUser());
             experiment.setName(experimentResource.getExpName());
@@ -163,9 +163,9 @@ public class ThriftDataModelConversion {
         if (experimentResource != null){
             ExperimentSummary experimentSummary = new ExperimentSummary();
             if (experimentResource.getProject()!= null){
-                experimentSummary.setProjectID(experimentResource.getProject().getId());
+                experimentSummary.setProjectId(experimentResource.getProject().getId());
             }
-            experimentSummary.setExperimentID(experimentResource.getExpID());
+            experimentSummary.setExperimentId(experimentResource.getExpID());
             experimentSummary.setCreationTime(experimentResource.getCreationTime().getTime());
             experimentSummary.setUserName(experimentResource.getExecutionUser());
             experimentSummary.setName(experimentResource.getExpName());
@@ -494,7 +494,7 @@ public class ThriftDataModelConversion {
         if (taskDetailResource != null){
             TaskDetails taskDetails = new TaskDetails();
             String taskId = taskDetailResource.getTaskId();
-            taskDetails.setTaskID(taskId);
+            taskDetails.setTaskId(taskId);
             taskDetails.setApplicationId(taskDetailResource.getApplicationId());
             taskDetails.setApplicationVersion(taskDetailResource.getApplicationVersion());
             List<ApplicationInputResource> applicationInputs = taskDetailResource.getApplicationInputs();
@@ -556,7 +556,7 @@ public class ThriftDataModelConversion {
     public static JobDetails getJobDetail(JobDetailResource jobDetailResource) throws RegistryException {
         if (jobDetailResource != null){
             JobDetails jobDetails = new JobDetails();
-            jobDetails.setJobID(jobDetailResource.getJobId());
+            jobDetails.setJobId(jobDetailResource.getJobId());
             jobDetails.setJobDescription(jobDetailResource.getJobDescription());
             jobDetails.setCreationTime(jobDetailResource.getCreationTime().getTime());
             StatusResource jobStatus = jobDetailResource.getJobStatus();
@@ -576,7 +576,7 @@ public class ThriftDataModelConversion {
     public static ErrorDetails getErrorDetails (ErrorDetailResource resource){
         if (resource != null){
             ErrorDetails errorDetails = new ErrorDetails();
-            errorDetails.setErrorID(String.valueOf(resource.getErrorId()));
+            errorDetails.setErrorId(String.valueOf(resource.getErrorId()));
             errorDetails.setCreationTime(resource.getCreationTime().getTime());
             errorDetails.setActualErrorMessage(resource.getActualErrorMsg());
             errorDetails.setUserFriendlyMessage(resource.getUserFriendlyErrorMsg());
@@ -602,7 +602,7 @@ public class ThriftDataModelConversion {
     public static DataTransferDetails getDataTransferDetail (DataTransferDetailResource resource) throws RegistryException {
         if (resource != null){
             DataTransferDetails details = new DataTransferDetails();
-            details.setTransferID(resource.getTransferId());
+            details.setTransferId(resource.getTransferId());
             details.setCreationTime(resource.getCreationTime().getTime());
             details.setTransferDescription(resource.getTransferDescription());
             details.setTransferStatus(getTransferStatus(resource.getDataTransferStatus()));
@@ -628,7 +628,7 @@ public class ThriftDataModelConversion {
             data.setAiravataAutoSchedule(resource.isAiravataAutoSchedule());
             data.setOverrideManualScheduledParams(resource.isOverrideManualParams());
             data.setShareExperimentPublicly(resource.isShareExp());
-            data.setUserDN(resource.getUserDn());
+            data.setUserDn(resource.getUserDn());
             data.setGenerateCert(resource.isGenerateCert());
             ExperimentResource experimentResource = resource.getExperimentResource();
             String expID = experimentResource.getExpID();
@@ -661,7 +661,7 @@ public class ThriftDataModelConversion {
         if (csr != null){
             ComputationalResourceScheduling scheduling = new ComputationalResourceScheduling();
             scheduling.setResourceHostId(csr.getResourceHostId());
-            scheduling.setTotalCPUCount(csr.getCpuCount());
+            scheduling.setTotalCpuCount(csr.getCpuCount());
             scheduling.setNodeCount(csr.getNodeCount());
             scheduling.setNumberOfThreads(csr.getNumberOfThreads());
             scheduling.setQueueName(csr.getQueueName());

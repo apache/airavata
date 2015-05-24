@@ -87,7 +87,7 @@ public class SSHOutputHandler extends AbstractHandler {
             }
 
             // Get the Stdouts and StdErrs
-            String timeStampedExperimentID = GFacUtils.createUniqueNameWithDate(jobExecutionContext.getExperimentID());
+            String timeStampedExperimentID = GFacUtils.createUniqueNameWithDate(jobExecutionContext.getExperimentId());
 
             TaskDetails taskData = jobExecutionContext.getTaskData();
             String outputDataDir = null;
@@ -100,7 +100,7 @@ public class SSHOutputHandler extends AbstractHandler {
             if (outputDataDir == null) {
                 outputDataDir = File.separator + "tmp";
             }
-            outputDataDir = outputDataDir + File.separator + jobExecutionContext.getExperimentID() + "-" + jobExecutionContext.getTaskData().getTaskID();
+            outputDataDir = outputDataDir + File.separator + jobExecutionContext.getExperimentId() + "-" + jobExecutionContext.getTaskData().getTaskId();
             (new File(outputDataDir)).mkdirs();
 
 
@@ -128,12 +128,12 @@ public class SSHOutputHandler extends AbstractHandler {
             status.setTransferState(TransferState.STDOUT_DOWNLOAD);
             detail.setTransferStatus(status);
             detail.setTransferDescription("STDOUT:" + localStdOutFile.getAbsolutePath());
-            registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+            registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskId());
 
             status.setTransferState(TransferState.STDERROR_DOWNLOAD);
             detail.setTransferStatus(status);
             detail.setTransferDescription("STDERR:" + localStdErrFile.getAbsolutePath());
-            registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+            registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskId());
 
 
             List<OutputDataObjectType> outputArray = new ArrayList<OutputDataObjectType>();
@@ -224,14 +224,14 @@ public class SSHOutputHandler extends AbstractHandler {
             status.setTransferState(TransferState.DOWNLOAD);
             detail.setTransferStatus(status);
             detail.setTransferDescription(outputDataDir);
-            registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
-            registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
+            registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskId());
+            registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentId());
 
         } catch (Exception e) {
             try {
                 status.setTransferState(TransferState.FAILED);
                 detail.setTransferStatus(status);
-                registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+                registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskId());
                 StringWriter errors = new StringWriter();
                 e.printStackTrace(new PrintWriter(errors));
                 GFacUtils.saveErrorDetails(jobExecutionContext,  errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE);

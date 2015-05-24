@@ -56,7 +56,7 @@ public class OrchestratorTestWithGRAM extends BaseOrchestratorTest {
 ////        basicMetadata.setExperimentName("test-trestles");
 ////        basicMetadata.setUserName("admin");
 ////        basicMetadata.setUserNameIsSet(true);
-////        basicMetadata.setProjectID("default");
+////        basicMetadata.setProjectId("default");
 ////
 ////        AdvancedInputDataHandling advancedInputDataHandling = new AdvancedInputDataHandling();
 ////        AdvancedOutputDataHandling advancedOutputDataHandling = new AdvancedOutputDataHandling();

@@ -110,7 +110,7 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
         	log.info("\t"+user+" : "+data.size()+" experiments");
 			Assert.assertEquals(listUserExperiments.size(), data.size());
 			for (Experiment experiment : listUserExperiments) {
-				Assert.assertThat(experiment.getExperimentID(), isIn(data)); 
+				Assert.assertThat(experiment.getExperimentId(), isIn(data));
 			}
 		}
     }
@@ -125,7 +125,7 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
         	log.info("\t"+project+" : "+data.size()+" experiments");
 			Assert.assertEquals(listProjectExperiments.size(), data.size());
 			for (Experiment experiment : listProjectExperiments) {
-				Assert.assertThat(experiment.getExperimentID(), isIn(data)); 
+				Assert.assertThat(experiment.getExperimentId(), isIn(data));
 			}
 		}
     }
@@ -141,7 +141,7 @@ public class DataRetrievalIT extends AbstractIntegrationTest {
             log.info("\t"+user+" : "+data.size()+" projects");
 			Assert.assertEquals(listUserProjects.size(), 4);
 //			for (Project project : listUserProjects) {
-//				Assert.assertThat(project.getProjectID(), isIn(data));
+//				Assert.assertThat(project.getProjectId(), isIn(data));
 //			}
 		}
     }

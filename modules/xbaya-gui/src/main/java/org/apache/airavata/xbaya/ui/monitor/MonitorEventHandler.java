@@ -331,14 +331,14 @@ public class MonitorEventHandler implements ChangeListener {
             if (event.getStatus().equals(WorkflowNodeState.INVOKED.toString())) {
                 invokeNode(node);
 //            workflowStarted(graph, forward);
-//            workflowStatusUpdater.workflowStarted(event.getExperimentID());
+//            workflowStatusUpdater.workflowStarted(event.getExperimentId());
             } else if (event.getStatus().equals(WorkflowNodeState.COMPLETED.toString())) {
                 nodeFinished(node, true);
 //            workflowFinished(graph, forward);
-//            workflowStatusUpdater.workflowFinished(event.getExperimentID());
+//            workflowStatusUpdater.workflowFinished(event.getExperimentId());
             } else if (event.getStatus().equals(WorkflowNodeState.EXECUTING.toString())) {
                 nodeStarted(node, forward);
-//                workflowNodeStatusUpdater.workflowStarted(event.getExperimentID(), event.getNodeID());
+//                workflowNodeStatusUpdater.workflowStarted(event.getExperimentId(), event.getNodeID());
             } else {
                 // Ignore the rest.
             }

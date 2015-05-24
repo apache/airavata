@@ -120,7 +120,7 @@ uint32_t Project::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   using ::apache::thrift::protocol::TProtocolException;
 
-  bool isset_projectID = false;
+  bool isset_projectId = false;
   bool isset_owner = false;
   bool isset_name = false;
 
@@ -134,8 +134,8 @@ uint32_t Project::read(::apache::thrift::protocol::TProtocol* iprot) {
     {
       case 1:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
-          xfer += iprot->readString(this->projectID);
-          isset_projectID = true;
+          xfer += iprot->readString(this->projectId);
+          isset_projectId = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -221,7 +221,7 @@ uint32_t Project::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   xfer += iprot->readStructEnd();
 
-  if (!isset_projectID)
+  if (!isset_projectId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_owner)
     throw TProtocolException(TProtocolException::INVALID_DATA);
@@ -234,8 +234,8 @@ uint32_t Project::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Project");
 
-  xfer += oprot->writeFieldBegin("projectID", ::apache::thrift::protocol::T_STRING, 1);
-  xfer += oprot->writeString(this->projectID);
+  xfer += oprot->writeFieldBegin("projectId", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->projectId);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("owner", ::apache::thrift::protocol::T_STRING, 2);
@@ -289,7 +289,7 @@ uint32_t Project::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
 void swap(Project &a, Project &b) {
   using ::std::swap;
-  swap(a.projectID, b.projectID);
+  swap(a.projectId, b.projectId);
   swap(a.owner, b.owner);
   swap(a.name, b.name);
   swap(a.description, b.description);

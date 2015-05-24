@@ -93,7 +93,7 @@ public class EmailBasedMonitor implements Runnable{
     }
 
     public void addToJobMonitorMap(JobExecutionContext jobExecutionContext) {
-        String monitorId = jobExecutionContext.getJobDetails().getJobID();
+        String monitorId = jobExecutionContext.getJobDetails().getJobId();
         if (monitorId == null || monitorId.isEmpty()) {
             monitorId = jobExecutionContext.getJobDetails().getJobName();
         }
@@ -300,10 +300,10 @@ public class EmailBasedMonitor implements Runnable{
 
     private void publishJobStatusChange(JobExecutionContext jobExecutionContext) {
         JobStatusChangeRequestEvent jobStatus = new JobStatusChangeRequestEvent();
-        JobIdentifier jobIdentity = new JobIdentifier(jobExecutionContext.getJobDetails().getJobID(),
-                jobExecutionContext.getTaskData().getTaskID(),
+        JobIdentifier jobIdentity = new JobIdentifier(jobExecutionContext.getJobDetails().getJobId(),
+                jobExecutionContext.getTaskData().getTaskId(),
                 jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
-                jobExecutionContext.getExperimentID(),
+                jobExecutionContext.getExperimentId(),
                 jobExecutionContext.getGatewayID());
         jobStatus.setJobIdentity(jobIdentity);
         jobStatus.setState(jobExecutionContext.getJobDetails().getJobStatus().getJobState());

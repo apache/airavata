@@ -772,7 +772,7 @@ class ComputationalResourceScheduling {
   static $_TSPEC;
 
   public $resourceHostId = null;
-  public $totalCPUCount = null;
+  public $totalCpuCount = null;
   public $nodeCount = null;
   public $numberOfThreads = null;
   public $queueName = null;
@@ -790,7 +790,7 @@ class ComputationalResourceScheduling {
           'type' => TType::STRING,
           ),
         2 => array(
-          'var' => 'totalCPUCount',
+          'var' => 'totalCpuCount',
           'type' => TType::I32,
           ),
         3 => array(
@@ -831,8 +831,8 @@ class ComputationalResourceScheduling {
       if (isset($vals['resourceHostId'])) {
         $this->resourceHostId = $vals['resourceHostId'];
       }
-      if (isset($vals['totalCPUCount'])) {
-        $this->totalCPUCount = $vals['totalCPUCount'];
+      if (isset($vals['totalCpuCount'])) {
+        $this->totalCpuCount = $vals['totalCpuCount'];
       }
       if (isset($vals['nodeCount'])) {
         $this->nodeCount = $vals['nodeCount'];
@@ -889,7 +889,7 @@ class ComputationalResourceScheduling {
           break;
         case 2:
           if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->totalCPUCount);
+            $xfer += $input->readI32($this->totalCpuCount);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -968,9 +968,9 @@ class ComputationalResourceScheduling {
       $xfer += $output->writeString($this->resourceHostId);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->totalCPUCount !== null) {
-      $xfer += $output->writeFieldBegin('totalCPUCount', TType::I32, 2);
-      $xfer += $output->writeI32($this->totalCPUCount);
+    if ($this->totalCpuCount !== null) {
+      $xfer += $output->writeFieldBegin('totalCpuCount', TType::I32, 2);
+      $xfer += $output->writeI32($this->totalCpuCount);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->nodeCount !== null) {
@@ -1387,7 +1387,7 @@ class UserConfigurationData {
   public $advanceOutputDataHandling = null;
   public $qosParams = null;
   public $throttleResources = false;
-  public $userDN = null;
+  public $userDn = null;
   public $generateCert = false;
 
   public function __construct($vals=null) {
@@ -1430,7 +1430,7 @@ class UserConfigurationData {
           'type' => TType::BOOL,
           ),
         9 => array(
-          'var' => 'userDN',
+          'var' => 'userDn',
           'type' => TType::STRING,
           ),
         10 => array(
@@ -1464,8 +1464,8 @@ class UserConfigurationData {
       if (isset($vals['throttleResources'])) {
         $this->throttleResources = $vals['throttleResources'];
       }
-      if (isset($vals['userDN'])) {
-        $this->userDN = $vals['userDN'];
+      if (isset($vals['userDn'])) {
+        $this->userDn = $vals['userDn'];
       }
       if (isset($vals['generateCert'])) {
         $this->generateCert = $vals['generateCert'];
@@ -1554,7 +1554,7 @@ class UserConfigurationData {
           break;
         case 9:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->userDN);
+            $xfer += $input->readString($this->userDn);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -1631,9 +1631,9 @@ class UserConfigurationData {
       $xfer += $output->writeBool($this->throttleResources);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->userDN !== null) {
-      $xfer += $output->writeFieldBegin('userDN', TType::STRING, 9);
-      $xfer += $output->writeString($this->userDN);
+    if ($this->userDn !== null) {
+      $xfer += $output->writeFieldBegin('userDn', TType::STRING, 9);
+      $xfer += $output->writeString($this->userDn);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->generateCert !== null) {
@@ -1651,7 +1651,7 @@ class UserConfigurationData {
 class ErrorDetails {
   static $_TSPEC;
 
-  public $errorID = "DO_NOT_SET_AT_CLIENTS";
+  public $errorId = "DO_NOT_SET_AT_CLIENTS";
   public $creationTime = null;
   public $actualErrorMessage = null;
   public $userFriendlyMessage = null;
@@ -1665,7 +1665,7 @@ class ErrorDetails {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
-          'var' => 'errorID',
+          'var' => 'errorId',
           'type' => TType::STRING,
           ),
         2 => array(
@@ -1707,8 +1707,8 @@ class ErrorDetails {
         );
     }
     if (is_array($vals)) {
-      if (isset($vals['errorID'])) {
-        $this->errorID = $vals['errorID'];
+      if (isset($vals['errorId'])) {
+        $this->errorId = $vals['errorId'];
       }
       if (isset($vals['creationTime'])) {
         $this->creationTime = $vals['creationTime'];
@@ -1758,7 +1758,7 @@ class ErrorDetails {
       {
         case 1:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->errorID);
+            $xfer += $input->readString($this->errorId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -1842,9 +1842,9 @@ class ErrorDetails {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('ErrorDetails');
-    if ($this->errorID !== null) {
-      $xfer += $output->writeFieldBegin('errorID', TType::STRING, 1);
-      $xfer += $output->writeString($this->errorID);
+    if ($this->errorId !== null) {
+      $xfer += $output->writeFieldBegin('errorId', TType::STRING, 1);
+      $xfer += $output->writeString($this->errorId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->creationTime !== null) {
@@ -1909,7 +1909,7 @@ class ErrorDetails {
 class JobDetails {
   static $_TSPEC;
 
-  public $jobID = "DO_NOT_SET_AT_CLIENTS";
+  public $jobId = "DO_NOT_SET_AT_CLIENTS";
   public $jobDescription = null;
   public $creationTime = null;
   public $jobStatus = null;
@@ -1923,7 +1923,7 @@ class JobDetails {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
-          'var' => 'jobID',
+          'var' => 'jobId',
           'type' => TType::STRING,
           ),
         2 => array(
@@ -1968,8 +1968,8 @@ class JobDetails {
         );
     }
     if (is_array($vals)) {
-      if (isset($vals['jobID'])) {
-        $this->jobID = $vals['jobID'];
+      if (isset($vals['jobId'])) {
+        $this->jobId = $vals['jobId'];
       }
       if (isset($vals['jobDescription'])) {
         $this->jobDescription = $vals['jobDescription'];
@@ -2019,7 +2019,7 @@ class JobDetails {
       {
         case 1:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->jobID);
+            $xfer += $input->readString($this->jobId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -2106,9 +2106,9 @@ class JobDetails {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('JobDetails');
-    if ($this->jobID !== null) {
-      $xfer += $output->writeFieldBegin('jobID', TType::STRING, 1);
-      $xfer += $output->writeString($this->jobID);
+    if ($this->jobId !== null) {
+      $xfer += $output->writeFieldBegin('jobId', TType::STRING, 1);
+      $xfer += $output->writeString($this->jobId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->jobDescription !== null) {
@@ -2179,7 +2179,7 @@ class JobDetails {
 class DataTransferDetails {
   static $_TSPEC;
 
-  public $transferID = "DO_NOT_SET_AT_CLIENTS";
+  public $transferId = "DO_NOT_SET_AT_CLIENTS";
   public $creationTime = null;
   public $transferDescription = null;
   public $transferStatus = null;
@@ -2188,7 +2188,7 @@ class DataTransferDetails {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
-          'var' => 'transferID',
+          'var' => 'transferId',
           'type' => TType::STRING,
           ),
         2 => array(
@@ -2207,8 +2207,8 @@ class DataTransferDetails {
         );
     }
     if (is_array($vals)) {
-      if (isset($vals['transferID'])) {
-        $this->transferID = $vals['transferID'];
+      if (isset($vals['transferId'])) {
+        $this->transferId = $vals['transferId'];
       }
       if (isset($vals['creationTime'])) {
         $this->creationTime = $vals['creationTime'];
@@ -2243,7 +2243,7 @@ class DataTransferDetails {
       {
         case 1:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->transferID);
+            $xfer += $input->readString($this->transferId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -2283,9 +2283,9 @@ class DataTransferDetails {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('DataTransferDetails');
-    if ($this->transferID !== null) {
-      $xfer += $output->writeFieldBegin('transferID', TType::STRING, 1);
-      $xfer += $output->writeString($this->transferID);
+    if ($this->transferId !== null) {
+      $xfer += $output->writeFieldBegin('transferId', TType::STRING, 1);
+      $xfer += $output->writeString($this->transferId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->creationTime !== null) {
@@ -2316,7 +2316,7 @@ class DataTransferDetails {
 class TaskDetails {
   static $_TSPEC;
 
-  public $taskID = "DO_NOT_SET_AT_CLIENTS";
+  public $taskId = "DO_NOT_SET_AT_CLIENTS";
   public $creationTime = null;
   public $applicationId = null;
   public $applicationVersion = null;
@@ -2337,7 +2337,7 @@ class TaskDetails {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
-          'var' => 'taskID',
+          'var' => 'taskId',
           'type' => TType::STRING,
           ),
         2 => array(
@@ -2436,8 +2436,8 @@ class TaskDetails {
         );
     }
     if (is_array($vals)) {
-      if (isset($vals['taskID'])) {
-        $this->taskID = $vals['taskID'];
+      if (isset($vals['taskId'])) {
+        $this->taskId = $vals['taskId'];
       }
       if (isset($vals['creationTime'])) {
         $this->creationTime = $vals['creationTime'];
@@ -2508,7 +2508,7 @@ class TaskDetails {
       {
         case 1:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->taskID);
+            $xfer += $input->readString($this->taskId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -2700,9 +2700,9 @@ class TaskDetails {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('TaskDetails');
-    if ($this->taskID !== null) {
-      $xfer += $output->writeFieldBegin('taskID', TType::STRING, 1);
-      $xfer += $output->writeString($this->taskID);
+    if ($this->taskId !== null) {
+      $xfer += $output->writeFieldBegin('taskId', TType::STRING, 1);
+      $xfer += $output->writeString($this->taskId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->creationTime !== null) {
@@ -3455,8 +3455,8 @@ class ValidationResults {
 class Experiment {
   static $_TSPEC;
 
-  public $experimentID = "DO_NOT_SET_AT_CLIENTS";
-  public $projectID = "DEFAULT";
+  public $experimentId = "DO_NOT_SET_AT_CLIENTS";
+  public $projectId = "DEFAULT";
   public $creationTime = null;
   public $userName = null;
   public $name = null;
@@ -3481,11 +3481,11 @@ class Experiment {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
-          'var' => 'experimentID',
+          'var' => 'experimentId',
           'type' => TType::STRING,
           ),
         2 => array(
-          'var' => 'projectID',
+          'var' => 'projectId',
           'type' => TType::STRING,
           ),
         3 => array(
@@ -3598,11 +3598,11 @@ class Experiment {
         );
     }
     if (is_array($vals)) {
-      if (isset($vals['experimentID'])) {
-        $this->experimentID = $vals['experimentID'];
+      if (isset($vals['experimentId'])) {
+        $this->experimentId = $vals['experimentId'];
       }
-      if (isset($vals['projectID'])) {
-        $this->projectID = $vals['projectID'];
+      if (isset($vals['projectId'])) {
+        $this->projectId = $vals['projectId'];
       }
       if (isset($vals['creationTime'])) {
         $this->creationTime = $vals['creationTime'];
@@ -3685,14 +3685,14 @@ class Experiment {
       {
         case 1:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->experimentID);
+            $xfer += $input->readString($this->experimentId);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 2:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->projectID);
+            $xfer += $input->readString($this->projectId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -3910,14 +3910,14 @@ class Experiment {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Experiment');
-    if ($this->experimentID !== null) {
-      $xfer += $output->writeFieldBegin('experimentID', TType::STRING, 1);
-      $xfer += $output->writeString($this->experimentID);
+    if ($this->experimentId !== null) {
+      $xfer += $output->writeFieldBegin('experimentId', TType::STRING, 1);
+      $xfer += $output->writeString($this->experimentId);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->projectID !== null) {
-      $xfer += $output->writeFieldBegin('projectID', TType::STRING, 2);
-      $xfer += $output->writeString($this->projectID);
+    if ($this->projectId !== null) {
+      $xfer += $output->writeFieldBegin('projectId', TType::STRING, 2);
+      $xfer += $output->writeString($this->projectId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->creationTime !== null) {
@@ -4103,8 +4103,8 @@ class Experiment {
 class ExperimentSummary {
   static $_TSPEC;
 
-  public $experimentID = null;
-  public $projectID = null;
+  public $experimentId = null;
+  public $projectId = null;
   public $creationTime = null;
   public $userName = null;
   public $name = null;
@@ -4117,11 +4117,11 @@ class ExperimentSummary {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
-          'var' => 'experimentID',
+          'var' => 'experimentId',
           'type' => TType::STRING,
           ),
         2 => array(
-          'var' => 'projectID',
+          'var' => 'projectId',
           'type' => TType::STRING,
           ),
         3 => array(
@@ -4161,11 +4161,11 @@ class ExperimentSummary {
         );
     }
     if (is_array($vals)) {
-      if (isset($vals['experimentID'])) {
-        $this->experimentID = $vals['experimentID'];
+      if (isset($vals['experimentId'])) {
+        $this->experimentId = $vals['experimentId'];
       }
-      if (isset($vals['projectID'])) {
-        $this->projectID = $vals['projectID'];
+      if (isset($vals['projectId'])) {
+        $this->projectId = $vals['projectId'];
       }
       if (isset($vals['creationTime'])) {
         $this->creationTime = $vals['creationTime'];
@@ -4212,14 +4212,14 @@ class ExperimentSummary {
       {
         case 1:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->experimentID);
+            $xfer += $input->readString($this->experimentId);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
         case 2:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->projectID);
+            $xfer += $input->readString($this->projectId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -4298,14 +4298,14 @@ class ExperimentSummary {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('ExperimentSummary');
-    if ($this->experimentID !== null) {
-      $xfer += $output->writeFieldBegin('experimentID', TType::STRING, 1);
-      $xfer += $output->writeString($this->experimentID);
+    if ($this->experimentId !== null) {
+      $xfer += $output->writeFieldBegin('experimentId', TType::STRING, 1);
+      $xfer += $output->writeString($this->experimentId);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->projectID !== null) {
-      $xfer += $output->writeFieldBegin('projectID', TType::STRING, 2);
-      $xfer += $output->writeString($this->projectID);
+    if ($this->projectId !== null) {
+      $xfer += $output->writeFieldBegin('projectId', TType::STRING, 2);
+      $xfer += $output->writeString($this->projectId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->creationTime !== null) {

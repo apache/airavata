@@ -52,8 +52,8 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("all") public class ExperimentSummary implements org.apache.thrift.TBase<ExperimentSummary, ExperimentSummary._Fields>, java.io.Serializable, Cloneable, Comparable<ExperimentSummary> {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("ExperimentSummary");
 
-  private static final org.apache.thrift.protocol.TField EXPERIMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentID", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField PROJECT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("projectID", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField EXPERIMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentId", org.apache.thrift.protocol.TType.STRING, (short)1);
+  private static final org.apache.thrift.protocol.TField PROJECT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("projectId", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("creationTime", org.apache.thrift.protocol.TType.I64, (short)3);
   private static final org.apache.thrift.protocol.TField USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("userName", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("name", org.apache.thrift.protocol.TType.STRING, (short)5);
@@ -68,8 +68,8 @@ import org.slf4j.LoggerFactory;
     schemes.put(TupleScheme.class, new ExperimentSummaryTupleSchemeFactory());
   }
 
-  private String experimentID; // required
-  private String projectID; // required
+  private String experimentId; // required
+  private String projectId; // required
   private long creationTime; // optional
   private String userName; // required
   private String name; // required
@@ -80,8 +80,8 @@ import org.slf4j.LoggerFactory;
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
-    EXPERIMENT_ID((short)1, "experimentID"),
-    PROJECT_ID((short)2, "projectID"),
+    EXPERIMENT_ID((short)1, "experimentId"),
+    PROJECT_ID((short)2, "projectId"),
     CREATION_TIME((short)3, "creationTime"),
     USER_NAME((short)4, "userName"),
     NAME((short)5, "name"),
@@ -167,9 +167,9 @@ import org.slf4j.LoggerFactory;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
-    tmpMap.put(_Fields.EXPERIMENT_ID, new org.apache.thrift.meta_data.FieldMetaData("experimentID", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.EXPERIMENT_ID, new org.apache.thrift.meta_data.FieldMetaData("experimentId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.PROJECT_ID, new org.apache.thrift.meta_data.FieldMetaData("projectID", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.PROJECT_ID, new org.apache.thrift.meta_data.FieldMetaData("projectId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.CREATION_TIME, new org.apache.thrift.meta_data.FieldMetaData("creationTime", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64)));
@@ -194,14 +194,14 @@ import org.slf4j.LoggerFactory;
   }
 
   public ExperimentSummary(
-    String experimentID,
-    String projectID,
+    String experimentId,
+    String projectId,
     String userName,
     String name)
   {
     this();
-    this.experimentID = experimentID;
-    this.projectID = projectID;
+    this.experimentId = experimentId;
+    this.projectId = projectId;
     this.userName = userName;
     this.name = name;
   }
@@ -211,11 +211,11 @@ import org.slf4j.LoggerFactory;
    */
   public ExperimentSummary(ExperimentSummary other) {
     __isset_bitfield = other.__isset_bitfield;
-    if (other.isSetExperimentID()) {
-      this.experimentID = other.experimentID;
+    if (other.isSetExperimentId()) {
+      this.experimentId = other.experimentId;
     }
-    if (other.isSetProjectID()) {
-      this.projectID = other.projectID;
+    if (other.isSetProjectId()) {
+      this.projectId = other.projectId;
     }
     this.creationTime = other.creationTime;
     if (other.isSetUserName()) {
@@ -248,8 +248,8 @@ import org.slf4j.LoggerFactory;
 
   @Override
   public void clear() {
-    this.experimentID = null;
-    this.projectID = null;
+    this.experimentId = null;
+    this.projectId = null;
     setCreationTimeIsSet(false);
     this.creationTime = 0;
     this.userName = null;
@@ -260,49 +260,49 @@ import org.slf4j.LoggerFactory;
     this.errors = null;
   }
 
-  public String getExperimentID() {
-    return this.experimentID;
+  public String getExperimentId() {
+    return this.experimentId;
   }
 
-  public void setExperimentID(String experimentID) {
-    this.experimentID = experimentID;
+  public void setExperimentId(String experimentId) {
+    this.experimentId = experimentId;
   }
 
-  public void unsetExperimentID() {
-    this.experimentID = null;
+  public void unsetExperimentId() {
+    this.experimentId = null;
   }
 
-  /** Returns true if field experimentID is set (has been assigned a value) and false otherwise */
-  public boolean isSetExperimentID() {
-    return this.experimentID != null;
+  /** Returns true if field experimentId is set (has been assigned a value) and false otherwise */
+  public boolean isSetExperimentId() {
+    return this.experimentId != null;
   }
 
-  public void setExperimentIDIsSet(boolean value) {
+  public void setExperimentIdIsSet(boolean value) {
     if (!value) {
-      this.experimentID = null;
+      this.experimentId = null;
     }
   }
 
-  public String getProjectID() {
-    return this.projectID;
+  public String getProjectId() {
+    return this.projectId;
   }
 
-  public void setProjectID(String projectID) {
-    this.projectID = projectID;
+  public void setProjectId(String projectId) {
+    this.projectId = projectId;
   }
 
-  public void unsetProjectID() {
-    this.projectID = null;
+  public void unsetProjectId() {
+    this.projectId = null;
   }
 
-  /** Returns true if field projectID is set (has been assigned a value) and false otherwise */
-  public boolean isSetProjectID() {
-    return this.projectID != null;
+  /** Returns true if field projectId is set (has been assigned a value) and false otherwise */
+  public boolean isSetProjectId() {
+    return this.projectId != null;
   }
 
-  public void setProjectIDIsSet(boolean value) {
+  public void setProjectIdIsSet(boolean value) {
     if (!value) {
-      this.projectID = null;
+      this.projectId = null;
     }
   }
 
@@ -485,17 +485,17 @@ import org.slf4j.LoggerFactory;
     switch (field) {
     case EXPERIMENT_ID:
       if (value == null) {
-        unsetExperimentID();
+        unsetExperimentId();
       } else {
-        setExperimentID((String)value);
+        setExperimentId((String)value);
       }
       break;
 
     case PROJECT_ID:
       if (value == null) {
-        unsetProjectID();
+        unsetProjectId();
       } else {
-        setProjectID((String)value);
+        setProjectId((String)value);
       }
       break;
 
@@ -561,10 +561,10 @@ import org.slf4j.LoggerFactory;
   public Object getFieldValue(_Fields field) {
     switch (field) {
     case EXPERIMENT_ID:
-      return getExperimentID();
+      return getExperimentId();
 
     case PROJECT_ID:
-      return getProjectID();
+      return getProjectId();
 
     case CREATION_TIME:
       return Long.valueOf(getCreationTime());
@@ -599,9 +599,9 @@ import org.slf4j.LoggerFactory;
 
     switch (field) {
     case EXPERIMENT_ID:
-      return isSetExperimentID();
+      return isSetExperimentId();
     case PROJECT_ID:
-      return isSetProjectID();
+      return isSetProjectId();
     case CREATION_TIME:
       return isSetCreationTime();
     case USER_NAME:
@@ -633,21 +633,21 @@ import org.slf4j.LoggerFactory;
     if (that == null)
       return false;
 
-    boolean this_present_experimentID = true && this.isSetExperimentID();
-    boolean that_present_experimentID = true && that.isSetExperimentID();
-    if (this_present_experimentID || that_present_experimentID) {
-      if (!(this_present_experimentID && that_present_experimentID))
+    boolean this_present_experimentId = true && this.isSetExperimentId();
+    boolean that_present_experimentId = true && that.isSetExperimentId();
+    if (this_present_experimentId || that_present_experimentId) {
+      if (!(this_present_experimentId && that_present_experimentId))
         return false;
-      if (!this.experimentID.equals(that.experimentID))
+      if (!this.experimentId.equals(that.experimentId))
         return false;
     }
 
-    boolean this_present_projectID = true && this.isSetProjectID();
-    boolean that_present_projectID = true && that.isSetProjectID();
-    if (this_present_projectID || that_present_projectID) {
-      if (!(this_present_projectID && that_present_projectID))
+    boolean this_present_projectId = true && this.isSetProjectId();
+    boolean that_present_projectId = true && that.isSetProjectId();
+    if (this_present_projectId || that_present_projectId) {
+      if (!(this_present_projectId && that_present_projectId))
         return false;
-      if (!this.projectID.equals(that.projectID))
+      if (!this.projectId.equals(that.projectId))
         return false;
     }
 
@@ -730,22 +730,22 @@ import org.slf4j.LoggerFactory;
 
     int lastComparison = 0;
 
-    lastComparison = Boolean.valueOf(isSetExperimentID()).compareTo(other.isSetExperimentID());
+    lastComparison = Boolean.valueOf(isSetExperimentId()).compareTo(other.isSetExperimentId());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetExperimentID()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.experimentID, other.experimentID);
+    if (isSetExperimentId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.experimentId, other.experimentId);
       if (lastComparison != 0) {
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetProjectID()).compareTo(other.isSetProjectID());
+    lastComparison = Boolean.valueOf(isSetProjectId()).compareTo(other.isSetProjectId());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetProjectID()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.projectID, other.projectID);
+    if (isSetProjectId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.projectId, other.projectId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -840,19 +840,19 @@ import org.slf4j.LoggerFactory;
     StringBuilder sb = new StringBuilder("ExperimentSummary(");
     boolean first = true;
 
-    sb.append("experimentID:");
-    if (this.experimentID == null) {
+    sb.append("experimentId:");
+    if (this.experimentId == null) {
       sb.append("null");
     } else {
-      sb.append(this.experimentID);
+      sb.append(this.experimentId);
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("projectID:");
-    if (this.projectID == null) {
+    sb.append("projectId:");
+    if (this.projectId == null) {
       sb.append("null");
     } else {
-      sb.append(this.projectID);
+      sb.append(this.projectId);
     }
     first = false;
     if (isSetCreationTime()) {
@@ -923,12 +923,12 @@ import org.slf4j.LoggerFactory;
 
   public void validate() throws org.apache.thrift.TException {
     // check for required fields
-    if (!isSetExperimentID()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'experimentID' is unset! Struct:" + toString());
+    if (!isSetExperimentId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'experimentId' is unset! Struct:" + toString());
     }
 
-    if (!isSetProjectID()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'projectID' is unset! Struct:" + toString());
+    if (!isSetProjectId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'projectId' is unset! Struct:" + toString());
     }
 
     if (!isSetUserName()) {
@@ -983,16 +983,16 @@ import org.slf4j.LoggerFactory;
         switch (schemeField.id) {
           case 1: // EXPERIMENT_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.experimentID = iprot.readString();
-              struct.setExperimentIDIsSet(true);
+              struct.experimentId = iprot.readString();
+              struct.setExperimentIdIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
           case 2: // PROJECT_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.projectID = iprot.readString();
-              struct.setProjectIDIsSet(true);
+              struct.projectId = iprot.readString();
+              struct.setProjectIdIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1078,14 +1078,14 @@ import org.slf4j.LoggerFactory;
       struct.validate();
 
       oprot.writeStructBegin(STRUCT_DESC);
-      if (struct.experimentID != null) {
+      if (struct.experimentId != null) {
         oprot.writeFieldBegin(EXPERIMENT_ID_FIELD_DESC);
-        oprot.writeString(struct.experimentID);
+        oprot.writeString(struct.experimentId);
         oprot.writeFieldEnd();
       }
-      if (struct.projectID != null) {
+      if (struct.projectId != null) {
         oprot.writeFieldBegin(PROJECT_ID_FIELD_DESC);
-        oprot.writeString(struct.projectID);
+        oprot.writeString(struct.projectId);
         oprot.writeFieldEnd();
       }
       if (struct.isSetCreationTime()) {
@@ -1155,8 +1155,8 @@ import org.slf4j.LoggerFactory;
     @Override
     public void write(org.apache.thrift.protocol.TProtocol prot, ExperimentSummary struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
-      oprot.writeString(struct.experimentID);
-      oprot.writeString(struct.projectID);
+      oprot.writeString(struct.experimentId);
+      oprot.writeString(struct.projectId);
       oprot.writeString(struct.userName);
       oprot.writeString(struct.name);
       BitSet optionals = new BitSet();
@@ -1202,10 +1202,10 @@ import org.slf4j.LoggerFactory;
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ExperimentSummary struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.experimentID = iprot.readString();
-      struct.setExperimentIDIsSet(true);
-      struct.projectID = iprot.readString();
-      struct.setProjectIDIsSet(true);
+      struct.experimentId = iprot.readString();
+      struct.setExperimentIdIsSet(true);
+      struct.projectId = iprot.readString();
+      struct.setProjectIdIsSet(true);
       struct.userName = iprot.readString();
       struct.setUserNameIsSet(true);
       struct.name = iprot.readString();
