@@ -121,9 +121,18 @@ public class SecureClient {
 
         //invoke Airavata API by the SecureClient, on behalf of the user.
         System.out.println("Invoking Airavata API...");
+        System.out.println("Enter the access token to be used: (default:" + accessToken + ", press 'd' to use default value.)");
+        String accessTokenInput = scanner.next();
+        String acTk = null;
+        if (accessTokenInput.trim().equals("d")) {
+            acTk = accessToken;
+        } else {
+            acTk = accessTokenInput.trim();
+        }
+
         Airavata.Client client = createAiravataClient(Properties.SERVER_HOST, Properties.SERVER_PORT);
         AuthzToken authzToken = new AuthzToken();
-        authzToken.setAccessToken(accessToken);
+        authzToken.setAccessToken(acTk);
         String version = client.getAPIVersion(authzToken);
         System.out.println("Airavata API version: " + version);
         System.out.println("");
