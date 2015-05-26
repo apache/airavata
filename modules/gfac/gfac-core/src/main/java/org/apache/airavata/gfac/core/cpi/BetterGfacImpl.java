@@ -568,11 +568,12 @@ public class BetterGfacImpl implements GFac,Watcher {
                     jobExecutionContext.getNotifier().publish(new ExecutionFailEvent(e.getCause()));
                     throw new GFacException(e.getMessage(), e);
                 }
-            }else if (gfacExpState == GfacExperimentState.INHANDLERSINVOKING || gfacExpState == GfacExperimentState.INHANDLERSINVOKED || gfacExpState == GfacExperimentState.OUTHANDLERSINVOKING){
-                log.info("Experiment should be immedietly cancelled");
-                GFacUtils.updateExperimentStatus(jobExecutionContext.getExperimentID(), ExperimentState.CANCELED);
-
             }
+//            else if (gfacExpState == GfacExperimentState.INHANDLERSINVOKING || gfacExpState == GfacExperimentState.INHANDLERSINVOKED || gfacExpState == GfacExperimentState.OUTHANDLERSINVOKING){
+//                log.info("Experiment should be immedietly cancelled");
+//                GFacUtils.updateExperimentStatus(jobExecutionContext.getExperimentID(), ExperimentState.CANCELED);
+//
+//            }
             return true;
             }catch(Exception e){
                 log.error("Error occured while cancelling job for experiment : " + jobExecutionContext.getExperimentID(), e);
