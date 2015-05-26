@@ -61,7 +61,6 @@ public class RabbitMQListener {
         try {
             FileOutputStream fos = new FileOutputStream(file, false);
             final BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
-            AiravataUtils.setExecutionAsServer();
             String brokerUrl = ServerSettings.getSetting(RABBITMQ_BROKER_URL);
             System.out.println("broker url " + brokerUrl);
             final String exchangeName = ServerSettings.getSetting(RABBITMQ_EXCHANGE_NAME);

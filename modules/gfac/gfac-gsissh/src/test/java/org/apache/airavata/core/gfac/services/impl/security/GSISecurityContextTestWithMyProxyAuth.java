@@ -47,7 +47,6 @@ public class GSISecurityContextTestWithMyProxyAuth extends DatabaseTestCases {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        AiravataUtils.setExecutionAsServer();
 
 //        System.setProperty("myproxy.username", "ogce");
 //        System.setProperty("myproxy.password", "");

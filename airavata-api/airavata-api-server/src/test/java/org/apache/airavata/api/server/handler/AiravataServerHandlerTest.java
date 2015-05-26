@@ -48,7 +48,6 @@ public class AiravataServerHandlerTest {
 
     @BeforeClass
     public static void setupBeforeClass() throws Exception{
-        AiravataUtils.setExecutionAsServer();
         RegistryInitUtil.initializeDB();
         airavataServerHandler = new AiravataServerHandler();
 

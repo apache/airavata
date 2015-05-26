@@ -26,34 +26,6 @@ import java.util.Calendar;
 import java.util.UUID;
 
 public class AiravataUtils {
-	public static final String EXECUTION_MODE="application.execution.mode";
-	public static void setExecutionMode(ExecutionMode mode){
-		System.setProperty(EXECUTION_MODE, mode.name());
-	}
-	
-	public static ExecutionMode getExecutionMode(){
-		if (System.getProperties().containsKey(EXECUTION_MODE)) {
-			return ExecutionMode.valueOf(System.getProperty(EXECUTION_MODE));
-		}else{
-			return ExecutionMode.CLIENT;
-		}
-	}
-	
-	public static boolean isServer(){
-		return getExecutionMode()==ExecutionMode.SERVER;
-	}
-	
-	public static boolean isClient(){
-		return getExecutionMode()==ExecutionMode.CLIENT;
-	}
-	
-	public static void setExecutionAsServer(){
-		setExecutionMode(ExecutionMode.SERVER);
-	}
-	
-	public static void setExecutionAsClient(){
-		setExecutionMode(ExecutionMode.CLIENT);
-	}
 
     public static Timestamp getCurrentTimestamp() {
         Calendar calender = Calendar.getInstance();

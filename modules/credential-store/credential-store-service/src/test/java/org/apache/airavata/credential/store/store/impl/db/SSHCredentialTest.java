@@ -47,7 +47,6 @@ public class SSHCredentialTest {
         String pubKeyPath = "/Users/chathuri/Desktop/ssh_gw111/id_rsa.pub";
 
         try {
-            AiravataUtils.setExecutionAsServer();
             DBUtil dbUtil = new DBUtil(jdbcURL, userName, password, jdbcDriver);
             SSHCredentialWriter writer = new SSHCredentialWriter(dbUtil);
             SSHCredential sshCredential = new SSHCredential();

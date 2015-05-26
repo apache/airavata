@@ -34,7 +34,6 @@ public class ApplicationSettingsTest extends TestCase {
    
     public void testGetAbsoluteSettingWithSpecialCharacters() throws Exception {
 
-        System.setProperty(AiravataUtils.EXECUTION_MODE, "SERVER");
         String url = ServerSettings.getSetting("default.registry.user");
         Assert.assertEquals("admin", url);
 

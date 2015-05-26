@@ -70,7 +70,6 @@ public class CredentialStoreCallbackServlet extends ClientServlet {
         DBUtil dbUtil;
 
         try {
-            AiravataUtils.setExecutionAsServer();
             dbUtil = DBUtil.getCredentialStoreDBUtil();
         } catch (Exception e) {
             throw new ServletException("Error initializing database operations.", e);
