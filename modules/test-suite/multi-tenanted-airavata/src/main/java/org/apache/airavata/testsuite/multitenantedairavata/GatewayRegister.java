@@ -128,7 +128,6 @@ public class GatewayRegister {
 
             PrintWriter tokenWriter = new PrintWriter(fileName, "UTF-8");
             // credential store related functions are not in the current api, so need to call credential store directly
-            AiravataUtils.setExecutionAsClient();
             String jdbcURL = propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.CS_JBDC_URL, PropertyFileType.AIRAVATA_CLIENT);
             String jdbcDriver = propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.CS_JBDC_DRIVER, PropertyFileType.AIRAVATA_CLIENT);
             String userName = propertyReader.readProperty(TestFrameworkConstants.AiravataClientConstants.CS_DB_USERNAME, PropertyFileType.AIRAVATA_CLIENT);

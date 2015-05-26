@@ -21,6 +21,8 @@
 package org.apache.airavata.gfac.core.monitor;
 
 import com.google.common.eventbus.Subscribe;
+import org.apache.airavata.common.logger.AiravataLogger;
+import org.apache.airavata.common.logger.AiravataLoggerFactory;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -67,8 +69,10 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener {
             try {
                 String taskID = jobStatus.getJobIdentity().getTaskId();
                 String jobID = jobStatus.getJobIdentity().getJobId();
-                updateJobStatus(taskID, jobID, state);
-    			logger.debug("Publishing job status for "+jobStatus.getJobIdentity().getJobId()+":"+state.toString());
+                String expId = jobStatus.getJobIdentity().getExperimentId();
+                updateJobStatus(expId,taskID, jobID, state);
+    			logger.debug("expId - {}: Publishing job status for " + jobStatus.getJobIdentity().getJobId() + ":"
+                        + state.toString(),jobStatus.getJobIdentity().getExperimentId());
                 JobStatusChangeEvent event = new JobStatusChangeEvent(jobStatus.getState(), jobStatus.getJobIdentity());
                 monitorPublisher.publish(event);
                 String messageId = AiravataUtils.getId("JOB");
@@ -76,25 +80,26 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener {
                 msgCntxt.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
                 publisher.publish(msgCntxt);
             } catch (Exception e) {
-                logger.error("Error persisting data" + e.getLocalizedMessage(), e);
+                logger.error("expId - " + jobStatus.getJobIdentity().getExperimentId() + ": Error persisting data"
+                        + e.getLocalizedMessage(), e);
                 throw new Exception("Error persisting job status..", e);
             }
         }
     }
 
-    public  void updateJobStatus(String taskId, String jobID, JobState state) throws Exception {
-		logger.info("Updating job status for " + jobID + ":" + state.toString());
+    public  void updateJobStatus(String expId, String taskId, String jobID, JobState state) throws Exception {
+        logger.info("expId - {}: Updating job status for " + jobID + ":" + state.toString(), expId);
         CompositeIdentifier ids = new CompositeIdentifier(taskId, jobID);
-        JobDetails details = (JobDetails)airavataRegistry.get(RegistryModelType.JOB_DETAIL, ids);
-        if(details == null) {
+        JobDetails details = (JobDetails) airavataRegistry.get(RegistryModelType.JOB_DETAIL, ids);
+        if (details == null) {
             details = new JobDetails();
         }
         org.apache.airavata.model.workspace.experiment.JobStatus status = new org.apache.airavata.model.workspace.experiment.JobStatus();
-        if(JobState.CANCELED.equals(details.getJobStatus().getJobState())||
+        if (JobState.CANCELED.equals(details.getJobStatus().getJobState()) ||
                 JobState.CANCELING.equals(details.getJobStatus().getJobState())) {
             status.setJobState(details.getJobStatus().getJobState());
-        }else{
-        	 status.setJobState(state);
+        } else {
+            status.setJobState(state);
         }
         status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
         details.setJobStatus(status);

@@ -120,7 +120,6 @@ public class ServerMain {
 //		if (true){
 //			return;
 //		}
-		AiravataUtils.setExecutionAsServer();
         CommandLineParameters commandLineParameters = StringUtil.getCommandLineParser(args);
         if (commandLineParameters.getArguments().contains(STOP_COMMAND_STR)){
             performServerStopRequest(commandLineParameters);

@@ -96,7 +96,6 @@ public class Initialize {
         String jdbcUser = null;
         String jdbcPassword = null;
         try{
-            AiravataUtils.setExecutionAsServer();
             jdbcUrl = ServerSettings.getSetting("registry.jdbc.url");
             jdbcUser = ServerSettings.getSetting("registry.jdbc.user");
             jdbcPassword = ServerSettings.getSetting("registry.jdbc.password");

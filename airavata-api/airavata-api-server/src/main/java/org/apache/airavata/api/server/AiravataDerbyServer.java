@@ -98,7 +98,6 @@ public class AiravataDerbyServer implements IServer{
     }
 	
     public void startDerbyServer() throws AiravataSystemException {
-        AiravataUtils.setExecutionAsServer();
         startDerbyServer();
         setStatus(ServerStatus.STARTED);
     }
