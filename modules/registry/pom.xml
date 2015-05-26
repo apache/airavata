@@ -32,6 +32,7 @@
             <modules>
                 <module>registry-cpi</module>
                 <module>airavata-jpa-registry</module>
+                <module>airavata-mongo-registry</module>
                 <!--<module>jpa-gen</module>-->
             </modules>
         </profile>
