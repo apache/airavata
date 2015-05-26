@@ -308,7 +308,8 @@ public class EmailBasedMonitor implements Runnable{
         jobStatus.setJobIdentity(jobIdentity);
         jobStatus.setState(jobExecutionContext.getJobDetails().getJobStatus().getJobState());
         // we have this JobStatus class to handle amqp monitoring
-        log.debugId(jobStatus.getJobIdentity().getJobId(), "[EJM]: Published job status change request, " +
+        log.debugId(jobStatus.getJobIdentity().getJobId(), "[EJM]: Published job status(" +
+                        jobExecutionContext.getJobDetails().getJobStatus().getJobState().toString() + ") change request, " +
                         "experiment {} , task {}", jobStatus.getJobIdentity().getExperimentId(),
                 jobStatus.getJobIdentity().getTaskId());
 

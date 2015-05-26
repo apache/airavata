@@ -56,7 +56,8 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
     public void setupTaskStatus(TaskStatusChangeRequestEvent taskStatus) throws Exception{
     	try {
 			updateTaskStatus(taskStatus.getTaskIdentity().getTaskId(), taskStatus.getState());
-			logger.debug("Publishing task status for "+taskStatus.getTaskIdentity().getTaskId()+":"+taskStatus.getState().toString());
+            logger.debug("expId - {}: Publishing task status for " + taskStatus.getTaskIdentity().getTaskId() + ":"
+                    + taskStatus.getState().toString(), taskStatus.getTaskIdentity().getExperimentId());
             TaskStatusChangeEvent event = new TaskStatusChangeEvent(taskStatus.getState(), taskStatus.getTaskIdentity());
             monitorPublisher.publish(event);
             String messageId = AiravataUtils.getId("TASK");
@@ -95,7 +96,8 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
     	}
     	try {
 			updateTaskStatus(jobStatus.getJobIdentity().getTaskId(), state);
-			logger.debug("Publishing task status for "+jobStatus.getJobIdentity().getTaskId()+":"+state.toString());
+            logger.debug("expId - {}: Publishing task status for " + jobStatus.getJobIdentity().getTaskId() + ":"
+                    + state.toString(), jobStatus.getJobIdentity().getExperimentId());
             TaskIdentifier taskIdentity = new TaskIdentifier(jobStatus.getJobIdentity().getTaskId(),
                                                          jobStatus.getJobIdentity().getWorkflowNodeId(),
                                                          jobStatus.getJobIdentity().getExperimentId(),
@@ -108,7 +110,7 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
             publisher.publish(msgCntxt);
 
         }  catch (Exception e) {
-            logger.error("Error persisting data" + e.getLocalizedMessage(), e);
+            logger.error("expId - " + jobStatus.getJobIdentity().getExperimentId() + ": Error persisting data" + e.getLocalizedMessage(), e);
             throw new Exception("Error persisting task status..", e);
 		}
     }
