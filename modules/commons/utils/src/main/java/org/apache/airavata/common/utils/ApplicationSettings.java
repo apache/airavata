@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
 
 public class ApplicationSettings {
     public static final String SERVER_PROPERTIES="airavata-server.properties";
-    public static final String CLIENT_PROPERTIES="airavata-client.properties";
     
 	public static String ADDITIONAL_SETTINGS_FILES = "external.settings";
 
@@ -85,13 +84,7 @@ public class ApplicationSettings {
 	}
 
 	protected URL getPropertyFileURL() {
-		URL url;
-		if (AiravataUtils.isClient()){
-            url=ApplicationSettings.class.getClassLoader().getResource(CLIENT_PROPERTIES);
-        }else{
-            url=ApplicationSettings.class.getClassLoader().getResource(SERVER_PROPERTIES);
-        }
-		return url;
+		return ApplicationSettings.class.getClassLoader().getResource(SERVER_PROPERTIES);
 	}
 	
 	protected URL[] getExternalSettingsFileURLs(){

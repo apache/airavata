@@ -50,7 +50,6 @@ public class GFacConfigXmlTest {
     public void testGFacConfigWithHost(){
         Assert.assertNotNull(gfac.getGfacConfigFile());
         Assert.assertEquals(1,gfac.getDaemonHandlers().size());
-        AiravataUtils.setExecutionAsServer();
         try {
             JobExecutionContext jec = new JobExecutionContext(GFacConfiguration.create(gfac.getGfacConfigFile(), null), "testService");
             ApplicationContext applicationContext = new ApplicationContext();
@@ -95,7 +94,6 @@ public class GFacConfigXmlTest {
         public void testAppSpecificConfig() {
         Assert.assertNotNull(gfac.getGfacConfigFile());
         Assert.assertEquals(1, gfac.getDaemonHandlers().size());
-        AiravataUtils.setExecutionAsServer();
         try {
             JobExecutionContext jec = new JobExecutionContext(GFacConfiguration.create(gfac.getGfacConfigFile(), null), "UltraScan");
             ApplicationContext applicationContext = new ApplicationContext();

@@ -50,7 +50,6 @@ public class TestSSLClient {
     private void invoke() {
         TTransport transport;
         try {
-            AiravataUtils.setExecutionAsServer();
             TSSLTransportFactory.TSSLTransportParameters params =
                     new TSSLTransportFactory.TSSLTransportParameters();
             String keystorePath = ServerSettings.getCredentialStoreThriftServerKeyStorePath();

@@ -47,7 +47,6 @@ public class TestClient {
 
     public static void main(String[] args) {
         try {
-            AiravataUtils.setExecutionAsServer();
             String brokerUrl = ServerSettings.getSetting(RABBITMQ_BROKER_URL);
             final String exchangeName = ServerSettings.getSetting(RABBITMQ_EXCHANGE_NAME);
             RabbitMQStatusConsumer consumer = new RabbitMQStatusConsumer(brokerUrl, exchangeName);

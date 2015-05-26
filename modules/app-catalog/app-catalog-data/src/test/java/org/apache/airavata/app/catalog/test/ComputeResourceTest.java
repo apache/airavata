@@ -48,7 +48,6 @@ public class ComputeResourceTest {
     @Before
     public void setUp() {
         try {
-            AiravataUtils.setExecutionAsServer();
             initialize = new Initialize("appcatalog-derby.sql");
             initialize.initializeDB();
             appcatalog = AppCatalogFactory.getAppCatalog();
