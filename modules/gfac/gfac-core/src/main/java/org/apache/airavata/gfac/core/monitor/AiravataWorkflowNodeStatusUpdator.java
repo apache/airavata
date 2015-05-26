@@ -81,8 +81,10 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
 			return;
     	}
     	try {
-			updateWorkflowNodeStatus(taskStatus.getTaskIdentity().getWorkflowNodeId(), state);
-			logger.debug("Publishing workflow node status for "+taskStatus.getTaskIdentity().getWorkflowNodeId()+":"+state.toString());
+            String expId = taskStatus.getTaskIdentity().getExperimentId();
+			updateWorkflowNodeStatus(expId, taskStatus.getTaskIdentity().getWorkflowNodeId(), state);
+            logger.debug("expId - {}: Publishing workflow node status for " + taskStatus.getTaskIdentity().getWorkflowNodeId()
+                    + ":" + state.toString(), taskStatus.getTaskIdentity().getExperimentId());
             WorkflowIdentifier workflowIdentity = new WorkflowIdentifier(taskStatus.getTaskIdentity().getWorkflowNodeId(),
                                                                          taskStatus.getTaskIdentity().getExperimentId(),
                                                                          taskStatus.getTaskIdentity().getGatewayId());
@@ -94,13 +96,14 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
 
             publisher.publish(msgCntxt);
 		} catch (Exception e) {
-            logger.error("Error persisting data" + e.getLocalizedMessage(), e);
+            logger.error("expId - " + taskStatus.getTaskIdentity().getExperimentId() + ": Error persisting data"
+                    + e.getLocalizedMessage(), e);
             throw new Exception("Error persisting workflow node status..", e);
-		}
+        }
     }
 
-    public  void updateWorkflowNodeStatus(String workflowNodeId, WorkflowNodeState state) throws Exception {
-		logger.info("Updating workflow node status for "+workflowNodeId+":"+state.toString());
+    public  void updateWorkflowNodeStatus(String experimentId, String workflowNodeId, WorkflowNodeState state) throws Exception {
+		logger.info("expId - {}: Updating workflow node status for "+workflowNodeId+":"+state.toString(), experimentId);
     	WorkflowNodeDetails details = (WorkflowNodeDetails)airavataRegistry.get(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeId);
         if(details == null) {
             details = new WorkflowNodeDetails();
