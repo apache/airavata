@@ -21,17 +21,11 @@
 package org.apache.airavata.orchestrator.core.impl;
 
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.AiravataZKUtils;
-import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.client.GFACInstance;
-import org.apache.airavata.gfac.client.GFacClientFactory;
-import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
-import org.apache.airavata.gfac.cpi.GfacService;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.PublisherFactory;
@@ -41,17 +35,11 @@ import org.apache.airavata.model.messaging.event.TaskTerminateEvent;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
-import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -59,13 +47,9 @@ import java.util.UUID;
  */
 public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
     private final static Logger logger = LoggerFactory.getLogger(GFACPassiveJobSubmitter.class);
-
     public static final String IP = "ip";
-
     private OrchestratorContext orchestratorContext;
-
     private static Integer mutex = -1;
-
     private Publisher publisher;
 
     public void initialize(OrchestratorContext orchestratorContext) throws OrchestratorException {
@@ -160,15 +144,6 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
         }
     }
 
-    private void closeZK(OrchestratorContext orchestratorContext) {
-        try {
-            if(orchestratorContext!=null && orchestratorContext.getZk()!=null) {
-                orchestratorContext.getZk().close();
-            }
-        } catch (InterruptedException e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
     synchronized public void process(WatchedEvent event) {
         logger.info(getClass().getName() + event.getPath());
         logger.info(getClass().getName()+event.getType());

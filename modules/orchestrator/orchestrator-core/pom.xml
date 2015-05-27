@@ -116,12 +116,6 @@ the License. -->
             <artifactId>airavata-server-configuration</artifactId>
             <scope>test</scope>
         </dependency>
-        <!-- zookeeper and curator dependencies -->
-        <dependency>
-        	<groupId>org.apache.zookeeper</groupId>
-        	<artifactId>zookeeper</artifactId>
-        	<version>${zk.version}</version>
-        </dependency>
     </dependencies>
 
 </project>
