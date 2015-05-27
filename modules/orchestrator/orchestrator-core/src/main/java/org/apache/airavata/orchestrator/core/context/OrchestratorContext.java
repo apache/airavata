@@ -34,13 +34,8 @@ import org.apache.zookeeper.ZooKeeper;
  */
 public class OrchestratorContext {
     private List<GFACInstance> gfacInstanceList;
-
     private OrchestratorConfiguration orchestratorConfiguration;
-
     private Registry newRegistry;
-
-    private static ZooKeeper zk; // this instance can be accessed by the Validators and other components
-
     private Publisher publisher;
     
     public OrchestratorContext(List<GFACInstance> gfacInstanceList) {
@@ -89,13 +84,5 @@ public class OrchestratorContext {
 
     public void setGfacInstanceList(List<GFACInstance> gfacInstanceList) {
         this.gfacInstanceList.addAll(gfacInstanceList);
-    }
-
-    public  void setZk(ZooKeeper zk) {
-        this.zk = zk;
-    }
-
-    public static ZooKeeper getZk() {
-        return zk;
     }
 }

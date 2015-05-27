@@ -76,40 +76,21 @@ import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowN
 import org.apache.airavata.workflow.core.WorkflowEnactmentService;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
-import org.apache.zookeeper.CreateMode;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.WatchedEvent;
-import org.apache.zookeeper.Watcher;
-import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.ZooKeeper;
-import org.apache.zookeeper.data.Stat;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
-public class OrchestratorServerHandler implements OrchestratorService.Iface,
-		Watcher {
-	private static AiravataLogger log = AiravataLoggerFactory
-			.getLogger(OrchestratorServerHandler.class);
-
+public class OrchestratorServerHandler implements OrchestratorService.Iface {
+	private static AiravataLogger log = AiravataLoggerFactory .getLogger(OrchestratorServerHandler.class);
 	private SimpleOrchestratorImpl orchestrator = null;
-
 	private Registry registry;
-
-	private ZooKeeper zk;
-
 	private static Integer mutex = new Integer(-1);
-
 	private String airavataUserName;
 	private String gatewayName;
 	private Publisher publisher;
-
     private RabbitMQProcessConsumer rabbitMQProcessConsumer;
     private RabbitMQProcessPublisher rabbitMQProcessPublisher;
 
@@ -133,31 +114,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 			
 //            setGatewayName(ServerSettings.getDefaultUserGateway());
             setAiravataUserName(ServerSettings.getDefaultUser());
-			if(!ServerSettings.isGFacPassiveMode()) {
-				try {
-					zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this); // no watcher is
-					// required, this
-					// will only use to
-					// store some data
-					log.info("Waiting for zookeeper to connect to the server");
-
-					String OrchServer = ServerSettings
-							.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_ORCHESTRATOR_SERVER_NODE);
-					synchronized (mutex) {
-						mutex.wait(5000); // waiting for the syncConnected event
-					}
-					registerOrchestratorService(airavataServerHostPort, OrchServer);
-					// creating a watch in orchestrator to monitor the gfac
-					// instances
-					zk.getChildren(ServerSettings.getSetting(
-									Constants.ZOOKEEPER_GFAC_SERVER_NODE, "/gfac-server"),
-							this);
-					log.info("Finished starting ZK: " + zk);
-				} catch (IOException|InterruptedException|KeeperException e) {
-					log.error(e.getMessage(), e);
-					throw new OrchestratorException("Error while initializing orchestrator service, Error in Zookeeper", e);
-				}
-			}
 		} catch (AiravataException e) {
             log.error(e.getMessage(), e);
             throw new OrchestratorException("Error while initializing orchestrator service", e);
@@ -169,7 +125,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
 			orchestrator = new SimpleOrchestratorImpl();
 			registry = RegistryFactory.getDefaultRegistry();
 			orchestrator.initialize();
-			orchestrator.getOrchestratorContext().setZk(this.zk);
 			orchestrator.getOrchestratorContext().setPublisher(this.publisher);
             startProcessConsumer();
         } catch (OrchestratorException e) {
@@ -192,23 +147,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
             throw new OrchestratorException("Error while starting process consumer", e);
         }
 
-    }
-
-    private void registerOrchestratorService(String airavataServerHostPort, String orchServer) throws KeeperException, InterruptedException {
-        Stat zkStat = zk.exists(orchServer, false);
-        if (zkStat == null) {
-            zk.create(orchServer, new byte[0],
-                    ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);
-        }
-        String instantNode = orchServer
-                + File.separator
-                + String.valueOf(new Random()
-                        .nextInt(Integer.MAX_VALUE));
-        zkStat = zk.exists(instantNode, false);
-        if (zkStat == null) {
-            zk.create(instantNode, airavataServerHostPort.getBytes(),
-                    ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);
-        }
     }
 
     /**
@@ -327,84 +265,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
         return validateStatesAndCancel(experimentId, tokenId);
 	}
 
-	/**
-	 * This method gracefully handler gfac node failures
-	 */
-	synchronized public void process(WatchedEvent watchedEvent) {
-		log.info(watchedEvent.getPath());
-		synchronized (mutex) {
-			try {
-				Event.KeeperState state = watchedEvent.getState();
-				switch (state) {
-					case SyncConnected:
-						mutex.notify();
-						break;
-					case Expired:
-					case Disconnected:
-						log.info("ZK Connection is "+ state.toString());
-						break;
-				}
-				if (watchedEvent.getPath() != null
-						&& watchedEvent.getPath().startsWith(
-						ServerSettings.getSetting(
-								Constants.ZOOKEEPER_GFAC_SERVER_NODE,
-								"/gfac-server"))) {
-					List<String> children = zk.getChildren(ServerSettings
-							.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NODE,
-									"/gfac-server"), true);
-					for (String gfacNodes : children) {
-						zk.exists(
-								ServerSettings.getSetting(
-										Constants.ZOOKEEPER_GFAC_SERVER_NODE,
-										"/gfac-server")
-										+ File.separator + gfacNodes, this);
-					}
-					switch (watchedEvent.getType()) {
-						case NodeCreated:
-							mutex.notify();
-							break;
-						case NodeDeleted:
-							// here we have to handle gfac node shutdown case
-							if (children.size() == 0) {
-								log.error("There are not gfac instances to route failed jobs");
-								return;
-							}
-							// we recover one gfac node at a time
-							final WatchedEvent event = watchedEvent;
-							final OrchestratorServerHandler handler = this;
-						/*(new Thread() {  // disabling ft implementation with zk
-							public void run() {
-								int retry = 0;
-								while (retry < 3) {
-									try {
-										(new OrchestratorRecoveryHandler(
-												handler, event.getPath()))
-												.recover();
-										break;
-									} catch (Exception e) {
-										e.printStackTrace();
-										log.error("error recovering the jobs for gfac-node: "
-												+ event.getPath());
-										log.error("Retrying again to recover jobs and retry attempt: "
-												+ ++retry);
-									}
-								}
-
-							}
-						}).start();*/
-							break;
-					}
-
-
-				}
-			} catch (KeeperException e) {
-				e.printStackTrace();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
 	private String getAiravataUserName() {
 		return airavataUserName;
 	}
@@ -513,9 +373,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface,
         try {
             Experiment experiment = (Experiment) registry.get(
                     RegistryModelType.EXPERIMENT, experimentId);
-            if (zk == null || !zk.getState().isConnected()){
-                zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(),this);
-            }
 			log.info("Waiting for zookeeper to connect to the server");
 			synchronized (mutex){
 				mutex.wait(5000);
