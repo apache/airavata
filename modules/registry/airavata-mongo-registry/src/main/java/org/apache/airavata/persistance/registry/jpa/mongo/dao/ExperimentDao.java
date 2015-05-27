@@ -47,14 +47,15 @@ public class ExperimentDao{
     private ModelConversionHelper modelConversionHelper;
 
     private static final String EXPERIMENT_ID = "experiment_id";
-    private static final String EXPERIMENT_NAME= "experiment_name";
-    private static final String EXPERIMENT_DESCRIPTION = "experiment_description";
+    private static final String EXPERIMENT_NAME= "name";
+    private static final String EXPERIMENT_DESCRIPTION = "description";
     private static final String USER_NAME = "user_name";
     private static final String GATEWAY = "gateway_execution_id";
     private static final String APPLICATION_ID = "application_id";
     private static final String EXPERIMENT_STATUS_STATE = "experiment_status.experiment_state";
     private static final String CREATION_TIME = "creation_time";
 
+    //Todo Nested Indexes - Its good if we can get rid of them
     private static final String WORKFLOW_NODE_ID = "workflow_node_details_list.node_instance_id";
     private static final String TASK_ID = "workflow_node_details_list.task_details_list.task_id";
 
@@ -62,7 +63,7 @@ public class ExperimentDao{
     public ExperimentDao(){
         collection = MongoUtil.getAiravataRegistry().getCollection(EXPERIMENTS_COLLECTION_NAME);
         modelConversionHelper = new ModelConversionHelper();
-        //collection.dropIndexes();
+        collection.dropIndexes();
         initIndexes();
     }
 
@@ -74,11 +75,11 @@ public class ExperimentDao{
         collection.createIndex(new BasicDBObject(WORKFLOW_NODE_ID, 1));
         collection.createIndex(new BasicDBObject(TASK_ID, 1));
 
-        //Defining a full-text index on experiment name and experiment description
-        BasicDBObject object = new BasicDBObject();
-        object.put(EXPERIMENT_NAME, "text");
-        object.put(EXPERIMENT_DESCRIPTION, "text");
-        collection.createIndex (object);
+//        //Defining a full-text index on experiment name and experiment description
+//        BasicDBObject object = new BasicDBObject();
+//        object.put(EXPERIMENT_NAME, "text");
+//        object.put(EXPERIMENT_DESCRIPTION, "text");
+//        collection.createIndex (object);
     }
 
     public List<Experiment> getAllExperiments() throws RegistryException{
@@ -153,15 +154,15 @@ public class ExperimentDao{
         BasicDBObjectBuilder queryBuilder = BasicDBObjectBuilder.start();
         for (String field : filters.keySet()) {
             if (field.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME)) {
-                //Fixme This is expensive operation
-                queryBuilder.add(EXPERIMENT_NAME, "/.*" + filters.get(field) + "/.*");
+                queryBuilder.add(EXPERIMENT_NAME, new BasicDBObject(
+                        "$regex", ".*" + filters.get(field) + ".*"));
             } else if (field.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
                 queryBuilder.add(USER_NAME, filters.get(field));
             } else if (field.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY)) {
                 queryBuilder.add(GATEWAY, filters.get(field));
             } else if (field.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_DESC)) {
-                //Fixme This is expensive operation
-                queryBuilder.add(EXPERIMENT_DESCRIPTION, "/.*" + filters.get(field) + "/.*");
+                queryBuilder.add(EXPERIMENT_DESCRIPTION, new BasicDBObject(
+                        "$regex", ".*" + filters.get(field) + ".*"));
             } else if (field.equals(Constants.FieldConstants.ExperimentConstants.APPLICATION_ID)) {
                 queryBuilder.add(APPLICATION_ID, filters.get(field));
             } else if (field.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_STATUS)) {
@@ -218,7 +219,7 @@ public class ExperimentDao{
     }
 
     public void updateWFNode(WorkflowNodeDetails workflowNodeDetail) throws RegistryException{
-        Experiment experiment = getExperimentOfWFNode(workflowNodeDetail.getNodeInstanceId());
+        Experiment experiment = getParentExperimentOfWFNode(workflowNodeDetail.getNodeInstanceId());
         for(WorkflowNodeDetails wfnd: experiment.getWorkflowNodeDetailsList()){
             if(wfnd.getNodeInstanceId().equals(workflowNodeDetail.getNodeInstanceId())){
                 experiment.getWorkflowNodeDetailsList().remove(wfnd);
@@ -230,7 +231,7 @@ public class ExperimentDao{
     }
 
     public void deleteWFNode(WorkflowNodeDetails workflowNodeDetail) throws RegistryException{
-        Experiment experiment = getExperimentOfWFNode(workflowNodeDetail.getNodeInstanceId());
+        Experiment experiment = getParentExperimentOfWFNode(workflowNodeDetail.getNodeInstanceId());
         for(WorkflowNodeDetails wfnd: experiment.getWorkflowNodeDetailsList()){
             if(wfnd.getNodeInstanceId().equals(workflowNodeDetail.getNodeInstanceId())){
                 experiment.getWorkflowNodeDetailsList().remove(wfnd);
@@ -241,7 +242,7 @@ public class ExperimentDao{
     }
 
     public WorkflowNodeDetails getWFNode(String nodeId) throws RegistryException{
-        Experiment experiment = getExperimentOfWFNode(nodeId);
+        Experiment experiment = getParentExperimentOfWFNode(nodeId);
         for(WorkflowNodeDetails wfnd: experiment.getWorkflowNodeDetailsList()){
             if(wfnd.getNodeInstanceId().equals(nodeId)){
                 return wfnd;
@@ -250,9 +251,8 @@ public class ExperimentDao{
         return null;
     }
 
-
     public void createTaskDetail(String nodeId, TaskDetails taskDetail) throws RegistryException{
-        Experiment experiment = getExperimentOfWFNode(nodeId);
+        Experiment experiment = getParentExperimentOfWFNode(nodeId);
         for(WorkflowNodeDetails wfnd: experiment.getWorkflowNodeDetailsList()){
             if(wfnd.getNodeInstanceId().equals(nodeId)){
                 wfnd.getTaskDetailsList().add(taskDetail);
@@ -263,7 +263,7 @@ public class ExperimentDao{
     }
 
     public void updateTaskDetail(TaskDetails taskDetail) throws RegistryException{
-        Experiment experiment = getExperimentOfTask(taskDetail.getTaskId());
+        Experiment experiment = getParentExperimentOfTask(taskDetail.getTaskId());
         for(WorkflowNodeDetails wfnd: experiment.getWorkflowNodeDetailsList()){
             for(TaskDetails taskDetails: wfnd.getTaskDetailsList()){
                 if(taskDetails.getTaskId().equals(taskDetail)){
@@ -277,7 +277,7 @@ public class ExperimentDao{
     }
 
     public void deleteTaskDetail(TaskDetails taskDetail) throws RegistryException{
-        Experiment experiment = getExperimentOfTask(taskDetail.getTaskId());
+        Experiment experiment = getParentExperimentOfTask(taskDetail.getTaskId());
         for(WorkflowNodeDetails wfnd: experiment.getWorkflowNodeDetailsList()){
             for(TaskDetails taskDetails: wfnd.getTaskDetailsList()){
                 if(taskDetails.getTaskId().equals(taskDetail)){
@@ -290,7 +290,7 @@ public class ExperimentDao{
     }
 
     public TaskDetails getTaskDetail(String taskId) throws RegistryException{
-        Experiment experiment = getExperimentOfTask(taskId);
+        Experiment experiment = getParentExperimentOfTask(taskId);
         for(WorkflowNodeDetails wfnd: experiment.getWorkflowNodeDetailsList()){
             for(TaskDetails taskDetails: wfnd.getTaskDetailsList()){
                 if(taskDetails.getTaskId().equals(taskId)){
@@ -303,12 +303,12 @@ public class ExperimentDao{
 
 
     /**
-     * Method to getExperiment the parent Experiment of a given workflow node instance id
+     * Method to get parent Experiment of the given workflow node instance id
      * @param nodeInstanceId
      * @return
      * @throws RegistryException
      */
-    public Experiment getExperimentOfWFNode(String nodeInstanceId) throws RegistryException{
+    public Experiment getParentExperimentOfWFNode(String nodeInstanceId) throws RegistryException{
         try {
             DBObject criteria = new BasicDBObject(WORKFLOW_NODE_ID, nodeInstanceId);
             DBObject doc = collection.findOne(criteria);
@@ -324,12 +324,12 @@ public class ExperimentDao{
     }
 
     /**
-     * Method to getExperiment the parent experiment of a given task id
+     * Method to get the parent experiment of the given task id
      * @param taskId
      * @return
      * @throws RegistryException
      */
-    public Experiment getExperimentOfTask(String taskId) throws RegistryException{
+    public Experiment getParentExperimentOfTask(String taskId) throws RegistryException{
         try {
             DBObject criteria = new BasicDBObject(TASK_ID, taskId);
             DBObject doc = collection.findOne(criteria);
@@ -337,6 +337,34 @@ public class ExperimentDao{
                 String json = doc.toString();
                 return (Experiment)modelConversionHelper.deserializeObject(
                         Experiment.class, json);
+            }
+        } catch (IOException e) {
+            throw new RegistryException(e);
+        }
+        return null;
+    }
+
+    /**
+     * Method to get the parent workflow node of the given task id
+     * @param taskId
+     * @return
+     * @throws RegistryException
+     */
+    public WorkflowNodeDetails getParentWFNodeOfTask(String taskId) throws RegistryException{
+        try {
+            DBObject criteria = new BasicDBObject(TASK_ID, taskId);
+            DBObject doc = collection.findOne(criteria);
+            if(doc != null){
+                String json = doc.toString();
+                Experiment experiment = (Experiment)modelConversionHelper.deserializeObject(
+                        Experiment.class, json);
+                for(WorkflowNodeDetails wfnd: experiment.getWorkflowNodeDetailsList()){
+                    for(TaskDetails taskDetails: wfnd.getTaskDetailsList()){
+                        if(taskDetails.getTaskId().equals(taskId)){
+                            return wfnd;
+                        }
+                    }
+                }
             }
         } catch (IOException e) {
             throw new RegistryException(e);

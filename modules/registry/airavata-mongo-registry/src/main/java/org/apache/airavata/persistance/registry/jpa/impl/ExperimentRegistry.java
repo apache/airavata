@@ -23,7 +23,6 @@ package org.apache.airavata.persistance.registry.jpa.impl;
 
 import org.apache.airavata.common.logger.AiravataLogger;
 import org.apache.airavata.common.logger.AiravataLoggerFactory;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
@@ -37,7 +36,6 @@ import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.ResultOrderType;
 import org.apache.airavata.registry.cpi.utils.Constants;
 
-import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -253,7 +251,7 @@ public class ExperimentRegistry {
         try {
             TaskDetails taskDetails = experimentDao.getTaskDetail((String) ids.getTopLevelIdentifier());
             for (JobDetails jobDetails : taskDetails.getJobDetailsList()) {
-                if (jobDetails.getJobId().equals((String) ids.getSecondLevelIdentifier())) {
+                if (jobDetails.getJobId().equals(ids.getSecondLevelIdentifier())) {
                     jobDetails.setApplicationStatus(status);
                     experimentDao.updateTaskDetail(taskDetails);
                     return;
@@ -512,94 +510,26 @@ public class ExperimentRegistry {
         }
     }
 
-    //Todo
     public String addErrorDetails(ErrorDetails error, Object id) throws RegistryException {
         try {
-            ErrorDetailResource errorResource = null;
-            ExperimentResource experiment;
-            TaskDetailResource taskDetail;
-            WorkflowNodeDetailResource workflowNode;
-            // figure out the id is an experiment, node task or job
-            if (id instanceof String) {
-                // FIXME : for .12 we only saveExperiment task related errors
-//                if (isExperimentExist((String) id)) {
-//                    experiment = gatewayResource.getExperiment((String) id);
-//                    errorResource = (ErrorDetailResource) experiment.create(ResourceType.ERROR_DETAIL);
-//                } else if (isWFNodeExist((String) id)) {
-//                    experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
-//                    workflowNode = experiment.getWorkflowNode((String) id);
-//                    errorResource = (ErrorDetailResource) workflowNode.create(ResourceType.ERROR_DETAIL);
-//                    errorResource.setExperimentResource(workflowNode.getExperimentResource());
-//                } else
-                if (isTaskDetailExist((String) id)) {
-                    experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
-                    workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
-                    taskDetail = workflowNode.getTaskDetail((String) id);
-                    errorResource = (ErrorDetailResource) taskDetail.create(ResourceType.ERROR_DETAIL);
-                    if (error.getErrorId() != null && !error.getErrorId().equals(experimentModelConstants.DEFAULT_ID)) {
-                        List<ErrorDetailResource> errorDetailList = taskDetail.getErrorDetailList();
-                        if (errorDetailList != null && !errorDetailList.isEmpty()) {
-                            for (ErrorDetailResource errorDetailResource : errorDetailList) {
-                                if (errorDetailResource.getErrorId() == Integer.parseInt(error.getErrorId())) {
-                                    errorResource = errorDetailResource;
-                                }
-                            }
-                        }
-                    }
-                    errorResource.setTaskDetailResource(taskDetail);
-                    errorResource.setNodeDetail(taskDetail.getWorkflowNodeDetailResource());
-                    errorResource.setExperimentResource(taskDetail.getWorkflowNodeDetailResource().getExperimentResource());
-                } else {
-//                    logger.error("The id provided is not an experiment id or a workflow id or a task id..");
-                }
+            // FIXME : for .12 we only saveExperiment task related errors
+            if(id instanceof String){
+                TaskDetails taskDetails = experimentDao.getTaskDetail((String) id);
+                taskDetails.getErrors().add(error);
+                experimentDao.updateTaskDetail(taskDetails);
+                return (String) id;
             } else if (id instanceof CompositeIdentifier) {
                 CompositeIdentifier cid = (CompositeIdentifier) id;
-                if (isJobDetailExist(cid)) {
-                    experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
-                    workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
-                    taskDetail = workflowNode.getTaskDetail((String) cid.getTopLevelIdentifier());
-                    JobDetailResource jobDetail = taskDetail.getJobDetail((String) cid.getSecondLevelIdentifier());
-                    errorResource = (ErrorDetailResource) jobDetail.create(ResourceType.ERROR_DETAIL);
-                    if (error.getErrorId() != null && !error.getErrorId().equals(experimentModelConstants.DEFAULT_ID)) {
-                        List<ErrorDetailResource> errorDetailList = taskDetail.getErrorDetailList();
-                        if (errorDetailList != null && !errorDetailList.isEmpty()) {
-                            for (ErrorDetailResource errorDetailResource : errorDetailList) {
-                                if (errorDetailResource.getErrorId() == Integer.parseInt(error.getErrorId())) {
-                                    errorResource = errorDetailResource;
-                                }
-                            }
-                        }
+                TaskDetails taskDetails = experimentDao.getTaskDetail((String) cid.getTopLevelIdentifier());
+                for(JobDetails jobDetails: taskDetails.getJobDetailsList()){
+                    if(jobDetails.getJobId().equals(cid.getSecondLevelIdentifier())){
+                        jobDetails.getErrors().add(error);
+                        experimentDao.updateTaskDetail(taskDetails);
+                        return (String) cid.getSecondLevelIdentifier();
                     }
-                    errorResource.setTaskDetailResource(taskDetail);
-                    errorResource.setNodeDetail(taskDetail.getWorkflowNodeDetailResource());
-                    errorResource.setExperimentResource(taskDetail.getWorkflowNodeDetailResource().getExperimentResource());
-                } else {
-                    logger.error("The id provided is not a job in the system..");
                 }
             } else {
-//                logger.error("The id provided is not an experiment id or a workflow id or a task id or a composite " +
-//                        "identifier for job..");
-            }
-            if (errorResource != null) {
-                errorResource.setCreationTime(AiravataUtils.getTime(error.getCreationTime()));
-                errorResource.setActualErrorMsg(error.getActualErrorMessage());
-                errorResource.setUserFriendlyErrorMsg(error.getUserFriendlyMessage());
-                if (error.getErrorCategory() != null) {
-                    errorResource.setErrorCategory(error.getErrorCategory().toString());
-                }
-                errorResource.setTransientPersistent(error.isTransientOrPersistent());
-                if (error.getCorrectiveAction() != null) {
-                    errorResource.setCorrectiveAction(error.getCorrectiveAction().toString());
-                } else {
-                    errorResource.setCorrectiveAction(CorrectiveAction.CONTACT_SUPPORT.toString());
-                }
-                if (error.getActionableGroup() != null) {
-                    errorResource.setActionableGroup(error.getActionableGroup().toString());
-                } else {
-                    errorResource.setActionableGroup(ActionableGroup.GATEWAYS_ADMINS.toString());
-                }
-                errorResource.save();
-                return String.valueOf(errorResource.getErrorId());
+                logger.error("Unsupported data type...");
             }
         } catch (Exception e) {
             logger.error("Unable to add error details...", e);
@@ -729,7 +659,6 @@ public class ExperimentRegistry {
         }
     }
 
-    //Todo
     /**
      * Method to getExperiment matching experiment list
      *
@@ -739,58 +668,9 @@ public class ExperimentRegistry {
      * @throws RegistryException
      */
     public List<Experiment> getExperimentList(String fieldName, Object value) throws RegistryException {
-        List<Experiment> experiments = new ArrayList();
-        try {
-            if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
-                WorkerResource resource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
-                resource.setUser((String) value);
-                List<ExperimentResource> resources = resource.getExperiments();
-                for (ExperimentResource experimentResource : resources) {
-                    Experiment experiment = ThriftDataModelConversion.getExperiment(experimentResource);
-                    experiments.add(experiment);
-                }
-                return experiments;
-            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.PROJECT_ID)) {
-                ProjectResource project = workerResource.getProject((String) value);
-                List<ExperimentResource> resources = project.getExperiments();
-                for (ExperimentResource resource : resources) {
-                    Experiment experiment = ThriftDataModelConversion.getExperiment(resource);
-                    experiments.add(experiment);
-                }
-                return experiments;
-            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY)) {
-                List<ExperimentResource> resources = gatewayResource.getExperiments();
-                for (ExperimentResource resource : resources) {
-                    Experiment experiment = ThriftDataModelConversion.getExperiment(resource);
-                    experiments.add(experiment);
-                }
-                return experiments;
-            }
-            if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.WORKFLOW_NODE_LIST)) {
-                if (value instanceof List<?>) {
-                    return getExperimentList(fieldName, ((List<?>) value).get(0));
-                } else if (value instanceof WorkflowNodeDetails) {
-                    //WorkflowNodeDetailResource nodeDetailResource = getWorkflowNodeDetailResource(((WorkflowNodeDetails) value).getNodeInstanceId());
-//                    if (nodeDetailResource != null) {
-//                        return Arrays.asList(new Experiment[]{ThriftDataModelConversion
-//                                .getExperiment(nodeDetailResource
-//                                        .getExperimentResource())});
-//                    }
-                } else {
-                    logger.error("Unsupported field value to retrieve workflow node detail list...");
-                }
-
-            } else {
-                logger.error("Unsupported field name to retrieve experiment list...");
-            }
-        } catch (Exception e) {
-            logger.error("Error while getting experiment list...", e);
-            throw new RegistryException(e);
-        }
-        return experiments;
+        return getExperimentList(fieldName, value, -1, -1, null, null);
     }
 
-    //Todo
     /**
      * Method to getExperiment matching experiment list with pagination and ordering
      *
@@ -806,28 +686,32 @@ public class ExperimentRegistry {
     public List<Experiment> getExperimentList(String fieldName, Object value, int limit, int offset,
                                               Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
         List<Experiment> experiments = new ArrayList();
+        Map<String, String> filters = new HashMap();
         try {
             if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
-                WorkerResource resource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
-                resource.setUser((String) value);
-                List<ExperimentResource> resources = resource.getExperiments(limit, offset,
-                        orderByIdentifier, resultOrderType);
-                for (ExperimentResource experimentResource : resources) {
-                    Experiment experiment = ThriftDataModelConversion.getExperiment(experimentResource);
-                    experiments.add(experiment);
-                }
-                return experiments;
+                filters.put(fieldName, (String)value);
+                return experimentDao.searchExperiments(filters, limit, offset, orderByIdentifier, resultOrderType);
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.PROJECT_ID)) {
-                ProjectResource project = workerResource.getProject((String) value);
-                List<ExperimentResource> resources = project.getExperiments(limit, offset,
-                        Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
-                for (ExperimentResource resource : resources) {
-                    Experiment experiment = ThriftDataModelConversion.getExperiment(resource);
-                    experiments.add(experiment);
+                filters.put(fieldName, (String)value);
+                return experimentDao.searchExperiments(filters, limit, offset, orderByIdentifier, resultOrderType);
+            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY)) {
+                filters.put(fieldName, (String)value);
+                return experimentDao.searchExperiments(filters, limit, offset, orderByIdentifier, resultOrderType);
+            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.WORKFLOW_NODE_LIST)) {
+                if (value instanceof List<?>) {
+                    return getExperimentList(fieldName, ((List<?>) value).get(0));
+                } else if (value instanceof WorkflowNodeDetails) {
+                    List<Experiment> experimentList = new ArrayList();
+                    experimentList.add(experimentDao.getParentExperimentOfWFNode(
+                            ((WorkflowNodeDetails)value).getNodeInstanceId())
+                    );
+                } else {
+                    logger.error("Unsupported field value to retrieve workflow node detail list...");
                 }
-                return experiments;
+
+            } else {
+                logger.error("Unsupported field name to retrieve experiment list...");
             }
-            logger.error("Unsupported field name to retrieve experiment list...");
         } catch (Exception e) {
             logger.error("Error while getting experiment list...", e);
             throw new RegistryException(e);
@@ -846,13 +730,9 @@ public class ExperimentRegistry {
                 if (value instanceof List<?>) {
                     return getWFNodeDetails(fieldName, ((List<?>) value).get(0));
                 } else if (value instanceof TaskDetails) {
-                    //Fixme
-//                    TaskDetailResource taskDetailResource = getTaskDetailResource(((TaskDetails) value).getTaskId());
-//                    if (taskDetailResource != null) {
-//                        return Arrays.asList(new WorkflowNodeDetails[]{ThriftDataModelConversion
-//                                .getWorkflowNodeDetails(taskDetailResource
-//                                        .getWorkflowNodeDetailResource())});
-//                    }
+                    List<WorkflowNodeDetails> workflowNodeDetailsList = new ArrayList();
+                    workflowNodeDetailsList.add(experimentDao.getParentWFNodeOfTask(((TaskDetails)value).getTaskId()));
+                    return workflowNodeDetailsList;
                 } else {
                     logger.error("Unsupported field value to retrieve workflow node detail list...");
                 }
@@ -1269,27 +1149,14 @@ public class ExperimentRegistry {
         }
     }
 
-    //Todo
     public List<String> getExperimentIds(String fieldName, Object value) throws RegistryException {
         List<String> expIDs = new ArrayList();
         try {
-            if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY)) {
-                if (gatewayResource == null) {
-                    logger.error("You should use an existing gateway in order to retrieve experiments..");
-                    return null;
-                } else {
-                    List<ExperimentResource> resources = gatewayResource.getExperiments();
-                    for (ExperimentResource resource : resources) {
-                        String expID = resource.getExpID();
-                        expIDs.add(expID);
-                    }
-                }
-            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
-                List<ExperimentResource> resources = workerResource.getExperiments();
-                expIDs.addAll(resources.stream().map(ExperimentResource::getExpID).collect(Collectors.toList()));
-            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.PROJECT_ID)) {
-                List<ExperimentResource> resources = workerResource.getExperiments();
-                expIDs.addAll(resources.stream().map(ExperimentResource::getExpID).collect(Collectors.toList()));
+            if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY)
+                        || fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)
+                        || fieldName.equals(Constants.FieldConstants.ExperimentConstants.PROJECT_ID)) {
+                getExperimentList(fieldName, value).stream().forEach(ex->expIDs.add(ex.getExperimentId()));
+                return expIDs;
             }
         } catch (Exception e) {
             logger.error("Error while retrieving experiment ids..", e);
@@ -1325,7 +1192,6 @@ public class ExperimentRegistry {
         transferIds.addAll(dataTransferDetails.stream().map(DataTransferDetails::getTransferId).collect(Collectors.toList()));
         return transferIds;
     }
-
 
     public void removeExperiment(String experimentId) throws RegistryException {
         try {
@@ -1721,10 +1587,14 @@ public class ExperimentRegistry {
         experimentList.stream().forEach(experiment->{
             ExperimentSummary expSummary = new ExperimentSummary();
             expSummary.setExperimentId(experiment.getExperimentId());
+            expSummary.setProjectId(experiment.getProjectId());
             expSummary.setName(experiment.getName());
             expSummary.setDescription(experiment.getDescription());
+            expSummary.setUserName(experiment.getUserName());
             expSummary.setCreationTime(experiment.getCreationTime());
-            //Todo
+            expSummary.setApplicationId(experiment.getApplicationId());
+            expSummary.setExperimentStatus(experiment.getExperimentStatus());
+            expSummary.setErrors(experiment.getErrors());
             experimentSummaries.add(expSummary);
         });
         return experimentSummaries;

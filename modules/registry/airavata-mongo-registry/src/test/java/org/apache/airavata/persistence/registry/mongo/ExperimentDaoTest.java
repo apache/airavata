@@ -22,7 +22,6 @@ package org.apache.airavata.persistence.registry.mongo;
 
 import com.mongodb.MongoClient;
 import junit.framework.Assert;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
@@ -31,6 +30,8 @@ import org.apache.airavata.persistance.registry.jpa.mongo.utils.MongoUtil;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.RegistryModelType;
+import org.apache.airavata.registry.cpi.ResultOrderType;
+import org.apache.airavata.registry.cpi.utils.Constants;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -40,7 +41,9 @@ import org.slf4j.LoggerFactory;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class ExperimentDaoTest {
@@ -112,7 +115,6 @@ public class ExperimentDaoTest {
 
     @Test
     public void test() throws RegistryException, IOException {
-        AiravataUtils.setExecutionAsServer();
         Registry registry = RegistryFactory.getDefaultRegistry();
         MongoUtil.dropAiravataRegistry();
 
@@ -149,7 +151,6 @@ public class ExperimentDaoTest {
 //        long time2 = System.currentTimeMillis();
 //        System.out.println(time2-time1);
 //        Assert.assertNotNull(experiment);
-        AiravataUtils.setExecutionAsServer();
 
         ExperimentDao experimentDao = new ExperimentDao();
         BufferedReader reader = new BufferedReader(new FileReader("/home/supun/Downloads/WORKFLOW_NODE_DETAIL.csv"));
@@ -159,7 +160,7 @@ public class ExperimentDaoTest {
         long time1 = System.currentTimeMillis();
         while(temp != null && !temp.isEmpty()){
             try{
-                Experiment experiment = experimentDao.getExperimentOfWFNode(temp.trim());
+                Experiment experiment = experimentDao.getParentExperimentOfWFNode(temp.trim());
                 if(experiment != null) {
                     System.out.println(i + " :" + experiment.getExperimentId());
                     count++;
@@ -190,7 +191,6 @@ public class ExperimentDaoTest {
 //        AiravataUtils.setExecutionAsServer();
 //        Registry registry = RegistryFactory.getDefaultRegistry();
 //        MongoUtil.dropAiravataRegistry();
-        AiravataUtils.setExecutionAsServer();
 
         ExperimentDao experimentDao = new ExperimentDao();
         BufferedReader reader = new BufferedReader(new FileReader("/home/supun/Downloads/TASK_DETAIL.csv"));
@@ -200,7 +200,7 @@ public class ExperimentDaoTest {
         long time1 = System.currentTimeMillis();
         while(temp != null && !temp.isEmpty()){
             try{
-                Experiment experiment = experimentDao.getExperimentOfTask(temp.trim());
+                Experiment experiment = experimentDao.getParentExperimentOfTask(temp.trim());
                 if(experiment != null) {
                     //System.out.println(i + " :" + experiment.getExperimentId());
                     count++;
@@ -224,7 +224,6 @@ public class ExperimentDaoTest {
         String nodeId = "tempNode_758b52ba-091b-43a5-a7b7-4c3a239c5d1e";
         String newNodeId = "newNode_758b52ba-091b-43a5-a7b7-4c3a2325d1e";
         String expId = "AlamoTest3_3965f4e2-0213-4434-9c3f-fe898b018666";
-        AiravataUtils.setExecutionAsServer();
         ExperimentDao experimentDao = new ExperimentDao();
         WorkflowNodeDetails wfNode = experimentDao.getWFNode("newNode_758b52ba-091b-43a5-a7b7-4c3a239c5d1e");
         Assert.assertTrue(wfNode.getNodeInstanceId().equals("newNode_758b52ba-091b-43a5-a7b7-4c3a239c5d1e"));
@@ -250,8 +249,7 @@ public class ExperimentDaoTest {
 
     @Test
     public void testTask() throws RegistryException {
-        String taskId = "tempNode_f43e1a37-5aec-4061-ae15-111a050b98e0";
-        AiravataUtils.setExecutionAsServer();
+        String taskId = "tempNode_58e1b2e4-f7d6-4543-9281-43dcb58e2c1a";
         ExperimentDao experimentDao = new ExperimentDao();
         TaskDetails taskDetails = experimentDao.getTaskDetail(taskId);
         Assert.assertTrue(taskDetails.getTaskId().equals(taskId));
@@ -261,8 +259,20 @@ public class ExperimentDaoTest {
         taskDetails = experimentDao.getTaskDetail(taskId);
         Assert.assertTrue(taskDetails.getTaskId().equals(taskId));
 
-        String expid = "AlamoTest1_6107d1f0-d64e-4690-8686-71ce87c4ad24";
+        String expid = "alamotest2_5420547e-877a-4a9c-8752-377c2806906c";
         Experiment experiment = experimentDao.getExperiment(expid);
         System.out.println();
+    }
+
+    @Test
+    public void testSearch() throws RegistryException{
+        Map<String, String> filters = new HashMap();
+        filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, "Eroma123");
+        filters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_DESC, "Test");
+        List<Experiment> result = experimentDao.searchExperiments(
+                filters, 10, 2, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result.size()==10);
+        Assert.assertTrue(result.get(0).getCreationTime() > result.get(9).getCreationTime());
     }
 }

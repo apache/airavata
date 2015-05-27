@@ -20,7 +20,6 @@
 */
 package org.apache.airavata.persistance.registry.jpa.mongo;
 
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.persistance.registry.jpa.mongo.dao.ExperimentDao;
@@ -40,7 +39,6 @@ public class Test {
     private final static Logger logger = LoggerFactory.getLogger(Test.class);
 
     public static void main(String[] args) throws RegistryException, IOException {
-        AiravataUtils.setExecutionAsServer();
         Registry registry = RegistryFactory.getDefaultRegistry();
 //        String experiemtnId = "SLM-Espresso-Stampede_45667ea8-aae3-4a8e-807d-a16312035c35";
 //        long time1 = System.currentTimeMillis();

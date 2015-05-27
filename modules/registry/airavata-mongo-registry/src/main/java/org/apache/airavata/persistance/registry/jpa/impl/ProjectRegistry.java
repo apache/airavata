@@ -21,12 +21,13 @@
 
 package org.apache.airavata.persistance.registry.jpa.impl;
 
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
-import org.apache.airavata.persistance.registry.jpa.resources.*;
-import org.apache.airavata.persistance.registry.jpa.utils.ThriftDataModelConversion;
+import org.apache.airavata.persistance.registry.jpa.mongo.dao.ProjectDao;
+import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
+import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
+import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.ResultOrderType;
 import org.apache.airavata.registry.cpi.utils.Constants;
@@ -40,7 +41,11 @@ public class ProjectRegistry {
     private WorkerResource workerResource;
     private final static Logger logger = LoggerFactory.getLogger(ProjectRegistry.class);
 
+    private ProjectDao projectDao;
+
     public ProjectRegistry(GatewayResource gatewayResource, UserResource user) throws RegistryException {
+        this.projectDao = new ProjectDao();
+
         if (!ResourceUtils.isGatewayExist(gatewayResource.getGatewayId())){
             this.gatewayResource = gatewayResource;
         }else {
@@ -55,50 +60,17 @@ public class ProjectRegistry {
     }
 
     public String addProject (Project project, String gatewayId) throws RegistryException{
-        String projectId;
         try {
             if (!ResourceUtils.isUserExist(project.getOwner())){
                 ResourceUtils.addUser(project.getOwner(), null);
             }
-            ProjectResource projectResource = new ProjectResource();
-            projectId = getProjectId(project.getName());
-            projectResource.setId(projectId);
-            project.setProjectId(projectId);
-            projectResource.setName(project.getName());
-            projectResource.setDescription(project.getDescription());
-            projectResource.setCreationTime(AiravataUtils.getTime(project.getCreationTime()));
-            GatewayResource gateway = (GatewayResource)ResourceUtils.getGateway(gatewayId);
-            projectResource.setGateway(gateway);
-            WorkerResource worker = new WorkerResource(project.getOwner(), workerResource.getGateway());
-            projectResource.setWorker(worker);
-            projectResource.save();
-            ProjectUserResource resource = (ProjectUserResource)projectResource.create(
-                    ResourceType.PROJECT_USER);
-            resource.setProjectId(project.getProjectId());
-            resource.setUserName(project.getOwner());
-            resource.save();
-            List<String> sharedGroups = project.getSharedGroups();
-            if (sharedGroups != null && !sharedGroups.isEmpty()){
-                for (String group : sharedGroups){
-                    //TODO - add shared groups
-                    logger.info("Groups are not supported at the moment...");
-                }
-            }
-
-            List<String> sharedUsers = project.getSharedUsers();
-            if (sharedUsers != null && !sharedUsers.isEmpty()){
-                for (String username : sharedUsers){
-                    ProjectUserResource pr = (ProjectUserResource)projectResource.
-                            create(ResourceType.PROJECT_USER);
-                    pr.setUserName(username);
-                    pr.save();
-                }
-            }
+            project.setProjectId(getProjectId(project.getName()));
+            projectDao.createProject(project);
+            return project.getProjectId();
         }catch (Exception e){
             logger.error("Error while saving project to registry", e);
            throw new RegistryException(e);
         }
-        return projectId;
     }
 
     private String getProjectId (String projectName){
@@ -108,11 +80,6 @@ public class ProjectRegistry {
 
     public void updateProject (Project project, String projectId) throws RegistryException{
         try {
-            ProjectResource existingProject = workerResource.getProject(projectId);
-            existingProject.setDescription(project.getDescription());
-            existingProject.setName(project.getName());
-            existingProject.setCreationTime(AiravataUtils.getTime(project.getCreationTime()));
-//            existingProject.setGateway(gatewayResource);
             UserResource user = (UserResource)ResourceUtils.getUser(project.getOwner());
             if (!gatewayResource.isExists(ResourceType.GATEWAY_WORKER, user.getUserName())){
                 workerResource = ResourceUtils.addGatewayWorker(gatewayResource, user);
@@ -120,31 +87,7 @@ public class ProjectRegistry {
                 workerResource = (WorkerResource)ResourceUtils.getWorker(
                         gatewayResource.getGatewayName(), user.getUserName());
             }
-            WorkerResource worker = new WorkerResource(project.getOwner(), gatewayResource);
-            existingProject.setWorker(worker);
-            existingProject.save();
-            ProjectUserResource resource = (ProjectUserResource)existingProject.create(
-                    ResourceType.PROJECT_USER);
-            resource.setProjectId(projectId);
-            resource.setUserName(project.getOwner());
-            resource.save();
-            List<String> sharedGroups = project.getSharedGroups();
-            if (sharedGroups != null && !sharedGroups.isEmpty()){
-                for (String group : sharedGroups){
-                    //TODO - add shared groups
-                    logger.info("Groups are not supported at the moment...");
-                }
-            }
-
-            List<String> sharedUsers = project.getSharedUsers();
-            if (sharedUsers != null && !sharedUsers.isEmpty()){
-                for (String username : sharedUsers){
-                    ProjectUserResource pr = (ProjectUserResource)existingProject.create(
-                            ResourceType.PROJECT_USER);
-                    pr.setUserName(username);
-                    pr.save();
-                }
-            }
+            projectDao.updateProject(project);
         }catch (Exception e){
             logger.error("Error while saving project to registry", e);
            throw new RegistryException(e);
@@ -153,15 +96,11 @@ public class ProjectRegistry {
 
     public Project getProject (String projectId) throws RegistryException{
         try {
-            ProjectResource project = workerResource.getProject(projectId);
-            if (project != null){
-                return ThriftDataModelConversion.getProject(project);
-            }
+            return projectDao.getProject(projectId);
         }catch (Exception e){
             logger.error("Error while retrieving project from registry", e);
            throw new RegistryException(e);
         }
-        return null;
     }
 
     /**
@@ -188,23 +127,14 @@ public class ProjectRegistry {
      */
     public List<Project> getProjectList (String fieldName, Object value, int limit, int offset,
                                          Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException{
-        List<Project> projects = new ArrayList<Project>();
         try {
-            if (fieldName.equals(Constants.FieldConstants.ProjectConstants.OWNER)){
-                workerResource.setUser((String)value);
-                List<ProjectResource> projectList = workerResource.getProjects();
-                if (projectList != null && !projectList.isEmpty()){
-                    for (ProjectResource pr : projectList){
-                        projects.add(ThriftDataModelConversion.getProject(pr));
-                    }
-                }
-                return projects;
-            }
+                Map<String, String> filters = new HashMap();
+                filters.put(fieldName, (String)value);
+                return  projectDao.searchProjects(filters, limit, offset, orderByIdentifier, resultOrderType);
         }catch (Exception e){
             logger.error("Error while retrieving project from registry", e);
             throw new RegistryException(e);
         }
-        return projects;
     }
 
     /**
@@ -233,48 +163,23 @@ public class ProjectRegistry {
      */
     public List<Project> searchProjects(Map<String, String> filters, int limit,
             int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
-        Map<String, String> fil = new HashMap<String, String>();
-        if (filters != null && filters.size() != 0){
-            List<Project> projects = new ArrayList<Project>();
-            try {
-                for (String field : filters.keySet()){
-                    if (field.equals(Constants.FieldConstants.ProjectConstants.PROJECT_NAME)){
-                        fil.put(AbstractResource.ProjectConstants.PROJECT_NAME, filters.get(field));
-                    }else if (field.equals(Constants.FieldConstants.ProjectConstants.OWNER)){
-                        fil.put(AbstractResource.ProjectConstants.USERNAME, filters.get(field));
-                    }else if (field.equals(Constants.FieldConstants.ProjectConstants.DESCRIPTION)){
-                        fil.put(AbstractResource.ProjectConstants.DESCRIPTION, filters.get(field));
-                    }else if (field.equals(Constants.FieldConstants.ProjectConstants.GATEWAY_ID)){
-                        fil.put(AbstractResource.ProjectConstants.GATEWAY_ID, filters.get(field));
-                    }
-                }
-                List<ProjectResource> projectResources = workerResource
-                        .searchProjects(fil, limit, offset, orderByIdentifier, resultOrderType);
-                if (projectResources != null && !projectResources.isEmpty()){
-                    for (ProjectResource pr : projectResources){
-                        projects.add(ThriftDataModelConversion.getProject(pr));
-                    }
-                }
-                return projects;
+          try {
+                return  projectDao.searchProjects(filters, limit, offset, orderByIdentifier, resultOrderType);
             }catch (Exception e){
                 logger.error("Error while retrieving project from registry", e);
                 throw new RegistryException(e);
             }
-        }
-        return null;
+
     }
 
     public List<String> getProjectIds (String fieldName, Object value) throws RegistryException{
         List<String> projectIds = new ArrayList<String>();
         try {
             if (fieldName.equals(Constants.FieldConstants.ProjectConstants.OWNER)){
-                workerResource.setUser((String)value);
-                List<ProjectResource> projectList = workerResource.getProjects();
-                if (projectList != null && !projectList.isEmpty()){
-                    for (ProjectResource pr : projectList){
-                        projectIds.add(pr.getName());
-                    }
-                }
+                Map<String, String> filters = new HashMap();
+                filters.put(fieldName, (String)value);
+                projectDao.searchProjects(filters, -1, -1, null, null).stream()
+                .forEach(pr->projectIds.add(pr.getProjectId()));
                 return projectIds;
             }
         }catch (Exception e){
@@ -286,7 +191,9 @@ public class ProjectRegistry {
 
     public void removeProject (String projectId) throws RegistryException {
         try {
-            workerResource.removeProject(projectId);
+            Project project = new Project();
+            project.setProjectId(projectId);
+            projectDao.deleteProject(project);
         } catch (Exception e) {
             logger.error("Error while removing the project..", e);
            throw new RegistryException(e);
@@ -295,11 +202,10 @@ public class ProjectRegistry {
 
     public boolean isProjectExist(String projectId) throws RegistryException {
         try {
-            return workerResource.isProjectExists(projectId);
+            return projectDao.getProject(projectId) != null;
         } catch (Exception e) {
             logger.error("Error while retrieving project...", e);
            throw new RegistryException(e);
         }
     }
-
 }
