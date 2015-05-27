@@ -87,42 +87,49 @@ public class BatchQueueValidator implements JobMetadataValidator {
             ComputeResourceDescription computeResource = appCatalog.getComputeResource().getComputeResource(taskDetail.getTaskScheduling().getResourceHostId());
             List<BatchQueue> batchQueues = computeResource.getBatchQueues();
 
-            if (batchQueues != null && !batchQueues.isEmpty()){
-                if (computationalResourceScheduling != null){
+            if (batchQueues != null && !batchQueues.isEmpty()) {
+                if (computationalResourceScheduling != null) {
                     String experimentQueueName = computationalResourceScheduling.getQueueName().trim();
                     int experimentWallTimeLimit = computationalResourceScheduling.getWallTimeLimit();
                     int experimentNodeCount = computationalResourceScheduling.getNodeCount();
+                    int experimentCPUCount = computationalResourceScheduling.getTotalCPUCount();
                     ValidatorResult queueNameResult = new ValidatorResult();
 
                     //Set the validation to false. Once all the queue's are looped, if nothing matches, then this gets passed.
                     queueNameResult.setResult(false);
                     queueNameResult.setErrorDetails("The specified queue" + experimentQueueName +
                             "does not exist. If you believe this is an error, contact the administrator to verify App-Catalog Configurations");
-                    for (BatchQueue queue : batchQueues){
+                    for (BatchQueue queue : batchQueues) {
                         String resourceQueueName = queue.getQueueName();
                         int maxQueueRunTime = queue.getMaxRunTime();
                         int maxNodeCount = queue.getMaxNodes();
-                        if (resourceQueueName != null && resourceQueueName.equals(experimentQueueName)){
+                        int maxcpuCount = queue.getMaxProcessors();
+                        if (resourceQueueName != null && resourceQueueName.equals(experimentQueueName)) {
                             queueNameResult.setResult(true);
                             queueNameResult.setErrorDetails("");
 
                             //Validate if the specified wall time is within allowable limit
                             ValidatorResult wallTimeResult = new ValidatorResult();
-                            if (maxQueueRunTime == 0) {
-                                wallTimeResult.setResult(true);
-                                wallTimeResult.setErrorDetails("Maximum wall time is not configured for the queue," +
-                                        "Validation is being skipped");
-                                logger.info("Maximum wall time is not configured for the queue" +
-                                        "Validation is being skipped");
+                            if (experimentWallTimeLimit == 0) {
+                                wallTimeResult.setResult(false);
+                                wallTimeResult.setErrorDetails("Walltime cannot be zero for queue " + resourceQueueName);
                             } else {
-                                if (maxQueueRunTime < experimentWallTimeLimit){
-                                    wallTimeResult.setResult(false);
-                                    wallTimeResult.setErrorDetails("Job Execution walltime " + experimentWallTimeLimit +
-                                            "exceeds the allowable walltime"  + maxQueueRunTime +
-                                            "for queue " + resourceQueueName);
-                                } else {
+                                if (maxQueueRunTime == 0) {
                                     wallTimeResult.setResult(true);
-                                    wallTimeResult.setErrorDetails("");
+                                    wallTimeResult.setErrorDetails("Maximum wall time is not configured for the queue," +
+                                            "Validation is being skipped");
+                                    logger.info("Maximum wall time is not configured for the queue" +
+                                            "Validation is being skipped");
+                                } else {
+                                    if (maxQueueRunTime < experimentWallTimeLimit) {
+                                        wallTimeResult.setResult(false);
+                                        wallTimeResult.setErrorDetails("Job Execution walltime " + experimentWallTimeLimit +
+                                                "exceeds the allowable walltime" + maxQueueRunTime +
+                                                "for queue " + resourceQueueName);
+                                    } else {
+                                        wallTimeResult.setResult(true);
+                                        wallTimeResult.setErrorDetails("");
+                                    }
                                 }
                             }
                             //validate max node count
@@ -134,18 +141,48 @@ public class BatchQueueValidator implements JobMetadataValidator {
                                 logger.info("Max node count is not configured for the queue" +
                                         "Validation is being skipped");
                             } else {
-                                if (maxNodeCount < experimentNodeCount){
+                                if (experimentNodeCount == 0) {
                                     nodeCountResult.setResult(false);
-                                    nodeCountResult.setErrorDetails("Job Execution node count " + experimentNodeCount +
-                                            "exceeds the allowable node count" + maxNodeCount +
-                                            "for queue " + resourceQueueName);
+                                    nodeCountResult.setErrorDetails("Job Execution node count cannot be zero for queue " + resourceQueueName);
                                 } else {
-                                    nodeCountResult.setResult(true);
-                                    nodeCountResult.setErrorDetails("");
+                                    if (maxNodeCount < experimentNodeCount) {
+                                        nodeCountResult.setResult(false);
+                                        nodeCountResult.setErrorDetails("Job Execution node count " + experimentNodeCount +
+                                                "exceeds the allowable node count" + maxNodeCount +
+                                                "for queue " + resourceQueueName);
+                                    } else {
+                                        nodeCountResult.setResult(true);
+                                        nodeCountResult.setErrorDetails("");
+                                    }
+                                }
+                            }
+                            // validate cpu count
+                            ValidatorResult cpuCountResult = new ValidatorResult();
+                            if (maxcpuCount == 0) {
+                                cpuCountResult.setResult(true);
+                                cpuCountResult.setErrorDetails("Max cpu count is not configured for the queue," +
+                                        "Validation is being skipped");
+                                logger.info("Max cpu count is not configured for the queue" +
+                                        "Validation is being skipped");
+                            } else {
+                                if (experimentCPUCount == 0) {
+                                    cpuCountResult.setResult(false);
+                                    cpuCountResult.setErrorDetails("Job Execution cpu count cannot be zero for queue " + resourceQueueName);
+                                } else {
+                                    if (maxcpuCount < experimentCPUCount) {
+                                        cpuCountResult.setResult(false);
+                                        cpuCountResult.setErrorDetails("Job Execution cpu count " + experimentCPUCount +
+                                                "exceeds the allowable cpu count" + maxcpuCount +
+                                                "for queue " + resourceQueueName);
+                                    } else {
+                                        cpuCountResult.setResult(true);
+                                        cpuCountResult.setErrorDetails("");
+                                    }
                                 }
                             }
                             validatorResultList.add(wallTimeResult);
                             validatorResultList.add(nodeCountResult);
+                            validatorResultList.add(cpuCountResult);
                         }
                     }
                     validatorResultList.add(queueNameResult);
