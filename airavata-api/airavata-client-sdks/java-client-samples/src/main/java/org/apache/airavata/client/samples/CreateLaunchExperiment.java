@@ -28,11 +28,7 @@ import org.apache.airavata.client.tools.RegisterSampleApplicationsUtils;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.SecurityProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
@@ -43,15 +39,13 @@ import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class CreateLaunchExperiment {
 
     //FIXME: Read from a config file
-    public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
-    public static final int THRIFT_SERVER_PORT = 9930;
+    public static final String THRIFT_SERVER_HOST = "localhost";
+    public static final int THRIFT_SERVER_PORT = 8930;
 //	public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
 //	public static final int THRIFT_SERVER_PORT = 9930;
 
@@ -60,7 +54,7 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_GATEWAY = "php_reference_gateway";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_f6eabb22-a7c0-4e13-90bc-7874c2d54a7d";
+    private static String echoAppId = "Echo_54324c70-8e89-4bb6-b77f-b0b274c3a2ed";
     private static String mpiAppId = "HelloMPI_bfd56d58-6085-4b7f-89fc-646576830518";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
     private static String amberAppId = "Amber_cb54b269-cf79-4276-8dbb-2ec16b759cc6";
@@ -87,14 +81,6 @@ public class CreateLaunchExperiment {
     public static void main(String[] args) throws Exception {
         airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
         System.out.println("API version is " + airavataClient.getAPIVersion());
-        Experiment experiment = airavataClient.getExperiment("echotest_fcc7127d-73e9-4e43-bc07-07399a7c5efc");
-        long creationTime = experiment.getCreationTime();
-        Date date = new Date(creationTime);
-        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String dateFormatted = formatter.format(date);
-        System.out.println(dateFormatted);
-//        createGateway();
-//        getGateway("testGatewayId");
 //        registerApplications(); // run this only the first time
 //        createAndLaunchExp();
     }
@@ -174,9 +160,9 @@ public class CreateLaunchExperiment {
 //                final String expId = createExperimentForSSHHost(airavata);
 //                final String expId = createEchoExperimentForFSD(airavataClient);
 //                final String expId = createMPIExperimentForFSD(airavataClient);
-               final String expId = createEchoExperimentForStampede(airavataClient);
+//               final String expId = createEchoExperimentForStampede(airavataClient);
 //                final String expId = createEchoExperimentForTrestles(airavataClient);
-//                final String expId = createExperimentEchoForLocalHost(airavataClient);
+                final String expId = createExperimentEchoForLocalHost(airavataClient);
 //                final String expId = createExperimentWRFTrestles(airavataClient);
 //                final String expId = createExperimentForBR2(airavataClient);
 //                final String expId = createExperimentForBR2Amber(airavataClient);
@@ -878,19 +864,13 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentEchoForLocalHost(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = new ArrayList<InputDataObjectType>();
-            InputDataObjectType input = new InputDataObjectType();
-            input.setName("Input_to_Echo");
-            input.setType(DataType.STRING);
-            input.setValue("Echoed_Output=Hello World");
-            exInputs.add(input);
-
-            List<OutputDataObjectType> exOut = new ArrayList<OutputDataObjectType>();
-            OutputDataObjectType output = new OutputDataObjectType();
-            output.setName("Echoed_Output");
-            output.setType(DataType.STRING);
-            output.setValue("");
-            exOut.add(output);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(echoAppId);
+            for (InputDataObjectType inputDataObjectType : exInputs) {
+                if (inputDataObjectType.getName().equalsIgnoreCase("Input_to_Echo")) {
+                    inputDataObjectType.setValue("Hello World");
+                }
+            }
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
 
             Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
             String projectId = client.createProject(DEFAULT_GATEWAY, project);
