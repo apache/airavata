@@ -53,6 +53,7 @@ public class RabbitMQTaskLaunchConsumer {
     private Map<String, QueueDetails> queueDetailsMap = new HashMap<String, QueueDetails>();
     private boolean durableQueue;
     private MessageHandler messageHandler;
+    private int prefetchCount;
 
 
     public RabbitMQTaskLaunchConsumer() throws AiravataException {
@@ -60,6 +61,7 @@ public class RabbitMQTaskLaunchConsumer {
             url = ServerSettings.getSetting(MessagingConstants.RABBITMQ_BROKER_URL);
             durableQueue = Boolean.parseBoolean(ServerSettings.getSetting(MessagingConstants.DURABLE_QUEUE));
             taskLaunchExchangeName = ServerSettings.getSetting(MessagingConstants.RABBITMQ_TASK_LAUNCH_EXCHANGE_NAME);
+            prefetchCount = Integer.valueOf(ServerSettings.getSetting(MessagingConstants.PREFETCH_COUNT, String.valueOf(64)));
             createConnection();
         } catch (ApplicationSettingsException e) {
             String message = "Failed to get read the required properties from airavata to initialize rabbitmq";
@@ -88,7 +90,7 @@ public class RabbitMQTaskLaunchConsumer {
             log.info("connected to rabbitmq: " + connection + " for " + taskLaunchExchangeName);
 
             channel = connection.createChannel();
-            channel.basicQos(MessagingConstants.PREFETCH_COUNT);
+            channel.basicQos(prefetchCount);
 
 //            channel.exchangeDeclare(taskLaunchExchangeName, "fanout");
 
@@ -133,7 +135,7 @@ public class RabbitMQTaskLaunchConsumer {
             if (queueName == null) {
                 if (!channel.isOpen()) {
                     channel = connection.createChannel();
-                    channel.basicQos(MessagingConstants.PREFETCH_COUNT);
+                    channel.basicQos(prefetchCount);
 //                    channel.exchangeDeclare(taskLaunchExchangeName, "fanout");
                 }
                 queueName = channel.queueDeclare().getQueue();

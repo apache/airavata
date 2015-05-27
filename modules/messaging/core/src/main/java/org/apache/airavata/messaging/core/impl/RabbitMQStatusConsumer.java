@@ -51,13 +51,14 @@ public class RabbitMQStatusConsumer implements Consumer {
     private String url;
     private Connection connection;
     private Channel channel;
+    private int prefetchCount;
     private Map<String, QueueDetails> queueDetailsMap = new HashMap<String, QueueDetails>();
 
     public RabbitMQStatusConsumer() throws AiravataException {
         try {
             url = ServerSettings.getSetting(MessagingConstants.RABBITMQ_BROKER_URL);
             exchangeName = ServerSettings.getSetting(MessagingConstants.RABBITMQ_STATUS_EXCHANGE_NAME);
-
+            prefetchCount = Integer.valueOf(ServerSettings.getSetting(MessagingConstants.PREFETCH_COUNT, String.valueOf(64)));
             createConnection();
         } catch (ApplicationSettingsException e) {
             String message = "Failed to get read the required properties from airavata to initialize rabbitmq";
@@ -86,7 +87,7 @@ public class RabbitMQStatusConsumer implements Consumer {
             log.info("connected to rabbitmq: " + connection + " for " + exchangeName);
 
             channel = connection.createChannel();
-            channel.basicQos(MessagingConstants.PREFETCH_COUNT);
+            channel.basicQos(prefetchCount);
             channel.exchangeDeclare(exchangeName, "topic", false);
 
         } catch (Exception e) {
