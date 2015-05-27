@@ -195,7 +195,7 @@ public class PBSOutputParser implements OutputParser {
     @Override
     public String parseJobId(String jobName, String rawOutput) throws SSHApiException {
         String regJobId = "jobId";
-        Pattern pattern = Pattern.compile("(?<" + regJobId + ">[^\\s]*).* " + jobName + " "); // regex , JOB_ID will come as first column 
+        Pattern pattern = Pattern.compile("\\s*(?<" + regJobId + ">[^\\s]*).* " + jobName + " "); // regex , JOB_ID will come as first column
         if (rawOutput != null) {
             Matcher matcher = pattern.matcher(rawOutput);
             if (matcher.find()) {
