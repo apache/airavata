@@ -415,7 +415,7 @@ public class RegisterSampleApplications {
         System.out.println("\n #### Registering Application Interfaces #### \n");
 
         //Registering local Echo
-//        registerLocalEchoInterface();
+        registerLocalEchoInterface();
 
         //Registering Echo
         registerEchoInterface();
