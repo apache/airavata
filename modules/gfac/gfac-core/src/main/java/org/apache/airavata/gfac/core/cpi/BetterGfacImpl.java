@@ -573,7 +573,6 @@ public class BetterGfacImpl implements GFac,Watcher {
             }else if (gfacExpState == GfacExperimentState.INHANDLERSINVOKING || gfacExpState == GfacExperimentState.INHANDLERSINVOKED || gfacExpState == GfacExperimentState.OUTHANDLERSINVOKING){
                 log.info("Experiment should be immedietly cancelled");
                 GFacUtils.updateExperimentStatus(jobExecutionContext.getExperimentId(), ExperimentState.CANCELED);
-
             }
             return true;
             }catch(Exception e){
