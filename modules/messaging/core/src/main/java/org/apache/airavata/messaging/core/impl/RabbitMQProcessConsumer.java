@@ -54,10 +54,12 @@ public class RabbitMQProcessConsumer {
     private String url;
     private Connection connection;
     private Channel channel;
+    private int prefetchCount;
 
     public RabbitMQProcessConsumer() throws AiravataException {
         try {
             url = ServerSettings.getSetting(MessagingConstants.RABBITMQ_BROKER_URL);
+            prefetchCount = Integer.valueOf(ServerSettings.getSetting(MessagingConstants.PREFETCH_COUNT, String.valueOf(64)));
             createConnection();
         } catch (ApplicationSettingsException e) {
             String message = "Failed to get read the required properties from airavata to initialize rabbitmq";
@@ -79,7 +81,7 @@ public class RabbitMQProcessConsumer {
             log.info("connected to rabbitmq: " + connection + " for default");
 
             channel = connection.createChannel();
-            channel.basicQos(MessagingConstants.PREFETCH_COUNT);
+            channel.basicQos(prefetchCount);
 //            channel.exchangeDeclare(taskLaunchExchangeName, "fanout");
 
         } catch (Exception e) {
@@ -102,7 +104,7 @@ public class RabbitMQProcessConsumer {
             if (queueName == null) {
                 if (!channel.isOpen()) {
                     channel = connection.createChannel();
-                    channel.basicQos(MessagingConstants.PREFETCH_COUNT);
+                    channel.basicQos(prefetchCount);
 //                    channel.exchangeDeclare(taskLaunchExchangeName, "fanout");
                 }
                 queueName = channel.queueDeclare().getQueue();
