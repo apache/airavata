@@ -410,11 +410,7 @@ public class SSHProvider extends AbstractProvider {
                     this.execute(jobExecutionContext);
                     return;
                 }
-            } catch (ApplicationSettingsException e) {
-                log.error("Error while  recovering provider", e);
-            } catch (KeeperException e) {
-                log.error("Error while  recovering provider", e);
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 log.error("Error while  recovering provider", e);
             }
             try {

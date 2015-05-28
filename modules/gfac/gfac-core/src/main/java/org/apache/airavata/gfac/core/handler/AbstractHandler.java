@@ -48,7 +48,7 @@ public abstract class AbstractHandler implements GFacHandler {
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         try {
-            GFacUtils.updateHandlerState(jobExecutionContext.getZk(), jobExecutionContext, this.getClass().getName(), GfacHandlerState.INVOKED);
+            GFacUtils.updateHandlerState(jobExecutionContext.getCuratorClient(), jobExecutionContext, this.getClass().getName(), GfacHandlerState.INVOKED);
         } catch (Exception e) {
             logger.error("Error saving Recoverable provider state", e);
         }

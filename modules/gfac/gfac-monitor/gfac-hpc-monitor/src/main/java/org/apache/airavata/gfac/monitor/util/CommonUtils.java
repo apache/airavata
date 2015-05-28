@@ -20,10 +20,8 @@
 */
 package org.apache.airavata.gfac.monitor.util;
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.logger.AiravataLogger;
 import org.apache.airavata.common.logger.AiravataLoggerFactory;
-import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
@@ -34,15 +32,16 @@ import org.apache.airavata.gfac.monitor.HostMonitorData;
 import org.apache.airavata.gfac.monitor.UserMonitorData;
 import org.apache.airavata.gfac.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.zookeeper.*;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
+import org.apache.zookeeper.ZooDefs;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CountDownLatch;
 
 public class CommonUtils {
     private final static AiravataLogger logger = AiravataLoggerFactory.getLogger(CommonUtils.class);
@@ -189,53 +188,38 @@ public class CommonUtils {
 
         /**
          *  Update job count for a given set of paths.
-         * @param zk - zookeeper instance
+         * @param curatorClient - CuratorFramework instance
          * @param changeCountMap - map of change job count with relevant path
          * @param isAdd - Should add or reduce existing job count by the given job count.
          */
-    public static void updateZkWithJobCount(ZooKeeper zk, final Map<String, Integer> changeCountMap, boolean isAdd) {
+    public static void updateZkWithJobCount(CuratorFramework curatorClient, final Map<String, Integer> changeCountMap, boolean isAdd) {
         StringBuilder changeZNodePaths = new StringBuilder();
         try {
-            if (zk == null || !zk.getState().isConnected()) {
-                try {
-                    final CountDownLatch countDownLatch = new CountDownLatch(1);
-                    zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), new Watcher() {
-                        @Override
-                        public void process(WatchedEvent event) {
-                            countDownLatch.countDown();
-                        }
-                    });
-                    countDownLatch.await();
-                } catch (ApplicationSettingsException e) {
-                    logger.error("Error while reading zookeeper hostport string");
-                } catch (IOException e) {
-                    logger.error("Error while reconnect attempt to zookeeper where zookeeper connection loss state");
-                }
-            }
-
             for (String path : changeCountMap.keySet()) {
                 if (isAdd) {
-                    CommonUtils.checkAndCreateZNode(zk, path);
+                    CommonUtils.checkAndCreateZNode(curatorClient, path);
                 }
-                byte[] byteData = zk.getData(path, null, null);
+                byte[] byteData = curatorClient.getData().forPath(path);
                 String nodeData;
                 if (byteData == null) {
                     if (isAdd) {
-                        zk.setData(path, String.valueOf(changeCountMap.get(path)).getBytes(), -1);
+                        curatorClient.setData().withVersion(-1).forPath(path, String.valueOf(changeCountMap.get(path)).getBytes());
                     } else {
                         // This is not possible, but we handle in case there any data zookeeper communication failure
                         logger.warn("Couldn't reduce job count in " + path + " as it returns null data. Hence reset the job count to 0");
-                        zk.setData(path, "0".getBytes(), -1);
+                        curatorClient.setData().withVersion(-1).forPath(path, "0".getBytes());
                     }
                 } else {
                     nodeData = new String(byteData);
                     if (isAdd) {
-                        zk.setData(path, String.valueOf(changeCountMap.get(path) + Integer.parseInt(nodeData)).getBytes(), -1);
+                        curatorClient.setData().withVersion(-1).forPath(path,
+                                String.valueOf(changeCountMap.get(path) + Integer.parseInt(nodeData)).getBytes());
                     } else {
                         int previousCount = Integer.parseInt(nodeData);
                         int removeCount = changeCountMap.get(path);
                         if (previousCount >= removeCount) {
-                            zk.setData(path, String.valueOf(previousCount - removeCount).getBytes(), -1);
+                            curatorClient.setData().withVersion(-1).forPath(path,
+                                    String.valueOf(previousCount - removeCount).getBytes());
                         } else {
                             // This is not possible, do we need to reset the job count to 0 ?
                             logger.error("Requested remove job count is " + removeCount +
@@ -250,11 +234,9 @@ public class CommonUtils {
             // update stat node to trigger orchestrator watchers
             if (changeCountMap.size() > 0) {
                 changeZNodePaths.deleteCharAt(changeZNodePaths.length() - 1);
-                zk.setData("/" + Constants.STAT, changeZNodePaths.toString().getBytes(), -1);
+                curatorClient.setData().withVersion(-1).forPath("/" + Constants.STAT, changeZNodePaths.toString().getBytes());
             }
-        } catch (KeeperException e) {
-            logger.error("Error while writing job count to zookeeper", e);
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             logger.error("Error while writing job count to zookeeper", e);
         }
 
@@ -267,7 +249,7 @@ public class CommonUtils {
     public static void increaseZkJobCount(MonitorID monitorID) {
         Map<String, Integer> addMap = new HashMap<String, Integer>();
         addMap.put(CommonUtils.getJobCountUpdatePath(monitorID), 1);
-        updateZkWithJobCount(monitorID.getJobExecutionContext().getZk(), addMap, true);
+        updateZkWithJobCount(monitorID.getJobExecutionContext().getCuratorClient(), addMap, true);
     }
 
     /**
@@ -282,17 +264,17 @@ public class CommonUtils {
 
     /**
      * Check whether znode is exist in given path if not create a new znode
-     * @param zk - zookeeper instance
+     * @param curatorClient - zookeeper instance
      * @param path - path to check znode
      * @throws KeeperException
      * @throws InterruptedException
      */
-    private static void checkAndCreateZNode(ZooKeeper zk , String path) throws KeeperException, InterruptedException {
-        if (zk.exists(path, null) == null) { // if znode doesn't exist
+    private static void checkAndCreateZNode(CuratorFramework curatorClient , String path) throws Exception {
+        if (curatorClient.checkExists().forPath(path) == null) { // if znode doesn't exist
             if (path.lastIndexOf("/") > 1) {  // recursively traverse to parent znode and check parent exist
-                checkAndCreateZNode(zk, (path.substring(0, path.lastIndexOf("/"))));
+                checkAndCreateZNode(curatorClient, (path.substring(0, path.lastIndexOf("/"))));
             }
-            zk.create(path, null, ZooDefs.Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);// create a znode
+            curatorClient.create().withMode(CreateMode.PERSISTENT).withACL(ZooDefs.Ids.OPEN_ACL_UNSAFE).forPath(path);
         }
     }
 }

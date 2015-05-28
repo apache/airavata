@@ -22,7 +22,6 @@ package org.apache.airavata.gfac.server;
 
 import com.google.common.eventbus.EventBus;
 import org.airavata.appcatalog.cpi.AppCatalog;
-import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -45,71 +44,65 @@ import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.messaging.core.MessagingConstants;
 import org.apache.airavata.messaging.core.impl.RabbitMQTaskLaunchConsumer;
-import org.apache.airavata.model.messaging.event.*;
+import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.airavata.model.messaging.event.TaskSubmitEvent;
+import org.apache.airavata.model.messaging.event.TaskTerminateEvent;
 import org.apache.airavata.model.workspace.experiment.ExperimentState;
 import org.apache.airavata.model.workspace.experiment.ExperimentStatus;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.RegistryModelType;
+import org.apache.curator.RetryPolicy;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
-import org.apache.zookeeper.*;
+import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.Stat;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.locks.Lock;
 
 
-public class GfacServerHandler implements GfacService.Iface, Watcher {
+public class GfacServerHandler implements GfacService.Iface {
     private final static AiravataLogger logger = AiravataLoggerFactory.getLogger(GfacServerHandler.class);
-
     private static RabbitMQTaskLaunchConsumer rabbitMQTaskLaunchConsumer;
-
     private static int requestCount=0;
-
     private Registry registry;
     private AppCatalog appCatalog;
-
     private String gatewayName;
-
     private String airavataUserName;
-
-    private ZooKeeper zk;
-
+//    private ZooKeeper zk;
+    private CuratorFramework curatorClient;
     private static Integer mutex = -1;
-
     private static Lock lock;
-
     private MonitorPublisher publisher;
-
     private String gfacServer;
-
     private String gfacExperiments;
-
     private String airavataServerHostPort;
-
-
     private BlockingQueue<TaskSubmitEvent> taskSubmitEvents;
 
     public GfacServerHandler() throws Exception {
-        // registering with zk
         try {
+            // start curator client
             String zkhostPort = AiravataZKUtils.getZKhostPort();
-            airavataServerHostPort = ServerSettings.getSetting(Constants.GFAC_SERVER_HOST)
-                    + ":" + ServerSettings.getSetting(Constants.GFAC_SERVER_PORT);
-            zk = new ZooKeeper(zkhostPort, AiravataZKUtils.getZKTimeout(), this);   // no watcher is required, this will only use to store some data
+            RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 5);
+            curatorClient = CuratorFrameworkFactory.newClient(zkhostPort, retryPolicy);
+            curatorClient.start();
             gfacServer = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NODE, "/gfac-server");
             gfacExperiments = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
-            logger.info("Waiting for zookeeper to connect to the server");
-            synchronized (mutex) {
-                mutex.wait(5000);  // waiting for the syncConnected event
-            }
+            airavataServerHostPort = ServerSettings.getSetting(Constants.GFAC_SERVER_HOST)
+                    + ":" + ServerSettings.getSetting(Constants.GFAC_SERVER_PORT);
             storeServerConfig();
-            logger.info("Finished starting ZK: " + zk);
             publisher = new MonitorPublisher(new EventBus());
             BetterGfacImpl.setMonitorPublisher(publisher);
             registry = RegistryFactory.getDefaultRegistry();
@@ -121,24 +114,8 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                 rabbitMQTaskLaunchConsumer = new RabbitMQTaskLaunchConsumer();
                 rabbitMQTaskLaunchConsumer.listen(new TaskLaunchMessageHandler());
             }
-            BetterGfacImpl.startStatusUpdators(registry, zk, publisher, rabbitMQTaskLaunchConsumer);
-        } catch (ApplicationSettingsException e) {
-            logger.error("Error initialising GFAC", e);
-            throw new Exception("Error initialising GFAC", e);
-        } catch (InterruptedException e) {
-            logger.error("Error initialising GFAC", e);
-            throw new Exception("Error initialising GFAC", e);
-        } catch (AppCatalogException e) {
-            logger.error("Error initialising GFAC", e);
-            throw new Exception("Error initialising GFAC", e);
-        } catch (RegistryException e) {
-            logger.error("Error initialising GFAC", e);
-            throw new Exception("Error initialising GFAC", e);
-        } catch (KeeperException e) {
-            logger.error("Error initialising GFAC", e);
-            throw new Exception("Error initialising GFAC", e);
-        } catch (IOException e) {
-            logger.error("Error initialising GFAC", e);
+            BetterGfacImpl.startStatusUpdators(registry, curatorClient, publisher, rabbitMQTaskLaunchConsumer);
+        } catch (Exception e) {
             throw new Exception("Error initialising GFAC", e);
         }
     }
@@ -152,60 +129,27 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
             logger.error(e.getMessage(), e);
         }
     }
-    private void storeServerConfig() throws KeeperException, InterruptedException, ApplicationSettingsException {
-        Stat zkStat = zk.exists(gfacServer, false);
-        if (zkStat == null) {
-            zk.create(gfacServer, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                    CreateMode.PERSISTENT);
+    private void storeServerConfig() throws Exception {
+        Stat stat = curatorClient.checkExists().forPath(gfacServer);
+        if (stat == null) {
+            curatorClient.create().withMode(CreateMode.PERSISTENT).withACL(ZooDefs.Ids.OPEN_ACL_UNSAFE)
+                    .forPath(gfacServer, new byte[0]);
         }
         String instanceId = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME);
         String instanceNode = gfacServer + File.separator + instanceId;
-        zkStat = zk.exists(instanceNode, true);
-        if (zkStat == null) {
-            zk.create(instanceNode,
-                    airavataServerHostPort.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                    CreateMode.EPHEMERAL);      // other component will watch these childeren creation deletion to monitor the status of the node
-            zk.getChildren(instanceNode, true);
+        stat = curatorClient.checkExists().forPath(instanceNode);
+        if (stat == null) {
+            curatorClient.create().withMode(CreateMode.EPHEMERAL).withACL(ZooDefs.Ids.OPEN_ACL_UNSAFE).forPath(instanceNode, airavataServerHostPort.getBytes());
+            curatorClient.getChildren().watched().forPath(instanceNode);
         }
-        zkStat = zk.exists(gfacExperiments, false);
-        if (zkStat == null) {
-            zk.create(gfacExperiments,
-                    airavataServerHostPort.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                    CreateMode.PERSISTENT);
+        stat = curatorClient.checkExists().forPath(gfacExperiments);
+        if (stat == null) {
+            curatorClient.create().withMode(CreateMode.PERSISTENT).withACL(ZooDefs.Ids.OPEN_ACL_UNSAFE).forPath(gfacExperiments, airavataServerHostPort.getBytes());
         }
-        zkStat = zk.exists(gfacExperiments + File.separator + instanceId, false);
-        if (zkStat == null) {
-            zk.create(gfacExperiments + File.separator + instanceId,
-                    airavataServerHostPort.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                    CreateMode.PERSISTENT);
-        } else {
-            logger.error(" Zookeeper is inconsistent state  !!!!!");
-        }
-    }
-
-    synchronized public void process(WatchedEvent watchedEvent) {
-        logger.info(watchedEvent.getPath());
-        logger.info(watchedEvent.getType().toString());
-        synchronized (mutex) {
-            Event.KeeperState state = watchedEvent.getState();
-            logger.info(state.name());
-            switch (state){
-                case SyncConnected:
-                    mutex.notify();
-                    break;
-                case Expired:case Disconnected:
-                   logger.info("ZK Connection is "+ state.toString());
-                    try {
-                        zk = new ZooKeeper(AiravataZKUtils.getZKhostPort(), AiravataZKUtils.getZKTimeout(), this);
-                    } catch (IOException e) {
-                        logger.error(e.getMessage(), e);
-                    } catch (ApplicationSettingsException e) {
-                        logger.error(e.getMessage(), e);
-                    }
-//                    synchronized (mutex) {
-//                        mutex.wait(5000);  // waiting for the syncConnected event
-//                    }
-            }
+        stat = curatorClient.checkExists().forPath(gfacExperiments + File.separator + instanceId);
+        if (stat == null) {
+            curatorClient.create().withMode(CreateMode.PERSISTENT).withACL(ZooDefs.Ids.OPEN_ACL_UNSAFE)
+                    .forPath(gfacExperiments + File.separator + instanceId, airavataServerHostPort.getBytes());
         }
     }
 
@@ -304,7 +248,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
 
     private GFac getGfac() throws TException {
         try {
-            return new BetterGfacImpl(registry, appCatalog,null , publisher);
+            return new BetterGfacImpl(registry, appCatalog, curatorClient, publisher);
 
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
@@ -379,16 +323,11 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                     registry.update(RegistryModelType.EXPERIMENT_STATUS, status, event.getExperimentId());
                     experimentNode = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
                     try {
-                        GFacUtils.createExperimentEntryForPassive(event.getExperimentId(), event.getTaskId(), zk, experimentNode, nodeName, event.getTokenId(), message.getDeliveryTag());
+                        GFacUtils.createExperimentEntryForPassive(event.getExperimentId(), event.getTaskId(), curatorClient,
+                                experimentNode, nodeName, event.getTokenId(), message.getDeliveryTag());
                         AiravataZKUtils.getExpStatePath(event.getExperimentId());
                         submitJob(event.getExperimentId(), event.getTaskId(), event.getGatewayId(), event.getTokenId());
-                    } catch (KeeperException e) {
-                        logger.error(nodeName + " was interrupted.");
-                        rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
-                    } catch (InterruptedException e) {
-                        logger.error(e.getMessage(), e);
-                        rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
-                    } catch (ApplicationSettingsException e) {
+                    } catch (Exception e) {
                         logger.error(e.getMessage(), e);
                         rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
                     }
@@ -404,7 +343,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                 try {
                     byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
                     ThriftUtils.createThriftFromBytes(bytes, event);
-                    boolean saveDeliveryTagSuccess = GFacUtils.setExperimentCancel(event.getExperimentId(), zk, message.getDeliveryTag());
+                    boolean saveDeliveryTagSuccess = GFacUtils.setExperimentCancel(event.getExperimentId(), curatorClient, message.getDeliveryTag());
                     if (saveDeliveryTagSuccess) {
                         cancelSuccess = cancelJob(event.getExperimentId(), event.getTaskId(), event.getGatewayId(), event.getTokenId());
                         System.out.println(" Message Received with message id '" + message.getMessageId()
@@ -420,7 +359,7 @@ public class GfacServerHandler implements GfacService.Iface, Watcher {
                         // if cancel success , AiravataExperimentStatusUpdator will send an ack to this message.
                     } else {
                         try {
-                            if (GFacUtils.ackCancelRequest(event.getExperimentId(), zk)) {
+                            if (GFacUtils.ackCancelRequest(event.getExperimentId(), curatorClient)) {
                                 if (!rabbitMQTaskLaunchConsumer.isOpen()) {
                                     rabbitMQTaskLaunchConsumer.reconnect();
                                 }
