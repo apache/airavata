@@ -173,6 +173,9 @@ public class UGEOutputParser implements OutputParser{
 
     @Override
     public String parseJobId(String jobName, String rawOutput) throws SSHApiException {
+        if (jobName.length() > 10) {
+            jobName = jobName.substring(0, 10);
+        }
         Pattern pattern = Pattern.compile("(?<" + JOB_ID + ">\\S+)\\s+\\S+\\s+(" + jobName + ")");
         Matcher matcher = pattern.matcher(rawOutput);
         if (matcher.find()) {

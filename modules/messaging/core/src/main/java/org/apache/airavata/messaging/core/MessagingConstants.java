@@ -30,5 +30,5 @@ public abstract class MessagingConstants {
     public static final String RABBIT_QUEUE= "queue";
     public static final String RABBIT_CONSUMER_TAG = "consumerTag";
     public static final String DURABLE_QUEUE="durable.queue";
-    public static final int PREFETCH_COUNT=64;
+    public static final String PREFETCH_COUNT="prefetch.count";
 }
