@@ -74,7 +74,6 @@ import org.apache.airavata.workflow.model.wf.WorkflowExecutionState;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xmlpull.infoset.XmlElement;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;

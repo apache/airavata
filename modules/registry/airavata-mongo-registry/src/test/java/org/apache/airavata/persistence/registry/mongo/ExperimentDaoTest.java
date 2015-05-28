@@ -20,51 +20,83 @@
 */
 package org.apache.airavata.persistence.registry.mongo;
 
-import com.mongodb.MongoClient;
 import junit.framework.Assert;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.workspace.experiment.*;
-import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
-import org.apache.airavata.persistance.registry.jpa.mongo.dao.ExperimentDao;
-import org.apache.airavata.persistance.registry.jpa.mongo.utils.MongoUtil;
-import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.persistance.registry.mongo.dao.ExperimentDao;
 import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.airavata.registry.cpi.RegistryModelType;
-import org.apache.airavata.registry.cpi.ResultOrderType;
 import org.apache.airavata.registry.cpi.utils.Constants;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
-public class ExperimentDaoTest {
+public class ExperimentDaoTest extends AbstractDaoTest{
     private final static Logger logger = LoggerFactory.getLogger(ExperimentDaoTest.class);
 
-    private static String gatewayId = "php_reference_gateway";
-
     private static ExperimentDao experimentDao;
+
     @BeforeClass
     public static void setupBeforeClass() throws Exception{
         experimentDao = new ExperimentDao();
     }
 
-    @AfterClass
-    public static void tearDown(){
-        MongoClient mongoClient = MongoUtil.getMongoClient();
-        mongoClient.dropDatabase("airavata-data");
+
+    @Test
+    public void testExperimentOperations() throws RegistryException {
+        Experiment experiment = createExperiment();
+        experimentDao.createExperiment(experiment);
+        Experiment persistedExperiement
+                = experimentDao.getExperiment(experiment.getExperimentId());
+        Assert.assertNotNull(persistedExperiement);
+        Assert.assertEquals(experiment, persistedExperiement);
+
+        experiment.setName("New Name");
+        experimentDao.updateExperiment(experiment);
+        persistedExperiement = experimentDao.getExperiment(experiment.getExperimentId());
+        Assert.assertEquals(experiment, persistedExperiement);
+
+        List<Experiment> experimentList = experimentDao.getAllExperiments();
+        Assert.assertTrue(experimentList.size()==1);
+
+        Map<String, String> filters = new HashMap();
+        filters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME,
+                experiment.getName().substring(1, 4));
+        experimentList = experimentDao.searchExperiments(filters, 1, 0, null, null);
+        Assert.assertTrue(experimentList.size()==1);
+
+        experimentDao.deleteExperiment(experiment);
+        experimentList = experimentDao.getAllExperiments();
+        Assert.assertTrue(experimentList.size()==0);
+    }
+
+
+    @Test
+    public void testWFOperations() throws RegistryException, IOException {
+        Experiment experiment = createExperiment();
+        experimentDao.createExperiment(experiment);
+        WorkflowNodeDetails wfnd = createWorkFlowNodeDetails();
+        experimentDao.createWFNode(experiment.getExperimentId(), wfnd);
+        Assert.assertEquals(wfnd, experimentDao.getWFNode(wfnd.getNodeInstanceId()));
+
+        wfnd.setNodeName("NewName");
+        experimentDao.updateWFNode(wfnd);
+        Assert.assertEquals(wfnd.getNodeName(),
+                experimentDao.getWFNode(wfnd.getNodeInstanceId()).getNodeName());
+
+        experimentDao.deleteWFNode(wfnd);
+        Assert.assertNull(experimentDao.getWFNode(wfnd.getNodeInstanceId()));
     }
 
     @Test
-    public void testExperimentDao() throws RegistryException {
+    public void testTaskOperations() throws RegistryException, IOException {
+    }
+
+    //Todo set all the fields in the experiment object
+    private Experiment createExperiment(){
         String TAG = System.currentTimeMillis() + "";
         //creating sample echo experiment
         InputDataObjectType inputDataObjectType = new InputDataObjectType();
@@ -88,191 +120,39 @@ public class ExperimentDaoTest {
         experiment.setExperimentId("28395669237854235"+TAG);
         experiment.setProjectId("2392519y92312341" + TAG);
         experiment.setUserName("TestUser" + TAG);
-        experiment.setName("TestExperiment"+TAG);
+        experiment.setName("TestExperiment" + TAG);
         experiment.setDescription("experiment");
-        experiment.setApplicationId("2358382458362846287"+TAG);
+        experiment.setApplicationId("2358382458362846287" + TAG);
         experiment.setUserConfigurationData(userConfigurationData);
         experiment.addToExperimentInputs(inputDataObjectType);
-        experiment.setGatewayExecutionId("329619820461624214"+TAG);
+        experiment.setGatewayExecutionId("default");
+        experiment.setEnableEmailNotification(true);
+        ArrayList<String> emailList = new ArrayList();
+        emailList.add("qwerty123@gmail.com");
+        experiment.setEmailAddresses(emailList);
+        ExperimentStatus experimentStatus = new ExperimentStatus();
+        experimentStatus.setExperimentState(ExperimentState.CREATED);
+        experiment.setExperimentStatus(experimentStatus);
 
-        experimentDao.createExperiment(experiment);
-        Experiment persistedExperiement = experimentDao.getExperiment(experiment.getExperimentId());
-        Assert.assertNotNull(persistedExperiement);
-        Assert.assertEquals(experiment, persistedExperiement);
-
-        experiment.setName("New Name"+TAG);
-        experimentDao.updateExperiment(experiment);
-        persistedExperiement = experimentDao.getExperiment(experiment.getExperimentId());
-        Assert.assertEquals(experiment, persistedExperiement);
-
-        List<Experiment> experimentList = experimentDao.getAllExperiments();
-        Assert.assertTrue(experimentList.size()==1);
-
-        experimentDao.deleteExperiment(experiment);
-        experimentList = experimentDao.getAllExperiments();
-        Assert.assertTrue(experimentList.size()==0);
+        experiment.addToWorkflowNodeDetailsList(createWorkFlowNodeDetails());
+        return experiment;
     }
 
-    @Test
-    public void test() throws RegistryException, IOException {
-        Registry registry = RegistryFactory.getDefaultRegistry();
-        MongoUtil.dropAiravataRegistry();
+    private WorkflowNodeDetails createWorkFlowNodeDetails(){
+        String TAG = System.currentTimeMillis() + "";
+        WorkflowNodeDetails wfnd = new WorkflowNodeDetails();
+        wfnd.setNodeInstanceId("tempNode_4e1582bd-f9dd-4563-8808-472470c93dbc"+TAG);
+        wfnd.setNodeName("Temp Node" + TAG);
+        wfnd.setExecutionUnit(ExecutionUnit.APPLICATION);
+        WorkflowNodeStatus workflowNodeStatus = new WorkflowNodeStatus();
+        workflowNodeStatus.setWorkflowNodeState(WorkflowNodeState.UNKNOWN);
+        wfnd.setWorkflowNodeStatus(workflowNodeStatus);
 
-        ExperimentDao experimentDao = new ExperimentDao();
-        BufferedReader reader = new BufferedReader(new FileReader("/home/supun/Downloads/EXPERIMENT.csv"));
-        String temp = reader.readLine();
-        int i = 1;
-        long time1 = System.currentTimeMillis();
-        while(temp != null && !temp.isEmpty()){
-            try{
-                Experiment experiement = (Experiment) registry.get(RegistryModelType.EXPERIMENT, temp.trim());
-                experimentDao.createExperiment(experiement);
-                Experiment persistedExperiment = experimentDao.getExperiment(temp.trim());
-//                List<Experiment> experimentList = experimentDao.getAllExperiments();
-                Assert.assertEquals(experiement, persistedExperiment);
-                System.out.println(i+" :"+experiement.getExperimentId());
-                i++;
-            }catch (Exception e){
-                System.out.println(temp);
-                e.printStackTrace();
-            }
-            temp = reader.readLine();
-        }
-        long time2  = System.currentTimeMillis();
-        System.out.println(time2-time1);
-    }
+        TaskDetails taskDetails = new TaskDetails();
+        taskDetails.setTaskId("Temp_Task"+TAG);
+        taskDetails.setApplicationId("Ultrascan_856df1d5-944a-49d3-a476-d969e57a8f37");
 
-    @Test
-    public void testGetExperimentOfWFNode() throws RegistryException, IOException {
-//        String nodeId = "IDontNeedaNode_48c545a1-bedd-46cf-90d4-e4390b129693";
-//        ExperimentDao experimentDao = new ExperimentDao();
-//        long time1 = System.currentTimeMillis();
-//        Experiment experiment = experimentDao.getExperimentOfWFNode(nodeId);
-//        long time2 = System.currentTimeMillis();
-//        System.out.println(time2-time1);
-//        Assert.assertNotNull(experiment);
-
-        ExperimentDao experimentDao = new ExperimentDao();
-        BufferedReader reader = new BufferedReader(new FileReader("/home/supun/Downloads/WORKFLOW_NODE_DETAIL.csv"));
-        String temp = reader.readLine();
-        int i = 1;
-        int count  = 0;
-        long time1 = System.currentTimeMillis();
-        while(temp != null && !temp.isEmpty()){
-            try{
-                Experiment experiment = experimentDao.getParentExperimentOfWFNode(temp.trim());
-                if(experiment != null) {
-                    System.out.println(i + " :" + experiment.getExperimentId());
-                    count++;
-                }else{
-                    System.out.println("FAILED: " + temp);
-                }
-                i++;
-            }catch (Exception e){
-                System.out.println(temp);
-                e.printStackTrace();
-            }
-            temp = reader.readLine();
-        }
-        long time2  = System.currentTimeMillis();
-        System.out.println(count);
-        System.out.println(time2-time1);
-    }
-
-    @Test
-    public void testGetExperimentOfTask() throws RegistryException, IOException {
-//        String taskId = "tempNode_fceda7f7-267c-4197-bf20-a54f4fff395b";
-//        ExperimentDao experimentDao = new ExperimentDao();
-//        long time1 = System.currentTimeMillis();
-//        Experiment experiment = experimentDao.getExperimentOfTask(taskId);
-//        long time2 = System.currentTimeMillis();
-//        System.out.println(time2-time1);
-//        Assert.assertNotNull(experiment);
-//        AiravataUtils.setExecutionAsServer();
-//        Registry registry = RegistryFactory.getDefaultRegistry();
-//        MongoUtil.dropAiravataRegistry();
-
-        ExperimentDao experimentDao = new ExperimentDao();
-        BufferedReader reader = new BufferedReader(new FileReader("/home/supun/Downloads/TASK_DETAIL.csv"));
-        String temp = reader.readLine();
-        int i = 1;
-        int count  = 0;
-        long time1 = System.currentTimeMillis();
-        while(temp != null && !temp.isEmpty()){
-            try{
-                Experiment experiment = experimentDao.getParentExperimentOfTask(temp.trim());
-                if(experiment != null) {
-                    //System.out.println(i + " :" + experiment.getExperimentId());
-                    count++;
-                }else{
-                    System.out.println("FAILED: " + temp);
-                }
-                i++;
-            }catch (Exception e){
-                System.out.println(temp);
-                e.printStackTrace();
-            }
-            temp = reader.readLine();
-        }
-        long time2  = System.currentTimeMillis();
-        System.out.println(count);
-        System.out.println(time2-time1);
-    }
-
-    @Test
-    public void testWorkFlow() throws RegistryException {
-        String nodeId = "tempNode_758b52ba-091b-43a5-a7b7-4c3a239c5d1e";
-        String newNodeId = "newNode_758b52ba-091b-43a5-a7b7-4c3a2325d1e";
-        String expId = "AlamoTest3_3965f4e2-0213-4434-9c3f-fe898b018666";
-        ExperimentDao experimentDao = new ExperimentDao();
-        WorkflowNodeDetails wfNode = experimentDao.getWFNode("newNode_758b52ba-091b-43a5-a7b7-4c3a239c5d1e");
-        Assert.assertTrue(wfNode.getNodeInstanceId().equals("newNode_758b52ba-091b-43a5-a7b7-4c3a239c5d1e"));
-
-        wfNode.setNodeName("New2 Name"+System.currentTimeMillis());
-        experimentDao.updateWFNode(wfNode);
-        WorkflowNodeDetails updatedWfNode = experimentDao.getWFNode("newNode_758b52ba-091b-43a5-a7b7-4c3a239c5d1e");
-        Assert.assertTrue(updatedWfNode.getNodeName().equals(wfNode.getNodeName()));
-
-        WorkflowNodeDetails newWfNode = wfNode;
-        newWfNode.setTaskDetailsList(null);
-        newWfNode.setNodeInstanceId(newNodeId);
-        experimentDao.createWFNode(expId, newWfNode);
-
-        Experiment experiment = experimentDao.getExperiment(expId);
-
-        experimentDao.deleteWFNode(newWfNode);
-
-        experiment = experimentDao.getExperiment(expId);
-
-        System.out.println();
-    }
-
-    @Test
-    public void testTask() throws RegistryException {
-        String taskId = "tempNode_58e1b2e4-f7d6-4543-9281-43dcb58e2c1a";
-        ExperimentDao experimentDao = new ExperimentDao();
-        TaskDetails taskDetails = experimentDao.getTaskDetail(taskId);
-        Assert.assertTrue(taskDetails.getTaskId().equals(taskId));
-
-        taskDetails.setTaskStatus(null);
-        experimentDao.updateTaskDetail(taskDetails);
-        taskDetails = experimentDao.getTaskDetail(taskId);
-        Assert.assertTrue(taskDetails.getTaskId().equals(taskId));
-
-        String expid = "alamotest2_5420547e-877a-4a9c-8752-377c2806906c";
-        Experiment experiment = experimentDao.getExperiment(expid);
-        System.out.println();
-    }
-
-    @Test
-    public void testSearch() throws RegistryException{
-        Map<String, String> filters = new HashMap();
-        filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, "Eroma123");
-        filters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_DESC, "Test");
-        List<Experiment> result = experimentDao.searchExperiments(
-                filters, 10, 2, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
-        Assert.assertNotNull(result);
-        Assert.assertTrue(result.size()==10);
-        Assert.assertTrue(result.get(0).getCreationTime() > result.get(9).getCreationTime());
+        wfnd.addToTaskDetailsList(taskDetails);
+        return wfnd;
     }
 }

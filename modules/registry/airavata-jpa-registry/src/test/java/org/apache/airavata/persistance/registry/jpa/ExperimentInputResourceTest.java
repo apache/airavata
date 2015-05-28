@@ -21,7 +21,9 @@
 
 package org.apache.airavata.persistance.registry.jpa;
 
-import org.apache.airavata.persistance.registry.jpa.resources.*;
+import org.apache.airavata.persistance.registry.jpa.resources.ExperimentInputResource;
+import org.apache.airavata.persistance.registry.jpa.resources.ExperimentResource;
+import org.apache.airavata.persistance.registry.mongo.resources.*;
 import org.junit.After;
 import org.junit.Test;
 

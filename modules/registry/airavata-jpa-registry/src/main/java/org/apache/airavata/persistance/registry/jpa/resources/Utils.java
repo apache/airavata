@@ -26,6 +26,7 @@ import org.apache.airavata.persistance.registry.jpa.JPAConstants;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.model.*;
+import org.apache.airavata.persistance.registry.mongo.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -215,7 +216,7 @@ public class Utils {
                     throw new IllegalArgumentException("Object should be a Experiment.");
                 }
             case NOTIFICATION_EMAIL:
-                if (o instanceof  Notification_Email){
+                if (o instanceof Notification_Email){
                     return createNotificationEmail((Notification_Email)o);
                 }else {
                     logger.error("Object should be a Experiment.", new IllegalArgumentException());
@@ -229,7 +230,7 @@ public class Utils {
                     throw new IllegalArgumentException("Object should be a Experiment input data.");
                 }
             case EXPERIMENT_OUTPUT:
-                if (o instanceof  Experiment_Output){
+                if (o instanceof Experiment_Output){
                     return createExperimentOutput((Experiment_Output)o);
                 }else {
                     logger.error("Object should be a Experiment output data.", new IllegalArgumentException());
@@ -243,7 +244,7 @@ public class Utils {
                      throw new IllegalArgumentException("Object should be a Workflow node data.");
                  }
             case TASK_DETAIL:
-                if (o instanceof  TaskDetail){
+                if (o instanceof TaskDetail){
                     return createTaskDetail((TaskDetail)o);
                 }else {
                     logger.error("Object should be a task detail data.", new IllegalArgumentException());

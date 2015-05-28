@@ -20,21 +20,6 @@
 */
 package org.apache.airavata.orchestrator.core;
 
-import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.orchestrator.cpi.Orchestrator;
-import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
-import org.apache.airavata.persistance.registry.jpa.impl.RegistryImpl;
-import org.apache.airavata.registry.cpi.ChildDataType;
-import org.apache.airavata.registry.cpi.ParentDataType;
-import org.apache.airavata.registry.cpi.Registry;
-import org.junit.Assert;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
-
-import java.util.*;
-
 public class OrchestratorTestWithGRAM extends BaseOrchestratorTest {
 //    private static final Logger log = LoggerFactory.getLogger(OrchestratorTestWithGRAM.class);
 //

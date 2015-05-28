@@ -24,7 +24,6 @@ package org.apache.airavata.persistance.registry.jpa;
 import static org.junit.Assert.*;
 
 import java.sql.Timestamp;
-import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.airavata.persistance.registry.jpa.resources.ExperimentResource;

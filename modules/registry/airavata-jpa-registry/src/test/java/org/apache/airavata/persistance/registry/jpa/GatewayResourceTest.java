@@ -25,6 +25,7 @@ import static org.junit.Assert.*;
 
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.persistance.registry.jpa.resources.*;
+import org.apache.airavata.persistance.registry.mongo.resources.*;
 import org.junit.After;
 import org.junit.Test;
 
