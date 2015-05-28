@@ -116,11 +116,10 @@
         <!-- this is the dependency for amqp implementation -->
         <!-- zookeeper dependencies -->
         <dependency>
-        	<groupId>org.apache.zookeeper</groupId>
-        	<artifactId>zookeeper</artifactId>
-        	<version>3.4.0</version>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-framework</artifactId>
+            <version>${curator.version}</version>
         </dependency>
-
     </dependencies>
 
     <build>

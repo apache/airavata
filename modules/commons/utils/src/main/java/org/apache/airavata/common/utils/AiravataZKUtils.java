@@ -20,9 +20,10 @@
 */
 package org.apache.airavata.common.utils;
 
-import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.zookeeper.*;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.zookeeper.WatchedEvent;
+import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.data.Stat;
 import org.apache.zookeeper.server.ServerCnxnFactory;
 import org.apache.zookeeper.server.ServerConfig;
@@ -36,15 +37,12 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
-import java.util.List;
 
 public class AiravataZKUtils implements Watcher {
     private final static Logger logger = LoggerFactory.getLogger(AiravataZKUtils.class);
 
     public static final String ZK_EXPERIMENT_STATE_NODE = "state";
-
     public static final String DELIVERY_TAG_POSTFIX = "-deliveryTag";
-
     public static final String CANCEL_DELIVERY_TAG_POSTFIX = "-cancel-deliveryTag";
 
     @Override
@@ -81,33 +79,12 @@ public class AiravataZKUtils implements Watcher {
                 "state";
     }
 
-    public static String getExpState(ZooKeeper zk, String expId) throws ApplicationSettingsException,
-            KeeperException, InterruptedException {
-        Stat exists = zk.exists(getExpStatePath(expId), false);
+    public static String getExpState(CuratorFramework curatorClient, String expId) throws Exception {
+        Stat exists = curatorClient.checkExists().forPath(getExpStatePath(expId));
         if (exists != null) {
-            return new String(zk.getData(getExpStatePath(expId), false, exists));
+            return new String(curatorClient.getData().storingStatIn(exists).forPath(getExpStatePath(expId)));
         }
         return null;
-    }
-
-
-    public static int getExpStateValueWithGivenPath(ZooKeeper zk,String fullPath)throws ApplicationSettingsException,
-            KeeperException, InterruptedException {
-        Stat exists = zk.exists(fullPath, false);
-        if (exists != null) {
-            return Integer.parseInt(new String(zk.getData(fullPath, false, exists)));
-        }
-        return -1;
-    }
-    public static List<String> getRunningGfacNodeNames(ZooKeeper zk) throws KeeperException, InterruptedException {
-        String gfacServer = ServerSettings.getSetting(Constants.ZOOKEEPER_API_SERVER_NODE, "/gfac-server");
-        return zk.getChildren(gfacServer, null);
-    }
-
-
-    public static List<String> getAllGfacNodeNames(ZooKeeper zk) throws KeeperException, InterruptedException {
-        String gfacServer = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
-        return zk.getChildren(gfacServer, null);
     }
 
     public static void runZKFromConfig(ServerConfig config,ServerCnxnFactory cnxnFactory) throws IOException {
@@ -177,33 +154,22 @@ public class AiravataZKUtils implements Watcher {
         }
     }
 
-    public static void storeDeliveryTag(ZooKeeper zk,String newExpNode,Double deliveryTag) throws KeeperException, InterruptedException {
-        String s = zk.create(newExpNode, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,
-                CreateMode.PERSISTENT);
-
-        Stat expParent = zk.exists(newExpNode, false);
-        if (expParent != null) {
-            zk.setData(newExpNode, toByteArray(deliveryTag),
-                    expParent.getVersion());
-        }
-    }
-
     public static byte[] toByteArray(double value) {
         byte[] bytes = new byte[8];
         ByteBuffer.wrap(bytes).putDouble(value);
         return bytes;
     }
 
-    public static long getDeliveryTag(String experimentID, ZooKeeper zk, String experimentNode,
-                                      String pickedChild) throws KeeperException, InterruptedException,AiravataException {
+    public static long getDeliveryTag(String experimentID, CuratorFramework curatorClient, String experimentNode,
+                                      String pickedChild) throws Exception {
         String deliveryTagPath = experimentNode + File.separator + pickedChild + File.separator + experimentID
                 + DELIVERY_TAG_POSTFIX;
-        Stat exists = zk.exists(deliveryTagPath, false);
+        Stat exists = curatorClient.checkExists().forPath(deliveryTagPath);
         if(exists==null) {
             logger.error("Cannot find delivery Tag in path:" + deliveryTagPath + " for this experiment");
             return -1;
         }
-        return bytesToLong(zk.getData(deliveryTagPath, false, exists));
+        return bytesToLong(curatorClient.getData().storingStatIn(exists).forPath(deliveryTagPath));
     }
     public static byte[] longToBytes(long x) {
         ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
@@ -222,15 +188,16 @@ public class AiravataZKUtils implements Watcher {
         return ByteBuffer.wrap(bytes).getDouble();
     }
 
-    public static long getCancelDeliveryTagIfExist(String experimentId, ZooKeeper zk, String experimentNode, String pickedChild) throws KeeperException, InterruptedException {
+    public static long getCancelDeliveryTagIfExist(String experimentId, CuratorFramework curatorClient,
+                                                   String experimentNode, String pickedChild) throws Exception {
 
         String cancelDeliveryTagPath = experimentNode + File.separator + pickedChild + File.separator + experimentId +
                 AiravataZKUtils.CANCEL_DELIVERY_TAG_POSTFIX;
-        Stat exists = zk.exists(cancelDeliveryTagPath, false);
+        Stat exists = curatorClient.checkExists().forPath(cancelDeliveryTagPath);
         if (exists == null) {
             return -1; // no cancel deliverytag found
         } else {
-            return bytesToLong(zk.getData(cancelDeliveryTagPath, false, exists));
+            return bytesToLong(curatorClient.getData().storingStatIn(exists).forPath(cancelDeliveryTagPath));
         }
 
 

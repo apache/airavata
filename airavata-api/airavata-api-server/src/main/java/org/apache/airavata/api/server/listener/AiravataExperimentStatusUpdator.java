@@ -23,11 +23,13 @@ package org.apache.airavata.api.server.listener;
 import com.google.common.eventbus.Subscribe;
 import org.apache.airavata.api.server.util.DataModelUtils;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.*;
+import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.common.utils.AiravataZKUtils;
+import org.apache.airavata.common.utils.Constants;
+import org.apache.airavata.common.utils.MonitorPublisher;
+import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
 import org.apache.airavata.messaging.core.MessageContext;
-import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.impl.RabbitMQTaskLaunchConsumer;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
@@ -38,9 +40,8 @@ import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.ExperimentState;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryModelType;
-import org.apache.zookeeper.KeeperException;
-import org.apache.zookeeper.ZKUtil;
-import org.apache.zookeeper.ZooKeeper;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.utils.ZKPaths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,17 +50,11 @@ import java.util.Calendar;
 
 public class AiravataExperimentStatusUpdator implements AbstractActivityListener {
     private final static Logger logger = LoggerFactory.getLogger(AiravataExperimentStatusUpdator.class);
-
     private Registry airavataRegistry;
-
     private MonitorPublisher monitorPublisher;
-
     private Publisher publisher;
-
-    private ZooKeeper zk;
-
+    private CuratorFramework curatorClient;
     private RabbitMQTaskLaunchConsumer consumer;
-
 
     public Registry getAiravataRegistry() {
         return airavataRegistry;
@@ -130,9 +125,9 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
 		}
     }
 
-    private void cleanup(WorkflowNodeStatusChangeEvent nodeStatus, String experimentNode, String experimentPath) throws KeeperException, InterruptedException, AiravataException {
+    private void cleanup(WorkflowNodeStatusChangeEvent nodeStatus, String experimentNode, String experimentPath) throws Exception {
         int count = 0;
-        long deliveryTag = AiravataZKUtils.getDeliveryTag(nodeStatus.getWorkflowNodeIdentity().getExperimentId(), zk,
+        long deliveryTag = AiravataZKUtils.getDeliveryTag(nodeStatus.getWorkflowNodeIdentity().getExperimentId(), curatorClient,
                 experimentNode, ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME));
         if(deliveryTag>0) {
             if (ServerSettings.isGFacPassiveMode()) {
@@ -152,16 +147,18 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
                 }
             }
         }
-        if (zk.exists(experimentPath + AiravataZKUtils.DELIVERY_TAG_POSTFIX, false) != null) {
-            ZKUtil.deleteRecursive(zk, experimentPath + AiravataZKUtils.DELIVERY_TAG_POSTFIX);
+        if (curatorClient.checkExists().forPath(experimentPath + AiravataZKUtils.DELIVERY_TAG_POSTFIX) != null) {
+            ZKPaths.deleteChildren(curatorClient.getZookeeperClient().getZooKeeper(),
+                    experimentPath + AiravataZKUtils.DELIVERY_TAG_POSTFIX, true);
         }
-        if (zk.exists(experimentPath, false) != null) {
-            ZKUtil.deleteRecursive(zk, experimentPath);
+
+        if (curatorClient.checkExists().forPath(experimentPath) != null) {
+            ZKPaths.deleteChildren(curatorClient.getZookeeperClient().getZooKeeper(), experimentPath, true);
         }
 
         // ack cancel operation if exist
         long cancelDT = AiravataZKUtils.getCancelDeliveryTagIfExist(nodeStatus.getWorkflowNodeIdentity().getExperimentId(),
-                zk, experimentNode, ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME));
+                curatorClient, experimentNode, ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME));
         count  = 0;
         if (cancelDT > 0) {
             while (!consumer.isOpen() && count < 3) {
@@ -180,7 +177,8 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
             }
         }
         if (cancelDT > 0) {
-            ZKUtil.deleteRecursive(zk, experimentPath + AiravataZKUtils.CANCEL_DELIVERY_TAG_POSTFIX);
+            ZKPaths.deleteChildren(curatorClient.getZookeeperClient().getZooKeeper(),
+                    experimentPath + AiravataZKUtils.CANCEL_DELIVERY_TAG_POSTFIX, true);
         }
     }
 
@@ -211,8 +209,8 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
                 this.publisher=(Publisher) configuration;
             }else if (configuration instanceof RabbitMQTaskLaunchConsumer) {
                 this.consumer = (RabbitMQTaskLaunchConsumer) configuration;
-            }else if (configuration instanceof ZooKeeper) {
-                this.zk = (ZooKeeper) configuration;
+            }else if (configuration instanceof CuratorFramework) {
+                this.curatorClient = (CuratorFramework) configuration;
             }
 
         }

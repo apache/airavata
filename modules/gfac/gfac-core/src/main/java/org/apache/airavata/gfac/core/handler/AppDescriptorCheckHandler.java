@@ -34,7 +34,7 @@ public class AppDescriptorCheckHandler implements GFacHandler {
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         logger.info("Invoking ApplicationDescriptorCheckHandler ...");
         try {
-            GFacUtils.updateHandlerState(jobExecutionContext.getZk(), jobExecutionContext, this.getClass().getName(), GfacHandlerState.INVOKED);
+            GFacUtils.updateHandlerState(jobExecutionContext.getCuratorClient(), jobExecutionContext, this.getClass().getName(), GfacHandlerState.INVOKED);
         } catch (Exception e) {
             logger.info("Error saving plugin status to ZK");
         }

@@ -42,6 +42,7 @@ import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.registry.cpi.Registry;
+import org.apache.curator.framework.CuratorFramework;
 import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,29 +51,18 @@ public class JobExecutionContext extends AbstractContext implements Serializable
 
     private static final Logger log = LoggerFactory.getLogger(JobExecutionContext.class);
     private GFacConfiguration gfacConfiguration;
-
     private ApplicationContext applicationContext;
-
     private MessageContext inMessageContext;
-
     private MessageContext outMessageContext;
-
     private GFacNotifier notifier;
-
     //FIXME : not needed for gfac
     private Experiment experiment;
-
     private TaskDetails taskData;
-
     private JobDetails jobDetails;
-
     // FIXME : not needed for gfac
     private WorkflowNodeDetails workflowNodeDetails;
-
     private GFac gfac;
-
-    private ZooKeeper zk;
-
+    private CuratorFramework curatorClient;
     private String credentialStoreToken;
     /**
      * User defined scratch/temp directory
@@ -150,10 +140,12 @@ public class JobExecutionContext extends AbstractContext implements Serializable
     // which service description we should refer during the execution of the current job represented
     // by this context instance.
     private String applicationName;
-
     private String experimentID;
-
     private AppCatalog appCatalog;
+    private String gatewayID;
+    private String status;
+    private List<String> outputFileList;
+    private Registry registry;
 
     public String getGatewayID() {
         return gatewayID;
@@ -163,13 +155,6 @@ public class JobExecutionContext extends AbstractContext implements Serializable
         this.gatewayID = gatewayID;
     }
 
-    private String gatewayID;
-    
-    private String status;
-
-    private List<String> outputFileList;
-
-    private Registry registry;
 
     /**
      *  Security context is used to handle authentication for input handlers and providers.
@@ -377,15 +362,6 @@ public class JobExecutionContext extends AbstractContext implements Serializable
         this.gfac = gfac;
     }
 
-    public ZooKeeper getZk() {
-        return zk;
-    }
-
-    public void setZk(ZooKeeper zk) {
-        this.zk = zk;
-
-    }
-
     public String getCredentialStoreToken() {
         return credentialStoreToken;
     }
@@ -494,6 +470,14 @@ public class JobExecutionContext extends AbstractContext implements Serializable
         this.preferredDataMovementInterface = preferredDataMovementInterface;
     }
 
+    public CuratorFramework getCuratorClient() {
+        return curatorClient;
+    }
+
+    public void setCuratorClient(CuratorFramework curatorClient) {
+        this.curatorClient = curatorClient;
+    }
+
     public String getExecutablePath() {
         if (applicationContext == null || applicationContext.getApplicationDeploymentDescription() == null) {
             return null;
@@ -501,6 +485,8 @@ public class JobExecutionContext extends AbstractContext implements Serializable
             return applicationContext.getApplicationDeploymentDescription().getExecutablePath();
         }
     }
+
+
 
     public String getLoginUserName() {
         return loginUserName;
