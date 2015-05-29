@@ -632,7 +632,7 @@ public class WorkerResource extends AbstractResource {
             }
 
             if(toTime != null && fromTime != null && toTime.after(fromTime)){
-                query += "e.creationTime > '" + fromTime +  "' " + "AND e.creationTime <'" + toTime + "'";
+                query += "e.creationTime > '" + fromTime +  "' " + "AND e.creationTime <'" + toTime + "' AND ";
             }
 
             filters.remove(StatusConstants.STATE);
