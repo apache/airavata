@@ -30,6 +30,7 @@ import java.util.Map;
 import org.airavata.appcatalog.cpi.AppCatalog;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
+import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.SecurityContext;
@@ -43,7 +44,6 @@ import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -146,6 +146,7 @@ public class JobExecutionContext extends AbstractContext implements Serializable
     private String status;
     private List<String> outputFileList;
     private Registry registry;
+    private MonitorPublisher monitorPublisher;
 
     public String getGatewayID() {
         return gatewayID;
@@ -494,5 +495,13 @@ public class JobExecutionContext extends AbstractContext implements Serializable
 
     public void setLoginUserName(String loginUserName) {
         this.loginUserName = loginUserName;
+    }
+
+    public MonitorPublisher getMonitorPublisher() {
+        return monitorPublisher;
+    }
+
+    public void setMonitorPublisher(MonitorPublisher monitorPublisher) {
+        this.monitorPublisher = monitorPublisher;
     }
 }

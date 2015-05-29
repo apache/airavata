@@ -53,10 +53,10 @@ public class OutHandlerWorker implements Runnable {
         this.jEC = monitorID.getJobExecutionContext();
     }
 
-    public OutHandlerWorker(JobExecutionContext jEC, MonitorPublisher monitorPublisher) {
+    public OutHandlerWorker(JobExecutionContext jEC) {
         this.jEC = jEC;
         this.gfac = jEC.getGfac();
-        this.monitorPublisher = monitorPublisher;
+        this.monitorPublisher = jEC.getMonitorPublisher();
     }
 
     @Override

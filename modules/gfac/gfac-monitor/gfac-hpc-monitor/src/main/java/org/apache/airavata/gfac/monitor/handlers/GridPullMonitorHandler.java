@@ -67,11 +67,7 @@ public class GridPullMonitorHandler extends ThreadedHandler implements Watcher{
             String myProxyServer = ServerSettings.getSetting("myproxy.server");
             setAuthenticationInfo(new MyProxyAuthenticationInfo(myProxyUser, myProxyPass, myProxyServer,
                     7512, 17280000, certPath));
-            if(BetterGfacImpl.getMonitorPublisher() != null){
-                hpcPullMonitor = new HPCPullMonitor(BetterGfacImpl.getMonitorPublisher(),getAuthenticationInfo());    // we use our own credentials for monitoring, not from the store
-            }else {
-                throw new GFacHandlerException("Error initializing Monitor Handler, because Monitor Publisher is null !!!");
-            }
+            hpcPullMonitor = new HPCPullMonitor(null,getAuthenticationInfo());    // we use our own credentials for monitoring, not from the store
         } catch (ApplicationSettingsException e) {
             logger.error("Error while  reading server properties", e);
             throw new GFacHandlerException("Error while  reading server properties", e);
@@ -85,6 +81,7 @@ public class GridPullMonitorHandler extends ThreadedHandler implements Watcher{
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         super.invoke(jobExecutionContext);
         hpcPullMonitor.setGfac(jobExecutionContext.getGfac());
+        hpcPullMonitor.setPublisher(jobExecutionContext.getMonitorPublisher());
         MonitorID monitorID = new HPCMonitorID(getAuthenticationInfo(), jobExecutionContext);
         try {
            /* ZooKeeper zk = jobExecutionContext.getZk();

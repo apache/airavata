@@ -150,7 +150,7 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
 
             log.info(String.format("Activity Submitting to %s ... \n",
                     factoryUrl));
-            monitorPublisher.publish(new StartExecutionEvent());
+            jobExecutionContext.getMonitorPublisher().publish(new StartExecutionEvent());
             CreateActivityResponseDocument response = factory.createActivity(cad);
             log.info(String.format("Activity Submitted to %s \n", factoryUrl));
 
@@ -169,7 +169,7 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
             jobDetails.setJobDescription(activityEpr.toString());
 
             jobExecutionContext.setJobDetails(jobDetails);
-            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SUBMITTED, monitorPublisher);
+            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SUBMITTED);
             log.info(formatStatusMessage(activityEpr.getAddress()
                     .getStringValue(), factory.getActivityStatus(activityEpr)
                     .toString()));
@@ -458,6 +458,6 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
         log.debug(jobStatus.getJobIdentity().getJobId(), "Published job status change request, " +
                 "experiment {} , task {}", jobStatus.getJobIdentity().getExperimentId(),
         jobStatus.getJobIdentity().getTaskId());
-        monitorPublisher.publish(jobStatus);
+        jobExecutionContext.getMonitorPublisher().publish(jobStatus);
     }
 }
