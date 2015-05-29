@@ -26,10 +26,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
-import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.model.workspace.experiment.ExperimentSummary;
-import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
+import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.persistance.registry.jpa.util.Initialize;
 import org.apache.airavata.registry.cpi.*;
@@ -167,7 +164,8 @@ public class RegistryUseCaseTest {
     @Test
     public void testExperiment(){
         try {
-            String TAG = System.currentTimeMillis() + "";
+            long time  = System.currentTimeMillis();
+            String TAG = time + "";
 
             String gatewayId = ServerSettings.getDefaultUserGateway();
 
@@ -253,11 +251,14 @@ public class RegistryUseCaseTest {
             String experimentId3 = (String)registry.add(ParentDataType.EXPERIMENT, experiment, gatewayId);
             Assert.assertNotNull(experimentId3);
 
-            //searching experiments by name
+            //searching experiments by
             Map<String, String> filters = new HashMap<String, String>();
             filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, "TestUser" + TAG);
             filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);
             filters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME, "Experiment2");
+            filters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_STATUS, ExperimentState.CREATED.toString());
+            filters.put(Constants.FieldConstants.ExperimentConstants.FROM_DATE, time - 999999999 + "");
+            filters.put(Constants.FieldConstants.ExperimentConstants.TO_DATE, time + 999999999 + "");
             List<Object> results = registry.search(RegistryModelType.EXPERIMENT, filters);
             Assert.assertTrue(results.size()==1);
 
@@ -267,14 +268,14 @@ public class RegistryUseCaseTest {
             Assert.assertTrue(list.size()==3);
 
             //searching all user experiments
-            filters = new HashMap<String, String>();
+            filters = new HashMap();
             filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, "TestUser" + TAG);
             filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);
             list = registry.search(RegistryModelType.EXPERIMENT, filters);
             Assert.assertTrue(list.size()==3);
 
             //searching user experiemets with pagination
-            filters = new HashMap<String, String>();
+            filters = new HashMap();
             filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, "TestUser" + TAG);
             filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);
             list = registry.search(RegistryModelType.EXPERIMENT, filters, 2, 1,
