@@ -34,13 +34,5 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AiravataAbstractMonitor implements Monitor {
     private final static Logger logger = LoggerFactory.getLogger(AiravataAbstractMonitor.class);
-    protected MonitorPublisher publisher;
 
-    public MonitorPublisher getPublisher() {
-        return publisher;
-    }
-
-    public void setPublisher(MonitorPublisher publisher) {
-        this.publisher = publisher;
-    }
 }

@@ -113,10 +113,10 @@ public class GSISSHProvider extends AbstractProvider {
             jobExecutionContext.setJobDetails(jobDetails);
             if (jobID == null) {
                 jobDetails.setJobID("none");
-                GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED, monitorPublisher);
+                GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
             } else {
                 jobDetails.setJobID(jobID.split("\\.")[0]);
-                GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SUBMITTED, monitorPublisher);
+                GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SUBMITTED);
             }
             data.append(",jobId=").append(jobDetails.getJobID());
 
@@ -128,7 +128,7 @@ public class GSISSHProvider extends AbstractProvider {
 		    String error = "Error submitting the job to host " + computeResourceDescription.getHostName() + " message: " + e.getMessage();
             log.error(error);
             jobDetails.setJobID("none");
-            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED, monitorPublisher);
+            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
             StringWriter errors = new StringWriter();
             e.printStackTrace(new PrintWriter(errors));
             GFacUtils.saveErrorDetails(jobExecutionContext,  errors.toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
@@ -142,7 +142,7 @@ public class GSISSHProvider extends AbstractProvider {
     }
 
     public void removeFromMonitorHandlers(JobExecutionContext jobExecutionContext, SSHJobSubmission sshJobSubmission, String jobID) throws GFacHandlerException {
-        List<ThreadedHandler> daemonHandlers = BetterGfacImpl.getDaemonHandlers();
+/*        List<ThreadedHandler> daemonHandlers = BetterGfacImpl.getDaemonHandlers();
         if (daemonHandlers == null) {
             daemonHandlers = BetterGfacImpl.getDaemonHandlers();
         }
@@ -173,7 +173,7 @@ public class GSISSHProvider extends AbstractProvider {
         if (pullMonitorHandler == null && pushMonitorHandler == null && ExecutionMode.ASYNCHRONOUS.equals(jobExecutionContext.getGFacConfiguration().getExecutionMode())) {
             log.error("No Daemon handler is configured in gfac-config.xml, either pull or push, so monitoring will not invoked" +
                     ", execution is configured as asynchronous, so Outhandler will not be invoked");
-        }
+        }*/
     }
 
     public void dispose(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
@@ -208,21 +208,21 @@ public class GSISSHProvider extends AbstractProvider {
                 log.error("No Job Id is set, so cannot perform the cancel operation !!!");
                 return false;
             }
-            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.CANCELED, monitorPublisher);
+            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.CANCELED);
             return true;
             // we know this host is type GsiSSHHostType
         } catch (SSHApiException e) {
             String error = "Error submitting the job to host " + jobExecutionContext.getHostName() + " message: " + e.getMessage();
             log.error(error);
             jobDetails.setJobID("none");
-            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED, monitorPublisher);
+            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
             GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
             throw new GFacProviderException(error, e);
         } catch (Exception e) {
             String error = "Error submitting the job to host " + jobExecutionContext.getHostName() + " message: " + e.getMessage();
             log.error(error);
             jobDetails.setJobID("none");
-            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED, monitorPublisher);
+            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
             GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
             throw new GFacProviderException(error, e);
         }
@@ -310,7 +310,7 @@ public class GSISSHProvider extends AbstractProvider {
                 return;
             }
         }
-
+/*
         // if email monitor is not activeated or not configure we use pull or push monitor
         List<ThreadedHandler> daemonHandlers = BetterGfacImpl.getDaemonHandlers();
         if (daemonHandlers == null) {
@@ -346,6 +346,6 @@ public class GSISSHProvider extends AbstractProvider {
             log.error("No Daemon handler is configured in gfac-config.xml, either pull or push, so monitoring will not invoked" +
                     ", execution is configured as asynchronous, so Outhandler will not be invoked");
 
-        }
+        }*/
     }
 }

@@ -20,14 +20,28 @@
 */
 package org.apache.airavata.gfac.core.cpi;
 
+import org.airavata.appcatalog.cpi.AppCatalog;
+import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.registry.cpi.Registry;
+import org.apache.curator.framework.CuratorFramework;
 
 /**
  * This is the GFac CPI interface which needs to be implemented by an internal class, this simply have a single method to submit a job to
  * the resource, required data for the job has to be stored in registry prior to invoke this object.
  */
 public interface GFac {
+
+    /**
+     * Initialized method, this method must call one time before use any other method.
+     * @param registry
+     * @param appCatalog
+     * @param curatorClient
+     * @param publisher
+     * @return
+     */
+    public boolean init(Registry registry, AppCatalog appCatalog, CuratorFramework curatorClient, MonitorPublisher publisher);
 
     /**
      * This is the job launching method outsiders of GFac can use, this will invoke the GFac handler chain and providers

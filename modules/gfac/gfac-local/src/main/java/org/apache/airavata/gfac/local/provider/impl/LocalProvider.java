@@ -136,8 +136,8 @@ public class LocalProvider extends AbstractProvider {
             jobDetails.setJobDescription(jobExecutionContext.getApplicationContext()
                     .getApplicationDeploymentDescription().getAppDeploymentDescription());
             jobExecutionContext.setJobDetails(jobDetails);
-            GFacUtils.saveJobStatus(jobExecutionContext,jobDetails, JobState.SETUP, monitorPublisher);
-        	// running cmd
+            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SETUP);
+            // running cmd
             Process process = builder.start();
 
             Thread standardOutWriter = new InputStreamToFileWriter(process.getInputStream(), jobExecutionContext.getStandardOutput());
@@ -180,7 +180,7 @@ public class LocalProvider extends AbstractProvider {
                     jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
                     jobExecutionContext.getExperimentID(),
                     jobExecutionContext.getGatewayID());
-            this.getMonitorPublisher().publish(new JobStatusChangeEvent(JobState.COMPLETE, jobIdentity));
+            jobExecutionContext.getMonitorPublisher().publish(new JobStatusChangeEvent(JobState.COMPLETE, jobIdentity));
         } catch (IOException io) {
             throw new GFacProviderException(io.getMessage(), io);
         } catch (InterruptedException e) {
@@ -236,7 +236,7 @@ public class LocalProvider extends AbstractProvider {
                     jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
                     jobExecutionContext.getExperimentID(),
                     jobExecutionContext.getGatewayID());
-            getMonitorPublisher().publish(new TaskOutputChangeEvent(outputArray, taskIdentity));
+            jobExecutionContext.getMonitorPublisher().publish(new TaskOutputChangeEvent(outputArray, taskIdentity));
         } catch (XmlException e) {
             throw new GFacProviderException("Cannot read output:" + e.getMessage(), e);
         } catch (IOException io) {

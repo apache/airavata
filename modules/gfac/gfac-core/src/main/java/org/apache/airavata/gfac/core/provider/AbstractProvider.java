@@ -41,12 +41,6 @@ public abstract class AbstractProvider implements GFacProvider{
 	protected JobStatus status;   //todo we need to remove this and add methods to fill Job details, this is not a property of a provider
 	protected JobExecutionContext jobExecutionContext;
 
-    protected MonitorPublisher monitorPublisher;
-
-    protected AbstractProvider() {                                            //todo this has to be fixed
-        this.monitorPublisher = BetterGfacImpl.getMonitorPublisher();
-    }
-
     public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
         log.debug("Initializing " + this.getClass().getName());
         if(jobExecutionContext.getRegistry() == null) {
@@ -63,11 +57,4 @@ public abstract class AbstractProvider implements GFacProvider{
 		this.jobExecutionContext=jobExecutionContext;
 	}
 
-    public MonitorPublisher getMonitorPublisher() {
-        return monitorPublisher;
-    }
-
-    public void setMonitorPublisher(MonitorPublisher monitorPublisher) {
-        this.monitorPublisher = monitorPublisher;
-    }
 }

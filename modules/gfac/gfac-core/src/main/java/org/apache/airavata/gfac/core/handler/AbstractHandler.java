@@ -42,12 +42,9 @@ public abstract class AbstractHandler implements GFacHandler {
 
     protected MonitorPublisher publisher = null;
 
-    protected AbstractHandler() {
-        publisher = BetterGfacImpl.getMonitorPublisher();   // This will not be null because this will be initialize in GFacIml
-    }
-
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         try {
+            publisher = jobExecutionContext.getMonitorPublisher();
             GFacUtils.updateHandlerState(jobExecutionContext.getCuratorClient(), jobExecutionContext, this.getClass().getName(), GfacHandlerState.INVOKED);
         } catch (Exception e) {
             logger.error("Error saving Recoverable provider state", e);
@@ -61,13 +58,6 @@ public abstract class AbstractHandler implements GFacHandler {
             }
         }
 	}
-    public MonitorPublisher getPublisher() {
-        return publisher;
-    }
-
-    public void setPublisher(MonitorPublisher publisher) {
-        this.publisher = publisher;
-    }
 
     public Registry getRegistry() {
         return registry;

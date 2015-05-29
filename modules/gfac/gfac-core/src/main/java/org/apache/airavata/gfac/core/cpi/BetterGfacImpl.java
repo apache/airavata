@@ -23,12 +23,9 @@ package org.apache.airavata.gfac.core.cpi;
 import org.airavata.appcatalog.cpi.AppCatalog;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
-import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.common.utils.listener.AbstractActivityListener;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
@@ -36,7 +33,9 @@ import org.apache.airavata.gfac.Scheduler;
 import org.apache.airavata.gfac.core.context.ApplicationContext;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
-import org.apache.airavata.gfac.core.handler.*;
+import org.apache.airavata.gfac.core.handler.GFacHandler;
+import org.apache.airavata.gfac.core.handler.GFacHandlerConfig;
+import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.core.monitor.state.GfacExperimentStateChangeRequest;
 import org.apache.airavata.gfac.core.notification.events.ExecutionFailEvent;
@@ -46,37 +45,50 @@ import org.apache.airavata.gfac.core.provider.GFacProviderException;
 import org.apache.airavata.gfac.core.states.GfacExperimentState;
 import org.apache.airavata.gfac.core.states.GfacHandlerState;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
-import org.apache.airavata.messaging.core.Publisher;
-import org.apache.airavata.messaging.core.PublisherFactory;
-import org.apache.airavata.messaging.core.impl.RabbitMQTaskLaunchConsumer;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
-import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
+import org.apache.airavata.model.appcatalog.computeresource.FileSystems;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
-import org.apache.airavata.model.messaging.event.*;
-import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.model.messaging.event.JobIdentifier;
+import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.TaskIdentifier;
+import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.TaskStatusChangeRequestEvent;
+import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
+import org.apache.airavata.model.workspace.experiment.ErrorCategory;
+import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.workspace.experiment.ExperimentState;
+import org.apache.airavata.model.workspace.experiment.ExperimentStatus;
+import org.apache.airavata.model.workspace.experiment.JobDetails;
+import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.model.workspace.experiment.TaskState;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.utils.ZKPaths;
-import org.apache.zookeeper.*;
-import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * This is the GFac CPI class for external usage, this simply have a single method to submit a job to
@@ -84,82 +96,35 @@ import java.util.*;
  */
 public class BetterGfacImpl implements GFac {
     private static final Logger log = LoggerFactory.getLogger(BetterGfacImpl.class);
-    public static final String ERROR_SENT = "ErrorSent";
+    private static String ERROR_SENT = "ErrorSent";
     private Registry registry;
     private CuratorFramework curatorClient;
-    private static List<ThreadedHandler> daemonHandlers = new ArrayList<ThreadedHandler>();
-    private static File gfacConfigFile;
-    private static List<AbstractActivityListener> activityListeners = new ArrayList<AbstractActivityListener>();
-    private static MonitorPublisher monitorPublisher;
+    private MonitorPublisher monitorPublisher;
+    private static GFac gfacInstance;
+    private boolean initialized = false;
 
-    /**
-     * Constructor for GFac
-     *
-     * @param registry
-     * @param curatorClient
-     */
-    public BetterGfacImpl(Registry registry, AppCatalog appCatalog, CuratorFramework curatorClient,
-                          MonitorPublisher publisher) throws ApplicationSettingsException, IOException, InterruptedException {
+    private BetterGfacImpl() {
+
+    }
+
+    public static GFac getInstance() {
+        if (gfacInstance == null) {
+            synchronized (BetterGfacImpl.class) {
+                if (gfacInstance == null) {
+                    gfacInstance = new BetterGfacImpl();
+                }
+            }
+        }
+        return gfacInstance;
+    }
+
+    @Override
+    public boolean init(Registry registry, AppCatalog appCatalog, CuratorFramework curatorClient,
+                        MonitorPublisher publisher) {
         this.registry = registry;
         monitorPublisher = publisher;     // This is a EventBus common for gfac
         this.curatorClient = curatorClient;
-    }
-
-    public static void startStatusUpdators(Registry registry, CuratorFramework curatorClient, MonitorPublisher publisher,
-
-                                           RabbitMQTaskLaunchConsumer rabbitMQTaskLaunchConsumer) {
-        try {
-            String[] listenerClassList = ServerSettings.getActivityListeners();
-            Publisher rabbitMQPublisher = PublisherFactory.createActivityPublisher();
-            for (String listenerClass : listenerClassList) {
-                Class<? extends AbstractActivityListener> aClass = Class.forName(listenerClass).asSubclass(AbstractActivityListener.class);
-                AbstractActivityListener abstractActivityListener = aClass.newInstance();
-                activityListeners.add(abstractActivityListener);
-                abstractActivityListener.setup(publisher, registry, curatorClient, rabbitMQPublisher, rabbitMQTaskLaunchConsumer);
-                log.info("Registering listener: " + listenerClass);
-                publisher.registerListener(abstractActivityListener);
-            }
-        } catch (Exception e) {
-            log.error("Error loading the listener classes configured in airavata-server.properties", e);
-        }
-    }
-
-    public static void startDaemonHandlers() {
-        List<GFacHandlerConfig> daemonHandlerConfig = null;
-        String className = null;
-        try {
-            URL resource = BetterGfacImpl.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
-            if (resource != null) {
-                gfacConfigFile = new File(resource.getPath());
-            }
-            daemonHandlerConfig = GFacConfiguration.getDaemonHandlers(gfacConfigFile);
-            for (GFacHandlerConfig handlerConfig : daemonHandlerConfig) {
-                className = handlerConfig.getClassName();
-                Class<?> aClass = Class.forName(className).asSubclass(ThreadedHandler.class);
-                ThreadedHandler threadedHandler = (ThreadedHandler) aClass.newInstance();
-                threadedHandler.initProperties(handlerConfig.getProperties());
-                daemonHandlers.add(threadedHandler);
-            }
-        } catch (ParserConfigurationException | IOException | XPathExpressionException | ClassNotFoundException |
-                InstantiationException | IllegalAccessException | GFacHandlerException | SAXException e) {
-            log.error("Error parsing gfac-config.xml, double check the xml configuration", e);
-        }
-        for (ThreadedHandler tHandler : daemonHandlers) {
-            (new Thread(tHandler)).start();
-        }
-    }
-
-    /**
-     * This can be used to submit jobs for testing purposes just by filling parameters by hand (JobExecutionContext)
-     */
-    public BetterGfacImpl() {
-        daemonHandlers = new ArrayList<ThreadedHandler>();
-        startDaemonHandlers();
-    }
-
-    public BetterGfacImpl(Registry registry) {
-        this();
-        this.registry = registry;
+        return initialized = true;
     }
 
 
@@ -171,7 +136,11 @@ public class BetterGfacImpl implements GFac {
      * @return
      * @throws GFacException
      */
+    @Override
     public boolean submitJob(String experimentID, String taskID, String gatewayID, String tokenId) throws GFacException {
+        if (!initialized) {
+            throw new GFacException("Initialize the Gfac instance before use it");
+        }
         JobExecutionContext jobExecutionContext = null;
         try {
             jobExecutionContext = createJEC(experimentID, taskID, gatewayID);
@@ -283,8 +252,9 @@ public class BetterGfacImpl implements GFac {
         jobExecutionContext.setInMessageContext(new MessageContext(GFacUtils.getInputParamMap(taskInputs)));
 
         jobExecutionContext.setProperty(Constants.PROP_TOPIC, experimentID);
-        jobExecutionContext.setGfac(this);
+        jobExecutionContext.setGfac(gfacInstance);
         jobExecutionContext.setCuratorClient(curatorClient);
+        jobExecutionContext.setMonitorPublisher(monitorPublisher);
 
         // handle job submission protocol
         List<JobSubmissionInterface> jobSubmissionInterfaces = computeResource.getJobSubmissionInterfaces();
@@ -502,7 +472,11 @@ public class BetterGfacImpl implements GFac {
         }
     }
 
+    @Override
     public boolean cancel(String experimentID, String taskID, String gatewayID, String tokenId) throws GFacException {
+        if (!initialized) {
+            throw new GFacException("Initialize the Gfac instance before use it");
+        }
         JobExecutionContext jobExecutionContext = null;
         try {
             jobExecutionContext = createJEC(experimentID, taskID, gatewayID);
@@ -886,7 +860,11 @@ public class BetterGfacImpl implements GFac {
         }
     }
 
+    @Override
     public void invokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
+        if (!initialized) {
+            throw new GFacException("Initialize the Gfac instance before use it");
+        }
         String experimentPath = null;
         try {
             experimentPath = AiravataZKUtils.getExpZnodePath(jobExecutionContext.getExperimentID());
@@ -1026,7 +1004,11 @@ public class BetterGfacImpl implements GFac {
     }
 
     // TODO - Did refactoring, but need to recheck the logic again.
+    @Override
     public void reInvokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException {
+        if (!initialized) {
+            throw new GFacException("Initialize the Gfac instance before use it");
+        }
         GFacConfiguration gFacConfiguration = jobExecutionContext.getGFacConfiguration();
         List<GFacHandlerConfig> handlers = null;
         if (gFacConfiguration != null) {
@@ -1118,32 +1100,7 @@ public class BetterGfacImpl implements GFac {
         monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext), GfacExperimentState.COMPLETED));
     }
 
-
-    public static void setMonitorPublisher(MonitorPublisher monitorPublisher) {
-        BetterGfacImpl.monitorPublisher = monitorPublisher;
-    }
-
-    public static List<ThreadedHandler> getDaemonHandlers() {
-        return daemonHandlers;
-    }
-
-    public static String getErrorSent() {
-        return ERROR_SENT;
-    }
-
-    public File getGfacConfigFile() {
-        return gfacConfigFile;
-    }
-
-    public static MonitorPublisher getMonitorPublisher() {
-        return monitorPublisher;
-    }
-
-    public Registry getRegistry() {
-        return registry;
-    }
-
-    public boolean isCancelled(JobExecutionContext executionContext) {
+    private boolean isCancelled(JobExecutionContext executionContext) {
         // we should check whether experiment is cancelled using registry
         try {
             ExperimentStatus status = (ExperimentStatus) registry.get(RegistryModelType.EXPERIMENT_STATUS, executionContext.getExperimentID());
@@ -1161,7 +1118,7 @@ public class BetterGfacImpl implements GFac {
         return false;
     }
 
-    public boolean isCancelling(JobExecutionContext executionContext) {
+    private boolean isCancelling(JobExecutionContext executionContext) {
         // check whether cancelling request came
         try {
             ExperimentStatus status = (ExperimentStatus) registry.get(RegistryModelType.EXPERIMENT_STATUS, executionContext.getExperimentID());
@@ -1179,7 +1136,7 @@ public class BetterGfacImpl implements GFac {
         return false;
     }
 
-    public boolean isCancel(JobExecutionContext jobExecutionContext) {
+    private boolean isCancel(JobExecutionContext jobExecutionContext) {
         try {
             ExperimentStatus status = (ExperimentStatus) registry.get(RegistryModelType.EXPERIMENT_STATUS, jobExecutionContext.getExperimentID());
             if (status != null) {
@@ -1195,5 +1152,7 @@ public class BetterGfacImpl implements GFac {
         }
         return false;
     }
+
+
 
 }

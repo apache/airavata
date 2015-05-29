@@ -222,7 +222,7 @@ public class GFacUtils {
 	}
 
 	public static void saveJobStatus(JobExecutionContext jobExecutionContext,
-                                     JobDetails details, JobState state, MonitorPublisher monitorPublisher) throws GFacException {
+                                     JobDetails details, JobState state) throws GFacException {
 		try {
             // first we save job details to the registry for sa and then save the job status.
             Registry registry = jobExecutionContext.getRegistry();
@@ -236,7 +236,7 @@ public class GFacUtils {
                     jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(), jobExecutionContext.getExperimentID(),
                     jobExecutionContext.getGatewayID());
             JobStatusChangeRequestEvent jobStatusChangeRequestEvent = new JobStatusChangeRequestEvent(state, identifier);
-            monitorPublisher.publish(jobStatusChangeRequestEvent);
+            jobExecutionContext.getMonitorPublisher().publish(jobStatusChangeRequestEvent);
         } catch (Exception e) {
 			throw new GFacException("Error persisting job status"
 					+ e.getLocalizedMessage(), e);

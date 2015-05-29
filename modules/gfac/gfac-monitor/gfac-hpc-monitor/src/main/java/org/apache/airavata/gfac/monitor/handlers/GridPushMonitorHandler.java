@@ -67,7 +67,7 @@ public class GridPushMonitorHandler extends ThreadedHandler {
             LinkedBlockingQueue<MonitorID> pushQueue = new LinkedBlockingQueue<MonitorID>();
             LinkedBlockingQueue<MonitorID> finishQueue = new LinkedBlockingQueue<MonitorID>();
             List<String> hosts= Arrays.asList(hostList.split(","));
-            amqpMonitor=new AMQPMonitor(BetterGfacImpl.getMonitorPublisher(),pushQueue,finishQueue,proxyFilePath,connectionName,hosts);
+            amqpMonitor=new AMQPMonitor(null,pushQueue,finishQueue,proxyFilePath,connectionName,hosts);
         }catch (ApplicationSettingsException e){
             logger.error(e.getMessage(), e);
             throw new GFacHandlerException(e.getMessage(), e);

@@ -294,7 +294,7 @@ public class EmailBasedMonitor implements Runnable{
 
         if (runOutHandlers) {
             log.info("[EJM]: Calling Out Handler chain of " + jobDetails);
-            GFacThreadPoolExecutor.getCachedThreadPool().execute(new OutHandlerWorker(jEC, BetterGfacImpl.getMonitorPublisher()));
+            GFacThreadPoolExecutor.getCachedThreadPool().execute(new OutHandlerWorker(jEC));
         }
     }
 
@@ -313,7 +313,7 @@ public class EmailBasedMonitor implements Runnable{
                         "experiment {} , task {}", jobStatus.getJobIdentity().getExperimentId(),
                 jobStatus.getJobIdentity().getTaskId());
 
-        BetterGfacImpl.getMonitorPublisher().publish(jobStatus);
+        jobExecutionContext.getMonitorPublisher().publish(jobStatus);
     }
 
     private void writeEnvelopeOnError(Message m) throws MessagingException {

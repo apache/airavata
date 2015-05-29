@@ -24,8 +24,10 @@ package org.apache.airavata.gfac.ssh.provider.impl;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.ExecutionMode;
+import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
@@ -70,6 +72,7 @@ import org.slf4j.LoggerFactory;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.*;
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -107,7 +110,7 @@ public class SSHProvider extends AbstractProvider {
                 JobDescriptor jobDescriptor = GFACSSHUtils.createJobDescriptor(jobExecutionContext, cluster);
                 details.setJobDescription(jobDescriptor.toXML());
 
-                GFacUtils.saveJobStatus(jobExecutionContext, details, JobState.SETUP, monitorPublisher);
+                GFacUtils.saveJobStatus(jobExecutionContext, details, JobState.SETUP);
                 log.info(remoteFile);
                 File runscript = createShellScript(jobExecutionContext);
                 cluster.scpTo(remoteFile, runscript.getAbsolutePath());
@@ -146,6 +149,7 @@ public class SSHProvider extends AbstractProvider {
                 jobExecutionContext.getNotifier().publish(new StartExecutionEvent());
                 JobDetails jobDetails = new JobDetails();
                 String hostAddress = jobExecutionContext.getHostName();
+                MonitorPublisher monitorPublisher = jobExecutionContext.getMonitorPublisher();
                 try {
                     Cluster cluster = null;
                     if (jobExecutionContext.getSecurityContext(hostAddress) == null) {
@@ -165,14 +169,14 @@ public class SSHProvider extends AbstractProvider {
                     String jobID = cluster.submitBatchJob(jobDescriptor);
                     if (jobID != null && !jobID.isEmpty()) {
                         jobDetails.setJobID(jobID);
-                        GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SUBMITTED, monitorPublisher);
-                        monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
-                                , GfacExperimentState.JOBSUBMITTED));
+                        GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SUBMITTED);
+                                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
+                                        , GfacExperimentState.JOBSUBMITTED));
                         jobExecutionContext.setJobDetails(jobDetails);
                         if (verifyJobSubmissionByJobId(cluster, jobID)) {
                             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
                                     , GfacExperimentState.JOBSUBMITTED));
-                            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.QUEUED, monitorPublisher);
+                            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.QUEUED);
                         }
                     } else {
                         jobExecutionContext.setJobDetails(jobDetails);
@@ -183,7 +187,7 @@ public class SSHProvider extends AbstractProvider {
                             jobDetails.setJobID(jobID);
                             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
                                     , GfacExperimentState.JOBSUBMITTED));
-                            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.QUEUED, monitorPublisher);
+                            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.QUEUED);
                         }
                     }
 
@@ -199,14 +203,14 @@ public class SSHProvider extends AbstractProvider {
                     String error = "Error submitting the job to host " + jobExecutionContext.getHostName() + " message: " + e.getMessage();
                     log.error(error);
                     jobDetails.setJobID("none");
-                    GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED, monitorPublisher);
+                    GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
                     GFacUtils.saveErrorDetails(jobExecutionContext, error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
                     throw new GFacProviderException(error, e);
                 } catch (Exception e) {
                     String error = "Error submitting the job to host " + jobExecutionContext.getHostName() + " message: " + e.getMessage();
                     log.error(error);
                     jobDetails.setJobID("none");
-                    GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED, monitorPublisher);
+                    GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.FAILED);
                     GFacUtils.saveErrorDetails(jobExecutionContext, error, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
                     throw new GFacProviderException(error, e);
                 } finally {
@@ -262,7 +266,7 @@ public class SSHProvider extends AbstractProvider {
                 if (jobDetails.getJobID() != null) {
                     if (cluster.cancelJob(jobDetails.getJobID()) != null) {
                         // if this operation success without any exceptions, we can assume cancel operation succeeded.
-                        GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.CANCELED, monitorPublisher);
+                        GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.CANCELED);
                         return true;
                     } else {
                         log.info("Job Cancel operation failed");
@@ -460,25 +464,10 @@ public class SSHProvider extends AbstractProvider {
                 }
                 return;
             }
+        } else {
+            throw new IllegalArgumentException("Monitoring is implemented only for SSH, "
+                    + jobExecutionContext.getPreferredJobSubmissionProtocol().name() + " is not yet implemented");
         }
 
-        // if email monitor is not activeated or not configure we use pull or push monitor
-        List<ThreadedHandler> daemonHandlers = BetterGfacImpl.getDaemonHandlers();
-        if (daemonHandlers == null) {
-            daemonHandlers = BetterGfacImpl.getDaemonHandlers();
-        }
-        ThreadedHandler pullMonitorHandler = null;
-        ThreadedHandler pushMonitorHandler = null;
-        for (ThreadedHandler threadedHandler : daemonHandlers) {
-            if ("org.apache.airavata.gfac.monitor.handlers.GridPullMonitorHandler".equals(threadedHandler.getClass().getName())) {
-                pullMonitorHandler = threadedHandler;
-                pullMonitorHandler.invoke(jobExecutionContext);
-            }
-            // have to handle the GridPushMonitorHandler logic
-        }
-        if (pullMonitorHandler == null && pushMonitorHandler == null && ExecutionMode.ASYNCHRONOUS.equals(jobExecutionContext.getGFacConfiguration().getExecutionMode())) {
-            log.error("No Daemon handler is configured in gfac-config.xml, either pull or push, so monitoring will not invoked" +
-                    ", execution is configured as asynchronous, so Outhandler will not be invoked");
-        }
     }
 }

@@ -32,9 +32,14 @@ import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
+import org.apache.airavata.common.utils.listener.AbstractActivityListener;
+import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.cpi.GFac;
+import org.apache.airavata.gfac.core.handler.GFacHandlerConfig;
+import org.apache.airavata.gfac.core.handler.GFacHandlerException;
+import org.apache.airavata.gfac.core.handler.ThreadedHandler;
 import org.apache.airavata.gfac.core.utils.GFacThreadPoolExecutor;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.core.utils.InputHandlerWorker;
@@ -43,6 +48,8 @@ import org.apache.airavata.gfac.cpi.gfac_cpi_serviceConstants;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.messaging.core.MessagingConstants;
+import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.messaging.core.PublisherFactory;
 import org.apache.airavata.messaging.core.impl.RabbitMQTaskLaunchConsumer;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.messaging.event.TaskSubmitEvent;
@@ -62,16 +69,19 @@ import org.apache.thrift.TException;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.Stat;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.locks.Lock;
-
 
 public class GfacServerHandler implements GfacService.Iface {
     private final static AiravataLogger logger = AiravataLoggerFactory.getLogger(GfacServerHandler.class);
@@ -81,15 +91,15 @@ public class GfacServerHandler implements GfacService.Iface {
     private AppCatalog appCatalog;
     private String gatewayName;
     private String airavataUserName;
-//    private ZooKeeper zk;
     private CuratorFramework curatorClient;
-    private static Integer mutex = -1;
-    private static Lock lock;
     private MonitorPublisher publisher;
     private String gfacServer;
     private String gfacExperiments;
     private String airavataServerHostPort;
     private BlockingQueue<TaskSubmitEvent> taskSubmitEvents;
+    private static File gfacConfigFile;
+    private static List<ThreadedHandler> daemonHandlers = new ArrayList<ThreadedHandler>();
+    private static List<AbstractActivityListener> activityListeners = new ArrayList<AbstractActivityListener>();
 
     public GfacServerHandler() throws Exception {
         try {
@@ -104,17 +114,18 @@ public class GfacServerHandler implements GfacService.Iface {
                     + ":" + ServerSettings.getSetting(Constants.GFAC_SERVER_PORT);
             storeServerConfig();
             publisher = new MonitorPublisher(new EventBus());
-            BetterGfacImpl.setMonitorPublisher(publisher);
             registry = RegistryFactory.getDefaultRegistry();
             appCatalog = AppCatalogFactory.getAppCatalog();
             setGatewayProperties();
-            BetterGfacImpl.startDaemonHandlers();
-
+            startDaemonHandlers();
+            // initializing Better Gfac Instance
+            BetterGfacImpl.getInstance().init(registry, appCatalog, curatorClient, publisher);
             if (ServerSettings.isGFacPassiveMode()) {
                 rabbitMQTaskLaunchConsumer = new RabbitMQTaskLaunchConsumer();
                 rabbitMQTaskLaunchConsumer.listen(new TaskLaunchMessageHandler());
             }
-            BetterGfacImpl.startStatusUpdators(registry, curatorClient, publisher, rabbitMQTaskLaunchConsumer);
+            startStatusUpdators(registry, curatorClient, publisher, rabbitMQTaskLaunchConsumer);
+
         } catch (Exception e) {
             throw new Exception("Error initialising GFAC", e);
         }
@@ -187,8 +198,8 @@ public class GfacServerHandler implements GfacService.Iface {
         requestCount++;
         logger.info("-----------------------------------------------------" + requestCount + "-----------------------------------------------------");
         logger.infoId(experimentId, "GFac Received submit job request for the Experiment: {} TaskId: {}", experimentId, taskId);
-        GFac gfac = getGfac();
-        InputHandlerWorker inputHandlerWorker = new InputHandlerWorker(gfac, experimentId, taskId, gatewayId, tokenId);
+        InputHandlerWorker inputHandlerWorker = new InputHandlerWorker(BetterGfacImpl.getInstance(), experimentId,
+                taskId, gatewayId, tokenId);
 //        try {
 //            if( gfac.submitJob(experimentId, taskId, gatewayId)){
         logger.debugId(experimentId, "Submitted job to the Gfac Implementation, experiment {}, task {}, gateway " +
@@ -202,9 +213,8 @@ public class GfacServerHandler implements GfacService.Iface {
 
     public boolean cancelJob(String experimentId, String taskId, String gatewayId, String tokenId) throws TException {
         logger.infoId(experimentId, "GFac Received cancel job request for Experiment: {} TaskId: {} ", experimentId, taskId);
-        GFac gfac = getGfac();
         try {
-            if (gfac.cancel(experimentId, taskId, gatewayId, tokenId)) {
+            if (BetterGfacImpl.getInstance().cancel(experimentId, taskId, gatewayId, tokenId)) {
                 logger.debugId(experimentId, "Successfully cancelled job, experiment {} , task {}", experimentId, taskId);
                 return true;
             } else {
@@ -247,20 +257,55 @@ public class GfacServerHandler implements GfacService.Iface {
     }
 
     private GFac getGfac() throws TException {
-        try {
-            return new BetterGfacImpl(registry, appCatalog, curatorClient, publisher);
-
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        } catch (ApplicationSettingsException e) {
-            logger.error(e.getMessage(), e);
-        } catch (InterruptedException e) {
-            logger.error(e.getMessage(), e);
-        }
-        return null;
-
+        GFac gFac = BetterGfacImpl.getInstance();
+        gFac.init(registry, appCatalog, curatorClient, publisher);
+        return gFac;
     }
 
+    public void startDaemonHandlers() {
+        List<GFacHandlerConfig> daemonHandlerConfig = null;
+        String className = null;
+        try {
+            URL resource = GfacServerHandler.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
+            if (resource != null) {
+                gfacConfigFile = new File(resource.getPath());
+            }
+            daemonHandlerConfig = GFacConfiguration.getDaemonHandlers(gfacConfigFile);
+            for (GFacHandlerConfig handlerConfig : daemonHandlerConfig) {
+                className = handlerConfig.getClassName();
+                Class<?> aClass = Class.forName(className).asSubclass(ThreadedHandler.class);
+                ThreadedHandler threadedHandler = (ThreadedHandler) aClass.newInstance();
+                threadedHandler.initProperties(handlerConfig.getProperties());
+                daemonHandlers.add(threadedHandler);
+            }
+        } catch (ParserConfigurationException | IOException | XPathExpressionException | ClassNotFoundException |
+                InstantiationException | IllegalAccessException | GFacHandlerException | SAXException e) {
+            logger.error("Error parsing gfac-config.xml, double check the xml configuration", e);
+        }
+        for (ThreadedHandler tHandler : daemonHandlers) {
+            (new Thread(tHandler)).start();
+        }
+    }
+
+
+    public static void startStatusUpdators(Registry registry, CuratorFramework curatorClient, MonitorPublisher publisher,
+
+                                           RabbitMQTaskLaunchConsumer rabbitMQTaskLaunchConsumer) {
+        try {
+            String[] listenerClassList = ServerSettings.getActivityListeners();
+            Publisher rabbitMQPublisher = PublisherFactory.createActivityPublisher();
+            for (String listenerClass : listenerClassList) {
+                Class<? extends AbstractActivityListener> aClass = Class.forName(listenerClass).asSubclass(AbstractActivityListener.class);
+                AbstractActivityListener abstractActivityListener = aClass.newInstance();
+                activityListeners.add(abstractActivityListener);
+                abstractActivityListener.setup(publisher, registry, curatorClient, rabbitMQPublisher, rabbitMQTaskLaunchConsumer);
+                logger.info("Registering listener: " + listenerClass);
+                publisher.registerListener(abstractActivityListener);
+            }
+        } catch (Exception e) {
+            logger.error("Error loading the listener classes configured in airavata-server.properties", e);
+        }
+    }
     private static  class TestHandler implements MessageHandler{
         @Override
         public Map<String, Object> getProperties() {
