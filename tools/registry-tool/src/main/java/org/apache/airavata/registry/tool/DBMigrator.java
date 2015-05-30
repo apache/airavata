@@ -38,6 +38,7 @@ public class DBMigrator {
     private static final String MIGRATE_SQL_DERBY = "migrate_derby.sql";
     private static final String MIGRATE_SQL_MYSQL = "migrate_mysql.sql";
     private static final String REGISTRY_VERSION = "registry.version";
+    private static final String AIRAVATA_VERSION = "0.5";
     private static String currentAiravataVersion;
     private static String relativePath;
     private static String SELECT_QUERY;
@@ -114,7 +115,7 @@ public class DBMigrator {
     }
 
     private static boolean canUpdated (Connection conn){
-        if (!currentAiravataVersion.equals("0.5")){
+        if (!currentAiravataVersion.equals(AIRAVATA_VERSION)){
             String config = executeSelectQuery(conn);
             if (config != null){
                 if (config.equals(getIncrementedVersion(currentAiravataVersion))) {
@@ -123,7 +124,7 @@ public class DBMigrator {
                     return true;
                 }
             }
-        } else if (currentAiravataVersion.equals("0.5")){
+        } else if (currentAiravataVersion.equals(AIRAVATA_VERSION)){
             return true;
         }
         return false;
