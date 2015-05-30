@@ -21,37 +21,33 @@
 package org.apache.airavata.job;
 
 import junit.framework.Assert;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.core.context.ApplicationContext;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
-import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
-import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.SecurityProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPathExpressionException;
-import java.io.IOException;
 
 public class GFacConfigXmlTest {
-
     private final static Logger log = LoggerFactory.getLogger(GFacConfigXmlTest.class);
-    private BetterGfacImpl gfac;
     @BeforeClass
     public void setUp() throws Exception {
-        gfac = new BetterGfacImpl();
     }
 
     @Test
     public void testGFacConfigWithHost(){
-        Assert.assertNotNull(gfac.getGfacConfigFile());
-        Assert.assertEquals(1,gfac.getDaemonHandlers().size());
+        Assert.assertNotNull(GFacConfiguration.getConfigFile());
         try {
-            JobExecutionContext jec = new JobExecutionContext(GFacConfiguration.create(gfac.getGfacConfigFile(), null), "testService");
+            Assert.assertEquals(1, GFacConfiguration.getDaemonHandlers(GFacConfiguration.getConfigFile()).size());
+            JobExecutionContext jec = new JobExecutionContext(GFacConfiguration.create(GFacConfiguration.getConfigFile(), null), "testService");
             ApplicationContext applicationContext = new ApplicationContext();
             ComputeResourceDescription computeResourceDescription = new ComputeResourceDescription();
             computeResourceDescription.setHostName("trestles.sdsc.xsede.org");
@@ -80,22 +76,16 @@ public class GFacConfigXmlTest {
 //            Scheduler.schedule(jec);
 //            Assert.assertEquals(ExecutionMode.ASYNCHRONOUS, jec.getGFacConfiguration().getExecutionMode());
 //            Assert.assertEquals("org.apache.airavata.job.TestProvider", jec.getProvider().getClass().getName());
-        } catch (ParserConfigurationException e) {
-            log.error(e.getMessage(), e);
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        } catch (SAXException e) {
-            log.error(e.getMessage(), e);
-        } catch (XPathExpressionException e) {
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
     }
     @Test
         public void testAppSpecificConfig() {
-        Assert.assertNotNull(gfac.getGfacConfigFile());
-        Assert.assertEquals(1, gfac.getDaemonHandlers().size());
+        Assert.assertNotNull(GFacConfiguration.getConfigFile());
         try {
-            JobExecutionContext jec = new JobExecutionContext(GFacConfiguration.create(gfac.getGfacConfigFile(), null), "UltraScan");
+            Assert.assertEquals(1, GFacConfiguration.getDaemonHandlers(GFacConfiguration.getConfigFile()).size());
+            JobExecutionContext jec = new JobExecutionContext(GFacConfiguration.create(GFacConfiguration.getConfigFile(), null), "UltraScan");
             ApplicationContext applicationContext = new ApplicationContext();
             ComputeResourceDescription computeResourceDescription = new ComputeResourceDescription();
             computeResourceDescription.setHostName("trestles.sdsc.xsede.org");
@@ -128,16 +118,9 @@ public class GFacConfigXmlTest {
 //            Assert.assertEquals(1, jec.getGFacConfiguration().getInHandlers().get(2).getProperties().size());
 //            Assert.assertEquals(ExecutionMode.ASYNCHRONOUS, jec.getGFacConfiguration().getExecutionMode());// todo this logic might be wrong
 //            Assert.assertEquals("org.apache.airavata.job.TestProvider", jec.getProvider().getClass().getName());
-        } catch (ParserConfigurationException e) {
-            log.error(e.getMessage(), e);
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        } catch (SAXException e) {
-            log.error(e.getMessage(), e);
-        } catch (XPathExpressionException e) {
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
         }
     }
-
 
 }
