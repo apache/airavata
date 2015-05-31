@@ -15786,10 +15786,10 @@ class Airavata_searchExperiments_args {
         3 => array(
           'var' => 'filters',
           'type' => TType::MAP,
-          'ktype' => TType::STRING,
+          'ktype' => TType::I32,
           'vtype' => TType::STRING,
           'key' => array(
-            'type' => TType::STRING,
+            'type' => TType::I32,
           ),
           'val' => array(
             'type' => TType::STRING,
@@ -15866,9 +15866,9 @@ class Airavata_searchExperiments_args {
             $xfer += $input->readMapBegin($_ktype129, $_vtype130, $_size128);
             for ($_i132 = 0; $_i132 < $_size128; ++$_i132)
             {
-              $key133 = '';
+              $key133 = 0;
               $val134 = '';
-              $xfer += $input->readString($key133);
+              $xfer += $input->readI32($key133);
               $xfer += $input->readString($val134);
               $this->filters[$key133] = $val134;
             }
@@ -15920,11 +15920,11 @@ class Airavata_searchExperiments_args {
       }
       $xfer += $output->writeFieldBegin('filters', TType::MAP, 3);
       {
-        $output->writeMapBegin(TType::STRING, TType::STRING, count($this->filters));
+        $output->writeMapBegin(TType::I32, TType::STRING, count($this->filters));
         {
           foreach ($this->filters as $kiter135 => $viter136)
           {
-            $xfer += $output->writeString($kiter135);
+            $xfer += $output->writeI32($kiter135);
             $xfer += $output->writeString($viter136);
           }
         }

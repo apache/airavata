@@ -62,7 +62,7 @@ class AiravataIf {
   virtual void searchExperimentsByStatusWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState, const int32_t limit, const int32_t offset) = 0;
   virtual void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime) = 0;
   virtual void searchExperimentsByCreationTimeWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset) = 0;
-  virtual void searchExperiments(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::map<std::string, std::string> & filters, const int32_t limit, const int32_t offset) = 0;
+  virtual void searchExperiments(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::workspace::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset) = 0;
   virtual void getAllExperimentsInProject(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& projectId) = 0;
   virtual void getAllExperimentsInProjectWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& projectId, const int32_t limit, const int32_t offset) = 0;
   virtual void getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& gatewayId, const std::string& userName) = 0;
@@ -281,7 +281,7 @@ class AiravataNull : virtual public AiravataIf {
   void searchExperimentsByCreationTimeWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const int64_t /* fromTime */, const int64_t /* toTime */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
-  void searchExperiments(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::map<std::string, std::string> & /* filters */, const int32_t /* limit */, const int32_t /* offset */) {
+  void searchExperiments(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::map< ::apache::airavata::model::workspace::experiment::ExperimentSearchFields::type, std::string> & /* filters */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
   void getAllExperimentsInProject(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & /* _return */, const std::string& /* projectId */) {
@@ -4991,7 +4991,7 @@ class Airavata_searchExperiments_args {
 
   std::string gatewayId;
   std::string userName;
-  std::map<std::string, std::string>  filters;
+  std::map< ::apache::airavata::model::workspace::experiment::ExperimentSearchFields::type, std::string>  filters;
   int32_t limit;
   int32_t offset;
 
@@ -5005,7 +5005,7 @@ class Airavata_searchExperiments_args {
     userName = val;
   }
 
-  void __set_filters(const std::map<std::string, std::string> & val) {
+  void __set_filters(const std::map< ::apache::airavata::model::workspace::experiment::ExperimentSearchFields::type, std::string> & val) {
     filters = val;
   }
 
@@ -5051,7 +5051,7 @@ class Airavata_searchExperiments_pargs {
 
   const std::string* gatewayId;
   const std::string* userName;
-  const std::map<std::string, std::string> * filters;
+  const std::map< ::apache::airavata::model::workspace::experiment::ExperimentSearchFields::type, std::string> * filters;
   const int32_t* limit;
   const int32_t* offset;
 
@@ -18398,8 +18398,8 @@ class AiravataClient : virtual public AiravataIf {
   void searchExperimentsByCreationTimeWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset);
   void send_searchExperimentsByCreationTimeWithPagination(const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset);
   void recv_searchExperimentsByCreationTimeWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return);
-  void searchExperiments(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::map<std::string, std::string> & filters, const int32_t limit, const int32_t offset);
-  void send_searchExperiments(const std::string& gatewayId, const std::string& userName, const std::map<std::string, std::string> & filters, const int32_t limit, const int32_t offset);
+  void searchExperiments(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::workspace::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
+  void send_searchExperiments(const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::workspace::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
   void recv_searchExperiments(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return);
   void getAllExperimentsInProject(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& projectId);
   void send_getAllExperimentsInProject(const std::string& projectId);
@@ -19284,7 +19284,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void searchExperiments(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::map<std::string, std::string> & filters, const int32_t limit, const int32_t offset) {
+  void searchExperiments(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::workspace::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {

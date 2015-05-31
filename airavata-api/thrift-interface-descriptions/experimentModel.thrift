@@ -72,6 +72,15 @@ enum ExperimentState {
     UNKNOWN
 }
 
+enum ExperimentSearchFields {
+    EXPERIMENT_NAME,
+    EXPERIMENT_DESC,
+    APPLICATION_ID,
+    FROM_DATE,
+    TO_DATE,
+    STATUS
+}
+
 struct ExperimentStatus {
     1: required ExperimentState experimentState,
     2: optional i64 timeOfStateChange
@@ -399,5 +408,4 @@ struct ExperimentSummary {
     6: optional string description,
     7: optional string applicationId,
     8: optional ExperimentStatus experimentStatus,
-    9: optional list<ErrorDetails> errors
 }

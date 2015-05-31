@@ -54,6 +54,19 @@ struct ExperimentState {
 
 extern const std::map<int, const char*> _ExperimentState_VALUES_TO_NAMES;
 
+struct ExperimentSearchFields {
+  enum type {
+    EXPERIMENT_NAME = 0,
+    EXPERIMENT_DESC = 1,
+    APPLICATION_ID = 2,
+    FROM_DATE = 3,
+    TO_DATE = 4,
+    STATUS = 5
+  };
+};
+
+extern const std::map<int, const char*> _ExperimentSearchFields_VALUES_TO_NAMES;
+
 struct WorkflowNodeState {
   enum type {
     INVOKED = 0,
@@ -2008,19 +2021,18 @@ class Experiment {
 void swap(Experiment &a, Experiment &b);
 
 typedef struct _ExperimentSummary__isset {
-  _ExperimentSummary__isset() : creationTime(false), description(false), applicationId(false), experimentStatus(false), errors(false) {}
+  _ExperimentSummary__isset() : creationTime(false), description(false), applicationId(false), experimentStatus(false) {}
   bool creationTime;
   bool description;
   bool applicationId;
   bool experimentStatus;
-  bool errors;
 } _ExperimentSummary__isset;
 
 class ExperimentSummary {
  public:
 
-  static const char* ascii_fingerprint; // = "44FD485ABF32F5EB94D6F393F51241B6";
-  static const uint8_t binary_fingerprint[16]; // = {0x44,0xFD,0x48,0x5A,0xBF,0x32,0xF5,0xEB,0x94,0xD6,0xF3,0x93,0xF5,0x12,0x41,0xB6};
+  static const char* ascii_fingerprint; // = "A1A9DDD1C0AA5DEEDC8413E553960BEF";
+  static const uint8_t binary_fingerprint[16]; // = {0xA1,0xA9,0xDD,0xD1,0xC0,0xAA,0x5D,0xEE,0xDC,0x84,0x13,0xE5,0x53,0x96,0x0B,0xEF};
 
   ExperimentSummary() : experimentID(), projectID(), creationTime(0), userName(), name(), description(), applicationId() {
   }
@@ -2035,7 +2047,6 @@ class ExperimentSummary {
   std::string description;
   std::string applicationId;
   ExperimentStatus experimentStatus;
-  std::vector<ErrorDetails>  errors;
 
   _ExperimentSummary__isset __isset;
 
@@ -2075,11 +2086,6 @@ class ExperimentSummary {
     __isset.experimentStatus = true;
   }
 
-  void __set_errors(const std::vector<ErrorDetails> & val) {
-    errors = val;
-    __isset.errors = true;
-  }
-
   bool operator == (const ExperimentSummary & rhs) const
   {
     if (!(experimentID == rhs.experimentID))
@@ -2105,10 +2111,6 @@ class ExperimentSummary {
     if (__isset.experimentStatus != rhs.__isset.experimentStatus)
       return false;
     else if (__isset.experimentStatus && !(experimentStatus == rhs.experimentStatus))
-      return false;
-    if (__isset.errors != rhs.__isset.errors)
-      return false;
-    else if (__isset.errors && !(errors == rhs.errors))
       return false;
     return true;
   }

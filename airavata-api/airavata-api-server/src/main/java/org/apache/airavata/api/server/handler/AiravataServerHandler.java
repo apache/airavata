@@ -936,14 +936,15 @@ public class AiravataServerHandler implements Airavata.Iface {
      * @param userName
      *       Username of the requested user
      * @param filters
-     *       map of multiple filter criteria. keys has to be camel case field values eg. experimentName
+     *       map of multiple filter criteria.
      * @param limit
      *       Amount of results to be fetched
      * @param offset
      *       The starting point of the results to be fetched
      */
     @Override
-    public List<ExperimentSummary> searchExperiments(String gatewayId, String userName, Map<String, String> filters, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public List<ExperimentSummary> searchExperiments(String gatewayId, String userName, Map<ExperimentSearchFields, String> filters, int limit, int offset)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -965,7 +966,26 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
             List<ExperimentSummary> summaries = new ArrayList<ExperimentSummary>();
             registry = RegistryFactory.getRegistry(gatewayId);
-            List<Object> results = registry.search(RegistryModelType.EXPERIMENT, filters, limit,
+            Map<String, String> regFilters = new HashMap();
+            regFilters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
+            regFilters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);
+            for(Map.Entry<ExperimentSearchFields, String> entry : filters.entrySet())
+            {
+                if(entry.getKey().equals(ExperimentSearchFields.EXPERIMENT_NAME)){
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME, entry.getValue());
+                }else if(entry.getKey().equals(ExperimentSearchFields.EXPERIMENT_DESC)){
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_DESC, entry.getValue());
+                }else if(entry.getKey().equals(ExperimentSearchFields.APPLICATION_ID)){
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.APPLICATION_ID, entry.getValue());
+                }else if(entry.getKey().equals(ExperimentSearchFields.STATUS)){
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_STATUS, entry.getValue());
+                }else if(entry.getKey().equals(ExperimentSearchFields.FROM_DATE)){
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.FROM_DATE, entry.getValue());
+                }else if(entry.getKey().equals(ExperimentSearchFields.TO_DATE)){
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.TO_DATE, entry.getValue());
+                }
+            }
+            List<Object> results = registry.search(RegistryModelType.EXPERIMENT, regFilters, limit,
                     offset, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             for (Object object : results) {
                 summaries.add((ExperimentSummary) object);

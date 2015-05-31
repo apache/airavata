@@ -516,7 +516,7 @@ class Iface:
     @param userName
           Username of the requested user
     @param filters
-          map of multiple filter criteria. keys has to be camel case field values eg. experimentName
+          map of multiple filter criteria.
     @param limit
           Amount of results to be fetched
     @param offset
@@ -3564,7 +3564,7 @@ class Client(Iface):
     @param userName
           Username of the requested user
     @param filters
-          map of multiple filter criteria. keys has to be camel case field values eg. experimentName
+          map of multiple filter criteria.
     @param limit
           Amount of results to be fetched
     @param offset
@@ -16209,7 +16209,7 @@ class searchExperiments_args:
     None, # 0
     (1, TType.STRING, 'gatewayId', None, None, ), # 1
     (2, TType.STRING, 'userName', None, None, ), # 2
-    (3, TType.MAP, 'filters', (TType.STRING,None,TType.STRING,None), None, ), # 3
+    (3, TType.MAP, 'filters', (TType.I32,None,TType.STRING,None), None, ), # 3
     (4, TType.I32, 'limit', None, None, ), # 4
     (5, TType.I32, 'offset', None, None, ), # 5
   )
@@ -16245,7 +16245,7 @@ class searchExperiments_args:
           self.filters = {}
           (_ktype129, _vtype130, _size128 ) = iprot.readMapBegin()
           for _i132 in xrange(_size128):
-            _key133 = iprot.readString();
+            _key133 = iprot.readI32();
             _val134 = iprot.readString();
             self.filters[_key133] = _val134
           iprot.readMapEnd()
@@ -16281,9 +16281,9 @@ class searchExperiments_args:
       oprot.writeFieldEnd()
     if self.filters is not None:
       oprot.writeFieldBegin('filters', TType.MAP, 3)
-      oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.filters))
+      oprot.writeMapBegin(TType.I32, TType.STRING, len(self.filters))
       for kiter135,viter136 in self.filters.items():
-        oprot.writeString(kiter135)
+        oprot.writeI32(kiter135)
         oprot.writeString(viter136)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()

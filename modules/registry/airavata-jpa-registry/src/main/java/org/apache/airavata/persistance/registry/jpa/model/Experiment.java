@@ -74,10 +74,10 @@ public class Experiment implements Serializable {
     @JoinColumn(name = "EXECUTION_USER", referencedColumnName = "USER_NAME")
     private Users user;
 
-    @OneToMany(mappedBy = "experiment")
+    @OneToMany(fetch=FetchType.LAZY, mappedBy = "experiment")
     private Collection<ErrorDetail> errorDetails;
 
-    @OneToMany(mappedBy = "experiment")
+    @OneToMany(fetch=FetchType.LAZY, mappedBy = "experiment")
     private Collection<Status> statuses;
 
     public String getExpId() {

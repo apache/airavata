@@ -31,6 +31,10 @@ import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.ResultOrderType;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.airavata.registry.cpi.utils.StatusType;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.jdbc.FetchMode;
+import org.apache.openjpa.persistence.jdbc.JDBCFetchPlan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -621,12 +625,16 @@ public class WorkerResource extends AbstractResource {
         List<ExperimentSummaryResource> result = new ArrayList();
         EntityManager em = null;
         try {
-            String query = "SELECT e FROM Experiment e " +
-                    "LEFT JOIN e.statuses s LEFT JOIN FETCH e.errorDetails LEFT JOIN FETCH e.statuses WHERE ";
+            String query;
             if(filters.get(StatusConstants.STATE) != null) {
+                query = "SELECT e FROM Experiment e " +
+                        "JOIN e.statuses s LEFT JOIN FETCH e.statuses WHERE " +
+                        "s.statusType='" + StatusType.EXPERIMENT + "' AND ";
                 String experimentState = ExperimentState.valueOf(filters.get(StatusConstants.STATE)).toString();
-                query += "s.state='" + experimentState + "' " +
-                        "AND s.statusType='" + StatusType.EXPERIMENT + "' AND ";
+                query += "s.state='" + experimentState + "' AND ";
+            }else{
+                query = "SELECT e FROM Experiment e " +
+                        "LEFT JOIN FETCH e.statuses WHERE ";
             }
 
             if(toTime != null && fromTime != null && toTime.after(fromTime)){
@@ -670,6 +678,9 @@ public class WorkerResource extends AbstractResource {
             }else{
                 q = em.createQuery(query);
             }
+            OpenJPAQuery kq = OpenJPAPersistence.cast(q);
+            JDBCFetchPlan fetch = (JDBCFetchPlan) kq.getFetchPlan();
+            fetch.setEagerFetchMode(FetchMode.JOIN);
 
             List resultList = q.getResultList();
             for (Object o : resultList) {
