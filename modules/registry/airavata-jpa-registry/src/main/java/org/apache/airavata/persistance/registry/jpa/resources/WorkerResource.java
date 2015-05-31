@@ -627,7 +627,7 @@ public class WorkerResource extends AbstractResource {
         try {
             String query;
             if(filters.get(StatusConstants.STATE) != null) {
-                query = "SELECT e FROM Experiment e " +
+                query = "SELECT DISTINCT (e) FROM Experiment e " +
                         "JOIN e.statuses s LEFT JOIN FETCH e.statuses WHERE " +
                         "s.statusType='" + StatusType.EXPERIMENT + "' AND ";
                 String experimentState = ExperimentState.valueOf(filters.get(StatusConstants.STATE)).toString();
