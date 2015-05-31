@@ -601,9 +601,10 @@ public class WorkerResource extends AbstractResource {
     }
 
     /**
-     * To search the experiments of user with the given filter criteria and retrieve the results with
+     * To search the experiments of user with the given time period and filter criteria and retrieve the results with
      * pagination support. Results can be ordered based on an identifier (i.e column) either ASC or
-     * DESC. But in the current implementation ordering is only supported based on creationTime
+     * DESC. But in the current implementation ordering is only supported based on creationTime. Also if
+     * time period values i.e fromTime and toTime are null they will be ignored.
      *
      * @param fromTime
      * @param toTime
@@ -615,20 +616,17 @@ public class WorkerResource extends AbstractResource {
      * @return
      * @throws RegistryException
      */
-    public List<ExperimentResource> searchExperiments(Timestamp fromTime, Timestamp toTime, Map<String, String> filters, int limit,
+    public List<ExperimentSummaryResource> searchExperiments(Timestamp fromTime, Timestamp toTime, Map<String, String> filters, int limit,
                                                       int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
-        List<ExperimentResource> result = new ArrayList<>();
+        List<ExperimentSummaryResource> result = new ArrayList();
         EntityManager em = null;
         try {
-            String query;
+            String query = "SELECT e FROM ExperimentSummary e " +
+                    "LEFT JOIN e.statuses s LEFT JOIN FETCH e.errorDetails LEFT JOIN FETCH e.statuses WHERE ";
             if(filters.get(StatusConstants.STATE) != null) {
                 String experimentState = ExperimentState.valueOf(filters.get(StatusConstants.STATE)).toString();
-                query = "SELECT e FROM Status s " +
-                        "JOIN s.experiment e " +
-                        "WHERE s.state='" + experimentState + "' " +
+                query += "s.state='" + experimentState + "' " +
                         "AND s.statusType='" + StatusType.EXPERIMENT + "' AND ";
-            }else {
-                query = "SELECT e from Experiment e WHERE ";
             }
 
             if(toTime != null && fromTime != null && toTime.after(fromTime)){
@@ -675,10 +673,10 @@ public class WorkerResource extends AbstractResource {
 
             List resultList = q.getResultList();
             for (Object o : resultList) {
-                Experiment experiment = (Experiment) o;
-                ExperimentResource experimentResource =
-                        (ExperimentResource) Utils.getResource(ResourceType.EXPERIMENT, experiment);
-                result.add(experimentResource);
+                ExperimentSummary experimentSummary = (ExperimentSummary) o;
+                ExperimentSummaryResource experimentSummaryResource =
+                        (ExperimentSummaryResource) Utils.getResource(ResourceType.EXPERIMENT_SUMMARY, experimentSummary);
+                result.add(experimentSummaryResource);
             }
             em.getTransaction().commit();
             em.close();
