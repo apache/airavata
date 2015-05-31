@@ -23,6 +23,7 @@ package org.apache.airavata.gfac;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.*;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -66,6 +67,14 @@ public class GFacConfiguration {
 //    }
 
 
+    public static File getConfigFile() {
+        URL resource = GFacConfiguration.class.getClassLoader().getResource(org.apache.airavata.common.utils.Constants.GFAC_CONFIG_XML);
+        File gfacConfigFile = null;
+        if (resource != null) {
+            gfacConfigFile = new File(resource.getPath());
+        }
+        return gfacConfigFile;
+    }
     public List<GFacHandlerConfig> getInHandlers() {
         //This will avoid the misconfiguration done by user in gfac-config.xml
         return removeDuplicateWithOrder(inHandlers);
