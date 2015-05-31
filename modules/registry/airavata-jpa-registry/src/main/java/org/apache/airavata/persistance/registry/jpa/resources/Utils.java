@@ -30,6 +30,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 
 public class Utils {
@@ -213,6 +216,13 @@ public class Utils {
                 }else {
                     logger.error("Object should be a Experiment.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Experiment.");
+                }
+            case EXPERIMENT_SUMMARY:
+                if (o instanceof  ExperimentSummary){
+                    return createExperimentSummary((ExperimentSummary)o);
+                }else {
+                    logger.error("Object should be a ExperimentSummary.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a ExperimentSummary.");
                 }
             case NOTIFICATION_EMAIL:
                 if (o instanceof  Notification_Email){
@@ -470,6 +480,55 @@ public class Utils {
         }
 
         return experimentResource;
+    }
+
+    /**
+     *
+     * @param o ExperimentSummary model object
+     * @return  ExperimentSummary Resource object
+     */
+    private static Resource createExperimentSummary(ExperimentSummary o) {
+        ExperimentSummaryResource experimentSummaryResource = new ExperimentSummaryResource();
+        if (o != null){
+            experimentSummaryResource.setExecutionUser(o.getExecutionUser());
+            experimentSummaryResource.setExpID(o.getExpId());
+            experimentSummaryResource.setExpName(o.getExpName());
+            experimentSummaryResource.setProjectID(o.getProjectId());
+            experimentSummaryResource.setCreationTime(o.getCreationTime());
+            experimentSummaryResource.setDescription(o.getExpDesc());
+            experimentSummaryResource.setApplicationId(o.getApplicationId());
+
+            List<ErrorDetailResource> errorDetailResourceList = new ArrayList();
+            for(ErrorDetail err: o.getErrorDetailsByExperimentId()){
+                ErrorDetailResource errorDetailResource = new ErrorDetailResource();
+                errorDetailResource.setErrorId(err.getErrorID());
+                errorDetailResource.setJobId(err.getJobId());
+                errorDetailResource.setCreationTime(o.getCreationTime());
+                if (err.getActualErrorMsg() != null){
+                    errorDetailResource.setActualErrorMsg(new String(err.getActualErrorMsg()));
+                }
+                errorDetailResource.setUserFriendlyErrorMsg(err.getUserFriendlyErrorMsg());
+                errorDetailResource.setTransientPersistent(err.isTransientPersistent());
+                errorDetailResource.setErrorCategory(err.getErrorCategory());
+                errorDetailResource.setCorrectiveAction(err.getCorrectiveAction());
+                errorDetailResource.setActionableGroup(err.getActionableGroup());
+                errorDetailResourceList.add(errorDetailResource);
+            }
+            experimentSummaryResource.setErrorDetails(errorDetailResourceList);
+
+            Collection<Status> statusList = o.getStatusesByExperimentId();
+            if(statusList != null && statusList.size()>0){
+                StatusResource statusResource = new StatusResource();
+                statusResource.setStatusId(statusList.iterator().next().getStatusId());
+                statusResource.setJobId(statusList.iterator().next().getJobId());
+                statusResource.setState(statusList.iterator().next().getState());
+                statusResource.setStatusUpdateTime(statusList.iterator().next().getStatusUpdateTime());
+                statusResource.setStatusType(statusList.iterator().next().getStatusType());
+                experimentSummaryResource.setStatus(statusResource);
+            }
+        }
+
+        return experimentSummaryResource;
     }
 
     private static Resource createNotificationEmail (Notification_Email o){

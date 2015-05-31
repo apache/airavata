@@ -274,7 +274,7 @@ public class RegistryUseCaseTest {
             list = registry.search(RegistryModelType.EXPERIMENT, filters);
             Assert.assertTrue(list.size()==3);
 
-            //searching user experiemets with pagination
+            //searching user experiments with pagination
             filters = new HashMap();
             filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, "TestUser" + TAG);
             filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);

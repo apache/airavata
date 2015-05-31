@@ -2893,16 +2893,16 @@ public class ExperimentRegistry {
                         toTime = Long.parseLong(filters.get(field));
                     }
                 }
-                List<ExperimentResource> experimentResources;
+                List<ExperimentSummaryResource> experimentSummaryResources;
                 if (fromTime != 0 && toTime != 0) {
-                    experimentResources = workerResource.searchExperiments(new Timestamp(fromTime), new Timestamp(toTime), fil
+                    experimentSummaryResources = workerResource.searchExperiments(new Timestamp(fromTime), new Timestamp(toTime), fil
                             ,limit , offset, orderByIdentifier, resultOrderType);
                 } else {
-                    experimentResources = workerResource
+                    experimentSummaryResources = workerResource
                             .searchExperiments(null, null, fil, limit, offset, orderByIdentifier, resultOrderType);
                 }
-                if (experimentResources != null && !experimentResources.isEmpty()) {
-                    for (ExperimentResource ex : experimentResources) {
+                if (experimentSummaryResources != null && !experimentSummaryResources.isEmpty()) {
+                    for (ExperimentSummaryResource ex : experimentSummaryResources) {
                         experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
                     }
                 }
