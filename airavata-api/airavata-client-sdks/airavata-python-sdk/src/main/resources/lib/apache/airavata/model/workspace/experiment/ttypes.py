@@ -60,6 +60,32 @@ class ExperimentState:
     "UNKNOWN": 10,
   }
 
+class ExperimentSearchFields:
+  EXPERIMENT_NAME = 0
+  EXPERIMENT_DESC = 1
+  APPLICATION_ID = 2
+  FROM_DATE = 3
+  TO_DATE = 4
+  STATUS = 5
+
+  _VALUES_TO_NAMES = {
+    0: "EXPERIMENT_NAME",
+    1: "EXPERIMENT_DESC",
+    2: "APPLICATION_ID",
+    3: "FROM_DATE",
+    4: "TO_DATE",
+    5: "STATUS",
+  }
+
+  _NAMES_TO_VALUES = {
+    "EXPERIMENT_NAME": 0,
+    "EXPERIMENT_DESC": 1,
+    "APPLICATION_ID": 2,
+    "FROM_DATE": 3,
+    "TO_DATE": 4,
+    "STATUS": 5,
+  }
+
 class WorkflowNodeState:
   INVOKED = 0
   EXECUTING = 1
@@ -2902,7 +2928,6 @@ class ExperimentSummary:
    - description
    - applicationId
    - experimentStatus
-   - errors
   """
 
   thrift_spec = (
@@ -2915,10 +2940,9 @@ class ExperimentSummary:
     (6, TType.STRING, 'description', None, None, ), # 6
     (7, TType.STRING, 'applicationId', None, None, ), # 7
     (8, TType.STRUCT, 'experimentStatus', (ExperimentStatus, ExperimentStatus.thrift_spec), None, ), # 8
-    (9, TType.LIST, 'errors', (TType.STRUCT,(ErrorDetails, ErrorDetails.thrift_spec)), None, ), # 9
   )
 
-  def __init__(self, experimentID=None, projectID=None, creationTime=None, userName=None, name=None, description=None, applicationId=None, experimentStatus=None, errors=None,):
+  def __init__(self, experimentID=None, projectID=None, creationTime=None, userName=None, name=None, description=None, applicationId=None, experimentStatus=None,):
     self.experimentID = experimentID
     self.projectID = projectID
     self.creationTime = creationTime
@@ -2927,7 +2951,6 @@ class ExperimentSummary:
     self.description = description
     self.applicationId = applicationId
     self.experimentStatus = experimentStatus
-    self.errors = errors
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -2979,17 +3002,6 @@ class ExperimentSummary:
           self.experimentStatus.read(iprot)
         else:
           iprot.skip(ftype)
-      elif fid == 9:
-        if ftype == TType.LIST:
-          self.errors = []
-          (_etype136, _size133) = iprot.readListBegin()
-          for _i137 in xrange(_size133):
-            _elem138 = ErrorDetails()
-            _elem138.read(iprot)
-            self.errors.append(_elem138)
-          iprot.readListEnd()
-        else:
-          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -3031,13 +3043,6 @@ class ExperimentSummary:
     if self.experimentStatus is not None:
       oprot.writeFieldBegin('experimentStatus', TType.STRUCT, 8)
       self.experimentStatus.write(oprot)
-      oprot.writeFieldEnd()
-    if self.errors is not None:
-      oprot.writeFieldBegin('errors', TType.LIST, 9)
-      oprot.writeListBegin(TType.STRUCT, len(self.errors))
-      for iter139 in self.errors:
-        iter139.write(oprot)
-      oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()

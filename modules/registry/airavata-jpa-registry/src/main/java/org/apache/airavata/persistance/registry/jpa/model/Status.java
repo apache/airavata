@@ -52,19 +52,19 @@ public class Status implements Serializable {
     @Column(name = "STATUS_TYPE")
     private String statusType;
 
-    @ManyToOne(cascade= CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.LAZY, cascade= CascadeType.MERGE)
     @JoinColumn(name = "EXPERIMENT_ID")
     private Experiment experiment;
 
-    @ManyToOne(cascade= CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.LAZY, cascade= CascadeType.MERGE)
     @JoinColumn(name = "TASK_ID")
     private TaskDetail task;
 
-    @ManyToOne(cascade= CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.LAZY, cascade= CascadeType.MERGE)
     @JoinColumn(name = "NODE_INSTANCE_ID")
     private WorkflowNodeDetail node;
 
-    @ManyToOne(cascade= CascadeType.MERGE)
+    @ManyToOne(fetch = FetchType.LAZY, cascade= CascadeType.MERGE)
     @JoinColumn(name = "TRANSFER_ID")
     private DataTransferDetail transferDetail;
 

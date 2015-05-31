@@ -148,10 +148,6 @@ public class ThriftDataModelConversion {
             if (experimentStatus != null){
                 experimentSummary.setExperimentStatus(getExperimentStatus(experimentStatus));
             }
-            List<ErrorDetailResource> errorDetails = experimentSummaryResource.getErrorDetails();
-            if (errorDetails!= null && !errorDetails.isEmpty()){
-                experimentSummary.setErrors(getErrorDetailList(errorDetails));
-            }
             return experimentSummary;
         }
         return null;

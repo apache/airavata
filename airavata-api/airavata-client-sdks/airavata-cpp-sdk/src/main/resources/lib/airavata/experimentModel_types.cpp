@@ -55,6 +55,24 @@ const char* _kExperimentStateNames[] = {
 };
 const std::map<int, const char*> _ExperimentState_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(11, _kExperimentStateValues, _kExperimentStateNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
 
+int _kExperimentSearchFieldsValues[] = {
+  ExperimentSearchFields::EXPERIMENT_NAME,
+  ExperimentSearchFields::EXPERIMENT_DESC,
+  ExperimentSearchFields::APPLICATION_ID,
+  ExperimentSearchFields::FROM_DATE,
+  ExperimentSearchFields::TO_DATE,
+  ExperimentSearchFields::STATUS
+};
+const char* _kExperimentSearchFieldsNames[] = {
+  "EXPERIMENT_NAME",
+  "EXPERIMENT_DESC",
+  "APPLICATION_ID",
+  "FROM_DATE",
+  "TO_DATE",
+  "STATUS"
+};
+const std::map<int, const char*> _ExperimentSearchFields_VALUES_TO_NAMES(::apache::thrift::TEnumIterator(6, _kExperimentSearchFieldsValues, _kExperimentSearchFieldsNames), ::apache::thrift::TEnumIterator(-1, NULL, NULL));
+
 int _kWorkflowNodeStateValues[] = {
   WorkflowNodeState::INVOKED,
   WorkflowNodeState::EXECUTING,
@@ -3221,8 +3239,8 @@ void swap(Experiment &a, Experiment &b) {
   swap(a.__isset, b.__isset);
 }
 
-const char* ExperimentSummary::ascii_fingerprint = "44FD485ABF32F5EB94D6F393F51241B6";
-const uint8_t ExperimentSummary::binary_fingerprint[16] = {0x44,0xFD,0x48,0x5A,0xBF,0x32,0xF5,0xEB,0x94,0xD6,0xF3,0x93,0xF5,0x12,0x41,0xB6};
+const char* ExperimentSummary::ascii_fingerprint = "A1A9DDD1C0AA5DEEDC8413E553960BEF";
+const uint8_t ExperimentSummary::binary_fingerprint[16] = {0xA1,0xA9,0xDD,0xD1,0xC0,0xAA,0x5D,0xEE,0xDC,0x84,0x13,0xE5,0x53,0x96,0x0B,0xEF};
 
 uint32_t ExperimentSummary::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -3312,26 +3330,6 @@ uint32_t ExperimentSummary::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 9:
-        if (ftype == ::apache::thrift::protocol::T_LIST) {
-          {
-            this->errors.clear();
-            uint32_t _size123;
-            ::apache::thrift::protocol::TType _etype126;
-            xfer += iprot->readListBegin(_etype126, _size123);
-            this->errors.resize(_size123);
-            uint32_t _i127;
-            for (_i127 = 0; _i127 < _size123; ++_i127)
-            {
-              xfer += this->errors[_i127].read(iprot);
-            }
-            xfer += iprot->readListEnd();
-          }
-          this->__isset.errors = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -3392,19 +3390,6 @@ uint32_t ExperimentSummary::write(::apache::thrift::protocol::TProtocol* oprot) 
     xfer += this->experimentStatus.write(oprot);
     xfer += oprot->writeFieldEnd();
   }
-  if (this->__isset.errors) {
-    xfer += oprot->writeFieldBegin("errors", ::apache::thrift::protocol::T_LIST, 9);
-    {
-      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->errors.size()));
-      std::vector<ErrorDetails> ::const_iterator _iter128;
-      for (_iter128 = this->errors.begin(); _iter128 != this->errors.end(); ++_iter128)
-      {
-        xfer += (*_iter128).write(oprot);
-      }
-      xfer += oprot->writeListEnd();
-    }
-    xfer += oprot->writeFieldEnd();
-  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -3420,7 +3405,6 @@ void swap(ExperimentSummary &a, ExperimentSummary &b) {
   swap(a.description, b.description);
   swap(a.applicationId, b.applicationId);
   swap(a.experimentStatus, b.experimentStatus);
-  swap(a.errors, b.errors);
   swap(a.__isset, b.__isset);
 }
 

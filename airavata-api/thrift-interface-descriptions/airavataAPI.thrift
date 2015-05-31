@@ -510,14 +510,14 @@ service Airavata {
    * @param userName
    *       Username of the requested user
    * @param filters
-   *       map of multiple filter criteria. keys has to be camel case field values eg. experimentName
+   *       map of multiple filter criteria.
    * @param limit
    *       Amount of results to be fetched
    * @param offset
    *       The starting point of the results to be fetched
    */
     list<experimentModel.ExperimentSummary> searchExperiments(1: required string gatewayId,
-                            2: required string userName, 3: map<string, string> filters,
+                            2: required string userName, 3: map<experimentModel.ExperimentSearchFields, string> filters,
                             4: required i32 limit, 5: required i32 offset)
                 throws (1: airavataErrors.InvalidRequestException ire,
                         2: airavataErrors.AiravataClientException ace,

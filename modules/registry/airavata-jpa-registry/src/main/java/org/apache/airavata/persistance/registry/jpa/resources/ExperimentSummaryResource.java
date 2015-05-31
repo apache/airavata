@@ -41,7 +41,6 @@ public class ExperimentSummaryResource extends AbstractResource {
     private String description;
     private String applicationId;
 
-    private List<ErrorDetailResource> errorDetails;
     private StatusResource status;
 
     @Override
@@ -123,14 +122,6 @@ public class ExperimentSummaryResource extends AbstractResource {
 
     public void setApplicationId(String applicationId) {
         this.applicationId = applicationId;
-    }
-
-    public List<ErrorDetailResource> getErrorDetails() {
-        return errorDetails;
-    }
-
-    public void setErrorDetails(List<ErrorDetailResource> errorDetails) {
-        this.errorDetails = errorDetails;
     }
 
     public StatusResource getStatus() {

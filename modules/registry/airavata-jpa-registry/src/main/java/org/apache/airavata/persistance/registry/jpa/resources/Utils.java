@@ -31,10 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 
 public class Utils {
@@ -499,26 +497,6 @@ public class Utils {
             experimentSummaryResource.setCreationTime(o.getCreationTime());
             experimentSummaryResource.setDescription(o.getExpDesc());
             experimentSummaryResource.setApplicationId(o.getApplicationId());
-
-            if(o.getErrorDetails()!=null) {
-                List<ErrorDetailResource> errorDetailResourceList = new ArrayList();
-                for (ErrorDetail err : o.getErrorDetails()) {
-                    ErrorDetailResource errorDetailResource = new ErrorDetailResource();
-                    errorDetailResource.setErrorId(err.getErrorID());
-                    errorDetailResource.setJobId(err.getJobId());
-                    errorDetailResource.setCreationTime(o.getCreationTime());
-                    if (err.getActualErrorMsg() != null) {
-                        errorDetailResource.setActualErrorMsg(new String(err.getActualErrorMsg()));
-                    }
-                    errorDetailResource.setUserFriendlyErrorMsg(err.getUserFriendlyErrorMsg());
-                    errorDetailResource.setTransientPersistent(err.isTransientPersistent());
-                    errorDetailResource.setErrorCategory(err.getErrorCategory());
-                    errorDetailResource.setCorrectiveAction(err.getCorrectiveAction());
-                    errorDetailResource.setActionableGroup(err.getActionableGroup());
-                    errorDetailResourceList.add(errorDetailResource);
-                }
-                experimentSummaryResource.setErrorDetails(errorDetailResourceList);
-            }
 
             Collection<Status> statusList = o.getStatuses();
             if(statusList != null && statusList.size()>0){

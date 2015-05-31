@@ -44,6 +44,23 @@ final class ExperimentState {
   );
 }
 
+final class ExperimentSearchFields {
+  const EXPERIMENT_NAME = 0;
+  const EXPERIMENT_DESC = 1;
+  const APPLICATION_ID = 2;
+  const FROM_DATE = 3;
+  const TO_DATE = 4;
+  const STATUS = 5;
+  static public $__names = array(
+    0 => 'EXPERIMENT_NAME',
+    1 => 'EXPERIMENT_DESC',
+    2 => 'APPLICATION_ID',
+    3 => 'FROM_DATE',
+    4 => 'TO_DATE',
+    5 => 'STATUS',
+  );
+}
+
 final class WorkflowNodeState {
   const INVOKED = 0;
   const EXECUTING = 1;
@@ -4111,7 +4128,6 @@ class ExperimentSummary {
   public $description = null;
   public $applicationId = null;
   public $experimentStatus = null;
-  public $errors = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -4149,15 +4165,6 @@ class ExperimentSummary {
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\Workspace\Experiment\ExperimentStatus',
           ),
-        9 => array(
-          'var' => 'errors',
-          'type' => TType::LST,
-          'etype' => TType::STRUCT,
-          'elem' => array(
-            'type' => TType::STRUCT,
-            'class' => '\Airavata\Model\Workspace\Experiment\ErrorDetails',
-            ),
-          ),
         );
     }
     if (is_array($vals)) {
@@ -4184,9 +4191,6 @@ class ExperimentSummary {
       }
       if (isset($vals['experimentStatus'])) {
         $this->experimentStatus = $vals['experimentStatus'];
-      }
-      if (isset($vals['errors'])) {
-        $this->errors = $vals['errors'];
       }
     }
   }
@@ -4267,24 +4271,6 @@ class ExperimentSummary {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 9:
-          if ($ftype == TType::LST) {
-            $this->errors = array();
-            $_size133 = 0;
-            $_etype136 = 0;
-            $xfer += $input->readListBegin($_etype136, $_size133);
-            for ($_i137 = 0; $_i137 < $_size133; ++$_i137)
-            {
-              $elem138 = null;
-              $elem138 = new \Airavata\Model\Workspace\Experiment\ErrorDetails();
-              $xfer += $elem138->read($input);
-              $this->errors []= $elem138;
-            }
-            $xfer += $input->readListEnd();
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -4339,23 +4325,6 @@ class ExperimentSummary {
       }
       $xfer += $output->writeFieldBegin('experimentStatus', TType::STRUCT, 8);
       $xfer += $this->experimentStatus->write($output);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->errors !== null) {
-      if (!is_array($this->errors)) {
-        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
-      }
-      $xfer += $output->writeFieldBegin('errors', TType::LST, 9);
-      {
-        $output->writeListBegin(TType::STRUCT, count($this->errors));
-        {
-          foreach ($this->errors as $iter139)
-          {
-            $xfer += $iter139->write($output);
-          }
-        }
-        $output->writeListEnd();
-      }
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
