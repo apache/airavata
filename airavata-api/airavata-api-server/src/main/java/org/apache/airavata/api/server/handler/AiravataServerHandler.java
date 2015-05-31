@@ -928,6 +928,59 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     /**
+     * Search Experiments by using multiple filter criteria with pagination. Results will be sorted
+     * based on creation time DESC
+     *
+     * @param gatewayId
+     *       Identifier of the requested gateway
+     * @param userName
+     *       Username of the requested user
+     * @param filters
+     *       map of multiple filter criteria. keys has to be camel case field values eg. experimentName
+     * @param limit
+     *       Amount of results to be fetched
+     * @param offset
+     *       The starting point of the results to be fetched
+     */
+    @Override
+    public List<ExperimentSummary> searchExperiments(String gatewayId, String userName, Map<String, String> filters, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        if (!validateString(userName)){
+            logger.error("Username cannot be empty. Please provide a valid user..");
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Username cannot be empty. Please provide a valid user..");
+            throw exception;
+        }
+        if (!isGatewayExist(gatewayId)){
+            logger.error("Gateway does not exist.Please provide a valid gateway id...");
+            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+        }
+        try {
+            if (!ResourceUtils.isUserExist(userName)){
+                logger.error("User does not exist in the system. Please provide a valid user..");
+                AiravataSystemException exception = new AiravataSystemException();
+                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                exception.setMessage("User does not exist in the system. Please provide a valid user..");
+                throw exception;
+            }
+            List<ExperimentSummary> summaries = new ArrayList<ExperimentSummary>();
+            registry = RegistryFactory.getRegistry(gatewayId);
+            List<Object> results = registry.search(RegistryModelType.EXPERIMENT, filters, limit,
+                    offset, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
+            for (Object object : results) {
+                summaries.add((ExperimentSummary) object);
+            }
+            return summaries;
+        }catch (Exception e) {
+            logger.error("Error while retrieving experiments", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving experiments. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
      * Get all Experiments within a Project
      *
      * @param projectId
