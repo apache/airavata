@@ -26,12 +26,14 @@ import org.apache.airavata.persistance.registry.jpa.JPAConstants;
 import org.apache.airavata.persistance.registry.jpa.Resource;
 import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.model.*;
+import org.apache.airavata.registry.cpi.utils.StatusType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -218,8 +220,8 @@ public class Utils {
                     throw new IllegalArgumentException("Object should be a Experiment.");
                 }
             case EXPERIMENT_SUMMARY:
-                if (o instanceof  ExperimentSummary){
-                    return createExperimentSummary((ExperimentSummary)o);
+                if (o instanceof  Experiment){
+                    return createExperimentSummary((Experiment)o);
                 }else {
                     logger.error("Object should be a ExperimentSummary.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a ExperimentSummary.");
@@ -487,7 +489,7 @@ public class Utils {
      * @param o ExperimentSummary model object
      * @return  ExperimentSummary Resource object
      */
-    private static Resource createExperimentSummary(ExperimentSummary o) {
+    private static Resource createExperimentSummary(Experiment o) {
         ExperimentSummaryResource experimentSummaryResource = new ExperimentSummaryResource();
         if (o != null){
             experimentSummaryResource.setExecutionUser(o.getExecutionUser());
@@ -498,33 +500,42 @@ public class Utils {
             experimentSummaryResource.setDescription(o.getExpDesc());
             experimentSummaryResource.setApplicationId(o.getApplicationId());
 
-            List<ErrorDetailResource> errorDetailResourceList = new ArrayList();
-            for(ErrorDetail err: o.getErrorDetailsByExperimentId()){
-                ErrorDetailResource errorDetailResource = new ErrorDetailResource();
-                errorDetailResource.setErrorId(err.getErrorID());
-                errorDetailResource.setJobId(err.getJobId());
-                errorDetailResource.setCreationTime(o.getCreationTime());
-                if (err.getActualErrorMsg() != null){
-                    errorDetailResource.setActualErrorMsg(new String(err.getActualErrorMsg()));
+            if(o.getErrorDetails()!=null) {
+                List<ErrorDetailResource> errorDetailResourceList = new ArrayList();
+                for (ErrorDetail err : o.getErrorDetails()) {
+                    ErrorDetailResource errorDetailResource = new ErrorDetailResource();
+                    errorDetailResource.setErrorId(err.getErrorID());
+                    errorDetailResource.setJobId(err.getJobId());
+                    errorDetailResource.setCreationTime(o.getCreationTime());
+                    if (err.getActualErrorMsg() != null) {
+                        errorDetailResource.setActualErrorMsg(new String(err.getActualErrorMsg()));
+                    }
+                    errorDetailResource.setUserFriendlyErrorMsg(err.getUserFriendlyErrorMsg());
+                    errorDetailResource.setTransientPersistent(err.isTransientPersistent());
+                    errorDetailResource.setErrorCategory(err.getErrorCategory());
+                    errorDetailResource.setCorrectiveAction(err.getCorrectiveAction());
+                    errorDetailResource.setActionableGroup(err.getActionableGroup());
+                    errorDetailResourceList.add(errorDetailResource);
                 }
-                errorDetailResource.setUserFriendlyErrorMsg(err.getUserFriendlyErrorMsg());
-                errorDetailResource.setTransientPersistent(err.isTransientPersistent());
-                errorDetailResource.setErrorCategory(err.getErrorCategory());
-                errorDetailResource.setCorrectiveAction(err.getCorrectiveAction());
-                errorDetailResource.setActionableGroup(err.getActionableGroup());
-                errorDetailResourceList.add(errorDetailResource);
+                experimentSummaryResource.setErrorDetails(errorDetailResourceList);
             }
-            experimentSummaryResource.setErrorDetails(errorDetailResourceList);
 
-            Collection<Status> statusList = o.getStatusesByExperimentId();
+            Collection<Status> statusList = o.getStatuses();
             if(statusList != null && statusList.size()>0){
-                StatusResource statusResource = new StatusResource();
-                statusResource.setStatusId(statusList.iterator().next().getStatusId());
-                statusResource.setJobId(statusList.iterator().next().getJobId());
-                statusResource.setState(statusList.iterator().next().getState());
-                statusResource.setStatusUpdateTime(statusList.iterator().next().getStatusUpdateTime());
-                statusResource.setStatusType(statusList.iterator().next().getStatusType());
-                experimentSummaryResource.setStatus(statusResource);
+                Iterator<Status> statusIterator = statusList.iterator();
+                while(statusIterator.hasNext()){
+                    Status status = statusIterator.next();
+                    if(status.getStatusType().equals(StatusType.EXPERIMENT.toString())){
+                        StatusResource statusResource = new StatusResource();
+                        statusResource.setStatusId(status.getStatusId());
+                        statusResource.setJobId(status.getJobId());
+                        statusResource.setState(status.getState());
+                        statusResource.setStatusUpdateTime(status.getStatusUpdateTime());
+                        statusResource.setStatusType(status.getStatusType());
+                        experimentSummaryResource.setStatus(statusResource);
+                        break;
+                    }
+                }
             }
         }
 

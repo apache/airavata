@@ -621,7 +621,7 @@ public class WorkerResource extends AbstractResource {
         List<ExperimentSummaryResource> result = new ArrayList();
         EntityManager em = null;
         try {
-            String query = "SELECT e FROM ExperimentSummary e " +
+            String query = "SELECT e FROM Experiment e " +
                     "LEFT JOIN e.statuses s LEFT JOIN FETCH e.errorDetails LEFT JOIN FETCH e.statuses WHERE ";
             if(filters.get(StatusConstants.STATE) != null) {
                 String experimentState = ExperimentState.valueOf(filters.get(StatusConstants.STATE)).toString();
@@ -673,9 +673,9 @@ public class WorkerResource extends AbstractResource {
 
             List resultList = q.getResultList();
             for (Object o : resultList) {
-                ExperimentSummary experimentSummary = (ExperimentSummary) o;
+                Experiment experiment = (Experiment) o;
                 ExperimentSummaryResource experimentSummaryResource =
-                        (ExperimentSummaryResource) Utils.getResource(ResourceType.EXPERIMENT_SUMMARY, experimentSummary);
+                        (ExperimentSummaryResource) Utils.getResource(ResourceType.EXPERIMENT_SUMMARY, experiment);
                 result.add(experimentSummaryResource);
             }
             em.getTransaction().commit();
