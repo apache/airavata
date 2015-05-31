@@ -69,11 +69,11 @@
             <artifactId>airavata-registry-cpi</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--dependency>
+        <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql.connector.version}</version>
-        </dependency-->
+        </dependency>
         <dependency>
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>

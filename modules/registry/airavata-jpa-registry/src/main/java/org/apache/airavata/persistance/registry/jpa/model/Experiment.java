@@ -26,6 +26,7 @@ import org.apache.openjpa.persistence.DataCache;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Collection;
 
 @Entity
 @Table(name = "EXPERIMENT")
@@ -61,17 +62,23 @@ public class Experiment implements Serializable {
     @Column(name = "GATEWAY_EXECUTION_ID")
     private String gatewayExecutionId;
 
-    @ManyToOne(cascade=CascadeType.MERGE)
+    @ManyToOne(fetch=FetchType.LAZY, cascade=CascadeType.MERGE)
     @JoinColumn(name = "GATEWAY_ID")
     private Gateway gateway;
 
-    @ManyToOne(cascade=CascadeType.MERGE)
+    @ManyToOne(fetch=FetchType.LAZY, cascade=CascadeType.MERGE)
     @JoinColumn(name = "PROJECT_ID")
     private Project project;
 
-    @ManyToOne(cascade=CascadeType.MERGE)
+    @ManyToOne(fetch=FetchType.LAZY, cascade=CascadeType.MERGE)
     @JoinColumn(name = "EXECUTION_USER", referencedColumnName = "USER_NAME")
     private Users user;
+
+    @OneToMany(mappedBy = "experiment")
+    private Collection<ErrorDetail> errorDetails;
+
+    @OneToMany(mappedBy = "experiment")
+    private Collection<Status> statuses;
 
     public String getExpId() {
         return expId;
@@ -207,5 +214,21 @@ public class Experiment implements Serializable {
 
     public void setGatewayExecutionId(String gatewayExecutionId) {
         this.gatewayExecutionId = gatewayExecutionId;
+    }
+
+    public Collection<Status> getStatuses() {
+        return statuses;
+    }
+
+    public void setStatuses(Collection<Status> statuses) {
+        this.statuses = statuses;
+    }
+
+    public Collection<ErrorDetail> getErrorDetails() {
+        return errorDetails;
+    }
+
+    public void setErrorDetails(Collection<ErrorDetail> errorDetails) {
+        this.errorDetails = errorDetails;
     }
 }
