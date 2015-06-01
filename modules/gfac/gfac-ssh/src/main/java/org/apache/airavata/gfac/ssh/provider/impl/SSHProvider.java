@@ -63,6 +63,7 @@ import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.model.workspace.experiment.ExperimentState;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.model.workspace.experiment.TaskState;
 import org.apache.xmlbeans.XmlException;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
@@ -188,8 +189,9 @@ public class SSHProvider extends AbstractProvider {
                     }
 
                     if (jobID == null || jobID.isEmpty()) {
-                        log.error("Couldn't find remote jobId for JobName:" + jobDetails.getJobName() + ", ExperimentId:" + jobExecutionContext.getExperimentID());
-                        GFacUtils.updateExperimentStatus(jobExecutionContext.getExperimentID(), ExperimentState.FAILED);
+                        log.error("expId:" + jobExecutionContext.getExperimentID() + " Couldn't find remote jobId for JobName:"
+                                + jobDetails.getJobName() + ", both submit and verify steps doesn't return a valid JobId. Hence changing task state to Failed");
+                        GFacUtils.publishTaskStatus(jobExecutionContext, monitorPublisher, TaskState.FAILED);
                         return;
                     }
                     data.append("jobDesc=").append(jobDescriptor.toXML());
