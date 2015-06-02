@@ -24,9 +24,11 @@ import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.logger.AiravataLogger;
 import org.apache.airavata.common.logger.AiravataLoggerFactory;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.utils.GFacThreadPoolExecutor;
+import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.gfac.core.utils.OutHandlerWorker;
 import org.apache.airavata.gfac.monitor.email.parser.EmailParser;
 import org.apache.airavata.gfac.monitor.email.parser.LSFEmailParser;
@@ -36,8 +38,14 @@ import org.apache.airavata.gfac.monitor.email.parser.UGEEmailParser;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeRequestEvent;
+import org.apache.airavata.model.workspace.experiment.ActionableGroup;
+import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
+import org.apache.airavata.model.workspace.experiment.ErrorCategory;
+import org.apache.airavata.model.workspace.experiment.ErrorDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.model.workspace.experiment.JobStatus;
+import org.apache.airavata.registry.cpi.ChildDataType;
+import org.apache.airavata.registry.cpi.Registry;
 
 import javax.mail.Address;
 import javax.mail.Flags;
@@ -50,6 +58,7 @@ import javax.mail.Store;
 import javax.mail.search.FlagTerm;
 import javax.mail.search.SearchTerm;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -283,6 +292,11 @@ public class EmailBasedMonitor implements Runnable{
             jobMonitorMap.remove(jobStatusResult.getJobId());
             runOutHandlers = true;
             log.info("[EJM]: Job failed email received , removed job from job monitoring. " + jobDetails);
+            try {
+                GFacUtils.saveErrorDetails(jEC,"Job runs on remote compute resource failed", CorrectiveAction.RETRY_SUBMISSION, ErrorCategory.APPLICATION_FAILURE);
+            } catch (GFacException e) {
+                log.info("[EJM]: Error while saving error details for jobId:{}, expId: {}", jEC.getJobDetails().getJobID(), jEC.getExperimentID());
+            }
         }else if (resultState == JobState.CANCELED) {
             jobMonitorMap.remove(jobStatusResult.getJobId());
             runOutHandlers = false; // Do we need to run out handlers in canceled case?

@@ -189,8 +189,10 @@ public class SSHProvider extends AbstractProvider {
                     }
 
                     if (jobID == null || jobID.isEmpty()) {
-                        log.error("expId:" + jobExecutionContext.getExperimentID() + " Couldn't find remote jobId for JobName:"
-                                + jobDetails.getJobName() + ", both submit and verify steps doesn't return a valid JobId. Hence changing task state to Failed");
+                        String msg = "expId:" + jobExecutionContext.getExperimentID() + " Couldn't find remote jobId for JobName:"
+                                + jobDetails.getJobName() + ", both submit and verify steps doesn't return a valid JobId. Hence changing experiment state to Failed";
+                        log.error(msg);
+                        GFacUtils.saveErrorDetails(jobExecutionContext, msg, CorrectiveAction.CONTACT_SUPPORT , ErrorCategory.AIRAVATA_INTERNAL_ERROR);
                         GFacUtils.publishTaskStatus(jobExecutionContext, monitorPublisher, TaskState.FAILED);
                         return;
                     }
