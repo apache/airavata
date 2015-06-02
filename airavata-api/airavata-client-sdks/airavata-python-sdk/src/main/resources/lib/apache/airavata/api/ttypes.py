@@ -16,6 +16,7 @@ import apache.airavata.model.appcatalog.appdeployment.ttypes
 import apache.airavata.model.appcatalog.appinterface.ttypes
 import apache.airavata.model.appcatalog.gatewayprofile.ttypes
 import apache.airavata.model.workflow.ttypes
+import apache.airavata.model.security.ttypes
 
 
 from thrift.transport import TTransport
