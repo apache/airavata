@@ -30,6 +30,7 @@ import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.error.*;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
 import org.apache.airavata.model.workspace.Gateway;
@@ -54,7 +55,7 @@ public class CreateLaunchExperiment {
     private static final String DEFAULT_GATEWAY = "php_reference_gateway";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_54324c70-8e89-4bb6-b77f-b0b274c3a2ed";
+    private static String echoAppId = "Echo_53fcb5cd-7eda-485e-a9bc-fcf7c84a2e26";
     private static String mpiAppId = "HelloMPI_bfd56d58-6085-4b7f-89fc-646576830518";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
     private static String amberAppId = "Amber_357ba0ea-038c-4f14-b5f3-16bab331031b";
@@ -80,9 +81,10 @@ public class CreateLaunchExperiment {
 
     public static void main(String[] args) throws Exception {
         airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
-        System.out.println("API version is " + airavataClient.getAPIVersion(null));
-        registerApplications(); // run this only the first time
-//        createAndLaunchExp();
+        AuthzToken token = new AuthzToken("empty_token");
+        System.out.println("API version is " + airavataClient.getAPIVersion(token));
+//        registerApplications(); // run this only the first time
+        createAndLaunchExp();
     }
 
     private static String fsdResourceId;
@@ -162,12 +164,12 @@ public class CreateLaunchExperiment {
 //                final String expId = createMPIExperimentForFSD(airavataClient);
 //               final String expId = createEchoExperimentForStampede(airavataClient);
 //                final String expId = createEchoExperimentForTrestles(airavataClient);
-//                final String expId = createExperimentEchoForLocalHost(airavataClient);
+                final String expId = createExperimentEchoForLocalHost(airavataClient);
 //                final String expId = createExperimentWRFTrestles(airavataClient);
 //                final String expId = createExperimentForBR2(airavataClient);
 //                final String expId = createExperimentForBR2Amber(airavataClient);
 //                final String expId = createExperimentWRFStampede(airavataClient);
-                final String expId = createExperimentForStampedeAmber(airavataClient);
+//                final String expId = createExperimentForStampedeAmber(airavataClient);
 //                String expId = createExperimentForTrestlesAmber(airavataClient);
 //                final String expId = createExperimentGROMACSStampede(airavataClient);
 //                final String expId = createExperimentESPRESSOStampede(airavataClient);
