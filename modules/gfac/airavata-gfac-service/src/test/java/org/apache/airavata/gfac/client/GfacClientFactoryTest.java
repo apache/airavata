@@ -25,24 +25,13 @@ package org.apache.airavata.gfac.client;
 //import org.apache.airavata.client.api.AiravataAPI;
 //import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 //import org.apache.airavata.client.tools.DocumentCreator;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.AiravataZKUtils;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.client.util.Initialize;
 import org.apache.airavata.gfac.cpi.GfacService;
 import org.apache.airavata.gfac.server.GfacServer;
-import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.zookeeper.server.ServerCnxnFactory;
-import org.apache.zookeeper.server.ServerConfig;
-import org.apache.zookeeper.server.quorum.QuorumPeerConfig;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.net.URL;
 
 public class GfacClientFactoryTest {
     private final static Logger logger = LoggerFactory.getLogger(GfacClientFactoryTest.class);
