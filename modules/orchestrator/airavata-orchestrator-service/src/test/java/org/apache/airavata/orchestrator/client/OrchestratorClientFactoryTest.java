@@ -25,19 +25,6 @@ package org.apache.airavata.orchestrator.client;
 //import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 //import org.apache.airavata.client.tools.DocumentCreator;
 //import org.apache.airavata.client.tools.DocumentCreatorNew;
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.AiravataZKUtils;
-import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.model.error.AiravataClientConnectException;
-import org.apache.airavata.orchestrator.client.util.Initialize;
-import org.apache.airavata.orchestrator.cpi.OrchestratorService;
-import org.apache.airavata.orchestrator.server.OrchestratorServer;
-import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.Registry;
-import org.apache.zookeeper.server.ServerCnxnFactory;
-import org.junit.Test;
 
 public class OrchestratorClientFactoryTest {
 /*    private DocumentCreatorNew documentCreator;

@@ -42,7 +42,7 @@ import org.apache.airavata.model.workspace.experiment.TaskState;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeState;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeStatus;
-import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
+import org.apache.airavata.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryException;

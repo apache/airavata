@@ -42,7 +42,7 @@
 //import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
 //import org.apache.airavata.gsi.ssh.util.CommonUtils;
 //import org.apache.airavata.model.workspace.experiment.TaskDetails;
-//import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
+//import org.apache.airavata.experiment.registry.jpa.impl.RegistryFactory;
 //import org.apache.airavata.schemas.gfac.*;
 //import org.testng.annotations.BeforeClass;
 //import org.testng.annotations.Test;

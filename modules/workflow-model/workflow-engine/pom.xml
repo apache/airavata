@@ -252,7 +252,7 @@
         <!--</dependency>-->
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-jpa-registry</artifactId>
+            <artifactId>airavata-experiment-catalog</artifactId>
             <version>${project.version}</version>
         </dependency>
         <!-- JCR Support -->

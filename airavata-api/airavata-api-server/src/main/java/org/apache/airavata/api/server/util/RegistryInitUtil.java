@@ -29,12 +29,12 @@ import java.sql.SQLException;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.persistance.registry.jpa.ResourceType;
-import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
-import org.apache.airavata.persistance.registry.jpa.resources.GatewayResource;
-import org.apache.airavata.persistance.registry.jpa.resources.ProjectResource;
-import org.apache.airavata.persistance.registry.jpa.resources.UserResource;
-import org.apache.airavata.persistance.registry.jpa.resources.WorkerResource;
+import org.apache.airavata.experiment.catalog.ResourceType;
+import org.apache.airavata.experiment.catalog.ResourceUtils;
+import org.apache.airavata.experiment.catalog.resources.GatewayResource;
+import org.apache.airavata.experiment.catalog.resources.ProjectResource;
+import org.apache.airavata.experiment.catalog.resources.UserResource;
+import org.apache.airavata.experiment.catalog.resources.WorkerResource;
 import org.apache.derby.drda.NetworkServerControl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

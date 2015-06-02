@@ -42,7 +42,7 @@
 //import org.apache.airavata.model.workspace.experiment.Experiment;
 //import org.apache.airavata.model.workspace.experiment.TaskDetails;
 //import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
-//import org.apache.airavata.persistance.registry.jpa.impl.LoggingRegistryImpl;
+//import org.apache.airavata.experiment.registry.jpa.impl.LoggingRegistryImpl;
 //import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 //import org.apache.airavata.schemas.gfac.InputParameterType;
 //import org.apache.airavata.schemas.gfac.OutputParameterType;

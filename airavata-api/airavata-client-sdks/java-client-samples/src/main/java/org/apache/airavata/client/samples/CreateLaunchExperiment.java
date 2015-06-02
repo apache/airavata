@@ -81,8 +81,8 @@ public class CreateLaunchExperiment {
     public static void main(String[] args) throws Exception {
         airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
         System.out.println("API version is " + airavataClient.getAPIVersion(null));
-//        registerApplications(); // run this only the first time
-        createAndLaunchExp();
+        registerApplications(); // run this only the first time
+//        createAndLaunchExp();
     }
 
     private static String fsdResourceId;
