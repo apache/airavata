@@ -36,6 +36,7 @@ uint32_t Airavata_getAPIVersion_args::read(::apache::thrift::protocol::TProtocol
 
   using ::apache::thrift::protocol::TProtocolException;
 
+  bool isset_authzToken = false;
 
   while (true)
   {
@@ -43,18 +44,37 @@ uint32_t Airavata_getAPIVersion_args::read(::apache::thrift::protocol::TProtocol
     if (ftype == ::apache::thrift::protocol::T_STOP) {
       break;
     }
-    xfer += iprot->skip(ftype);
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->authzToken.read(iprot);
+          isset_authzToken = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
     xfer += iprot->readFieldEnd();
   }
 
   xfer += iprot->readStructEnd();
 
+  if (!isset_authzToken)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
 
 uint32_t Airavata_getAPIVersion_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_getAPIVersion_args");
+
+  xfer += oprot->writeFieldBegin("authzToken", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += this->authzToken.write(oprot);
+  xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -64,6 +84,10 @@ uint32_t Airavata_getAPIVersion_args::write(::apache::thrift::protocol::TProtoco
 uint32_t Airavata_getAPIVersion_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   xfer += oprot->writeStructBegin("Airavata_getAPIVersion_pargs");
+
+  xfer += oprot->writeFieldBegin("authzToken", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += (*(this->authzToken)).write(oprot);
+  xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -122,6 +146,14 @@ uint32_t Airavata_getAPIVersion_result::read(::apache::thrift::protocol::TProtoc
           xfer += iprot->skip(ftype);
         }
         break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ae.read(iprot);
+          this->__isset.ae = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -155,6 +187,10 @@ uint32_t Airavata_getAPIVersion_result::write(::apache::thrift::protocol::TProto
   } else if (this->__isset.ase) {
     xfer += oprot->writeFieldBegin("ase", ::apache::thrift::protocol::T_STRUCT, 3);
     xfer += this->ase.write(oprot);
+    xfer += oprot->writeFieldEnd();
+  } else if (this->__isset.ae) {
+    xfer += oprot->writeFieldBegin("ae", ::apache::thrift::protocol::T_STRUCT, 4);
+    xfer += this->ae.write(oprot);
     xfer += oprot->writeFieldEnd();
   }
   xfer += oprot->writeFieldStop();
@@ -210,6 +246,14 @@ uint32_t Airavata_getAPIVersion_presult::read(::apache::thrift::protocol::TProto
         if (ftype == ::apache::thrift::protocol::T_STRUCT) {
           xfer += this->ase.read(iprot);
           this->__isset.ase = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->ae.read(iprot);
+          this->__isset.ae = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -32132,18 +32176,19 @@ uint32_t Airavata_isWorkflowExistWithName_presult::read(::apache::thrift::protoc
   return xfer;
 }
 
-void AiravataClient::getAPIVersion(std::string& _return)
+void AiravataClient::getAPIVersion(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken)
 {
-  send_getAPIVersion();
+  send_getAPIVersion(authzToken);
   recv_getAPIVersion(_return);
 }
 
-void AiravataClient::send_getAPIVersion()
+void AiravataClient::send_getAPIVersion(const  ::apache::airavata::model::security::AuthzToken& authzToken)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("getAPIVersion", ::apache::thrift::protocol::T_CALL, cseqid);
 
   Airavata_getAPIVersion_pargs args;
+  args.authzToken = &authzToken;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -32194,6 +32239,9 @@ void AiravataClient::recv_getAPIVersion(std::string& _return)
   }
   if (result.__isset.ase) {
     throw result.ase;
+  }
+  if (result.__isset.ae) {
+    throw result.ae;
   }
   throw ::apache::thrift::TApplicationException(::apache::thrift::TApplicationException::MISSING_RESULT, "getAPIVersion failed: unknown result");
 }
@@ -40785,7 +40833,7 @@ void AiravataProcessor::process_getAPIVersion(int32_t seqid, ::apache::thrift::p
 
   Airavata_getAPIVersion_result result;
   try {
-    iface_->getAPIVersion(result.success);
+    iface_->getAPIVersion(result.success, args.authzToken);
     result.__isset.success = true;
   } catch ( ::apache::airavata::api::error::InvalidRequestException &ire) {
     result.ire = ire;
@@ -40796,6 +40844,9 @@ void AiravataProcessor::process_getAPIVersion(int32_t seqid, ::apache::thrift::p
   } catch ( ::apache::airavata::api::error::AiravataSystemException &ase) {
     result.ase = ase;
     result.__isset.ase = true;
+  } catch ( ::apache::airavata::api::error::AuthorizationException &ae) {
+    result.ae = ae;
+    result.__isset.ae = true;
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "Airavata.getAPIVersion");
