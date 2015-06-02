@@ -76,5 +76,7 @@ public class Constants {
     public static final String PROPERTY = "property";
     public static final String NAME = "name";
     public static final String VALUE = "value";
+    public static final String OUTPUT_DATA_DIR = "output.location";
+
 
 }

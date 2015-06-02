@@ -37,12 +37,28 @@ import java.util.List;
 public class AdvanceInputDataHandlingResource extends AbstractResource {
     private static final Logger logger = LoggerFactory.getLogger(AdvanceInputDataHandlingResource.class);
     private int dataHandlingId = 0;
-    private ExperimentResource experimentResource;
-    private TaskDetailResource taskDetailResource;
     private String workingDirParent;
     private String workingDir;
     private boolean stageInputFiles;
     private boolean cleanAfterJob;
+    private String experimentId;
+    private String taskId;
+
+    public String getExperimentId() {
+        return experimentId;
+    }
+
+    public void setExperimentId(String experimentId) {
+        this.experimentId = experimentId;
+    }
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
 
     public int getDataHandlingId() {
         return dataHandlingId;
@@ -50,22 +66,6 @@ public class AdvanceInputDataHandlingResource extends AbstractResource {
 
     public void setDataHandlingId(int dataHandlingId) {
         this.dataHandlingId = dataHandlingId;
-    }
-
-    public ExperimentResource getExperimentResource() {
-        return experimentResource;
-    }
-
-    public void setExperimentResource(ExperimentResource experimentResource) {
-        this.experimentResource = experimentResource;
-    }
-
-    public TaskDetailResource getTaskDetailResource() {
-        return taskDetailResource;
-    }
-
-    public void setTaskDetailResource(TaskDetailResource taskDetailResource) {
-        this.taskDetailResource = taskDetailResource;
     }
 
     public String getWorkingDirParent() {
@@ -137,18 +137,12 @@ public class AdvanceInputDataHandlingResource extends AbstractResource {
             } else {
                 dataHandling = new AdvancedInputDataHandling();
             }
-            Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
-            if (taskDetailResource != null) {
-                TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
-                dataHandling.setTaskId(taskDetailResource.getTaskId());
-                dataHandling.setTask(taskDetail);
-            }
-            dataHandling.setExpId(experimentResource.getExpID());
-            dataHandling.setExperiment(experiment);
             dataHandling.setWorkingDir(workingDir);
             dataHandling.setParentWorkingDir(workingDirParent);
             dataHandling.setStageInputsToWorkingDir(stageInputFiles);
             dataHandling.setCleanAfterJob(cleanAfterJob);
+            dataHandling.setExpId(experimentId);
+            dataHandling.setTaskId(taskId);
             em.persist(dataHandling);
             dataHandlingId = dataHandling.getDataHandlingId();
             em.getTransaction().commit();

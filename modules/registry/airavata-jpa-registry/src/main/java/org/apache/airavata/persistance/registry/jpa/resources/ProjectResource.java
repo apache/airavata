@@ -41,7 +41,7 @@ public class ProjectResource extends AbstractResource {
     private final static Logger logger = LoggerFactory.getLogger(ProjectResource.class);
     private String name;
     private String id;
-    private GatewayResource gateway;
+    private String gatewayId;
     private WorkerResource worker;
     private String description;
     private Timestamp creationTime;
@@ -54,27 +54,15 @@ public class ProjectResource extends AbstractResource {
 
     /**
      *
-     * @param worker gateway worker
-     * @param gateway gateway
-     * @param projectId project name
-     */
-    public ProjectResource(WorkerResource worker, GatewayResource gateway, String projectId) {
-        this.setWorker(worker);
-        this.setGateway(gateway);
-        this.id = projectId;
-    }
-
-    /**
-     *
      * @param type child resource type
      * @return child resource
      */
     public Resource create(ResourceType type) throws RegistryException {
         if (type == ResourceType.EXPERIMENT) {
             ExperimentResource experimentResource = new ExperimentResource();
-            experimentResource.setGateway(getGateway());
+            experimentResource.setGatewayId(gatewayId);
             experimentResource.setExecutionUser(worker.getUser());
-            experimentResource.setProject(this);
+            experimentResource.setProjectId(id);
             return experimentResource;
         } else if (type == ResourceType.PROJECT_USER){
             ProjectUserResource pr = new ProjectUserResource();
@@ -348,9 +336,7 @@ public class ProjectResource extends AbstractResource {
             Project project = new Project();
             project.setProject_id(id);
             project.setProject_name(name);
-            Gateway modelGateway = em.find(Gateway.class, gateway.getGatewayId());
-            project.setGateway(modelGateway);
-            project.setGateway_id(modelGateway.getGateway_id());
+            project.setGateway_id(gatewayId);
             Users user = em.find(Users.class, worker.getUser());
             project.setUsers(user);
             project.setUser_name(user.getUser_name());
@@ -359,8 +345,7 @@ public class ProjectResource extends AbstractResource {
 
             if (existingProject != null) {
                 existingProject.setProject_name(name);
-                existingProject.setGateway(modelGateway);
-                existingProject.setGateway_id(modelGateway.getGateway_id());
+                existingProject.setGateway_id(gatewayId);
                 existingProject.setUsers(user);
                 existingProject.setUser_name(user.getUser_name());
                 existingProject.setDescription(description);
@@ -425,21 +410,13 @@ public class ProjectResource extends AbstractResource {
 		this.worker = worker;
 	}
 
-    /**
-     *
-     * @return gateway resource
-     */
-    public GatewayResource getGateway() {
-		return gateway;
-	}
+    public String getGatewayId() {
+        return gatewayId;
+    }
 
-    /**
-     *
-     * @param gateway gateway resource
-     */
-    public void setGateway(GatewayResource gateway) {
-		this.gateway = gateway;
-	}
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
 
     public String getDescription() {
         return description;

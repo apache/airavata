@@ -40,12 +40,26 @@ import java.util.List;
 public class JobDetailResource extends AbstractResource {
     private static final Logger logger = LoggerFactory.getLogger(JobDetailResource.class);
     private String jobId;
-    private TaskDetailResource taskDetailResource;
+    private String taskId;
     private String jobDescription;
     private Timestamp creationTime;
     private String computeResourceConsumed;
     private String jobName;
     private String workingDir;
+    private StatusResource jobStatus;
+    private List<ErrorDetailResource> errors;
+
+    public void setJobStatus(StatusResource jobStatus) {
+        this.jobStatus = jobStatus;
+    }
+
+    public List<ErrorDetailResource> getErrors() {
+        return errors;
+    }
+
+    public void setErrors(List<ErrorDetailResource> errors) {
+        this.errors = errors;
+    }
 
     public String getJobName() {
         return jobName;
@@ -71,12 +85,12 @@ public class JobDetailResource extends AbstractResource {
         this.jobId = jobId;
     }
 
-    public TaskDetailResource getTaskDetailResource() {
-        return taskDetailResource;
+    public String getTaskId() {
+        return taskId;
     }
 
-    public void setTaskDetailResource(TaskDetailResource taskDetailResource) {
-        this.taskDetailResource = taskDetailResource;
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 
     public String getJobDescription() {
@@ -273,16 +287,14 @@ public class JobDetailResource extends AbstractResource {
         EntityManager em = null;
         try {
             em = ResourceUtils.getEntityManager();
-            JobDetail existingJobDetail = em.find(JobDetail.class, new JobDetails_PK(jobId, taskDetailResource.getTaskId()));
+            JobDetail existingJobDetail = em.find(JobDetail.class, new JobDetails_PK(jobId, taskId));
             em.close();
 
             em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
             JobDetail jobDetail = new JobDetail();
-            TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
             jobDetail.setJobId(jobId);
-            jobDetail.setTask(taskDetail);
-            jobDetail.setTaskId(taskDetailResource.getTaskId());
+            jobDetail.setTaskId(taskId);
             jobDetail.setCreationTime(creationTime);
             jobDetail.setJobName(jobName);
             jobDetail.setWorkingDir(workingDir);
@@ -292,8 +304,7 @@ public class JobDetailResource extends AbstractResource {
             jobDetail.setComputeResourceConsumed(computeResourceConsumed);
             if (existingJobDetail != null) {
                 existingJobDetail.setJobId(jobId);
-                existingJobDetail.setTask(taskDetail);
-                existingJobDetail.setTaskId(taskDetailResource.getTaskId());
+                existingJobDetail.setTaskId(taskId);
                 existingJobDetail.setCreationTime(creationTime);
                 if (jobDescription != null) {
                     existingJobDetail.setJobDescription(jobDescription.toCharArray());
@@ -320,7 +331,11 @@ public class JobDetailResource extends AbstractResource {
         }
     }
 
-    public StatusResource getJobStatus() throws RegistryException{
+    public StatusResource getJobStatus() {
+        return jobStatus;
+    }
+
+    public StatusResource getJobStatus1() throws RegistryException{
         List<Resource> resources = get(ResourceType.STATUS);
         for (Resource resource : resources) {
             StatusResource jobStatus = (StatusResource) resource;

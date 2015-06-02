@@ -49,23 +49,23 @@ import java.util.UUID;
 public class WorkerResource extends AbstractResource {
     private final static Logger logger = LoggerFactory.getLogger(WorkerResource.class);
     private String user;
-	private GatewayResource gateway;
+	private String gatewayId;
 
-    /**
-     *
-     */
     public WorkerResource() {
     }
 
-    /**
-     *
-     * @param user username
-     * @param gateway  gatewayResource
-     */
-    public WorkerResource(String user, GatewayResource gateway) {
-		this.setUser(user);
-		this.gateway=gateway;
-	}
+    public WorkerResource(String user, String gatewayId) {
+        this.user = user;
+        this.gatewayId = gatewayId;
+    }
+
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
 
     /**
      * Gateway worker can create child data structures such as projects and user workflows
@@ -78,13 +78,13 @@ public class WorkerResource extends AbstractResource {
 			case PROJECT:
 				ProjectResource projectResource = new ProjectResource();
 				projectResource.setWorker(this);
-				projectResource.setGateway(gateway);
+				projectResource.setGatewayId(gatewayId);
 				result=projectResource;
 				break;
             case EXPERIMENT:
                 ExperimentResource experimentResource = new ExperimentResource();
                 experimentResource.setExecutionUser(user);
-                experimentResource.setGateway(gateway);
+                experimentResource.setGatewayId(gatewayId);
                 result = experimentResource;
                 break;
 			default:
@@ -259,9 +259,11 @@ public class WorkerResource extends AbstractResource {
                 case PROJECT:
                     generator = new QueryGenerator(PROJECT);
                     Users users = em.find(Users.class, getUser());
-                    Gateway gatewayModel = em.find(Gateway.class, gateway.getGatewayId());
+                    Gateway gatewayModel = em.find(Gateway.class, gatewayId);
                     generator.setParameter("users", users);
-                    generator.setParameter("gateway", gatewayModel);
+                    if (gatewayModel != null){
+                        generator.setParameter("gateway", gatewayModel);
+                    }
 
                     //ordering - only supported only by CREATION_TIME
                     if(orderByIdentifier != null && resultOrderType != null
@@ -334,7 +336,7 @@ public class WorkerResource extends AbstractResource {
         EntityManager em = null;
         try {
             em = ResourceUtils.getEntityManager();
-            Gateway_Worker existingWorker = em.find(Gateway_Worker.class, new Gateway_Worker_PK(gateway.getGatewayId(), user));
+            Gateway_Worker existingWorker = em.find(Gateway_Worker.class, new Gateway_Worker_PK(gatewayId, user));
             em.close();
 
             em = ResourceUtils.getEntityManager();
@@ -343,14 +345,11 @@ public class WorkerResource extends AbstractResource {
             Users existingUser = em.find(Users.class, this.user);
             gatewayWorker.setUser(existingUser);
             gatewayWorker.setUser_name(existingUser.getUser_name());
-            Gateway gatewaymodel = em.find(Gateway.class, gateway.getGatewayId());
-            gatewayWorker.setGateway(gatewaymodel);
-            gatewayWorker.setGateway_id(gatewaymodel.getGateway_id());
+            gatewayWorker.setGateway_id(gatewayId);
             if (existingWorker != null) {
                 existingWorker.setUser_name(existingUser.getUser_name());
                 existingWorker.setUser(existingUser);
-                existingWorker.setGateway(gatewaymodel);
-                existingWorker.setGateway_id(gatewaymodel.getGateway_id());
+                existingWorker.setGateway_id(gatewayId);
                 gatewayWorker = em.merge(existingWorker);
             } else {
                 em.persist(gatewayWorker);
@@ -385,22 +384,6 @@ public class WorkerResource extends AbstractResource {
     public void setUser(String user) {
 		this.user = user;
 	}
-
-    /**
-     *
-     * @return gateway resource
-     */
-    public GatewayResource getGateway() {
-        return gateway;
-    }
-
-    /**
-     *
-     * @param gateway  gateway resource
-     */
-    public void setGateway(GatewayResource gateway) {
-        this.gateway = gateway;
-    }
 
     /**
      *

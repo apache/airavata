@@ -38,8 +38,8 @@ import java.util.List;
 public class ComputationSchedulingResource extends AbstractResource {
     private static final Logger logger = LoggerFactory.getLogger(ComputationSchedulingResource.class);
     private int schedulingId = 0;
-    private ExperimentResource experimentResource;
-    private TaskDetailResource taskDetailResource;
+    private String experimentId;
+    private String taskId;
     private String resourceHostId;
     private int cpuCount;
     private int nodeCount;
@@ -67,20 +67,20 @@ public class ComputationSchedulingResource extends AbstractResource {
         this.schedulingId = schedulingId;
     }
 
-    public ExperimentResource getExperimentResource() {
-        return experimentResource;
+    public String getExperimentId() {
+        return experimentId;
     }
 
-    public void setExperimentResource(ExperimentResource experimentResource) {
-        this.experimentResource = experimentResource;
+    public void setExperimentId(String experimentId) {
+        this.experimentId = experimentId;
     }
 
-    public TaskDetailResource getTaskDetailResource() {
-        return taskDetailResource;
+    public String getTaskId() {
+        return taskId;
     }
 
-    public void setTaskDetailResource(TaskDetailResource taskDetailResource) {
-        this.taskDetailResource = taskDetailResource;
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 
     public String getResourceHostId() {
@@ -192,14 +192,8 @@ public class ComputationSchedulingResource extends AbstractResource {
             } else {
                 scheduling = new Computational_Resource_Scheduling();
             }
-            Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
-            if (taskDetailResource != null) {
-                TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
-                scheduling.setTask(taskDetail);
-                scheduling.setTaskId(taskDetailResource.getTaskId());
-            }
-            scheduling.setExpId(experimentResource.getExpID());
-            scheduling.setExperiment(experiment);
+            scheduling.setExpId(experimentId);
+            scheduling.setTaskId(taskId);
             scheduling.setResourceHostId(resourceHostId);
             scheduling.setCpuCount(cpuCount);
             scheduling.setNodeCount(nodeCount);

@@ -134,6 +134,7 @@ public class EmailBasedMonitor implements Runnable{
     }
 
     private ResourceJobManagerType getJobMonitorType(String addressStr) throws AiravataException {
+        System.out.println("*********** address ******** : " + addressStr);
         switch (addressStr) {
             case "pbsconsult@sdsc.edu":   // trestles , gordan
             case "adm@trident.bigred2.uits.iu.edu":  // bigred2
@@ -142,6 +143,7 @@ public class EmailBasedMonitor implements Runnable{
                 return ResourceJobManagerType.PBS;
             case "SDSC Admin <slurm@comet-fe3.sdsc.edu>": // comet
             case "slurm@batch1.stampede.tacc.utexas.edu": // stampede
+            case "slurm user <slurm@tempest.dsc.soic.indiana.edu>":
                 return ResourceJobManagerType.SLURM;
 //            case "lsf":
 //                return ResourceJobManagerType.LSF;

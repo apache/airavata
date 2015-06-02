@@ -22,6 +22,7 @@
 package org.apache.airavata.persistance.registry.jpa.model;
 
 import org.apache.openjpa.persistence.DataCache;
+import org.apache.openjpa.persistence.jdbc.ElementJoinColumn;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -47,6 +48,18 @@ public class ExperimentConfigData implements Serializable {
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "EXPERIMENT_ID")
     private Experiment experiment;
+
+    @OneToOne (fetch = FetchType.LAZY, mappedBy = "experiment")
+    private Computational_Resource_Scheduling resourceScheduling;
+
+    @OneToOne (fetch = FetchType.LAZY, mappedBy = "experiment")
+    private AdvancedInputDataHandling inputDataHandling;
+
+    @OneToOne (fetch = FetchType.LAZY, mappedBy = "experiment")
+    private AdvancedOutputDataHandling outputDataHandling;
+
+    @OneToOne (fetch = FetchType.LAZY, mappedBy = "experiment")
+    private QosParam qosParam;
 
     public String getExpId() {
         return expId;
@@ -80,14 +93,6 @@ public class ExperimentConfigData implements Serializable {
         this.shareExp = shareExp;
     }
 
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
-    public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
-    }
-
     public String getUserDn() {
         return userDn;
     }
@@ -102,5 +107,37 @@ public class ExperimentConfigData implements Serializable {
 
     public void setGenerateCert(boolean generateCert) {
         this.generateCert = generateCert;
+    }
+
+    public AdvancedInputDataHandling getInputDataHandling() {
+        return inputDataHandling;
+    }
+
+    public void setInputDataHandling(AdvancedInputDataHandling inputDataHandling) {
+        this.inputDataHandling = inputDataHandling;
+    }
+
+    public AdvancedOutputDataHandling getOutputDataHandling() {
+        return outputDataHandling;
+    }
+
+    public void setOutputDataHandling(AdvancedOutputDataHandling outputDataHandling) {
+        this.outputDataHandling = outputDataHandling;
+    }
+
+    public QosParam getQosParam() {
+        return qosParam;
+    }
+
+    public void setQosParam(QosParam qosParam) {
+        this.qosParam = qosParam;
+    }
+
+    public Computational_Resource_Scheduling getResourceScheduling() {
+        return resourceScheduling;
+    }
+
+    public void setResourceScheduling(Computational_Resource_Scheduling resourceScheduling) {
+        this.resourceScheduling = resourceScheduling;
     }
 }

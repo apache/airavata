@@ -93,14 +93,6 @@ public class Experiment_Output  implements Serializable {
         this.dataType = dataType;
     }
 
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
-    public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
-    }
-
     public boolean isRequired() {
         return isRequired;
     }

@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 public class NodeOutputResource extends AbstractResource {
 	private static final Logger logger = LoggerFactory.getLogger(NodeOutputResource.class);
 	
-    private WorkflowNodeDetailResource nodeDetailResource;
+    private String nodeId;
     private String outputKey;
     private String dataType;
     private String value;
@@ -98,12 +98,12 @@ public class NodeOutputResource extends AbstractResource {
         this.dataNameLocation = dataNameLocation;
     }
 
-    public WorkflowNodeDetailResource getNodeDetailResource() {
-        return nodeDetailResource;
+    public String getNodeId() {
+        return nodeId;
     }
 
-    public void setNodeDetailResource(WorkflowNodeDetailResource nodeDetailResource) {
-        this.nodeDetailResource = nodeDetailResource;
+    public void setNodeId(String nodeId) {
+        this.nodeId = nodeId;
     }
 
     public String getOutputKey() {
@@ -159,15 +159,13 @@ public class NodeOutputResource extends AbstractResource {
         EntityManager em = null;
         try {
             em = ResourceUtils.getEntityManager();
-            NodeOutput existingOutput = em.find(NodeOutput.class, new NodeOutput_PK(outputKey, nodeDetailResource.getNodeInstanceId()));
+            NodeOutput existingOutput = em.find(NodeOutput.class, new NodeOutput_PK(outputKey, nodeId));
             em.close();
 
             em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
             NodeOutput nodeOutput = new NodeOutput();
-            WorkflowNodeDetail nodeDetail = em.find(WorkflowNodeDetail.class, nodeDetailResource.getNodeInstanceId());
-            nodeOutput.setNode(nodeDetail);
-            nodeOutput.setNodeId(nodeDetail.getNodeId());
+            nodeOutput.setNodeId(nodeId);
             nodeOutput.setOutputKey(outputKey);
             nodeOutput.setDataType(dataType);
             nodeOutput.setValue(value);
@@ -179,8 +177,7 @@ public class NodeOutputResource extends AbstractResource {
             nodeOutput.setSearchQuery(searchQuery);
 
             if (existingOutput != null) {
-                existingOutput.setNode(nodeDetail);
-                existingOutput.setNodeId(nodeDetail.getNodeId());
+                existingOutput.setNodeId(nodeId);
                 existingOutput.setOutputKey(outputKey);
                 existingOutput.setDataType(dataType);
                 existingOutput.setValue(value);
