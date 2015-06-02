@@ -12,17 +12,18 @@
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>airavata</artifactId>
-        <version>0.12-SNAPSHOT</version>
+        <version>0.15-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>airavata-client-sample</artifactId>
+    <artifactId>samples</artifactId>
     <name>Samples - Airavata Client Samples</name>
     <packaging>pom</packaging>
     <url>http://airavata.apache.org/</url>
 
     <modules>
-        <module>experiment</module>
+        <!--module>experiment</module-->
+        <module>secure-client</module>
     </modules>
 </project>

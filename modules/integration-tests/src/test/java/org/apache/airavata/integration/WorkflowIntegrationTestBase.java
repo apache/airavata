@@ -23,6 +23,7 @@ package org.apache.airavata.integration;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.workspace.experiment.Experiment;
@@ -113,6 +114,7 @@ public abstract class WorkflowIntegrationTestBase {
             ServerSettings.setSetting(MYPROXY_USER_NAME, myProxyUserName);
             ServerSettings.setSetting(MYPROXY_PWD, myProxyPassword);
             ServerSettings.setSetting(CERT_LOCATION, certLocation);
+            ServerSettings.setSetting(Constants.IS_API_SECURED, "false");
         }
 
     }

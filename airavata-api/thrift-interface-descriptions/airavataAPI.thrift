@@ -33,6 +33,7 @@ include "applicationDeploymentModel.thrift"
 include "applicationInterfaceModel.thrift"
 include "gatewayResourceProfileModel.thrift"
 include "workflowDataModel.thrift"
+include "securityModel.thrift"
 
 namespace java org.apache.airavata.api
 namespace php Airavata.API
@@ -66,10 +67,11 @@ service Airavata {
   /**
    * Fetch Apache Airavata API version
   */
-  string getAPIVersion()
+  string getAPIVersion(1: required securityModel.AuthzToken authzToken)
         throws (1: airavataErrors.InvalidRequestException ire,
                 2: airavataErrors.AiravataClientException ace,
-                3: airavataErrors.AiravataSystemException ase)
+                3: airavataErrors.AiravataSystemException ase,
+                4: airavataErrors.AuthorizationException ae)
 
   string addGateway(1: required workspaceModel.Gateway gateway)
          throws (1: airavataErrors.InvalidRequestException ire,
