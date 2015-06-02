@@ -31,7 +31,7 @@
             </activation>
             <modules>
                 <module>registry-cpi</module>
-                <module>airavata-jpa-registry</module>
+                <module>experiment-catalog</module>
                 <!--<module>jpa-gen</module>-->
             </modules>
         </profile>
