@@ -18,9 +18,12 @@ except:
 
 
 class Iface:
-  def getAPIVersion(self):
+  def getAPIVersion(self, authzToken):
     """
     Fetch Apache Airavata API version
+
+    Parameters:
+     - authzToken
     """
     pass
 
@@ -2144,16 +2147,20 @@ class Client(Iface):
       self._oprot = oprot
     self._seqid = 0
 
-  def getAPIVersion(self):
+  def getAPIVersion(self, authzToken):
     """
     Fetch Apache Airavata API version
+
+    Parameters:
+     - authzToken
     """
-    self.send_getAPIVersion()
+    self.send_getAPIVersion(authzToken)
     return self.recv_getAPIVersion()
 
-  def send_getAPIVersion(self):
+  def send_getAPIVersion(self, authzToken):
     self._oprot.writeMessageBegin('getAPIVersion', TMessageType.CALL, self._seqid)
     args = getAPIVersion_args()
+    args.authzToken = authzToken
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
@@ -2176,6 +2183,8 @@ class Client(Iface):
       raise result.ace
     if result.ase is not None:
       raise result.ase
+    if result.ae is not None:
+      raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getAPIVersion failed: unknown result");
 
   def addGateway(self, gateway):
@@ -8216,13 +8225,15 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = getAPIVersion_result()
     try:
-      result.success = self._handler.getAPIVersion()
+      result.success = self._handler.getAPIVersion(args.authzToken)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
       result.ace = ace
     except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
       result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException, ae:
+      result.ae = ae
     oprot.writeMessageBegin("getAPIVersion", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
@@ -10522,9 +10533,18 @@ class Processor(Iface, TProcessor):
 # HELPER FUNCTIONS AND STRUCTURES
 
 class getAPIVersion_args:
+  """
+  Attributes:
+   - authzToken
+  """
 
   thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
   )
+
+  def __init__(self, authzToken=None,):
+    self.authzToken = authzToken
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -10535,6 +10555,12 @@ class getAPIVersion_args:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -10545,10 +10571,16 @@ class getAPIVersion_args:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('getAPIVersion_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
   def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
     return
 
 
@@ -10570,6 +10602,7 @@ class getAPIVersion_result:
    - ire
    - ace
    - ase
+   - ae
   """
 
   thrift_spec = (
@@ -10577,13 +10610,15 @@ class getAPIVersion_result:
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
   )
 
-  def __init__(self, success=None, ire=None, ace=None, ase=None,):
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
     self.success = success
     self.ire = ire
     self.ace = ace
     self.ase = ase
+    self.ae = ae
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -10617,6 +10652,12 @@ class getAPIVersion_result:
           self.ase.read(iprot)
         else:
           iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -10642,6 +10683,10 @@ class getAPIVersion_result:
     if self.ase is not None:
       oprot.writeFieldBegin('ase', TType.STRUCT, 3)
       self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()

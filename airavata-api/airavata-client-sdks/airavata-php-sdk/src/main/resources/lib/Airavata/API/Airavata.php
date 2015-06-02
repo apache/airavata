@@ -17,7 +17,7 @@ use Thrift\Exception\TApplicationException;
 
 
 interface AiravataIf {
-  public function getAPIVersion();
+  public function getAPIVersion(\Airavata\Model\Security\AuthzToken $authzToken);
   public function addGateway(\Airavata\Model\Workspace\Gateway $gateway);
   public function updateGateway($gatewayId, \Airavata\Model\Workspace\Gateway $updatedGateway);
   public function getGateway($gatewayId);
@@ -157,15 +157,16 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     $this->output_ = $output ? $output : $input;
   }
 
-  public function getAPIVersion()
+  public function getAPIVersion(\Airavata\Model\Security\AuthzToken $authzToken)
   {
-    $this->send_getAPIVersion();
+    $this->send_getAPIVersion($authzToken);
     return $this->recv_getAPIVersion();
   }
 
-  public function send_getAPIVersion()
+  public function send_getAPIVersion(\Airavata\Model\Security\AuthzToken $authzToken)
   {
     $args = new \Airavata\API\Airavata_getAPIVersion_args();
+    $args->authzToken = $authzToken;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -212,6 +213,9 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     }
     if ($result->ase !== null) {
       throw $result->ase;
+    }
+    if ($result->ae !== null) {
+      throw $result->ae;
     }
     throw new \Exception("getAPIVersion failed: unknown result");
   }
@@ -7904,11 +7908,22 @@ class AiravataClient implements \Airavata\API\AiravataIf {
 class Airavata_getAPIVersion_args {
   static $_TSPEC;
 
+  public $authzToken = null;
 
-  public function __construct() {
+  public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
+        1 => array(
+          'var' => 'authzToken',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Security\AuthzToken',
+          ),
         );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['authzToken'])) {
+        $this->authzToken = $vals['authzToken'];
+      }
     }
   }
 
@@ -7931,6 +7946,14 @@ class Airavata_getAPIVersion_args {
       }
       switch ($fid)
       {
+        case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->authzToken = new \Airavata\Model\Security\AuthzToken();
+            $xfer += $this->authzToken->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -7944,6 +7967,14 @@ class Airavata_getAPIVersion_args {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_getAPIVersion_args');
+    if ($this->authzToken !== null) {
+      if (!is_object($this->authzToken)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('authzToken', TType::STRUCT, 1);
+      $xfer += $this->authzToken->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
     $xfer += $output->writeFieldStop();
     $xfer += $output->writeStructEnd();
     return $xfer;
@@ -7958,6 +7989,7 @@ class Airavata_getAPIVersion_result {
   public $ire = null;
   public $ace = null;
   public $ase = null;
+  public $ae = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -7981,6 +8013,11 @@ class Airavata_getAPIVersion_result {
           'type' => TType::STRUCT,
           'class' => '\Airavata\API\Error\AiravataSystemException',
           ),
+        4 => array(
+          'var' => 'ae',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\API\Error\AuthorizationException',
+          ),
         );
     }
     if (is_array($vals)) {
@@ -7995,6 +8032,9 @@ class Airavata_getAPIVersion_result {
       }
       if (isset($vals['ase'])) {
         $this->ase = $vals['ase'];
+      }
+      if (isset($vals['ae'])) {
+        $this->ae = $vals['ae'];
       }
     }
   }
@@ -8049,6 +8089,14 @@ class Airavata_getAPIVersion_result {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 4:
+          if ($ftype == TType::STRUCT) {
+            $this->ae = new \Airavata\API\Error\AuthorizationException();
+            $xfer += $this->ae->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -8080,6 +8128,11 @@ class Airavata_getAPIVersion_result {
     if ($this->ase !== null) {
       $xfer += $output->writeFieldBegin('ase', TType::STRUCT, 3);
       $xfer += $this->ase->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->ae !== null) {
+      $xfer += $output->writeFieldBegin('ae', TType::STRUCT, 4);
+      $xfer += $this->ae->write($output);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();
