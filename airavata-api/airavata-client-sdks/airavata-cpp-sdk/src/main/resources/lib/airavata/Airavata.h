@@ -32,7 +32,7 @@ namespace apache { namespace airavata { namespace api {
 class AiravataIf {
  public:
   virtual ~AiravataIf() {}
-  virtual void getAPIVersion(std::string& _return) = 0;
+  virtual void getAPIVersion(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) = 0;
   virtual void addGateway(std::string& _return, const  ::apache::airavata::model::workspace::Gateway& gateway) = 0;
   virtual void updateGateway(const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway) = 0;
   virtual void getGateway( ::apache::airavata::model::workspace::Gateway& _return, const std::string& gatewayId) = 0;
@@ -188,7 +188,7 @@ class AiravataIfSingletonFactory : virtual public AiravataIfFactory {
 class AiravataNull : virtual public AiravataIf {
  public:
   virtual ~AiravataNull() {}
-  void getAPIVersion(std::string& /* _return */) {
+  void getAPIVersion(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */) {
     return;
   }
   void addGateway(std::string& /* _return */, const  ::apache::airavata::model::workspace::Gateway& /* gateway */) {
@@ -615,9 +615,16 @@ class Airavata_getAPIVersion_args {
 
   virtual ~Airavata_getAPIVersion_args() throw() {}
 
+   ::apache::airavata::model::security::AuthzToken authzToken;
 
-  bool operator == (const Airavata_getAPIVersion_args & /* rhs */) const
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val) {
+    authzToken = val;
+  }
+
+  bool operator == (const Airavata_getAPIVersion_args & rhs) const
   {
+    if (!(authzToken == rhs.authzToken))
+      return false;
     return true;
   }
   bool operator != (const Airavata_getAPIVersion_args &rhs) const {
@@ -638,17 +645,19 @@ class Airavata_getAPIVersion_pargs {
 
   virtual ~Airavata_getAPIVersion_pargs() throw() {}
 
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
 };
 
 typedef struct _Airavata_getAPIVersion_result__isset {
-  _Airavata_getAPIVersion_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_getAPIVersion_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success;
   bool ire;
   bool ace;
   bool ase;
+  bool ae;
 } _Airavata_getAPIVersion_result__isset;
 
 class Airavata_getAPIVersion_result {
@@ -663,6 +672,7 @@ class Airavata_getAPIVersion_result {
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_getAPIVersion_result__isset __isset;
 
@@ -682,6 +692,10 @@ class Airavata_getAPIVersion_result {
     ase = val;
   }
 
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val) {
+    ae = val;
+  }
+
   bool operator == (const Airavata_getAPIVersion_result & rhs) const
   {
     if (!(success == rhs.success))
@@ -691,6 +705,8 @@ class Airavata_getAPIVersion_result {
     if (!(ace == rhs.ace))
       return false;
     if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
       return false;
     return true;
   }
@@ -706,11 +722,12 @@ class Airavata_getAPIVersion_result {
 };
 
 typedef struct _Airavata_getAPIVersion_presult__isset {
-  _Airavata_getAPIVersion_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_getAPIVersion_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success;
   bool ire;
   bool ace;
   bool ase;
+  bool ae;
 } _Airavata_getAPIVersion_presult__isset;
 
 class Airavata_getAPIVersion_presult {
@@ -723,6 +740,7 @@ class Airavata_getAPIVersion_presult {
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_getAPIVersion_presult__isset __isset;
 
@@ -18308,8 +18326,8 @@ class AiravataClient : virtual public AiravataIf {
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getOutputProtocol() {
     return poprot_;
   }
-  void getAPIVersion(std::string& _return);
-  void send_getAPIVersion();
+  void getAPIVersion(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken);
+  void send_getAPIVersion(const  ::apache::airavata::model::security::AuthzToken& authzToken);
   void recv_getAPIVersion(std::string& _return);
   void addGateway(std::string& _return, const  ::apache::airavata::model::workspace::Gateway& gateway);
   void send_addGateway(const  ::apache::airavata::model::workspace::Gateway& gateway);
@@ -18989,13 +19007,13 @@ class AiravataMultiface : virtual public AiravataIf {
     ifaces_.push_back(iface);
   }
  public:
-  void getAPIVersion(std::string& _return) {
+  void getAPIVersion(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getAPIVersion(_return);
+      ifaces_[i]->getAPIVersion(_return, authzToken);
     }
-    ifaces_[i]->getAPIVersion(_return);
+    ifaces_[i]->getAPIVersion(_return, authzToken);
     return;
   }
 
