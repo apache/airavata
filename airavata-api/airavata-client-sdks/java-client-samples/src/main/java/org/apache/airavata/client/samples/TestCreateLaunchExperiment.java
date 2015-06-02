@@ -27,6 +27,7 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.InvalidRequestException;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
@@ -48,7 +49,7 @@ public class TestCreateLaunchExperiment {
     public static void main(String[] args) {
         try {
             final Airavata.Client airavata = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
-            System.out.println("API version is " + airavata.getAPIVersion());
+            System.out.println("API version is " + airavata.getAPIVersion(null));
             Calendar cal1 = Calendar.getInstance();
             cal1.add(Calendar.DATE, -1);
             Long from = cal1.getTimeInMillis();
