@@ -252,4 +252,19 @@ public class ServerSettings extends ApplicationSettings {
         return Boolean.valueOf(getSetting(ENABLE_EMAIL_BASED_MONITORING, "false"));
     }
 
+    public static boolean isAPISecured() throws ApplicationSettingsException {
+        return Boolean.valueOf(getSetting(Constants.IS_API_SECURED));
+    }
+
+    public static String getRemoteOauthServerUrl() throws ApplicationSettingsException {
+        return getSetting(Constants.REMOTE_OAUTH_SERVER_URL);
+    }
+
+    public static String getAdminUsername() throws ApplicationSettingsException {
+        return getSetting(Constants.ADMIN_USERNAME);
+    }
+
+    public static String getAdminPassword() throws ApplicationSettingsException {
+        return getSetting(Constants.ADMIN_PASSWORD);
+    }
 }
