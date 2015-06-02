@@ -27,6 +27,7 @@ import org.apache.aiaravata.application.catalog.data.resources.*;
 import org.apache.aiaravata.application.catalog.data.util.AppCatalogThriftConversion;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavataAPIConstants;
+import org.apache.airavata.api.server.security.*;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.logger.AiravataLogger;
@@ -48,6 +49,7 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfil
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.*;
@@ -86,7 +88,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Query Airavata to fetch the API version
      */
     @Override
-    public String getAPIVersion() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public String getAPIVersion(AuthzToken authzToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        //security check
+        authenticateNAuthorize(authzToken);
         return airavataAPIConstants.AIRAVATA_API_VERSION;
     }
 
@@ -1659,7 +1663,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
     }
 
-       
+
     private OrchestratorService.Client getOrchestratorClient() throws TException{
 		final int serverPort = Integer.parseInt(ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ORCHESTRATOR_SERVER_PORT,"8940"));
         final String serverHost = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ORCHESTRATOR_SERVER_HOST, null);
@@ -2368,7 +2372,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             throw exception;
         }
     }
-    
+
     /**
      * Add a Local Job Submission details to a compute resource
      * App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
@@ -3492,6 +3496,25 @@ public class AiravataServerHandler implements Airavata.Iface {
             ProjectNotFoundException exception = new ProjectNotFoundException();
             exception.setMessage("Error while removing the project. More info : " + e.getMessage());
             throw exception;
+        }
+    }
+
+    public void authenticateNAuthorize(AuthzToken authzToken) throws AuthorizationException {
+        try {
+            boolean isAPISecured = ServerSettings.isAPISecured();
+            if (isAPISecured) {
+
+                AiravataSecurityManager securityManager = SecurityManagerFactory.getSecurityManager();
+                boolean isAuthz = securityManager.isUserAuthenticatedAndAuthorized(authzToken);
+                if (!isAuthz) {
+                    throw new AuthorizationException("User is not authenticated or authorized.");
+                }
+            }
+        } catch (org.apache.airavata.api.server.security.SecurityException e) {
+            throw new AuthorizationException(e.getMessage());
+        } catch (ApplicationSettingsException e) {
+            logger.error("Error in reading API security settings.");
+            throw new AuthorizationException(e.getMessage());
         }
     }
 
