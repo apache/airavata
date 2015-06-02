@@ -22,11 +22,13 @@
 package org.apache.airavata.persistance.registry.jpa.model;
 
 import org.apache.openjpa.persistence.DataCache;
+import org.apache.openjpa.persistence.jdbc.ElementJoinColumn;
 
 import javax.persistence.*;
-
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.List;
 
 @DataCache
 @Entity
@@ -52,6 +54,36 @@ public class TaskDetail implements Serializable {
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "NODE_INSTANCE_ID")
     private WorkflowNodeDetail nodeDetail;
+
+    @OneToMany (fetch = FetchType.LAZY, mappedBy = "task")
+    private List<ApplicationOutput> applicationOutputs;
+
+    @OneToMany (fetch = FetchType.LAZY, mappedBy = "task")
+    private List<ApplicationInput> applicationInputs;
+
+    @OneToOne (fetch = FetchType.LAZY, mappedBy = "task")
+    private Computational_Resource_Scheduling resourceScheduling;
+
+    @OneToOne (fetch = FetchType.LAZY, mappedBy = "task")
+    private AdvancedInputDataHandling inputDataHandling;
+
+    @OneToOne (fetch = FetchType.LAZY, mappedBy = "task")
+    private AdvancedOutputDataHandling outputDataHandling;
+
+    @OneToOne (fetch = FetchType.LAZY, mappedBy = "task")
+    private Status taskStatus;
+
+    @OneToMany (fetch = FetchType.LAZY, mappedBy = "task")
+    private List<JobDetail> jobDetails;
+
+    @OneToMany (fetch = FetchType.LAZY, mappedBy = "task")
+    private List<DataTransferDetail> dataTransferDetails;
+
+    @OneToMany (fetch = FetchType.LAZY, mappedBy = "task")
+    private List<Notification_Email> notificationEmails;
+
+    @OneToMany (fetch = FetchType.LAZY, mappedBy = "task")
+    private List<ErrorDetail> errorDetails;
 
     public String getTaskId() {
         return taskId;
@@ -93,14 +125,6 @@ public class TaskDetail implements Serializable {
         this.appVersion = appVersion;
     }
 
-    public WorkflowNodeDetail getNodeDetail() {
-        return nodeDetail;
-    }
-
-    public void setNodeDetail(WorkflowNodeDetail nodeDetail) {
-        this.nodeDetail = nodeDetail;
-    }
-
 	public String getApplicationDeploymentId() {
 		return applicationDeploymentId;
 	}
@@ -115,5 +139,85 @@ public class TaskDetail implements Serializable {
 
     public void setAllowNotification(boolean allowNotification) {
         this.allowNotification = allowNotification;
+    }
+
+    public List<ApplicationOutput> getApplicationOutputs() {
+        return applicationOutputs;
+    }
+
+    public void setApplicationOutputs(List<ApplicationOutput> applicationOutputs) {
+        this.applicationOutputs = applicationOutputs;
+    }
+
+    public List<ApplicationInput> getApplicationInputs() {
+        return applicationInputs;
+    }
+
+    public void setApplicationInputs(List<ApplicationInput> applicationInputs) {
+        this.applicationInputs = applicationInputs;
+    }
+
+    public Computational_Resource_Scheduling getResourceScheduling() {
+        return resourceScheduling;
+    }
+
+    public void setResourceScheduling(Computational_Resource_Scheduling resourceScheduling) {
+        this.resourceScheduling = resourceScheduling;
+    }
+
+    public AdvancedInputDataHandling getInputDataHandling() {
+        return inputDataHandling;
+    }
+
+    public void setInputDataHandling(AdvancedInputDataHandling inputDataHandling) {
+        this.inputDataHandling = inputDataHandling;
+    }
+
+    public AdvancedOutputDataHandling getOutputDataHandling() {
+        return outputDataHandling;
+    }
+
+    public void setOutputDataHandling(AdvancedOutputDataHandling outputDataHandling) {
+        this.outputDataHandling = outputDataHandling;
+    }
+
+    public List<JobDetail> getJobDetails() {
+        return jobDetails;
+    }
+
+    public void setJobDetails(List<JobDetail> jobDetails) {
+        this.jobDetails = jobDetails;
+    }
+
+    public List<DataTransferDetail> getDataTransferDetails() {
+        return dataTransferDetails;
+    }
+
+    public void setDataTransferDetails(List<DataTransferDetail> dataTransferDetails) {
+        this.dataTransferDetails = dataTransferDetails;
+    }
+
+    public List<Notification_Email> getNotificationEmails() {
+        return notificationEmails;
+    }
+
+    public void setNotificationEmails(List<Notification_Email> notificationEmails) {
+        this.notificationEmails = notificationEmails;
+    }
+
+    public Status getTaskStatus() {
+        return taskStatus;
+    }
+
+    public void setTaskStatus(Status taskStatus) {
+        this.taskStatus = taskStatus;
+    }
+
+    public List<ErrorDetail> getErrorDetails() {
+        return errorDetails;
+    }
+
+    public void setErrorDetails(List<ErrorDetail> errorDetails) {
+        this.errorDetails = errorDetails;
     }
 }

@@ -37,7 +37,6 @@ import org.slf4j.LoggerFactory;
 
 public class ApplicationInputResource extends AbstractResource {
 	private static final Logger logger = LoggerFactory.getLogger(ApplicationInputResource.class);
-    private TaskDetailResource taskDetailResource;
     private String inputKey;
     private String dataType;
     private String metadata;
@@ -49,6 +48,15 @@ public class ApplicationInputResource extends AbstractResource {
     private boolean isRequired;
     private boolean requiredToCMD;
     private boolean dataStaged;
+    private String taskId;
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
 
     public boolean isRequired() {
         return isRequired;
@@ -138,15 +146,6 @@ public class ApplicationInputResource extends AbstractResource {
         this.value = value;
     }
 
-    public TaskDetailResource getTaskDetailResource() {
-        return taskDetailResource;
-    }
-
-    public void setTaskDetailResource(TaskDetailResource taskDetailResource) {
-        this.taskDetailResource = taskDetailResource;
-    }
-
-    
     public Resource create(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for application input data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
@@ -175,15 +174,13 @@ public class ApplicationInputResource extends AbstractResource {
         EntityManager em = null;
         try {
             em = ResourceUtils.getEntityManager();
-            ApplicationInput existingInput = em.find(ApplicationInput.class, new ApplicationInput_PK(inputKey, taskDetailResource.getTaskId()));
+            ApplicationInput existingInput = em.find(ApplicationInput.class, new ApplicationInput_PK(inputKey, taskId));
             em.close();
 
             em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
             ApplicationInput applicationInput = new ApplicationInput();
-            TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
-            applicationInput.setTask(taskDetail);
-            applicationInput.setTaskId(taskDetail.getTaskId());
+            applicationInput.setTaskId(taskId);
             applicationInput.setInputKey(inputKey);
             applicationInput.setDataType(dataType);
             applicationInput.setAppArgument(appArgument);
@@ -193,15 +190,14 @@ public class ApplicationInputResource extends AbstractResource {
             applicationInput.setRequiredToCMD(requiredToCMD);
             applicationInput.setRequired(isRequired);
             applicationInput.setDataStaged(dataStaged);
-            if (value != null){
+            if (value != null) {
                 applicationInput.setValue(value.toCharArray());
             }
 
             applicationInput.setMetadata(metadata);
 
             if (existingInput != null) {
-                existingInput.setTask(taskDetail);
-                existingInput.setTaskId(taskDetail.getTaskId());
+                existingInput.setTaskId(taskId);
                 existingInput.setInputKey(inputKey);
                 existingInput.setDataType(dataType);
                 existingInput.setAppArgument(appArgument);
@@ -211,7 +207,7 @@ public class ApplicationInputResource extends AbstractResource {
                 existingInput.setRequiredToCMD(requiredToCMD);
                 existingInput.setRequired(isRequired);
                 existingInput.setDataStaged(dataStaged);
-                if (value != null){
+                if (value != null) {
                     existingInput.setValue(value.toCharArray());
                 }
                 existingInput.setMetadata(metadata);
@@ -224,12 +220,12 @@ public class ApplicationInputResource extends AbstractResource {
         } catch (Exception e) {
             throw new RegistryException(e.getMessage());
         } finally {
-                if (em != null && em.isOpen()) {
-                    if (em.getTransaction().isActive()){
-                        em.getTransaction().rollback();
-                    }
-                    em.close();
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
                 }
+                em.close();
             }
         }
+    }
 }

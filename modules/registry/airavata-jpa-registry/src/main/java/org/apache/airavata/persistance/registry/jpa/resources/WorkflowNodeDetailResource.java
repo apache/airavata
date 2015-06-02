@@ -39,19 +39,56 @@ import java.util.List;
 
 public class WorkflowNodeDetailResource extends AbstractResource {
     private static final Logger logger = LoggerFactory.getLogger(WorkflowNodeDetailResource.class);
-    private ExperimentResource experimentResource;
+    private String experimentId;
     private String nodeInstanceId;
     private Timestamp creationTime;
     private String nodeName;
     private String executionUnit;
     private String executionUnitData;
+    private List<TaskDetailResource> taskDetailResourceList;
+    private List<NodeInputResource> nodeInputs;
+    private List<NodeOutputResource> nodeOutputs;
+    private StatusResource nodeStatus;
+    private List<ErrorDetailResource> erros;
 
-    public ExperimentResource getExperimentResource() {
-        return experimentResource;
+    public List<TaskDetailResource> getTaskDetailResourceList() {
+        return taskDetailResourceList;
     }
 
-    public void setExperimentResource(ExperimentResource experimentResource) {
-        this.experimentResource = experimentResource;
+    public void setTaskDetailResourceList(List<TaskDetailResource> taskDetailResourceList) {
+        this.taskDetailResourceList = taskDetailResourceList;
+    }
+
+    public void setNodeInputs(List<NodeInputResource> nodeInputs) {
+        this.nodeInputs = nodeInputs;
+    }
+
+    public void setNodeOutputs(List<NodeOutputResource> nodeOutputs) {
+        this.nodeOutputs = nodeOutputs;
+    }
+
+    public StatusResource getNodeStatus() {
+        return nodeStatus;
+    }
+
+    public void setNodeStatus(StatusResource nodeStatus) {
+        this.nodeStatus = nodeStatus;
+    }
+
+    public List<ErrorDetailResource> getErros() {
+        return erros;
+    }
+
+    public void setErros(List<ErrorDetailResource> erros) {
+        this.erros = erros;
+    }
+
+    public String getExperimentId() {
+        return experimentId;
+    }
+
+    public void setExperimentId(String experimentId) {
+        this.experimentId = experimentId;
     }
 
     public String getNodeInstanceId() {
@@ -82,23 +119,23 @@ public class WorkflowNodeDetailResource extends AbstractResource {
         switch (type){
             case TASK_DETAIL:
                 TaskDetailResource taskDetailResource = new TaskDetailResource();
-                taskDetailResource.setWorkflowNodeDetailResource(this);
+                taskDetailResource.setNodeId(nodeInstanceId);
                 return taskDetailResource;
             case ERROR_DETAIL:
                 ErrorDetailResource errorDetailResource = new ErrorDetailResource();
-                errorDetailResource.setNodeDetail(this);
+                errorDetailResource.setNodeId(nodeInstanceId);;
                 return errorDetailResource;
             case NODE_INPUT:
                 NodeInputResource nodeInputResource = new NodeInputResource();
-                nodeInputResource.setNodeDetailResource(this);
+                nodeInputResource.setNodeId(nodeInstanceId);
                 return nodeInputResource;
             case NODE_OUTPUT:
                 NodeOutputResource nodeOutputResource = new NodeOutputResource();
-                nodeOutputResource.setNodeDetailResource(this);
+                nodeOutputResource.setNodeId(nodeInstanceId);
                 return nodeOutputResource;
             case STATUS:
                 StatusResource statusResource = new StatusResource();
-                statusResource.setWorkflowNodeDetail(this);
+                statusResource.setNodeId(nodeInstanceId);
                 return statusResource;
             default:
                 logger.error("Unsupported resource type for workflow node detail resource.", new IllegalArgumentException());
@@ -349,17 +386,14 @@ public class WorkflowNodeDetailResource extends AbstractResource {
             em.getTransaction().begin();
             WorkflowNodeDetail workflowNodeDetail = new WorkflowNodeDetail();
             workflowNodeDetail.setNodeId(nodeInstanceId);
-            Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
-            workflowNodeDetail.setExperiment(experiment);
-            workflowNodeDetail.setExpId(experimentResource.getExpID());
+            workflowNodeDetail.setExpId(experimentId);
             workflowNodeDetail.setCreationTime(creationTime);
             workflowNodeDetail.setNodeName(nodeName);
             workflowNodeDetail.setExecutionUnit(getExecutionUnit());
             workflowNodeDetail.setExecutionUnitData(getExecutionUnitData());
 
             if (existingNode != null) {
-                existingNode.setExperiment(experiment);
-                existingNode.setExpId(experimentResource.getExpID());
+                existingNode.setExpId(experimentId);
                 existingNode.setCreationTime(creationTime);
                 existingNode.setNodeName(nodeName);
                 existingNode.setExecutionUnit(getExecutionUnit());
@@ -383,7 +417,15 @@ public class WorkflowNodeDetailResource extends AbstractResource {
         }
     }
 
-    public List<NodeInputResource> getNodeInputs() throws RegistryException{
+    public List<NodeInputResource> getNodeInputs() {
+        return nodeInputs;
+    }
+
+    public List<NodeOutputResource> getNodeOutputs() {
+        return nodeOutputs;
+    }
+
+    public List<NodeInputResource> getNodeInputs1() throws RegistryException{
         List<NodeInputResource> nodeInputResourceList = new ArrayList<NodeInputResource>();
         List<Resource> resources = get(ResourceType.NODE_INPUT);
         for (Resource resource : resources) {
@@ -393,7 +435,7 @@ public class WorkflowNodeDetailResource extends AbstractResource {
         return nodeInputResourceList;
     }
 
-    public List<NodeOutputResource> getNodeOutputs() throws RegistryException{
+    public List<NodeOutputResource> getNodeOutputs1() throws RegistryException{
         List<NodeOutputResource> outputResources = new ArrayList<NodeOutputResource>();
         List<Resource> resources = get(ResourceType.NODE_OUTPUT);
         for (Resource resource : resources) {
@@ -421,12 +463,12 @@ public class WorkflowNodeDetailResource extends AbstractResource {
         List<Resource> resources = get(ResourceType.STATUS);
         for (Resource resource : resources) {
             StatusResource taskStatus = (StatusResource) resource;
-            if(taskStatus.getStatusType().equals(StatusType.TASK.toString()) && taskStatus.getTaskDetailResource().getTaskId().equals(taskId)){
+            if(taskStatus.getStatusType().equals(StatusType.TASK.toString()) && taskStatus.getTaskId().equals(taskId)){
                 if (taskStatus.getState() == null || taskStatus.getState().equals("") ){
                     taskStatus.setState("UNKNOWN");
                 }
                 return taskStatus;
-            } 
+            }
         }
         return null;
     }

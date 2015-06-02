@@ -36,10 +36,10 @@ import java.util.List;
 public class StatusResource extends AbstractResource {
     private static final Logger logger = LoggerFactory.getLogger(StatusResource.class);
     private int statusId = 0;
-    private ExperimentResource experimentResource;
-    private WorkflowNodeDetailResource workflowNodeDetail;
-    private DataTransferDetailResource dataTransferDetail;
-    private TaskDetailResource taskDetailResource;
+    private String experimentId;
+    private String nodeId;
+    private String transferId;
+    private String taskId;
     private String jobId;
     private String state;
     private Timestamp statusUpdateTime;
@@ -53,36 +53,36 @@ public class StatusResource extends AbstractResource {
         this.statusId = statusId;
     }
 
-    public ExperimentResource getExperimentResource() {
-        return experimentResource;
+    public String getExperimentId() {
+        return experimentId;
     }
 
-    public void setExperimentResource(ExperimentResource experimentResource) {
-        this.experimentResource = experimentResource;
+    public void setExperimentId(String experimentId) {
+        this.experimentId = experimentId;
     }
 
-    public WorkflowNodeDetailResource getWorkflowNodeDetail() {
-        return workflowNodeDetail;
+    public String getNodeId() {
+        return nodeId;
     }
 
-    public void setWorkflowNodeDetail(WorkflowNodeDetailResource workflowNodeDetail) {
-        this.workflowNodeDetail = workflowNodeDetail;
+    public void setNodeId(String nodeId) {
+        this.nodeId = nodeId;
     }
 
-    public DataTransferDetailResource getDataTransferDetail() {
-        return dataTransferDetail;
+    public String getTransferId() {
+        return transferId;
     }
 
-    public void setDataTransferDetail(DataTransferDetailResource dataTransferDetail) {
-        this.dataTransferDetail = dataTransferDetail;
+    public void setTransferId(String transferId) {
+        this.transferId = transferId;
     }
 
-    public TaskDetailResource getTaskDetailResource() {
-        return taskDetailResource;
+    public String getTaskId() {
+        return taskId;
     }
 
-    public void setTaskDetailResource(TaskDetailResource taskDetailResource) {
-        this.taskDetailResource = taskDetailResource;
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 
     public String getJobId() {
@@ -154,25 +154,11 @@ public class StatusResource extends AbstractResource {
             } else {
                 status = new Status();
             }
-            Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
-            if (taskDetailResource != null) {
-                TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
-                status.setTask(taskDetail);
-                status.setTaskId(taskDetailResource.getTaskId());
-            }
-            if (workflowNodeDetail != null) {
-                WorkflowNodeDetail nodeDetail = em.find(WorkflowNodeDetail.class, workflowNodeDetail.getNodeInstanceId());
-                status.setNode(nodeDetail);
-                status.setNodeId(workflowNodeDetail.getNodeInstanceId());
-            }
-            if (dataTransferDetail != null) {
-                DataTransferDetail transferDetail = em.find(DataTransferDetail.class, dataTransferDetail.getTransferId());
-                status.setTransferDetail(transferDetail);
-                status.setTransferId(dataTransferDetail.getTransferId());
-            }
-            status.setExperiment(experiment);
+            status.setExpId(experimentId);
+            status.setTaskId(taskId);
+            status.setNodeId(nodeId);
+            status.setTransferId(transferId);
             status.setJobId(jobId);
-            status.setExpId(experimentResource.getExpID());
             status.setState(state);
             status.setStatusUpdateTime(statusUpdateTime);
             status.setStatusType(statusType);

@@ -100,20 +100,4 @@ public class QosParam implements Serializable {
     public void setNoOfRetries(int noOfRetries) {
         this.noOfRetries = noOfRetries;
     }
-
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
-    public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
-    }
-
-    public TaskDetail getTask() {
-        return task;
-    }
-
-    public void setTask(TaskDetail task) {
-        this.task = task;
-    }
 }

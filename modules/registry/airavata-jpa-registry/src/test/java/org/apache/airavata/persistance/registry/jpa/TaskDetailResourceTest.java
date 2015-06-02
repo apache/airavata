@@ -49,19 +49,19 @@ public class TaskDetailResourceTest extends AbstractResourceTest{
 	    experimentResource = (ExperimentResource) getGatewayResource().create(ResourceType.EXPERIMENT);
         experimentResource.setExpID(experimentID);
         experimentResource.setExecutionUser(getWorkerResource().getUser());
-        experimentResource.setProject(getProjectResource());
+        experimentResource.setProjectId(getProjectResource().getId());
         experimentResource.setCreationTime(creationTime);
         experimentResource.save();
         
         nodeDetailResource = (WorkflowNodeDetailResource) experimentResource.create(ResourceType.WORKFLOW_NODE_DETAIL);
-        nodeDetailResource.setExperimentResource(experimentResource);
+        nodeDetailResource.setExperimentId(experimentResource.getExpID());
         nodeDetailResource.setNodeInstanceId(nodeID);
         nodeDetailResource.setNodeName(nodeID);
         nodeDetailResource.setCreationTime(creationTime);
         nodeDetailResource.save();
         
         taskDetailResource = (TaskDetailResource)nodeDetailResource.create(ResourceType.TASK_DETAIL);
-        taskDetailResource.setWorkflowNodeDetailResource(nodeDetailResource);
+        taskDetailResource.setNodeId(nodeDetailResource.getNodeInstanceId());
         taskDetailResource.setTaskId(taskID);
         taskDetailResource.setApplicationId(applicationID);
         taskDetailResource.setApplicationVersion("1.0");

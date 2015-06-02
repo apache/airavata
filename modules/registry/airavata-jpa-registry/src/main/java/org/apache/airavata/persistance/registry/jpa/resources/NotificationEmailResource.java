@@ -36,8 +36,8 @@ public class NotificationEmailResource extends AbstractResource {
     private static final Logger logger = LoggerFactory.getLogger(NotificationEmailResource.class);
 
     private int emailId = 0;
-    private ExperimentResource experimentResource;
-    private TaskDetailResource taskDetailResource;
+    private String experimentId;
+    private String taskId;
     private String emailAddress;
 
 
@@ -49,20 +49,20 @@ public class NotificationEmailResource extends AbstractResource {
         this.emailAddress = emailAddress;
     }
 
-    public ExperimentResource getExperimentResource() {
-        return experimentResource;
+    public String getExperimentId() {
+        return experimentId;
     }
 
-    public void setExperimentResource(ExperimentResource experimentResource) {
-        this.experimentResource = experimentResource;
+    public void setExperimentId(String experimentId) {
+        this.experimentId = experimentId;
     }
 
-    public TaskDetailResource getTaskDetailResource() {
-        return taskDetailResource;
+    public String getTaskId() {
+        return taskId;
     }
 
-    public void setTaskDetailResource(TaskDetailResource taskDetailResource) {
-        this.taskDetailResource = taskDetailResource;
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 
     public Resource create(ResourceType type) throws RegistryException {
@@ -97,14 +97,8 @@ public class NotificationEmailResource extends AbstractResource {
             }else {
                 notification_email = new Notification_Email();
             }
-            Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
-            notification_email.setExperiment(experiment);
-            notification_email.setExperiment_id(experiment.getExpId());
-            if (taskDetailResource != null){
-                TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
-                notification_email.setTaskDetail(taskDetail);
-                notification_email.setTaskId(taskDetail.getTaskId());
-            }
+            notification_email.setExperiment_id(experimentId);
+            notification_email.setTaskId(taskId);
             notification_email.setEmailAddress(emailAddress);
             em.persist(notification_email);
             emailId = notification_email.getEmailId();

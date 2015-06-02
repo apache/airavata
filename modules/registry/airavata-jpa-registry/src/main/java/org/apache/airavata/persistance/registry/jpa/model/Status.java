@@ -62,11 +62,15 @@ public class Status implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade= CascadeType.MERGE)
     @JoinColumn(name = "NODE_INSTANCE_ID")
-    private WorkflowNodeDetail node;
+    private WorkflowNodeDetail nodeDetail;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade= CascadeType.MERGE)
     @JoinColumn(name = "TRANSFER_ID")
     private DataTransferDetail transferDetail;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade= CascadeType.MERGE)
+    @JoinColumn(name = "JOB_ID")
+    private JobDetail jobDetail;
 
     public int getStatusId() {
         return statusId;
@@ -138,37 +142,5 @@ public class Status implements Serializable {
 
     public void setStatusType(String statusType) {
         this.statusType = statusType;
-    }
-
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
-    public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
-    }
-
-    public TaskDetail getTask() {
-        return task;
-    }
-
-    public void setTask(TaskDetail task) {
-        this.task = task;
-    }
-
-    public WorkflowNodeDetail getNode() {
-        return node;
-    }
-
-    public void setNode(WorkflowNodeDetail node) {
-        this.node = node;
-    }
-
-    public DataTransferDetail getTransferDetail() {
-        return transferDetail;
-    }
-
-    public void setTransferDetail(DataTransferDetail transferDetail) {
-        this.transferDetail = transferDetail;
     }
 }

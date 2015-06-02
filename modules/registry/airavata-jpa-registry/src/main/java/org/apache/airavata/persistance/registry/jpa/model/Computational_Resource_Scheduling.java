@@ -171,20 +171,4 @@ public class Computational_Resource_Scheduling implements Serializable {
     public void setProjectName(String projectName) {
         this.projectName = projectName;
     }
-
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
-    public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
-    }
-
-    public TaskDetail getTask() {
-        return task;
-    }
-
-    public void setTask(TaskDetail task) {
-        this.task = task;
-    }
 }

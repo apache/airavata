@@ -40,12 +40,90 @@ import java.util.List;
 public class TaskDetailResource extends AbstractResource {
     private static final Logger logger = LoggerFactory.getLogger(TaskDetailResource.class);
     private String taskId;
-    private WorkflowNodeDetailResource workflowNodeDetailResource;
+    private String nodeId;
     private Timestamp creationTime;
     private String applicationId;
     private String applicationVersion;
     private String applicationDeploymentId;
     private boolean enableEmailNotifications;
+    private List<ApplicationInputResource> applicationInputs;
+    private List<ApplicationOutputResource> applicationOutputs;
+    private ComputationSchedulingResource schedulingResource;
+    private AdvanceInputDataHandlingResource inputDataHandlingResource;
+    private AdvancedOutputDataHandlingResource outputDataHandlingResource;
+    private StatusResource taskStatus;
+    private List<JobDetailResource> jobDetailResources;
+    private List<DataTransferDetailResource> transferDetailResourceList;
+    private List<NotificationEmailResource> emailResourceList;
+    private List<ErrorDetailResource> errors;
+
+    public List<JobDetailResource> getJobDetailResources() {
+        return jobDetailResources;
+    }
+
+    public void setJobDetailResources(List<JobDetailResource> jobDetailResources) {
+        this.jobDetailResources = jobDetailResources;
+    }
+
+    public void setApplicationInputs(List<ApplicationInputResource> applicationInputs) {
+        this.applicationInputs = applicationInputs;
+    }
+
+    public void setApplicationOutputs(List<ApplicationOutputResource> applicationOutputs) {
+        this.applicationOutputs = applicationOutputs;
+    }
+
+    public ComputationSchedulingResource getSchedulingResource() {
+        return schedulingResource;
+    }
+
+    public void setSchedulingResource(ComputationSchedulingResource schedulingResource) {
+        this.schedulingResource = schedulingResource;
+    }
+
+    public AdvanceInputDataHandlingResource getInputDataHandlingResource() {
+        return inputDataHandlingResource;
+    }
+
+    public void setInputDataHandlingResource(AdvanceInputDataHandlingResource inputDataHandlingResource) {
+        this.inputDataHandlingResource = inputDataHandlingResource;
+    }
+
+    public AdvancedOutputDataHandlingResource getOutputDataHandlingResource() {
+        return outputDataHandlingResource;
+    }
+
+    public void setOutputDataHandlingResource(AdvancedOutputDataHandlingResource outputDataHandlingResource) {
+        this.outputDataHandlingResource = outputDataHandlingResource;
+    }
+
+    public void setTaskStatus(StatusResource taskStatus) {
+        this.taskStatus = taskStatus;
+    }
+
+    public List<DataTransferDetailResource> getTransferDetailResourceList() {
+        return transferDetailResourceList;
+    }
+
+    public void setTransferDetailResourceList(List<DataTransferDetailResource> transferDetailResourceList) {
+        this.transferDetailResourceList = transferDetailResourceList;
+    }
+
+    public List<NotificationEmailResource> getEmailResourceList() {
+        return emailResourceList;
+    }
+
+    public void setEmailResourceList(List<NotificationEmailResource> emailResourceList) {
+        this.emailResourceList = emailResourceList;
+    }
+
+    public List<ErrorDetailResource> getErrors() {
+        return errors;
+    }
+
+    public void setErrors(List<ErrorDetailResource> errors) {
+        this.errors = errors;
+    }
 
     public boolean isEnableEmailNotifications() {
         return enableEmailNotifications;
@@ -63,12 +141,12 @@ public class TaskDetailResource extends AbstractResource {
         this.taskId = taskId;
     }
 
-    public WorkflowNodeDetailResource getWorkflowNodeDetailResource() {
-        return workflowNodeDetailResource;
+    public String getNodeId() {
+        return nodeId;
     }
 
-    public void setWorkflowNodeDetailResource(WorkflowNodeDetailResource workflowNodeDetailResource) {
-        this.workflowNodeDetailResource = workflowNodeDetailResource;
+    public void setNodeId(String nodeId) {
+        this.nodeId = nodeId;
     }
 
     public Timestamp getCreationTime() {
@@ -100,47 +178,47 @@ public class TaskDetailResource extends AbstractResource {
        switch (type){
            case ERROR_DETAIL:
                ErrorDetailResource errorDetailResource = new ErrorDetailResource();
-               errorDetailResource.setTaskDetailResource(this);
+               errorDetailResource.setTaskId(taskId);
                return errorDetailResource;
            case NOTIFICATION_EMAIL:
                NotificationEmailResource emailResource = new NotificationEmailResource();
-               emailResource.setTaskDetailResource(this);
+               emailResource.setTaskId(taskId);
                return emailResource;
            case APPLICATION_INPUT:
                ApplicationInputResource applicationInputResource = new ApplicationInputResource();
-               applicationInputResource.setTaskDetailResource(this);
+               applicationInputResource.setTaskId(taskId);
                return applicationInputResource;
            case APPLICATION_OUTPUT:
                ApplicationOutputResource applicationOutputResource = new ApplicationOutputResource();
-               applicationOutputResource.setTaskDetailResource(this);
+               applicationOutputResource.setTaskId(taskId);
                return applicationOutputResource;
            case JOB_DETAIL:
                JobDetailResource jobDetailResource = new JobDetailResource();
-               jobDetailResource.setTaskDetailResource(this);
+               jobDetailResource.setTaskId(taskId);
                return jobDetailResource;
            case DATA_TRANSFER_DETAIL:
                DataTransferDetailResource dataTransferDetailResource = new DataTransferDetailResource();
-               dataTransferDetailResource.setTaskDetailResource(this);
+               dataTransferDetailResource.setTaskId(taskId);
                return dataTransferDetailResource;
            case STATUS:
                StatusResource statusResource = new StatusResource();
-               statusResource.setTaskDetailResource(this);
+               statusResource.setTaskId(taskId);
                return statusResource;
            case COMPUTATIONAL_RESOURCE_SCHEDULING:
                ComputationSchedulingResource schedulingResource = new ComputationSchedulingResource();
-               schedulingResource.setTaskDetailResource(this);
+               schedulingResource.setTaskId(taskId);
                return schedulingResource;
            case ADVANCE_INPUT_DATA_HANDLING:
                AdvanceInputDataHandlingResource inputDataHandlingResource = new AdvanceInputDataHandlingResource();
-               inputDataHandlingResource.setTaskDetailResource(this);
+               inputDataHandlingResource.setTaskId(taskId);
                return inputDataHandlingResource;
            case ADVANCE_OUTPUT_DATA_HANDLING:
                AdvancedOutputDataHandlingResource outputDataHandlingResource = new AdvancedOutputDataHandlingResource();
-               outputDataHandlingResource.setTaskDetailResource(this);
+               outputDataHandlingResource.setTaskId(taskId);
                return outputDataHandlingResource;
            case QOS_PARAM:
                QosParamResource qosParamResource = new QosParamResource();
-               qosParamResource.setTaskDetailResource(this);
+               qosParamResource.setTaskId(taskId);
                return qosParamResource;
            default:
                logger.error("Unsupported resource type for task detail resource.", new IllegalArgumentException());
@@ -513,13 +591,12 @@ public class TaskDetailResource extends AbstractResource {
             em.close();
             em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
-            WorkflowNodeDetail workflowNodeDetail = em.find(WorkflowNodeDetail.class, workflowNodeDetailResource.getNodeInstanceId());
             if (taskDetail != null) {
-            	updateTaskDetail(taskDetail, workflowNodeDetail);
+            	updateTaskDetail(taskDetail, nodeId);
                 em.merge(taskDetail);
             } else {
                 taskDetail = new TaskDetail();
-                updateTaskDetail(taskDetail, workflowNodeDetail);                
+                updateTaskDetail(taskDetail, nodeId);
                 em.persist(taskDetail);
             }
             em.getTransaction().commit();
@@ -536,11 +613,9 @@ public class TaskDetailResource extends AbstractResource {
         }
     }
 
-	private void updateTaskDetail(TaskDetail taskDetail,
-			WorkflowNodeDetail workflowNodeDetail) {
+	private void updateTaskDetail(TaskDetail taskDetail, String nodeId) {
 		taskDetail.setTaskId(taskId);
-		taskDetail.setNodeDetail(workflowNodeDetail);
-		taskDetail.setNodeId(workflowNodeDetailResource.getNodeInstanceId());
+		taskDetail.setNodeId(nodeId);
 		taskDetail.setCreationTime(creationTime);
 		taskDetail.setAppId(applicationId);
 		taskDetail.setAppVersion(applicationVersion);
@@ -548,7 +623,15 @@ public class TaskDetailResource extends AbstractResource {
 		taskDetail.setApplicationDeploymentId(getApplicationDeploymentId());
 	}
 
-    public List<ApplicationInputResource> getApplicationInputs() throws RegistryException{
+    public List<ApplicationInputResource> getApplicationInputs() {
+        return applicationInputs;
+    }
+
+    public List<ApplicationOutputResource> getApplicationOutputs() {
+        return applicationOutputs;
+    }
+
+    public List<ApplicationInputResource> getApplicationInputs1() throws RegistryException{
         List<ApplicationInputResource> applicationInputResources = new ArrayList<ApplicationInputResource>();
         List<Resource> resources = get(ResourceType.APPLICATION_INPUT);
         for (Resource resource : resources) {
@@ -558,7 +641,7 @@ public class TaskDetailResource extends AbstractResource {
         return applicationInputResources;
     }
 
-    public List<ApplicationOutputResource> getApplicationOutputs() throws RegistryException{
+    public List<ApplicationOutputResource> getApplicationOutputs1() throws RegistryException{
         List<ApplicationOutputResource> outputResources = new ArrayList<ApplicationOutputResource>();
         List<Resource> resources = get(ResourceType.APPLICATION_OUTPUT);
         for (Resource resource : resources) {
@@ -568,7 +651,11 @@ public class TaskDetailResource extends AbstractResource {
         return outputResources;
     }
 
-    public StatusResource getTaskStatus() throws RegistryException{
+    public StatusResource getTaskStatus() {
+        return taskStatus;
+    }
+
+    public StatusResource getTaskStatus1() throws RegistryException{
         List<Resource> resources = get(ResourceType.STATUS);
         for (Resource resource : resources) {
             StatusResource taskStatus = (StatusResource) resource;

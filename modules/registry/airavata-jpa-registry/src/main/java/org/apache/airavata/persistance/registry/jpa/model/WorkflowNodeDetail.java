@@ -22,10 +22,13 @@
 package org.apache.airavata.persistance.registry.jpa.model;
 
 import org.apache.openjpa.persistence.DataCache;
+import org.apache.openjpa.persistence.jdbc.ElementJoinColumn;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.List;
 
 @DataCache
 @Entity
@@ -48,6 +51,21 @@ public class WorkflowNodeDetail implements Serializable {
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "EXPERIMENT_ID")
     private Experiment experiment;
+
+    @OneToMany (fetch = FetchType.LAZY, mappedBy = "nodeDetail")
+    private List<TaskDetail> taskDetails;
+
+    @OneToMany (fetch = FetchType.LAZY, mappedBy = "nodeDetail")
+    private List<NodeInput> nodeInputs;
+
+    @OneToMany (fetch = FetchType.LAZY, mappedBy = "nodeDetail")
+    private List<NodeOutput> nodeOutputs;
+
+    @OneToOne (fetch = FetchType.LAZY, mappedBy = "nodeDetail")
+    private Status nodeStatus;
+
+    @OneToMany (fetch = FetchType.LAZY, mappedBy = "nodeDetail")
+    private List<ErrorDetail> errorDetails;
 
     public String getExpId() {
         return expId;
@@ -81,14 +99,6 @@ public class WorkflowNodeDetail implements Serializable {
         this.nodeName = nodeName;
     }
 
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
-    public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
-    }
-
 	public String getExecutionUnitData() {
 		return executionUnitData;
 	}
@@ -104,4 +114,44 @@ public class WorkflowNodeDetail implements Serializable {
 	public void setExecutionUnit(String executionUnit) {
 		this.executionUnit = executionUnit;
 	}
+
+    public List<TaskDetail> getTaskDetails() {
+        return taskDetails;
+    }
+
+    public void setTaskDetails(List<TaskDetail> taskDetails) {
+        this.taskDetails = taskDetails;
+    }
+
+    public List<NodeInput> getNodeInputs() {
+        return nodeInputs;
+    }
+
+    public void setNodeInputs(List<NodeInput> nodeInputs) {
+        this.nodeInputs = nodeInputs;
+    }
+
+    public List<NodeOutput> getNodeOutputs() {
+        return nodeOutputs;
+    }
+
+    public void setNodeOutputs(List<NodeOutput> nodeOutputs) {
+        this.nodeOutputs = nodeOutputs;
+    }
+
+    public Status getNodeStatus() {
+        return nodeStatus;
+    }
+
+    public void setNodeStatus(Status nodeStatus) {
+        this.nodeStatus = nodeStatus;
+    }
+
+    public List<ErrorDetail> getErrorDetails() {
+        return errorDetails;
+    }
+
+    public void setErrorDetails(List<ErrorDetail> errorDetails) {
+        this.errorDetails = errorDetails;
+    }
 }

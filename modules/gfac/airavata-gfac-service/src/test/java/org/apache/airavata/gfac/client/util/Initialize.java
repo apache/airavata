@@ -152,7 +152,7 @@ public class Initialize {
             workerResource.save();
             
             ProjectResource projectResource = (ProjectResource)workerResource.create(ResourceType.PROJECT);
-            projectResource.setGateway(gatewayResource);
+            projectResource.setGatewayId(gatewayResource.getGatewayId());
             projectResource.setId("default");
             projectResource.setName("default");
             projectResource.setWorker(workerResource);

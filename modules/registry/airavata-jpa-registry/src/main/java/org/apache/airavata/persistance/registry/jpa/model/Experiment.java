@@ -22,11 +22,13 @@
 package org.apache.airavata.persistance.registry.jpa.model;
 
 import org.apache.openjpa.persistence.DataCache;
+import org.apache.openjpa.persistence.jdbc.ElementJoinColumn;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "EXPERIMENT")
@@ -74,8 +76,32 @@ public class Experiment implements Serializable {
     @JoinColumn(name = "EXECUTION_USER", referencedColumnName = "USER_NAME")
     private Users user;
 
-    @OneToMany(fetch=FetchType.LAZY, mappedBy = "experiment")
-    private Collection<ErrorDetail> errorDetails;
+    @OneToMany (fetch = FetchType.LAZY, mappedBy = "experiment")
+    private List<Experiment_Output> experimentOutputs;
+
+    @OneToMany (fetch = FetchType.LAZY, mappedBy = "experiment")
+    private List<Experiment_Input> experimentInputs;
+
+    @OneToOne (fetch = FetchType.LAZY, mappedBy = "experiment")
+    private Computational_Resource_Scheduling resourceScheduling;
+
+    @OneToOne (fetch = FetchType.LAZY, mappedBy = "experiment")
+    private ExperimentConfigData userConfigurationData;
+
+    @OneToMany (fetch = FetchType.LAZY, mappedBy = "experiment")
+    private List<WorkflowNodeDetail> workflowNodeDetails;
+
+    @OneToMany (fetch = FetchType.LAZY, mappedBy = "experiment")
+    private List<Status> stateChangeList;
+
+    @OneToMany (fetch = FetchType.LAZY, mappedBy = "experiment")
+    private List<ErrorDetail> errorDetails;
+
+    @OneToOne (fetch = FetchType.LAZY, mappedBy = "experiment")
+    private Status experimentStatus;
+
+    @OneToMany (fetch = FetchType.LAZY, mappedBy = "experiment")
+    private List<Notification_Email> notificationEmails;
 
     @OneToMany(fetch=FetchType.LAZY, mappedBy = "experiment")
     private Collection<Status> statuses;
@@ -102,14 +128,6 @@ public class Experiment implements Serializable {
 
     public void setExecutionUser(String executionUser) {
         this.executionUser = executionUser;
-    }
-
-    public String getProjectId() {
-        return projectID;
-    }
-
-    public void setProjectId(String projectId) {
-        this.projectID = projectId;
     }
 
     public Timestamp getCreationTime() {
@@ -176,30 +194,6 @@ public class Experiment implements Serializable {
         this.workflowExecutionId = workflowExecutionId;
     }
 
-    public Gateway getGateway() {
-        return gateway;
-    }
-
-    public void setGateway(Gateway gateway) {
-        this.gateway = gateway;
-    }
-
-    public Project getProject() {
-        return project;
-    }
-
-    public void setProject(Project project) {
-        this.project = project;
-    }
-
-    public Users getUser() {
-        return user;
-    }
-
-    public void setUser(Users user) {
-        this.user = user;
-    }
-
     public boolean isAllowNotification() {
         return allowNotification;
     }
@@ -212,6 +206,86 @@ public class Experiment implements Serializable {
         return gatewayExecutionId;
     }
 
+    public String getProjectID() {
+        return projectID;
+    }
+
+    public void setProjectID(String projectID) {
+        this.projectID = projectID;
+    }
+
+    public List<Experiment_Output> getExperimentOutputs() {
+        return experimentOutputs;
+    }
+
+    public void setExperimentOutputs(List<Experiment_Output> experimentOutputs) {
+        this.experimentOutputs = experimentOutputs;
+    }
+
+    public List<Experiment_Input> getExperimentInputs() {
+        return experimentInputs;
+    }
+
+    public void setExperimentInputs(List<Experiment_Input> experimentInputs) {
+        this.experimentInputs = experimentInputs;
+    }
+
+    public Computational_Resource_Scheduling getResourceScheduling() {
+        return resourceScheduling;
+    }
+
+    public void setResourceScheduling(Computational_Resource_Scheduling resourceScheduling) {
+        this.resourceScheduling = resourceScheduling;
+    }
+
+    public List<ErrorDetail> getErrorDetails() {
+        return errorDetails;
+    }
+
+    public ExperimentConfigData getUserConfigurationData() {
+        return userConfigurationData;
+    }
+
+    public void setUserConfigurationData(ExperimentConfigData userConfigurationData) {
+        this.userConfigurationData = userConfigurationData;
+    }
+
+    public List<WorkflowNodeDetail> getWorkflowNodeDetails() {
+        return workflowNodeDetails;
+    }
+
+    public void setWorkflowNodeDetails(List<WorkflowNodeDetail> workflowNodeDetails) {
+        this.workflowNodeDetails = workflowNodeDetails;
+    }
+
+    public List<Status> getStateChangeList() {
+        return stateChangeList;
+    }
+
+    public void setStateChangeList(List<Status> stateChangeList) {
+        this.stateChangeList = stateChangeList;
+    }
+
+    public void setErrorDetails(List<ErrorDetail> errorDetails) {
+        this.errorDetails = errorDetails;
+    }
+
+    public Status getExperimentStatus() {
+        return experimentStatus;
+    }
+
+    public void setExperimentStatus(Status experimentStatus) {
+        this.experimentStatus = experimentStatus;
+    }
+
+    public List<Notification_Email> getNotificationEmails() {
+        return notificationEmails;
+    }
+
+    public void setNotificationEmails(List<Notification_Email> notificationEmails) {
+        this.notificationEmails = notificationEmails;
+    }
+
     public void setGatewayExecutionId(String gatewayExecutionId) {
         this.gatewayExecutionId = gatewayExecutionId;
     }
@@ -222,13 +296,5 @@ public class Experiment implements Serializable {
 
     public void setStatuses(Collection<Status> statuses) {
         this.statuses = statuses;
-    }
-
-    public Collection<ErrorDetail> getErrorDetails() {
-        return errorDetails;
-    }
-
-    public void setErrorDetails(Collection<ErrorDetail> errorDetails) {
-        this.errorDetails = errorDetails;
     }
 }
