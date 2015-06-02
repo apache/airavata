@@ -42,7 +42,7 @@ public class ExperimentOutputResourceTest extends AbstractResourceTest  {
         experimentResource = (ExperimentResource) getGatewayResource().create(ResourceType.EXPERIMENT);
         experimentResource.setExpID(experimentID);
         experimentResource.setExecutionUser(getWorkerResource().getUser());
-        experimentResource.setProject(getProjectResource());
+        experimentResource.setProjectId(getProjectResource().getId());
         experimentResource.setCreationTime(getCurrentTimestamp());
         experimentResource.setApplicationId("testApplication");
         experimentResource.setApplicationVersion("1.0");
@@ -51,7 +51,7 @@ public class ExperimentOutputResourceTest extends AbstractResourceTest  {
         experimentResource.save();
 
         outputResource = (ExperimentOutputResource)experimentResource.create(ResourceType.EXPERIMENT_OUTPUT);
-        outputResource.setExperimentResource(experimentResource);
+        outputResource.setExperimentId(experimentResource.getExpID());
         outputResource.setExperimentKey("testKey");
         outputResource.setValue("testValue");
         outputResource.setDataType("string");

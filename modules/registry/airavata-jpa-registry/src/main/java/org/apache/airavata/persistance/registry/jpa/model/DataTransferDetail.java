@@ -22,6 +22,7 @@
 package org.apache.airavata.persistance.registry.jpa.model;
 
 import org.apache.openjpa.persistence.DataCache;
+import org.apache.openjpa.persistence.jdbc.ElementJoinColumn;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -45,6 +46,9 @@ public class DataTransferDetail implements Serializable {
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "TASK_ID")
     private TaskDetail task;
+
+    @OneToOne (fetch = FetchType.LAZY, mappedBy = "transferDetail")
+    private Status dataTransferStatus;
 
     public String getTransferId() {
         return transferId;
@@ -78,11 +82,11 @@ public class DataTransferDetail implements Serializable {
         this.transferDesc = transferDesc;
     }
 
-    public TaskDetail getTask() {
-        return task;
+    public Status getDataTransferStatus() {
+        return dataTransferStatus;
     }
 
-    public void setTask(TaskDetail task) {
-        this.task = task;
+    public void setDataTransferStatus(Status dataTransferStatus) {
+        this.dataTransferStatus = dataTransferStatus;
     }
 }

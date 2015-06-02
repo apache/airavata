@@ -26,7 +26,6 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.DataTransferDetail;
 import org.apache.airavata.persistance.registry.jpa.model.Status;
-import org.apache.airavata.persistance.registry.jpa.model.TaskDetail;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.utils.StatusType;
@@ -42,9 +41,18 @@ import java.util.List;
 public class DataTransferDetailResource extends AbstractResource {
     private static final Logger logger = LoggerFactory.getLogger(DataTransferDetailResource.class);
     private String transferId;
-    private TaskDetailResource taskDetailResource;
+    private String taskId;
     private Timestamp creationTime;
     private String transferDescription;
+    private StatusResource datatransferStatus;
+
+    public StatusResource getDatatransferStatus() {
+        return datatransferStatus;
+    }
+
+    public void setDatatransferStatus(StatusResource datatransferStatus) {
+        this.datatransferStatus = datatransferStatus;
+    }
 
     public String getTransferId() {
         return transferId;
@@ -52,14 +60,6 @@ public class DataTransferDetailResource extends AbstractResource {
 
     public void setTransferId(String transferId) {
         this.transferId = transferId;
-    }
-
-    public TaskDetailResource getTaskDetailResource() {
-        return taskDetailResource;
-    }
-
-    public void setTaskDetailResource(TaskDetailResource taskDetailResource) {
-        this.taskDetailResource = taskDetailResource;
     }
 
     public Timestamp getCreationTime() {
@@ -78,12 +78,19 @@ public class DataTransferDetailResource extends AbstractResource {
         this.transferDescription = transferDescription;
     }
 
-    
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
+
     public Resource create(ResourceType type) throws RegistryException {
         switch (type){
             case STATUS:
                 StatusResource statusResource = new StatusResource();
-                statusResource.setDataTransferDetail(this);
+                statusResource.setTransferId(transferId);
                 return statusResource;
             default:
                 logger.error("Unsupported resource type for data transfer details data resource.", new UnsupportedOperationException());
@@ -221,18 +228,15 @@ public class DataTransferDetailResource extends AbstractResource {
             em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
             DataTransferDetail dataTransferDetail = new DataTransferDetail();
-            TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
             dataTransferDetail.setTransferId(transferId);
-            dataTransferDetail.setTask(taskDetail);
-            dataTransferDetail.setTaskId(taskDetailResource.getTaskId());
+            dataTransferDetail.setTaskId(taskId);
             dataTransferDetail.setCreationTime(creationTime);
             if (transferDescription != null) {
                 dataTransferDetail.setTransferDesc(transferDescription.toCharArray());
             }
             if (existingDF != null) {
                 existingDF.setTransferId(transferId);
-                existingDF.setTask(taskDetail);
-                existingDF.setTaskId(taskDetailResource.getTaskId());
+                existingDF.setTaskId(taskId);
                 existingDF.setCreationTime(creationTime);
                 if (transferDescription != null) {
                     existingDF.setTransferDesc(transferDescription.toCharArray());

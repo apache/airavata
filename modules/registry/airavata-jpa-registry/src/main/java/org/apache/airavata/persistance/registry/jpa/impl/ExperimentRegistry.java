@@ -70,16 +70,14 @@ public class ExperimentRegistry {
             experimentResource.setExpID(experimentID);
             experimentResource.setExpName(experiment.getName());
             experimentResource.setExecutionUser(experiment.getUserName());
-            GatewayResource gateway = (GatewayResource)ResourceUtils.getGateway(gatewayId);
-            experimentResource.setGateway(gateway);
+            experimentResource.setGatewayId(gatewayId);
             experimentResource.setGatewayExecutionId(experiment.getGatewayExecutionId());
             experimentResource.setEnableEmailNotifications(experiment.isEnableEmailNotification());
             if (!workerResource.isProjectExists(experiment.getProjectID())) {
                 logger.error("Project does not exist in the system..");
                 throw new Exception("Project does not exist in the system, Please create the project first...");
             }
-            ProjectResource project = workerResource.getProject(experiment.getProjectID());
-            experimentResource.setProject(project);
+            experimentResource.setProjectId(experiment.getProjectID());
             experimentResource.setCreationTime(AiravataUtils.getTime(experiment.getCreationTime()));
             experimentResource.setDescription(experiment.getDescription());
             experimentResource.setApplicationId(experiment.getApplicationId());
@@ -93,7 +91,7 @@ public class ExperimentRegistry {
             if (emailAddresses != null && !emailAddresses.isEmpty()){
                 for (String email : emailAddresses){
                     NotificationEmailResource emailResource = new NotificationEmailResource();
-                    emailResource.setExperimentResource(experimentResource);
+                    emailResource.setExperimentId(experimentID);
                     emailResource.setEmailAddress(email);
                     emailResource.save();
                 }
@@ -150,7 +148,7 @@ public class ExperimentRegistry {
         try {
             ExperimentResource experiment = gatewayResource.getExperiment(experimentID);
             ConfigDataResource configData = (ConfigDataResource) experiment.create(ResourceType.CONFIG_DATA);
-            configData.setExperimentResource(experiment);
+            configData.setExperimentId(experimentID);
             configData.setAiravataAutoSchedule(configurationData.isAiravataAutoSchedule());
             configData.setOverrideManualParams(configurationData.isOverrideManualScheduledParams());
             configData.setShareExp(configurationData.isShareExperimentPublicly());
@@ -187,12 +185,15 @@ public class ExperimentRegistry {
             QosParamResource qosr = new QosParamResource();
             if (resource instanceof ExperimentResource) {
                 ExperimentResource experiment = (ExperimentResource) resource;
-                qosr.setExperimentResource(experiment);
+                qosr.setExperimentId(experiment.getExpID());
             }
             if (resource instanceof TaskDetailResource) {
                 TaskDetailResource taskDetailResource = (TaskDetailResource) resource;
-                qosr.setTaskDetailResource(taskDetailResource);
-                qosr.setExperimentResource(taskDetailResource.getWorkflowNodeDetailResource().getExperimentResource());
+                qosr.setTaskId(taskDetailResource.getTaskId());
+                String nodeId = taskDetailResource.getNodeId();
+                ExperimentResource experimentResource = new ExperimentResource();
+                WorkflowNodeDetailResource workflowNode = experimentResource.getWorkflowNode(nodeId);
+                qosr.setExperimentId(workflowNode.getExperimentId());
             }
             qosr.setStartExecutionAt(qosParams.getStartExecutionAt());
             qosr.setExecuteBefore(qosParams.getExecuteBefore());
@@ -210,12 +211,15 @@ public class ExperimentRegistry {
         try {
             if (resource instanceof ExperimentResource) {
                 ExperimentResource experiment = (ExperimentResource) resource;
-                adodh.setExperimentResource(experiment);
+                adodh.setExperimentId(experiment.getExpID());
             }
             if (resource instanceof TaskDetailResource) {
                 TaskDetailResource taskDetailResource = (TaskDetailResource) resource;
-                adodh.setTaskDetailResource(taskDetailResource);
-                adodh.setExperimentResource(taskDetailResource.getWorkflowNodeDetailResource().getExperimentResource());
+                String nodeId = taskDetailResource.getNodeId();
+                ExperimentResource experimentResource = new ExperimentResource();
+                WorkflowNodeDetailResource workflowNode = experimentResource.getWorkflowNode(nodeId);
+                adodh.setExperimentId(workflowNode.getExperimentId());
+                adodh.setTaskId(taskDetailResource.getTaskId());
             }
             adodh.setOutputDataDir(outputDataHandling.getOutputDataDir());
             adodh.setDataRegUrl(outputDataHandling.getDataRegistryURL());
@@ -233,12 +237,15 @@ public class ExperimentRegistry {
         try {
             if (resource instanceof ExperimentResource) {
                 ExperimentResource experiment = (ExperimentResource) resource;
-                adidh.setExperimentResource(experiment);
+                adidh.setExperimentId(experiment.getExpID());
             }
             if (resource instanceof TaskDetailResource) {
                 TaskDetailResource taskDetailResource = (TaskDetailResource) resource;
-                adidh.setTaskDetailResource(taskDetailResource);
-                adidh.setExperimentResource(taskDetailResource.getWorkflowNodeDetailResource().getExperimentResource());
+                String nodeId = taskDetailResource.getNodeId();
+                ExperimentResource experimentResource = new ExperimentResource();
+                WorkflowNodeDetailResource workflowNode = experimentResource.getWorkflowNode(nodeId);
+                adidh.setExperimentId(workflowNode.getExperimentId());
+                adidh.setTaskId(taskDetailResource.getTaskId());
             }
             adidh.setWorkingDir(inputDataHandling.getUniqueWorkingDirectory());
             adidh.setWorkingDirParent(inputDataHandling.getParentWorkingDirectory());
@@ -257,12 +264,15 @@ public class ExperimentRegistry {
         try {
             if (resource instanceof ExperimentResource) {
                 ExperimentResource experiment = (ExperimentResource) resource;
-                cmsr.setExperimentResource(experiment);
+                cmsr.setExperimentId(experiment.getExpID());
             }
             if (resource instanceof TaskDetailResource) {
                 TaskDetailResource taskDetailResource = (TaskDetailResource) resource;
-                cmsr.setTaskDetailResource(taskDetailResource);
-                cmsr.setExperimentResource(taskDetailResource.getWorkflowNodeDetailResource().getExperimentResource());
+                String nodeId = taskDetailResource.getNodeId();
+                ExperimentResource experimentResource = new ExperimentResource();
+                WorkflowNodeDetailResource workflowNode = experimentResource.getWorkflowNode(nodeId);
+                cmsr.setExperimentId(workflowNode.getExperimentId());
+                cmsr.setTaskId(taskDetailResource.getTaskId());
             }
             cmsr.setResourceHostId(resourceScheduling.getResourceHostId());
             cmsr.setCpuCount(resourceScheduling.getTotalCPUCount());
@@ -285,7 +295,7 @@ public class ExperimentRegistry {
         try {
             for (InputDataObjectType input : exInputs) {
                 ExperimentInputResource resource = (ExperimentInputResource) experimentResource.create(ResourceType.EXPERIMENT_INPUT);
-                resource.setExperimentResource(experimentResource);
+                resource.setExperimentId(experimentResource.getExpID());
                 resource.setExperimentKey(input.getName());
                 resource.setValue(input.getValue());
                 if (input.getType() != null) {
@@ -335,7 +345,7 @@ public class ExperimentRegistry {
             ExperimentResource experiment = gatewayResource.getExperiment(expId);
             for (OutputDataObjectType output : exOutput) {
                 ExperimentOutputResource resource = (ExperimentOutputResource) experiment.create(ResourceType.EXPERIMENT_OUTPUT);
-                resource.setExperimentResource(experiment);
+                resource.setExperimentId(expId);
                 resource.setExperimentKey(output.getName());
                 resource.setValue(output.getValue());
                 if (output.getType() != null) {
@@ -364,7 +374,7 @@ public class ExperimentRegistry {
             for (OutputDataObjectType output : exOutput) {
                 for (ExperimentOutputResource resource : existingExpOutputs) {
                     if (resource.getExperimentKey().equals(output.getName())) {
-                        resource.setExperimentResource(experiment);
+                        resource.setExperimentId(expId);
                         resource.setExperimentKey(output.getName());
                         resource.setValue(output.getValue());
                         if (output.getType() != null) {
@@ -393,7 +403,7 @@ public class ExperimentRegistry {
             WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode((String) ids.getSecondLevelIdentifier());
             for (OutputDataObjectType output : wfOutputs) {
                 NodeOutputResource resource = (NodeOutputResource) workflowNode.create(ResourceType.NODE_OUTPUT);
-                resource.setNodeDetailResource(workflowNode);
+                resource.setNodeId(workflowNode.getNodeInstanceId());
                 resource.setOutputKey(output.getName());
                 resource.setValue(output.getValue());
                 if (output.getType() != null) {
@@ -422,7 +432,7 @@ public class ExperimentRegistry {
             List<NodeOutputResource> nodeOutputs = workflowNode.getNodeOutputs();
             for (OutputDataObjectType output : wfOutputs) {
                 for (NodeOutputResource resource : nodeOutputs) {
-                    resource.setNodeDetailResource(workflowNode);
+                    resource.setNodeId(workflowNode.getNodeInstanceId());
                     resource.setOutputKey(output.getName());
                     resource.setValue(output.getValue());
                     if (output.getType() != null) {
@@ -451,7 +461,7 @@ public class ExperimentRegistry {
             TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) ids.getSecondLevelIdentifier());
             for (OutputDataObjectType output : appOutputs) {
                 ApplicationOutputResource resource = (ApplicationOutputResource) taskDetail.create(ResourceType.APPLICATION_OUTPUT);
-                resource.setTaskDetailResource(taskDetail);
+                resource.setTaskId(taskDetail.getTaskId());
                 resource.setOutputKey(output.getName());
                 resource.setValue(output.getValue());
                 if (output.getType() != null) {
@@ -480,7 +490,7 @@ public class ExperimentRegistry {
             if (status == null) {
                 status = (StatusResource) experiment.create(ResourceType.STATUS);
             }
-            status.setExperimentResource(experiment);
+            status.setExperimentId(expId);
             status.setStatusUpdateTime(AiravataUtils.getTime(experimentStatus.getTimeOfStateChange()));
             if (status.getState() == null) {
                 status.setState(ExperimentState.UNKNOWN.name());
@@ -503,8 +513,8 @@ public class ExperimentRegistry {
             ExperimentResource experiment = gatewayResource.getExperiment((String) ids.getTopLevelIdentifier());
             WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode((String) ids.getSecondLevelIdentifier());
             StatusResource statusResource = (StatusResource) experiment.create(ResourceType.STATUS);
-            statusResource.setExperimentResource(experiment);
-            statusResource.setWorkflowNodeDetail(workflowNode);
+            statusResource.setExperimentId(experiment.getExpID());
+            statusResource.setNodeId(workflowNode.getNodeInstanceId());
             statusResource.setStatusType(StatusType.WORKFLOW_NODE.toString());
             statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
             if (status.getWorkflowNodeState() == null) {
@@ -528,8 +538,8 @@ public class ExperimentRegistry {
             if (statusResource == null) {
                 statusResource = (StatusResource) workflowNode.create(ResourceType.STATUS);
             }
-            statusResource.setExperimentResource(workflowNode.getExperimentResource());
-            statusResource.setWorkflowNodeDetail(workflowNode);
+            statusResource.setExperimentId(workflowNode.getExperimentId());
+            statusResource.setNodeId(nodeId);
             statusResource.setStatusType(StatusType.WORKFLOW_NODE.toString());
             statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
             statusResource.setState(status.getWorkflowNodeState().toString());
@@ -548,9 +558,9 @@ public class ExperimentRegistry {
             WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode((String) ids.getTopLevelIdentifier());
             TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) ids.getSecondLevelIdentifier());
             StatusResource statusResource = (StatusResource) workflowNode.create(ResourceType.STATUS);
-            statusResource.setExperimentResource(workflowNode.getExperimentResource());
-            statusResource.setWorkflowNodeDetail(workflowNode);
-            statusResource.setTaskDetailResource(taskDetail);
+            statusResource.setExperimentId(workflowNode.getExperimentId());
+            statusResource.setNodeId(workflowNode.getNodeInstanceId());
+            statusResource.setTaskId(taskDetail.getTaskId());
             statusResource.setStatusType(StatusType.TASK.toString());
             statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
             if (status.getExecutionState() == null) {
@@ -573,13 +583,14 @@ public class ExperimentRegistry {
             TaskDetailResource taskDetail = workflowNode.getTaskDetail(taskId);
             StatusResource statusResource;
             if (taskDetail.isTaskStatusExist(taskId)) {
-                statusResource = taskDetail.getWorkflowNodeDetailResource().getTaskStatus(taskId);
+                workflowNode = experiment.getWorkflowNode(taskDetail.getNodeId());
+                statusResource = workflowNode.getTaskStatus(taskId);
             } else {
                 statusResource = (StatusResource) taskDetail.create(ResourceType.STATUS);
             }
-            statusResource.setExperimentResource(taskDetail.getWorkflowNodeDetailResource().getExperimentResource());
-            statusResource.setWorkflowNodeDetail(taskDetail.getWorkflowNodeDetailResource());
-            statusResource.setTaskDetailResource(taskDetail);
+            statusResource.setExperimentId(workflowNode.getExperimentId());
+            statusResource.setNodeId(workflowNode.getNodeInstanceId());
+            statusResource.setTaskId(taskId);
             statusResource.setStatusType(StatusType.TASK.toString());
             statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
             statusResource.setState(status.getExecutionState().toString());
@@ -601,11 +612,12 @@ public class ExperimentRegistry {
             ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) ids.getTopLevelIdentifier());
+            workflowNode = experiment.getWorkflowNode(taskDetail.getNodeId());
             JobDetailResource jobDetail = taskDetail.getJobDetail((String) ids.getSecondLevelIdentifier());
             StatusResource statusResource = (StatusResource) jobDetail.create(ResourceType.STATUS);
-            statusResource.setExperimentResource(taskDetail.getWorkflowNodeDetailResource().getExperimentResource());
-            statusResource.setWorkflowNodeDetail(taskDetail.getWorkflowNodeDetailResource());
-            statusResource.setTaskDetailResource(taskDetail);
+            statusResource.setExperimentId(workflowNode.getExperimentId());
+            statusResource.setNodeId(workflowNode.getNodeInstanceId());
+            statusResource.setTaskId(taskDetail.getTaskId());
             statusResource.setStatusType(StatusType.JOB.toString());
             statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
             if (status.getJobState() == null) {
@@ -628,11 +640,10 @@ public class ExperimentRegistry {
             TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) ids.getTopLevelIdentifier());
             JobDetailResource jobDetail = taskDetail.getJobDetail((String) ids.getSecondLevelIdentifier());
             StatusResource statusResource = jobDetail.getJobStatus();
-            workflowNode = taskDetail.getWorkflowNodeDetailResource();
-            experiment = workflowNode.getExperimentResource();
-            statusResource.setExperimentResource(experiment);
-            statusResource.setWorkflowNodeDetail(workflowNode);
-            statusResource.setTaskDetailResource(taskDetail);
+            workflowNode = experiment.getWorkflowNode(taskDetail.getNodeId());
+            statusResource.setExperimentId(workflowNode.getExperimentId());
+            statusResource.setNodeId(workflowNode.getNodeInstanceId());
+            statusResource.setTaskId(taskDetail.getTaskId());
             statusResource.setStatusType(StatusType.JOB.toString());
             statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
             statusResource.setState(status.getJobState().toString());
@@ -657,9 +668,10 @@ public class ExperimentRegistry {
             TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) ids.getTopLevelIdentifier());
             JobDetailResource jobDetail = taskDetail.getJobDetail((String) ids.getSecondLevelIdentifier());
             StatusResource statusResource = (StatusResource) jobDetail.create(ResourceType.STATUS);
-            statusResource.setExperimentResource(taskDetail.getWorkflowNodeDetailResource().getExperimentResource());
-            statusResource.setWorkflowNodeDetail(taskDetail.getWorkflowNodeDetailResource());
-            statusResource.setTaskDetailResource(taskDetail);
+            workflowNode = experiment.getWorkflowNode(taskDetail.getNodeId());
+            statusResource.setExperimentId(workflowNode.getExperimentId());
+            statusResource.setNodeId(workflowNode.getNodeInstanceId());
+            statusResource.setTaskId(taskDetail.getTaskId());
             statusResource.setStatusType(StatusType.APPLICATION.toString());
             statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
             if (status.getApplicationState() == null) {
@@ -682,9 +694,10 @@ public class ExperimentRegistry {
             TaskDetailResource taskDetail = (TaskDetailResource) workflowNode.create(ResourceType.TASK_DETAIL);
             JobDetailResource jobDetail = taskDetail.getJobDetail(jobId);
             StatusResource statusResource = jobDetail.getApplicationStatus();
-            statusResource.setExperimentResource(jobDetail.getTaskDetailResource().getWorkflowNodeDetailResource().getExperimentResource());
-            statusResource.setWorkflowNodeDetail(jobDetail.getTaskDetailResource().getWorkflowNodeDetailResource());
-            statusResource.setTaskDetailResource(jobDetail.getTaskDetailResource());
+            workflowNode = experiment.getWorkflowNode(taskDetail.getNodeId());
+            statusResource.setExperimentId(workflowNode.getExperimentId());
+            statusResource.setNodeId(workflowNode.getNodeInstanceId());
+            statusResource.setTaskId(taskDetail.getTaskId());
             statusResource.setStatusType(StatusType.APPLICATION.toString());
             statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
             statusResource.setState(status.getApplicationState());
@@ -708,10 +721,11 @@ public class ExperimentRegistry {
             TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) ids.getTopLevelIdentifier());
             DataTransferDetailResource dataTransferDetail = taskDetail.getDataTransferDetail((String) ids.getSecondLevelIdentifier());
             StatusResource statusResource = (StatusResource) dataTransferDetail.create(ResourceType.STATUS);
-            statusResource.setExperimentResource(taskDetail.getWorkflowNodeDetailResource().getExperimentResource());
-            statusResource.setWorkflowNodeDetail(taskDetail.getWorkflowNodeDetailResource());
-            statusResource.setTaskDetailResource(taskDetail);
-            statusResource.setDataTransferDetail(dataTransferDetail);
+            workflowNode = experiment.getWorkflowNode(taskDetail.getNodeId());
+            statusResource.setExperimentId(workflowNode.getExperimentId());
+            statusResource.setNodeId(workflowNode.getNodeInstanceId());
+            statusResource.setTaskId(taskDetail.getTaskId());
+            statusResource.setTransferId(dataTransferDetail.getTransferId());
             statusResource.setStatusType(StatusType.DATA_TRANSFER.toString());
             statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
             if (status.getTransferState() == null) {
@@ -735,13 +749,15 @@ public class ExperimentRegistry {
             DataTransferDetailResource dataTransferDetail = taskDetail.getDataTransferDetail(transferId);
             StatusResource statusResource = dataTransferDetail.getDataTransferStatus();
 
-            WorkflowNodeDetailResource workflowNodeDetailResource = dataTransferDetail.getTaskDetailResource().getWorkflowNodeDetailResource();
-            if (workflowNodeDetailResource != null) {
-                statusResource.setExperimentResource(workflowNodeDetailResource.getExperimentResource());
-                statusResource.setWorkflowNodeDetail(workflowNodeDetailResource);
+            String taskId = dataTransferDetail.getTaskId();
+            taskDetail = workflowNode.getTaskDetail(taskId);
+            workflowNode = experiment.getWorkflowNode(taskDetail.getNodeId());
+            if (workflowNode != null) {
+                statusResource.setExperimentId(workflowNode.getExperimentId());
+                statusResource.setNodeId(workflowNode.getNodeInstanceId());
             }
-            statusResource.setTaskDetailResource(dataTransferDetail.getTaskDetailResource());
-            statusResource.setDataTransferDetail(dataTransferDetail);
+            statusResource.setTaskId(taskId);
+            statusResource.setTransferId(transferId);
             statusResource.setStatusType(StatusType.DATA_TRANSFER.toString());
             statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
             statusResource.setState(status.getTransferState().toString());
@@ -756,7 +772,7 @@ public class ExperimentRegistry {
         try {
             ExperimentResource experiment = gatewayResource.getExperiment(expId);
             WorkflowNodeDetailResource resource = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
-            resource.setExperimentResource(experiment);
+            resource.setExperimentId(expId);
             resource.setNodeName(nodeDetails.getNodeName());
             resource.setExecutionUnit(nodeDetails.getExecutionUnit().toString());
             resource.setExecutionUnitData(nodeDetails.getExecutionUnitData());
@@ -820,7 +836,7 @@ public class ExperimentRegistry {
             workflowNode.setCreationTime(AiravataUtils.getTime(nodeDetails.getCreationTime()));
             workflowNode.setNodeInstanceId(nodeId);
             workflowNode.save();
-            String expID = workflowNode.getExperimentResource().getExpID();
+            String expID = workflowNode.getExperimentId();
             List<InputDataObjectType> nodeInputs = nodeDetails.getNodeInputs();
             if (nodeInputs != null) {
                 updateWorkflowInputs(nodeDetails.getNodeInputs(), workflowNode);
@@ -866,7 +882,7 @@ public class ExperimentRegistry {
         try {
             for (InputDataObjectType input : wfInputs) {
                 NodeInputResource resource = (NodeInputResource) nodeDetailResource.create(ResourceType.NODE_INPUT);
-                resource.setNodeDetailResource(nodeDetailResource);
+                resource.setNodeId(nodeDetailResource.getNodeInstanceId());
                 resource.setInputKey(input.getName());
                 resource.setValue(input.getValue());
                 if (input.getType() != null) {
@@ -891,7 +907,7 @@ public class ExperimentRegistry {
             List<NodeInputResource> nodeInputs = nodeDetailResource.getNodeInputs();
             for (InputDataObjectType input : wfInputs) {
                 for (NodeInputResource resource : nodeInputs) {
-                    resource.setNodeDetailResource(nodeDetailResource);
+                    resource.setNodeId(nodeDetailResource.getNodeInstanceId());
                     resource.setInputKey(input.getName());
                     resource.setValue(input.getValue());
                     if (input.getType() != null) {
@@ -916,9 +932,8 @@ public class ExperimentRegistry {
         try {
             ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
             WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode(nodeId);
-            experiment = workflowNode.getExperimentResource();
             TaskDetailResource taskDetail = (TaskDetailResource) workflowNode.create(ResourceType.TASK_DETAIL);
-            taskDetail.setWorkflowNodeDetailResource(workflowNode);
+            taskDetail.setNodeId(nodeId);
             taskDetail.setTaskId(getTaskID(workflowNode.getNodeName()));
             taskDetail.setApplicationId(taskDetails.getApplicationId());
             taskDetail.setApplicationVersion(taskDetails.getApplicationVersion());
@@ -930,8 +945,8 @@ public class ExperimentRegistry {
             if (emailAddresses != null && !emailAddresses.isEmpty()){
                 for (String email : emailAddresses){
                     NotificationEmailResource emailResource = new NotificationEmailResource();
-                    emailResource.setExperimentResource(experiment);
-                    emailResource.setTaskDetailResource(taskDetail);
+                    emailResource.setExperimentId(workflowNode.getExperimentId());
+                    emailResource.setTaskId(taskDetail.getTaskId());
                     emailResource.setEmailAddress(email);
                     emailResource.save();
                 }
@@ -1013,7 +1028,8 @@ public class ExperimentRegistry {
             taskDetail.setApplicationDeploymentId(taskDetails.getApplicationDeploymentId());
             taskDetail.setEnableEmailNotifications(taskDetails.isEnableEmailNotification());
             taskDetail.save();
-            experiment = taskDetail.getWorkflowNodeDetailResource().getExperimentResource();
+
+            workflowNode = experiment.getWorkflowNode(taskDetail.getNodeId());
 
             List<String> emailAddresses = taskDetails.getEmailAddresses();
             // remove existing emails
@@ -1021,8 +1037,8 @@ public class ExperimentRegistry {
             if (emailAddresses != null && !emailAddresses.isEmpty()){
                 for (String email : emailAddresses){
                     NotificationEmailResource emailResource = new NotificationEmailResource();
-                    emailResource.setExperimentResource(experiment);
-                    emailResource.setTaskDetailResource(taskDetail);
+                    emailResource.setExperimentId(workflowNode.getExperimentId());
+                    emailResource.setTaskId(taskId);
                     emailResource.setEmailAddress(email);
                     emailResource.save();
                 }
@@ -1080,7 +1096,7 @@ public class ExperimentRegistry {
         try {
             for (InputDataObjectType input : appInputs) {
                 ApplicationInputResource resource = (ApplicationInputResource) taskDetailResource.create(ResourceType.APPLICATION_INPUT);
-                resource.setTaskDetailResource(taskDetailResource);
+                resource.setTaskId(taskDetailResource.getTaskId());
                 resource.setInputKey(input.getName());
                 resource.setValue(input.getValue());
                 if (input.getType() != null) {
@@ -1104,7 +1120,7 @@ public class ExperimentRegistry {
         try {
             for (OutputDataObjectType output : appOytputs) {
                 ApplicationOutputResource resource = (ApplicationOutputResource) taskDetailResource.create(ResourceType.APPLICATION_OUTPUT);
-                resource.setTaskDetailResource(taskDetailResource);
+                resource.setTaskId(taskDetailResource.getTaskId());
                 resource.setOutputKey(output.getName());
                 resource.setValue(output.getValue());
                 if (output.getType() != null) {
@@ -1116,7 +1132,6 @@ public class ExperimentRegistry {
                 resource.setDataNameLocation(output.getLocation());
                 resource.setAppArgument(output.getApplicationArgument());
                 resource.setSearchQuery(output.getSearchQuery());
-//                resource.setMetadata(output.getMetaData());
                 resource.save();
             }
         } catch (Exception e) {
@@ -1134,7 +1149,7 @@ public class ExperimentRegistry {
             List<ApplicationOutputResource> outputs = taskDetail.getApplicationOutputs();
             for (OutputDataObjectType output : appOutputs) {
                 for (ApplicationOutputResource resource : outputs) {
-                    resource.setTaskDetailResource(taskDetail);
+                    resource.setTaskId(taskId);
                     resource.setOutputKey(output.getName());
                     resource.setValue(output.getValue());
                     if (output.getType() != null) {
@@ -1161,7 +1176,7 @@ public class ExperimentRegistry {
             List<ApplicationInputResource> inputs = taskDetailResource.getApplicationInputs();
             for (InputDataObjectType input : appInputs) {
                 for (ApplicationInputResource resource : inputs) {
-                    resource.setTaskDetailResource(taskDetailResource);
+                    resource.setTaskId(taskDetailResource.getTaskId());
                     resource.setInputKey(input.getName());
                     resource.setValue(input.getValue());
                     if (input.getType() != null) {
@@ -1189,7 +1204,7 @@ public class ExperimentRegistry {
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) ids.getTopLevelIdentifier());
             JobDetailResource jobDetail = taskDetail.createJobDetail((String) ids.getSecondLevelIdentifier());
-            jobDetail.setTaskDetailResource(taskDetail);
+            jobDetail.setTaskId(taskDetail.getTaskId());
             jobDetail.setJobDescription(jobDetails.getJobDescription());
             jobDetail.setCreationTime(AiravataUtils.getTime(jobDetails.getCreationTime()));
             jobDetail.setComputeResourceConsumed(jobDetails.getComputeResourceConsumed());
@@ -1236,7 +1251,7 @@ public class ExperimentRegistry {
             TaskDetailResource taskDetail = workflowNode.getTaskDetail(taskId);
             String jobId = (String) ids.getSecondLevelIdentifier();
             JobDetailResource jobDetail = taskDetail.getJobDetail(jobId);
-            jobDetail.setTaskDetailResource(taskDetail);
+            jobDetail.setTaskId(taskDetail.getTaskId());
             jobDetail.setJobDescription(jobDetails.getJobDescription());
             jobDetail.setCreationTime(AiravataUtils.getTime(jobDetails.getCreationTime()));
             jobDetail.setComputeResourceConsumed(jobDetails.getComputeResourceConsumed());
@@ -1282,7 +1297,7 @@ public class ExperimentRegistry {
             WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
             TaskDetailResource taskDetail = workflowNode.getTaskDetail(taskId);
             DataTransferDetailResource resource = (DataTransferDetailResource) taskDetail.create(ResourceType.DATA_TRANSFER_DETAIL);
-            resource.setTaskDetailResource(taskDetail);
+            resource.setTaskId(taskId);
             resource.setTransferId(getDataTransferID(taskId));
 
             resource.setTransferDescription(transferDetails.getTransferDescription());
@@ -1316,7 +1331,7 @@ public class ExperimentRegistry {
             resource.setTransferDescription(transferDetails.getTransferDescription());
             resource.setCreationTime(AiravataUtils.getTime(transferDetails.getCreationTime()));
             resource.save();
-            String taskId = resource.getTaskDetailResource().getTaskId();
+            String taskId = resource.getTaskId();
             TransferStatus transferStatus = transferDetails.getTransferStatus();
             if (transferStatus != null) {
                 TransferStatus status = getDataTransferStatus(transferId);
@@ -1346,9 +1361,9 @@ public class ExperimentRegistry {
             if (ids.getSecondLevelIdentifier() != null) {
                 WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
                 TaskDetailResource taskDetail = nodeDetailResource.getTaskDetail((String) ids.getSecondLevelIdentifier());
-                schedulingResource.setTaskDetailResource(taskDetail);
+                schedulingResource.setTaskId(taskDetail.getTaskId());
             }
-            schedulingResource.setExperimentResource(experiment);
+            schedulingResource.setExperimentId(experiment.getExpID());
             schedulingResource.setResourceHostId(scheduling.getResourceHostId());
             schedulingResource.setCpuCount(scheduling.getTotalCPUCount());
             schedulingResource.setNodeCount(scheduling.getNodeCount());
@@ -1378,9 +1393,9 @@ public class ExperimentRegistry {
             if (ids.getSecondLevelIdentifier() != null) {
                 WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
                 TaskDetailResource taskDetail = nodeDetailResource.getTaskDetail((String) ids.getSecondLevelIdentifier());
-                dataHandlingResource.setTaskDetailResource(taskDetail);
+                dataHandlingResource.setTaskId(taskDetail.getTaskId());
             }
-            dataHandlingResource.setExperimentResource(experiment);
+            dataHandlingResource.setExperimentId(experiment.getExpID());
             dataHandlingResource.setWorkingDir(dataHandling.getUniqueWorkingDirectory());
             dataHandlingResource.setWorkingDirParent(dataHandling.getParentWorkingDirectory());
             dataHandlingResource.setStageInputFiles(dataHandling.isStageInputFilesToWorkingDir());
@@ -1405,9 +1420,9 @@ public class ExperimentRegistry {
             if (ids.getSecondLevelIdentifier() != null) {
                 WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
                 TaskDetailResource taskDetail = nodeDetailResource.getTaskDetail((String) ids.getSecondLevelIdentifier());
-                dataHandlingResource.setTaskDetailResource(taskDetail);
+                dataHandlingResource.setTaskId(taskDetail.getTaskId());
             }
-            dataHandlingResource.setExperimentResource(experiment);
+            dataHandlingResource.setExperimentId(experiment.getExpID());
             dataHandlingResource.setOutputDataDir(dataHandling.getOutputDataDir());
             dataHandlingResource.setDataRegUrl(dataHandling.getDataRegistryURL());
             dataHandlingResource.setPersistOutputData(dataHandling.isPersistOutputData());
@@ -1426,9 +1441,9 @@ public class ExperimentRegistry {
             if (ids.getSecondLevelIdentifier() != null) {
                 WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
                 TaskDetailResource taskDetail = nodeDetailResource.getTaskDetail((String) ids.getSecondLevelIdentifier());
-                qosParamResource.setTaskDetailResource(taskDetail);
+                qosParamResource.setTaskId(taskDetail.getTaskId());
             }
-            qosParamResource.setExperimentResource(experiment);
+            qosParamResource.setExperimentId(experiment.getExpID());
             qosParamResource.setStartExecutionAt(qosParams.getStartExecutionAt());
             qosParamResource.setExecuteBefore(qosParams.getExecuteBefore());
             qosParamResource.setNoOfRetries(qosParams.getNumberofRetries());
@@ -1474,9 +1489,10 @@ public class ExperimentRegistry {
                             }
                         }
                     }
-                    errorResource.setTaskDetailResource(taskDetail);
-                    errorResource.setNodeDetail(taskDetail.getWorkflowNodeDetailResource());
-                    errorResource.setExperimentResource(taskDetail.getWorkflowNodeDetailResource().getExperimentResource());
+                    errorResource.setTaskId(taskDetail.getTaskId());
+                    errorResource.setNodeId(taskDetail.getNodeId());
+                    workflowNode = experiment.getWorkflowNode(taskDetail.getNodeId());
+                    errorResource.setExperimentId(workflowNode.getExperimentId());
                 } else {
 //                    logger.error("The id provided is not an experiment id or a workflow id or a task id..");
                 }
@@ -1498,9 +1514,10 @@ public class ExperimentRegistry {
                             }
                         }
                     }
-                    errorResource.setTaskDetailResource(taskDetail);
-                    errorResource.setNodeDetail(taskDetail.getWorkflowNodeDetailResource());
-                    errorResource.setExperimentResource(taskDetail.getWorkflowNodeDetailResource().getExperimentResource());
+                    errorResource.setTaskId(taskDetail.getTaskId());
+                    errorResource.setNodeId(taskDetail.getNodeId());
+                    workflowNode = experiment.getWorkflowNode(taskDetail.getNodeId());
+                    errorResource.setExperimentId(workflowNode.getExperimentId());
                 } else {
                     logger.error("The id provided is not a job in the system..");
                 }
@@ -1626,14 +1643,13 @@ public class ExperimentRegistry {
             ExperimentResource existingExperiment = gatewayResource.getExperiment(expId);
             existingExperiment.setExpName(experiment.getName());
             existingExperiment.setExecutionUser(experiment.getUserName());
-            existingExperiment.setGateway(gatewayResource);
+            existingExperiment.setGatewayId(gatewayResource.getGatewayId());
             existingExperiment.setGatewayExecutionId(experiment.getGatewayExecutionId());
             if (!workerResource.isProjectExists(experiment.getProjectID())) {
                 logger.error("Project does not exist in the system..");
                 throw new Exception("Project does not exist in the system, Please create the project first...");
             }
-            ProjectResource project = workerResource.getProject(experiment.getProjectID());
-            existingExperiment.setProject(project);
+            existingExperiment.setProjectId(experiment.getProjectID());
             existingExperiment.setCreationTime(AiravataUtils.getTime(experiment.getCreationTime()));
             existingExperiment.setDescription(experiment.getDescription());
             existingExperiment.setApplicationId(experiment.getApplicationId());
@@ -1650,7 +1666,7 @@ public class ExperimentRegistry {
             if (emailAddresses != null && !emailAddresses.isEmpty()){
                 for (String email : emailAddresses){
                     NotificationEmailResource emailResource = new NotificationEmailResource();
-                    emailResource.setExperimentResource(existingExperiment);
+                    emailResource.setExperimentId(expId);
                     emailResource.setEmailAddress(email);
                     emailResource.save();
                 }
@@ -1697,7 +1713,7 @@ public class ExperimentRegistry {
         try {
             ExperimentResource experiment = gatewayResource.getExperiment(expId);
             ConfigDataResource resource = (ConfigDataResource) experiment.get(ResourceType.CONFIG_DATA, expId);
-            resource.setExperimentResource(experiment);
+            resource.setExperimentId(expId);
             resource.setAiravataAutoSchedule(configData.isAiravataAutoSchedule());
             resource.setOverrideManualParams(configData.isOverrideManualScheduledParams());
             resource.setShareExp(configData.isShareExperimentPublicly());
@@ -1733,7 +1749,7 @@ public class ExperimentRegistry {
             if (resource instanceof ExperimentResource) {
                 ExperimentResource expResource = (ExperimentResource) resource;
                 QosParamResource qosr = expResource.getQOSparams(expResource.getExpID());
-                qosr.setExperimentResource(expResource);
+                qosr.setExperimentId(expResource.getExpID());
                 qosr.setStartExecutionAt(qosParams.getStartExecutionAt());
                 qosr.setExecuteBefore(qosParams.getExecuteBefore());
                 qosr.setNoOfRetries(qosParams.getNumberofRetries());
@@ -1752,12 +1768,14 @@ public class ExperimentRegistry {
             if (resource instanceof ExperimentResource) {
                 ExperimentResource expResource = (ExperimentResource) resource;
                 adodh = expResource.getOutputDataHandling(expResource.getExpID());
-                adodh.setExperimentResource(expResource);
+                adodh.setExperimentId(expResource.getExpID());
             } else {
                 TaskDetailResource taskDetailResource = (TaskDetailResource) resource;
+                ExperimentResource experimentResource = new ExperimentResource();
                 adodh = taskDetailResource.getOutputDataHandling(taskDetailResource.getTaskId());
-                adodh.setTaskDetailResource(taskDetailResource);
-                adodh.setExperimentResource(taskDetailResource.getWorkflowNodeDetailResource().getExperimentResource());
+                adodh.setTaskId(taskDetailResource.getTaskId());
+                WorkflowNodeDetailResource nodeDetailResource = experimentResource.getWorkflowNode(taskDetailResource.getNodeId());
+                adodh.setExperimentId(nodeDetailResource.getExperimentId());
             }
             adodh.setOutputDataDir(outputDataHandling.getOutputDataDir());
             adodh.setDataRegUrl(outputDataHandling.getDataRegistryURL());
@@ -1776,12 +1794,14 @@ public class ExperimentRegistry {
             if (resource instanceof ExperimentResource) {
                 ExperimentResource expResource = (ExperimentResource) resource;
                 adidh = expResource.getInputDataHandling(expResource.getExpID());
-                adidh.setExperimentResource(expResource);
+                adidh.setExperimentId(expResource.getExpID());
             } else {
                 TaskDetailResource taskDetailResource = (TaskDetailResource) resource;
+                ExperimentResource experimentResource = new ExperimentResource();
                 adidh = taskDetailResource.getInputDataHandling(taskDetailResource.getTaskId());
-                adidh.setTaskDetailResource(taskDetailResource);
-                adidh.setExperimentResource(taskDetailResource.getWorkflowNodeDetailResource().getExperimentResource());
+                adidh.setTaskId(taskDetailResource.getTaskId());
+                WorkflowNodeDetailResource nodeDetailResource = experimentResource.getWorkflowNode(taskDetailResource.getNodeId());
+                adidh.setExperimentId(nodeDetailResource.getExperimentId());
             }
             adidh.setWorkingDir(inputDataHandling.getUniqueWorkingDirectory());
             adidh.setWorkingDirParent(inputDataHandling.getParentWorkingDirectory());
@@ -1801,12 +1821,14 @@ public class ExperimentRegistry {
             if (resource instanceof ExperimentResource) {
                 ExperimentResource expResource = (ExperimentResource) resource;
                 cmsr = expResource.getComputationScheduling(expResource.getExpID());
-                cmsr.setExperimentResource(expResource);
+                cmsr.setExperimentId(expResource.getExpID());
             } else {
                 TaskDetailResource taskDetailResource = (TaskDetailResource) resource;
+                ExperimentResource experimentResource = new ExperimentResource();
                 cmsr = taskDetailResource.getComputationScheduling(taskDetailResource.getTaskId());
-                cmsr.setTaskDetailResource(taskDetailResource);
-                cmsr.setExperimentResource(taskDetailResource.getWorkflowNodeDetailResource().getExperimentResource());
+                cmsr.setTaskId(taskDetailResource.getTaskId());
+                WorkflowNodeDetailResource nodeDetailResource = experimentResource.getWorkflowNode(taskDetailResource.getNodeId());
+                cmsr.setExperimentId(nodeDetailResource.getExperimentId());
             }
             cmsr.setResourceHostId(resourceScheduling.getResourceHostId());
             cmsr.setCpuCount(resourceScheduling.getTotalCPUCount());
@@ -1865,9 +1887,10 @@ public class ExperimentRegistry {
                 } else if (value instanceof WorkflowNodeDetails) {
                     WorkflowNodeDetailResource nodeDetailResource = getWorkflowNodeDetailResource(((WorkflowNodeDetails) value).getNodeInstanceId());
                     if (nodeDetailResource != null) {
-                        return Arrays.asList(new Experiment[]{ThriftDataModelConversion
-                                .getExperiment(nodeDetailResource
-                                        .getExperimentResource())});
+                        String experimentId = nodeDetailResource.getExperimentId();
+                        ExperimentResource experiment = gatewayResource.getExperiment(experimentId);
+                        return Arrays.asList(ThriftDataModelConversion
+                                .getExperiment(experiment));
                     }
                 } else {
                     logger.error("Unsupported field value to retrieve workflow node detail list...");
@@ -1940,10 +1963,11 @@ public class ExperimentRegistry {
                     return getWFNodeDetails(fieldName, ((List<?>) value).get(0));
                 } else if (value instanceof TaskDetails) {
                     TaskDetailResource taskDetailResource = getTaskDetailResource(((TaskDetails) value).getTaskID());
+                    ExperimentResource experimentResource = new ExperimentResource();
                     if (taskDetailResource != null) {
-                        return Arrays.asList(new WorkflowNodeDetails[]{ThriftDataModelConversion
-                                .getWorkflowNodeDetails(taskDetailResource
-                                        .getWorkflowNodeDetailResource())});
+                        WorkflowNodeDetailResource workflowNode = experimentResource.getWorkflowNode(taskDetailResource.getNodeId());
+                        return Arrays.asList(ThriftDataModelConversion
+                                .getWorkflowNodeDetails(workflowNode));
                     }
                 } else {
                     logger.error("Unsupported field value to retrieve workflow node detail list...");
@@ -2070,7 +2094,7 @@ public class ExperimentRegistry {
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
                 return resource.getExecutionUser();
             }else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY)) {
-                return resource.getGateway().getGatewayId();
+                return resource.getGatewayId();
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME)) {
                 return resource.getExpName();
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_DESC)) {
@@ -2078,7 +2102,7 @@ public class ExperimentRegistry {
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.APPLICATION_ID)) {
                 return resource.getApplicationId();
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.PROJECT_ID)) {
-                return resource.getProject().getId();
+                return resource.getProjectId();
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.APPLICATION_VERSION)) {
                 return resource.getApplicationVersion();
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.WORKFLOW_TEMPLATE_ID)) {

@@ -22,10 +22,12 @@
 package org.apache.airavata.persistance.registry.jpa.model;
 
 import org.apache.openjpa.persistence.DataCache;
+import org.apache.openjpa.persistence.jdbc.ElementJoinColumn;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.List;
 
 @DataCache
 @Entity
@@ -53,6 +55,20 @@ public class JobDetail implements Serializable {
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "TASK_ID")
     private TaskDetail task;
+
+    @OneToOne (fetch = FetchType.LAZY, mappedBy = "jobDetail")
+    private Status jobStatus;
+
+    @OneToMany (fetch = FetchType.LAZY,  mappedBy = "jobDetail")
+    private List<ErrorDetail> errorDetails;
+
+    public List<ErrorDetail> getErrorDetails() {
+        return errorDetails;
+    }
+
+    public void setErrorDetails(List<ErrorDetail> errorDetails) {
+        this.errorDetails = errorDetails;
+    }
 
     public String getJobId() {
         return jobId;
@@ -86,14 +102,6 @@ public class JobDetail implements Serializable {
         this.creationTime = creationTime;
     }
 
-    public TaskDetail getTask() {
-        return task;
-    }
-
-    public void setTask(TaskDetail task) {
-        this.task = task;
-    }
-
     public String getComputeResourceConsumed() {
         return computeResourceConsumed;
     }
@@ -116,5 +124,13 @@ public class JobDetail implements Serializable {
 
     public void setWorkingDir(String workingDir) {
         this.workingDir = workingDir;
+    }
+
+    public Status getJobStatus() {
+        return jobStatus;
+    }
+
+    public void setJobStatus(Status jobStatus) {
+        this.jobStatus = jobStatus;
     }
 }

@@ -37,11 +37,27 @@ import java.util.List;
 public class AdvancedOutputDataHandlingResource extends AbstractResource {
     private static final Logger logger = LoggerFactory.getLogger(AdvancedOutputDataHandlingResource.class);
     private int outputDataHandlingId = 0;
-    private ExperimentResource experimentResource;
-    private TaskDetailResource taskDetailResource;
     private  String outputDataDir;
     private String dataRegUrl;
     private boolean persistOutputData;
+    private String experimentId;
+    private String taskId;
+
+    public String getExperimentId() {
+        return experimentId;
+    }
+
+    public void setExperimentId(String experimentId) {
+        this.experimentId = experimentId;
+    }
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
 
     public int getOutputDataHandlingId() {
         return outputDataHandlingId;
@@ -49,22 +65,6 @@ public class AdvancedOutputDataHandlingResource extends AbstractResource {
 
     public void setOutputDataHandlingId(int outputDataHandlingId) {
         this.outputDataHandlingId = outputDataHandlingId;
-    }
-
-    public ExperimentResource getExperimentResource() {
-        return experimentResource;
-    }
-
-    public void setExperimentResource(ExperimentResource experimentResource) {
-        this.experimentResource = experimentResource;
-    }
-
-    public TaskDetailResource getTaskDetailResource() {
-        return taskDetailResource;
-    }
-
-    public void setTaskDetailResource(TaskDetailResource taskDetailResource) {
-        this.taskDetailResource = taskDetailResource;
     }
 
     public String getOutputDataDir() {
@@ -128,18 +128,11 @@ public class AdvancedOutputDataHandlingResource extends AbstractResource {
             }else {
                 dataHandling = new AdvancedOutputDataHandling();
             }
-            Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
-            if (taskDetailResource !=null){
-                TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
-                dataHandling.setTaskId(taskDetailResource.getTaskId());
-                dataHandling.setTask(taskDetail);
-            }
-
-            dataHandling.setExpId(experimentResource.getExpID());
-            dataHandling.setExperiment(experiment);
             dataHandling.setDataRegUrl(dataRegUrl);
             dataHandling.setOutputDataDir(outputDataDir);
             dataHandling.setPersistOutputData(persistOutputData);
+            dataHandling.setExpId(experimentId);
+            dataHandling.setTaskId(taskId);
             em.persist(dataHandling);
             outputDataHandlingId = dataHandling.getOutputDataHandlingId();
             em.getTransaction().commit();

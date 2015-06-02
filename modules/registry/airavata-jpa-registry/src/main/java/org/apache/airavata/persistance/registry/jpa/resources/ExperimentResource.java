@@ -43,8 +43,8 @@ public class ExperimentResource extends AbstractResource {
     private String executionUser;
     private String expID;
     private Timestamp creationTime;
-    private GatewayResource gateway;
-    private ProjectResource project;
+    private String gatewayId;
+    private String projectId;
     private String expName;
     private String description;
     private String applicationId;
@@ -54,6 +54,15 @@ public class ExperimentResource extends AbstractResource {
     private String workflowExecutionId;
     private boolean enableEmailNotifications;
     private String gatewayExecutionId;
+    private List<ExperimentInputResource> experimentInputResources;
+    private List<ExperimentOutputResource> experimentOutputputResources;
+    private ComputationSchedulingResource computationSchedulingResource;
+    private ConfigDataResource userConfigDataResource;
+    private List<WorkflowNodeDetailResource> workflowNodeDetailResourceList;
+    private List<StatusResource> stateChangeList;
+    private List<ErrorDetailResource> errorDetailList;
+    private StatusResource experimentStatus;
+    private List<NotificationEmailResource> emailResourceList;
 
     /**
      *
@@ -143,6 +152,91 @@ public class ExperimentResource extends AbstractResource {
         this.gatewayExecutionId = gatewayExecutionId;
     }
 
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
+
+    public String getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
+    }
+
+    public List<ExperimentInputResource> getExperimentInputResources() {
+        return experimentInputResources;
+    }
+
+    public void setExperimentInputResources(List<ExperimentInputResource> experimentInputResources) {
+        this.experimentInputResources = experimentInputResources;
+    }
+
+    public List<ExperimentOutputResource> getExperimentOutputputResources() {
+        return experimentOutputputResources;
+    }
+
+    public void setExperimentOutputputResources(List<ExperimentOutputResource> experimentOutputputResources) {
+        this.experimentOutputputResources = experimentOutputputResources;
+    }
+
+    public ComputationSchedulingResource getComputationSchedulingResource() {
+        return computationSchedulingResource;
+    }
+
+    public void setComputationSchedulingResource(ComputationSchedulingResource computationSchedulingResource) {
+        this.computationSchedulingResource = computationSchedulingResource;
+    }
+
+    public ConfigDataResource getUserConfigDataResource() {
+        return userConfigDataResource;
+    }
+
+    public void setUserConfigDataResource(ConfigDataResource userConfigDataResource) {
+        this.userConfigDataResource = userConfigDataResource;
+    }
+
+    public List<WorkflowNodeDetailResource> getWorkflowNodeDetailResourceList() {
+        return workflowNodeDetailResourceList;
+    }
+
+    public void setWorkflowNodeDetailResourceList(List<WorkflowNodeDetailResource> workflowNodeDetailResourceList) {
+        this.workflowNodeDetailResourceList = workflowNodeDetailResourceList;
+    }
+
+    public List<StatusResource> getStateChangeList() {
+        return stateChangeList;
+    }
+
+    public void setStateChangeList(List<StatusResource> stateChangeList) {
+        this.stateChangeList = stateChangeList;
+    }
+
+    public List<ErrorDetailResource> getErrorDetailList() {
+        return errorDetailList;
+    }
+
+    public void setErrorDetailList(List<ErrorDetailResource> errorDetailList) {
+        this.errorDetailList = errorDetailList;
+    }
+
+    public void setExperimentStatus(StatusResource experimentStatus) {
+        this.experimentStatus = experimentStatus;
+    }
+
+    public List<NotificationEmailResource> getEmailResourceList() {
+        return emailResourceList;
+    }
+
+    public void setEmailResourceList(List<NotificationEmailResource> emailResourceList) {
+        this.emailResourceList = emailResourceList;
+    }
+
+
     /**
      * Since experiments are at the leaf level, this method is not
      * valid for an experiment
@@ -153,47 +247,47 @@ public class ExperimentResource extends AbstractResource {
     	switch (type){
 	        case EXPERIMENT_INPUT:
 	        	ExperimentInputResource inputResource = new ExperimentInputResource();
-	            inputResource.setExperimentResource(this);
+	            inputResource.setExperimentId(expID);
 	            return inputResource;
             case EXPERIMENT_OUTPUT:
                 ExperimentOutputResource experimentOutputResource = new ExperimentOutputResource();
-                experimentOutputResource.setExperimentResource(this);
+                experimentOutputResource.setExperimentId(expID);
                 return experimentOutputResource;
             case NOTIFICATION_EMAIL:
                 NotificationEmailResource emailResource = new NotificationEmailResource();
-                emailResource.setExperimentResource(this);
+                emailResource.setExperimentId(expID);
                 return emailResource;
             case WORKFLOW_NODE_DETAIL:
                 WorkflowNodeDetailResource nodeDetailResource = new WorkflowNodeDetailResource();
-                nodeDetailResource.setExperimentResource(this);
+                nodeDetailResource.setExperimentId(expID);
                 return nodeDetailResource;
             case ERROR_DETAIL:
                 ErrorDetailResource errorDetailResource = new ErrorDetailResource();
-                errorDetailResource.setExperimentResource(this);
+                errorDetailResource.setExperimentId(expID);
                 return errorDetailResource;
             case STATUS:
                 StatusResource statusResource = new StatusResource();
-                statusResource.setExperimentResource(this);
+                statusResource.setExperimentId(expID);
                 return statusResource;
             case CONFIG_DATA:
                 ConfigDataResource configDataResource = new ConfigDataResource();
-                configDataResource.setExperimentResource(this);
+                configDataResource.setExperimentId(expID);
                 return configDataResource;
             case COMPUTATIONAL_RESOURCE_SCHEDULING:
                 ComputationSchedulingResource schedulingResource = new ComputationSchedulingResource();
-                schedulingResource.setExperimentResource(this);
+                schedulingResource.setExperimentId(expID);
                 return schedulingResource;
             case ADVANCE_INPUT_DATA_HANDLING:
                 AdvanceInputDataHandlingResource dataHandlingResource = new AdvanceInputDataHandlingResource();
-                dataHandlingResource.setExperimentResource(this);
+                dataHandlingResource.setExperimentId(expID);
                 return dataHandlingResource;
             case ADVANCE_OUTPUT_DATA_HANDLING:
                 AdvancedOutputDataHandlingResource outputDataHandlingResource = new AdvancedOutputDataHandlingResource();
-                outputDataHandlingResource.setExperimentResource(this);
+                outputDataHandlingResource.setExperimentId(expID);
                 return outputDataHandlingResource;
             case QOS_PARAM:
                 QosParamResource qosParamResource = new QosParamResource();
-                qosParamResource.setExperimentResource(this);
+                qosParamResource.setExperimentId(expID);
                 return qosParamResource;
 	        default:
                 logger.error("Unsupported resource type for experiment resource.", new IllegalArgumentException());
@@ -572,17 +666,11 @@ public class ExperimentResource extends AbstractResource {
             em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
             Experiment experiment = new Experiment();
-            Project projectmodel = em.find(Project.class, project.getId());
-            experiment.setProject(projectmodel);
-            experiment.setProjectId(projectmodel.getProject_id());
-            Gateway gateway = em.find(Gateway.class, getGateway().getGatewayId());
+            experiment.setProjectID(projectId);
             experiment.setExpId(expID);
             experiment.setExecutionUser(executionUser);
-            Users userModel = em.find(Users.class, executionUser);
-            experiment.setUser(userModel);
-            experiment.setExecutionUser(userModel.getUser_name());
-            experiment.setGateway(gateway);
-            experiment.setGatewayId(gateway.getGateway_id());
+            experiment.setExecutionUser(executionUser);
+            experiment.setGatewayId(gatewayId);
             experiment.setCreationTime(creationTime);
             experiment.setExpName(expName);
             experiment.setExpDesc(description);
@@ -594,12 +682,9 @@ public class ExperimentResource extends AbstractResource {
             experiment.setAllowNotification(enableEmailNotifications);
             experiment.setGatewayExecutionId(gatewayExecutionId);
             if (existingExp != null) {
-                existingExp.setGateway(gateway);
-                existingExp.setGatewayId(gateway.getGateway_id());
-                existingExp.setProject(projectmodel);
+                existingExp.setGatewayId(gatewayId);
                 existingExp.setExecutionUser(executionUser);
-                existingExp.setUser(userModel);
-                existingExp.setProjectId(projectmodel.getProject_id());
+                existingExp.setProjectID(projectId);
                 existingExp.setCreationTime(creationTime);
                 existingExp.setExpName(expName);
                 existingExp.setExpDesc(description);
@@ -637,22 +722,6 @@ public class ExperimentResource extends AbstractResource {
 		this.expID = expID;
 	}
 
-    /**
-     *
-     * @return gatewayResource
-     */
-    public GatewayResource getGateway() {
-		return gateway;
-	}
-
-    /**
-     *
-     * @param gateway gateway
-     */
-    public void setGateway(GatewayResource gateway) {
-		this.gateway = gateway;
-	}
-
     public String getExecutionUser() {
         return executionUser;
     }
@@ -660,22 +729,6 @@ public class ExperimentResource extends AbstractResource {
     public void setExecutionUser(String executionUser) {
         this.executionUser = executionUser;
     }
-
-    /**
-     *
-     * @return project
-     */
-    public ProjectResource getProject() {
-		return project;
-	}
-
-    /**
-     *
-     * @param project  project
-     */
-    public void setProject(ProjectResource project) {
-		this.project = project;
-	}
 
     public List<NotificationEmailResource> getNotificationEmails () throws RegistryException{
         List<NotificationEmailResource> emailResources = new ArrayList<NotificationEmailResource>();

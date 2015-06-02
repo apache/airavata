@@ -67,9 +67,8 @@ public class ProjectRegistry {
             projectResource.setName(project.getName());
             projectResource.setDescription(project.getDescription());
             projectResource.setCreationTime(AiravataUtils.getTime(project.getCreationTime()));
-            GatewayResource gateway = (GatewayResource)ResourceUtils.getGateway(gatewayId);
-            projectResource.setGateway(gateway);
-            WorkerResource worker = new WorkerResource(project.getOwner(), workerResource.getGateway());
+            projectResource.setGatewayId(gatewayId);
+            WorkerResource worker = new WorkerResource(project.getOwner(), gatewayId);
             projectResource.setWorker(worker);
             projectResource.save();
             ProjectUserResource resource = (ProjectUserResource)projectResource.create(
@@ -119,7 +118,7 @@ public class ProjectRegistry {
                 workerResource = (WorkerResource)ResourceUtils.getWorker(
                         gatewayResource.getGatewayName(), user.getUserName());
             }
-            WorkerResource worker = new WorkerResource(project.getOwner(), gatewayResource);
+            WorkerResource worker = new WorkerResource(project.getOwner(), gatewayResource.getGatewayId());
             existingProject.setWorker(worker);
             existingProject.save();
             ProjectUserResource resource = (ProjectUserResource)existingProject.create(

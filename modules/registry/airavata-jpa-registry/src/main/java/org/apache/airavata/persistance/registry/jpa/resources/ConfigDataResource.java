@@ -35,12 +35,48 @@ import java.util.List;
 
 public class ConfigDataResource extends AbstractResource {
     private static final Logger logger = LoggerFactory.getLogger(ConfigDataResource.class);
-    private ExperimentResource experimentResource;
+    private String experimentId;
     private boolean airavataAutoSchedule;
     private boolean overrideManualParams;
     private boolean shareExp;
     private String userDn;
     private boolean generateCert;
+    private ComputationSchedulingResource computationSchedulingResource;
+    private AdvanceInputDataHandlingResource advanceInputDataHandlingResource;
+    private AdvancedOutputDataHandlingResource advancedOutputDataHandlingResource;
+    private QosParamResource qosParamResource;
+
+    public ComputationSchedulingResource getComputationSchedulingResource() {
+        return computationSchedulingResource;
+    }
+
+    public void setComputationSchedulingResource(ComputationSchedulingResource computationSchedulingResource) {
+        this.computationSchedulingResource = computationSchedulingResource;
+    }
+
+    public AdvanceInputDataHandlingResource getAdvanceInputDataHandlingResource() {
+        return advanceInputDataHandlingResource;
+    }
+
+    public void setAdvanceInputDataHandlingResource(AdvanceInputDataHandlingResource advanceInputDataHandlingResource) {
+        this.advanceInputDataHandlingResource = advanceInputDataHandlingResource;
+    }
+
+    public AdvancedOutputDataHandlingResource getAdvancedOutputDataHandlingResource() {
+        return advancedOutputDataHandlingResource;
+    }
+
+    public void setAdvancedOutputDataHandlingResource(AdvancedOutputDataHandlingResource advancedOutputDataHandlingResource) {
+        this.advancedOutputDataHandlingResource = advancedOutputDataHandlingResource;
+    }
+
+    public QosParamResource getQosParamResource() {
+        return qosParamResource;
+    }
+
+    public void setQosParamResource(QosParamResource qosParamResource) {
+        this.qosParamResource = qosParamResource;
+    }
 
     public String getUserDn() {
         return userDn;
@@ -58,12 +94,12 @@ public class ConfigDataResource extends AbstractResource {
         this.generateCert = generateCert;
     }
 
-    public ExperimentResource getExperimentResource() {
-        return experimentResource;
+    public String getExperimentId() {
+        return experimentId;
     }
 
-    public void setExperimentResource(ExperimentResource experimentResource) {
-        this.experimentResource = experimentResource;
+    public void setExperimentId(String experimentId) {
+        this.experimentId = experimentId;
     }
 
     public boolean isAiravataAutoSchedule() {
@@ -119,23 +155,20 @@ public class ConfigDataResource extends AbstractResource {
         EntityManager em = null;
         try {
             em = ResourceUtils.getEntityManager();
-            ExperimentConfigData existingConfig = em.find(ExperimentConfigData.class, experimentResource.getExpID());
+            ExperimentConfigData existingConfig = em.find(ExperimentConfigData.class, experimentId);
             em.close();
 
             em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
             ExperimentConfigData configData = new ExperimentConfigData();
-            Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
-            configData.setExpId(experimentResource.getExpID());
-            configData.setExperiment(experiment);
+            configData.setExpId(experimentId);
             configData.setAiravataAutoSchedule(airavataAutoSchedule);
             configData.setOverrideManualParams(overrideManualParams);
             configData.setShareExp(shareExp);
             configData.setUserDn(userDn);
             configData.setGenerateCert(generateCert);
             if (existingConfig != null) {
-                existingConfig.setExpId(experimentResource.getExpID());
-                existingConfig.setExperiment(experiment);
+                existingConfig.setExpId(experimentId);
                 existingConfig.setAiravataAutoSchedule(airavataAutoSchedule);
                 existingConfig.setOverrideManualParams(overrideManualParams);
                 existingConfig.setShareExp(shareExp);

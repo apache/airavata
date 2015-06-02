@@ -72,7 +72,11 @@ public class ErrorDetail implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY, cascade= CascadeType.MERGE)
     @JoinColumn(name = "NODE_INSTANCE_ID")
-    private WorkflowNodeDetail nodeDetails;
+    private WorkflowNodeDetail nodeDetail;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade= CascadeType.MERGE)
+    @JoinColumn(name = "JOB_ID")
+    private JobDetail jobDetail;
 
     public int getErrorID() {
         return errorID;
@@ -152,30 +156,6 @@ public class ErrorDetail implements Serializable {
 
     public void setActionableGroup(String actionableGroup) {
         this.actionableGroup = actionableGroup;
-    }
-
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
-    public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
-    }
-
-    public TaskDetail getTask() {
-        return task;
-    }
-
-    public void setTask(TaskDetail task) {
-        this.task = task;
-    }
-
-    public WorkflowNodeDetail getNodeDetails() {
-        return nodeDetails;
-    }
-
-    public void setNodeDetails(WorkflowNodeDetail nodeDetails) {
-        this.nodeDetails = nodeDetails;
     }
 
     public String getCorrectiveAction() {

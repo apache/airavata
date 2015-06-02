@@ -76,14 +76,6 @@ public class ApplicationOutput implements Serializable {
         this.value = value;
     }
 
-    public TaskDetail getTask() {
-        return task;
-    }
-
-    public void setTask(TaskDetail task) {
-        this.task = task;
-    }
-
     public String getOutputKey() {
         return outputKey;
     }

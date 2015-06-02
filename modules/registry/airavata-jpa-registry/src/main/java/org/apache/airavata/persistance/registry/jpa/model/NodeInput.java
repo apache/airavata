@@ -63,7 +63,7 @@ public class NodeInput implements Serializable {
 
     @ManyToOne(cascade= CascadeType.MERGE)
     @JoinColumn(name = "NODE_INSTANCE_ID")
-    private WorkflowNodeDetail nodeDetails;
+    private WorkflowNodeDetail nodeDetail;
 
     public String getInputKey() {
         return inputKey;
@@ -103,14 +103,6 @@ public class NodeInput implements Serializable {
 
     public void setNodeId(String nodeId) {
         this.nodeId = nodeId;
-    }
-
-    public WorkflowNodeDetail getNodeDetails() {
-        return nodeDetails;
-    }
-
-    public void setNodeDetails(WorkflowNodeDetail nodeDetails) {
-        this.nodeDetails = nodeDetails;
     }
 
     public String getAppArgument() {

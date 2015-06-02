@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 public class NodeInputResource extends AbstractResource {
 	private static final Logger logger = LoggerFactory.getLogger(NodeInputResource.class);
 
-    private WorkflowNodeDetailResource nodeDetailResource;
+    private String nodeId;
     private String inputKey;
     private String dataType;
     private String metadata;
@@ -99,12 +99,12 @@ public class NodeInputResource extends AbstractResource {
         this.userFriendlyDesc = userFriendlyDesc;
     }
 
-    public WorkflowNodeDetailResource getNodeDetailResource() {
-        return nodeDetailResource;
+    public String getNodeId() {
+        return nodeId;
     }
 
-    public void setNodeDetailResource(WorkflowNodeDetailResource nodeDetailResource) {
-        this.nodeDetailResource = nodeDetailResource;
+    public void setNodeId(String nodeId) {
+        this.nodeId = nodeId;
     }
 
     public String getInputKey() {
@@ -175,15 +175,13 @@ public class NodeInputResource extends AbstractResource {
         EntityManager em = null;
         try {
             em = ResourceUtils.getEntityManager();
-            NodeInput existingInput = em.find(NodeInput.class, new NodeInput_PK(inputKey, nodeDetailResource.getNodeInstanceId()));
+            NodeInput existingInput = em.find(NodeInput.class, new NodeInput_PK(inputKey, nodeId));
             em.close();
 
             em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
             NodeInput nodeInput = new NodeInput();
-            WorkflowNodeDetail nodeDetail = em.find(WorkflowNodeDetail.class, nodeDetailResource.getNodeInstanceId());
-            nodeInput.setNodeDetails(nodeDetail);
-            nodeInput.setNodeId(nodeDetail.getNodeId());
+            nodeInput.setNodeId(nodeId);
             nodeInput.setInputKey(inputKey);
             nodeInput.setDataType(dataType);
             nodeInput.setValue(value);
@@ -197,8 +195,7 @@ public class NodeInputResource extends AbstractResource {
             nodeInput.setDataStaged(dataStaged);
 
             if (existingInput != null){
-                existingInput.setNodeDetails(nodeDetail);
-                existingInput.setNodeId(nodeDetail.getNodeId());
+                existingInput.setNodeId(nodeId);
                 existingInput.setInputKey(inputKey);
                 existingInput.setDataType(dataType);
                 existingInput.setValue(value);

@@ -21,6 +21,7 @@
 
 package org.apache.airavata.persistance.registry.jpa.utils;
 
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
@@ -84,9 +85,7 @@ public class ThriftDataModelConversion {
     public static Experiment getExperiment(ExperimentResource experimentResource) throws RegistryException {
         if (experimentResource != null){
             Experiment experiment = new Experiment();
-            if (experimentResource.getProject()!= null){
-                experiment.setProjectID(experimentResource.getProject().getId());
-            }
+            experiment.setProjectID(experimentResource.getProjectId());
             experiment.setExperimentID(experimentResource.getExpID());
             experiment.setCreationTime(experimentResource.getCreationTime().getTime());
             experiment.setUserName(experimentResource.getExecutionUser());
@@ -124,9 +123,8 @@ public class ThriftDataModelConversion {
             if (errorDetails!= null && !errorDetails.isEmpty()){
                 experiment.setErrors(getErrorDetailList(errorDetails));
             }
-            String expID = experimentResource.getExpID();
-            if (experimentResource.isExists(ResourceType.CONFIG_DATA, expID)){
-                ConfigDataResource userConfigData = experimentResource.getUserConfigData(expID);
+            if (experimentResource.isExists(ResourceType.CONFIG_DATA, experimentResource.getExpID())){
+                ConfigDataResource userConfigData = experimentResource.getUserConfigData(experimentResource.getExpID());
                 experiment.setUserConfigurationData(getUserConfigData(userConfigData));
             }
             return experiment;
@@ -385,7 +383,11 @@ public class ThriftDataModelConversion {
                 status.setState("UNKNOWN");
             }
             jobStatus.setJobState(JobState.valueOf(status.getState()));
-            jobStatus.setTimeOfStateChange(status.getStatusUpdateTime().getTime());
+            if (status.getStatusUpdateTime() == null){
+                jobStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+            }else {
+                jobStatus.setTimeOfStateChange(status.getStatusUpdateTime().getTime());
+            }
             return jobStatus;
         }
         return null;
@@ -599,8 +601,9 @@ public class ThriftDataModelConversion {
             data.setShareExperimentPublicly(resource.isShareExp());
             data.setUserDN(resource.getUserDn());
             data.setGenerateCert(resource.isGenerateCert());
-            ExperimentResource experimentResource = resource.getExperimentResource();
-            String expID = experimentResource.getExpID();
+            String expID = resource.getExperimentId();
+            ExperimentResource experimentResource = new ExperimentResource();
+            experimentResource.setExpID(expID);
             if (experimentResource.isExists(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING, expID)){
                 ComputationSchedulingResource computationScheduling = experimentResource.getComputationScheduling(expID);
                 data.setComputationalResourceScheduling(getComputationalResourceScheduling(computationScheduling));

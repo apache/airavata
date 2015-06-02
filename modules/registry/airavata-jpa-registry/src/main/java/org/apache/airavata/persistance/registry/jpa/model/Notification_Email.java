@@ -45,7 +45,7 @@ public class Notification_Email implements Serializable {
     private Experiment experiment;
     @ManyToOne
     @JoinColumn(name = "TASK_ID")
-    private TaskDetail taskDetail;
+    private TaskDetail task;
 
     public String getExperiment_id() {
         return experiment_id;
@@ -53,14 +53,6 @@ public class Notification_Email implements Serializable {
 
     public void setExperiment_id(String experiment_id) {
         this.experiment_id = experiment_id;
-    }
-
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
-    public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
     }
 
     public String getEmailAddress() {
@@ -77,14 +69,6 @@ public class Notification_Email implements Serializable {
 
     public void setTaskId(String taskId) {
         this.taskId = taskId;
-    }
-
-    public TaskDetail getTaskDetail() {
-        return taskDetail;
-    }
-
-    public void setTaskDetail(TaskDetail taskDetail) {
-        this.taskDetail = taskDetail;
     }
 
     public int getEmailId() {

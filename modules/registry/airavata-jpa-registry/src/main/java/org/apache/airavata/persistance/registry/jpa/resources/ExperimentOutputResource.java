@@ -37,7 +37,7 @@ import java.util.List;
 public class ExperimentOutputResource extends AbstractResource {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentOutputResource.class);
 
-    private ExperimentResource experimentResource;
+    private String experimentId;
     private String experimentKey;
     private String value;
     private String dataType;
@@ -63,7 +63,6 @@ public class ExperimentOutputResource extends AbstractResource {
     public void setAppArgument(String appArgument) {
         this.appArgument = appArgument;
     }
-
 
     public boolean getRequiredToCMD() {
         return requiredToCMD;
@@ -113,12 +112,12 @@ public class ExperimentOutputResource extends AbstractResource {
         this.value = value;
     }
 
-    public ExperimentResource getExperimentResource() {
-        return experimentResource;
+    public String getExperimentId() {
+        return experimentId;
     }
 
-    public void setExperimentResource(ExperimentResource experimentResource) {
-        this.experimentResource = experimentResource;
+    public void setExperimentId(String experimentId) {
+        this.experimentId = experimentId;
     }
 
     public String getDataType() {
@@ -153,16 +152,14 @@ public class ExperimentOutputResource extends AbstractResource {
         EntityManager em = null;
         try {
             em = ResourceUtils.getEntityManager();
-            Experiment_Output existingOutput = em.find(Experiment_Output.class, new Experiment_Output_PK(experimentResource.getExpID(), experimentKey));
+            Experiment_Output existingOutput = em.find(Experiment_Output.class, new Experiment_Output_PK(experimentId, experimentKey));
             em.close();
 
             em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
             Experiment_Output exOutput = new Experiment_Output();
             exOutput.setEx_key(experimentKey);
-            Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
-            exOutput.setExperiment(experiment);
-            exOutput.setExperiment_id(experiment.getExpId());
+            exOutput.setExperiment_id(experimentId);
             if (value != null){
                 exOutput.setValue(value.toCharArray());
             }
@@ -176,11 +173,10 @@ public class ExperimentOutputResource extends AbstractResource {
 
             if (existingOutput != null) {
                 existingOutput.setEx_key(experimentKey);
-                existingOutput.setExperiment(experiment);
+                existingOutput.setExperiment_id(experimentId);
                 if (value != null){
                     existingOutput.setValue(value.toCharArray());
                 }
-                existingOutput.setExperiment_id(experiment.getExpId());
                 existingOutput.setDataType(dataType);
                 existingOutput.setRequired(isRequired);
                 existingOutput.setRequiredToCMD(requiredToCMD);

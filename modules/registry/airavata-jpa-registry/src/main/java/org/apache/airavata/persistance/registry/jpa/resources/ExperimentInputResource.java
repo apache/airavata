@@ -37,7 +37,7 @@ import java.util.List;
 public class ExperimentInputResource extends AbstractResource {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentInputResource.class);
 
-    private ExperimentResource experimentResource;
+    private String experimentId;
     private String experimentKey;
     private String value;
     private String metadata;
@@ -122,12 +122,12 @@ public class ExperimentInputResource extends AbstractResource {
         this.value = value;
     }
 
-    public ExperimentResource getExperimentResource() {
-        return experimentResource;
+    public String getExperimentId() {
+        return experimentId;
     }
 
-    public void setExperimentResource(ExperimentResource experimentResource) {
-        this.experimentResource = experimentResource;
+    public void setExperimentId(String experimentId) {
+        this.experimentId = experimentId;
     }
 
     public String getDataType() {
@@ -170,16 +170,14 @@ public class ExperimentInputResource extends AbstractResource {
         EntityManager em = null;
         try {
             em = ResourceUtils.getEntityManager();
-            Experiment_Input existingInput = em.find(Experiment_Input.class, new Experiment_Input_PK(experimentResource.getExpID(), experimentKey));
+            Experiment_Input existingInput = em.find(Experiment_Input.class, new Experiment_Input_PK(experimentId, experimentKey));
             em.close();
 
             em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
             Experiment_Input exInput = new Experiment_Input();
             exInput.setEx_key(experimentKey);
-            Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
-            exInput.setExperiment(experiment);
-            exInput.setExperiment_id(experiment.getExpId());
+            exInput.setExperiment_id(experimentId);
             if (value != null){
                 exInput.setValue(value.toCharArray());
             }
@@ -194,8 +192,7 @@ public class ExperimentInputResource extends AbstractResource {
             exInput.setDataStaged(dataStaged);
             if (existingInput != null) {
                 existingInput.setEx_key(experimentKey);
-                existingInput.setExperiment(experiment);
-                existingInput.setExperiment_id(experiment.getExpId());
+                existingInput.setExperiment_id(experimentId);
                 if (value != null){
                     existingInput.setValue(value.toCharArray());
                 }

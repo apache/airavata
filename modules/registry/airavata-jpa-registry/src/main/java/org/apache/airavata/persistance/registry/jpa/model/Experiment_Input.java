@@ -120,14 +120,6 @@ public class Experiment_Input implements Serializable {
         this.metadata = metadata;
     }
 
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
-    public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
-    }
-
     public String getAppArgument() {
         return appArgument;
     }
