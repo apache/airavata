@@ -37,8 +37,8 @@ import java.util.List;
 public class QosParamResource extends AbstractResource {
     private static final Logger logger = LoggerFactory.getLogger(QosParamResource.class);
     private int  qosId;
-    private ExperimentResource experimentResource;
-    private TaskDetailResource taskDetailResource;
+    private String experimentId;
+    private String taskId;
     private String startExecutionAt;
     private String executeBefore;
     private int noOfRetries;
@@ -51,20 +51,20 @@ public class QosParamResource extends AbstractResource {
         this.qosId = qosId;
     }
 
-    public ExperimentResource getExperimentResource() {
-        return experimentResource;
+    public String getExperimentId() {
+        return experimentId;
     }
 
-    public void setExperimentResource(ExperimentResource experimentResource) {
-        this.experimentResource = experimentResource;
+    public void setExperimentId(String experimentId) {
+        this.experimentId = experimentId;
     }
 
-    public TaskDetailResource getTaskDetailResource() {
-        return taskDetailResource;
+    public String getTaskId() {
+        return taskId;
     }
 
-    public void setTaskDetailResource(TaskDetailResource taskDetailResource) {
-        this.taskDetailResource = taskDetailResource;
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 
     public String getStartExecutionAt() {
@@ -122,14 +122,8 @@ public class QosParamResource extends AbstractResource {
             em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
             QosParam qosParam = new QosParam();
-            Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
-            if (taskDetailResource != null) {
-                TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
-                qosParam.setTaskId(taskDetailResource.getTaskId());
-                qosParam.setTask(taskDetail);
-            }
-            qosParam.setExpId(experimentResource.getExpID());
-            qosParam.setExperiment(experiment);
+            qosParam.setTaskId(taskId);
+            qosParam.setExpId(experimentId);
             qosParam.setStartExecutionAt(startExecutionAt);
             qosParam.setExecuteBefore(executeBefore);
             qosParam.setNoOfRetries(noOfRetries);

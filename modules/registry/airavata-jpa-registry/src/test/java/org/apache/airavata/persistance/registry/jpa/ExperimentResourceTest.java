@@ -41,7 +41,7 @@ public class ExperimentResourceTest extends AbstractResourceTest {
         experimentResource = (ExperimentResource) getGatewayResource().create(ResourceType.EXPERIMENT);
         experimentResource.setExpID(experimentID);
         experimentResource.setExecutionUser(getWorkerResource().getUser());
-        experimentResource.setProject(getProjectResource());
+        experimentResource.setProjectId(getProjectResource().getId());
         Timestamp currentDate = new Timestamp(new Date().getTime());
         experimentResource.setCreationTime(currentDate);
         experimentResource.setApplicationId("testApplication");

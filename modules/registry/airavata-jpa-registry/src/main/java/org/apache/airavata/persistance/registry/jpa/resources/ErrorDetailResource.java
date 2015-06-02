@@ -39,9 +39,9 @@ import java.util.List;
 public class ErrorDetailResource extends AbstractResource {
     private static final Logger logger = LoggerFactory.getLogger(ErrorDetailResource.class);
     private int errorId;
-    private ExperimentResource experimentResource;
-    private TaskDetailResource taskDetailResource;
-    private WorkflowNodeDetailResource nodeDetail;
+    private String experimentId;
+    private String taskId;
+    private String nodeId;
     private Timestamp creationTime;
     private String actualErrorMsg;
     private String userFriendlyErrorMsg;
@@ -79,6 +79,30 @@ public class ErrorDetailResource extends AbstractResource {
         return userFriendlyErrorMsg;
     }
 
+    public String getExperimentId() {
+        return experimentId;
+    }
+
+    public void setExperimentId(String experimentId) {
+        this.experimentId = experimentId;
+    }
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
+
+    public String getNodeId() {
+        return nodeId;
+    }
+
+    public void setNodeId(String nodeId) {
+        this.nodeId = nodeId;
+    }
+
     public void setUserFriendlyErrorMsg(String userFriendlyErrorMsg) {
         this.userFriendlyErrorMsg = userFriendlyErrorMsg;
     }
@@ -113,30 +137,6 @@ public class ErrorDetailResource extends AbstractResource {
 
     public void setActionableGroup(String actionableGroup) {
         this.actionableGroup = actionableGroup;
-    }
-
-    public ExperimentResource getExperimentResource() {
-        return experimentResource;
-    }
-
-    public void setExperimentResource(ExperimentResource experimentResource) {
-        this.experimentResource = experimentResource;
-    }
-
-    public TaskDetailResource getTaskDetailResource() {
-        return taskDetailResource;
-    }
-
-    public void setTaskDetailResource(TaskDetailResource taskDetailResource) {
-        this.taskDetailResource = taskDetailResource;
-    }
-
-    public WorkflowNodeDetailResource getNodeDetail() {
-        return nodeDetail;
-    }
-
-    public void setNodeDetail(WorkflowNodeDetailResource nodeDetail) {
-        this.nodeDetail = nodeDetail;
     }
 
     public String getJobId() {
@@ -185,20 +185,9 @@ public class ErrorDetailResource extends AbstractResource {
                 errorDetail = new ErrorDetail();
             }
             errorDetail.setErrorID(errorId);
-            Experiment experiment = em.find(Experiment.class, experimentResource.getExpID());
-            errorDetail.setExperiment(experiment);
-            errorDetail.setExpId(experimentResource.getExpID());
-            if (taskDetailResource != null) {
-                TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
-                errorDetail.setTask(taskDetail);
-                errorDetail.setTaskId(taskDetail.getTaskId());
-            }
-
-            if (nodeDetail != null) {
-                WorkflowNodeDetail workflowNodeDetail = em.find(WorkflowNodeDetail.class, nodeDetail.getNodeInstanceId());
-                errorDetail.setNodeDetails(workflowNodeDetail);
-                errorDetail.setNodeId(workflowNodeDetail.getNodeId());
-            }
+            errorDetail.setExpId(experimentId);
+            errorDetail.setTaskId(taskId);
+            errorDetail.setNodeId(nodeId);
             errorDetail.setCreationTime(creationTime);
             if (actualErrorMsg != null){
                 errorDetail.setActualErrorMsg(actualErrorMsg.toCharArray());

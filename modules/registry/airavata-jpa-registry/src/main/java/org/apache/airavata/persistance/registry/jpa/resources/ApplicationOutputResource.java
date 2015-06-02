@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 public class ApplicationOutputResource extends AbstractResource {
 	private static final Logger logger = LoggerFactory.getLogger(ApplicationOutputResource.class);
-    private TaskDetailResource taskDetailResource;
+    private String taskId;
     private String outputKey;
     private String dataType;
     private String value;
@@ -120,15 +120,14 @@ public class ApplicationOutputResource extends AbstractResource {
         this.value = value;
     }
 
-    public TaskDetailResource getTaskDetailResource() {
-        return taskDetailResource;
+    public String getTaskId() {
+        return taskId;
     }
 
-    public void setTaskDetailResource(TaskDetailResource taskDetailResource) {
-        this.taskDetailResource = taskDetailResource;
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 
-    
     public Resource create(ResourceType type) throws RegistryException {
         logger.error("Unsupported resource type for application output data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
@@ -157,15 +156,13 @@ public class ApplicationOutputResource extends AbstractResource {
         EntityManager em = null;
         try {
             em = ResourceUtils.getEntityManager();
-            ApplicationOutput existingOutput = em.find(ApplicationOutput.class, new ApplicationOutput_PK(outputKey, taskDetailResource.getTaskId()));
+            ApplicationOutput existingOutput = em.find(ApplicationOutput.class, new ApplicationOutput_PK(outputKey, taskId));
             em.close();
 
             em = ResourceUtils.getEntityManager();
             em.getTransaction().begin();
             ApplicationOutput applicationOutput = new ApplicationOutput();
-            TaskDetail taskDetail = em.find(TaskDetail.class, taskDetailResource.getTaskId());
-            applicationOutput.setTask(taskDetail);
-            applicationOutput.setTaskId(taskDetail.getTaskId());
+            applicationOutput.setTaskId(taskId);
             applicationOutput.setOutputKey(outputKey);
             applicationOutput.setDataType(dataType);
             applicationOutput.setRequired(isRequired);
@@ -179,8 +176,7 @@ public class ApplicationOutputResource extends AbstractResource {
             }
 
             if (existingOutput != null) {
-                existingOutput.setTask(taskDetail);
-                existingOutput.setTaskId(taskDetail.getTaskId());
+                existingOutput.setTaskId(taskId);
                 existingOutput.setOutputKey(outputKey);
                 existingOutput.setDataType(dataType);
                 existingOutput.setRequired(isRequired);

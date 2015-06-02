@@ -110,20 +110,4 @@ public class AdvancedInputDataHandling implements Serializable {
     public void setCleanAfterJob(boolean cleanAfterJob) {
         this.cleanAfterJob = cleanAfterJob;
     }
-
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
-    public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
-    }
-
-    public TaskDetail getTask() {
-        return task;
-    }
-
-    public void setTask(TaskDetail task) {
-        this.task = task;
-    }
 }

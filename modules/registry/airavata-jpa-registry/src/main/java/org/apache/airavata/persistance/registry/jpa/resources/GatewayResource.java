@@ -118,15 +118,15 @@ public class GatewayResource extends AbstractResource {
         switch (type) {
             case PROJECT:
                 ProjectResource projectResource = new ProjectResource();
-                projectResource.setGateway(this);
+                projectResource.setGatewayId(gatewayId);
                 return projectResource;
             case EXPERIMENT:
                 ExperimentResource experimentResource =new ExperimentResource();
-                experimentResource.setGateway(this);
+                experimentResource.setGatewayId(gatewayId);
                 return experimentResource;
             case GATEWAY_WORKER:
                 WorkerResource workerResource = new WorkerResource();
-                workerResource.setGateway(this);
+                workerResource.setGatewayId(gatewayId);
                 return workerResource;
             default:
                 logger.error("Unsupported resource type for gateway resource.", new IllegalArgumentException());

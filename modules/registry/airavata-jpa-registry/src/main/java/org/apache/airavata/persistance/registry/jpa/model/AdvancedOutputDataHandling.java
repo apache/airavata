@@ -101,19 +101,4 @@ public class AdvancedOutputDataHandling implements Serializable {
         this.persistOutputData = persistOutputData;
     }
 
-    public Experiment getExperiment() {
-        return experiment;
-    }
-
-    public void setExperiment(Experiment experiment) {
-        this.experiment = experiment;
-    }
-
-    public TaskDetail getTask() {
-        return task;
-    }
-
-    public void setTask(TaskDetail task) {
-        this.task = task;
-    }
 }

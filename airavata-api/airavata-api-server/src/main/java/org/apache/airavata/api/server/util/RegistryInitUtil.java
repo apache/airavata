@@ -112,7 +112,7 @@ public class RegistryInitUtil {
                 if (!workerResource.isExists(ResourceType.PROJECT, DEFAULT_PROJECT_NAME)){
                     projectResource = workerResource.createProject(DEFAULT_PROJECT_NAME);
                     projectResource.setName(DEFAULT_PROJECT_NAME);
-                    projectResource.setGateway(gateway);
+                    projectResource.setGatewayId(gateway.getGatewayId());
                     projectResource.save();
                 }
 

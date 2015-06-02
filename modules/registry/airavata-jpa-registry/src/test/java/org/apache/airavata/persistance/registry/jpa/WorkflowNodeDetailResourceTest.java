@@ -47,13 +47,13 @@ public class WorkflowNodeDetailResourceTest extends AbstractResourceTest {
 		experimentResource = (ExperimentResource) getGatewayResource().create(ResourceType.EXPERIMENT);
 		experimentResource.setExpID(experimentID);
 		experimentResource.setExecutionUser(getWorkerResource().getUser());
-		experimentResource.setProject(getProjectResource());
+		experimentResource.setProjectId(getProjectResource().getId());
 		experimentResource.setCreationTime(creationTime);
 		experimentResource.setApplicationId(applicationID);
 		experimentResource.save();
 
 		nodeDetailResource = (WorkflowNodeDetailResource) experimentResource.create(ResourceType.WORKFLOW_NODE_DETAIL);
-		nodeDetailResource.setExperimentResource(experimentResource);
+		nodeDetailResource.setExperimentId(experimentResource.getExpID());
 		nodeDetailResource.setNodeInstanceId(nodeID);
 		nodeDetailResource.setNodeName(nodeID);
 		nodeDetailResource.setCreationTime(creationTime);
