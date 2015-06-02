@@ -174,7 +174,7 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
                     .getStringValue(), factory.getActivityStatus(activityEpr)
                     .toString()));
             
-            waitUntilDone(factory, activityEpr, jobDetails);
+            waitUntilDone(eprt, activityEpr, jobDetails, secProperties);
 
             ActivityStatusType activityStatus = null;
             activityStatus = getStatus(factory, activityEpr);
@@ -300,10 +300,11 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
 	 * @param jobExecutionContext
 	 * @throws GFacProviderException
 	 */
-	public void cancelJob(String activityEpr,
+	public boolean cancelJob(
 			JobExecutionContext jobExecutionContext)
 			throws GFacProviderException {
 		try {
+			String activityEpr = jobExecutionContext.getJobDetails().getJobDescription();
 			// initSecurityProperties(jobExecutionContext);
 			EndpointReferenceType eprt = EndpointReferenceType.Factory
 					.parse(activityEpr);
@@ -321,6 +322,7 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
 
 			FactoryClient factory = new FactoryClient(epr, secProperties);
 			factory.terminateActivity(eprt);
+			return true;
 		} catch (Exception e) {
 			throw new GFacProviderException(e.getLocalizedMessage(), e);
 		}
@@ -402,13 +404,6 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
 
 	}
 
-	@Override
-	public boolean cancelJob(JobExecutionContext jobExecutionContext)
-			throws GFacProviderException, GFacException {
-		// TODO Auto-generated method stub
-        return false;
-	}
-
     @Override
     public void recover(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
         // TODO: Auto generated method body.
@@ -419,17 +414,18 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
         // TODO: Auto generated method body.
     }
 
-    protected void waitUntilDone(FactoryClient factory, EndpointReferenceType activityEpr, JobDetails jobDetails) throws Exception {
+    protected void waitUntilDone(EndpointReferenceType factoryEpr, EndpointReferenceType activityEpr, JobDetails jobDetails, DefaultClientConfiguration secProperties) throws Exception {
 		
 		try {
+			FactoryClient factoryClient = new FactoryClient(factoryEpr, secProperties);
 			JobState applicationJobStatus = null;
 			
-			while ((factory.getActivityStatus(activityEpr) != ActivityStateEnumeration.FINISHED)
-	                && (factory.getActivityStatus(activityEpr) != ActivityStateEnumeration.FAILED)
-	                && (factory.getActivityStatus(activityEpr) != ActivityStateEnumeration.CANCELLED) 
+			while ((factoryClient.getActivityStatus(activityEpr) != ActivityStateEnumeration.FINISHED)
+	                && (factoryClient.getActivityStatus(activityEpr) != ActivityStateEnumeration.FAILED)
+	                && (factoryClient.getActivityStatus(activityEpr) != ActivityStateEnumeration.CANCELLED) 
 	                && (applicationJobStatus != JobState.COMPLETE)) {
 	
-	            ActivityStatusType activityStatus = getStatus(factory, activityEpr);
+	            ActivityStatusType activityStatus = getStatus(factoryClient, activityEpr);
 	            applicationJobStatus = getApplicationJobStatus(activityStatus);
 	         
 	            sendNotification(jobExecutionContext,applicationJobStatus);

@@ -22,10 +22,9 @@
 package org.apache.airavata.gfac.client.util;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.persistance.registry.jpa.ResourceType;
-import org.apache.airavata.persistance.registry.jpa.resources.*;
+import org.apache.airavata.experiment.catalog.ResourceType;
+import org.apache.airavata.experiment.catalog.resources.*;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.derby.drda.NetworkServerControl;
 import org.slf4j.Logger;

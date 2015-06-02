@@ -22,13 +22,12 @@ package org.apache.airavata.gfac.core.handler;
 
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
-import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.states.GfacHandlerState;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.messaging.event.TaskIdentifier;
 import org.apache.airavata.model.messaging.event.TaskOutputChangeEvent;
-import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
+import org.apache.airavata.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;

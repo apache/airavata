@@ -38,7 +38,7 @@ import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
-import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
+import org.apache.airavata.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryException;
@@ -74,7 +74,6 @@ import org.apache.airavata.workflow.model.wf.WorkflowExecutionState;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xmlpull.infoset.XmlElement;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;

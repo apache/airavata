@@ -56,7 +56,7 @@ import org.apache.airavata.model.messaging.event.TaskSubmitEvent;
 import org.apache.airavata.model.messaging.event.TaskTerminateEvent;
 import org.apache.airavata.model.workspace.experiment.ExperimentState;
 import org.apache.airavata.model.workspace.experiment.ExperimentStatus;
-import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
+import org.apache.airavata.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.RegistryModelType;

@@ -49,7 +49,7 @@
 //import org.apache.airavata.gsi.ssh.util.CommonUtils;
 //import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 //import org.apache.airavata.model.workspace.experiment.TaskDetails;
-//import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
+//import org.apache.airavata.experiment.registry.jpa.impl.RegistryFactory;
 //import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 //import org.apache.airavata.schemas.gfac.GsisshHostType;
 //import org.apache.airavata.schemas.gfac.HpcApplicationDeploymentType;
