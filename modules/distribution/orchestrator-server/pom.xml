@@ -138,7 +138,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
-			<artifactId>airavata-orchestrator-service</artifactId>
+			<artifactId>orchestrator-service</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
