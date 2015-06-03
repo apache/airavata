@@ -244,7 +244,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
-			<artifactId>airavata-orchestrator-service</artifactId>
+			<artifactId>orchestrator-service</artifactId>
 			<version>${project.version}</version>
 			<exclusions>
 				<exclusion>
@@ -263,7 +263,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
-			<artifactId>airavata-orchestrator-stubs</artifactId>
+			<artifactId>orchestrator-client</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -273,7 +273,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
-			<artifactId>airavata-orchestrator-core</artifactId>
+			<artifactId>orchestrator-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>

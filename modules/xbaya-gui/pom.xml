@@ -216,7 +216,7 @@
         </dependency>
         	<dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-orchestrator-stubs</artifactId>
+            <artifactId>orchestrator-client</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

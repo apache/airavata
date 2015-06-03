@@ -18,7 +18,7 @@ the License. -->
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>airavata-orchestrator-core</artifactId>
+    <artifactId>orchestrator-core</artifactId>
     <packaging>jar</packaging>
     <name>Airavata Orchestrator Core</name>
     <url>http://airavata.apache.org/</url>
