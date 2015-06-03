@@ -6,4 +6,4 @@ To run the SSHApiClientWithMyProxyAuth tool, first add all the jars in target/li
 export CP=`echo ./target/lib/*.jar | tr ' ' ':'`
 
 Then use the following command line:
-java -classpath ./target/gsissh-cli-tools-0.14-SNAPSHOT.jar:$CP -Dmyproxy.server=myproxy.teragrid.org -Dmyproxy.username=<your.username> -Dmyproxy.password=<your.password> -Dmyproxy.cert.location=<path-to>/airavata/tools/gsissh-cli-tools/target/classes/certificates/ -Dremote.host=trestles.sdsc.xsede.org -Dremote.host.port=22 -Dremote.cmd=/bin/ls org.apache.airavata.gsi.ssh.cli.SSHApiClientWithMyProxyAuth 
+java -classpath ./target/gsissh-cli-tools-0.14-SNAPSHOT.jar:$CP -Dmyproxy.server=myproxy.teragrid.org -Dmyproxy.username=<your.username> -Dmyproxy.password=<your.password> -Dmyproxy.cert.location=<path-to>/airavata/tools/gsissh-cli-tools/target/classes/certificates/ -Dremote.host=trestles.sdsc.xsede.org -Dremote.host.port=22 -Dremote.cmd=/bin/ls org.apache.airavata.gfac.ssh.cli.SSHApiClientWithMyProxyAuth

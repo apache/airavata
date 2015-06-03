@@ -34,8 +34,7 @@ import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.SecurityContext;
-import org.apache.airavata.gfac.core.cpi.GFac;
-import org.apache.airavata.gfac.core.notification.GFacNotifier;
+import org.apache.airavata.gfac.core.GFac;
 import org.apache.airavata.gfac.core.provider.GFacProvider;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.workspace.experiment.Experiment;
@@ -54,7 +53,6 @@ public class JobExecutionContext extends AbstractContext implements Serializable
     private ApplicationContext applicationContext;
     private MessageContext inMessageContext;
     private MessageContext outMessageContext;
-    private GFacNotifier notifier;
     //FIXME : not needed for gfac
     private Experiment experiment;
     private TaskDetails taskData;
@@ -166,7 +164,6 @@ public class JobExecutionContext extends AbstractContext implements Serializable
 
     public JobExecutionContext(GFacConfiguration gFacConfiguration,String applicationName){
         this.gfacConfiguration = gFacConfiguration;
-        notifier = new GFacNotifier();
         setApplicationName(applicationName);
         outputFileList = new ArrayList<String>();
     }
@@ -223,10 +220,6 @@ public class JobExecutionContext extends AbstractContext implements Serializable
         return gfacConfiguration;
     }
 
-    public GFacNotifier getNotificationService(){
-        return notifier;
-    }
-
     public GFacProvider getProvider() {
         return provider;
     }
@@ -257,10 +250,6 @@ public class JobExecutionContext extends AbstractContext implements Serializable
 
     public void setApplicationName(String applicationName) {
         this.applicationName = applicationName;
-    }
-
-    public GFacNotifier getNotifier() {
-        return notifier;
     }
 
     public boolean isInPath() {

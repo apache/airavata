@@ -556,7 +556,6 @@
 				<module>modules/security</module>
 				<module>modules/credential-store</module>
 				<module>modules/orchestrator</module>
-				<module>tools</module>
 				<module>modules/server</module>
 				<module>modules/test-suite</module>
 				<module>modules/distribution</module>
