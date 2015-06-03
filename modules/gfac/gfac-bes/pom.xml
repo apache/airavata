@@ -20,7 +20,7 @@
 	</parent>
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>airavata-gfac-bes</artifactId>
+	<artifactId>gfac-bes</artifactId>
 	<name>Airavata GFac BES implementation</name>
 	<description>This is the extension of GFAC to use GRAM </description>
 	<url>http://airavata.apache.org/</url>
@@ -36,7 +36,7 @@
 		<!-- GFAC schemas -->
 		<dependency>
 			<groupId>org.apache.airavata</groupId>
-			<artifactId>airavata-gfac-core</artifactId>
+			<artifactId>gfac-core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<!-- Credential Store -->

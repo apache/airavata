@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.gfac.ssh.api;
+package org.apache.airavata.gfac.core;
 
 /**
  * An exception class to wrap SSH command execution related errors.

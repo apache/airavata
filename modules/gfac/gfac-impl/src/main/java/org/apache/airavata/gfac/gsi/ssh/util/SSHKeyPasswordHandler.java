@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.gfac.ssh.util;
+package org.apache.airavata.gfac.gsi.ssh.util;
 
 import com.jcraft.jsch.UserInfo;
 import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;

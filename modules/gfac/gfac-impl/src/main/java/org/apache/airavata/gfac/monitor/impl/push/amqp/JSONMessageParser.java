@@ -21,7 +21,6 @@
 package org.apache.airavata.gfac.monitor.impl.push.amqp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.airavata.ComputingActivity;
 import org.apache.airavata.gfac.monitor.core.MessageParser;
 import org.apache.airavata.gfac.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.model.workspace.experiment.JobState;

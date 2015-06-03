@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.gfac.ssh.jsch;
+package org.apache.airavata.gfac.gsi.ssh.jsch;
 
 import com.jcraft.jsch.ExtendedSession;
 import com.jcraft.jsch.JSch;

@@ -1,4 +1,4 @@
-/*
+package org.apache.airavata.gfac.core.cluster;/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,16 +17,18 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
-package org.apache.airavata.gfac.ssh.api.job;
+ */
 
 /**
- * Created by IntelliJ IDEA.
- * User: lahirugunathilake
- * Date: 8/22/13
- * Time: 7:19 AM
- * To change this template use File | Settings | File Templates.
+ * Encapsulates information about
  */
-public enum JobType {
-            SERIAL, SINGLE, MPI, MULTIPLE, CONDOR
+public interface CommandInfo {
+
+    /**
+     * Gets the executable command as a string.
+     * @return String encoded command. Should be able to execute
+     * directly on remote shell. Should includes appropriate parameters.
+     */
+    String getCommand();
+
 }

@@ -12,7 +12,7 @@ import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gfac.gsissh.util.GFACGSISSHUtils;
 import org.apache.airavata.gfac.ssh.util.HandleOutputs;
-import org.apache.airavata.gfac.ssh.api.Cluster;
+import org.apache.airavata.gfac.core.cluster.Cluster;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;

@@ -22,7 +22,6 @@ package org.apache.airavata.gfac.core.handler;
 
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
-import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.states.GfacHandlerState;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;

@@ -20,7 +20,7 @@
     </parent>
 
     <name>Airavata Gfac Client SDK</name>
-    <artifactId>airavata-gfac-stubs</artifactId>
+    <artifactId>gfac-client</artifactId>
     <packaging>jar</packaging>
     <url>http://airavata.apache.org/</url>
 

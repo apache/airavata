@@ -18,14 +18,16 @@
  * under the License.
  *
 */
-package org.apache.airavata.gfac.ssh.api.job;
+package org.apache.airavata.gfac.gsi.ssh.api.job;
 
-import org.apache.airavata.gfac.ssh.impl.RawCommandInfo;
+import org.apache.airavata.gfac.core.JobManagerConfiguration;
+import org.apache.airavata.gfac.core.cluster.OutputParser;
+import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 
-public class SlurmJobConfiguration implements JobManagerConfiguration{
+public class SlurmJobConfiguration implements JobManagerConfiguration {
 
     private String jobDescriptionTemplateName;
 

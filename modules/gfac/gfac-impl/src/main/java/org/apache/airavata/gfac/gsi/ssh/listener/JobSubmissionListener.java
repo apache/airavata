@@ -18,11 +18,11 @@
  * under the License.
  *
 */
-package org.apache.airavata.gfac.ssh.listener;
+package org.apache.airavata.gfac.gsi.ssh.listener;
 
-import org.apache.airavata.gfac.ssh.api.SSHApiException;
-import org.apache.airavata.gfac.ssh.api.job.JobDescriptor;
-import org.apache.airavata.gfac.ssh.impl.JobStatus;
+import org.apache.airavata.gfac.core.JobDescriptor;
+import org.apache.airavata.gfac.core.SSHApiException;
+import org.apache.airavata.gfac.core.cluster.JobStatus;
 
 /**
  * This interface can be implemented by the end user of the API

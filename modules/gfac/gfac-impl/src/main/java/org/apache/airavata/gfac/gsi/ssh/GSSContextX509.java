@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.gfac.ssh;
+package org.apache.airavata.gfac.gsi.ssh;
 
 
 import java.io.File;

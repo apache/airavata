@@ -18,11 +18,13 @@
  * under the License.
  *
 */
-package org.apache.airavata.gfac.ssh.api.job;
+package org.apache.airavata.gfac.core;
 
-import org.apache.airavata.gfac.ssh.api.CommandOutput;
-import org.apache.airavata.gfac.ssh.util.CommonUtils;
-import org.apache.airavata.gfac.ssh.x2012.x12.*;
+import org.apache.airavata.gfac.core.cluster.CommandOutput;
+import org.apache.airavata.gfac.core.x2012.x12.AfterAnyList;
+import org.apache.airavata.gfac.core.x2012.x12.AfterOKList;
+import org.apache.airavata.gfac.core.x2012.x12.InputList;
+import org.apache.airavata.gfac.core.x2012.x12.JobDescriptorDocument;
 import org.apache.xmlbeans.XmlException;
 
 import java.util.List;
@@ -142,14 +144,14 @@ public class JobDescriptor {
      */
     public void setMaxWallTime(String minutes) {
         this.getJobDescriptorDocument().getJobDescriptor().setMaxWallTime(
-                CommonUtils.maxWallTimeCalculator(Integer.parseInt(minutes)));
+                GFacUtils.maxWallTimeCalculator(Integer.parseInt(minutes)));
 
     }
 
 
     public void setMaxWallTimeForLSF(String minutes) {
         this.getJobDescriptorDocument().getJobDescriptor().setMaxWallTime(
-                CommonUtils.maxWallTimeCalculatorForLSF(Integer.parseInt(minutes)));
+                GFacUtils.maxWallTimeCalculatorForLSF(Integer.parseInt(minutes)));
 
     }
     public void setAcountString(String name) {

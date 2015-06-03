@@ -18,10 +18,10 @@
  * under the License.
  *
 */
-package org.apache.airavata.gfac.ssh.api.job;
+package org.apache.airavata.gfac.core.cluster;
 
-import org.apache.airavata.gfac.ssh.api.SSHApiException;
-import org.apache.airavata.gfac.ssh.impl.JobStatus;
+import org.apache.airavata.gfac.core.JobDescriptor;
+import org.apache.airavata.gfac.core.SSHApiException;
 
 import java.util.Map;
 

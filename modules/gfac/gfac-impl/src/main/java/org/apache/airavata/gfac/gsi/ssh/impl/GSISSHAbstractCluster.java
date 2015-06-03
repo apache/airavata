@@ -18,8 +18,46 @@
  * under the License.
  *
 */
-package org.apache.airavata.gfac.ssh.impl;
+package org.apache.airavata.gfac.gsi.ssh.impl;
 
+import com.jcraft.jsch.ExtendedSession;
+import com.jcraft.jsch.GSISSHIdentityFile;
+import com.jcraft.jsch.GSISSHIdentityRepository;
+import com.jcraft.jsch.Identity;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
+import org.apache.airavata.gfac.core.JobDescriptor;
+import org.apache.airavata.gfac.core.JobManagerConfiguration;
+import org.apache.airavata.gfac.core.SSHApiException;
+import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
+import org.apache.airavata.gfac.core.authentication.GSIAuthenticationInfo;
+import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
+import org.apache.airavata.gfac.core.authentication.SSHPasswordAuthentication;
+import org.apache.airavata.gfac.core.authentication.SSHPublicKeyAuthentication;
+import org.apache.airavata.gfac.core.authentication.SSHPublicKeyFileAuthentication;
+import org.apache.airavata.gfac.core.cluster.Cluster;
+import org.apache.airavata.gfac.core.cluster.JobStatus;
+import org.apache.airavata.gfac.core.cluster.OutputParser;
+import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
+import org.apache.airavata.gfac.core.cluster.ServerInfo;
+import org.apache.airavata.gfac.gsi.ssh.api.CommandExecutor;
+import org.apache.airavata.gfac.gsi.ssh.config.ConfigReader;
+import org.apache.airavata.gfac.gsi.ssh.jsch.ExtendedJSch;
+import org.apache.airavata.gfac.gsi.ssh.util.SSHAPIUIKeyboardInteractive;
+import org.apache.airavata.gfac.gsi.ssh.util.SSHKeyPasswordHandler;
+import org.apache.airavata.gfac.gsi.ssh.util.SSHUtils;
+import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,44 +68,6 @@ import java.net.URL;
 import java.security.SecureRandom;
 import java.util.List;
 import java.util.Map;
-
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
-import org.apache.airavata.gfac.ssh.api.Cluster;
-import org.apache.airavata.gfac.ssh.api.CommandExecutor;
-import org.apache.airavata.gfac.ssh.api.SSHApiException;
-import org.apache.airavata.gfac.ssh.api.ServerInfo;
-import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
-import org.apache.airavata.gfac.core.authentication.GSIAuthenticationInfo;
-import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
-import org.apache.airavata.gfac.core.authentication.SSHPasswordAuthentication;
-import org.apache.airavata.gfac.core.authentication.SSHPublicKeyAuthentication;
-import org.apache.airavata.gfac.core.authentication.SSHPublicKeyFileAuthentication;
-import org.apache.airavata.gfac.ssh.api.job.JobDescriptor;
-import org.apache.airavata.gfac.ssh.api.job.JobManagerConfiguration;
-import org.apache.airavata.gfac.ssh.api.job.OutputParser;
-import org.apache.airavata.gfac.ssh.config.ConfigReader;
-import org.apache.airavata.gfac.ssh.jsch.ExtendedJSch;
-import org.apache.airavata.gfac.ssh.util.SSHAPIUIKeyboardInteractive;
-import org.apache.airavata.gfac.ssh.util.SSHKeyPasswordHandler;
-import org.apache.airavata.gfac.ssh.util.SSHUtils;
-import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.jcraft.jsch.ExtendedSession;
-import com.jcraft.jsch.GSISSHIdentityFile;
-import com.jcraft.jsch.GSISSHIdentityRepository;
-import com.jcraft.jsch.Identity;
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
 
 public class GSISSHAbstractCluster implements Cluster {
 
@@ -278,6 +278,8 @@ public class GSISSHAbstractCluster implements Cluster {
         return  outputParser.parseJobSubmission(outputifAvailable);
     }
 
+
+    @Override
     public synchronized String submitBatchJob(JobDescriptor jobDescriptor) throws SSHApiException {
         TransformerFactory factory = TransformerFactory.newInstance();
         URL resource = this.getClass().getClassLoader().getResource(jobManagerConfiguration.getJobDescriptionTemplateName());

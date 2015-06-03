@@ -1,4 +1,4 @@
-package org.apache.airavata.gfac.ssh.api;/*
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,16 +19,24 @@ package org.apache.airavata.gfac.ssh.api;/*
  *
  */
 
-/**
- * Encapsulates information about
- */
-public interface CommandInfo {
+package com.jcraft.jsch;
 
-    /**
-     * Gets the executable command as a string.
-     * @return String encoded command. Should be able to execute
-     * directly on remote shell. Should includes appropriate parameters.
-     */
-    String getCommand();
 
+import org.apache.airavata.gfac.core.authentication.GSIAuthenticationInfo;
+
+public class ExtendedSession extends Session {
+
+    private GSIAuthenticationInfo authenticationInfo;
+
+    public ExtendedSession(JSch jsch, String username, String host, int port) throws JSchException {
+        super(jsch, username, host, port);
+    }
+
+    public GSIAuthenticationInfo getAuthenticationInfo() {
+        return authenticationInfo;
+    }
+
+    public void setAuthenticationInfo(GSIAuthenticationInfo authenticationInfo) {
+        this.authenticationInfo = authenticationInfo;
+    }
 }

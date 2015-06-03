@@ -23,14 +23,7 @@ package org.apache.airavata.gfac.gsissh.security;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.AbstractSecurityContext;
 import org.apache.airavata.gfac.RequestData;
-import org.apache.airavata.gfac.ssh.api.Cluster;
-import org.globus.gsi.X509Credential;
-import org.globus.gsi.gssapi.GlobusGSSCredentialImpl;
-import org.globus.gsi.provider.GlobusProvider;
-import org.globus.myproxy.GetParams;
-import org.globus.myproxy.MyProxy;
-import org.globus.myproxy.MyProxyException;
-import org.gridforum.jgss.ExtendedGSSCredential;
+import org.apache.airavata.gfac.core.cluster.Cluster;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
