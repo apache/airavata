@@ -15,13 +15,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This script will regenerate the thrift code for Airavata GFAC Server Skeltons and Client Stubs.
+# This script will regenerate the thrift code for Airavata Orchestrator Server Skeltons and Client Stubs.
 
 
 # Global Constants used across the script
 REQUIRED_THRIFT_VERSION='0.9.1'
 BASE_TARGET_DIR='target'
-GFAC_SERVICE_DIR='../airavata-gfac-service/src/main/java/'
+ORCHESTRATOR_SERVICE_DIR='../../modules/orchestrator/airavata-orchestrator-stubs/src/main/java'
 
 # The Funcation fail prints error messages on failure and quits the script.
 fail() {
@@ -104,7 +104,7 @@ THRIFT_ARGS="-r -o ${BASE_TARGET_DIR}"
 mkdir -p ${BASE_TARGET_DIR}
 
 #######################################################################
-# Generate/Update the GFAC CPI service stubs
+# Generate/Update the orchestrator CPI service stubs
 #  To start with both the servicer and client are in same package, but
 #  needs to be split using a common generated api-boilerplate-code
 #######################################################################
@@ -117,15 +117,13 @@ rm -rf ${JAVA_GEN_DIR}
 
 # Using thrify Java generator, generate the java classes based on Airavata API. This
 #   The airavataAPI.thrift includes rest of data models.
-thrift ${THRIFT_ARGS} --gen java gfac.cpi.service.thrift || fail unable to generate java thrift classes
-thrift ${THRIFT_ARGS} --gen java gfacDataModel.thrift || fail unable to generate java thrift classes
-
+thrift ${THRIFT_ARGS} --gen java orchestrator.cpi.service.thrift || fail unable to generate java thrift classes
 
 # For the generated java classes add the ASF V2 License header
 add_license_header $JAVA_GEN_DIR
 
 # Compare the newly generated classes with existing java generated skelton/stub sources and replace the changed ones.
-copy_changed_files ${JAVA_GEN_DIR} ${GFAC_SERVICE_DIR}
+copy_changed_files ${JAVA_GEN_DIR} ${ORCHESTRATOR_SERVICE_DIR}
 
 # CleanUp: Delete the base target build directory
 #rm -rf ${BASE_TARGET_DIR}
