@@ -21,13 +21,13 @@ package org.apache.airavata.gfac.monitor;/*
 
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.SecurityContext;
+import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
+import org.apache.airavata.gfac.core.cluster.ServerInfo;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
+import org.apache.airavata.gfac.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
-import org.apache.airavata.gfac.ssh.api.ServerInfo;
-import org.apache.airavata.gfac.ssh.api.authentication.AuthenticationInfo;
-import org.apache.airavata.gfac.ssh.impl.authentication.MyProxyAuthenticationInfo;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

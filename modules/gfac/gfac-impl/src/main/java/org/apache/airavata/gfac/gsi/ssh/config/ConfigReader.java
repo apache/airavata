@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.gfac.ssh.config;
+package org.apache.airavata.gfac.gsi.ssh.config;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

@@ -18,15 +18,14 @@
  * under the License.
  *
 */
-package org.apache.airavata.gfac.ssh.api;
+package org.apache.airavata.gfac.core.cluster;
+
+import com.jcraft.jsch.Session;
+import org.apache.airavata.gfac.core.JobDescriptor;
+import org.apache.airavata.gfac.core.SSHApiException;
 
 import java.util.List;
 import java.util.Map;
-
-import org.apache.airavata.gfac.ssh.api.job.JobDescriptor;
-import org.apache.airavata.gfac.ssh.impl.JobStatus;
-
-import com.jcraft.jsch.Session;
 
 /**
  * This interface represents a Cluster machine

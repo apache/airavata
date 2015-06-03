@@ -24,16 +24,16 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.logger.AiravataLogger;
 import org.apache.airavata.common.logger.AiravataLoggerFactory;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.handler.ThreadedHandler;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
+import org.apache.airavata.gfac.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
 import org.apache.airavata.gfac.monitor.HPCMonitorID;
 import org.apache.airavata.gfac.monitor.exception.AiravataMonitorException;
 import org.apache.airavata.gfac.monitor.impl.pull.qstat.HPCPullMonitor;
 import org.apache.airavata.gfac.monitor.util.CommonUtils;
-import org.apache.airavata.gfac.ssh.api.authentication.AuthenticationInfo;
-import org.apache.airavata.gfac.ssh.impl.authentication.MyProxyAuthenticationInfo;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.Watcher;
 

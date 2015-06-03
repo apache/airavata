@@ -32,7 +32,6 @@ import java.util.TreeSet;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
-import org.apache.airavata.gfac.core.notification.events.StartExecutionEvent;
 import org.apache.airavata.gfac.core.provider.AbstractProvider;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
 import org.apache.airavata.gfac.core.GFacUtils;
@@ -128,7 +127,6 @@ public class LocalProvider extends AbstractProvider {
     }
 
     public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException {
-        jobExecutionContext.getNotifier().publish(new StartExecutionEvent());
         JobDetails jobDetails = new JobDetails();
         try {
         	jobId = jobExecutionContext.getTaskData().getTaskID();

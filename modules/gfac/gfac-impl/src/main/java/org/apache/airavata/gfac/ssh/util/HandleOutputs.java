@@ -8,7 +8,7 @@ import java.util.List;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.GFacUtils;
-import org.apache.airavata.gfac.ssh.api.Cluster;
+import org.apache.airavata.gfac.core.cluster.Cluster;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.slf4j.Logger;

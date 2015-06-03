@@ -139,6 +139,45 @@ public class GFacUtils {
 	}
 
 	/**
+	 * This returns true if the give job is finished
+	 * otherwise false
+	 *
+	 * @param job
+	 * @return
+	 */
+	public static boolean isJobFinished(JobDescriptor job) {
+		if (org.apache.airavata.gfac.core.cluster.JobStatus.C.toString().equals(job.getStatus())) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * This will read
+	 *
+	 * @param maxWalltime
+	 * @return
+	 */
+	public static String maxWallTimeCalculator(int maxWalltime) {
+		if (maxWalltime < 60) {
+			return "00:" + maxWalltime + ":00";
+		} else {
+			int minutes = maxWalltime % 60;
+			int hours = maxWalltime / 60;
+			return hours + ":" + minutes + ":00";
+		}
+	}
+	public static String maxWallTimeCalculatorForLSF(int maxWalltime) {
+		if (maxWalltime < 60) {
+			return "00:" + maxWalltime;
+		} else {
+			int minutes = maxWalltime % 60;
+			int hours = maxWalltime / 60;
+			return hours + ":" + minutes;
+		}
+	}
+	/**
 	 * this can be used to do framework opertaions specific to different modes
 	 * 
 	 * @param jobExecutionContext

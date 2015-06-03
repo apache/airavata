@@ -18,14 +18,31 @@
  * under the License.
  *
 */
-package org.apache.airavata.gfac.ssh.api;
+package org.apache.airavata.gfac.gsi.ssh.api;
 
-import com.jcraft.jsch.*;
-import org.apache.airavata.gfac.ssh.api.authentication.*;
-import org.apache.airavata.gfac.ssh.config.ConfigReader;
-import org.apache.airavata.gfac.ssh.jsch.ExtendedJSch;
-import org.apache.airavata.gfac.ssh.util.SSHAPIUIKeyboardInteractive;
-import org.apache.airavata.gfac.ssh.util.SSHKeyPasswordHandler;
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.ExtendedSession;
+import com.jcraft.jsch.GSISSHIdentityFile;
+import com.jcraft.jsch.GSISSHIdentityRepository;
+import com.jcraft.jsch.Identity;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
+import org.apache.airavata.gfac.core.SSHApiException;
+import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
+import org.apache.airavata.gfac.core.authentication.GSIAuthenticationInfo;
+import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
+import org.apache.airavata.gfac.core.authentication.SSHPublicKeyAuthentication;
+import org.apache.airavata.gfac.core.authentication.SSHPublicKeyFileAuthentication;
+import org.apache.airavata.gfac.core.cluster.CommandInfo;
+import org.apache.airavata.gfac.core.cluster.CommandOutput;
+import org.apache.airavata.gfac.core.authentication.SSHPasswordAuthentication;
+import org.apache.airavata.gfac.core.cluster.ServerInfo;
+import org.apache.airavata.gfac.gsi.ssh.config.ConfigReader;
+import org.apache.airavata.gfac.gsi.ssh.jsch.ExtendedJSch;
+import org.apache.airavata.gfac.gsi.ssh.util.SSHAPIUIKeyboardInteractive;
+import org.apache.airavata.gfac.gsi.ssh.util.SSHKeyPasswordHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

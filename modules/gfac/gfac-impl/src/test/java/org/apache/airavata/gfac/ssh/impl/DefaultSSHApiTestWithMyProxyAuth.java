@@ -21,6 +21,7 @@
 
 package org.apache.airavata.gfac.ssh.impl;
 
+import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
 import org.apache.airavata.gfac.ssh.api.*;
 import org.apache.airavata.gfac.ssh.config.ConfigReader;
 import org.apache.airavata.gfac.ssh.impl.authentication.DefaultPublicKeyAuthentication;

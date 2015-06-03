@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.gfac.ssh.util;
+package org.apache.airavata.gfac.gsi.ssh.util;
 
 import com.jcraft.jsch.UIKeyboardInteractive;
 import com.jcraft.jsch.UserInfo;

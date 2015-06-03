@@ -1,4 +1,4 @@
-/*
+package org.apache.airavata.gfac.core.cluster;/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,37 +19,47 @@
  *
  */
 
-package org.apache.airavata.gfac.ssh.impl;
-
-import org.apache.airavata.gfac.ssh.api.CommandInfo;
-
 /**
- * User: AmilaJ (amilaj@apache.org)
- * Date: 8/14/13
- * Time: 5:18 PM
+ * Encapsulate server information.
  */
+public class ServerInfo {
 
-/**
- * The raw command information. String returned by getCommand is directly executed in SSH
- * shell. E.g :- getCommand return string set for rawCommand - "/opt/torque/bin/qsub /home/ogce/test.pbs".
- */
-public class RawCommandInfo implements CommandInfo {
+    private String host;
+    private String userName;
+    private int port = 22;
 
-    private String rawCommand;
-
-    public RawCommandInfo(String cmd) {
-        this.rawCommand = cmd;
+    public ServerInfo(String userName, String host) {
+        this.userName = userName;
+        this.host = host;
     }
 
-    public String getCommand() {
-        return this.rawCommand;
+    public ServerInfo(String userName,String host,  int port) {
+        this.host = host;
+        this.userName = userName;
+        this.port = port;
     }
 
-    public String getRawCommand() {
-        return rawCommand;
+    public String getHost() {
+        return host;
     }
 
-    public void setRawCommand(String rawCommand) {
-        this.rawCommand = rawCommand;
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
     }
 }

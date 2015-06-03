@@ -22,14 +22,14 @@ package org.apache.airavata.gfac.monitor.impl.pull.qstat;
 
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.SecurityContext;
+import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
+import org.apache.airavata.gfac.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gfac.monitor.HostMonitorData;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
-import org.apache.airavata.gfac.ssh.api.SSHApiException;
-import org.apache.airavata.gfac.ssh.api.authentication.AuthenticationInfo;
-import org.apache.airavata.gfac.ssh.impl.JobStatus;
-import org.apache.airavata.gfac.ssh.impl.PBSCluster;
+import org.apache.airavata.gfac.core.SSHApiException;
+import org.apache.airavata.gfac.core.cluster.JobStatus;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

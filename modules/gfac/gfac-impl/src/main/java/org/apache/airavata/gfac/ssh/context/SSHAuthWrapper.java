@@ -20,8 +20,8 @@
 */
 package org.apache.airavata.gfac.ssh.context;
 
-import org.apache.airavata.gfac.ssh.api.ServerInfo;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
+import org.apache.airavata.gfac.core.cluster.ServerInfo;
 
 public class SSHAuthWrapper {
     private ServerInfo serverInfo;

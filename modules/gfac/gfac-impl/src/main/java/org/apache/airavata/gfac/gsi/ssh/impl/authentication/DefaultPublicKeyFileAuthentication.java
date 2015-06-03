@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.gfac.ssh.impl.authentication;
+package org.apache.airavata.gfac.gsi.ssh.impl.authentication;
 
 import org.apache.airavata.gfac.core.authentication.SSHPublicKeyFileAuthentication;
 

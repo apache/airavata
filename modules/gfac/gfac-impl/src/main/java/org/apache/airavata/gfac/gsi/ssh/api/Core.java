@@ -18,9 +18,9 @@
  * under the License.
  *
 */
-package org.apache.airavata.gfac.ssh.api;
+package org.apache.airavata.gfac.gsi.ssh.api;
 
-import org.apache.airavata.gfac.ssh.api.job.JobDescriptor;
+import org.apache.airavata.gfac.core.JobDescriptor;
 
 /**
  * This represents a CPU core of a machine in the cluster

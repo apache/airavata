@@ -229,14 +229,9 @@
         <!-- TODO need clean up -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-core</artifactId>
+            <artifactId>gfac-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-<!--        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-ec2</artifactId>
-            <version>${project.version}</version>
-        </dependency>-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>

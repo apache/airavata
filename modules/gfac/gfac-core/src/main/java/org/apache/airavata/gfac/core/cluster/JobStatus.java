@@ -18,7 +18,7 @@
  * under the License.
  *
 */
- package org.apache.airavata.gfac.ssh.impl;
+ package org.apache.airavata.gfac.core.cluster;
 
  /**
   * This will contains all the PBS specific job statuses.

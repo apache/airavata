@@ -237,7 +237,7 @@
         </dependency>
          <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-stubs</artifactId>
+            <artifactId>gfac-client</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -259,7 +259,7 @@
         <!-- TODO need clean up -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-core</artifactId>
+            <artifactId>gfac-core</artifactId>
             <version>${project.version}</version>
         </dependency>
 <!--        <dependency>

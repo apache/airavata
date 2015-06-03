@@ -18,11 +18,12 @@
  * under the License.
  *
 */
-package org.apache.airavata.gfac.ssh.impl;
+package org.apache.airavata.gfac.gsi.ssh.impl;
 
-import org.apache.airavata.gfac.ssh.api.*;
-import org.apache.airavata.gfac.ssh.api.authentication.*;
-import org.apache.airavata.gfac.ssh.api.job.JobManagerConfiguration;
+import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
+import org.apache.airavata.gfac.core.SSHApiException;
+import org.apache.airavata.gfac.core.cluster.ServerInfo;
+import org.apache.airavata.gfac.core.JobManagerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
