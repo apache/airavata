@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements. See the NOTICE file
+	distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to you under
+	the Apache License, Version 2.0 (theÏ "License"); you may not use this file except in compliance with the License. You may
+	obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law or agreed to
+	in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
+	ANY ~ KIND, either express or implied. See the License for the specific language governing permissions and limitations under
+	the License. -->
+
+<schema targetNamespace="http://airavata.apache.org/gsi/ssh/2012/12" xmlns:gsissh="http://airavata.apache.org/gsi/ssh/2012/12"
+	xmlns="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+
+	<element name="JobDescriptor" type="gsissh:pbsParams" />
+
+	<complexType name="pbsParams">
+		<sequence>
+            <element name="jobID" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="userName" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<element name="shellName" type="xsd:string" minOccurs="0" maxOccurs="1" default="/bin/bash"/>
+            <element name="queueName" type="xsd:string" minOccurs="0" maxOccurs="1" default="normal"/>
+            <element name="jobName" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="allEnvExport" type="xsd:boolean" minOccurs="0 " maxOccurs="1" default="true"/>
+			<element name="mailOptions" type="xsd:string" minOccurs="0" maxOccurs="1" />
+            <element name="mailAddress" type="xsd:string" minOccurs="0" maxOccurs="1" />
+            <element name="partition" type="xsd:string" minOccurs="0" maxOccurs="1" />
+            <element name="mailType" type="xsd:string" minOccurs="0" maxOccurs="1" />
+			<element name="acountString" type="xsd:string" minOccurs="0" maxOccurs="1" />
+			<element name="maxWallTime" type="xsd:string" minOccurs="0" maxOccurs="1" default="1:00:00"/>
+            <element name="standardOutFile" type="xsd:string" minOccurs="0" maxOccurs="1" />
+            <element name="standardErrorFile" type="xsd:string" minOccurs="0" maxOccurs="1" />
+			<element name="outputDirectory" type="xsd:string" minOccurs="0" maxOccurs="1" />
+            <element name="inputDirectory" type="xsd:string" minOccurs="0" maxOccurs="1" />
+            <element name="nodes" type="xsd:int" minOccurs="0" maxOccurs="1" default="1"/>
+            <element name="processesPerNode" type="xsd:int" minOccurs="0" maxOccurs="1" default="1" />
+            <element name="cpuCount" type="xsd:int" minOccurs="0" maxOccurs="1" default="1" />
+            <element name="nodeList" type="xsd:string" minOccurs="0" maxOccurs="1" default="1" />
+            <element name="workingDirectory" type="xsd:string" minOccurs="0" maxOccurs="1" />
+            <element name="executablePath" type="xsd:string" minOccurs="0" maxOccurs="1" />
+            <element name="inputs" type="gsissh:inputList" minOccurs="1" maxOccurs="1"/>
+            <element name="exports" type="gsissh:exportProperties" minOccurs="1" maxOccurs="1"/>
+            <element name="status" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="afterAny" type="gsissh:afterAnyList" minOccurs="0" maxOccurs="1"/>
+            <element name="afterOKList" type="gsissh:afterOKList" minOccurs="0" maxOccurs="1"/>
+            <element name="cTime" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="qTime" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="mTime" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="sTime" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="compTime" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="owner" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="executeNode" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="ellapsedTime" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="usedCPUTime" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="usedMem" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="submitArgs" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="variableList" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="preJobCommands" type="gsissh:preJobCommands" minOccurs="0" maxOccurs="1"/>
+            <element name="moduleLoadCommands" type="gsissh:moduleLoadCommands" minOccurs="0" maxOccurs="1"/>
+            <element name="postJobCommands" type="gsissh:postJobCommands" minOccurs="0" maxOccurs="1"/>
+            <element name="jobSubmitterCommand" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="callBackIp" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="callBackPort" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+            <element name="chassisName" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+        </sequence>
+	</complexType>
+
+    <complexType name="moduleLoadCommands">
+        <sequence>
+			<element name="command" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
+		</sequence>
+    </complexType>
+    <complexType name="preJobCommands">
+        <sequence>
+			<element name="command" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
+		</sequence>
+    </complexType>
+
+    <complexType name="postJobCommands">
+        <sequence>
+			<element name="command" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
+		</sequence>
+    </complexType>
+    <complexType name="inputList">
+        <sequence>
+			<element name="input" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
+		</sequence>
+    </complexType>
+    <complexType name="afterAnyList">
+        <sequence>
+			<element name="afterAny" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
+		</sequence>
+    </complexType>
+
+    <complexType name="afterOKList">
+        <sequence>
+			<element name="afterOKList" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
+		</sequence>
+    </complexType>
+
+    <complexType name="exportProperties">
+		<sequence>
+
+			<element name="name" minOccurs="1" maxOccurs="unbounded">
+				<complexType>
+					<simpleContent>
+						<extension base="xsd:string">
+							<attribute name="value" type="xsd:string" use="required" />
+						</extension>
+					</simpleContent>
+				</complexType>
+			</element>
+
+		</sequence>
+	</complexType>
+</schema>

@@ -25,8 +25,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.airavata.gsi.ssh.GSSContextX509;
-import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
+import org.apache.airavata.gfac.ssh.GSSContextX509;
+import org.apache.airavata.gfac.ssh.api.authentication.GSIAuthenticationInfo;
 import org.globus.gsi.gssapi.GSSConstants;
 import org.ietf.jgss.GSSException;
 import org.ietf.jgss.Oid;

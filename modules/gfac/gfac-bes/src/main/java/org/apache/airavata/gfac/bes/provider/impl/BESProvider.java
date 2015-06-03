@@ -34,14 +34,10 @@ import org.apache.airavata.gfac.bes.utils.JSDLGenerator;
 import org.apache.airavata.gfac.bes.utils.SecurityUtils;
 import org.apache.airavata.gfac.bes.utils.StorageCreator;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
-import org.apache.airavata.gfac.core.monitor.MonitorID;
-import org.apache.airavata.gfac.core.notification.events.StartExecutionEvent;
-import org.apache.airavata.gfac.core.notification.events.StatusChangeEvent;
-import org.apache.airavata.gfac.core.notification.events.UnicoreJobIDEvent;
 import org.apache.airavata.gfac.core.provider.AbstractProvider;
 import org.apache.airavata.gfac.core.provider.GFacProvider;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
-import org.apache.airavata.gfac.core.utils.GFacUtils;
+import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
@@ -150,7 +146,6 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
 
             log.info(String.format("Activity Submitting to %s ... \n",
                     factoryUrl));
-            jobExecutionContext.getMonitorPublisher().publish(new StartExecutionEvent());
             CreateActivityResponseDocument response = factory.createActivity(cad);
             log.info(String.format("Activity Submitted to %s \n", factoryUrl));
 
