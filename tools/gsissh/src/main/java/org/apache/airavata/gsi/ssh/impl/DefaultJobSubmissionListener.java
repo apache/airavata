@@ -18,11 +18,12 @@
  * under the License.
  *
 */
-package org.apache.airavata.gsi.ssh.impl;
+package org.apache.airavata.gfac.gsi.ssh.impl;
 
-import org.apache.airavata.gsi.ssh.api.SSHApiException;
-import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
-import org.apache.airavata.gsi.ssh.listener.JobSubmissionListener;
+import org.apache.airavata.gfac.core.JobDescriptor;
+import org.apache.airavata.gfac.core.SSHApiException;
+import org.apache.airavata.gfac.core.cluster.JobStatus;
+import org.apache.airavata.gfac.gsi.ssh.listener.JobSubmissionListener;
 
 public class DefaultJobSubmissionListener extends JobSubmissionListener {
 

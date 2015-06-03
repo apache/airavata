@@ -1,4 +1,4 @@
-package org.apache.airavata.gsi.ssh.api;/*
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,31 +19,11 @@ package org.apache.airavata.gsi.ssh.api;/*
  *
  */
 
+package com.jcraft.jsch;
 
-import com.jcraft.jsch.Channel;
+public class GSISSHIdentityRepository extends LocalIdentityRepository {
 
-import java.io.OutputStream;
-
-/**
- * Output of a certain command. TODO rethink
- */
-public interface CommandOutput {
-
-    /**
-     * Gets the output of the command as a stream.
-     * @param  channel Command output as a stream.
-     */
-    void onOutput(Channel channel);
-
-    /**
-     * Gets standard error as a output stream.
-     * @return Command error as a stream.
-     */
-    OutputStream getStandardError();
-
-    /**
-     * The command exit code.
-     * @param code The program exit code
-     */
-    void exitCode(int code);
+    public GSISSHIdentityRepository(JSch jsch) {
+        super(jsch);
+    }
 }

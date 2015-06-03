@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.gsi.ssh.impl;
+package org.apache.airavata.gfac.gsi.ssh.impl;
 
 import com.jcraft.jsch.UserInfo;
 

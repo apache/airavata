@@ -18,15 +18,15 @@
  * under the License.
  *
 */
-package org.apache.airavata.gsi.ssh.api.job;
+package org.apache.airavata.gfac.gsi.ssh.api.job;
 
-import org.apache.airavata.gsi.ssh.api.SSHApiException;
-import org.apache.airavata.gsi.ssh.impl.JobStatus;
+import org.apache.airavata.gfac.core.JobDescriptor;
+import org.apache.airavata.gfac.core.cluster.JobStatus;
+import org.apache.airavata.gfac.core.cluster.OutputParser;
+import org.apache.airavata.gfac.core.SSHApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.print.attribute.standard.JobState;
-import javax.validation.constraints.Null;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

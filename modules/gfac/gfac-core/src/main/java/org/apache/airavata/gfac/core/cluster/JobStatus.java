@@ -18,9 +18,7 @@
  * under the License.
  *
 */
- package org.apache.airavata.gsi.ssh.impl;
-
- import javax.print.attribute.standard.JobState;
+ package org.apache.airavata.gfac.core.cluster;
 
  /**
   * This will contains all the PBS specific job statuses.

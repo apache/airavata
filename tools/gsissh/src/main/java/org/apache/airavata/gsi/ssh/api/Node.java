@@ -18,7 +18,7 @@
  * under the License.
  *
 */
-package org.apache.airavata.gsi.ssh.api;
+package org.apache.airavata.gfac.gsi.ssh.api;
 
 import java.util.HashMap;
 
