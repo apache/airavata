@@ -58,11 +58,11 @@ fi
 # Global Constants used across the script
 THRIFT_IDL_DIR='thrift-interface-descriptions'
 BASE_TARGET_DIR='target'
-DATAMODEL_SRC_DIR='airavata-data-models/src/main/java'
-JAVA_API_SDK_DIR='airavata-api-stubs/src/main/java'
-PHP_SDK_DIR='airavata-client-sdks/airavata-php-sdk/src/main/resources/lib'
-CPP_SDK_DIR='airavata-client-sdks/airavata-cpp-sdk/src/main/resources/lib/airavata/'
-PYTHON_SDK_DIR='airavata-client-sdks/airavata-python-sdk/src/main/resources/lib/'
+DATAMODEL_SRC_DIR='../airavata-api/airavata-data-models/src/main/java'
+JAVA_API_SDK_DIR='../airavata-api/airavata-api-stubs/src/main/java'
+PHP_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-php-sdk/src/main/resources/lib'
+CPP_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-cpp-sdk/src/main/resources/lib/airavata/'
+PYTHON_SDK_DIR='../airavata-api/airavata-client-sdks/airavata-python-sdk/src/main/resources/lib/'
 
 # Initialize the thrift arguments.
 #  Since most of the Airavata API and Data Models have includes, use recursive option by default.
