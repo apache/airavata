@@ -23,7 +23,7 @@
  *
 */
 
-include "../../../airavata-api/thrift-interface-descriptions/airavataErrors.thrift"
+include "../airavata-api/airavataErrors.thrift"
 namespace java org.apache.airavata.orchestrator.cpi
 
 const string ORCHESTRATOR_CPI_VERSION = "0.13.0"
