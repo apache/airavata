@@ -21,13 +21,13 @@
 package org.apache.airavata.gfac.ssh.handler;
 
 import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.gfac.core.cluster.Cluster;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
-import org.apache.airavata.gfac.core.utils.GFacUtils;
+import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
 import org.apache.airavata.gfac.ssh.util.GFACSSHUtils;
-import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.registry.cpi.ChildDataType;
 import org.slf4j.Logger;

@@ -19,9 +19,9 @@
  *
  */
 
-package org.apache.airavata.gsi.ssh.impl.authentication;
+package org.apache.airavata.gfac.gsi.ssh.impl.authentication;
 
-import org.apache.airavata.gsi.ssh.api.authentication.SSHPublicKeyAuthentication;
+import org.apache.airavata.gfac.core.authentication.SSHPublicKeyAuthentication;
 
 /**
  * User: AmilaJ (amilaj@apache.org)

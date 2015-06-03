@@ -18,12 +18,11 @@
  * under the License.
  *
 */
-package org.apache.airavata.gsi.ssh.impl;
+package org.apache.airavata.gfac.gsi.ssh.impl;
 
 import com.jcraft.jsch.Channel;
-import com.jcraft.jsch.ChannelExec;
 
-import org.apache.airavata.gsi.ssh.api.CommandOutput;
+import org.apache.airavata.gfac.core.cluster.CommandOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

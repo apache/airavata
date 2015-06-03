@@ -18,19 +18,22 @@
  * under the License.
  *
 */
-package org.apache.airavata.gsi.ssh.util;
+package org.apache.airavata.gfac.gsi.ssh.util;
 
 import com.jcraft.jsch.*;
+import org.apache.airavata.gfac.core.authentication.GSIAuthenticationInfo;
+import org.apache.airavata.gfac.core.SSHApiException;
+import org.apache.airavata.gfac.core.cluster.ServerInfo;
+import org.apache.airavata.gfac.gsi.ssh.config.ConfigReader;
+import org.apache.airavata.gfac.gsi.ssh.impl.StandardOutReader;
+import org.slf4j.LoggerFactory;
 
-import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
-import org.apache.airavata.gsi.ssh.api.SSHApiException;
-import org.apache.airavata.gsi.ssh.api.ServerInfo;
-import org.apache.airavata.gsi.ssh.config.ConfigReader;
-import org.apache.airavata.gsi.ssh.impl.StandardOutReader;
-import org.apache.airavata.gsi.ssh.jsch.ExtendedJSch;
-import org.slf4j.*;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,7 +44,7 @@ public class SSHUtils {
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(SSHUtils.class);
 
     static {
-        JSch.setConfig("gssapi-with-mic.x509", "org.apache.airavata.gsi.ssh.GSSContextX509");
+        JSch.setConfig("gssapi-with-mic.x509", "org.apache.airavata.gfac.ssh.GSSContextX509");
         JSch.setConfig("userauth.gssapi-with-mic", "com.jcraft.jsch.UserAuthGSSAPIWithMICGSSCredentials");
 
     }
@@ -88,8 +91,7 @@ public class SSHUtils {
      * @param lFile local file path to use in scp
      * @throws IOException
      * @throws JSchException
-     * @throws org.apache.airavata.gsi.ssh.api.SSHApiException
-     *
+     * @throws SSHApiException
      */
     public void scpTo(String rFile, String lFile) throws IOException, JSchException, SSHApiException {
         FileInputStream fis = null;
@@ -162,9 +164,9 @@ public class SSHUtils {
             out.write(command.getBytes());
             out.flush();
             if (checkAck(in) != 0) {
-                 String error = "Error Reading input Stream";
-            log.error(error);
-            throw new SSHApiException(error);
+                String error = "Error Reading input Stream";
+                log.error(error);
+                throw new SSHApiException(error);
             }
         }
 
@@ -200,7 +202,7 @@ public class SSHUtils {
         out.write(buf, 0, 1);
         out.flush();
         if (checkAck(in) != 0) {
-             String error = "Error Reading input Stream";
+            String error = "Error Reading input Stream";
             log.error(error);
             throw new SSHApiException(error);
         }
@@ -251,7 +253,7 @@ public class SSHUtils {
         channel.connect();
 
         if (checkAck(in) != 0) {
-             String error = "Error Reading input Stream";
+            String error = "Error Reading input Stream";
             log.error(error);
             throw new SSHApiException(error);
         }
@@ -266,9 +268,9 @@ public class SSHUtils {
             out.write(command.getBytes());
             out.flush();
             if (checkAck(in) != 0) {
-                 String error = "Error Reading input Stream";
-            log.error(error);
-            throw new SSHApiException(error);
+                String error = "Error Reading input Stream";
+                log.error(error);
+                throw new SSHApiException(error);
             }
         }
 
@@ -422,8 +424,8 @@ public class SSHUtils {
             }
             stdOutReader.onOutput(channel);
             if (stdOutReader.getStdErrorString().contains("scp:")) {
-            throw new SSHApiException(stdOutReader.getStdErrorString());
-        }
+                throw new SSHApiException(stdOutReader.getStdErrorString());
+            }
 
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -594,7 +596,7 @@ public class SSHUtils {
         FileOutputStream fos = null;
         try {
             String prefix = null;
-         
+
             // exec 'scp -f remotefile' remotely
             String command = "scp -3 " + remoteFileSource + " " + remoteFileTarget;
             Channel channel = session.openChannel("exec");
@@ -635,14 +637,14 @@ public class SSHUtils {
                 }
                 int foo;
                 while (true) {
-                	   if (buf.length < filesize) foo = buf.length;
-                       else foo = (int) filesize;
-                    
+                    if (buf.length < filesize) foo = buf.length;
+                    else foo = (int) filesize;
+
                     int len = in.read(buf, 0, foo);
                     if (len <= 0) break;
-                    out.write(buf, 0, len); 
+                    out.write(buf, 0, len);
                 }
-             // send '\0'
+                // send '\0'
                 buf[0] = 0;
                 out.write(buf, 0, 1);
                 out.flush();
@@ -657,8 +659,8 @@ public class SSHUtils {
 
             stdOutReader.onOutput(channel);
             if (stdOutReader.getStdErrorString().contains("scp:")) {
-            throw new SSHApiException(stdOutReader.getStdErrorString());
-        }
+                throw new SSHApiException(stdOutReader.getStdErrorString());
+            }
 
         } catch (Exception e) {
             log.error(e.getMessage(), e);

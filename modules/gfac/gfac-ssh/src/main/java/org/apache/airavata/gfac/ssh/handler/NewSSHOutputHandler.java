@@ -6,15 +6,15 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.gfac.core.cluster.Cluster;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
-import org.apache.airavata.gfac.core.utils.GFacUtils;
+import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
 import org.apache.airavata.gfac.ssh.util.GFACSSHUtils;
 import org.apache.airavata.gfac.ssh.util.HandleOutputs;
-import org.apache.airavata.gsi.ssh.api.Cluster;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;

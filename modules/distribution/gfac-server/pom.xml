@@ -133,49 +133,24 @@
 			<artifactId>airavata-standalone-server</artifactId>
 			<version>${project.version}</version>
 	   </dependency>
-      <!--<dependency>-->
-            <!--<groupId>org.apache.airavata</groupId>-->
-            <!--<artifactId>airavata-gfac-gram</artifactId>-->
-            <!--<version>${project.version}</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.apache.airavata</groupId>-->
-            <!--<artifactId>airavata-gfac-bes</artifactId>-->
-            <!--<version>${project.version}</version>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-gsissh</artifactId>
+            <artifactId>gfac-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-hpc-monitor</artifactId>
+            <artifactId>gfac-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-local</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.apache.airavata</groupId>-->
-            <!--<artifactId>airavata-gfac-hadoop</artifactId>-->
-            <!--<version>${project.version}</version>-->
-        <!--</dependency>-->
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-core</artifactId>
+            <artifactId>gfac-service</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-service</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-gfac-application-specific-handlers</artifactId>
+            <artifactId>gfac-application-specific-handlers</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

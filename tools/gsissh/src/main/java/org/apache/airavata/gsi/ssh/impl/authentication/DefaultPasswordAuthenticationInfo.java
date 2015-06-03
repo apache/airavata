@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.gsi.ssh.impl.authentication;
+package org.apache.airavata.gfac.gsi.ssh.impl.authentication;
 
 /**
  * User: AmilaJ (amilaj@apache.org)
@@ -27,9 +27,7 @@ package org.apache.airavata.gsi.ssh.impl.authentication;
  * Time: 12:15 PM
  */
 
-import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
-import org.apache.airavata.gsi.ssh.api.authentication.SSHPasswordAuthentication;
-import org.ietf.jgss.*;
+import org.apache.airavata.gfac.core.authentication.SSHPasswordAuthentication;
 
 /**
  * An authenticator used for raw SSH sessions. Gives SSH user name, password

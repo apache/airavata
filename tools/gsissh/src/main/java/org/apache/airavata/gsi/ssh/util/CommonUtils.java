@@ -18,10 +18,12 @@
  * under the License.
  *
 */
-package org.apache.airavata.gsi.ssh.util;
+package org.apache.airavata.gfac.gsi.ssh.util;
 
-import org.apache.airavata.gsi.ssh.api.job.*;
-import org.apache.airavata.gsi.ssh.impl.JobStatus;
+import org.apache.airavata.gfac.core.JobDescriptor;
+import org.apache.airavata.gfac.core.JobManagerConfiguration;
+import org.apache.airavata.gfac.gsi.ssh.api.job.*;
+import org.apache.airavata.gfac.core.cluster.JobStatus;
 
 public class CommonUtils {
     /**

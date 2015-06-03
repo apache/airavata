@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.gsi.ssh;
+package org.apache.airavata.gfac.gsi.ssh;
 
 
 import java.io.File;
@@ -28,11 +28,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.globus.common.CoGProperties;
-import org.globus.gsi.GSIConstants;
-import org.globus.gsi.gssapi.GSSConstants;
-import org.globus.gsi.gssapi.GlobusGSSCredentialImpl;
 import org.globus.gsi.gssapi.auth.HostAuthorization;
-import org.gridforum.jgss.ExtendedGSSContext;
 import org.gridforum.jgss.ExtendedGSSCredential;
 import org.gridforum.jgss.ExtendedGSSManager;
 import org.ietf.jgss.GSSContext;

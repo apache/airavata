@@ -19,10 +19,10 @@
  *
  */
 
-package org.apache.airavata.gsi.ssh.util;
+package org.apache.airavata.gfac.gsi.ssh.util;
 
 import com.jcraft.jsch.UserInfo;
-import org.apache.airavata.gsi.ssh.api.authentication.SSHKeyAuthentication;
+import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**

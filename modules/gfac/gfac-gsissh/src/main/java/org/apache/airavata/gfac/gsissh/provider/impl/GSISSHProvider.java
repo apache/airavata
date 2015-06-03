@@ -23,23 +23,19 @@ package org.apache.airavata.gfac.gsissh.provider.impl;
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.gfac.ExecutionMode;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
-import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
-import org.apache.airavata.gfac.core.handler.ThreadedHandler;
-import org.apache.airavata.gfac.core.notification.events.StartExecutionEvent;
 import org.apache.airavata.gfac.core.provider.AbstractProvider;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
-import org.apache.airavata.gfac.core.utils.GFacUtils;
+import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gfac.gsissh.util.GFACGSISSHUtils;
 import org.apache.airavata.gfac.monitor.email.EmailBasedMonitor;
 import org.apache.airavata.gfac.monitor.email.EmailMonitorFactory;
-import org.apache.airavata.gsi.ssh.api.Cluster;
-import org.apache.airavata.gsi.ssh.api.SSHApiException;
-import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
+import org.apache.airavata.gfac.core.cluster.Cluster;
+import org.apache.airavata.gfac.core.SSHApiException;
+import org.apache.airavata.gfac.core.JobDescriptor;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
@@ -49,13 +45,11 @@ import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
-import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.List;
 import java.util.Map;
 
 //import org.apache.airavata.schemas.gfac.GsisshHostType;
@@ -85,7 +79,6 @@ public class GSISSHProvider extends AbstractProvider {
     public void execute(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
         log.info("Invoking GSISSH Provider Invoke ...");
         StringBuffer data = new StringBuffer();
-        jobExecutionContext.getNotifier().publish(new StartExecutionEvent());
         ComputeResourceDescription computeResourceDescription = jobExecutionContext.getApplicationContext()
                 .getComputeResourceDescription();
         ApplicationDeploymentDescription appDeployDesc = jobExecutionContext.getApplicationContext()

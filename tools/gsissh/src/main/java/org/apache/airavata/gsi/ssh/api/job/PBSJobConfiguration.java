@@ -18,9 +18,11 @@
  * under the License.
  *
 */
-package org.apache.airavata.gsi.ssh.api.job;
+package org.apache.airavata.gfac.gsi.ssh.api.job;
 
-import org.apache.airavata.gsi.ssh.impl.RawCommandInfo;
+import org.apache.airavata.gfac.core.JobManagerConfiguration;
+import org.apache.airavata.gfac.core.cluster.OutputParser;
+import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;

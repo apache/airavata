@@ -28,22 +28,22 @@ import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.RequestData;
+import org.apache.airavata.gfac.core.JobDescriptor;
+import org.apache.airavata.gfac.core.JobManagerConfiguration;
+import org.apache.airavata.gfac.core.cluster.Cluster;
+import org.apache.airavata.gfac.core.cluster.ServerInfo;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
-import org.apache.airavata.gfac.core.utils.GFacUtils;
+import org.apache.airavata.gfac.core.GFacUtils;
+import org.apache.airavata.gfac.gsi.ssh.impl.GSISSHAbstractCluster;
+import org.apache.airavata.gfac.gsi.ssh.impl.PBSCluster;
+import org.apache.airavata.gfac.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
+import org.apache.airavata.gfac.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.gfac.ssh.context.SSHAuthWrapper;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
 import org.apache.airavata.gfac.ssh.security.TokenizedSSHAuthInfo;
-import org.apache.airavata.gsi.ssh.api.Cluster;
-import org.apache.airavata.gsi.ssh.api.ServerInfo;
-import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
-import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
-import org.apache.airavata.gsi.ssh.api.job.JobManagerConfiguration;
-import org.apache.airavata.gsi.ssh.impl.GSISSHAbstractCluster;
-import org.apache.airavata.gsi.ssh.impl.PBSCluster;
-import org.apache.airavata.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
-import org.apache.airavata.gsi.ssh.util.CommonUtils;
+import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
@@ -91,7 +91,7 @@ public class GFACSSHUtils {
                 AppCatalog appCatalog = jobExecutionContext.getAppCatalog();
                 SSHJobSubmission sshJobSubmission = appCatalog.getComputeResource().getSSHJobSubmission(preferredJobSubmissionInterface.getJobSubmissionInterfaceId());
                 SecurityProtocol securityProtocol = sshJobSubmission.getSecurityProtocol();
-                if (securityProtocol == SecurityProtocol.GSI || securityProtocol == SecurityProtocol.SSH_KEYS || securityProtocol == SecurityProtocol.USERNAME_PASSWORD) {
+                if (securityProtocol == SecurityProtocol.GSI || securityProtocol == SecurityProtocol.SSH_KEYS) {
                     SSHSecurityContext sshSecurityContext = new SSHSecurityContext();
                     String credentialStoreToken = jobExecutionContext.getCredentialStoreToken(); // this is set by the framework
                     RequestData requestData = new RequestData(jobExecutionContext.getGatewayID());
@@ -108,7 +108,7 @@ public class GFACSSHUtils {
                         }
 
                         SSHCredential credentials =((TokenizedSSHAuthInfo)tokenizedSSHAuthInfo).getCredentials();// this is just a call to get and set credentials in to this object,data will be used
-                        if(credentials.getPrivateKey()==null || credentials.getPublicKey()==null || securityProtocol == SecurityProtocol.USERNAME_PASSWORD){
+                        if(credentials.getPrivateKey()==null || credentials.getPublicKey()==null){
                             // now we fall back to username password authentication
                             Properties configurationProperties = ServerSettings.getProperties();
                             tokenizedSSHAuthInfo = new DefaultPasswordAuthenticationInfo(configurationProperties.getProperty(Constants.SSH_PASSWORD));
