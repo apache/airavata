@@ -21,7 +21,7 @@
 # Global Constants used across the script
 REQUIRED_THRIFT_VERSION='0.9.1'
 BASE_TARGET_DIR='target'
-ORCHESTRATOR_SERVICE_DIR='../../modules/orchestrator/airavata-orchestrator-stubs/src/main/java'
+ORCHESTRATOR_SERVICE_DIR='../../modules/orchestrator/orchestrator-client/src/main/java'
 
 # The Funcation fail prints error messages on failure and quits the script.
 fail() {
