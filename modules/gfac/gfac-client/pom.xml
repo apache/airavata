@@ -13,14 +13,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <artifactId>gfac</artifactId>
+        <artifactId>airavata-gfac</artifactId>
         <groupId>org.apache.airavata</groupId>
         <version>0.16-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <name>Airavata Gfac Client SDK</name>
-    <artifactId>gfac-client</artifactId>
+    <artifactId>airavata-gfac-client</artifactId>
     <packaging>jar</packaging>
     <url>http://airavata.apache.org/</url>
 

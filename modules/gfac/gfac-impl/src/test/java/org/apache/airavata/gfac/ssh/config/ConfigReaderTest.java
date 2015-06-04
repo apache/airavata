@@ -21,6 +21,7 @@
 
 package org.apache.airavata.gfac.ssh.config;
 
+import org.apache.airavata.gfac.gsi.ssh.config.ConfigReader;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
