@@ -27,8 +27,8 @@ import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.messaging.event.TaskIdentifier;
 import org.apache.airavata.model.messaging.event.TaskOutputChangeEvent;
-import org.apache.airavata.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
+import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +37,7 @@ import java.util.List;
 
 public abstract class AbstractHandler implements GFacHandler {
     private static final Logger logger = LoggerFactory.getLogger(AbstractHandler.class);
-    protected Registry registry = null;
+    protected ExperimentCatalog experimentCatalog = null;
 
     protected MonitorPublisher publisher = null;
 
@@ -48,22 +48,22 @@ public abstract class AbstractHandler implements GFacHandler {
         } catch (Exception e) {
             logger.error("Error saving Recoverable provider state", e);
         }
-		registry = jobExecutionContext.getRegistry();
-        if(registry == null){
+		experimentCatalog = jobExecutionContext.getExperimentCatalog();
+        if(experimentCatalog == null){
             try {
-                registry = RegistryFactory.getDefaultRegistry();
+                experimentCatalog = RegistryFactory.getDefaultRegistry();
             } catch (RegistryException e) {
                 throw new GFacHandlerException("unable to create registry instance", e);
             }
         }
 	}
 
-    public Registry getRegistry() {
-        return registry;
+    public ExperimentCatalog getExperimentCatalog() {
+        return experimentCatalog;
     }
 
-    public void setRegistry(Registry registry) {
-        this.registry = registry;
+    public void setExperimentCatalog(ExperimentCatalog experimentCatalog) {
+        this.experimentCatalog = experimentCatalog;
     }
 
     protected void fireTaskOutputChangeEvent(JobExecutionContext jobExecutionContext, List<OutputDataObjectType> outputArray) {

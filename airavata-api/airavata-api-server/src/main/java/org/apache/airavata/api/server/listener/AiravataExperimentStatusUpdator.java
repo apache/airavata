@@ -38,8 +38,8 @@ import org.apache.airavata.model.messaging.event.WorkflowNodeStatusChangeEvent;
 import org.apache.airavata.model.util.ExecutionType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.ExperimentState;
-import org.apache.airavata.registry.cpi.Registry;
-import org.apache.airavata.registry.cpi.RegistryModelType;
+import org.apache.airavata.registry.cpi.ExperimentCatalog;
+import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.utils.ZKPaths;
 import org.slf4j.Logger;
@@ -50,18 +50,18 @@ import java.util.Calendar;
 
 public class AiravataExperimentStatusUpdator implements AbstractActivityListener {
     private final static Logger logger = LoggerFactory.getLogger(AiravataExperimentStatusUpdator.class);
-    private Registry airavataRegistry;
+    private ExperimentCatalog airavataExperimentCatalog;
     private MonitorPublisher monitorPublisher;
     private Publisher publisher;
     private CuratorFramework curatorClient;
     private RabbitMQTaskLaunchConsumer consumer;
 
-    public Registry getAiravataRegistry() {
-        return airavataRegistry;
+    public ExperimentCatalog getAiravataExperimentCatalog() {
+        return airavataExperimentCatalog;
     }
 
-    public void setAiravataRegistry(Registry airavataRegistry) {
-        this.airavataRegistry = airavataRegistry;
+    public void setAiravataExperimentCatalog(ExperimentCatalog airavataExperimentCatalog) {
+        this.airavataExperimentCatalog = airavataExperimentCatalog;
     }
     
     @Subscribe
@@ -69,7 +69,7 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
 		try {
 			boolean updateExperimentStatus=true;
             boolean clean= false;
-			ExecutionType executionType = DataModelUtils.getExecutionType((Experiment) airavataRegistry.get(RegistryModelType.EXPERIMENT, nodeStatus.getWorkflowNodeIdentity().getExperimentId()));
+			ExecutionType executionType = DataModelUtils.getExecutionType((Experiment) airavataExperimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, nodeStatus.getWorkflowNodeIdentity().getExperimentId()));
             String experimentNode = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
             String experimentPath = experimentNode + File.separator + ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME)
                     + File.separator + nodeStatus.getWorkflowNodeIdentity().getExperimentId();
@@ -183,7 +183,7 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
     }
 
     public  ExperimentState updateExperimentStatus(String experimentId, ExperimentState state) throws Exception {
-    	Experiment details = (Experiment)airavataRegistry.get(RegistryModelType.EXPERIMENT, experimentId);
+    	Experiment details = (Experiment) airavataExperimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
         if(details == null) {
             details = new Experiment();
             details.setExperimentID(experimentId);
@@ -194,15 +194,15 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
         status.setExperimentState(state);
         details.setExperimentStatus(status);
         logger.info("Updating the experiment status of experiment: " + experimentId + " to " + status.getExperimentState().toString());
-        airavataRegistry.update(RegistryModelType.EXPERIMENT_STATUS, status, experimentId);
+        airavataExperimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT_STATUS, status, experimentId);
         return details.getExperimentStatus().getExperimentState();
 
     }
 
 	public void setup(Object... configurations) {
 		for (Object configuration : configurations) {
-			if (configuration instanceof Registry){
-				this.airavataRegistry=(Registry)configuration;
+			if (configuration instanceof ExperimentCatalog){
+				this.airavataExperimentCatalog =(ExperimentCatalog)configuration;
 			} else if (configuration instanceof MonitorPublisher){
 				this.monitorPublisher=(MonitorPublisher) configuration;
 			} else if (configuration instanceof Publisher){

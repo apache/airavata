@@ -32,8 +32,8 @@ import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.registry.cpi.CompositeIdentifier;
-import org.apache.airavata.registry.cpi.Registry;
-import org.apache.airavata.registry.cpi.RegistryModelType;
+import org.apache.airavata.registry.cpi.ExperimentCatalog;
+import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,18 +41,18 @@ import java.util.Calendar;
 
 public class AiravataJobStatusUpdator implements AbstractActivityListener {
     private final static Logger logger = LoggerFactory.getLogger(AiravataJobStatusUpdator.class);
-    private Registry airavataRegistry;
+    private ExperimentCatalog airavataExperimentCatalog;
 
     private MonitorPublisher monitorPublisher;
     private Publisher publisher;
 
 
-    public Registry getAiravataRegistry() {
-        return airavataRegistry;
+    public ExperimentCatalog getAiravataExperimentCatalog() {
+        return airavataExperimentCatalog;
     }
 
-    public void setAiravataRegistry(Registry airavataRegistry) {
-        this.airavataRegistry = airavataRegistry;
+    public void setAiravataExperimentCatalog(ExperimentCatalog airavataExperimentCatalog) {
+        this.airavataExperimentCatalog = airavataExperimentCatalog;
     }
 
 
@@ -87,7 +87,7 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener {
     public  void updateJobStatus(String expId, String taskId, String jobID, JobState state) throws Exception {
         logger.info("expId - {}: Updating job status for " + jobID + ":" + state.toString(), expId);
         CompositeIdentifier ids = new CompositeIdentifier(taskId, jobID);
-        JobDetails details = (JobDetails) airavataRegistry.get(RegistryModelType.JOB_DETAIL, ids);
+        JobDetails details = (JobDetails) airavataExperimentCatalog.get(ExperimentCatalogModelType.JOB_DETAIL, ids);
         if (details == null) {
             details = new JobDetails();
         }
@@ -102,14 +102,14 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener {
         details.setJobStatus(status);
         details.setJobID(jobID);
         logger.debug("expId - {}: Updated job status for " + jobID + ":" + details.getJobStatus().toString(), expId);
-        airavataRegistry.update(RegistryModelType.JOB_STATUS, status, ids);
+        airavataExperimentCatalog.update(ExperimentCatalogModelType.JOB_STATUS, status, ids);
     }
 
 	@SuppressWarnings("unchecked")
 	public void setup(Object... configurations) {
 		for (Object configuration : configurations) {
-			if (configuration instanceof Registry){
-				this.airavataRegistry=(Registry)configuration;
+			if (configuration instanceof ExperimentCatalog){
+				this.airavataExperimentCatalog =(ExperimentCatalog)configuration;
 			} else if (configuration instanceof MonitorPublisher){
 				this.monitorPublisher=(MonitorPublisher) configuration;
 			} else if (configuration instanceof Publisher){

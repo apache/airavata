@@ -1,0 +1,252 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
+package org.apache.airavata.registry.core.app.catalog.impl;
+
+import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
+import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.appcatalog.gatewayprofile.gatewayResourceProfileModelConstants;
+import org.apache.airavata.registry.core.app.catalog.resources.*;
+import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
+import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.GwyResourceProfile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class GwyResourceProfileImpl implements GwyResourceProfile {
+    private final static Logger logger = LoggerFactory.getLogger(GwyResourceProfileImpl.class);
+
+    @Override
+    public String addGatewayResourceProfile(org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile gatewayProfile) throws AppCatalogException {
+        try {
+            GatewayProfileAppCatalogResourceAppCat profileResource = new GatewayProfileAppCatalogResourceAppCat();
+            if (!gatewayProfile.getGatewayID().equals("") && !gatewayProfile.getGatewayID().equals(gatewayResourceProfileModelConstants.DEFAULT_ID)){
+                profileResource.setGatewayID(gatewayProfile.getGatewayID());
+            }
+//            profileResource.setGatewayID(gatewayProfile.getGatewayID());
+            profileResource.save();
+            List<ComputeResourcePreference> computeResourcePreferences = gatewayProfile.getComputeResourcePreferences();
+            if (computeResourcePreferences != null && !computeResourcePreferences.isEmpty()){
+                for (ComputeResourcePreference preference : computeResourcePreferences ){
+                    ComputeHostPreferenceAppCatalogResourceAppCat resource = new ComputeHostPreferenceAppCatalogResourceAppCat();
+                    resource.setGatewayProfile(profileResource);
+                    resource.setResourceId(preference.getComputeResourceId());
+                    ComputeResourceAppCatalogResourceAppCat computeHostResource = new ComputeResourceAppCatalogResourceAppCat();
+                    resource.setComputeHostResource((ComputeResourceAppCatalogResourceAppCat)computeHostResource.get(preference.getComputeResourceId()));
+                    resource.setGatewayId(profileResource.getGatewayID());
+                    resource.setOverrideByAiravata(preference.isOverridebyAiravata());
+                    resource.setLoginUserName(preference.getLoginUserName());
+                    if (preference.getPreferredJobSubmissionProtocol() != null){
+                        resource.setPreferredJobProtocol(preference.getPreferredJobSubmissionProtocol().toString());
+                    }
+
+                    if (preference.getPreferredDataMovementProtocol() != null){
+                        resource.setPreferedDMProtocol(preference.getPreferredDataMovementProtocol().toString());
+                    }
+
+                    resource.setBatchQueue(preference.getPreferredBatchQueue());
+                    resource.setProjectNumber(preference.getAllocationProjectNumber());
+                    resource.setScratchLocation(preference.getScratchLocation());
+                    resource.save();
+                }
+            }
+            return profileResource.getGatewayID();
+        }catch (Exception e) {
+            logger.error("Error while saving gateway profile...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
+    public void updateGatewayResourceProfile(String gatewayId, org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile updatedProfile) throws AppCatalogException {
+        try {
+            GatewayProfileAppCatalogResourceAppCat profileResource = new GatewayProfileAppCatalogResourceAppCat();
+            GatewayProfileAppCatalogResourceAppCat existingGP = (GatewayProfileAppCatalogResourceAppCat)profileResource.get(gatewayId);
+            existingGP.save();
+
+            List<ComputeResourcePreference> computeResourcePreferences = updatedProfile.getComputeResourcePreferences();
+            if (computeResourcePreferences != null && !computeResourcePreferences.isEmpty()){
+                for (ComputeResourcePreference preference : computeResourcePreferences ){
+                    ComputeHostPreferenceAppCatalogResourceAppCat resource = new ComputeHostPreferenceAppCatalogResourceAppCat();
+                    resource.setGatewayProfile(existingGP);
+                    resource.setResourceId(preference.getComputeResourceId());
+                    ComputeResourceAppCatalogResourceAppCat computeHostResource = new ComputeResourceAppCatalogResourceAppCat();
+                    resource.setComputeHostResource((ComputeResourceAppCatalogResourceAppCat)computeHostResource.get(preference.getComputeResourceId()));
+                    resource.setGatewayId(gatewayId);
+                    resource.setLoginUserName(preference.getLoginUserName());
+                    resource.setOverrideByAiravata(preference.isOverridebyAiravata());
+                    if (preference.getPreferredJobSubmissionProtocol() != null){
+                        resource.setPreferredJobProtocol(preference.getPreferredJobSubmissionProtocol().toString());
+                    }
+
+                    if (preference.getPreferredDataMovementProtocol() != null){
+                        resource.setPreferedDMProtocol(preference.getPreferredDataMovementProtocol().toString());
+                    }
+                    resource.setBatchQueue(preference.getPreferredBatchQueue());
+                    resource.setProjectNumber(preference.getAllocationProjectNumber());
+                    resource.setScratchLocation(preference.getScratchLocation());
+                    resource.save();
+                }
+            }
+        }catch (Exception e) {
+            logger.error("Error while updating gateway profile...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
+    public GatewayResourceProfile getGatewayProfile(String gatewayId) throws AppCatalogException {
+        try {
+            GatewayProfileAppCatalogResourceAppCat resource = new GatewayProfileAppCatalogResourceAppCat();
+            GatewayProfileAppCatalogResourceAppCat gwresource = (GatewayProfileAppCatalogResourceAppCat)resource.get(gatewayId);
+            ComputeHostPreferenceAppCatalogResourceAppCat prefResource = new ComputeHostPreferenceAppCatalogResourceAppCat();
+            List<AppCatalogResource> computePrefList = prefResource.get(AppCatAbstractResource.ComputeResourcePreferenceConstants.GATEWAY_ID, gatewayId);
+            List<ComputeResourcePreference> computeResourcePreferences = AppCatalogThriftConversion.getComputeResourcePreferences(computePrefList);
+            return AppCatalogThriftConversion.getGatewayResourceProfile(gwresource, computeResourcePreferences);
+        }catch (Exception e) {
+            logger.error("Error while retrieving gateway profile...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
+    public boolean removeGatewayResourceProfile(String gatewayId) throws AppCatalogException {
+       try {
+           GatewayProfileAppCatalogResourceAppCat resource = new GatewayProfileAppCatalogResourceAppCat();
+           resource.remove(gatewayId);
+           return true;
+       }catch (Exception e) {
+           logger.error("Error while deleting gateway profile...", e);
+           throw new AppCatalogException(e);
+       }
+    }
+
+    @Override
+    public boolean removeComputeResourcePreferenceFromGateway(String gatewayId, String preferenceId) throws AppCatalogException {
+        try {
+            ComputeHostPreferenceAppCatalogResourceAppCat resource = new ComputeHostPreferenceAppCatalogResourceAppCat();
+            Map<String, String> ids = new HashMap<String, String>();
+            ids.put(AppCatAbstractResource.ComputeResourcePreferenceConstants.GATEWAY_ID, gatewayId);
+            ids.put(AppCatAbstractResource.ComputeResourcePreferenceConstants.RESOURCE_ID, preferenceId);
+            resource.remove(ids);
+            return true;
+        }catch (Exception e) {
+            logger.error("Error while deleting gateway profile...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
+    public boolean isGatewayResourceProfileExists(String gatewayId) throws AppCatalogException {
+        try {
+            GatewayProfileAppCatalogResourceAppCat resource = new GatewayProfileAppCatalogResourceAppCat();
+            return resource.isExists(gatewayId);
+        }catch (Exception e) {
+            logger.error("Error while retrieving gateway profile...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    /**
+     * @param gatewayId
+     * @param hostId
+     * @return ComputeResourcePreference
+     */
+    @Override
+    public ComputeResourcePreference getComputeResourcePreference(String gatewayId, String hostId) throws AppCatalogException {
+        try {
+            ComputeHostPreferenceAppCatalogResourceAppCat prefResource = new ComputeHostPreferenceAppCatalogResourceAppCat();
+            List<AppCatalogResource> computePrefList = prefResource.get(AppCatAbstractResource.ComputeResourcePreferenceConstants.GATEWAY_ID, gatewayId);
+            for (AppCatalogResource resource : computePrefList){
+                ComputeHostPreferenceAppCatalogResourceAppCat cmP = (ComputeHostPreferenceAppCatalogResourceAppCat) resource;
+                if (cmP.getResourceId() != null && !cmP.getResourceId().equals("")){
+                    if (cmP.getResourceId().equals(hostId)){
+                        return AppCatalogThriftConversion.getComputeResourcePreference(cmP);
+                    }
+                }
+            }
+        }catch (Exception e) {
+            logger.error("Error while retrieving compute resource preference...", e);
+            throw new AppCatalogException(e);
+        }
+        return null;
+    }
+
+    /**
+     * @param gatewayId
+     * @return
+     */
+    @Override
+    public List<ComputeResourcePreference> getAllComputeResourcePreferences(String gatewayId) throws AppCatalogException {
+        try {
+            ComputeHostPreferenceAppCatalogResourceAppCat prefResource = new ComputeHostPreferenceAppCatalogResourceAppCat();
+            List<AppCatalogResource> computePrefList = prefResource.get(AppCatAbstractResource.ComputeResourcePreferenceConstants.GATEWAY_ID, gatewayId);
+            return AppCatalogThriftConversion.getComputeResourcePreferences(computePrefList);
+        }catch (Exception e) {
+            logger.error("Error while retrieving compute resource preference...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
+    public List<String> getGatewayProfileIds(String gatewayName) throws AppCatalogException {
+        try {
+            GatewayProfileAppCatalogResourceAppCat profileResource = new GatewayProfileAppCatalogResourceAppCat();
+            List<AppCatalogResource> resourceList = profileResource.get(AppCatAbstractResource.GatewayProfileConstants.GATEWAY_ID, gatewayName);
+            List<String> gatewayIds = new ArrayList<String>();
+            if (resourceList != null && !resourceList.isEmpty()){
+                for (AppCatalogResource resource : resourceList){
+                    gatewayIds.add(((GatewayProfileAppCatalogResourceAppCat)resource).getGatewayID());
+                }
+            }
+            return gatewayIds;
+        }catch (Exception e) {
+            logger.error("Error while retrieving gateway ids...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
+    @Override
+    public List<GatewayResourceProfile> getAllGatewayProfiles() throws AppCatalogException {
+        try {
+            List<GatewayResourceProfile> gatewayResourceProfileList = new ArrayList<GatewayResourceProfile>();
+            GatewayProfileAppCatalogResourceAppCat profileResource = new GatewayProfileAppCatalogResourceAppCat();
+            List<AppCatalogResource> resourceList = profileResource.getAll();
+            if (resourceList != null && !resourceList.isEmpty()){
+                for (AppCatalogResource resource : resourceList){
+                    GatewayProfileAppCatalogResourceAppCat gatewayProfileResource = (GatewayProfileAppCatalogResourceAppCat)resource;
+                    List<ComputeResourcePreference> computeResourcePreferences = getAllComputeResourcePreferences(gatewayProfileResource.getGatewayID());
+                    GatewayResourceProfile gatewayResourceProfile = AppCatalogThriftConversion.getGatewayResourceProfile(gatewayProfileResource, computeResourcePreferences);
+                    gatewayResourceProfileList.add(gatewayResourceProfile);
+                }
+            }
+            return gatewayResourceProfileList;
+        }catch (Exception e) {
+            logger.error("Error while retrieving gateway ids...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+}

@@ -24,7 +24,7 @@ package org.apache.airavata.gfac.client;
 import org.apache.airavata.gfac.client.util.Initialize;
 import org.apache.airavata.gfac.cpi.GfacService;
 import org.apache.airavata.gfac.server.GfacServer;
-import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.zookeeper.server.ServerCnxnFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +33,7 @@ public class GfacClientFactoryTest {
     private final static Logger logger = LoggerFactory.getLogger(GfacClientFactoryTest.class);
 //    private DocumentCreator documentCreator;
     private GfacService.Client gfacClient;
-    private Registry registry;
+    private ExperimentCatalog experimentCatalog;
     private int NUM_CONCURRENT_REQUESTS = 1;
     Initialize initialize;
     GfacServer service;

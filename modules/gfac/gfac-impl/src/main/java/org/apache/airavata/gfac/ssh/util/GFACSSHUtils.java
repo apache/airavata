@@ -20,8 +20,8 @@
 */
 package org.apache.airavata.gfac.ssh.util;
 
-import org.airavata.appcatalog.cpi.AppCatalog;
-import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.AppCatalog;
+import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
@@ -91,7 +91,7 @@ public class GFACSSHUtils {
                 AppCatalog appCatalog = jobExecutionContext.getAppCatalog();
                 SSHJobSubmission sshJobSubmission = appCatalog.getComputeResource().getSSHJobSubmission(preferredJobSubmissionInterface.getJobSubmissionInterfaceId());
                 SecurityProtocol securityProtocol = sshJobSubmission.getSecurityProtocol();
-                if (securityProtocol == SecurityProtocol.GSI || securityProtocol == SecurityProtocol.SSH_KEYS || securityProtocol == SecurityProtocol.USERNAME_PASSWORD) {
+                if (securityProtocol == SecurityProtocol.GSI || securityProtocol == SecurityProtocol.SSH_KEYS) {
                     SSHSecurityContext sshSecurityContext = new SSHSecurityContext();
                     String credentialStoreToken = jobExecutionContext.getCredentialStoreToken(); // this is set by the framework
                     RequestData requestData = new RequestData(jobExecutionContext.getGatewayID());
@@ -108,7 +108,7 @@ public class GFACSSHUtils {
                         }
 
                         SSHCredential credentials =((TokenizedSSHAuthInfo)tokenizedSSHAuthInfo).getCredentials();// this is just a call to get and set credentials in to this object,data will be used
-                        if(credentials.getPrivateKey()==null || credentials.getPublicKey()==null || securityProtocol == SecurityProtocol.USERNAME_PASSWORD){
+                        if(credentials.getPrivateKey()==null || credentials.getPublicKey()==null){
                             // now we fall back to username password authentication
                             Properties configurationProperties = ServerSettings.getProperties();
                             tokenizedSSHAuthInfo = new DefaultPasswordAuthenticationInfo(configurationProperties.getProperty(Constants.SSH_PASSWORD));

@@ -31,7 +31,7 @@
             </activation>
             <modules>
                 <module>registry-cpi</module>
-                <module>experiment-catalog</module>
+                <module>registry-core</module>
                 <!--<module>jpa-gen</module>-->
             </modules>
         </profile>

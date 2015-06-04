@@ -21,8 +21,8 @@
 
 package org.apache.airavata.workflow.catalog;
 
-import org.airavata.appcatalog.cpi.AppCatalogException;
-import org.airavata.appcatalog.cpi.WorkflowCatalog;
+import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.WorkflowCatalog;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

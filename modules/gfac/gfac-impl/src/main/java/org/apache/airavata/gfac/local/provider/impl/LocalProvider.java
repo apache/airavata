@@ -49,8 +49,8 @@ import org.apache.airavata.model.messaging.event.TaskOutputChangeEvent;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
-import org.apache.airavata.registry.cpi.ChildDataType;
-import org.apache.airavata.registry.cpi.RegistryModelType;
+import org.apache.airavata.registry.cpi.ExpCatChildDataType;
+import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -224,12 +224,12 @@ public class LocalProvider extends AbstractProvider {
             String stdErrStr = GFacUtils.readFileToString(jobExecutionContext.getStandardError());
 			Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
             OutputUtils.fillOutputFromStdout(output, stdOutStr, stdErrStr, outputArray);
-            TaskDetails taskDetails = (TaskDetails)registry.get(RegistryModelType.TASK_DETAIL, jobExecutionContext.getTaskData().getTaskID());
+            TaskDetails taskDetails = (TaskDetails) experimentCatalog.get(ExperimentCatalogModelType.TASK_DETAIL, jobExecutionContext.getTaskData().getTaskID());
             if (taskDetails != null){
                 taskDetails.setApplicationOutputs(outputArray);
-                registry.update(RegistryModelType.TASK_DETAIL, taskDetails, taskDetails.getTaskID());
+                experimentCatalog.update(ExperimentCatalogModelType.TASK_DETAIL, taskDetails, taskDetails.getTaskID());
             }
-            registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
+            experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
             TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
                     jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
                     jobExecutionContext.getExperimentID(),

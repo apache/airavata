@@ -26,8 +26,8 @@ import org.apache.airavata.gfac.core.handler.AbstractHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
+import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,7 +88,7 @@ public class GaussianHandler extends AbstractHandler {
                         }
                         logger.info("$$$$$$$$ " + inputConfig.getKey() + " --> " + inputConfig.getValue() + " $$$$$$$$$$$");
                     }
-                    registry.update(RegistryModelType.TASK_DETAIL, jobExecutionContext.getTaskData(), jobExecutionContext.getTaskData().getTaskID());
+                    experimentCatalog.update(ExperimentCatalogModelType.TASK_DETAIL, jobExecutionContext.getTaskData(), jobExecutionContext.getTaskData().getTaskID());
                 } catch (IOException e) {
                     throw new GFacHandlerException("Error while reading main input file ", e);
                 } catch (RegistryException e) {

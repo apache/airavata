@@ -20,8 +20,8 @@
 */
 package org.apache.airavata.gfac.impl;
 
-import org.airavata.appcatalog.cpi.AppCatalog;
-import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.AppCatalog;
+import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.MonitorPublisher;
@@ -71,9 +71,9 @@ import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.TaskState;
-import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.ExperimentCatalog;
+import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.utils.ZKPaths;
 import org.slf4j.Logger;
@@ -96,7 +96,7 @@ import java.util.Properties;
 public class BetterGfacImpl implements GFac {
     private static final Logger log = LoggerFactory.getLogger(BetterGfacImpl.class);
     private static String ERROR_SENT = "ErrorSent";
-    private Registry registry;
+    private ExperimentCatalog experimentCatalog;
     private CuratorFramework curatorClient;
     private MonitorPublisher monitorPublisher;
     private static GFac gfacInstance;
@@ -118,9 +118,9 @@ public class BetterGfacImpl implements GFac {
     }
 
     @Override
-    public boolean init(Registry registry, AppCatalog appCatalog, CuratorFramework curatorClient,
+    public boolean init(ExperimentCatalog experimentCatalog, AppCatalog appCatalog, CuratorFramework curatorClient,
                         MonitorPublisher publisher) {
-        this.registry = registry;
+        this.experimentCatalog = experimentCatalog;
         monitorPublisher = publisher;     // This is a EventBus common for gfac
         this.curatorClient = curatorClient;
         return initialized = true;
@@ -177,7 +177,7 @@ public class BetterGfacImpl implements GFac {
          */
 
         //Fetch the Task details for the requested experimentID from the registry. Extract required pointers from the Task object.
-        TaskDetails taskData = (TaskDetails) registry.get(RegistryModelType.TASK_DETAIL, taskID);
+        TaskDetails taskData = (TaskDetails) experimentCatalog.get(ExperimentCatalogModelType.TASK_DETAIL, taskID);
 
         String applicationInterfaceId = taskData.getApplicationId();
         String applicationDeploymentId = taskData.getApplicationDeploymentId();
@@ -220,7 +220,7 @@ public class BetterGfacImpl implements GFac {
         jobExecutionContext = new JobExecutionContext(gFacConfiguration, applicationInterface.getApplicationName());
 
         // setting experiment/task/workflownode related information
-        Experiment experiment = (Experiment) registry.get(RegistryModelType.EXPERIMENT, experimentID);
+        Experiment experiment = (Experiment) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentID);
         jobExecutionContext.setExperiment(experiment);
         jobExecutionContext.setExperimentID(experimentID);
         jobExecutionContext.setWorkflowNodeDetails(experiment.getWorkflowNodeDetailsList().get(0));
@@ -235,7 +235,7 @@ public class BetterGfacImpl implements GFac {
             jobExecutionContext.setJobDetails(jDetails);
         }
         // setting the registry
-        jobExecutionContext.setRegistry(registry);
+        jobExecutionContext.setExperimentCatalog(experimentCatalog);
 
         ApplicationContext applicationContext = new ApplicationContext();
         applicationContext.setComputeResourceDescription(computeResource);
@@ -1096,7 +1096,7 @@ public class BetterGfacImpl implements GFac {
     private boolean isCancelled(JobExecutionContext executionContext) {
         // we should check whether experiment is cancelled using registry
         try {
-            ExperimentStatus status = (ExperimentStatus) registry.get(RegistryModelType.EXPERIMENT_STATUS, executionContext.getExperimentID());
+            ExperimentStatus status = (ExperimentStatus) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT_STATUS, executionContext.getExperimentID());
             if (status != null) {
                 ExperimentState experimentState = status.getExperimentState();
                 if (experimentState != null) {
@@ -1114,7 +1114,7 @@ public class BetterGfacImpl implements GFac {
     private boolean isCancelling(JobExecutionContext executionContext) {
         // check whether cancelling request came
         try {
-            ExperimentStatus status = (ExperimentStatus) registry.get(RegistryModelType.EXPERIMENT_STATUS, executionContext.getExperimentID());
+            ExperimentStatus status = (ExperimentStatus) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT_STATUS, executionContext.getExperimentID());
             if (status != null) {
                 ExperimentState experimentState = status.getExperimentState();
                 if (experimentState != null) {
@@ -1131,7 +1131,7 @@ public class BetterGfacImpl implements GFac {
 
     private boolean isCancel(JobExecutionContext jobExecutionContext) {
         try {
-            ExperimentStatus status = (ExperimentStatus) registry.get(RegistryModelType.EXPERIMENT_STATUS, jobExecutionContext.getExperimentID());
+            ExperimentStatus status = (ExperimentStatus) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT_STATUS, jobExecutionContext.getExperimentID());
             if (status != null) {
                 ExperimentState experimentState = status.getExperimentState();
                 if (experimentState != null) {

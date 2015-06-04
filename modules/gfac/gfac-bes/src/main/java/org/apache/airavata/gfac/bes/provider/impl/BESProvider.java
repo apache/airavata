@@ -23,7 +23,7 @@ package org.apache.airavata.gfac.bes.provider.impl;
 import java.util.Calendar;
 import java.util.Map;
 
-import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.bes.security.UNICORESecurityContext;

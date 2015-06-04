@@ -33,8 +33,8 @@ import org.apache.airavata.model.messaging.event.WorkflowNodeStatusChangeEvent;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeState;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeStatus;
-import org.apache.airavata.registry.cpi.Registry;
-import org.apache.airavata.registry.cpi.RegistryModelType;
+import org.apache.airavata.registry.cpi.ExperimentCatalog;
+import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,19 +43,19 @@ import java.util.Calendar;
 public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListener {
     private final static Logger logger = LoggerFactory.getLogger(AiravataWorkflowNodeStatusUpdator.class);
 
-    private Registry airavataRegistry;
+    private ExperimentCatalog airavataExperimentCatalog;
     private MonitorPublisher monitorPublisher;
     private Publisher publisher;
 
 
 
 
-    public Registry getAiravataRegistry() {
-        return airavataRegistry;
+    public ExperimentCatalog getAiravataExperimentCatalog() {
+        return airavataExperimentCatalog;
     }
 
-    public void setAiravataRegistry(Registry airavataRegistry) {
-        this.airavataRegistry = airavataRegistry;
+    public void setAiravataExperimentCatalog(ExperimentCatalog airavataExperimentCatalog) {
+        this.airavataExperimentCatalog = airavataExperimentCatalog;
     }
 
     @Subscribe
@@ -103,7 +103,7 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
 
     public  void updateWorkflowNodeStatus(String experimentId, String workflowNodeId, WorkflowNodeState state) throws Exception {
 		logger.info("expId - {}: Updating workflow node status for "+workflowNodeId+":"+state.toString(), experimentId);
-    	WorkflowNodeDetails details = (WorkflowNodeDetails)airavataRegistry.get(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeId);
+    	WorkflowNodeDetails details = (WorkflowNodeDetails) airavataExperimentCatalog.get(ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL, workflowNodeId);
         if(details == null) {
             details = new WorkflowNodeDetails();
             details.setNodeInstanceId(workflowNodeId);
@@ -112,13 +112,13 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
         status.setWorkflowNodeState(state);
         status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
         details.setWorkflowNodeStatus(status);
-        airavataRegistry.update(RegistryModelType.WORKFLOW_NODE_STATUS, status, workflowNodeId);
+        airavataExperimentCatalog.update(ExperimentCatalogModelType.WORKFLOW_NODE_STATUS, status, workflowNodeId);
     }
 
 	public void setup(Object... configurations) {
 		for (Object configuration : configurations) {
-			if (configuration instanceof Registry){
-				this.airavataRegistry=(Registry)configuration;
+			if (configuration instanceof ExperimentCatalog){
+				this.airavataExperimentCatalog =(ExperimentCatalog)configuration;
 			} else if (configuration instanceof MonitorPublisher){
 				this.monitorPublisher=(MonitorPublisher) configuration;
 			}  else if (configuration instanceof Publisher){
