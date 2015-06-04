@@ -31,8 +31,8 @@
             </activation>
             <modules>
                 <module>orchestrator-core</module>
-                <module>airavata-orchestrator-service</module>
-                <module>airavata-orchestrator-stubs</module>
+                <module>orchestrator-service</module>
+                <module>orchestrator-client</module>
             </modules>
         </profile>
     </profiles>

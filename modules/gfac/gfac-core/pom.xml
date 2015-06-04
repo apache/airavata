@@ -11,7 +11,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>org.apache.airavata</groupId>
-        <artifactId>gfac</artifactId>
+        <artifactId>airavata-gfac</artifactId>
         <version>0.16-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
@@ -49,6 +49,11 @@
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-experiment-catalog</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.xmlbeans</groupId>
+            <artifactId>xmlbeans</artifactId>
+            <version>${xmlbeans.version}</version>
         </dependency>
         <!-- Credential Store -->
         <dependency>
@@ -112,6 +117,7 @@
             <groupId>org.apache.xmlbeans</groupId>
             <artifactId>xmlbeans</artifactId>
             <version>${xmlbeans.version}</version>
+            <scope>compile</scope>
         </dependency>
         <!-- this is the dependency for amqp implementation -->
         <!-- zookeeper dependencies -->
@@ -124,6 +130,28 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>xmlbeans-maven-plugin</artifactId>
+                <version>2.3.3</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>xmlbeans</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <inherited>true</inherited>
+                <configuration>
+                    <schemaDirectory>src/main/resources</schemaDirectory>
+                    <xmlConfigs>
+                        <xmlConfig implementation="java.io.File">src/main/resources/gsissh-schemas.xsdconfig </xmlConfig>
+                    </xmlConfigs>
+                    <sourceGenerationDirectory>src/main/java</sourceGenerationDirectory>
+                    <outputJar>target/generated/${project.artifactId}-${project.version}.jar</outputJar>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
