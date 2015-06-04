@@ -22,7 +22,7 @@ package org.apache.airavata.gfac.core.handler;
 
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.states.GfacHandlerState;
-import org.apache.airavata.gfac.core.utils.GFacUtils;
+import org.apache.airavata.gfac.core.GFacUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
