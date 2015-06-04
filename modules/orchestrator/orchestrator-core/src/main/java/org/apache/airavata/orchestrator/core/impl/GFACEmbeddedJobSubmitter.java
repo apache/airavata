@@ -21,23 +21,16 @@
 package org.apache.airavata.orchestrator.core.impl;
 
 
-import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.client.GFACInstance;
-import org.apache.airavata.gfac.core.cpi.BetterGfacImpl;
-import org.apache.airavata.gfac.core.cpi.GFac;
-import org.apache.airavata.gfac.core.utils.GFacUtils;
+import org.apache.airavata.gfac.core.GFac;
+import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.eventbus.EventBus;
-
-import java.io.IOException;
 
 /**
  * This is the simplest implementation for JobSubmitter,
@@ -54,7 +47,6 @@ public class GFACEmbeddedJobSubmitter implements JobSubmitter {
 
     public void initialize(OrchestratorContext orchestratorContext) throws OrchestratorException {
         this.orchestratorContext = orchestratorContext;
-        gfac = BetterGfacImpl.getInstance();
     }
 
     public GFACInstance selectGFACInstance() throws OrchestratorException {

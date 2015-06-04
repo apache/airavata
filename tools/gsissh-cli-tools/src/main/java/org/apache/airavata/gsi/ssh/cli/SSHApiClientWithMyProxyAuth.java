@@ -19,24 +19,19 @@
  *
  */
 
-package org.apache.airavata.gsi.ssh.cli;
+package org.apache.airavata.gfac.ssh.cli;
 
-import org.apache.airavata.gsi.ssh.api.*;
-import org.apache.airavata.gsi.ssh.api.authentication.GSIAuthenticationInfo;
-import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
-import org.apache.airavata.gsi.ssh.config.ConfigReader;
-import org.apache.airavata.gsi.ssh.impl.PBSCluster;
-import org.apache.airavata.gsi.ssh.impl.RawCommandInfo;
-import org.apache.airavata.gsi.ssh.impl.SystemCommandOutput;
-import org.apache.airavata.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
-import org.apache.airavata.gsi.ssh.util.CommonUtils;
+import org.apache.airavata.gfac.ssh.api.*;
+import org.apache.airavata.gfac.ssh.api.authentication.GSIAuthenticationInfo;
+import org.apache.airavata.gfac.ssh.api.job.JobDescriptor;
+import org.apache.airavata.gfac.ssh.config.ConfigReader;
+import org.apache.airavata.gfac.ssh.impl.PBSCluster;
+import org.apache.airavata.gfac.ssh.impl.RawCommandInfo;
+import org.apache.airavata.gfac.ssh.impl.SystemCommandOutput;
+import org.apache.airavata.gfac.ssh.impl.authentication.MyProxyAuthenticationInfo;
+import org.apache.airavata.gfac.ssh.util.CommonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class SSHApiClientWithMyProxyAuth {
 
