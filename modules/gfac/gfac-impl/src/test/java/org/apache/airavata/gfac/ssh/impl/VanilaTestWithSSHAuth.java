@@ -21,12 +21,14 @@
 
 package org.apache.airavata.gfac.ssh.impl;
 
-import org.apache.airavata.gfac.ssh.api.*;
+import org.apache.airavata.gfac.core.JobDescriptor;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
-import org.apache.airavata.gfac.ssh.api.job.JobDescriptor;
-import org.apache.airavata.gfac.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
-import org.apache.airavata.gfac.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
-import org.apache.airavata.gfac.ssh.util.CommonUtils;
+import org.apache.airavata.gfac.core.cluster.Cluster;
+import org.apache.airavata.gfac.core.cluster.ServerInfo;
+import org.apache.airavata.gfac.gsi.ssh.impl.PBSCluster;
+import org.apache.airavata.gfac.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
+import org.apache.airavata.gfac.gsi.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
+import org.apache.airavata.gfac.gsi.ssh.util.CommonUtils;
 import org.testng.AssertJUnit;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;

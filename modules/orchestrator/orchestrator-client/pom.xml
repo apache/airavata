@@ -20,7 +20,7 @@
     </parent>
 
     <name>Airavata Orchestrator Client SDK</name>
-    <artifactId>orchestrator-client</artifactId>
+    <artifactId>airavata-orchestrator-client</artifactId>
     <packaging>jar</packaging>
     <url>http://airavata.apache.org/</url>
 

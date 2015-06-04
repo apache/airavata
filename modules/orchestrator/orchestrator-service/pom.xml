@@ -20,7 +20,7 @@
     </parent>
 
     <name>Airavata Orchestrator Service</name>
-    <artifactId>orchestrator-service</artifactId>
+    <artifactId>airavata-orchestrator-service</artifactId>
     <packaging>jar</packaging>
     <url>http://airavata.apache.org/</url>
 
@@ -42,12 +42,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>orchestrator-core</artifactId>
+            <artifactId>airavata-orchestrator-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>orchestrator-client</artifactId>
+            <artifactId>airavata-orchestrator-client</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

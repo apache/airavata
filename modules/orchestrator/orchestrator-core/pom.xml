@@ -18,7 +18,7 @@ the License. -->
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>orchestrator-core</artifactId>
+    <artifactId>airavata-orchestrator-core</artifactId>
     <packaging>jar</packaging>
     <name>Airavata Orchestrator Core</name>
     <url>http://airavata.apache.org/</url>
@@ -46,12 +46,12 @@ the License. -->
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>gfac-core</artifactId>
+            <artifactId>airavata-gfac-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>gfac-client</artifactId>
+            <artifactId>airavata-gfac-client</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
