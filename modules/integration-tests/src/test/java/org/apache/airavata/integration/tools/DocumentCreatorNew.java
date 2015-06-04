@@ -20,10 +20,9 @@
 */
 package org.apache.airavata.integration.tools;
 
-import org.airavata.appcatalog.cpi.AppCatalog;
-import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.AppCatalog;
+import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.api.Airavata;
-import org.apache.airavata.common.utils.ClientSettings;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;

@@ -20,7 +20,7 @@
 */
 package org.apache.airavata.gfac.gsissh.util;
 
-import org.airavata.appcatalog.cpi.AppCatalog;
+import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential;

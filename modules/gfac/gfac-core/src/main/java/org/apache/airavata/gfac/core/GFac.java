@@ -20,11 +20,11 @@
 */
 package org.apache.airavata.gfac.core;
 
-import org.airavata.appcatalog.cpi.AppCatalog;
+import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
-import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.curator.framework.CuratorFramework;
 
 /**
@@ -35,13 +35,13 @@ public interface GFac {
 
     /**
      * Initialized method, this method must call one time before use any other method.
-     * @param registry
+     * @param experimentCatalog
      * @param appCatalog
      * @param curatorClient
      * @param publisher
      * @return
      */
-    public boolean init(Registry registry, AppCatalog appCatalog, CuratorFramework curatorClient, MonitorPublisher publisher);
+    public boolean init(ExperimentCatalog experimentCatalog, AppCatalog appCatalog, CuratorFramework curatorClient, MonitorPublisher publisher);
 
     /**
      * This is the job launching method outsiders of GFac can use, this will invoke the GFac handler chain and providers

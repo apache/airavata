@@ -27,8 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.airavata.appcatalog.cpi.AppCatalog;
-import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.AppCatalog;
+import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.gfac.GFacConfiguration;
@@ -41,7 +41,7 @@ import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
-import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.curator.framework.CuratorFramework;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -143,7 +143,7 @@ public class JobExecutionContext extends AbstractContext implements Serializable
     private String gatewayID;
     private String status;
     private List<String> outputFileList;
-    private Registry registry;
+    private ExperimentCatalog experimentCatalog;
     private MonitorPublisher monitorPublisher;
 
     public String getGatewayID() {
@@ -316,16 +316,16 @@ public class JobExecutionContext extends AbstractContext implements Serializable
         return outputFileList;
     }
 
-    public Registry getRegistry() {
-        return registry;
+    public ExperimentCatalog getExperimentCatalog() {
+        return experimentCatalog;
     }
 
     public Map<String, SecurityContext>  getAllSecurityContexts(){
         return securityContext;
     }
 
-    public void setRegistry(Registry registry) {
-        this.registry = registry;
+    public void setExperimentCatalog(ExperimentCatalog experimentCatalog) {
+        this.experimentCatalog = experimentCatalog;
     }
 
     public Experiment getExperiment() {

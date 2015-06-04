@@ -22,7 +22,7 @@ package org.apache.airavata.job;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.airavata.appcatalog.cpi.AppCatalog;
+import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.gfac.core.JobDescriptor;

@@ -21,7 +21,7 @@
 
 package org.apache.airavata.workflow.engine;
 
-import org.airavata.appcatalog.cpi.WorkflowCatalog;
+import org.apache.airavata.registry.cpi.WorkflowCatalog;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.messaging.core.Publisher;
@@ -31,9 +31,9 @@ import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.orchestrator.client.OrchestratorClientFactory;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.ExperimentCatalog;
+import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.workflow.catalog.WorkflowCatalogFactory;
 import org.apache.airavata.workflow.engine.interpretor.WorkflowInterpreter;
 import org.apache.airavata.workflow.engine.interpretor.WorkflowInterpreterConfiguration;
@@ -57,8 +57,8 @@ public class WorkflowEngineImpl implements WorkflowEngine {
 	public void launchExperiment(String experimentId, String token)
 			throws WorkflowEngineException {
 		try {
-            Registry registry = RegistryFactory.getDefaultRegistry();
-            Experiment experiment = (Experiment)registry.get(RegistryModelType.EXPERIMENT, experimentId);
+            ExperimentCatalog experimentCatalog = RegistryFactory.getDefaultRegistry();
+            Experiment experiment = (Experiment) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
             WorkflowCatalog workflowCatalog = WorkflowCatalogFactory.getWorkflowCatalog();
 			WorkflowInterpreterConfiguration config = new WorkflowInterpreterConfiguration(new Workflow(workflowCatalog.getWorkflow(experiment.getApplicationId()).getGraph()));
 			final WorkflowInterpreter workflowInterpreter = new WorkflowInterpreter(experiment, token, config , getOrchestratorClient(), rabbitMQPublisher);

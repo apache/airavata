@@ -25,7 +25,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Properties;
 
-import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.bes.security.UNICORESecurityContext;
 import org.apache.airavata.gfac.bes.security.X509SecurityContext;

@@ -25,8 +25,8 @@ import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobStatus;
-import org.apache.airavata.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
+import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,21 +34,21 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractProvider implements GFacProvider{
     private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-    protected Registry registry = null;
+    protected ExperimentCatalog experimentCatalog = null;
 	protected JobDetails details;     //todo we need to remove this and add methods to fill Job details, this is not a property of a provider
 	protected JobStatus status;   //todo we need to remove this and add methods to fill Job details, this is not a property of a provider
 	protected JobExecutionContext jobExecutionContext;
 
     public void initialize(JobExecutionContext jobExecutionContext) throws GFacProviderException, GFacException {
         log.debug("Initializing " + this.getClass().getName());
-        if(jobExecutionContext.getRegistry() == null) {
+        if(jobExecutionContext.getExperimentCatalog() == null) {
             try {
-                registry = RegistryFactory.getDefaultRegistry();
+                experimentCatalog = RegistryFactory.getDefaultRegistry();
             } catch (RegistryException e) {
                 throw new GFacException("Unable to create registry instance", e);
             }
         }else{
-            registry = jobExecutionContext.getRegistry();
+            experimentCatalog = jobExecutionContext.getExperimentCatalog();
         }
 		details = new JobDetails();
 		status = new JobStatus();

@@ -21,9 +21,9 @@
 
 package org.apache.airavata.orchestrator.server;
 
-import org.airavata.appcatalog.cpi.AppCatalog;
-import org.airavata.appcatalog.cpi.AppCatalogException;
-import org.airavata.appcatalog.cpi.ComputeResource;
+import org.apache.airavata.registry.cpi.AppCatalog;
+import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.ComputeResource;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.aiaravata.application.catalog.data.resources.AbstractResource;
 import org.apache.airavata.common.exception.AiravataException;
@@ -67,10 +67,10 @@ import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
 import org.apache.airavata.orchestrator.cpi.orchestrator_cpi_serviceConstants;
 import org.apache.airavata.orchestrator.util.DataModelUtils;
 import org.apache.airavata.orchestrator.util.OrchestratorServerThreadPoolExecutor;
-import org.apache.airavata.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
+import org.apache.airavata.registry.cpi.ExperimentCatalog;
+import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.TaskDetailConstants;
 import org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants;
 import org.apache.airavata.workflow.core.WorkflowEnactmentService;
@@ -86,7 +86,7 @@ import java.util.Map;
 public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	private static AiravataLogger log = AiravataLoggerFactory .getLogger(OrchestratorServerHandler.class);
 	private SimpleOrchestratorImpl orchestrator = null;
-	private Registry registry;
+	private ExperimentCatalog experimentCatalog;
 	private static Integer mutex = new Integer(-1);
 	private String airavataUserName;
 	private String gatewayName;
@@ -123,7 +123,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			// first constructing the monitorManager and orchestrator, then fill
 			// the required properties
 			orchestrator = new SimpleOrchestratorImpl();
-			registry = RegistryFactory.getDefaultRegistry();
+			experimentCatalog = RegistryFactory.getDefaultRegistry();
 			orchestrator.initialize();
 			orchestrator.getOrchestratorContext().setPublisher(this.publisher);
             startProcessConsumer();
@@ -160,8 +160,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	public boolean launchExperiment(String experimentId, String token) throws TException {
         Experiment experiment = null; // this will inside the bottom catch statement
         try {
-            experiment = (Experiment) registry.get(
-                    RegistryModelType.EXPERIMENT, experimentId);
+            experiment = (Experiment) experimentCatalog.get(
+                    ExperimentCatalogModelType.EXPERIMENT, experimentId);
             if (experiment == null) {
                 log.errorId(experimentId, "Error retrieving the Experiment by the given experimentID: {} ", experimentId);
                 return false;
@@ -216,22 +216,22 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			if (tasks.size() > 1) {
 				log.info("There are multiple tasks for this experiment, So Orchestrator will launch multiple Jobs");
 			}
-			List<String> ids = registry.getIds(
-					RegistryModelType.WORKFLOW_NODE_DETAIL,
+			List<String> ids = experimentCatalog.getIds(
+					ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL,
 					WorkflowNodeConstants.EXPERIMENT_ID, experimentId);
 			for (String workflowNodeId : ids) {
-				WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails) registry
-						.get(RegistryModelType.WORKFLOW_NODE_DETAIL,
+				WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails) experimentCatalog
+						.get(ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL,
 								workflowNodeId);
-				List<Object> taskDetailList = registry.get(
-						RegistryModelType.TASK_DETAIL,
+				List<Object> taskDetailList = experimentCatalog.get(
+						ExperimentCatalogModelType.TASK_DETAIL,
 						TaskDetailConstants.NODE_ID, workflowNodeId);
 				for (Object o : taskDetailList) {
 					TaskDetails taskID = (TaskDetails) o;
 					// iterate through all the generated tasks and performs the
 					// job submisssion+monitoring
-					Experiment experiment = (Experiment) registry.get(
-							RegistryModelType.EXPERIMENT, experimentId);
+					Experiment experiment = (Experiment) experimentCatalog.get(
+							ExperimentCatalogModelType.EXPERIMENT, experimentId);
 					if (experiment == null) {
 						log.errorId(experimentId, "Error retrieving the Experiment by the given experimentID: {}.",
                                 experimentId);
@@ -284,8 +284,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	@Override
 	public boolean launchTask(String taskId, String airavataCredStoreToken) throws TException {
 		try {
-			TaskDetails taskData = (TaskDetails) registry.get(
-					RegistryModelType.TASK_DETAIL, taskId);
+			TaskDetails taskData = (TaskDetails) experimentCatalog.get(
+					ExperimentCatalogModelType.TASK_DETAIL, taskId);
 			String applicationId = taskData.getApplicationId();
 			if (applicationId == null) {
                 log.errorId(taskId, "Application id shouldn't be null.");
@@ -293,12 +293,12 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			}
 			ApplicationDeploymentDescription applicationDeploymentDescription = getAppDeployment(taskData, applicationId);
             taskData.setApplicationDeploymentId(applicationDeploymentDescription.getAppDeploymentId());
-			registry.update(RegistryModelType.TASK_DETAIL, taskData,taskData.getTaskID());
-			List<Object> workflowNodeDetailList = registry.get(RegistryModelType.WORKFLOW_NODE_DETAIL,
+			experimentCatalog.update(ExperimentCatalogModelType.TASK_DETAIL, taskData,taskData.getTaskID());
+			List<Object> workflowNodeDetailList = experimentCatalog.get(ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL,
 							org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants.TASK_LIST, taskData);
 			if (workflowNodeDetailList != null
 					&& workflowNodeDetailList.size() > 0) {
-				List<Object> experimentList = registry.get(RegistryModelType.EXPERIMENT,
+				List<Object> experimentList = experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT,
 								org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.ExperimentConstants.WORKFLOW_NODE_LIST,
 								(WorkflowNodeDetails) workflowNodeDetailList.get(0));
 				if (experimentList != null && experimentList.size() > 0) {
@@ -371,8 +371,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 
     private boolean validateStatesAndCancel(String experimentId, String tokenId)throws TException{
         try {
-            Experiment experiment = (Experiment) registry.get(
-                    RegistryModelType.EXPERIMENT, experimentId);
+            Experiment experiment = (Experiment) experimentCatalog.get(
+                    ExperimentCatalogModelType.EXPERIMENT, experimentId);
 			log.info("Waiting for zookeeper to connect to the server");
 			synchronized (mutex){
 				mutex.wait(5000);
@@ -388,15 +388,15 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 status.setTimeOfStateChange(Calendar.getInstance()
                         .getTimeInMillis());
                 experiment.setExperimentStatus(status);
-                registry.update(RegistryModelType.EXPERIMENT, experiment,
+                experimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT, experiment,
                         experimentId);
 
-                List<String> ids = registry.getIds(
-                        RegistryModelType.WORKFLOW_NODE_DETAIL,
+                List<String> ids = experimentCatalog.getIds(
+                        ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL,
                         WorkflowNodeConstants.EXPERIMENT_ID, experimentId);
                 for (String workflowNodeId : ids) {
-                    WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails) registry
-                            .get(RegistryModelType.WORKFLOW_NODE_DETAIL,
+                    WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails) experimentCatalog
+                            .get(ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL,
                                     workflowNodeId);
                     int value = workflowNodeDetail.getWorkflowNodeStatus().getWorkflowNodeState().getValue();
                     if ( value> 1 && value < 7) { // we skip the unknown state
@@ -409,11 +409,11 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                         workflowNodeStatus.setTimeOfStateChange(Calendar.getInstance()
                                 .getTimeInMillis());
                         workflowNodeDetail.setWorkflowNodeStatus(workflowNodeStatus);
-                        registry.update(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeDetail,
+                        experimentCatalog.update(ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL, workflowNodeDetail,
                                 workflowNodeId);
                     }
-                    List<Object> taskDetailList = registry.get(
-                            RegistryModelType.TASK_DETAIL,
+                    List<Object> taskDetailList = experimentCatalog.get(
+                            ExperimentCatalogModelType.TASK_DETAIL,
                             TaskDetailConstants.NODE_ID, workflowNodeId);
                     for (Object o : taskDetailList) {
                         TaskDetails taskDetails = (TaskDetails) o;
@@ -427,7 +427,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                             taskStatus.setTimeOfStateChange(Calendar.getInstance()
                                     .getTimeInMillis());
                             taskDetails.setTaskStatus(taskStatus);
-                            registry.update(RegistryModelType.TASK_DETAIL, o,
+                            experimentCatalog.update(ExperimentCatalogModelType.TASK_DETAIL, o,
                                     taskDetails.getTaskID());
                         }
                         orchestrator.cancelExperiment(experiment,
@@ -444,24 +444,24 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                     status.setTimeOfStateChange(Calendar.getInstance()
                             .getTimeInMillis());
                     experiment.setExperimentStatus(status);
-                    registry.update(RegistryModelType.EXPERIMENT, experiment,
+                    experimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT, experiment,
                             experimentId);
-                    List<String> ids = registry.getIds(
-                            RegistryModelType.WORKFLOW_NODE_DETAIL,
+                    List<String> ids = experimentCatalog.getIds(
+                            ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL,
                             WorkflowNodeConstants.EXPERIMENT_ID, experimentId);
                     for (String workflowNodeId : ids) {
-                        WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails) registry
-                                .get(RegistryModelType.WORKFLOW_NODE_DETAIL,
+                        WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails) experimentCatalog
+                                .get(ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL,
                                         workflowNodeId);
                         WorkflowNodeStatus workflowNodeStatus = new WorkflowNodeStatus();
                         workflowNodeStatus.setWorkflowNodeState(WorkflowNodeState.CANCELED);
                         workflowNodeStatus.setTimeOfStateChange(Calendar.getInstance()
                                 .getTimeInMillis());
                         workflowNodeDetail.setWorkflowNodeStatus(workflowNodeStatus);
-                        registry.update(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeDetail,
+                        experimentCatalog.update(ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL, workflowNodeDetail,
                                 workflowNodeId);
-                        List<Object> taskDetailList = registry.get(
-                                RegistryModelType.TASK_DETAIL,
+                        List<Object> taskDetailList = experimentCatalog.get(
+                                ExperimentCatalogModelType.TASK_DETAIL,
                                 TaskDetailConstants.NODE_ID, workflowNodeId);
                         for (Object o : taskDetailList) {
                             TaskDetails taskDetails = (TaskDetails) o;
@@ -470,7 +470,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                             taskStatus.setTimeOfStateChange(Calendar.getInstance()
                                     .getTimeInMillis());
                             taskDetails.setTaskStatus(taskStatus);
-                            registry.update(RegistryModelType.TASK_DETAIL, o,
+                            experimentCatalog.update(ExperimentCatalogModelType.TASK_DETAIL, o,
                                     taskDetails);
                         }
                     }
@@ -547,14 +547,14 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         private boolean launchSingleAppExperiment() throws TException {
             Experiment experiment = null;
             try {
-                List<String> ids = registry.getIds(RegistryModelType.WORKFLOW_NODE_DETAIL, WorkflowNodeConstants.EXPERIMENT_ID, experimentId);
+                List<String> ids = experimentCatalog.getIds(ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL, WorkflowNodeConstants.EXPERIMENT_ID, experimentId);
                 for (String workflowNodeId : ids) {
 //                WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails) registry.get(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeId);
-                    List<Object> taskDetailList = registry.get(RegistryModelType.TASK_DETAIL, TaskDetailConstants.NODE_ID, workflowNodeId);
+                    List<Object> taskDetailList = experimentCatalog.get(ExperimentCatalogModelType.TASK_DETAIL, TaskDetailConstants.NODE_ID, workflowNodeId);
                     for (Object o : taskDetailList) {
                         TaskDetails taskData = (TaskDetails) o;
                         //iterate through all the generated tasks and performs the job submisssion+monitoring
-                        experiment = (Experiment) registry.get(RegistryModelType.EXPERIMENT, experimentId);
+                        experiment = (Experiment) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
                         if (experiment == null) {
                             log.errorId(experimentId, "Error retrieving the Experiment by the given experimentID: {}", experimentId);
                             return false;
@@ -578,7 +578,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                         MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT, messageId, gatewayId);
                         messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
                         publisher.publish(messageContext);
-                        registry.update(RegistryModelType.TASK_DETAIL, taskData, taskData.getTaskID());
+                        experimentCatalog.update(ExperimentCatalogModelType.TASK_DETAIL, taskData, taskData.getTaskID());
                         //launching the experiment
                         launchTask(taskData.getTaskID(), airavataCredStoreToken);
                     }
@@ -594,7 +594,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
                 experiment.setExperimentStatus(status);
                 try {
-                    registry.update(RegistryModelType.EXPERIMENT_STATUS, status, experimentId);
+                    experimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT_STATUS, status, experimentId);
                 } catch (RegistryException e1) {
                     log.errorId(experimentId, "Error while updating experiment status to " + status.toString(), e);
                     throw new TException(e);
