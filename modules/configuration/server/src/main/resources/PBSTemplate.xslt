@@ -86,9 +86,10 @@ cd <xsl:text>   </xsl:text><xsl:value-of select="ns:workingDirectory"/><xsl:text
 <xsl:for-each select="ns:inputs/ns:input">
       <xsl:value-of select="."/><xsl:text>   </xsl:text>
     </xsl:for-each>
-    <xsl:text>&#xa;</xsl:text>
+<xsl:text>&#xa;</xsl:text>
 <xsl:for-each select="ns:postJobCommands/ns:command">
       <xsl:value-of select="."/><xsl:text>   </xsl:text>
+       <xsl:text>&#xa;</xsl:text>
 </xsl:for-each>
     <xsl:text>&#xa;</xsl:text>
 </xsl:template>
