@@ -19,7 +19,7 @@
 
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>gfac</artifactId>
+    <artifactId>airavata-gfac</artifactId>
     <packaging>pom</packaging>
     <name>Airavata GFac</name>
     <url>http://airavata.apache.org/</url>
@@ -31,14 +31,11 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
+                <module>gfac-service</module>
+                <module>gfac-client</module>
                 <module>gfac-core</module>
-                <module>gfac-ssh</module>
-                <module>gfac-local</module>
-                <module>gfac-gsissh</module>
+                <module>gfac-impl</module>
                 <module>gfac-bes</module>
-                <module>gfac-monitor</module>
-                <module>airavata-gfac-service</module>
-                <module>airavata-gfac-stubs</module>
                 <module>gfac-application-specific-handlers</module>
             </modules>
         </profile>

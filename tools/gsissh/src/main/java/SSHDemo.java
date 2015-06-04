@@ -39,7 +39,7 @@
  */
 
 import com.jcraft.jsch.*;
-import org.apache.airavata.gsi.ssh.jsch.ExtendedJSch;
+import org.apache.airavata.gfac.ssh.jsch.ExtendedJSch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +54,7 @@ public class SSHDemo {
 
     private static final Logger logger = LoggerFactory.getLogger(SSHDemo.class);
     static {
-        JSch.setConfig("gssapi-with-mic.x509", "org.apache.airavata.gsi.ssh.GSSContextX509");
+        JSch.setConfig("gssapi-with-mic.x509", "org.apache.airavata.gfac.ssh.GSSContextX509");
         JSch.setConfig("userauth.gssapi-with-mic", "com.jcraft.jsch.UserAuthGSSAPIWithMICGSSCredentials");
         System.setProperty("X509_CERT_DIR",
                 "/Users/smarru/deploy/certificates");
