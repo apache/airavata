@@ -21,7 +21,7 @@
 
 package org.apache.airavata.integration.tools;
 
-import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
@@ -39,7 +39,6 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePrefer
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class DocumentCreatorUtils {
 

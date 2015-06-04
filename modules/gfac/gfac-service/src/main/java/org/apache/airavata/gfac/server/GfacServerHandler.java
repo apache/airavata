@@ -21,7 +21,7 @@
 package org.apache.airavata.gfac.server;
 
 import com.google.common.eventbus.EventBus;
-import org.airavata.appcatalog.cpi.AppCatalog;
+import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -33,6 +33,7 @@ import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
+import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.gfac.GFacConfiguration;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.GFac;
@@ -56,10 +57,9 @@ import org.apache.airavata.model.messaging.event.TaskSubmitEvent;
 import org.apache.airavata.model.messaging.event.TaskTerminateEvent;
 import org.apache.airavata.model.workspace.experiment.ExperimentState;
 import org.apache.airavata.model.workspace.experiment.ExperimentStatus;
-import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.ExperimentCatalog;
+import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -87,7 +87,7 @@ public class GfacServerHandler implements GfacService.Iface {
     private final static AiravataLogger logger = AiravataLoggerFactory.getLogger(GfacServerHandler.class);
     private static RabbitMQTaskLaunchConsumer rabbitMQTaskLaunchConsumer;
     private static int requestCount=0;
-    private Registry registry;
+    private ExperimentCatalog experimentCatalog;
     private AppCatalog appCatalog;
     private String gatewayName;
     private String airavataUserName;
@@ -114,17 +114,17 @@ public class GfacServerHandler implements GfacService.Iface {
                     + ":" + ServerSettings.getSetting(Constants.GFAC_SERVER_PORT);
             storeServerConfig();
             publisher = new MonitorPublisher(new EventBus());
-            registry = RegistryFactory.getDefaultRegistry();
+            experimentCatalog = RegistryFactory.getDefaultRegistry();
             appCatalog = AppCatalogFactory.getAppCatalog();
             setGatewayProperties();
             startDaemonHandlers();
             // initializing Better Gfac Instance
-            BetterGfacImpl.getInstance().init(registry, appCatalog, curatorClient, publisher);
+            BetterGfacImpl.getInstance().init(experimentCatalog, appCatalog, curatorClient, publisher);
             if (ServerSettings.isGFacPassiveMode()) {
                 rabbitMQTaskLaunchConsumer = new RabbitMQTaskLaunchConsumer();
                 rabbitMQTaskLaunchConsumer.listen(new TaskLaunchMessageHandler());
             }
-            startStatusUpdators(registry, curatorClient, publisher, rabbitMQTaskLaunchConsumer);
+            startStatusUpdators(experimentCatalog, curatorClient, publisher, rabbitMQTaskLaunchConsumer);
 
         } catch (Exception e) {
             throw new Exception("Error initialising GFAC", e);
@@ -227,12 +227,12 @@ public class GfacServerHandler implements GfacService.Iface {
         }
     }
 
-    public Registry getRegistry() {
-        return registry;
+    public ExperimentCatalog getExperimentCatalog() {
+        return experimentCatalog;
     }
 
-    public void setRegistry(Registry registry) {
-        this.registry = registry;
+    public void setExperimentCatalog(ExperimentCatalog experimentCatalog) {
+        this.experimentCatalog = experimentCatalog;
     }
 
     public String getGatewayName() {
@@ -258,7 +258,7 @@ public class GfacServerHandler implements GfacService.Iface {
 
     private GFac getGfac() throws TException {
         GFac gFac = BetterGfacImpl.getInstance();
-        gFac.init(registry, appCatalog, curatorClient, publisher);
+        gFac.init(experimentCatalog, appCatalog, curatorClient, publisher);
         return gFac;
     }
 
@@ -288,7 +288,7 @@ public class GfacServerHandler implements GfacService.Iface {
     }
 
 
-    public static void startStatusUpdators(Registry registry, CuratorFramework curatorClient, MonitorPublisher publisher,
+    public static void startStatusUpdators(ExperimentCatalog experimentCatalog, CuratorFramework curatorClient, MonitorPublisher publisher,
 
                                            RabbitMQTaskLaunchConsumer rabbitMQTaskLaunchConsumer) {
         try {
@@ -298,7 +298,7 @@ public class GfacServerHandler implements GfacService.Iface {
                 Class<? extends AbstractActivityListener> aClass = Class.forName(listenerClass).asSubclass(AbstractActivityListener.class);
                 AbstractActivityListener abstractActivityListener = aClass.newInstance();
                 activityListeners.add(abstractActivityListener);
-                abstractActivityListener.setup(publisher, registry, curatorClient, rabbitMQPublisher, rabbitMQTaskLaunchConsumer);
+                abstractActivityListener.setup(publisher, experimentCatalog, curatorClient, rabbitMQPublisher, rabbitMQTaskLaunchConsumer);
                 logger.info("Registering listener: " + listenerClass);
                 publisher.registerListener(abstractActivityListener);
             }
@@ -365,7 +365,7 @@ public class GfacServerHandler implements GfacService.Iface {
                     ExperimentStatus status = new ExperimentStatus();
                     status.setExperimentState(ExperimentState.EXECUTING);
                     status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
-                    registry.update(RegistryModelType.EXPERIMENT_STATUS, status, event.getExperimentId());
+                    experimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT_STATUS, status, event.getExperimentId());
                     experimentNode = ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
                     try {
                         GFacUtils.createExperimentEntryForPassive(event.getExperimentId(), event.getTaskId(), curatorClient,

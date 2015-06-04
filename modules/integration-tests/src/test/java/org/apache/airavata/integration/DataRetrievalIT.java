@@ -21,7 +21,7 @@
 
 package org.apache.airavata.integration;
 
-import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.api.Airavata.Client;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.integration.tools.DocumentCreatorNew;

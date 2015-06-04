@@ -21,8 +21,8 @@
 
 package org.apache.airavata.api.server.util;
 
-import org.airavata.appcatalog.cpi.AppCatalogException;
-import org.airavata.appcatalog.cpi.ApplicationInterface;
+import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.ApplicationInterface;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.util.ExecutionType;

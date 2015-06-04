@@ -40,7 +40,7 @@ import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
 import org.apache.airavata.model.workspace.experiment.TransferState;
 import org.apache.airavata.model.workspace.experiment.TransferStatus;
-import org.apache.airavata.registry.cpi.ChildDataType;
+import org.apache.airavata.registry.cpi.ExpCatChildDataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -159,12 +159,12 @@ public class GSISSHOutputHandler extends AbstractHandler {
             status.setTransferState(TransferState.STDOUT_DOWNLOAD);
             detail.setTransferStatus(status);
             detail.setTransferDescription("STDOUT:" + localStdOutFile.getAbsolutePath());
-            registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+            experimentCatalog.add(ExpCatChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
 
             status.setTransferState(TransferState.STDERROR_DOWNLOAD);
             detail.setTransferStatus(status);
             detail.setTransferDescription("STDERR:" + localStdErrFile.getAbsolutePath());
-            registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+            experimentCatalog.add(ExpCatChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
 
             //todo this is a mess we have to fix this
             List<OutputDataObjectType> outputArray = new ArrayList<OutputDataObjectType>();
@@ -296,15 +296,15 @@ public class GSISSHOutputHandler extends AbstractHandler {
             status.setTransferState(TransferState.DOWNLOAD);
             detail.setTransferStatus(status);
             detail.setTransferDescription(outputDataDir);
-            registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
-            registry.add(ChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
+            experimentCatalog.add(ExpCatChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+            experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
             fireTaskOutputChangeEvent(jobExecutionContext, outputArray);
         } catch (Exception e) {
             try {
                 status.setTransferState(TransferState.FAILED);
                 detail.setTransferStatus(status);
                 detail.setTransferDescription(e.getLocalizedMessage());
-                registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+                experimentCatalog.add(ExpCatChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
                 GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE);
             } catch (Exception e1) {
                 throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
