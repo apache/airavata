@@ -19,7 +19,7 @@
 
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>gfac</artifactId>
+    <artifactId>airavata-gfac</artifactId>
     <packaging>pom</packaging>
     <name>Airavata GFac</name>
     <url>http://airavata.apache.org/</url>

@@ -232,12 +232,12 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>orchestrator-client</artifactId>
+            <artifactId>airavata-orchestrator-client</artifactId>
             <version>${project.version}</version>
         </dependency>
          <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>gfac-client</artifactId>
+            <artifactId>airavata-gfac-client</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -259,7 +259,7 @@
         <!-- TODO need clean up -->
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>gfac-core</artifactId>
+            <artifactId>airavata-gfac-core</artifactId>
             <version>${project.version}</version>
         </dependency>
 <!--        <dependency>
