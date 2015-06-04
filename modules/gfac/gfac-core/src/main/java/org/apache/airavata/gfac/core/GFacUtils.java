@@ -20,8 +20,8 @@
  */
 package org.apache.airavata.gfac.core;
 
-import org.airavata.appcatalog.cpi.AppCatalog;
-import org.airavata.appcatalog.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.AppCatalog;
+import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataZKUtils;
@@ -57,12 +57,9 @@ import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.model.workspace.experiment.JobStatus;
 import org.apache.airavata.model.workspace.experiment.TaskState;
-import org.apache.airavata.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.ChildDataType;
-import org.apache.airavata.registry.cpi.CompositeIdentifier;
-import org.apache.airavata.registry.cpi.Registry;
-import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.airavata.registry.cpi.RegistryModelType;
+import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
+import org.apache.airavata.registry.cpi.*;
+import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.utils.ZKPaths;
 import org.apache.zookeeper.CreateMode;
@@ -264,11 +261,11 @@ public class GFacUtils {
                                      JobDetails details, JobState state) throws GFacException {
 		try {
             // first we save job details to the registry for sa and then save the job status.
-            Registry registry = jobExecutionContext.getRegistry();
+            ExperimentCatalog experimentCatalog = jobExecutionContext.getExperimentCatalog();
             JobStatus status = new JobStatus();
             status.setJobState(state);
             details.setJobStatus(status);
-            registry.add(ChildDataType.JOB_DETAIL, details,
+            experimentCatalog.add(ExpCatChildDataType.JOB_DETAIL, details,
                     new CompositeIdentifier(jobExecutionContext.getTaskData()
                             .getTaskID(), details.getJobID()));
             JobIdentifier identifier = new JobIdentifier(details.getJobID(), jobExecutionContext.getTaskData().getTaskID(),
@@ -285,14 +282,14 @@ public class GFacUtils {
 	public static void updateJobStatus(JobExecutionContext jobExecutionContext,
 			JobDetails details, JobState state) throws GFacException {
 		try {
-			Registry registry = jobExecutionContext.getRegistry();
+			ExperimentCatalog experimentCatalog = jobExecutionContext.getExperimentCatalog();
 			JobStatus status = new JobStatus();
 			status.setJobState(state);
 			status.setTimeOfStateChange(Calendar.getInstance()
 					.getTimeInMillis());
 			details.setJobStatus(status);
-			registry.update(
-					org.apache.airavata.registry.cpi.RegistryModelType.JOB_DETAIL,
+			experimentCatalog.update(
+					ExperimentCatalogModelType.JOB_DETAIL,
 					details, details.getJobID());
 		} catch (Exception e) {
 			throw new GFacException("Error persisting job status"
@@ -305,14 +302,14 @@ public class GFacUtils {
 			CorrectiveAction action, ErrorCategory errorCatogory)
 			throws GFacException {
 		try {
-			Registry registry = jobExecutionContext.getRegistry();
+			ExperimentCatalog experimentCatalog = jobExecutionContext.getExperimentCatalog();
 			ErrorDetails details = new ErrorDetails();
 			details.setActualErrorMessage(errorMessage);
 			details.setCorrectiveAction(action);
 			details.setActionableGroup(ActionableGroup.GATEWAYS_ADMINS);
 			details.setCreationTime(Calendar.getInstance().getTimeInMillis());
 			details.setErrorCategory(errorCatogory);
-			registry.add(ChildDataType.ERROR_DETAIL, details,
+			experimentCatalog.add(ExpCatChildDataType.ERROR_DETAIL, details,
 					jobExecutionContext.getTaskData().getTaskID());
 		} catch (Exception e) {
 			throw new GFacException("Error persisting job status"
@@ -690,8 +687,8 @@ public class GFacUtils {
 	}
 
     public static ExperimentState updateExperimentStatus(String experimentId, ExperimentState state) throws RegistryException {
-        Registry airavataRegistry = RegistryFactory.getDefaultRegistry();
-        Experiment details = (Experiment) airavataRegistry.get(RegistryModelType.EXPERIMENT, experimentId);
+        ExperimentCatalog airavataExperimentCatalog = RegistryFactory.getDefaultRegistry();
+        Experiment details = (Experiment) airavataExperimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
         if (details == null) {
             details = new Experiment();
             details.setExperimentID(experimentId);
@@ -707,7 +704,7 @@ public class GFacUtils {
         }
         details.setExperimentStatus(status);
         log.info("Updating the experiment status of experiment: " + experimentId + " to " + status.getExperimentState().toString());
-        airavataRegistry.update(RegistryModelType.EXPERIMENT_STATUS, status, experimentId);
+        airavataExperimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT_STATUS, status, experimentId);
         return details.getExperimentStatus().getExperimentState();
     }
 

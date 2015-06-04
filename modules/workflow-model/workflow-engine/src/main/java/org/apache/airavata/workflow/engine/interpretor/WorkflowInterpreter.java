@@ -39,10 +39,10 @@ import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.ChildDataType;
-import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.ExpCatChildDataType;
+import org.apache.airavata.registry.cpi.ExperimentCatalog;
+import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.airavata.registry.cpi.RegistryModelType;
 import org.apache.airavata.workflow.engine.invoker.DynamicInvoker;
 import org.apache.airavata.workflow.engine.invoker.Invoker;
 import org.apache.airavata.workflow.engine.util.AmazonUtil;
@@ -104,7 +104,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 	private Map<Node,WorkflowNodeDetails> nodeInstanceList;
 
 	private Experiment experiment;
-	private Registry registry;
+	private ExperimentCatalog experimentCatalog;
 
     public void setGatewayId(String gatewayId) {
         this.gatewayId = gatewayId;
@@ -167,18 +167,18 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 		return interactor.retrieveData(messageType, config, data);
 	}
 	
-	private Registry getRegistry() throws RegistryException{
-		if (registry==null){
-			registry = RegistryFactory.getDefaultRegistry();
+	private ExperimentCatalog getExperimentCatalog() throws RegistryException{
+		if (experimentCatalog ==null){
+			experimentCatalog = RegistryFactory.getDefaultRegistry();
 		}
-		return registry;
+		return experimentCatalog;
 //		return new TmpRegistry();
 	}
 	
 	private void updateWorkflowNodeStatus(WorkflowNodeDetails node, WorkflowNodeState state) throws RegistryException{
 		WorkflowNodeStatus status = ExperimentModelUtil.createWorkflowNodeStatus(state);
 		node.setWorkflowNodeStatus(status);
-		getRegistry().update(RegistryModelType.WORKFLOW_NODE_STATUS, status, node.getNodeInstanceId());
+		getExperimentCatalog().update(ExperimentCatalogModelType.WORKFLOW_NODE_STATUS, status, node.getNodeInstanceId());
 	}
 	
 	private void updateExperimentStatus(ExperimentState state){
@@ -223,7 +223,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 				elem.setValue(portValue == null ? null : portValue.toString());
 				elem.setType(dataType);
 				workflowNode.addToNodeInputs(elem);
-				getRegistry().update(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNode, workflowNode.getNodeInstanceId());
+				getExperimentCatalog().update(ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL, workflowNode, workflowNode.getNodeInstanceId());
 				updateWorkflowNodeStatus(workflowNode, WorkflowNodeState.COMPLETED);
                 publishNodeStatusChange(WorkflowNodeState.COMPLETED, node.getID(), experiment.getExperimentID());
 			}
@@ -396,7 +396,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 		}  
 		workflowNode.setExecutionUnit(executionUnit);
 		workflowNode.setExecutionUnitData(executionData);
-		workflowNode.setNodeInstanceId((String) getRegistry().add(ChildDataType.WORKFLOW_NODE_DETAIL, workflowNode, getExperiment().getExperimentID()));
+		workflowNode.setNodeInstanceId((String) getExperimentCatalog().add(ExpCatChildDataType.WORKFLOW_NODE_DETAIL, workflowNode, getExperiment().getExperimentID()));
 		nodeInstanceList.put(node, workflowNode);
 		setupNodeDetailsInput(node, workflowNode);
 		return workflowNode;
@@ -465,7 +465,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
                     elem.setName(portname);
                     elem.setValue(portValue);
 					workflowNodeDetails.addToNodeOutputs(elem);
-					getRegistry().update(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeDetails, workflowNodeDetails.getNodeInstanceId());
+					getExperimentCatalog().update(ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL, workflowNodeDetails, workflowNodeDetails.getNodeInstanceId());
 					if (this.config.isActOnProvenance()) {
 						//TODO do provanence thing
 //						try {
@@ -530,7 +530,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 				elem.setValue(val.toString());
 				workflowNodeDetails.addToNodeOutputs(elem);
 				try {
-					getRegistry().update(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeDetails, workflowNodeDetails.getNodeInstanceId());
+					getExperimentCatalog().update(ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL, workflowNodeDetails, workflowNodeDetails.getNodeInstanceId());
 				} catch (RegistryException e) {
 					log.error(e.getMessage(), e);
 				}
@@ -1027,7 +1027,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 			nodeDetails.addToNodeInputs(elem);
 		}
 		try {
-			getRegistry().update(RegistryModelType.WORKFLOW_NODE_DETAIL, nodeDetails, nodeDetails.getNodeInstanceId());
+			getExperimentCatalog().update(ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL, nodeDetails, nodeDetails.getNodeInstanceId());
 		} catch (RegistryException e) {
             log.error(e.getMessage(), e);
 		}
@@ -1045,7 +1045,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 			nodeDetails.addToNodeOutputs(elem);
 		}
 		try {
-			getRegistry().update(RegistryModelType.WORKFLOW_NODE_DETAIL, nodeDetails, nodeDetails.getNodeInstanceId());
+			getExperimentCatalog().update(ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL, nodeDetails, nodeDetails.getNodeInstanceId());
 		} catch (RegistryException e) {
             log.error(e.getMessage(), e);
 		}
@@ -1055,7 +1055,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 			throws RegistryException {
 		setupNodeDetailsInput(node, nodeInstanceList.get(node));
 		TaskDetails taskDetails = ExperimentModelUtil.cloneTaskFromWorkflowNodeDetails(experiment, nodeInstanceList.get(node));
-        taskDetails.setTaskID(getRegistry().add(ChildDataType.TASK_DETAIL, taskDetails,nodeInstanceList.get(node).getNodeInstanceId()).toString());
+        taskDetails.setTaskID(getExperimentCatalog().add(ExpCatChildDataType.TASK_DETAIL, taskDetails,nodeInstanceList.get(node).getNodeInstanceId()).toString());
         addToAwaitingTaskList(taskDetails.getTaskID(), node);
 		return taskDetails;
 	}

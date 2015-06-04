@@ -29,7 +29,7 @@ import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gfac.gsissh.util.GFACGSISSHUtils;
 import org.apache.airavata.gfac.core.cluster.Cluster;
 import org.apache.airavata.model.workspace.experiment.*;
-import org.apache.airavata.registry.cpi.ChildDataType;
+import org.apache.airavata.registry.cpi.ExpCatChildDataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,7 +90,7 @@ public class GSISSHDirectorySetupHandler extends AbstractHandler {
             detail.setTransferStatus(status);
             detail.setTransferDescription("Working directory = " + workingDirectory);
 
-            registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+            experimentCatalog.add(ExpCatChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
 
 		} catch (Exception e) {
 			DataTransferDetails detail = new DataTransferDetails();
@@ -99,7 +99,7 @@ public class GSISSHDirectorySetupHandler extends AbstractHandler {
 			status.setTransferState(TransferState.FAILED);
 			detail.setTransferStatus(status);
 			try {
-				registry.add(ChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
+				experimentCatalog.add(ExpCatChildDataType.DATA_TRANSFER_DETAIL, detail, jobExecutionContext.getTaskData().getTaskID());
 				GFacUtils.saveErrorDetails(jobExecutionContext,  e.getCause().toString(), CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE);
 			} catch (Exception e1) {
 				throw new GFacHandlerException("Error persisting status", e1, e1.getLocalizedMessage());
