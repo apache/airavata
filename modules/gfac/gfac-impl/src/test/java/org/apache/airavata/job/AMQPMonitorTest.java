@@ -25,15 +25,16 @@ import com.google.common.eventbus.Subscribe;
 import org.airavata.appcatalog.cpi.AppCatalog;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.utils.MonitorPublisher;
+import org.apache.airavata.gfac.core.JobDescriptor;
+import org.apache.airavata.gfac.core.SSHApiException;
+import org.apache.airavata.gfac.core.authentication.GSIAuthenticationInfo;
+import org.apache.airavata.gfac.core.cluster.Cluster;
+import org.apache.airavata.gfac.core.cluster.ServerInfo;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
+import org.apache.airavata.gfac.gsi.ssh.impl.PBSCluster;
+import org.apache.airavata.gfac.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
+import org.apache.airavata.gfac.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.gfac.monitor.impl.push.amqp.AMQPMonitor;
-import org.apache.airavata.gfac.ssh.api.Cluster;
-import org.apache.airavata.gfac.ssh.api.SSHApiException;
-import org.apache.airavata.gfac.ssh.api.ServerInfo;
-import org.apache.airavata.gfac.ssh.api.authentication.GSIAuthenticationInfo;
-import org.apache.airavata.gfac.ssh.api.job.JobDescriptor;
-import org.apache.airavata.gfac.ssh.impl.PBSCluster;
-import org.apache.airavata.gfac.ssh.impl.authentication.MyProxyAuthenticationInfo;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
 import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
@@ -148,7 +149,7 @@ public class AMQPMonitorTest {
 
 
         Cluster pbsCluster = new
-                PBSCluster(serverInfo, authenticationInfo, org.apache.airavata.gfac.ssh.util.CommonUtils.getPBSJobManager("/usr/bin/"));
+                PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/usr/bin/"));
 
 
         // Execute command

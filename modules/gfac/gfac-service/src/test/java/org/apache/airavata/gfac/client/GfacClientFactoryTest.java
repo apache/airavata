@@ -21,10 +21,6 @@
 
 package org.apache.airavata.gfac.client;
 
-//import org.apache.airavata.client.AiravataAPIFactory;
-//import org.apache.airavata.client.api.AiravataAPI;
-//import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
-//import org.apache.airavata.client.tools.DocumentCreator;
 import org.apache.airavata.gfac.client.util.Initialize;
 import org.apache.airavata.gfac.cpi.GfacService;
 import org.apache.airavata.gfac.server.GfacServer;

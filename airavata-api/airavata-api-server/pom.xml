@@ -63,7 +63,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>orchestrator-client</artifactId>
+            <artifactId>airavata-orchestrator-client</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

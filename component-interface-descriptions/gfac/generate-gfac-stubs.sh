@@ -19,9 +19,9 @@
 
 
 # Global Constants used across the script
-REQUIRED_THRIFT_VERSION='0.9.1'
+REQUIRED_THRIFT_VERSION='0.9.2'
 BASE_TARGET_DIR='target'
-GFAC_SERVICE_DIR='../../modules/gfac/airavata-gfac-service/src/main/java/'
+GFAC_SERVICE_DIR='../../modules/gfac/gfac-client/src/main/java/'
 
 # The Funcation fail prints error messages on failure and quits the script.
 fail() {

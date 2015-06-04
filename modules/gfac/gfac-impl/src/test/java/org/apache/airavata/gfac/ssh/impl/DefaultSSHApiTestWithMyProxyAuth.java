@@ -21,10 +21,16 @@
 
 package org.apache.airavata.gfac.ssh.impl;
 
+import org.apache.airavata.gfac.core.SSHApiException;
+import org.apache.airavata.gfac.core.cluster.CommandInfo;
+import org.apache.airavata.gfac.core.cluster.CommandOutput;
 import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
-import org.apache.airavata.gfac.ssh.api.*;
-import org.apache.airavata.gfac.ssh.config.ConfigReader;
-import org.apache.airavata.gfac.ssh.impl.authentication.DefaultPublicKeyAuthentication;
+import org.apache.airavata.gfac.core.cluster.ServerInfo;
+import org.apache.airavata.gfac.gsi.ssh.api.CommandExecutor;
+import org.apache.airavata.gfac.gsi.ssh.config.ConfigReader;
+import org.apache.airavata.gfac.gsi.ssh.impl.PBSCluster;
+import org.apache.airavata.gfac.gsi.ssh.impl.SystemCommandOutput;
+import org.apache.airavata.gfac.gsi.ssh.impl.authentication.DefaultPublicKeyAuthentication;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
