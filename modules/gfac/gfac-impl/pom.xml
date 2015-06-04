@@ -18,7 +18,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>gfac-impl</artifactId>
-    <name>Airavata GFac Local implementation</name>
+    <name>Airavata GFac Implementation</name>
     <description>This is the extension of GFAC Local.</description>
     <url>http://airavata.apache.org/</url>
 

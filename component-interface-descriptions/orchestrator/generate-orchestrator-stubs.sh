@@ -19,7 +19,7 @@
 
 
 # Global Constants used across the script
-REQUIRED_THRIFT_VERSION='0.9.1'
+REQUIRED_THRIFT_VERSION='0.9.2'
 BASE_TARGET_DIR='target'
 ORCHESTRATOR_SERVICE_DIR='../../modules/orchestrator/orchestrator-client/src/main/java'
 
