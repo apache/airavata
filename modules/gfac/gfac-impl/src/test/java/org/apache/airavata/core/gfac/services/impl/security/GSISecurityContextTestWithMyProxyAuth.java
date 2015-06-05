@@ -22,14 +22,12 @@
 package org.apache.airavata.core.gfac.services.impl.security;
 
 import junit.framework.Assert;
-import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.DatabaseTestCases;
 import org.apache.airavata.common.utils.DerbyUtil;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.credential.store.store.CredentialReaderFactory;
-import org.apache.airavata.gfac.RequestData;
-import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
+import org.apache.airavata.gfac.core.RequestData;
 import org.apache.airavata.gfac.gsissh.security.TokenizedMyProxyAuthInfo;
 import org.apache.log4j.Logger;
 import org.ietf.jgss.GSSCredential;

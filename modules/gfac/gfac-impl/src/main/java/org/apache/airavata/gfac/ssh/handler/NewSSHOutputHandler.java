@@ -5,7 +5,7 @@ import java.io.StringWriter;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.cluster.Cluster;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;

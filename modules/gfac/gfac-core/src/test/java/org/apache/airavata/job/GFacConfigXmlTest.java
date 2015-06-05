@@ -21,7 +21,7 @@
 package org.apache.airavata.job;
 
 import junit.framework.Assert;
-import org.apache.airavata.gfac.GFacConfiguration;
+import org.apache.airavata.gfac.core.GFacConfiguration;
 import org.apache.airavata.gfac.core.context.ApplicationContext;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;

@@ -21,7 +21,7 @@
 
 package org.apache.airavata.gfac.core.handler;
 
-import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.gfac.core.GFacException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

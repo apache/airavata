@@ -3,7 +3,7 @@ package org.apache.airavata.gfac.gsissh.handler;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;

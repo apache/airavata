@@ -32,8 +32,8 @@
 //import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
 //import org.apache.airavata.credential.store.store.CredentialReader;
 //import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
-//import org.apache.airavata.gfac.GFacException;
-//import org.apache.airavata.gfac.RequestData;
+//import org.apache.airavata.gfac.core.GFacException;
+//import org.apache.airavata.gfac.core.RequestData;
 //import org.apache.airavata.gfac.ssh.security.TokenizedSSHAuthInfo;
 //import org.apache.airavata.gfac.ssh.api.SSHApiException;
 //import org.apache.airavata.gfac.ssh.api.ServerInfo;

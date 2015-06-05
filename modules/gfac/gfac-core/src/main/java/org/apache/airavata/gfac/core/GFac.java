@@ -22,7 +22,6 @@ package org.apache.airavata.gfac.core;
 
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.common.utils.MonitorPublisher;
-import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.curator.framework.CuratorFramework;
@@ -49,7 +48,7 @@ public interface GFac {
      *
      * @param experimentID
      * @return boolean Successful acceptence of the jobExecution returns a true value
-     * @throws org.apache.airavata.gfac.GFacException
+     * @throws GFacException
      */
     public boolean submitJob(String experimentID,String taskID, String gatewayID, String tokenId) throws GFacException;
 

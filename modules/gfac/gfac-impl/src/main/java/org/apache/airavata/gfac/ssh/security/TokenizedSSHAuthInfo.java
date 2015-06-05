@@ -26,9 +26,9 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
 import org.apache.airavata.credential.store.store.CredentialReader;
-import org.apache.airavata.gfac.Constants;
-import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.RequestData;
+import org.apache.airavata.gfac.core.Constants;
+import org.apache.airavata.gfac.core.GFacException;
+import org.apache.airavata.gfac.core.RequestData;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.authentication.SSHPublicKeyFileAuthentication;
 import org.slf4j.Logger;
@@ -146,7 +146,7 @@ public class TokenizedSSHAuthInfo implements SSHPublicKeyFileAuthentication {
      * Gets the default proxy certificate.
      *
      * @return Default my proxy credentials.
-     * @throws org.apache.airavata.gfac.GFacException                            If an error occurred while retrieving credentials.
+     * @throws GFacException                            If an error occurred while retrieving credentials.
      * @throws org.apache.airavata.common.exception.ApplicationSettingsException
      */
     public SSHCredential getDefaultCredentials() throws GFacException, ApplicationSettingsException, IOException {

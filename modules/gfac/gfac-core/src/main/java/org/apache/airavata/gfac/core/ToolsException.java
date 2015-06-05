@@ -18,22 +18,18 @@
  * under the License.
  *
 */
-package org.apache.airavata.gfac;
+package org.apache.airavata.gfac.core;
 
 
 /**
- * These are the different modes of execution chains in gfac
- * if the mode is SYNCHRONOUS then gfac will waits until the provider invoke mthod returns and then
- * invoke the out handlers explicitly, otherwise gfac will not invoke out hanlders, implementation
- * has to handler when to invoke out handlers, and default execution mode is synchronous.
+ * Exception for all utilities
  */
-public enum ExecutionMode {
-    SYNCHRONOUS,ASYNCHRONOUS;
+public class ToolsException extends GFacException {
 
-    public static ExecutionMode fromString(String mode){
-        if("async".equals(mode) ||  "asynchronous".equals(mode)){
-            return ExecutionMode.ASYNCHRONOUS;
-        }
-        return ExecutionMode.SYNCHRONOUS;
+    public ToolsException(String message){
+        super(message,new Throwable(message));
+    }
+    public ToolsException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

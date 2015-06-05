@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.gfac;
+package org.apache.airavata.gfac.core;
 
 /**
  * User: AmilaJ (amilaj@apache.org)
@@ -29,6 +29,7 @@ package org.apache.airavata.gfac;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.gfac.core.Constants;
 
 /**
  * Encapsulates GFac specific data that are coming in the request.
