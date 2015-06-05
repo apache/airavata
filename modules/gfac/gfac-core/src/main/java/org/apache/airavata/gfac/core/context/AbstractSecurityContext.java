@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.gfac.core;
+package org.apache.airavata.gfac.core.context;
 
 /**
  * User: AmilaJ (amilaj@apache.org)
@@ -30,6 +30,8 @@ package org.apache.airavata.gfac.core;
 import java.io.Serializable;
 
 import org.apache.airavata.credential.store.store.CredentialReader;
+import org.apache.airavata.gfac.core.RequestData;
+import org.apache.airavata.gfac.core.SecurityContext;
 
 /**
  * Abstract implementation of the security context.
