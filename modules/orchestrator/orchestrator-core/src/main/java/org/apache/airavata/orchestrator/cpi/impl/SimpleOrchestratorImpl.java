@@ -29,10 +29,7 @@ import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.impl.GFACPassiveJobSubmitter;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
-import org.apache.airavata.registry.cpi.ChildDataType;
-import org.apache.airavata.registry.cpi.Registry;
-import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.airavata.registry.cpi.RegistryModelType;
+import org.apache.airavata.registry.cpi.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,7 +90,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         List<TaskDetails> tasks = new ArrayList<TaskDetails>();
         try {
             Registry newRegistry = orchestratorContext.getNewRegistry();
-            experiment = (Experiment) newRegistry.get(RegistryModelType.EXPERIMENT, experimentId);
+            experiment = (Experiment) newRegistry.getExperimentCatalog().get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
             List<WorkflowNodeDetails> workflowNodeDetailsList = experiment.getWorkflowNodeDetailsList();
             if (workflowNodeDetailsList != null && !workflowNodeDetailsList.isEmpty()){
                 for (WorkflowNodeDetails wfn : workflowNodeDetailsList){
@@ -104,10 +101,10 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 }
             }else {
                 WorkflowNodeDetails iDontNeedaNode = ExperimentModelUtil.createWorkflowNode("tempNode", null);
-                String nodeID = (String) newRegistry.add(ChildDataType.WORKFLOW_NODE_DETAIL, iDontNeedaNode, experimentId);
+                String nodeID = (String) newRegistry.getExperimentCatalog().add(ExpCatChildDataType.WORKFLOW_NODE_DETAIL, iDontNeedaNode, experimentId);
 
                 TaskDetails taskDetails = ExperimentModelUtil.cloneTaskFromExperiment(experiment);
-                taskDetails.setTaskID((String) newRegistry.add(ChildDataType.TASK_DETAIL, taskDetails, nodeID));
+                taskDetails.setTaskID((String) newRegistry.getExperimentCatalog().add(ExpCatChildDataType.TASK_DETAIL, taskDetails, nodeID));
                 tasks.add(taskDetails);
             }
 
@@ -149,7 +146,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                             details.setActionableGroup(ActionableGroup.GATEWAYS_ADMINS);
                             details.setCreationTime(Calendar.getInstance().getTimeInMillis());
                             details.setErrorCategory(ErrorCategory.APPLICATION_FAILURE);
-                            orchestratorContext.getNewRegistry().add(ChildDataType.ERROR_DETAIL, details,
+                            orchestratorContext.getNewRegistry().getExperimentCatalog().add(ExpCatChildDataType.ERROR_DETAIL, details,
                                     taskID.getTaskID());
                         } catch (RegistryException e) {
                             logger.error("Error while saving error details to registry", e);

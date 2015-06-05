@@ -27,7 +27,6 @@ import org.apache.airavata.gfac.client.GFACInstance;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.orchestrator.core.OrchestratorConfiguration;
 import org.apache.airavata.registry.cpi.Registry;
-import org.apache.zookeeper.ZooKeeper;
 
 /**
  * This is the context object used in orchestrator which

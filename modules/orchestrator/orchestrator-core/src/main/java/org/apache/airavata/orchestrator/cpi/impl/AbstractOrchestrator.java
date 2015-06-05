@@ -27,7 +27,7 @@ import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.utils.OrchestratorUtils;
 import org.apache.airavata.orchestrator.cpi.Orchestrator;
-import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryImpl;
+import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,7 +99,7 @@ public abstract class AbstractOrchestrator implements Orchestrator {
 //            orchestratorContext.setRegistry(airavataRegistry);
 
             /* initializing registry cpi */
-            orchestratorContext.setNewRegistry(new RegistryImpl());
+            orchestratorContext.setNewRegistry(RegistryFactory.getRegistry());
         }  catch (IOException e) {
             logger.error("Failed to initializing Orchestrator - Error parsing configuration files");
             OrchestratorException orchestratorException = new OrchestratorException(e);
