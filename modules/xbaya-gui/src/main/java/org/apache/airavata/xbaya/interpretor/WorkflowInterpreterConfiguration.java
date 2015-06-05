@@ -98,7 +98,7 @@
 //	public void setMessageBrokerURL(URI messageBrokerURL) {
 //		this.messageBrokerURL = messageBrokerURL;
 //	}
-//	public AiravataAPI getRegistry() {
+//	public AiravataAPI getExperimentCatalog() {
 //		return registry;
 //	}
 //	public void setRegistry(AiravataAPI registry) {

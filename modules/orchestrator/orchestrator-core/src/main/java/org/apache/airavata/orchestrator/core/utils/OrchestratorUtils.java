@@ -51,7 +51,7 @@ public class OrchestratorUtils {
 
 //    public static HostDescription getHostDescription(Orchestrator orchestrator, TaskDetails taskDetails)throws OrchestratorException {
 //        JobSubmitter jobSubmitter = ((SimpleOrchestratorImpl) orchestrator).getJobSubmitter();
-//        AiravataRegistry2 registry = ((GFACEmbeddedJobSubmitter) jobSubmitter).getOrchestratorContext().getRegistry();
+//        AiravataRegistry2 registry = ((GFACEmbeddedJobSubmitter) jobSubmitter).getOrchestratorContext().getExperimentCatalog();
 //        ComputationalResourceScheduling taskScheduling = taskDetails.getTaskScheduling();
 //        String resourceHostId = taskScheduling.getResourceHostId();
 //        try {

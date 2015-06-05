@@ -27,9 +27,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.gfac.core.GFacConfiguration;
 import org.apache.airavata.gfac.core.GFacException;
@@ -175,7 +175,7 @@ public class JobExecutionContext extends AbstractContext implements Serializable
     public void setAppCatalog(AppCatalog appCatalog) {
         if (appCatalog == null) {
             try {
-                this.appCatalog = AppCatalogFactory.getAppCatalog();
+                this.appCatalog = RegistryFactory.getAppCatalog();
             } catch (AppCatalogException e) {
                 log.error("Unable to create app catalog instance", e);
             }

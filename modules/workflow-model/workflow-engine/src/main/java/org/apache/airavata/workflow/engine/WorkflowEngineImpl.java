@@ -57,7 +57,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
 	public void launchExperiment(String experimentId, String token)
 			throws WorkflowEngineException {
 		try {
-            ExperimentCatalog experimentCatalog = RegistryFactory.getDefaultRegistry();
+            ExperimentCatalog experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             Experiment experiment = (Experiment) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
             WorkflowCatalog workflowCatalog = WorkflowCatalogFactory.getWorkflowCatalog();
 			WorkflowInterpreterConfiguration config = new WorkflowInterpreterConfiguration(new Workflow(workflowCatalog.getWorkflow(experiment.getApplicationId()).getGraph()));

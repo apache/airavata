@@ -69,7 +69,7 @@ public class OrchestratorTestWithMyProxyAuth extends BaseOrchestratorTest {
 //        simpleExperiment.setUserConfigurationData(userConfigurationData);
 //
 //        WorkflowNodeDetails test = ExperimentModelUtil.createWorkflowNode("test", null);
-//        Registry registry = RegistryFactory.getDefaultRegistry();
+//        Registry registry = RegistryFactory.getDefaultExpCatalog();
 //        experimentID = (String) registry.add(ParentDataType.EXPERIMENT, simpleExperiment);
 //        tasks = orchestrator.createTasks(experimentID);
 //

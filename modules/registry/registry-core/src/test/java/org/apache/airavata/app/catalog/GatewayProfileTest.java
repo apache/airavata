@@ -27,7 +27,7 @@ import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
-import org.apache.airavata.registry.core.app.catalog.impl.AppCatalogFactory;
+import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.ComputeResource;
@@ -53,7 +53,7 @@ public class GatewayProfileTest {
         try {
             initialize = new Initialize("appcatalog-derby.sql");
             initialize.initializeDB();
-            appcatalog = AppCatalogFactory.getAppCatalog();
+            appcatalog = RegistryFactory.getAppCatalog();
         } catch (AppCatalogException e) {
             logger.error(e.getMessage(), e);
         }

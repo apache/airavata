@@ -290,7 +290,7 @@
 //                        throw new WorkflowException(e);
 //                    }
 //
-//					// System.out.println(this.config.getConfiguration().getJcrComponentRegistry().getRegistry().getWorkflowStatus(this.topic));
+//					// System.out.println(this.config.getConfiguration().getJcrComponentRegistry().getExperimentCatalog().getWorkflowStatus(this.topic));
 //				}
 //			} else {
 //				if (this.config.isActOnProvenance()) {

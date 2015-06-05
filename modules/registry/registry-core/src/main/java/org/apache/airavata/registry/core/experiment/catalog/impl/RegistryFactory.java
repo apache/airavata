@@ -23,55 +23,81 @@ package org.apache.airavata.registry.core.experiment.catalog.impl;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.registry.cpi.ExperimentCatalog;
-import org.apache.airavata.registry.cpi.Registry;
-import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.core.app.catalog.impl.AppCatalogImpl;
+import org.apache.airavata.registry.core.impl.RegistryImpl;
+import org.apache.airavata.registry.cpi.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RegistryFactory {
     private static ExperimentCatalog experimentCatalog;
+    private static AppCatalog appCatalog;
     private static Registry registry;
     private static Logger logger = LoggerFactory.getLogger(RegistryFactory.class);
 
-    public static ExperimentCatalog getRegistry(String gateway, String username, String password) throws RegistryException {
+    public static Registry getRegistry() throws RegistryException {
+        try {
+            if (registry == null) {
+                registry = new RegistryImpl();
+            }
+        } catch (Exception e) {
+            logger.error("Unable to create registry instance", e);
+            throw new RegistryException(e);
+        }
+        return registry;
+    }
+
+    public static ExperimentCatalog getExperimentCatalog(String gateway, String username, String password) throws RegistryException {
         try {
             if (experimentCatalog == null) {
                 experimentCatalog = new ExperimentCatalogImpl(gateway, username, password);
             }
         } catch (RegistryException e) {
-            logger.error("Unable to create registry instance", e);
+            logger.error("Unable to create experiment catalog instance", e);
             throw new RegistryException(e);
         }
         return experimentCatalog;
     }
 
-    public static ExperimentCatalog getRegistry(String gateway) throws RegistryException {
+    public static ExperimentCatalog getExperimentCatalog(String gateway) throws RegistryException {
         try {
             if (experimentCatalog == null) {
                 experimentCatalog = new ExperimentCatalogImpl(gateway, ServerSettings.getDefaultUser(), ServerSettings.getDefaultUserPassword());
             }
         } catch (RegistryException e) {
-            logger.error("Unable to create registry instance", e);
+            logger.error("Unable to create experiment catalog instance", e);
             throw new RegistryException(e);
         } catch (ApplicationSettingsException e) {
-            logger.error("Unable to create registry instance", e);
+            logger.error("Unable to create experiment catalog instance", e);
             throw new RegistryException(e);
         }
         return experimentCatalog;
     }
 
-    public static ExperimentCatalog getDefaultRegistry () throws RegistryException {
+    public static ExperimentCatalog getDefaultExpCatalog() throws RegistryException {
         try {
             if (experimentCatalog == null) {
                 experimentCatalog = new ExperimentCatalogImpl();
             }
         } catch (RegistryException e) {
-            logger.error("Unable to create registry instance", e);
+            logger.error("Unable to create experiment catalog instance", e);
             throw new RegistryException(e);
         }
         return experimentCatalog;
     }
+
+    public static AppCatalog getAppCatalog() throws AppCatalogException {
+        try {
+            if (appCatalog == null) {
+                appCatalog = new AppCatalogImpl();
+            }
+        } catch (Exception e) {
+            logger.error("Unable to create app catalog instance", e);
+            throw new AppCatalogException(e);
+        }
+        return appCatalog;
+    }
+
 
     public static ExperimentCatalog getLoggingRegistry() {
         if(experimentCatalog == null) {

@@ -27,8 +27,8 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentD
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.registry.core.app.catalog.impl.AppCatalogFactory;
 import org.apache.airavata.registry.core.app.catalog.resources.AppCatAbstractResource;
+import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.*;
 import org.junit.After;
 import org.junit.Before;
@@ -53,7 +53,7 @@ public class AppDeploymentTest {
         try {
             initialize = new Initialize("appcatalog-derby.sql");
             initialize.initializeDB();
-            appcatalog = AppCatalogFactory.getAppCatalog();
+            appcatalog = RegistryFactory.getAppCatalog();
         } catch (AppCatalogException e) {
             logger.error(e.getMessage(), e);
         }

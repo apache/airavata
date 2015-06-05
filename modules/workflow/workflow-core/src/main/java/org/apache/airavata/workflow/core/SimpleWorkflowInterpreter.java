@@ -21,8 +21,6 @@
 
 package org.apache.airavata.workflow.core;
 
-import org.airavata.appcatalog.cpi.AppCatalogException;
-import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.messaging.core.MessageContext;
@@ -43,10 +41,7 @@ import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeState;
 import org.apache.airavata.model.workspace.experiment.WorkflowNodeStatus;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.ChildDataType;
-import org.apache.airavata.registry.cpi.Registry;
-import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.airavata.registry.cpi.RegistryModelType;
+import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.workflow.core.dag.edge.Edge;
 import org.apache.airavata.workflow.core.dag.nodes.ApplicationNode;
 import org.apache.airavata.workflow.core.dag.nodes.NodeState;
@@ -167,7 +162,7 @@ class SimpleWorkflowInterpreter{
         for (WorkflowOutputNode completeWorkflowOutput : completeWorkflowOutputs) {
             outputDataObjects.add(completeWorkflowOutput.getOutputObject());
         }
-        AppCatalogFactory.getAppCatalog().getWorkflowCatalog()
+        RegistryFactory.getAppCatalog().getWorkflowCatalog()
                 .updateWorkflowOutputs(experiment.getApplicationId(), outputDataObjects);
     }
 
@@ -184,8 +179,7 @@ class SimpleWorkflowInterpreter{
     private TaskDetails getProcess(WorkflowNodeDetails wfNodeDetails) throws RegistryException {
         // create workflow taskDetails from workflowNodeDetails
         TaskDetails taskDetails = ExperimentModelUtil.cloneTaskFromWorkflowNodeDetails(getExperiment(), wfNodeDetails);
-        taskDetails.setTaskID(getRegistry()
-                .add(ChildDataType.TASK_DETAIL, taskDetails, wfNodeDetails.getNodeInstanceId()).toString());
+        taskDetails.setTaskID(getRegistry().getExperimentCatalog().add(ExpCatChildDataType.TASK_DETAIL, taskDetails, wfNodeDetails.getNodeInstanceId()).toString());
         return taskDetails;
     }
 
@@ -204,8 +198,7 @@ class SimpleWorkflowInterpreter{
         }
         wfNodeDetails.setExecutionUnit(executionUnit);
         wfNodeDetails.setExecutionUnitData(executionData);
-        wfNodeDetails.setNodeInstanceId((String) getRegistry()
-                .add(ChildDataType.WORKFLOW_NODE_DETAIL, wfNodeDetails, getExperiment().getExperimentID()));
+        wfNodeDetails.setNodeInstanceId((String) getRegistry().getExperimentCatalog().add(ExpCatChildDataType.WORKFLOW_NODE_DETAIL, wfNodeDetails, getExperiment().getExperimentID()));
         return wfNodeDetails;
     }
 
@@ -252,7 +245,7 @@ class SimpleWorkflowInterpreter{
 
     private Registry getRegistry() throws RegistryException {
         if (registry==null){
-            registry = RegistryFactory.getDefaultRegistry();
+            registry = RegistryFactory.getRegistry();
         }
         return registry;
     }
@@ -264,7 +257,7 @@ class SimpleWorkflowInterpreter{
     private void updateWorkflowNodeStatus(WorkflowNodeDetails wfNodeDetails, WorkflowNodeState state) throws RegistryException{
         WorkflowNodeStatus status = ExperimentModelUtil.createWorkflowNodeStatus(state);
         wfNodeDetails.setWorkflowNodeStatus(status);
-        getRegistry().update(RegistryModelType.WORKFLOW_NODE_STATUS, status, wfNodeDetails.getNodeInstanceId());
+        getRegistry().getExperimentCatalog().update(ExperimentCatalogModelType.WORKFLOW_NODE_STATUS, status, wfNodeDetails.getNodeInstanceId());
     }
 
     /**
@@ -307,7 +300,7 @@ class SimpleWorkflowInterpreter{
     }
 
     private void setExperiment(String experimentId) throws RegistryException {
-        experiment = (Experiment) getRegistry().get(RegistryModelType.EXPERIMENT, experimentId);
+        experiment = (Experiment) getRegistry().getExperimentCatalog().get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
         log.debug("Retrieve Experiment for experiment id : " + experimentId);
     }
 

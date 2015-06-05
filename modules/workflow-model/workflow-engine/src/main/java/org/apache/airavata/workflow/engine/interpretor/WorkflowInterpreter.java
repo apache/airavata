@@ -169,7 +169,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 	
 	private ExperimentCatalog getExperimentCatalog() throws RegistryException{
 		if (experimentCatalog ==null){
-			experimentCatalog = RegistryFactory.getDefaultRegistry();
+			experimentCatalog = RegistryFactory.getDefaultExpCatalog();
 		}
 		return experimentCatalog;
 //		return new TmpRegistry();
@@ -332,7 +332,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
                         throw new WorkflowException(e);
                     }
 
-					// System.out.println(this.config.getConfiguration().getJcrComponentRegistry().getRegistry().getWorkflowStatus(this.topic));
+					// System.out.println(this.config.getConfiguration().getJcrComponentRegistry().getExperimentCatalog().getWorkflowStatus(this.topic));
 				}
 			} else {
 				if (this.config.isActOnProvenance()) {
@@ -434,7 +434,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 				// next run
 				// even if the next run runs before the notification arrives
 				WorkflowNodeDetails workflowNodeDetails = createWorkflowNodeDetails(node);
-//				workflowNodeDetails.setNodeInstanceId((String)getRegistry().add(ChildDataType.WORKFLOW_NODE_DETAIL, workflowNodeDetails, getExperiment().getExperimentID()));
+//				workflowNodeDetails.setNodeInstanceId((String)getExperimentCatalog().add(ChildDataType.WORKFLOW_NODE_DETAIL, workflowNodeDetails, getExperiment().getExperimentID()));
 				node.setState(NodeExecutionState.EXECUTING);
 				updateWorkflowNodeStatus(workflowNodeDetails, WorkflowNodeState.EXECUTING);
                 publishNodeStatusChange(WorkflowNodeState.EXECUTING, node.getID(), experiment.getExperimentID());

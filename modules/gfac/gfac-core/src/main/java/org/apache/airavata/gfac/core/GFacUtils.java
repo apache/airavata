@@ -22,7 +22,6 @@ package org.apache.airavata.gfac.core;
 
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.DBUtil;
@@ -615,7 +614,7 @@ public class GFacUtils {
 
     public static LOCALSubmission getLocalJobSubmission (String submissionId) throws AppCatalogException{
         try {
-            AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
+            AppCatalog appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getComputeResource().getLocalJobSubmission(submissionId);
         }catch (Exception e){
             String errorMsg = "Error while retrieving local job submission with submission id : " + submissionId;
@@ -626,7 +625,7 @@ public class GFacUtils {
 
     public static UnicoreJobSubmission getUnicoreJobSubmission (String submissionId) throws AppCatalogException{
         try {
-            AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
+            AppCatalog appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getComputeResource().getUNICOREJobSubmission(submissionId);
         }catch (Exception e){
             String errorMsg = "Error while retrieving UNICORE job submission with submission id : " + submissionId;
@@ -637,7 +636,7 @@ public class GFacUtils {
 
     public static SSHJobSubmission getSSHJobSubmission (String submissionId) throws AppCatalogException{
         try {
-            AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
+            AppCatalog appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getComputeResource().getSSHJobSubmission(submissionId);
         }catch (Exception e){
             String errorMsg = "Error while retrieving SSH job submission with submission id : " + submissionId;
@@ -683,7 +682,7 @@ public class GFacUtils {
 	}
 
     public static ExperimentState updateExperimentStatus(String experimentId, ExperimentState state) throws RegistryException {
-        ExperimentCatalog airavataExperimentCatalog = RegistryFactory.getDefaultRegistry();
+        ExperimentCatalog airavataExperimentCatalog = RegistryFactory.getDefaultExpCatalog();
         Experiment details = (Experiment) airavataExperimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
         if (details == null) {
             details = new Experiment();

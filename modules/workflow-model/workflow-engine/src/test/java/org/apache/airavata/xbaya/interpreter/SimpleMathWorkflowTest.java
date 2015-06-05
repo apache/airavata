@@ -59,7 +59,7 @@
 //        URL systemResource = this.getClass().getClassLoader().getSystemResource("SimpleMath.xwf");
 //        Workflow workflow = new Workflow(WorkflowTestUtils.readWorkflow(systemResource));
 //        XBayaConfiguration conf = WorkflowTestUtils.getConfiguration();
-////        AiravataRegistry2 registry = conf.getJcrComponentRegistry()==null? null:conf.getJcrComponentRegistry().getRegistry();
+////        AiravataRegistry2 registry = conf.getJcrComponentRegistry()==null? null:conf.getJcrComponentRegistry().getExperimentCatalog();
 ////		WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow, UUID.randomUUID().toString(),conf.getMessageBoxURL(), conf.getBrokerURL(), registry, conf, null,null,true);
 //		WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(workflow,
 //                UUID.randomUUID().toString(),conf.getMessageBoxURL(), conf.getBrokerURL(), conf.getAiravataAPI(), conf, null,null,true);
