@@ -44,8 +44,8 @@ public class AppModuleMappingAppCatalogResourceAppCat extends AppCatAbstractReso
     private final static Logger logger = LoggerFactory.getLogger(AppModuleMappingAppCatalogResourceAppCat.class);
     private String interfaceId;
     private String moduleId;
-    private AppInterfaceAppCatalogResourceAppCat appInterfaceResource;
-    private AppModuleAppCatalogResourceAppCat moduleResource;
+    private AppInterfaceResource appInterfaceResource;
+    private AppModuleResource moduleResource;
 
 
     public String getModuleId() {
@@ -64,19 +64,19 @@ public class AppModuleMappingAppCatalogResourceAppCat extends AppCatAbstractReso
         this.interfaceId = interfaceId;
     }
 
-    public AppInterfaceAppCatalogResourceAppCat getAppInterfaceResource() {
+    public AppInterfaceResource getAppInterfaceResource() {
         return appInterfaceResource;
     }
 
-    public void setAppInterfaceResource(AppInterfaceAppCatalogResourceAppCat appInterfaceResource) {
+    public void setAppInterfaceResource(AppInterfaceResource appInterfaceResource) {
         this.appInterfaceResource = appInterfaceResource;
     }
 
-    public AppModuleAppCatalogResourceAppCat getModuleResource() {
+    public AppModuleResource getModuleResource() {
         return moduleResource;
     }
 
-    public void setModuleResource(AppModuleAppCatalogResourceAppCat moduleResource) {
+    public void setModuleResource(AppModuleResource moduleResource) {
         this.moduleResource = moduleResource;
     }
 

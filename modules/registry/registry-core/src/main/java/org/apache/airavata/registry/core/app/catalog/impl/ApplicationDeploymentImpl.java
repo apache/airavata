@@ -42,9 +42,9 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
     @Override
     public String addApplicationDeployment(ApplicationDeploymentDescription deploymentDescription, String gatewayId) throws AppCatalogException {
         try {
-            AppDeploymentAppCatalogResourceAppCat deploymentResource = new AppDeploymentAppCatalogResourceAppCat();
-            ComputeResourceAppCatalogResourceAppCat computeHostResource = new ComputeResourceAppCatalogResourceAppCat();
-            AppModuleAppCatalogResourceAppCat moduleResource = new AppModuleAppCatalogResourceAppCat();
+            AppDeploymentResource deploymentResource = new AppDeploymentResource();
+            ComputeResourceResource computeHostResource = new ComputeResourceResource();
+            AppModuleResource moduleResource = new AppModuleResource();
             if (!computeHostResource.isExists(deploymentDescription.getComputeHostId())){
                 logger.error("Compute host does not exist in the system. Please create a Compute host first...");
                 throw new AppCatalogException("Compute host does not exist in the system. Please create a Compute host first...");
@@ -53,8 +53,8 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
                 logger.error("Application module does not exist in the system. Please create an application module first...");
                 throw new AppCatalogException("Application module does not exist in the system. Please create an application module first...");
             }
-            AppModuleAppCatalogResourceAppCat module = (AppModuleAppCatalogResourceAppCat)moduleResource.get(deploymentDescription.getAppModuleId());
-            ComputeResourceAppCatalogResourceAppCat hostResource = (ComputeResourceAppCatalogResourceAppCat) computeHostResource.get(deploymentDescription.getComputeHostId());
+            AppModuleResource module = (AppModuleResource)moduleResource.get(deploymentDescription.getAppModuleId());
+            ComputeResourceResource hostResource = (ComputeResourceResource) computeHostResource.get(deploymentDescription.getComputeHostId());
             deploymentResource.setDeploymentId(hostResource.getHostName() + "_" + deploymentDescription.getAppModuleId());
             deploymentResource.setAppModuleId(deploymentDescription.getAppModuleId());
             deploymentResource.setModuleResource(module);
@@ -73,7 +73,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             List<String> moduleLoadCmds = deploymentDescription.getModuleLoadCmds();
             if (moduleLoadCmds != null && !moduleLoadCmds.isEmpty()){
                 for (String cmd : moduleLoadCmds){
-                    ModuleLoadCmdAppCatalogResourceAppCat cmdResource = new ModuleLoadCmdAppCatalogResourceAppCat();
+                    ModuleLoadCmdResource cmdResource = new ModuleLoadCmdResource();
                     cmdResource.setAppDeploymentId(deploymentDescription.getAppDeploymentId());
                     cmdResource.setCmd(cmd);
                     cmdResource.save();
@@ -83,7 +83,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             List<String> preJobCommands = deploymentDescription.getPreJobCommands();
             if (preJobCommands != null && !preJobCommands.isEmpty()){
                 for (String cmd : preJobCommands){
-                    PreJobCommandAppCatalogResourceAppCat cmdResource = new PreJobCommandAppCatalogResourceAppCat();
+                    PreJobCommandResource cmdResource = new PreJobCommandResource();
                     cmdResource.setAppDeploymentId(deploymentDescription.getAppDeploymentId());
                     cmdResource.setCommand(cmd);
                     cmdResource.save();
@@ -93,7 +93,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             List<String> postJobCommands = deploymentDescription.getPostJobCommands();
             if (postJobCommands != null && !postJobCommands.isEmpty()){
                 for (String cmd : postJobCommands){
-                    PostJobCommandAppCatalogResourceAppCat cmdResource = new PostJobCommandAppCatalogResourceAppCat();
+                    PostJobCommandResource cmdResource = new PostJobCommandResource();
                     cmdResource.setAppDeploymentId(deploymentDescription.getAppDeploymentId());
                     cmdResource.setCommand(cmd);
                     cmdResource.save();
@@ -103,7 +103,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             List<SetEnvPaths> libPrependPaths = deploymentDescription.getLibPrependPaths();
             if (libPrependPaths != null && !libPrependPaths.isEmpty()){
                 for (SetEnvPaths path : libPrependPaths){
-                    LibraryPrepandPathAppCatalogResourceAppCat prepandPathResource = new LibraryPrepandPathAppCatalogResourceAppCat();
+                    LibraryPrepandPathResource prepandPathResource = new LibraryPrepandPathResource();
                     prepandPathResource.setAppDeploymentResource(deploymentResource);
                     prepandPathResource.setName(path.getName());
                     prepandPathResource.setValue(path.getValue());
@@ -115,7 +115,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             List<SetEnvPaths> libApendPaths = deploymentDescription.getLibAppendPaths();
             if (libApendPaths != null && !libApendPaths.isEmpty()){
                 for (SetEnvPaths path : libApendPaths){
-                    LibraryApendPathAppCatalogResourceAppCat apendPathResource = new LibraryApendPathAppCatalogResourceAppCat();
+                    LibraryApendPathResource apendPathResource = new LibraryApendPathResource();
                     apendPathResource.setAppDeploymentResource(deploymentResource);
                     apendPathResource.setName(path.getName());
                     apendPathResource.setValue(path.getValue());
@@ -126,7 +126,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             List<SetEnvPaths> setEnvironment = deploymentDescription.getSetEnvironment();
             if (setEnvironment != null && !setEnvironment.isEmpty()){
                 for (SetEnvPaths path : setEnvironment){
-                    AppEnvironmentAppCatalogResourceAppCat environmentResource = new AppEnvironmentAppCatalogResourceAppCat();
+                    AppEnvironmentResource environmentResource = new AppEnvironmentResource();
                     environmentResource.setAppDeploymentResource(deploymentResource);
                     environmentResource.setName(path.getName());
                     environmentResource.setValue(path.getValue());
@@ -144,10 +144,10 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
     @Override
     public void updateApplicationDeployment(String deploymentId, ApplicationDeploymentDescription updatedDeployment) throws AppCatalogException {
         try {
-            AppDeploymentAppCatalogResourceAppCat deploymentResource = new AppDeploymentAppCatalogResourceAppCat();
-            AppDeploymentAppCatalogResourceAppCat existingDep = (AppDeploymentAppCatalogResourceAppCat)deploymentResource.get(deploymentId);
-            ComputeResourceAppCatalogResourceAppCat computeHostResource = new ComputeResourceAppCatalogResourceAppCat();
-            AppModuleAppCatalogResourceAppCat moduleResource = new AppModuleAppCatalogResourceAppCat();
+            AppDeploymentResource deploymentResource = new AppDeploymentResource();
+            AppDeploymentResource existingDep = (AppDeploymentResource)deploymentResource.get(deploymentId);
+            ComputeResourceResource computeHostResource = new ComputeResourceResource();
+            AppModuleResource moduleResource = new AppModuleResource();
             if (!computeHostResource.isExists(updatedDeployment.getComputeHostId())){
                 logger.error("Compute host does not exist in the system. Please create a Compute host first...");
                 throw new AppCatalogException("Compute host does not exist in the system. Please create a Compute host first...");
@@ -156,11 +156,11 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
                 logger.error("Application module does not exist in the system. Please create an application module first...");
                 throw new AppCatalogException("Application module does not exist in the system. Please create an application module first...");
             }
-            AppModuleAppCatalogResourceAppCat module = (AppModuleAppCatalogResourceAppCat)moduleResource.get(updatedDeployment.getAppModuleId());
+            AppModuleResource module = (AppModuleResource)moduleResource.get(updatedDeployment.getAppModuleId());
             existingDep.setAppModuleId(updatedDeployment.getAppModuleId());
             existingDep.setModuleResource(module);
             existingDep.setHostId(updatedDeployment.getComputeHostId());
-            existingDep.setHostResource((ComputeResourceAppCatalogResourceAppCat)computeHostResource.get(updatedDeployment.getComputeHostId()));
+            existingDep.setHostResource((ComputeResourceResource)computeHostResource.get(updatedDeployment.getComputeHostId()));
             existingDep.setAppDes(updatedDeployment.getAppDeploymentDescription());
             existingDep.setExecutablePath(updatedDeployment.getExecutablePath());
             if (updatedDeployment.getParallelism() != null){
@@ -170,7 +170,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             existingDep.save();
 
             // remove existing module load commands
-            ModuleLoadCmdAppCatalogResourceAppCat cmdResource = new ModuleLoadCmdAppCatalogResourceAppCat();
+            ModuleLoadCmdResource cmdResource = new ModuleLoadCmdResource();
             Map<String, String> ids = new HashMap<String, String>();
             ids.put(AppCatAbstractResource.ModuleLoadCmdConstants.APP_DEPLOYMENT_ID, deploymentId);
             cmdResource.remove(ids);
@@ -181,7 +181,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
                     ids.put(AppCatAbstractResource.ModuleLoadCmdConstants.APP_DEPLOYMENT_ID, deploymentId);
                     ids.put(AppCatAbstractResource.ModuleLoadCmdConstants.CMD, cmd);
                     if (cmdResource.isExists(ids)){
-                        cmdResource = (ModuleLoadCmdAppCatalogResourceAppCat)cmdResource.get(ids);
+                        cmdResource = (ModuleLoadCmdResource)cmdResource.get(ids);
                     }
                     cmdResource.setCmd(cmd);
                     cmdResource.setAppDeploymentResource(existingDep);
@@ -190,7 +190,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
                 }
             }
 
-            PreJobCommandAppCatalogResourceAppCat preJobCommandResource = new PreJobCommandAppCatalogResourceAppCat();
+            PreJobCommandResource preJobCommandResource = new PreJobCommandResource();
             ids = new HashMap<String, String>();
             ids.put(AppCatAbstractResource.PreJobCommandConstants.DEPLOYMENT_ID, deploymentId);
             preJobCommandResource.remove(ids);
@@ -201,7 +201,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
                     ids.put(AppCatAbstractResource.PreJobCommandConstants.DEPLOYMENT_ID, deploymentId);
                     ids.put(AppCatAbstractResource.PreJobCommandConstants.COMMAND, cmd);
                     if (preJobCommandResource.isExists(ids)){
-                        preJobCommandResource = (PreJobCommandAppCatalogResourceAppCat)preJobCommandResource.get(ids);
+                        preJobCommandResource = (PreJobCommandResource)preJobCommandResource.get(ids);
                     }
                     preJobCommandResource.setCommand(cmd);
                     preJobCommandResource.setAppDeploymentResource(existingDep);
@@ -210,7 +210,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
                 }
             }
 
-            PostJobCommandAppCatalogResourceAppCat postJobCommandResource = new PostJobCommandAppCatalogResourceAppCat();
+            PostJobCommandResource postJobCommandResource = new PostJobCommandResource();
             ids = new HashMap<String, String>();
             ids.put(AppCatAbstractResource.PostJobCommandConstants.DEPLOYMENT_ID, deploymentId);
             postJobCommandResource.remove(ids);
@@ -221,7 +221,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
                     ids.put(AppCatAbstractResource.PostJobCommandConstants.DEPLOYMENT_ID, deploymentId);
                     ids.put(AppCatAbstractResource.PostJobCommandConstants.COMMAND, cmd);
                     if (postJobCommandResource.isExists(ids)){
-                        postJobCommandResource = (PostJobCommandAppCatalogResourceAppCat)postJobCommandResource.get(ids);
+                        postJobCommandResource = (PostJobCommandResource)postJobCommandResource.get(ids);
                     }
                     postJobCommandResource.setCommand(cmd);
                     postJobCommandResource.setAppDeploymentResource(existingDep);
@@ -231,7 +231,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
             }
 
             // remove existing lib prepand paths
-            LibraryPrepandPathAppCatalogResourceAppCat prepandPathResource = new LibraryPrepandPathAppCatalogResourceAppCat();
+            LibraryPrepandPathResource prepandPathResource = new LibraryPrepandPathResource();
             ids = new HashMap<String, String>();
             ids.put(AppCatAbstractResource.LibraryPrepandPathConstants.DEPLOYMENT_ID, deploymentId);
             prepandPathResource.remove(ids);
@@ -242,7 +242,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
                     ids.put(AppCatAbstractResource.LibraryPrepandPathConstants.DEPLOYMENT_ID, deploymentId);
                     ids.put(AppCatAbstractResource.LibraryPrepandPathConstants.NAME, path.getName());
                     if (prepandPathResource.isExists(ids)){
-                        prepandPathResource = (LibraryPrepandPathAppCatalogResourceAppCat)prepandPathResource.get(ids);
+                        prepandPathResource = (LibraryPrepandPathResource)prepandPathResource.get(ids);
                     }
                     prepandPathResource.setAppDeploymentResource(existingDep);
                     prepandPathResource.setName(path.getName());
@@ -254,7 +254,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
 
             List<SetEnvPaths> libApendPaths = updatedDeployment.getLibAppendPaths();
             // remove lib append paths
-            LibraryApendPathAppCatalogResourceAppCat apendPathResource = new LibraryApendPathAppCatalogResourceAppCat();
+            LibraryApendPathResource apendPathResource = new LibraryApendPathResource();
             ids = new HashMap<String, String>();
             ids.put(AppCatAbstractResource.LibraryApendPathConstants.DEPLOYMENT_ID, deploymentId);
             apendPathResource.remove(ids);
@@ -264,7 +264,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
                     ids.put(AppCatAbstractResource.LibraryApendPathConstants.DEPLOYMENT_ID, deploymentId);
                     ids.put(AppCatAbstractResource.LibraryApendPathConstants.NAME, path.getName());
                     if (apendPathResource.isExists(ids)){
-                        apendPathResource = (LibraryApendPathAppCatalogResourceAppCat)apendPathResource.get(ids);
+                        apendPathResource = (LibraryApendPathResource)apendPathResource.get(ids);
                     }
                     apendPathResource.setAppDeploymentResource(existingDep);
                     apendPathResource.setName(path.getName());
@@ -276,7 +276,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
 
             List<SetEnvPaths> setEnvironment = updatedDeployment.getSetEnvironment();
             // remove existing setEnvPaths
-            AppEnvironmentAppCatalogResourceAppCat environmentResource = new AppEnvironmentAppCatalogResourceAppCat();
+            AppEnvironmentResource environmentResource = new AppEnvironmentResource();
             ids = new HashMap<String, String>();
             ids.put(AppCatAbstractResource.AppEnvironmentConstants.DEPLOYMENT_ID, deploymentId);
             environmentResource.remove(ids);
@@ -286,7 +286,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
                     ids.put(AppCatAbstractResource.AppEnvironmentConstants.DEPLOYMENT_ID, deploymentId);
                     ids.put(AppCatAbstractResource.AppEnvironmentConstants.NAME, path.getName());
                     if (environmentResource.isExists(ids)){
-                        environmentResource = (AppEnvironmentAppCatalogResourceAppCat)environmentResource.get(ids);
+                        environmentResource = (AppEnvironmentResource)environmentResource.get(ids);
                     }
                     environmentResource.setAppDeploymentResource(existingDep);
                     environmentResource.setName(path.getName());
@@ -304,8 +304,8 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
     @Override
     public ApplicationDeploymentDescription getApplicationDeployement(String deploymentId) throws AppCatalogException {
         try {
-            AppDeploymentAppCatalogResourceAppCat deploymentResource = new AppDeploymentAppCatalogResourceAppCat();
-            AppDeploymentAppCatalogResourceAppCat appDep = (AppDeploymentAppCatalogResourceAppCat)deploymentResource.get(deploymentId);
+            AppDeploymentResource deploymentResource = new AppDeploymentResource();
+            AppDeploymentResource appDep = (AppDeploymentResource)deploymentResource.get(deploymentId);
             return AppCatalogThriftConversion.getApplicationDeploymentDescription(appDep);
         }catch (Exception e) {
             logger.error("Error while retrieving application deployment...", e);
@@ -317,7 +317,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
     public List<ApplicationDeploymentDescription> getApplicationDeployements(Map<String, String> filters) throws AppCatalogException {
         List<ApplicationDeploymentDescription> deploymentDescriptions = new ArrayList<ApplicationDeploymentDescription>();
         try {
-            AppDeploymentAppCatalogResourceAppCat resource = new AppDeploymentAppCatalogResourceAppCat();
+            AppDeploymentResource resource = new AppDeploymentResource();
             boolean firstTry=true;
             for (String fieldName : filters.keySet() ){
                 List<ApplicationDeploymentDescription> tmpDescriptions = new ArrayList<ApplicationDeploymentDescription>();
@@ -364,7 +364,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
     public List<ApplicationDeploymentDescription> getAllApplicationDeployements(String gatewayId) throws AppCatalogException {
         List<ApplicationDeploymentDescription> deploymentDescriptions = new ArrayList<ApplicationDeploymentDescription>();
         try {
-            AppDeploymentAppCatalogResourceAppCat resource = new AppDeploymentAppCatalogResourceAppCat();
+            AppDeploymentResource resource = new AppDeploymentResource();
             resource.setGatewayId(gatewayId);
             List<AppCatalogResource> resources = resource.getAll();
             if (resources != null && !resources.isEmpty()){
@@ -381,7 +381,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
     @Override
     public List<String> getAllApplicationDeployementIds() throws AppCatalogException {
         try {
-            AppDeploymentAppCatalogResourceAppCat resource = new AppDeploymentAppCatalogResourceAppCat();
+            AppDeploymentResource resource = new AppDeploymentResource();
             return resource.getAllIds();
         }catch (Exception e){
             logger.error("Error while retrieving app deployment list...", e);
@@ -392,7 +392,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
     @Override
     public boolean isAppDeploymentExists(String deploymentId) throws AppCatalogException {
         try {
-           AppDeploymentAppCatalogResourceAppCat deploymentResource = new AppDeploymentAppCatalogResourceAppCat();
+           AppDeploymentResource deploymentResource = new AppDeploymentResource();
             return deploymentResource.isExists(deploymentId);
         }catch (Exception e){
             logger.error("Error while retrieving app deployment...", e);
@@ -403,7 +403,7 @@ public class ApplicationDeploymentImpl implements ApplicationDeployment {
     @Override
     public void removeAppDeployment(String deploymentId) throws AppCatalogException {
         try {
-            AppDeploymentAppCatalogResourceAppCat deploymentResource = new AppDeploymentAppCatalogResourceAppCat();
+            AppDeploymentResource deploymentResource = new AppDeploymentResource();
             deploymentResource.remove(deploymentId);
         }catch (Exception e){
             logger.error("Error while deleting app deployment...", e);

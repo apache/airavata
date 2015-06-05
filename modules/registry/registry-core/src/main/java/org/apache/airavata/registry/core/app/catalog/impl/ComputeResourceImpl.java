@@ -51,7 +51,7 @@ public class ComputeResourceImpl implements ComputeResource {
 	protected String saveComputeResourceDescriptorData(
 			ComputeResourceDescription description) throws AppCatalogException {
 		//TODO remove existing one
-		ComputeResourceAppCatalogResourceAppCat computeHostResource = saveComputeResource(description);
+		ComputeResourceResource computeHostResource = saveComputeResource(description);
 		saveHostAliases(description, computeHostResource);
 		saveIpAddresses(description, computeHostResource);
 		saveBatchQueues(description, computeHostResource);
@@ -61,21 +61,21 @@ public class ComputeResourceImpl implements ComputeResource {
 		return computeHostResource.getResourceId();
 	}
 
-	protected ComputeResourceAppCatalogResourceAppCat saveComputeResource(
+	protected ComputeResourceResource saveComputeResource(
 			ComputeResourceDescription description) throws AppCatalogException {
-		ComputeResourceAppCatalogResourceAppCat computeHostResource = AppCatalogThriftConversion.getComputeHostResource(description);
+		ComputeResourceResource computeHostResource = AppCatalogThriftConversion.getComputeHostResource(description);
 		computeHostResource.save();
 		return computeHostResource;
 	}
 
 	protected void saveDataMovementInterfaces(
 			ComputeResourceDescription description,
-			ComputeResourceAppCatalogResourceAppCat computeHostResource)
+			ComputeResourceResource computeHostResource)
 			throws AppCatalogException {
 		List<DataMovementInterface> dataMovemenetInterfaces = description.getDataMovementInterfaces();
 		if (dataMovemenetInterfaces != null && !dataMovemenetInterfaces.isEmpty()) {
 		    for (DataMovementInterface dataMovementInterface : dataMovemenetInterfaces) {
-		    	DataMovementInterfaceAppCatalogResourceAppCat dmir = AppCatalogThriftConversion.getDataMovementInterface(dataMovementInterface);
+		    	DataMovementInterfaceResource dmir = AppCatalogThriftConversion.getDataMovementInterface(dataMovementInterface);
 		    	dmir.setComputeHostResource(computeHostResource);
 		    	dmir.setComputeResourceId(computeHostResource.getResourceId());
 				dmir.save();
@@ -85,12 +85,12 @@ public class ComputeResourceImpl implements ComputeResource {
 
 	protected void saveJobSubmissionInterfaces(
 			ComputeResourceDescription description,
-			ComputeResourceAppCatalogResourceAppCat computeHostResource)
+			ComputeResourceResource computeHostResource)
 			throws AppCatalogException {
 		List<JobSubmissionInterface> jobSubmissionInterfaces = description.getJobSubmissionInterfaces();
 		if (jobSubmissionInterfaces != null && !jobSubmissionInterfaces.isEmpty()) {
 		    for (JobSubmissionInterface jobSubmissionInterface : jobSubmissionInterfaces) {
-		    	JobSubmissionInterfaceAppCatalogResourceAppCat jsir = AppCatalogThriftConversion.getJobSubmissionInterface(jobSubmissionInterface);
+		    	JobSubmissionInterfaceResource jsir = AppCatalogThriftConversion.getJobSubmissionInterface(jobSubmissionInterface);
 				jsir.setComputeHostResource(computeHostResource);
 				jsir.setComputeResourceId(computeHostResource.getResourceId());
 				jsir.save();
@@ -99,12 +99,12 @@ public class ComputeResourceImpl implements ComputeResource {
 	}
 
 	protected void saveFileSystems(ComputeResourceDescription description,
-			ComputeResourceAppCatalogResourceAppCat computeHostResource)
+			ComputeResourceResource computeHostResource)
 			throws AppCatalogException {
 		Map<FileSystems, String> fileSystems = description.getFileSystems();
 		if (fileSystems != null && !fileSystems.isEmpty()) {
 		    for (FileSystems key : fileSystems.keySet()) {
-		    	ComputeResourceFileSystemAppCatalogResourceAppCat computeResourceFileSystemResource = new ComputeResourceFileSystemAppCatalogResourceAppCat();
+		    	ComputeResourceFileSystemResource computeResourceFileSystemResource = new ComputeResourceFileSystemResource();
 		    	computeResourceFileSystemResource.setComputeHostResource(computeHostResource);
 		    	computeResourceFileSystemResource.setComputeResourceId(computeHostResource.getResourceId());
 		    	computeResourceFileSystemResource.setFileSystem(key.toString());
@@ -115,12 +115,12 @@ public class ComputeResourceImpl implements ComputeResource {
 	}
 
 	protected void saveBatchQueues(ComputeResourceDescription description,
-			ComputeResourceAppCatalogResourceAppCat computeHostResource)
+			ComputeResourceResource computeHostResource)
 			throws AppCatalogException {
 		List<BatchQueue> batchQueueList = description.getBatchQueues();
 		if (batchQueueList != null && !batchQueueList.isEmpty()) {
 		    for (BatchQueue batchQueue : batchQueueList) {
-		    	BatchQueueAppCatalogResourceAppCat bq = AppCatalogThriftConversion.getBatchQueue(batchQueue);
+		    	BatchQueueResource bq = AppCatalogThriftConversion.getBatchQueue(batchQueue);
 		    	bq.setComputeResourceId(computeHostResource.getResourceId());
 		    	bq.setComputeHostResource(computeHostResource);
 		        bq.save();
@@ -129,14 +129,14 @@ public class ComputeResourceImpl implements ComputeResource {
 	}
 
 	protected void saveIpAddresses(ComputeResourceDescription description,
-			ComputeResourceAppCatalogResourceAppCat computeHostResource)
+			ComputeResourceResource computeHostResource)
 			throws AppCatalogException {
 		List<String> ipAddresses = description.getIpAddresses();
-        HostIPAddressAppCatalogResourceAppCat resource = new HostIPAddressAppCatalogResourceAppCat();
+        HostIPAddressResource resource = new HostIPAddressResource();
         resource.remove(description.getComputeResourceId());
 		if (ipAddresses != null && !ipAddresses.isEmpty()) {
 		    for (String ipAddress : ipAddresses) {
-		        HostIPAddressAppCatalogResourceAppCat ipAddressResource = new HostIPAddressAppCatalogResourceAppCat();
+		        HostIPAddressResource ipAddressResource = new HostIPAddressResource();
 		        ipAddressResource.setComputeHostResource(computeHostResource);
 		        ipAddressResource.setResourceID(computeHostResource.getResourceId());
 		        ipAddressResource.setIpaddress(ipAddress);
@@ -146,15 +146,15 @@ public class ComputeResourceImpl implements ComputeResource {
 	}
 
 	protected void saveHostAliases(ComputeResourceDescription description,
-			ComputeResourceAppCatalogResourceAppCat computeHostResource)
+			ComputeResourceResource computeHostResource)
 			throws AppCatalogException {
 		List<String> hostAliases = description.getHostAliases();
         // delete previous host aliases
-        HostAliasAppCatalogResourceAppCat resource = new HostAliasAppCatalogResourceAppCat();
+        HostAliasAppResource resource = new HostAliasAppResource();
         resource.remove(description.getComputeResourceId());
 		if (hostAliases != null && !hostAliases.isEmpty()) {
 		    for (String alias : hostAliases) {
-		        HostAliasAppCatalogResourceAppCat aliasResource = new HostAliasAppCatalogResourceAppCat();
+		        HostAliasAppResource aliasResource = new HostAliasAppResource();
 		        aliasResource.setComputeHostResource(computeHostResource);
 		        aliasResource.setResourceID(computeHostResource.getResourceId());
                 aliasResource.setAlias(alias);
@@ -179,7 +179,7 @@ public class ComputeResourceImpl implements ComputeResource {
             String submissionId = AppCatalogUtils.getID("SSH");
             sshJobSubmission.setJobSubmissionInterfaceId(submissionId);
     		String resourceJobManagerId = addResourceJobManager(sshJobSubmission.getResourceJobManager());
-    		SshJobSubmissionAppCatalogResourceAppCat resource = AppCatalogThriftConversion.getSSHJobSubmission(sshJobSubmission);
+    		SshJobSubmissionResource resource = AppCatalogThriftConversion.getSSHJobSubmission(sshJobSubmission);
     		resource.setResourceJobManagerId(resourceJobManagerId);
     		resource.getResourceJobManagerResource().setResourceJobManagerId(resourceJobManagerId);
             if (sshJobSubmission.getMonitorMode() != null){
@@ -197,7 +197,7 @@ public class ComputeResourceImpl implements ComputeResource {
     public String addCloudJobSubmission(CloudJobSubmission sshJobSubmission) throws AppCatalogException {
         try {
             sshJobSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("Cloud"));
-            CloudSubmissionAppCatalogResourceAppCat resource = AppCatalogThriftConversion.getCloudJobSubmission(sshJobSubmission);
+            CloudSubmissionResource resource = AppCatalogThriftConversion.getCloudJobSubmission(sshJobSubmission);
             resource.save();
             return resource.getJobSubmissionInterfaceId();
         }catch (Exception e) {
@@ -211,7 +211,7 @@ public class ComputeResourceImpl implements ComputeResource {
 			throws AppCatalogException {
 		 try {
              unicoreJobSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("UNICORE"));
-             UnicoreJobSubmissionAppCatalogResourceAppCat resource = AppCatalogThriftConversion.getUnicoreJobSubmission(unicoreJobSubmission);
+             UnicoreJobSubmissionResource resource = AppCatalogThriftConversion.getUnicoreJobSubmission(unicoreJobSubmission);
              resource.setUnicoreEndpointUrl(unicoreJobSubmission.getUnicoreEndPointURL());
              if (unicoreJobSubmission.getSecurityProtocol() !=  null){
                  resource.setSecurityProtocol(unicoreJobSubmission.getSecurityProtocol().toString());
@@ -228,10 +228,10 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public String addJobSubmissionProtocol(String computeResourceId, JobSubmissionInterface jobSubmissionInterface) throws AppCatalogException {
         try {
-        	JobSubmissionInterfaceAppCatalogResourceAppCat jsi = AppCatalogThriftConversion.getJobSubmissionInterface(jobSubmissionInterface);
+        	JobSubmissionInterfaceResource jsi = AppCatalogThriftConversion.getJobSubmissionInterface(jobSubmissionInterface);
         	jsi.setComputeResourceId(computeResourceId);
-        	ComputeResourceAppCatalogResourceAppCat computeResourceResource = new ComputeResourceAppCatalogResourceAppCat();
-        	computeResourceResource=(ComputeResourceAppCatalogResourceAppCat)computeResourceResource.get(computeResourceId);
+        	ComputeResourceResource computeResourceResource = new ComputeResourceResource();
+        	computeResourceResource=(ComputeResourceResource)computeResourceResource.get(computeResourceId);
         	jsi.setComputeHostResource(computeResourceResource);
             jsi.save();
             return jsi.getJobSubmissionInterfaceId();
@@ -341,7 +341,7 @@ public class ComputeResourceImpl implements ComputeResource {
     public String addScpDataMovement(SCPDataMovement scpDataMovement) throws AppCatalogException {
         try {
         	scpDataMovement.setDataMovementInterfaceId(AppCatalogUtils.getID("SCP"));
-        	ScpDataMovementAppCatalogResourceAppCat resource = AppCatalogThriftConversion.getSCPDataMovementDescription(scpDataMovement);
+        	ScpDataMovementResource resource = AppCatalogThriftConversion.getSCPDataMovementDescription(scpDataMovement);
             resource.save();
             return resource.getDataMovementInterfaceId();
         }catch (Exception e){
@@ -354,7 +354,7 @@ public class ComputeResourceImpl implements ComputeResource {
     public String addUnicoreDataMovement(UnicoreDataMovement unicoreDataMovement) throws AppCatalogException {
         try {
             unicoreDataMovement.setDataMovementInterfaceId(AppCatalogUtils.getID("UNICORE"));
-            UnicoreDataMovementAppCatalogResourceAppCat resource = AppCatalogThriftConversion.getUnicoreDMResource(unicoreDataMovement);
+            UnicoreDataMovementResource resource = AppCatalogThriftConversion.getUnicoreDMResource(unicoreDataMovement);
             resource.save();
             return resource.getDataMovementId();
         }catch (Exception e){
@@ -366,10 +366,10 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public String addDataMovementProtocol(String computeResourceId, DataMovementInterface dataMovementInterface) throws AppCatalogException {
         try {
-        	DataMovementInterfaceAppCatalogResourceAppCat dmi = AppCatalogThriftConversion.getDataMovementInterface(dataMovementInterface);
+        	DataMovementInterfaceResource dmi = AppCatalogThriftConversion.getDataMovementInterface(dataMovementInterface);
         	dmi.setComputeResourceId(computeResourceId);
-        	ComputeResourceAppCatalogResourceAppCat computeResourceResource = new ComputeResourceAppCatalogResourceAppCat();
-        	computeResourceResource=(ComputeResourceAppCatalogResourceAppCat)computeResourceResource.get(computeResourceId);
+        	ComputeResourceResource computeResourceResource = new ComputeResourceResource();
+        	computeResourceResource=(ComputeResourceResource)computeResourceResource.get(computeResourceId);
         	dmi.setComputeHostResource(computeResourceResource);
         	dmi.save();
             return dmi.getDataMovementInterfaceId();
@@ -383,12 +383,12 @@ public class ComputeResourceImpl implements ComputeResource {
     public String addGridFTPDataMovement(GridFTPDataMovement gridFTPDataMovement) throws AppCatalogException {
         try {
         	gridFTPDataMovement.setDataMovementInterfaceId(AppCatalogUtils.getID("GRIDFTP"));
-        	GridftpDataMovementAppCatalogResourceAppCat resource = AppCatalogThriftConversion.getGridFTPDataMovementDescription(gridFTPDataMovement);
+        	GridftpDataMovementResource resource = AppCatalogThriftConversion.getGridFTPDataMovementDescription(gridFTPDataMovement);
             resource.save();
             List<String> gridFTPEndPoint = gridFTPDataMovement.getGridFTPEndPoints();
             if (gridFTPEndPoint != null && !gridFTPEndPoint.isEmpty()) {
                 for (String endpoint : gridFTPEndPoint) {
-                    GridftpEndpointAppCatalogResourceAppCat endpointResource = new GridftpEndpointAppCatalogResourceAppCat();
+                    GridftpEndpointResource endpointResource = new GridftpEndpointResource();
                     endpointResource.setDataMovementInterfaceId(resource.getDataMovementInterfaceId());
                     endpointResource.setEndpoint(endpoint);
                     endpointResource.setGridftpDataMovementResource(resource);
@@ -405,8 +405,8 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public ComputeResourceDescription getComputeResource(String resourceId) throws AppCatalogException {
         try {
-            ComputeResourceAppCatalogResourceAppCat resource = new ComputeResourceAppCatalogResourceAppCat();
-            ComputeResourceAppCatalogResourceAppCat computeResource = (ComputeResourceAppCatalogResourceAppCat)resource.get(resourceId);
+            ComputeResourceResource resource = new ComputeResourceResource();
+            ComputeResourceResource computeResource = (ComputeResourceResource)resource.get(resourceId);
             return AppCatalogThriftConversion.getComputeHostDescription(computeResource);
         }catch (Exception e){
             logger.error("Error while retrieving compute resource...", e);
@@ -419,7 +419,7 @@ public class ComputeResourceImpl implements ComputeResource {
         List<ComputeResourceDescription> computeResourceDescriptions = new ArrayList<ComputeResourceDescription>();
         try {
         	//TODO check if this is correct way to do this
-            ComputeResourceAppCatalogResourceAppCat resource = new ComputeResourceAppCatalogResourceAppCat();
+            ComputeResourceResource resource = new ComputeResourceResource();
             for (String fieldName : filters.keySet() ){
                 if (fieldName.equals(AppCatAbstractResource.ComputeResourceConstants.HOST_NAME)){
                     List<AppCatalogResource> resources = resource.get(AppCatAbstractResource.ComputeResourceConstants.HOST_NAME, filters.get(fieldName));
@@ -442,7 +442,7 @@ public class ComputeResourceImpl implements ComputeResource {
     public List<ComputeResourceDescription> getAllComputeResourceList() throws AppCatalogException {
         List<ComputeResourceDescription> computeResourceDescriptions = new ArrayList<ComputeResourceDescription>();
         try {
-            ComputeResourceAppCatalogResourceAppCat resource = new ComputeResourceAppCatalogResourceAppCat();
+            ComputeResourceResource resource = new ComputeResourceResource();
             List<AppCatalogResource> resources = resource.getAll();
             if (resources != null && !resources.isEmpty()){
                 computeResourceDescriptions = AppCatalogThriftConversion.getComputeDescriptionList(resources);
@@ -458,11 +458,11 @@ public class ComputeResourceImpl implements ComputeResource {
     public Map<String, String> getAllComputeResourceIdList() throws AppCatalogException {
         try {
             Map<String, String> computeResourceMap = new HashMap<String, String>();
-            ComputeResourceAppCatalogResourceAppCat resource = new ComputeResourceAppCatalogResourceAppCat();
+            ComputeResourceResource resource = new ComputeResourceResource();
             List<AppCatalogResource> allComputeResources = resource.getAll();
             if (allComputeResources != null && !allComputeResources.isEmpty()){
                 for (AppCatalogResource cm : allComputeResources){
-                    ComputeResourceAppCatalogResourceAppCat cmr = (ComputeResourceAppCatalogResourceAppCat)cm;
+                    ComputeResourceResource cmr = (ComputeResourceResource)cm;
                     computeResourceMap.put(cmr.getResourceId(), cmr.getHostName());
                 }
             }
@@ -552,8 +552,8 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public SSHJobSubmission getSSHJobSubmission(String submissionId) throws AppCatalogException {
         try {
-            SshJobSubmissionAppCatalogResourceAppCat resource = new SshJobSubmissionAppCatalogResourceAppCat();
-            resource = (SshJobSubmissionAppCatalogResourceAppCat)resource.get(submissionId);
+            SshJobSubmissionResource resource = new SshJobSubmissionResource();
+            resource = (SshJobSubmissionResource)resource.get(submissionId);
             return AppCatalogThriftConversion.getSSHJobSubmissionDescription(resource);
         }catch (Exception e){
             logger.error("Error while retrieving SSH Job Submission...", e);
@@ -587,8 +587,8 @@ public class ComputeResourceImpl implements ComputeResource {
 		public UnicoreJobSubmission getUNICOREJobSubmission(String submissionId)
 				throws AppCatalogException {
 	    	try {
-	            UnicoreJobSubmissionAppCatalogResourceAppCat resource = new UnicoreJobSubmissionAppCatalogResourceAppCat();
-	            resource = (UnicoreJobSubmissionAppCatalogResourceAppCat)resource.get(submissionId);
+	            UnicoreJobSubmissionResource resource = new UnicoreJobSubmissionResource();
+	            resource = (UnicoreJobSubmissionResource)resource.get(submissionId);
 	            return AppCatalogThriftConversion.getUnicoreJobSubmissionDescription(resource);
 	        }catch (Exception e){
 	            logger.error("Error while retrieving UNICORE Job Submission model instance...", e);
@@ -600,8 +600,8 @@ public class ComputeResourceImpl implements ComputeResource {
     public UnicoreDataMovement getUNICOREDataMovement(String dataMovementId)
             throws AppCatalogException {
         try {
-            UnicoreDataMovementAppCatalogResourceAppCat resource = new UnicoreDataMovementAppCatalogResourceAppCat();
-            resource = (UnicoreDataMovementAppCatalogResourceAppCat)resource.get(dataMovementId);
+            UnicoreDataMovementResource resource = new UnicoreDataMovementResource();
+            resource = (UnicoreDataMovementResource)resource.get(dataMovementId);
             return AppCatalogThriftConversion.getUnicoreDMDescription(resource);
         }catch (Exception e){
             logger.error("Error while retrieving UNICORE data movement...", e);
@@ -612,8 +612,8 @@ public class ComputeResourceImpl implements ComputeResource {
 	@Override
     public CloudJobSubmission getCloudJobSubmission(String submissionId) throws AppCatalogException {
         try {
-            CloudSubmissionAppCatalogResourceAppCat resource = new CloudSubmissionAppCatalogResourceAppCat();
-            resource = (CloudSubmissionAppCatalogResourceAppCat)resource.get(submissionId);
+            CloudSubmissionResource resource = new CloudSubmissionResource();
+            resource = (CloudSubmissionResource)resource.get(submissionId);
             return AppCatalogThriftConversion.getCloudJobSubmissionDescription(resource);
         }catch (Exception e){
             logger.error("Error while retrieving SSH Job Submission...", e);
@@ -646,8 +646,8 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public SCPDataMovement getSCPDataMovement(String dataMoveId) throws AppCatalogException {
         try {
-            ScpDataMovementAppCatalogResourceAppCat resource = new ScpDataMovementAppCatalogResourceAppCat();
-            ScpDataMovementAppCatalogResourceAppCat dataMovementResource = (ScpDataMovementAppCatalogResourceAppCat)resource.get(dataMoveId);
+            ScpDataMovementResource resource = new ScpDataMovementResource();
+            ScpDataMovementResource dataMovementResource = (ScpDataMovementResource)resource.get(dataMoveId);
             return AppCatalogThriftConversion.getSCPDataMovementDescription(dataMovementResource);
         }catch (Exception e){
             logger.error("Error while retrieving SCP Data Movement...", e);
@@ -680,8 +680,8 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public GridFTPDataMovement getGridFTPDataMovement(String dataMoveId) throws AppCatalogException {
         try {
-            GridftpDataMovementAppCatalogResourceAppCat resource = new GridftpDataMovementAppCatalogResourceAppCat();
-            GridftpDataMovementAppCatalogResourceAppCat dataMovementResource = (GridftpDataMovementAppCatalogResourceAppCat)resource.get(dataMoveId);
+            GridftpDataMovementResource resource = new GridftpDataMovementResource();
+            GridftpDataMovementResource dataMovementResource = (GridftpDataMovementResource)resource.get(dataMoveId);
             return AppCatalogThriftConversion.getGridFTPDataMovementDescription(dataMovementResource);
         }catch (Exception e){
             logger.error("Error while retrieving Grid FTP Data Movement...", e);
@@ -714,7 +714,7 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public boolean isComputeResourceExists(String resourceId) throws AppCatalogException {
         try {
-            ComputeResourceAppCatalogResourceAppCat resource = new ComputeResourceAppCatalogResourceAppCat();
+            ComputeResourceResource resource = new ComputeResourceResource();
             return resource.isExists(resourceId);
         }catch (Exception e){
             logger.error("Error while retrieving compute resource...", e);
@@ -725,7 +725,7 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public void removeComputeResource(String resourceId) throws AppCatalogException {
         try {
-            ComputeResourceAppCatalogResourceAppCat resource = new ComputeResourceAppCatalogResourceAppCat();
+            ComputeResourceResource resource = new ComputeResourceResource();
             resource.remove(resourceId);
         }catch (Exception e){
             logger.error("Error while removing compute resource...", e);
@@ -736,7 +736,7 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public void removeJobSubmissionInterface(String computeResourceId, String jobSubmissionInterfaceId) throws AppCatalogException {
         try {
-            JobSubmissionInterfaceAppCatalogResourceAppCat resource = new JobSubmissionInterfaceAppCatalogResourceAppCat();
+            JobSubmissionInterfaceResource resource = new JobSubmissionInterfaceResource();
             Map<String, String> ids = new HashMap<String, String>();
             ids.put(AppCatAbstractResource.JobSubmissionInterfaceConstants.COMPUTE_RESOURCE_ID, computeResourceId);
             ids.put(AppCatAbstractResource.JobSubmissionInterfaceConstants.JOB_SUBMISSION_INTERFACE_ID, jobSubmissionInterfaceId);
@@ -750,7 +750,7 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public void removeDataMovementInterface(String computeResourceId, String dataMovementInterfaceId) throws AppCatalogException {
         try {
-            DataMovementInterfaceAppCatalogResourceAppCat resource = new DataMovementInterfaceAppCatalogResourceAppCat();
+            DataMovementInterfaceResource resource = new DataMovementInterfaceResource();
             Map<String, String> ids = new HashMap<String, String>();
             ids.put(AppCatAbstractResource.DataMovementInterfaceConstants.COMPUTE_RESOURCE_ID, computeResourceId);
             ids.put(AppCatAbstractResource.DataMovementInterfaceConstants.DATA_MOVEMENT_INTERFACE_ID, dataMovementInterfaceId);
@@ -764,7 +764,7 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public void removeBatchQueue(String computeResourceId, String queueName) throws AppCatalogException {
         try {
-            BatchQueueAppCatalogResourceAppCat resource = new BatchQueueAppCatalogResourceAppCat();
+            BatchQueueResource resource = new BatchQueueResource();
             Map<String, String> ids = new HashMap<String, String>();
             ids.put(AppCatAbstractResource.BatchQueueConstants.COMPUTE_RESOURCE_ID, computeResourceId);
             ids.put(AppCatAbstractResource.BatchQueueConstants.QUEUE_NAME, queueName);
@@ -779,12 +779,12 @@ public class ComputeResourceImpl implements ComputeResource {
 	public String addResourceJobManager(ResourceJobManager resourceJobManager)
 			throws AppCatalogException {
 		resourceJobManager.setResourceJobManagerId(AppCatalogUtils.getID("RJM"));
-		ResourceJobManagerAppCatalogResourceAppCat resource = AppCatalogThriftConversion.getResourceJobManager(resourceJobManager);
+		ResourceJobManagerResource resource = AppCatalogThriftConversion.getResourceJobManager(resourceJobManager);
 		resource.save();
 		Map<JobManagerCommand, String> jobManagerCommands = resourceJobManager.getJobManagerCommands();
 		if (jobManagerCommands!=null && jobManagerCommands.size() != 0) {
 			for (JobManagerCommand commandType : jobManagerCommands.keySet()) {
-				JobManagerCommandAppCatalogResourceAppCat r = new JobManagerCommandAppCatalogResourceAppCat();
+				JobManagerCommandResource r = new JobManagerCommandResource();
 				r.setCommandType(commandType.toString());
 				r.setCommand(jobManagerCommands.get(commandType));
 				r.setResourceJobManagerId(resource.getResourceJobManagerId());
@@ -797,21 +797,21 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public void updateResourceJobManager(String resourceJobManagerId, ResourceJobManager updatedResourceJobManager) throws AppCatalogException {
         try {
-            ResourceJobManagerAppCatalogResourceAppCat resource = AppCatalogThriftConversion.getResourceJobManager(updatedResourceJobManager);
+            ResourceJobManagerResource resource = AppCatalogThriftConversion.getResourceJobManager(updatedResourceJobManager);
             resource.setResourceJobManagerId(resourceJobManagerId);
             resource.save();
             Map<JobManagerCommand, String> jobManagerCommands = updatedResourceJobManager.getJobManagerCommands();
             if (jobManagerCommands!=null && jobManagerCommands.size() != 0) {
                 for (JobManagerCommand commandType : jobManagerCommands.keySet()) {
-                    JobManagerCommandAppCatalogResourceAppCat r = new JobManagerCommandAppCatalogResourceAppCat();
+                    JobManagerCommandResource r = new JobManagerCommandResource();
                     Map<String, String> ids = new HashMap<String, String>();
                     ids.put(AppCatAbstractResource.JobManagerCommandConstants.RESOURCE_JOB_MANAGER_ID, resourceJobManagerId);
                     ids.put(AppCatAbstractResource.JobManagerCommandConstants.COMMAND_TYPE, commandType.toString());
-                    JobManagerCommandAppCatalogResourceAppCat existingCommand;
+                    JobManagerCommandResource existingCommand;
                     if (r.isExists(ids)){
-                        existingCommand = (JobManagerCommandAppCatalogResourceAppCat)r.get(ids);
+                        existingCommand = (JobManagerCommandResource)r.get(ids);
                     }else {
-                        existingCommand = new JobManagerCommandAppCatalogResourceAppCat();
+                        existingCommand = new JobManagerCommandResource();
                     }
                     existingCommand.setCommandType(commandType.toString());
                     existingCommand.setCommand(jobManagerCommands.get(commandType));
@@ -828,8 +828,8 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public ResourceJobManager getResourceJobManager(String resourceJobManagerId) throws AppCatalogException {
         try {
-            ResourceJobManagerAppCatalogResourceAppCat resource = new ResourceJobManagerAppCatalogResourceAppCat();
-            ResourceJobManagerAppCatalogResourceAppCat jobManagerResource = (ResourceJobManagerAppCatalogResourceAppCat)resource.get(resourceJobManagerId);
+            ResourceJobManagerResource resource = new ResourceJobManagerResource();
+            ResourceJobManagerResource jobManagerResource = (ResourceJobManagerResource)resource.get(resourceJobManagerId);
             return AppCatalogThriftConversion.getResourceJobManager(jobManagerResource);
         }catch (Exception e){
             logger.error("Error while retrieving resource job manager..", e);
@@ -840,7 +840,7 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public void deleteResourceJobManager(String resourceJobManagerId) throws AppCatalogException {
         try {
-            ResourceJobManagerAppCatalogResourceAppCat resource = new ResourceJobManagerAppCatalogResourceAppCat();
+            ResourceJobManagerResource resource = new ResourceJobManagerResource();
             resource.remove(resourceJobManagerId);
         }catch (Exception e){
             logger.error("Error while deleting resource job manager..", e);
@@ -853,7 +853,7 @@ public class ComputeResourceImpl implements ComputeResource {
 			throws AppCatalogException {
 		localSubmission.setJobSubmissionInterfaceId(AppCatalogUtils.getID("LOCAL"));
 		String resourceJobManagerId = addResourceJobManager(localSubmission.getResourceJobManager());
-		LocalSubmissionAppCatalogResourceAppCat localJobSubmission = AppCatalogThriftConversion.getLocalJobSubmission(localSubmission);
+		LocalSubmissionResource localJobSubmission = AppCatalogThriftConversion.getLocalJobSubmission(localSubmission);
 		localJobSubmission.setResourceJobManagerId(resourceJobManagerId);
 		localJobSubmission.getResourceJobManagerResource().setResourceJobManagerId(resourceJobManagerId);
     	localJobSubmission.save();
@@ -864,7 +864,7 @@ public class ComputeResourceImpl implements ComputeResource {
 	public String addLocalDataMovement(LOCALDataMovement localDataMovement)
 			throws AppCatalogException {
 		localDataMovement.setDataMovementInterfaceId(AppCatalogUtils.getID("LOCAL"));
-		LocalDataMovementAppCatalogResourceAppCat ldm = AppCatalogThriftConversion.getLocalDataMovement(localDataMovement);
+		LocalDataMovementResource ldm = AppCatalogThriftConversion.getLocalDataMovement(localDataMovement);
 		ldm.save();
     	return ldm.getDataMovementInterfaceId();
 	}
@@ -872,16 +872,16 @@ public class ComputeResourceImpl implements ComputeResource {
 	@Override
 	public LOCALSubmission getLocalJobSubmission(String submissionId)
 			throws AppCatalogException {
-		LocalSubmissionAppCatalogResourceAppCat localSubmissionResource = new LocalSubmissionAppCatalogResourceAppCat();
-		localSubmissionResource= (LocalSubmissionAppCatalogResourceAppCat)localSubmissionResource.get(submissionId);
+		LocalSubmissionResource localSubmissionResource = new LocalSubmissionResource();
+		localSubmissionResource= (LocalSubmissionResource)localSubmissionResource.get(submissionId);
 		return AppCatalogThriftConversion.getLocalJobSubmission(localSubmissionResource);
 	}
 
 	@Override
 	public LOCALDataMovement getLocalDataMovement(String datamovementId)
 			throws AppCatalogException {
-		LocalDataMovementAppCatalogResourceAppCat localDataMovementResource = new LocalDataMovementAppCatalogResourceAppCat();
-		localDataMovementResource = (LocalDataMovementAppCatalogResourceAppCat) localDataMovementResource.get(datamovementId);
+		LocalDataMovementResource localDataMovementResource = new LocalDataMovementResource();
+		localDataMovementResource = (LocalDataMovementResource) localDataMovementResource.get(datamovementId);
 		return AppCatalogThriftConversion.getLocalDataMovement(localDataMovementResource);
 	}
 

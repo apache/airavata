@@ -266,10 +266,10 @@ public class DatabaseCreator {
                 DatabaseType databaseType = DatabaseCreator.getDatabaseType(conn);
                 if(databaseType.equals(DatabaseType.derby)){
                     is = Thread.currentThread().getContextClassLoader()
-                            .getResourceAsStream("registry-core/src/main/resources/registry-derby.sql");
+                            .getResourceAsStream("registry-core/src/main/resources/expcatalog-derby.sql");
                 }else if(databaseType.equals(DatabaseType.derby)){
                     is = Thread.currentThread().getContextClassLoader()
-                            .getResourceAsStream("registry-core/src/main/resources/registry-mysql.sql");
+                            .getResourceAsStream("registry-core/src/main/resources/expcatalog-mysql.sql");
                 }
             }
             reader = new BufferedReader(new InputStreamReader(is));

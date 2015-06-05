@@ -19,11 +19,11 @@
  *
  */
 
-package org.apache.airavata.registry.core.experiment.catalog;
+package org.apache.airavata.experiment.catalog;
 
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
-import org.apache.airavata.registry.core.experiment.catalog.resources.ComputationSchedulingExperimentCatResource;
-import org.apache.airavata.registry.core.experiment.catalog.resources.ExperimentExperimentCatResource;
+import org.apache.airavata.registry.core.experiment.catalog.resources.ComputationSchedulingResource;
+import org.apache.airavata.registry.core.experiment.catalog.resources.ExperimentResource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,15 +36,15 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class ComputationalSchedulingTest extends AbstractResourceTest {
-    private ExperimentExperimentCatResource experimentResource;
-    private ComputationSchedulingExperimentCatResource schedulingResource;
+    private ExperimentResource experimentResource;
+    private ComputationSchedulingResource schedulingResource;
     private String experimentID = "testExpID";
 
     @Override
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        experimentResource = (ExperimentExperimentCatResource) getGatewayResource().create(ResourceType.EXPERIMENT);
+        experimentResource = (ExperimentResource) getGatewayResource().create(ResourceType.EXPERIMENT);
         experimentResource.setExpID(experimentID);
         experimentResource.setExecutionUser(getWorkerResource().getUser());
         experimentResource.setProjectId(getProjectResource().getId());
@@ -56,7 +56,7 @@ public class ComputationalSchedulingTest extends AbstractResourceTest {
         experimentResource.setExpName("TestExperiment");
         experimentResource.save();
 
-        schedulingResource = (ComputationSchedulingExperimentCatResource)experimentResource.create(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING);
+        schedulingResource = (ComputationSchedulingResource)experimentResource.create(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING);
         schedulingResource.setResourceHostId("testResource");
         schedulingResource.setCpuCount(10);
         schedulingResource.setNodeCount(5);

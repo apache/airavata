@@ -27,10 +27,7 @@ import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +36,7 @@ import java.util.Map;
 public class ExpCatResourceUtils {
     private final static Logger logger = LoggerFactory.getLogger(ExpCatResourceUtils.class);
     private static final String PERSISTENCE_UNIT_NAME = "experiment_data";
+    @PersistenceContext(unitName="experiment_data")
     protected static EntityManagerFactory factory;
 
     public static void reset(){
@@ -52,7 +50,6 @@ public class ExpCatResourceUtils {
             Utils.getValidationQuery();
             System.out.println(connectionProperties);
             Map<String, String> properties = new HashMap<String, String>();
-            properties.put("persistenceXmlLocation", "META-INF/experiment-catalog.xml");
             properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp.BasicDataSource");
             properties.put("openjpa.ConnectionProperties", connectionProperties);
             properties.put("openjpa.DynamicEnhancementAgent", "true");
@@ -80,7 +77,7 @@ public class ExpCatResourceUtils {
      */
     public static ExperimentCatResource createGateway(String gatewayId) throws RegistryException {
         if (!isGatewayExist(gatewayId)) {
-            GatewayExperimentCatResource gatewayResource = new GatewayExperimentCatResource();
+            GatewayResource gatewayResource = new GatewayResource();
             gatewayResource.setGatewayId(gatewayId);
             return gatewayResource;
         }else {
@@ -88,14 +85,14 @@ public class ExpCatResourceUtils {
         }
     }
 
-    public static UserExperimentCatResource createUser(String username, String password) throws RegistryException {
+    public static UserResource createUser(String username, String password) throws RegistryException {
         if (!isUserExist(username)) {
-            UserExperimentCatResource userResource = new UserExperimentCatResource();
+            UserResource userResource = new UserResource();
             userResource.setUserName(username);
             userResource.setPassword(password);
             return userResource;
         }else {
-            return (UserExperimentCatResource)getUser(username);
+            return (UserResource)getUser(username);
         }
 
     }
@@ -106,7 +103,7 @@ public class ExpCatResourceUtils {
             if (isGatewayExist(gatewayId)) {
                 em = getEntityManager();
                 Gateway gateway = em.find(Gateway.class, gatewayId);
-                GatewayExperimentCatResource gatewayResource = (GatewayExperimentCatResource)Utils.getResource(ResourceType.GATEWAY, gateway);
+                GatewayResource gatewayResource = (GatewayResource)Utils.getResource(ResourceType.GATEWAY, gateway);
                 em.close();
                 return gatewayResource;
             }
@@ -125,7 +122,7 @@ public class ExpCatResourceUtils {
     }
 
     public static void addUser (String userName, String password) throws RegistryException{
-        UserExperimentCatResource resource = new UserExperimentCatResource();
+        UserResource resource = new UserResource();
         resource.setUserName(userName);
         resource.setPassword(password);
         resource.save();
@@ -136,8 +133,8 @@ public class ExpCatResourceUtils {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            QueryGenerator generator = new QueryGenerator(AbstractExperimentCatResource.USERS);
-            generator.setParameter(AbstractExperimentCatResource.UserConstants.USERNAME, username);
+            QueryGenerator generator = new QueryGenerator(AbstractExpCatResource.USERS);
+            generator.setParameter(AbstractExpCatResource.UserConstants.USERNAME, username);
             Query q = generator.selectQuery(em);
             int size = q.getResultList().size();
             em.getTransaction().commit();
@@ -163,7 +160,7 @@ public class ExpCatResourceUtils {
             if (isUserExist(userName)) {
                 em = getEntityManager();
                 Users user =  em.find(Users.class, userName);
-                UserExperimentCatResource userResource = (UserExperimentCatResource)Utils.getResource(ResourceType.USER, user);
+                UserResource userResource = (UserResource)Utils.getResource(ResourceType.USER, user);
                 em.close();
                 return userResource;
             }
@@ -187,7 +184,7 @@ public class ExpCatResourceUtils {
         try {
             em = getEntityManager();
             Gateway_Worker gatewayWorker = em.find(Gateway_Worker.class, new Gateway_Worker_PK(gatewayId, userName));
-            WorkerExperimentCatResource workerResource = (WorkerExperimentCatResource) Utils.getResource(ResourceType.GATEWAY_WORKER, gatewayWorker);
+            WorkerResource workerResource = (WorkerResource) Utils.getResource(ResourceType.GATEWAY_WORKER, gatewayWorker);
             em.close();
             return workerResource;
         }catch (Exception e){
@@ -215,8 +212,8 @@ public class ExpCatResourceUtils {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            QueryGenerator generator = new QueryGenerator(AbstractExperimentCatResource.GATEWAY);
-            generator.setParameter(AbstractExperimentCatResource.GatewayConstants.GATEWAY_ID, gatewayId);
+            QueryGenerator generator = new QueryGenerator(AbstractExpCatResource.GATEWAY);
+            generator.setParameter(AbstractExpCatResource.GatewayConstants.GATEWAY_ID, gatewayId);
             Query q = generator.selectQuery(em);
             int size = q.getResultList().size();
             em.getTransaction().commit();
@@ -242,14 +239,14 @@ public class ExpCatResourceUtils {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            QueryGenerator generator = new QueryGenerator(AbstractExperimentCatResource.GATEWAY);
+            QueryGenerator generator = new QueryGenerator(AbstractExpCatResource.GATEWAY);
             Query q = generator.selectQuery(em);
             List results = q.getResultList();
             if (results.size() != 0) {
                 for (Object result : results) {
                     Gateway gateway = (Gateway) result;
-                    GatewayExperimentCatResource gatewayResource =
-                            (GatewayExperimentCatResource) Utils.getResource(ResourceType.GATEWAY, gateway);
+                    GatewayResource gatewayResource =
+                            (GatewayResource) Utils.getResource(ResourceType.GATEWAY, gateway);
                     resourceList.add(gatewayResource);
                 }
             }
@@ -278,8 +275,8 @@ public class ExpCatResourceUtils {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            QueryGenerator generator = new QueryGenerator(AbstractExperimentCatResource.GATEWAY);
-            generator.setParameter(AbstractExperimentCatResource.GatewayConstants.GATEWAY_ID, gatewayId);
+            QueryGenerator generator = new QueryGenerator(AbstractExpCatResource.GATEWAY);
+            generator.setParameter(AbstractExpCatResource.GatewayConstants.GATEWAY_ID, gatewayId);
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
@@ -302,7 +299,7 @@ public class ExpCatResourceUtils {
      * @param gatewayResource
      * @param userResource
      */
-    public static WorkerExperimentCatResource addGatewayWorker(GatewayExperimentCatResource gatewayResource, UserExperimentCatResource userResource) throws RegistryException{
+    public static WorkerResource addGatewayWorker(GatewayResource gatewayResource, UserResource userResource) throws RegistryException{
         EntityManager em = null;
         try {
             em = getEntityManager();
@@ -321,7 +318,7 @@ public class ExpCatResourceUtils {
             em.persist(gatewayWorker);
             em.getTransaction().commit();
             em.close();
-            return (WorkerExperimentCatResource)Utils.getResource(ResourceType.GATEWAY_WORKER, gatewayWorker);
+            return (WorkerResource)Utils.getResource(ResourceType.GATEWAY_WORKER, gatewayWorker);
         } catch (Exception e){
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
@@ -340,15 +337,15 @@ public class ExpCatResourceUtils {
      * @param userResource
      * @return
      */
-    public static boolean removeGatewayWorker(GatewayExperimentCatResource gatewayResource, UserExperimentCatResource userResource) {
+    public static boolean removeGatewayWorker(GatewayResource gatewayResource, UserResource userResource) {
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            QueryGenerator generator = new QueryGenerator(AbstractExperimentCatResource.GATEWAY_WORKER);
-            generator.setParameter(AbstractExperimentCatResource.GatewayWorkerConstants.GATEWAY_ID,
+            QueryGenerator generator = new QueryGenerator(AbstractExpCatResource.GATEWAY_WORKER);
+            generator.setParameter(AbstractExpCatResource.GatewayWorkerConstants.GATEWAY_ID,
                     gatewayResource.getGatewayName());
-            generator.setParameter(AbstractExperimentCatResource.UserConstants.USERNAME, userResource.getUserName());
+            generator.setParameter(AbstractExpCatResource.UserConstants.USERNAME, userResource.getUserName());
             Query q = generator.deleteQuery(em);
             q.executeUpdate();
             em.getTransaction().commit();
@@ -372,19 +369,19 @@ public class ExpCatResourceUtils {
      * @param configKey
      * @return
      */
-    public static List<ConfigurationExperimentCatResource> getConfigurations(String configKey){
-        List<ConfigurationExperimentCatResource> list = new ArrayList<ConfigurationExperimentCatResource>();
+    public static List<ConfigurationResource> getConfigurations(String configKey){
+        List<ConfigurationResource> list = new ArrayList<ConfigurationResource>();
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            QueryGenerator generator = new QueryGenerator(AbstractExperimentCatResource.CONFIGURATION);
-            generator.setParameter(AbstractExperimentCatResource.ConfigurationConstants.CONFIG_KEY, configKey);
+            QueryGenerator generator = new QueryGenerator(AbstractExpCatResource.CONFIGURATION);
+            generator.setParameter(AbstractExpCatResource.ConfigurationConstants.CONFIG_KEY, configKey);
             Query q = generator.selectQuery(em);
             List<?> resultList = q.getResultList();
             if (resultList.size() != 0) {
                 for (Object result : resultList) {
-                    ConfigurationExperimentCatResource configurationResource = createConfigurationResourceObject(result);
+                    ConfigurationResource configurationResource = createConfigurationResourceObject(result);
                     list.add(configurationResource);
                 }
             }
@@ -407,8 +404,8 @@ public class ExpCatResourceUtils {
      * @param configKey
      * @return
      */
-    public static ConfigurationExperimentCatResource getConfiguration(String configKey){
-        List<ConfigurationExperimentCatResource> configurations = getConfigurations(configKey);
+    public static ConfigurationResource getConfiguration(String configKey){
+        List<ConfigurationResource> configurations = getConfigurations(configKey);
         return (configurations != null && configurations.size() > 0) ? configurations.get(0) : null;
     }
 
@@ -417,7 +414,7 @@ public class ExpCatResourceUtils {
      * @return
      */
     public static boolean isConfigurationExist(String configKey){
-        List<ConfigurationExperimentCatResource> configurations = getConfigurations(configKey);
+        List<ConfigurationResource> configurations = getConfigurations(configKey);
         return (configurations != null && configurations.size() > 0);
     }
 
@@ -425,8 +422,8 @@ public class ExpCatResourceUtils {
      * @param configKey
      * @return
      */
-    public static ConfigurationExperimentCatResource createConfiguration(String configKey) {
-        ConfigurationExperimentCatResource config = new ConfigurationExperimentCatResource();
+    public static ConfigurationResource createConfiguration(String configKey) {
+        ConfigurationResource config = new ConfigurationResource();
         config.setConfigKey(configKey);
         return config;
     }
@@ -435,10 +432,10 @@ public class ExpCatResourceUtils {
      * @param result
      * @return
      */
-    private static ConfigurationExperimentCatResource createConfigurationResourceObject(
+    private static ConfigurationResource createConfigurationResourceObject(
             Object result) {
         Configuration configuration = (Configuration) result;
-        ConfigurationExperimentCatResource configurationResource = new ConfigurationExperimentCatResource(configuration.getConfig_key(), configuration.getConfig_val());
+        ConfigurationResource configurationResource = new ConfigurationResource(configuration.getConfig_key(), configuration.getConfig_val());
         configurationResource.setExpireDate(configuration.getExpire_date());
         return configurationResource;
     }
@@ -448,9 +445,9 @@ public class ExpCatResourceUtils {
      * @param configValue
      */
     public static void removeConfiguration(String configkey, String configValue) throws RegistryException{
-        QueryGenerator queryGenerator = new QueryGenerator(AbstractExperimentCatResource.CONFIGURATION);
-        queryGenerator.setParameter(AbstractExperimentCatResource.ConfigurationConstants.CONFIG_KEY, configkey);
-        queryGenerator.setParameter(AbstractExperimentCatResource.ConfigurationConstants.CONFIG_VAL, configValue);
+        QueryGenerator queryGenerator = new QueryGenerator(AbstractExpCatResource.CONFIGURATION);
+        queryGenerator.setParameter(AbstractExpCatResource.ConfigurationConstants.CONFIG_KEY, configkey);
+        queryGenerator.setParameter(AbstractExpCatResource.ConfigurationConstants.CONFIG_VAL, configValue);
         EntityManager em = null;
         try {
             if(isConfigurationExists(configkey, configValue)){
@@ -478,8 +475,8 @@ public class ExpCatResourceUtils {
      * @param configkey
      */
     public static void removeConfiguration(String configkey) throws RegistryException{
-        QueryGenerator queryGenerator = new QueryGenerator(AbstractExperimentCatResource.CONFIGURATION);
-        queryGenerator.setParameter(AbstractExperimentCatResource.ConfigurationConstants.CONFIG_KEY, configkey);
+        QueryGenerator queryGenerator = new QueryGenerator(AbstractExpCatResource.CONFIGURATION);
+        queryGenerator.setParameter(AbstractExpCatResource.ConfigurationConstants.CONFIG_KEY, configkey);
         EntityManager em = null;
         try {
             if(isConfigurationExist(configkey)){
@@ -508,7 +505,7 @@ public class ExpCatResourceUtils {
         try{
             //Currently categoryID is hardcoded value
             em = ExpCatResourceUtils.getEntityManager();
-            Configuration existing = em.find(Configuration.class, new Configuration_PK(configKey, configVal, AbstractExperimentCatResource.ConfigurationConstants.CATEGORY_ID_DEFAULT_VALUE));
+            Configuration existing = em.find(Configuration.class, new Configuration_PK(configKey, configVal, AbstractExpCatResource.ConfigurationConstants.CATEGORY_ID_DEFAULT_VALUE));
             em.close();
             return existing!= null;
         } catch (Exception e){

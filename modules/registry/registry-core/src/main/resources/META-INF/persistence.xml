@@ -64,4 +64,33 @@
         <class>org.apache.airavata.registry.core.app.catalog.model.Configuration</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
+    <persistence-unit name="experiment_data">
+        <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.Gateway</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.Configuration</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.Users</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.Gateway_Worker</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.Project</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.ProjectUser</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.Experiment</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.Notification_Email</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.Experiment_Input</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.Experiment_Output</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.WorkflowNodeDetail</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.TaskDetail</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.ErrorDetail</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.ApplicationInput</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.ApplicationOutput</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.NodeInput</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.NodeOutput</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.JobDetail</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.DataTransferDetail</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.Status</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.ExperimentConfigData</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.Computational_Resource_Scheduling</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.AdvancedInputDataHandling</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.AdvancedOutputDataHandling</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.QosParam</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    </persistence-unit>
 </persistence>

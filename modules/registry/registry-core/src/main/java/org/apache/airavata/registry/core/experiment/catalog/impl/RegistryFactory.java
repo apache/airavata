@@ -24,12 +24,14 @@ package org.apache.airavata.registry.core.experiment.catalog.impl;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
+import org.apache.airavata.registry.cpi.Registry;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RegistryFactory {
     private static ExperimentCatalog experimentCatalog;
+    private static Registry registry;
     private static Logger logger = LoggerFactory.getLogger(RegistryFactory.class);
 
     public static ExperimentCatalog getRegistry(String gateway, String username, String password) throws RegistryException {

@@ -19,14 +19,14 @@
  *
  */
 
-package org.apache.airavata.registry.core.experiment.catalog;
+package org.apache.airavata.experiment.catalog;
 
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.registry.core.experiment.catalog.util.Initialize;
+import org.apache.airavata.experiment.catalog.util.Initialize;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.resources.*;
-import org.apache.airavata.registry.core.experiment.catalog.resources.GatewayExperimentCatResource;
-import org.apache.airavata.registry.core.experiment.catalog.resources.WorkerExperimentCatResource;
+import org.apache.airavata.registry.core.experiment.catalog.resources.GatewayResource;
+import org.apache.airavata.registry.core.experiment.catalog.resources.WorkerResource;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -36,23 +36,23 @@ import java.util.Calendar;
 
 public abstract class AbstractResourceTest {
 
-    private GatewayExperimentCatResource gatewayResource;
-    private WorkerExperimentCatResource workerResource;
-    private UserExperimentCatResource userResource;
-    private ProjectExperimentCatResource projectResource;
+    private GatewayResource gatewayResource;
+    private WorkerResource workerResource;
+    private UserResource userResource;
+    private ProjectResource projectResource;
 
     private static Initialize initialize;
    
     @BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-    	  initialize = new Initialize("registry-derby.sql");
+    	  initialize = new Initialize("expcatalog-derby.sql");
           initialize.initializeDB();
     }
     @Before
     public void setUp() throws Exception {
-        gatewayResource = (GatewayExperimentCatResource) ExpCatResourceUtils.getGateway(ServerSettings.getDefaultUserGateway());
-        workerResource = (WorkerExperimentCatResource) ExpCatResourceUtils.getWorker(gatewayResource.getGatewayName(), ServerSettings.getDefaultUser());
-        userResource = (UserExperimentCatResource) ExpCatResourceUtils.getUser(ServerSettings.getDefaultUser());
+        gatewayResource = (GatewayResource) ExpCatResourceUtils.getGateway(ServerSettings.getDefaultUserGateway());
+        workerResource = (WorkerResource) ExpCatResourceUtils.getWorker(gatewayResource.getGatewayName(), ServerSettings.getDefaultUser());
+        userResource = (UserResource) ExpCatResourceUtils.getUser(ServerSettings.getDefaultUser());
         projectResource = workerResource.getProject("default");
     }
 
@@ -67,23 +67,23 @@ public abstract class AbstractResourceTest {
 	}
    
 
-    public GatewayExperimentCatResource getGatewayResource() {
+    public GatewayResource getGatewayResource() {
         return gatewayResource;
     }
 
-    public WorkerExperimentCatResource getWorkerResource() {
+    public WorkerResource getWorkerResource() {
         return workerResource;
     }
 
-    public UserExperimentCatResource getUserResource() {
+    public UserResource getUserResource() {
         return userResource;
     }
 
-	public ProjectExperimentCatResource getProjectResource() {
+	public ProjectResource getProjectResource() {
 		return projectResource;
 	}
 
-	public void setProjectResource(ProjectExperimentCatResource projectResource) {
+	public void setProjectResource(ProjectResource projectResource) {
 		this.projectResource = projectResource;
 	}
 

@@ -44,8 +44,8 @@ import org.apache.airavata.registry.cpi.AppCatalogException;
 import java.util.*;
 
 public class AppCatalogThriftConversion {
-    public static ComputeResourceAppCatalogResourceAppCat getComputeHostResource (ComputeResourceDescription description){
-        ComputeResourceAppCatalogResourceAppCat resource = new ComputeResourceAppCatalogResourceAppCat();
+    public static ComputeResourceResource getComputeHostResource (ComputeResourceDescription description){
+        ComputeResourceResource resource = new ComputeResourceResource();
         resource.setHostName(description.getHostName());
         resource.setResourceDescription(description.getResourceDescription());
         resource.setResourceId(description.getComputeResourceId());
@@ -53,46 +53,46 @@ public class AppCatalogThriftConversion {
         return resource;
     }
 
-    public static ComputeResourceDescription getComputeHostDescription (ComputeResourceAppCatalogResourceAppCat resource) throws AppCatalogException {
+    public static ComputeResourceDescription getComputeHostDescription (ComputeResourceResource resource) throws AppCatalogException {
         ComputeResourceDescription description = new ComputeResourceDescription();
         description.setComputeResourceId(resource.getResourceId());
         description.setHostName(resource.getHostName());
         description.setResourceDescription(resource.getResourceDescription());
         description.setMaxMemoryPerNode(resource.getMaxMemoryPerNode());
-        HostAliasAppCatalogResourceAppCat aliasResource = new HostAliasAppCatalogResourceAppCat();
+        HostAliasAppResource aliasResource = new HostAliasAppResource();
         List<AppCatalogResource> resources = aliasResource.get(AppCatAbstractResource.HostAliasConstants.RESOURCE_ID, resource.getResourceId());
         if (resources != null && !resources.isEmpty()){
             description.setHostAliases(getHostAliases(resources));
         }
-        HostIPAddressAppCatalogResourceAppCat ipAddressResource = new HostIPAddressAppCatalogResourceAppCat();
+        HostIPAddressResource ipAddressResource = new HostIPAddressResource();
         List<AppCatalogResource> ipAddresses = ipAddressResource.get(AppCatAbstractResource.HostIPAddressConstants.RESOURCE_ID, resource.getResourceId());
         if (ipAddresses != null && !ipAddresses.isEmpty()){
             description.setIpAddresses(getIpAddresses(ipAddresses));
         }
 
-        BatchQueueAppCatalogResourceAppCat bqResource = new BatchQueueAppCatalogResourceAppCat();
+        BatchQueueResource bqResource = new BatchQueueResource();
         List<AppCatalogResource> batchQueues = bqResource.get(AppCatAbstractResource.BatchQueueConstants.COMPUTE_RESOURCE_ID, resource.getResourceId());
         if (batchQueues != null && !batchQueues.isEmpty()){
             description.setBatchQueues(getBatchQueues(batchQueues));
         }
         
-        ComputeResourceFileSystemAppCatalogResourceAppCat fsResource = new ComputeResourceFileSystemAppCatalogResourceAppCat();
+        ComputeResourceFileSystemResource fsResource = new ComputeResourceFileSystemResource();
         List<AppCatalogResource> fsList = fsResource.get(AppCatAbstractResource.ComputeResourceFileSystemConstants.COMPUTE_RESOURCE_ID, resource.getResourceId());
         description.setFileSystems(new HashMap<FileSystems,String>());
         if (fsList != null && !fsList.isEmpty()){
         	for (AppCatalogResource r : fsList) {
-        		ComputeResourceFileSystemAppCatalogResourceAppCat rr=(ComputeResourceFileSystemAppCatalogResourceAppCat)r;
+        		ComputeResourceFileSystemResource rr=(ComputeResourceFileSystemResource)r;
         		description.getFileSystems().put(FileSystems.valueOf(rr.getFileSystem()), rr.getPath());
 			}
         }
         
-        JobSubmissionInterfaceAppCatalogResourceAppCat jsiResource = new JobSubmissionInterfaceAppCatalogResourceAppCat();
+        JobSubmissionInterfaceResource jsiResource = new JobSubmissionInterfaceResource();
         List<AppCatalogResource> hsiList = jsiResource.get(AppCatAbstractResource.JobSubmissionInterfaceConstants.COMPUTE_RESOURCE_ID, resource.getResourceId());
         if (hsiList != null && !hsiList.isEmpty()){
             description.setJobSubmissionInterfaces(getJobSubmissionInterfaces(hsiList));
         }
         
-        DataMovementInterfaceAppCatalogResourceAppCat dmiResource = new DataMovementInterfaceAppCatalogResourceAppCat();
+        DataMovementInterfaceResource dmiResource = new DataMovementInterfaceResource();
         List<AppCatalogResource> dmiList = dmiResource.get(AppCatAbstractResource.DataMovementInterfaceConstants.COMPUTE_RESOURCE_ID, resource.getResourceId());
         if (dmiList != null && !dmiList.isEmpty()){
             description.setDataMovementInterfaces(getDataMovementInterfaces(dmiList));
@@ -103,7 +103,7 @@ public class AppCatalogThriftConversion {
     public static  List<ComputeResourceDescription> getComputeDescriptionList (List<AppCatalogResource> resources) throws AppCatalogException {
         List<ComputeResourceDescription> list = new ArrayList<ComputeResourceDescription>();
         for (AppCatalogResource resource : resources){
-            list.add(getComputeHostDescription((ComputeResourceAppCatalogResourceAppCat)resource));
+            list.add(getComputeHostDescription((ComputeResourceResource)resource));
         }
         return list;
     }
@@ -111,7 +111,7 @@ public class AppCatalogThriftConversion {
     public static List<String> getHostAliases (List<AppCatalogResource> resources){
         List<String> hostAliases = new ArrayList<String>();
         for (AppCatalogResource alias : resources){
-            hostAliases.add(((HostAliasAppCatalogResourceAppCat)alias).getAlias());
+            hostAliases.add(((HostAliasAppResource)alias).getAlias());
         }
         return hostAliases;
     }
@@ -119,7 +119,7 @@ public class AppCatalogThriftConversion {
     public static List<String> getIpAddresses (List<AppCatalogResource> resources){
         List<String> hostIpAddresses = new ArrayList<String>();
         for (AppCatalogResource resource : resources){
-            hostIpAddresses.add(((HostIPAddressAppCatalogResourceAppCat)resource).getIpaddress());
+            hostIpAddresses.add(((HostIPAddressResource)resource).getIpaddress());
         }
         return hostIpAddresses;
     }
@@ -127,7 +127,7 @@ public class AppCatalogThriftConversion {
     public static List<BatchQueue> getBatchQueues (List<AppCatalogResource> resources){
     	List<BatchQueue> batchQueues = new ArrayList<BatchQueue>();
         for (AppCatalogResource resource : resources){
-        	batchQueues.add(getBatchQueue((BatchQueueAppCatalogResourceAppCat)resource));
+        	batchQueues.add(getBatchQueue((BatchQueueResource)resource));
         }
         return batchQueues;
     }
@@ -135,12 +135,12 @@ public class AppCatalogThriftConversion {
     public static List<DataMovementInterface> getDataMovementInterfaces(List<AppCatalogResource> resources){
     	List<DataMovementInterface> dataMovementInterfaces = new ArrayList<DataMovementInterface>();
         for (AppCatalogResource resource : resources){
-        	dataMovementInterfaces.add(getDataMovementInterface((DataMovementInterfaceAppCatalogResourceAppCat)resource));
+        	dataMovementInterfaces.add(getDataMovementInterface((DataMovementInterfaceResource)resource));
         }
         return dataMovementInterfaces;
     }
     
-    public static DataMovementInterface getDataMovementInterface(DataMovementInterfaceAppCatalogResourceAppCat resource){
+    public static DataMovementInterface getDataMovementInterface(DataMovementInterfaceResource resource){
     	DataMovementInterface dmi = new DataMovementInterface();
     	dmi.setDataMovementInterfaceId(resource.getDataMovementInterfaceId());
     	dmi.setDataMovementProtocol(DataMovementProtocol.valueOf(resource.getDataMovementProtocol()));
@@ -148,8 +148,8 @@ public class AppCatalogThriftConversion {
         return dmi;
     }
     
-    public static DataMovementInterfaceAppCatalogResourceAppCat getDataMovementInterface(DataMovementInterface resource){
-    	DataMovementInterfaceAppCatalogResourceAppCat dmi = new DataMovementInterfaceAppCatalogResourceAppCat();
+    public static DataMovementInterfaceResource getDataMovementInterface(DataMovementInterface resource){
+    	DataMovementInterfaceResource dmi = new DataMovementInterfaceResource();
     	dmi.setDataMovementInterfaceId(resource.getDataMovementInterfaceId());
     	dmi.setDataMovementProtocol(resource.getDataMovementProtocol().toString());
     	dmi.setPriorityOrder(resource.getPriorityOrder());
@@ -159,12 +159,12 @@ public class AppCatalogThriftConversion {
     public static List<JobSubmissionInterface> getJobSubmissionInterfaces(List<AppCatalogResource> resources){
     	List<JobSubmissionInterface> jobSubmissionInterfaces = new ArrayList<JobSubmissionInterface>();
         for (AppCatalogResource resource : resources){
-        	jobSubmissionInterfaces.add(getJobSubmissionInterface((JobSubmissionInterfaceAppCatalogResourceAppCat)resource));
+        	jobSubmissionInterfaces.add(getJobSubmissionInterface((JobSubmissionInterfaceResource)resource));
         }
         return jobSubmissionInterfaces;
     }
     
-    public static JobSubmissionInterface getJobSubmissionInterface(JobSubmissionInterfaceAppCatalogResourceAppCat resource){
+    public static JobSubmissionInterface getJobSubmissionInterface(JobSubmissionInterfaceResource resource){
     	JobSubmissionInterface jsi = new JobSubmissionInterface();
     	jsi.setJobSubmissionInterfaceId(resource.getJobSubmissionInterfaceId());
     	jsi.setJobSubmissionProtocol(JobSubmissionProtocol.valueOf(resource.getJobSubmissionProtocol()));
@@ -172,15 +172,15 @@ public class AppCatalogThriftConversion {
         return jsi;
     }
     
-    public static JobSubmissionInterfaceAppCatalogResourceAppCat getJobSubmissionInterface(JobSubmissionInterface resource){
-    	JobSubmissionInterfaceAppCatalogResourceAppCat jsi = new JobSubmissionInterfaceAppCatalogResourceAppCat();
+    public static JobSubmissionInterfaceResource getJobSubmissionInterface(JobSubmissionInterface resource){
+    	JobSubmissionInterfaceResource jsi = new JobSubmissionInterfaceResource();
     	jsi.setJobSubmissionInterfaceId(resource.getJobSubmissionInterfaceId());
     	jsi.setJobSubmissionProtocol(resource.getJobSubmissionProtocol().toString());
     	jsi.setPriorityOrder(resource.getPriorityOrder());
         return jsi;
     }
     
-    public static BatchQueue getBatchQueue(BatchQueueAppCatalogResourceAppCat resource){
+    public static BatchQueue getBatchQueue(BatchQueueResource resource){
     	BatchQueue batchQueue = new BatchQueue();
     	batchQueue.setMaxJobsInQueue(resource.getMaxJobInQueue());
     	batchQueue.setMaxNodes(resource.getMaxNodes());
@@ -192,8 +192,8 @@ public class AppCatalogThriftConversion {
         return batchQueue;
     }
 
-    public static BatchQueueAppCatalogResourceAppCat getBatchQueue(BatchQueue resource){
-    	BatchQueueAppCatalogResourceAppCat batchQueue = new BatchQueueAppCatalogResourceAppCat();
+    public static BatchQueueResource getBatchQueue(BatchQueue resource){
+    	BatchQueueResource batchQueue = new BatchQueueResource();
     	batchQueue.setMaxJobInQueue(resource.getMaxJobsInQueue());
     	batchQueue.setMaxNodes(resource.getMaxNodes());
     	batchQueue.setMaxProcessors(resource.getMaxProcessors());
@@ -222,11 +222,11 @@ public class AppCatalogThriftConversion {
 //        return protocols;
 //    }
 
-    public static SshJobSubmissionAppCatalogResourceAppCat getSSHJobSubmission (SSHJobSubmission submission){
-    	SshJobSubmissionAppCatalogResourceAppCat resource = new SshJobSubmissionAppCatalogResourceAppCat();
+    public static SshJobSubmissionResource getSSHJobSubmission (SSHJobSubmission submission){
+    	SshJobSubmissionResource resource = new SshJobSubmissionResource();
         resource.setAlternativeSshHostname(submission.getAlternativeSSHHostName());
         resource.setJobSubmissionInterfaceId(submission.getJobSubmissionInterfaceId());
-        ResourceJobManagerAppCatalogResourceAppCat resourceJobManager = getResourceJobManager(submission.getResourceJobManager());
+        ResourceJobManagerResource resourceJobManager = getResourceJobManager(submission.getResourceJobManager());
 //        resourceJobManager.setResourceJobManagerId(submission.getJobSubmissionInterfaceId());
         resource.setResourceJobManagerId(resourceJobManager.getResourceJobManagerId());
         if (submission.getMonitorMode() != null){
@@ -241,8 +241,8 @@ public class AppCatalogThriftConversion {
     }
     
     
-    public static UnicoreJobSubmissionAppCatalogResourceAppCat getUnicoreJobSubmission (UnicoreJobSubmission submission){
-    	UnicoreJobSubmissionAppCatalogResourceAppCat resource = new UnicoreJobSubmissionAppCatalogResourceAppCat();
+    public static UnicoreJobSubmissionResource getUnicoreJobSubmission (UnicoreJobSubmission submission){
+    	UnicoreJobSubmissionResource resource = new UnicoreJobSubmissionResource();
         resource.setjobSubmissionInterfaceId(submission.getJobSubmissionInterfaceId());
         if (submission.getSecurityProtocol() != null){
             resource.setSecurityProtocol(submission.getSecurityProtocol().toString());
@@ -251,8 +251,8 @@ public class AppCatalogThriftConversion {
         return resource;
     }
 
-    public static UnicoreDataMovementAppCatalogResourceAppCat getUnicoreDMResource (UnicoreDataMovement dataMovement){
-        UnicoreDataMovementAppCatalogResourceAppCat resource = new UnicoreDataMovementAppCatalogResourceAppCat();
+    public static UnicoreDataMovementResource getUnicoreDMResource (UnicoreDataMovement dataMovement){
+        UnicoreDataMovementResource resource = new UnicoreDataMovementResource();
         resource.setDataMovementId(dataMovement.getDataMovementInterfaceId());
         if (dataMovement.getSecurityProtocol() != null){
             resource.setSecurityProtocol(dataMovement.getSecurityProtocol().toString());
@@ -262,8 +262,8 @@ public class AppCatalogThriftConversion {
     }
 
     
-    public static CloudSubmissionAppCatalogResourceAppCat getCloudJobSubmission (CloudJobSubmission submission){
-        CloudSubmissionAppCatalogResourceAppCat resource = new CloudSubmissionAppCatalogResourceAppCat();
+    public static CloudSubmissionResource getCloudJobSubmission (CloudJobSubmission submission){
+        CloudSubmissionResource resource = new CloudSubmissionResource();
         resource.setJobSubmissionInterfaceId(submission.getJobSubmissionInterfaceId());
         if (submission.getSecurityProtocol() != null){
             resource.setSecurityProtocol(submission.getSecurityProtocol().toString());
@@ -277,37 +277,37 @@ public class AppCatalogThriftConversion {
         return resource;
     }
 
-    public static LocalDataMovementAppCatalogResourceAppCat getLocalDataMovement(LOCALDataMovement localSubmission)throws AppCatalogException {
-    	LocalDataMovementAppCatalogResourceAppCat submission = new LocalDataMovementAppCatalogResourceAppCat();
+    public static LocalDataMovementResource getLocalDataMovement(LOCALDataMovement localSubmission)throws AppCatalogException {
+    	LocalDataMovementResource submission = new LocalDataMovementResource();
     	submission.setDataMovementInterfaceId(localSubmission.getDataMovementInterfaceId());
     	return submission;
     }
     
-    public static LOCALDataMovement getLocalDataMovement(LocalDataMovementAppCatalogResourceAppCat localSubmission)throws AppCatalogException {
+    public static LOCALDataMovement getLocalDataMovement(LocalDataMovementResource localSubmission)throws AppCatalogException {
     	LOCALDataMovement submission = new LOCALDataMovement();
     	submission.setDataMovementInterfaceId(localSubmission.getDataMovementInterfaceId());
     	return submission;
     }
     
     
-    public static LocalSubmissionAppCatalogResourceAppCat getLocalJobSubmission(LOCALSubmission localSubmission)throws AppCatalogException {
-    	LocalSubmissionAppCatalogResourceAppCat submission = new LocalSubmissionAppCatalogResourceAppCat();
+    public static LocalSubmissionResource getLocalJobSubmission(LOCALSubmission localSubmission)throws AppCatalogException {
+    	LocalSubmissionResource submission = new LocalSubmissionResource();
     	submission.setJobSubmissionInterfaceId(localSubmission.getJobSubmissionInterfaceId());
-    	ResourceJobManagerAppCatalogResourceAppCat resourceJobManager = getResourceJobManager(localSubmission.getResourceJobManager());
+    	ResourceJobManagerResource resourceJobManager = getResourceJobManager(localSubmission.getResourceJobManager());
     	submission.setResourceJobManagerId(resourceJobManager.getResourceJobManagerId());
     	submission.setResourceJobManagerResource(resourceJobManager);
     	return submission;
     }
     
-    public static LOCALSubmission getLocalJobSubmission(LocalSubmissionAppCatalogResourceAppCat localSubmission)throws AppCatalogException {
+    public static LOCALSubmission getLocalJobSubmission(LocalSubmissionResource localSubmission)throws AppCatalogException {
     	LOCALSubmission submission = new LOCALSubmission();
     	submission.setJobSubmissionInterfaceId(localSubmission.getJobSubmissionInterfaceId());
     	submission.setResourceJobManager(getResourceJobManager(localSubmission.getResourceJobManagerResource()));
     	return submission;
     }
     
-    public static ResourceJobManagerAppCatalogResourceAppCat getResourceJobManager(ResourceJobManager manager){
-    	ResourceJobManagerAppCatalogResourceAppCat r = new ResourceJobManagerAppCatalogResourceAppCat();
+    public static ResourceJobManagerResource getResourceJobManager(ResourceJobManager manager){
+    	ResourceJobManagerResource r = new ResourceJobManagerResource();
     	r.setResourceJobManagerId(manager.getResourceJobManagerId());
     	r.setJobManagerBinPath(manager.getJobManagerBinPath());
     	r.setPushMonitoringEndpoint(manager.getPushMonitoringEndpoint());
@@ -315,18 +315,18 @@ public class AppCatalogThriftConversion {
     	return r;
     }
     
-    public static ResourceJobManager getResourceJobManager(ResourceJobManagerAppCatalogResourceAppCat manager) throws AppCatalogException {
+    public static ResourceJobManager getResourceJobManager(ResourceJobManagerResource manager) throws AppCatalogException {
     	ResourceJobManager r = new ResourceJobManager();
     	r.setResourceJobManagerId(manager.getResourceJobManagerId());
     	r.setJobManagerBinPath(manager.getJobManagerBinPath());
     	r.setPushMonitoringEndpoint(manager.getPushMonitoringEndpoint());
     	r.setResourceJobManagerType(ResourceJobManagerType.valueOf(manager.getResourceJobManagerType()));
     	r.setJobManagerCommands(new HashMap<JobManagerCommand, String>());
-    	JobManagerCommandAppCatalogResourceAppCat jmcr=new JobManagerCommandAppCatalogResourceAppCat();
+    	JobManagerCommandResource jmcr=new JobManagerCommandResource();
         List<AppCatalogResource> jmcrList = jmcr.get(AppCatAbstractResource.JobManagerCommandConstants.RESOURCE_JOB_MANAGER_ID, manager.getResourceJobManagerId());
         if (jmcrList != null && !jmcrList.isEmpty()){
         	for (AppCatalogResource rrr : jmcrList) {
-        		JobManagerCommandAppCatalogResourceAppCat rr=(JobManagerCommandAppCatalogResourceAppCat)rrr;
+        		JobManagerCommandResource rr=(JobManagerCommandResource)rrr;
         		r.getJobManagerCommands().put(JobManagerCommand.valueOf(rr.getCommandType()), rr.getCommand());
 			}
         }
@@ -334,7 +334,7 @@ public class AppCatalogThriftConversion {
     }
     
     
-    public static SSHJobSubmission getSSHJobSubmissionDescription (SshJobSubmissionAppCatalogResourceAppCat submission) throws AppCatalogException {
+    public static SSHJobSubmission getSSHJobSubmissionDescription (SshJobSubmissionResource submission) throws AppCatalogException {
     	SSHJobSubmission sshJobSubmission = new SSHJobSubmission();
     	sshJobSubmission.setAlternativeSSHHostName(submission.getAlternativeSshHostname());
     	sshJobSubmission.setJobSubmissionInterfaceId(submission.getJobSubmissionInterfaceId());
@@ -347,7 +347,7 @@ public class AppCatalogThriftConversion {
         return sshJobSubmission;
     }
 
-    public static UnicoreJobSubmission getUnicoreJobSubmissionDescription (UnicoreJobSubmissionAppCatalogResourceAppCat submission) throws AppCatalogException {
+    public static UnicoreJobSubmission getUnicoreJobSubmissionDescription (UnicoreJobSubmissionResource submission) throws AppCatalogException {
     	UnicoreJobSubmission unicoreJobSubmission = new UnicoreJobSubmission();
     	unicoreJobSubmission.setUnicoreEndPointURL(submission.getUnicoreEndpointUrl());
     	unicoreJobSubmission.setJobSubmissionInterfaceId(submission.getjobSubmissionInterfaceId());
@@ -357,7 +357,7 @@ public class AppCatalogThriftConversion {
         return unicoreJobSubmission;
     }
 
-    public static UnicoreDataMovement getUnicoreDMDescription (UnicoreDataMovementAppCatalogResourceAppCat resource) throws AppCatalogException {
+    public static UnicoreDataMovement getUnicoreDMDescription (UnicoreDataMovementResource resource) throws AppCatalogException {
         UnicoreDataMovement dataMovement = new UnicoreDataMovement();
         dataMovement.setUnicoreEndPointURL(resource.getUnicoreEndpointUrl());
         dataMovement.setDataMovementInterfaceId(resource.getDataMovementId());
@@ -368,7 +368,7 @@ public class AppCatalogThriftConversion {
     }
 
     
-    public static CloudJobSubmission getCloudJobSubmissionDescription (CloudSubmissionAppCatalogResourceAppCat submission) throws AppCatalogException {
+    public static CloudJobSubmission getCloudJobSubmissionDescription (CloudSubmissionResource submission) throws AppCatalogException {
         CloudJobSubmission cloudJobSubmission = new CloudJobSubmission();
         cloudJobSubmission.setJobSubmissionInterfaceId(submission.getJobSubmissionInterfaceId());
         cloudJobSubmission.setExecutableType(submission.getExecutableType());
@@ -394,7 +394,7 @@ public class AppCatalogThriftConversion {
 //        return globusJobSubmission;
 //    }
 
-    public static SCPDataMovement getSCPDataMovementDescription (ScpDataMovementAppCatalogResourceAppCat dataMovementResource) throws AppCatalogException {
+    public static SCPDataMovement getSCPDataMovementDescription (ScpDataMovementResource dataMovementResource) throws AppCatalogException {
         SCPDataMovement dataMovement = new SCPDataMovement();
         dataMovement.setDataMovementInterfaceId(dataMovementResource.getDataMovementInterfaceId());
         dataMovement.setAlternativeSCPHostName(dataMovementResource.getAlternativeScpHostname());
@@ -403,8 +403,8 @@ public class AppCatalogThriftConversion {
         return dataMovement;
     }
     
-    public static ScpDataMovementAppCatalogResourceAppCat getSCPDataMovementDescription (SCPDataMovement dataMovementResource) throws AppCatalogException {
-    	ScpDataMovementAppCatalogResourceAppCat dataMovement = new ScpDataMovementAppCatalogResourceAppCat();
+    public static ScpDataMovementResource getSCPDataMovementDescription (SCPDataMovement dataMovementResource) throws AppCatalogException {
+    	ScpDataMovementResource dataMovement = new ScpDataMovementResource();
         dataMovement.setDataMovementInterfaceId(dataMovementResource.getDataMovementInterfaceId());
         dataMovement.setAlternativeScpHostname(dataMovementResource.getAlternativeSCPHostName());
         dataMovement.setSecurityProtocol(dataMovementResource.getSecurityProtocol().toString());
@@ -412,11 +412,11 @@ public class AppCatalogThriftConversion {
         return dataMovement;
     }
 
-    public static GridFTPDataMovement getGridFTPDataMovementDescription (GridftpDataMovementAppCatalogResourceAppCat dataMovementResource) throws AppCatalogException {
+    public static GridFTPDataMovement getGridFTPDataMovementDescription (GridftpDataMovementResource dataMovementResource) throws AppCatalogException {
         GridFTPDataMovement dataMovement = new GridFTPDataMovement();
         dataMovement.setDataMovementInterfaceId(dataMovementResource.getDataMovementInterfaceId());
         dataMovement.setSecurityProtocol(SecurityProtocol.valueOf(dataMovementResource.getSecurityProtocol()));
-        GridftpEndpointAppCatalogResourceAppCat endpointResource = new GridftpEndpointAppCatalogResourceAppCat();
+        GridftpEndpointResource endpointResource = new GridftpEndpointResource();
         List<AppCatalogResource> endpoints = endpointResource.get(AppCatAbstractResource.GridftpEndpointConstants.DATA_MOVEMENT_INTERFACE_ID, dataMovementResource.getDataMovementInterfaceId());
         if (endpoints != null && !endpoints.isEmpty()){
             dataMovement.setGridFTPEndPoints(getGridFTPDMEPList(endpoints));
@@ -424,8 +424,8 @@ public class AppCatalogThriftConversion {
         return dataMovement;
     }
 
-    public static GridftpDataMovementAppCatalogResourceAppCat getGridFTPDataMovementDescription (GridFTPDataMovement dataMovementResource) throws AppCatalogException {
-    	GridftpDataMovementAppCatalogResourceAppCat dataMovement = new GridftpDataMovementAppCatalogResourceAppCat();
+    public static GridftpDataMovementResource getGridFTPDataMovementDescription (GridFTPDataMovement dataMovementResource) throws AppCatalogException {
+    	GridftpDataMovementResource dataMovement = new GridftpDataMovementResource();
         dataMovement.setDataMovementInterfaceId(dataMovementResource.getDataMovementInterfaceId());
         dataMovement.setSecurityProtocol(dataMovementResource.getSecurityProtocol().toString());
         return dataMovement;
@@ -434,7 +434,7 @@ public class AppCatalogThriftConversion {
     public static List<String> getGridFTPDMEPList (List<AppCatalogResource> endpoints){
         List<String> list = new ArrayList<String>();
         for (AppCatalogResource resource : endpoints){
-            list.add(((GridftpEndpointAppCatalogResourceAppCat) resource).getEndpoint());
+            list.add(((GridftpEndpointResource) resource).getEndpoint());
         }
         return list;
     }
@@ -442,7 +442,7 @@ public class AppCatalogThriftConversion {
     public static List<String> getGlobusGateKeeperEndPointList (List<AppCatalogResource> resources) throws AppCatalogException {
         List<String> list = new ArrayList<String>();
         for (AppCatalogResource resource : resources){
-            list.add(((GlobusGKEndpointAppCatalogResourceAppCat) resource).getEndpoint());
+            list.add(((GlobusGKEndpointResource) resource).getEndpoint());
         }
         return list;
     }
@@ -519,7 +519,7 @@ public class AppCatalogThriftConversion {
 //        return resource;
 //    }
 
-    public static ApplicationModule getApplicationModuleDesc (AppModuleAppCatalogResourceAppCat resource){
+    public static ApplicationModule getApplicationModuleDesc (AppModuleResource resource){
         ApplicationModule module = new ApplicationModule();
         module.setAppModuleId(resource.getModuleId());
         module.setAppModuleDescription(resource.getModuleDesc());
@@ -528,7 +528,7 @@ public class AppCatalogThriftConversion {
         return module;
     }
 
-    public static ApplicationInterfaceDescription getApplicationInterfaceDescription (AppInterfaceAppCatalogResourceAppCat resource) throws AppCatalogException {
+    public static ApplicationInterfaceDescription getApplicationInterfaceDescription (AppInterfaceResource resource) throws AppCatalogException {
         ApplicationInterfaceDescription description = new ApplicationInterfaceDescription();
         description.setApplicationInterfaceId(resource.getInterfaceId());
         description.setApplicationName(resource.getAppName());
@@ -540,13 +540,13 @@ public class AppCatalogThriftConversion {
             description.setApplicationModules(getAppModuleIds(appModules));
         }
 
-        ApplicationInputAppCatalogResourceAppCat inputResource = new ApplicationInputAppCatalogResourceAppCat();
+        ApplicationInputResource inputResource = new ApplicationInputResource();
         List<AppCatalogResource> appInputs = inputResource.get(AppCatAbstractResource.AppInputConstants.INTERFACE_ID, resource.getInterfaceId());
         if (appInputs != null && !appInputs.isEmpty()){
             description.setApplicationInputs(getAppInputs(appInputs));
         }
 
-        ApplicationOutputAppCatalogResourceAppCat outputResource = new ApplicationOutputAppCatalogResourceAppCat();
+        ApplicationOutputResource outputResource = new ApplicationOutputResource();
         List<AppCatalogResource> appOutputs = outputResource.get(AppCatAbstractResource.AppOutputConstants.INTERFACE_ID, resource.getInterfaceId());
         if (appOutputs != null && !appOutputs.isEmpty()){
             description.setApplicationOutputs(getAppOutputs(appOutputs));
@@ -565,7 +565,7 @@ public class AppCatalogThriftConversion {
     public static List<ApplicationModule> getAppModules (List<AppCatalogResource> appModules){
         List<ApplicationModule> modules = new ArrayList<ApplicationModule>();
         for (AppCatalogResource resource : appModules){
-            modules.add(getApplicationModuleDesc((AppModuleAppCatalogResourceAppCat) resource));
+            modules.add(getApplicationModuleDesc((AppModuleResource) resource));
         }
         return modules;
     }
@@ -573,7 +573,7 @@ public class AppCatalogThriftConversion {
     public static List<ApplicationInterfaceDescription> getAppInterfaceDescList (List<AppCatalogResource> appInterfaces) throws AppCatalogException {
         List<ApplicationInterfaceDescription> interfaceDescriptions = new ArrayList<ApplicationInterfaceDescription>();
         for (AppCatalogResource resource : appInterfaces){
-            interfaceDescriptions.add(getApplicationInterfaceDescription((AppInterfaceAppCatalogResourceAppCat) resource));
+            interfaceDescriptions.add(getApplicationInterfaceDescription((AppInterfaceResource) resource));
         }
         return interfaceDescriptions;
     }
@@ -581,12 +581,12 @@ public class AppCatalogThriftConversion {
     public static List<InputDataObjectType> getAppInputs (List<AppCatalogResource> resources){
         List<InputDataObjectType> inputs = new ArrayList<InputDataObjectType>();
         for (AppCatalogResource resource : resources){
-            inputs.add(getInputDataObjType((ApplicationInputAppCatalogResourceAppCat) resource));
+            inputs.add(getInputDataObjType((ApplicationInputResource) resource));
         }
         return inputs;
     }
 
-    public static InputDataObjectType getInputDataObjType (ApplicationInputAppCatalogResourceAppCat input){
+    public static InputDataObjectType getInputDataObjType (ApplicationInputResource input){
         InputDataObjectType inputDataObjectType = new InputDataObjectType();
         inputDataObjectType.setName(input.getInputKey());
         inputDataObjectType.setValue(input.getInputVal());
@@ -605,11 +605,11 @@ public class AppCatalogThriftConversion {
     public static List<OutputDataObjectType> getAppOutputs (List<AppCatalogResource> resources){
         List<OutputDataObjectType> outputs = new ArrayList<OutputDataObjectType>();
         for (AppCatalogResource resource : resources){
-            outputs.add(getOutputDataObjType((ApplicationOutputAppCatalogResourceAppCat) resource));
+            outputs.add(getOutputDataObjType((ApplicationOutputResource) resource));
         }
         return outputs;
     }
-    public static OutputDataObjectType getOutputDataObjType (ApplicationOutputAppCatalogResourceAppCat output){
+    public static OutputDataObjectType getOutputDataObjType (ApplicationOutputResource output){
         OutputDataObjectType outputDataObjectType = new OutputDataObjectType();
         outputDataObjectType.setName(output.getOutputKey());
         outputDataObjectType.setValue(output.getOutputVal());
@@ -623,7 +623,7 @@ public class AppCatalogThriftConversion {
         return outputDataObjectType;
     }
 
-    public static ApplicationDeploymentDescription getApplicationDeploymentDescription (AppDeploymentAppCatalogResourceAppCat resource) throws AppCatalogException {
+    public static ApplicationDeploymentDescription getApplicationDeploymentDescription (AppDeploymentResource resource) throws AppCatalogException {
         ApplicationDeploymentDescription description = new ApplicationDeploymentDescription();
         description.setAppDeploymentId(resource.getDeploymentId());
         description.setAppModuleId(resource.getAppModuleId());
@@ -633,42 +633,42 @@ public class AppCatalogThriftConversion {
             description.setParallelism(ApplicationParallelismType.valueOf(resource.getParallelism()));
         }
         description.setAppDeploymentDescription(resource.getAppDes());
-        ModuleLoadCmdAppCatalogResourceAppCat cmdResource = new ModuleLoadCmdAppCatalogResourceAppCat();
+        ModuleLoadCmdResource cmdResource = new ModuleLoadCmdResource();
         List<AppCatalogResource> moduleLoadCmds = cmdResource.get(AppCatAbstractResource.ModuleLoadCmdConstants.APP_DEPLOYMENT_ID, resource.getDeploymentId());
         if (moduleLoadCmds != null && !moduleLoadCmds.isEmpty()){
             for (AppCatalogResource moduleLoadCmd : moduleLoadCmds){
-                description.addToModuleLoadCmds(((ModuleLoadCmdAppCatalogResourceAppCat) moduleLoadCmd).getCmd());
+                description.addToModuleLoadCmds(((ModuleLoadCmdResource) moduleLoadCmd).getCmd());
             }
         }
-        LibraryPrepandPathAppCatalogResourceAppCat prepandPathResource = new LibraryPrepandPathAppCatalogResourceAppCat();
+        LibraryPrepandPathResource prepandPathResource = new LibraryPrepandPathResource();
         List<AppCatalogResource> libPrepandPaths = prepandPathResource.get(AppCatAbstractResource.LibraryPrepandPathConstants.DEPLOYMENT_ID, resource.getDeploymentId());
         if (libPrepandPaths != null && !libPrepandPaths.isEmpty()){
             description.setLibPrependPaths(getLibPrepandPaths(libPrepandPaths));
         }
 
-        LibraryApendPathAppCatalogResourceAppCat apendPathResource = new LibraryApendPathAppCatalogResourceAppCat();
+        LibraryApendPathResource apendPathResource = new LibraryApendPathResource();
         List<AppCatalogResource> libApendPaths = apendPathResource.get(AppCatAbstractResource.LibraryPrepandPathConstants.DEPLOYMENT_ID, resource.getDeploymentId());
         if (libApendPaths != null && !libApendPaths.isEmpty()){
             description.setLibAppendPaths(getLibApendPaths(libApendPaths));
         }
 
-        AppEnvironmentAppCatalogResourceAppCat appEnvironmentResource = new AppEnvironmentAppCatalogResourceAppCat();
+        AppEnvironmentResource appEnvironmentResource = new AppEnvironmentResource();
         List<AppCatalogResource> appEnvList = appEnvironmentResource.get(AppCatAbstractResource.LibraryPrepandPathConstants.DEPLOYMENT_ID, resource.getDeploymentId());
         if (appEnvList != null && !appEnvList.isEmpty()){
             description.setSetEnvironment(getAppEnvPaths(appEnvList));
         }
-        PreJobCommandAppCatalogResourceAppCat preJobCommandResource = new PreJobCommandAppCatalogResourceAppCat();
+        PreJobCommandResource preJobCommandResource = new PreJobCommandResource();
         List<AppCatalogResource> preJobCommands = preJobCommandResource.get(AppCatAbstractResource.PreJobCommandConstants.DEPLOYMENT_ID, resource.getDeploymentId());
         if (preJobCommands != null && !preJobCommands.isEmpty()){
             for (AppCatalogResource prejobCommand : preJobCommands){
-                description.addToPreJobCommands(((PreJobCommandAppCatalogResourceAppCat) prejobCommand).getCommand());
+                description.addToPreJobCommands(((PreJobCommandResource) prejobCommand).getCommand());
             }
         }
-        PostJobCommandAppCatalogResourceAppCat postJobCommandResource = new PostJobCommandAppCatalogResourceAppCat();
+        PostJobCommandResource postJobCommandResource = new PostJobCommandResource();
         List<AppCatalogResource> postJobCommands = postJobCommandResource.get(AppCatAbstractResource.PostJobCommandConstants.DEPLOYMENT_ID, resource.getDeploymentId());
         if (postJobCommands != null && !postJobCommands.isEmpty()){
             for (AppCatalogResource postjobCommand : postJobCommands){
-                description.addToPostJobCommands(((PostJobCommandAppCatalogResourceAppCat) postjobCommand).getCommand());
+                description.addToPostJobCommands(((PostJobCommandResource) postjobCommand).getCommand());
             }
         }
         return description;
@@ -677,24 +677,24 @@ public class AppCatalogThriftConversion {
     public static List<ApplicationDeploymentDescription> getAppDepDescList (List<AppCatalogResource> resources) throws AppCatalogException {
         List<ApplicationDeploymentDescription> appList = new ArrayList<ApplicationDeploymentDescription>();
         for (AppCatalogResource resource : resources){
-            appList.add(getApplicationDeploymentDescription((AppDeploymentAppCatalogResourceAppCat)resource));
+            appList.add(getApplicationDeploymentDescription((AppDeploymentResource)resource));
         }
         return appList;
     }
 
     public static SetEnvPaths getSetEnvPath(AppCatalogResource resource){
         SetEnvPaths envPaths = new SetEnvPaths();
-        if (resource instanceof LibraryPrepandPathAppCatalogResourceAppCat){
-            envPaths.setName(((LibraryPrepandPathAppCatalogResourceAppCat) resource).getName());
-            envPaths.setValue(((LibraryPrepandPathAppCatalogResourceAppCat) resource).getValue());
+        if (resource instanceof LibraryPrepandPathResource){
+            envPaths.setName(((LibraryPrepandPathResource) resource).getName());
+            envPaths.setValue(((LibraryPrepandPathResource) resource).getValue());
             return envPaths;
-        }else if (resource instanceof LibraryApendPathAppCatalogResourceAppCat){
-            envPaths.setName(((LibraryApendPathAppCatalogResourceAppCat) resource).getName());
-            envPaths.setValue(((LibraryApendPathAppCatalogResourceAppCat) resource).getValue());
+        }else if (resource instanceof LibraryApendPathResource){
+            envPaths.setName(((LibraryApendPathResource) resource).getName());
+            envPaths.setValue(((LibraryApendPathResource) resource).getValue());
             return envPaths;
-        }else if (resource instanceof AppEnvironmentAppCatalogResourceAppCat){
-            envPaths.setName(((AppEnvironmentAppCatalogResourceAppCat) resource).getName());
-            envPaths.setValue(((AppEnvironmentAppCatalogResourceAppCat) resource).getValue());
+        }else if (resource instanceof AppEnvironmentResource){
+            envPaths.setName(((AppEnvironmentResource) resource).getName());
+            envPaths.setValue(((AppEnvironmentResource) resource).getValue());
             return envPaths;
         }else {
             return null;
@@ -725,7 +725,7 @@ public class AppCatalogThriftConversion {
         return pathList;
     }
 
-    public static ComputeResourcePreference getComputeResourcePreference (ComputeHostPreferenceAppCatalogResourceAppCat resource){
+    public static ComputeResourcePreference getComputeResourcePreference (ComputeHostPreferenceResource resource){
         ComputeResourcePreference preference = new ComputeResourcePreference();
         preference.setComputeResourceId(resource.getResourceId());
         preference.setOverridebyAiravata(resource.getOverrideByAiravata());
@@ -746,13 +746,13 @@ public class AppCatalogThriftConversion {
         List<ComputeResourcePreference> preferences = new ArrayList<ComputeResourcePreference>();
         if (resources != null && !resources.isEmpty()){
             for (AppCatalogResource resource : resources){
-                 preferences.add(getComputeResourcePreference((ComputeHostPreferenceAppCatalogResourceAppCat)resource));
+                 preferences.add(getComputeResourcePreference((ComputeHostPreferenceResource)resource));
             }
         }
         return preferences;
     }
 
-    public static InputDataObjectType getWorkflowInput (WorkflowInputAppCatalogResourceAppCat resource){
+    public static InputDataObjectType getWorkflowInput (WorkflowInputResource resource){
         InputDataObjectType input = new InputDataObjectType();
         input.setName(resource.getInputKey());
         input.setApplicationArgument(resource.getAppArgument());
@@ -770,20 +770,20 @@ public class AppCatalogThriftConversion {
         List<InputDataObjectType> inputResources = new ArrayList<InputDataObjectType>();
         if (resources != null && !resources.isEmpty()){
             for (AppCatalogResource resource : resources){
-                inputResources.add(getWorkflowInput((WorkflowInputAppCatalogResourceAppCat) resource));
+                inputResources.add(getWorkflowInput((WorkflowInputResource) resource));
             }
         }
         return inputResources;
     }
 
-    public static GatewayResourceProfile getGatewayResourceProfile(GatewayProfileAppCatalogResourceAppCat gw, List<ComputeResourcePreference> preferences){
+    public static GatewayResourceProfile getGatewayResourceProfile(GatewayProfileResource gw, List<ComputeResourcePreference> preferences){
         GatewayResourceProfile gatewayProfile = new GatewayResourceProfile();
         gatewayProfile.setGatewayID(gw.getGatewayID());
         gatewayProfile.setComputeResourcePreferences(preferences);
         return gatewayProfile;
     }
 
-    public static Workflow getWorkflow (WorkflowAppCatalogResourceAppCat resource) throws AppCatalogException {
+    public static Workflow getWorkflow (WorkflowResource resource) throws AppCatalogException {
         Workflow workflow = new Workflow();
         workflow.setTemplateId(resource.getWfTemplateId());
         workflow.setGraph(resource.getGraph());
@@ -791,7 +791,7 @@ public class AppCatalogThriftConversion {
         if (resource.getImage() != null){
             workflow.setImage(resource.getImage().getBytes());
         }
-        WorkflowInputAppCatalogResourceAppCat inputResource = new WorkflowInputAppCatalogResourceAppCat();
+        WorkflowInputResource inputResource = new WorkflowInputResource();
         List<AppCatalogResource> resources = inputResource.get(AppCatAbstractResource.WFInputConstants.WF_TEMPLATE_ID, resource.getWfTemplateId());
         workflow.setWorkflowInputs(getWFInputs(resources));
 

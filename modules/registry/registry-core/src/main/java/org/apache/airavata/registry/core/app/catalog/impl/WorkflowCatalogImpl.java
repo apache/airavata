@@ -44,7 +44,7 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
     public List<String> getAllWorkflows(String gatewayId) throws AppCatalogException {
         List<String> workflowIds = new ArrayList<String>();
         try {
-            WorkflowAppCatalogResourceAppCat resource = new WorkflowAppCatalogResourceAppCat();
+            WorkflowResource resource = new WorkflowResource();
             resource.setGatewayId(gatewayId);
             workflowIds = resource.getAllIds();
         } catch (Exception e) {
@@ -57,8 +57,8 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
     @Override
     public Workflow getWorkflow(String workflowTemplateId) throws AppCatalogException {
         try {
-            WorkflowAppCatalogResourceAppCat resource = new WorkflowAppCatalogResourceAppCat();
-            WorkflowAppCatalogResourceAppCat wfResource = (WorkflowAppCatalogResourceAppCat)resource.get(workflowTemplateId);
+            WorkflowResource resource = new WorkflowResource();
+            WorkflowResource wfResource = (WorkflowResource)resource.get(workflowTemplateId);
             return AppCatalogThriftConversion.getWorkflow(wfResource);
         } catch (Exception e) {
             logger.error("Error while retrieving the workflow...", e);
@@ -69,7 +69,7 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
     @Override
     public void deleteWorkflow(String workflowTemplateId) throws AppCatalogException {
         try {
-            WorkflowAppCatalogResourceAppCat resource = new WorkflowAppCatalogResourceAppCat();
+            WorkflowResource resource = new WorkflowResource();
             resource.remove(workflowTemplateId);
         } catch (Exception e) {
             logger.error("Error while deleting the workflow...", e);
@@ -80,7 +80,7 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
     @Override
     public String registerWorkflow(Workflow workflow, String gatewayId) throws AppCatalogException {
         try {
-            WorkflowAppCatalogResourceAppCat resource = new WorkflowAppCatalogResourceAppCat();
+            WorkflowResource resource = new WorkflowResource();
             resource.setWfTemplateId(AppCatalogUtils.getID(workflow.getName()));
             resource.setWfName(workflow.getName());
             resource.setGraph(workflow.getGraph());
@@ -93,7 +93,7 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
             List<InputDataObjectType> workflowInputs = workflow.getWorkflowInputs();
             if (workflowInputs != null && workflowInputs.size() != 0){
                 for (InputDataObjectType input : workflowInputs){
-                    WorkflowInputAppCatalogResourceAppCat wfInputResource = new WorkflowInputAppCatalogResourceAppCat();
+                    WorkflowInputResource wfInputResource = new WorkflowInputResource();
                     wfInputResource.setWorkflowResource(resource);
                     wfInputResource.setInputKey(input.getName());
                     wfInputResource.setInputVal(input.getValue());
@@ -109,7 +109,7 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
             List<OutputDataObjectType> workflowOutputs = workflow.getWorkflowOutputs();
             if (workflowOutputs != null && workflowOutputs.size() != 0){
                 for (OutputDataObjectType output : workflowOutputs){
-                    WorkflowOutputAppCatalogResourceAppCat outputResource = new WorkflowOutputAppCatalogResourceAppCat();
+                    WorkflowOutputResource outputResource = new WorkflowOutputResource();
                     outputResource.setWorkflowResource(resource);
                     outputResource.setOutputKey(output.getName());
                     outputResource.setOutputVal(output.getValue());
@@ -128,8 +128,8 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
     @Override
     public void updateWorkflow(String workflowTemplateId, Workflow workflow) throws AppCatalogException {
         try {
-            WorkflowAppCatalogResourceAppCat resource = new WorkflowAppCatalogResourceAppCat();
-            WorkflowAppCatalogResourceAppCat existingWF = (WorkflowAppCatalogResourceAppCat)resource.get(workflowTemplateId);
+            WorkflowResource resource = new WorkflowResource();
+            WorkflowResource existingWF = (WorkflowResource)resource.get(workflowTemplateId);
             existingWF.setWfName(workflow.getName());
             existingWF.setGraph(workflow.getGraph());
             if (workflow.getImage() != null){
@@ -139,11 +139,11 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
             List<InputDataObjectType> existingwFInputs = workflow.getWorkflowInputs();
             if (existingwFInputs != null && existingwFInputs.size() != 0){
                 for (InputDataObjectType input : existingwFInputs){
-                    WorkflowInputAppCatalogResourceAppCat wfInputResource = new WorkflowInputAppCatalogResourceAppCat();
+                    WorkflowInputResource wfInputResource = new WorkflowInputResource();
                     Map<String, String> ids = new HashMap<String, String>();
                     ids.put(AppCatAbstractResource.WFInputConstants.WF_TEMPLATE_ID,existingWF.getWfTemplateId());
                     ids.put(AppCatAbstractResource.WFInputConstants.INPUT_KEY,input.getName());
-                    WorkflowInputAppCatalogResourceAppCat existingInput = (WorkflowInputAppCatalogResourceAppCat)wfInputResource.get(ids);
+                    WorkflowInputResource existingInput = (WorkflowInputResource)wfInputResource.get(ids);
                     existingInput.setWorkflowResource(existingWF);
                     existingInput.setInputKey(input.getName());
                     existingInput.setInputVal(input.getValue());
@@ -159,11 +159,11 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
             List<OutputDataObjectType> workflowOutputs = workflow.getWorkflowOutputs();
             if (workflowOutputs != null && workflowOutputs.size() != 0){
                 for (OutputDataObjectType output : workflowOutputs){
-                    WorkflowOutputAppCatalogResourceAppCat outputResource = new WorkflowOutputAppCatalogResourceAppCat();
+                    WorkflowOutputResource outputResource = new WorkflowOutputResource();
                     Map<String, String> ids = new HashMap<String, String>();
                     ids.put(AppCatAbstractResource.WFOutputConstants.WF_TEMPLATE_ID,existingWF.getWfTemplateId());
                     ids.put(AppCatAbstractResource.WFOutputConstants.OUTPUT_KEY,output.getName());
-                    WorkflowOutputAppCatalogResourceAppCat existingOutput = (WorkflowOutputAppCatalogResourceAppCat)outputResource.get(ids);
+                    WorkflowOutputResource existingOutput = (WorkflowOutputResource)outputResource.get(ids);
                     existingOutput.setWorkflowResource(existingWF);
                     existingOutput.setOutputKey(output.getName());
                     existingOutput.setOutputVal(output.getValue());
@@ -181,10 +181,10 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
     @Override
     public String getWorkflowTemplateId(String workflowName) throws AppCatalogException {
         try {
-            WorkflowAppCatalogResourceAppCat resource = new WorkflowAppCatalogResourceAppCat();
+            WorkflowResource resource = new WorkflowResource();
             List<AppCatalogResource> resourceList = resource.get(AppCatAbstractResource.WorkflowConstants.WF_NAME, workflowName);
             if (resourceList != null && !resourceList.isEmpty()){
-                WorkflowAppCatalogResourceAppCat wfResource = (WorkflowAppCatalogResourceAppCat)resourceList.get(0);
+                WorkflowResource wfResource = (WorkflowResource)resourceList.get(0);
                 return wfResource.getWfTemplateId();
             }
         } catch (Exception e) {
@@ -197,7 +197,7 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
     @Override
     public boolean isWorkflowExistWithName(String workflowName) throws AppCatalogException {
         try {
-            WorkflowAppCatalogResourceAppCat resource = new WorkflowAppCatalogResourceAppCat();
+            WorkflowResource resource = new WorkflowResource();
             List<AppCatalogResource> resourceList = resource.get(AppCatAbstractResource.WorkflowConstants.WF_NAME, workflowName);
             if (resourceList != null && !resourceList.isEmpty()){
                 return true;
@@ -211,15 +211,15 @@ public class WorkflowCatalogImpl implements WorkflowCatalog {
 
     @Override
     public void updateWorkflowOutputs(String workflowTemplateId, List<OutputDataObjectType> workflowOutputs) throws AppCatalogException {
-        WorkflowAppCatalogResourceAppCat resource = new WorkflowAppCatalogResourceAppCat();
-        WorkflowAppCatalogResourceAppCat existingWF = (WorkflowAppCatalogResourceAppCat)resource.get(workflowTemplateId);
+        WorkflowResource resource = new WorkflowResource();
+        WorkflowResource existingWF = (WorkflowResource)resource.get(workflowTemplateId);
         if (workflowOutputs != null && workflowOutputs.size() != 0) {
             for (OutputDataObjectType output : workflowOutputs) {
-                WorkflowOutputAppCatalogResourceAppCat outputResource = new WorkflowOutputAppCatalogResourceAppCat();
+                WorkflowOutputResource outputResource = new WorkflowOutputResource();
                 Map<String, String> ids = new HashMap<String, String>();
                 ids.put(AppCatAbstractResource.WFOutputConstants.WF_TEMPLATE_ID, existingWF.getWfTemplateId());
                 ids.put(AppCatAbstractResource.WFOutputConstants.OUTPUT_KEY, output.getName());
-                WorkflowOutputAppCatalogResourceAppCat existingOutput = (WorkflowOutputAppCatalogResourceAppCat) outputResource.get(ids);
+                WorkflowOutputResource existingOutput = (WorkflowOutputResource) outputResource.get(ids);
                 existingOutput.setWorkflowResource(existingWF);
                 existingOutput.setOutputKey(output.getName());
                 existingOutput.setOutputVal(output.getValue());

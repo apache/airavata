@@ -29,8 +29,8 @@ import java.sql.SQLException;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
-import org.apache.airavata.registry.core.experiment.catalog.ResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.resources.GatewayResource;
 import org.apache.airavata.registry.core.experiment.catalog.resources.ProjectResource;
 import org.apache.airavata.registry.core.experiment.catalog.resources.UserResource;
@@ -85,19 +85,19 @@ public class RegistryInitUtil {
             }
             try{
                 GatewayResource gateway;
-                if (!ResourceUtils.isGatewayExist(ServerSettings.getDefaultUserGateway())){
-                    gateway = (GatewayResource)ResourceUtils.createGateway(ServerSettings.getDefaultUserGateway());
+                if (!ExpCatResourceUtils.isGatewayExist(ServerSettings.getDefaultUserGateway())){
+                    gateway = (GatewayResource)ExpCatResourceUtils.createGateway(ServerSettings.getDefaultUserGateway());
                     gateway.save();
                 }else {
-                    gateway = (GatewayResource)ResourceUtils.getGateway(ServerSettings.getDefaultUserGateway());
+                    gateway = (GatewayResource)ExpCatResourceUtils.getGateway(ServerSettings.getDefaultUserGateway());
                 }
 
                 UserResource user;
-                if (!ResourceUtils.isUserExist(ServerSettings.getDefaultUser())){
-                    user = ResourceUtils.createUser(ServerSettings.getDefaultUser(), ServerSettings.getDefaultUserPassword());
+                if (!ExpCatResourceUtils.isUserExist(ServerSettings.getDefaultUser())){
+                    user = ExpCatResourceUtils.createUser(ServerSettings.getDefaultUser(), ServerSettings.getDefaultUserPassword());
                     user.save();
                 }else {
-                    user = (UserResource)ResourceUtils.getUser(ServerSettings.getDefaultUser());
+                    user = (UserResource)ExpCatResourceUtils.getUser(ServerSettings.getDefaultUser());
                 }
 
                 WorkerResource workerResource;

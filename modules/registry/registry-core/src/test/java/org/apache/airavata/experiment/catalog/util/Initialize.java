@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.registry.core.experiment.catalog.util;
+package org.apache.airavata.experiment.catalog.util;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -41,7 +41,7 @@ import java.util.StringTokenizer;
 public class Initialize {
     private static final Logger logger = LoggerFactory.getLogger(Initialize.class);
     public static final String DERBY_SERVER_MODE_SYS_PROPERTY = "derby.drda.startNetworkServer";
-    public  String scriptName = "registry-derby.sql";
+    public  String scriptName = "expcatalog-derby.sql";
     private NetworkServerControl server;
     private static final String delimiter = ";";
     public static final String PERSISTANT_DATA = "Configuration";
@@ -134,23 +134,23 @@ public class Initialize {
         }
 
         try{
-            GatewayExperimentCatResource gatewayResource = new GatewayExperimentCatResource();
+            GatewayResource gatewayResource = new GatewayResource();
             gatewayResource.setGatewayId(ServerSettings.getSetting("default.registry.gateway"));
             gatewayResource.setGatewayName(ServerSettings.getSetting("default.registry.gateway"));
             gatewayResource.setDomain("test-domain");
             gatewayResource.setEmailAddress("test-email");
             gatewayResource.save();
             
-            UserExperimentCatResource userResource = new UserExperimentCatResource();
+            UserResource userResource = new UserResource();
             userResource.setUserName(ServerSettings.getSetting("default.registry.user"));
             userResource.setPassword(ServerSettings.getSetting("default.registry.password"));
             userResource.save();
 
-            WorkerExperimentCatResource workerResource = (WorkerExperimentCatResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
+            WorkerResource workerResource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
             workerResource.setUser(userResource.getUserName());
             workerResource.save();
             
-            ProjectExperimentCatResource projectResource = (ProjectExperimentCatResource)workerResource.create(ResourceType.PROJECT);
+            ProjectResource projectResource = (ProjectResource)workerResource.create(ResourceType.PROJECT);
             projectResource.setGatewayId(gatewayResource.getGatewayId());
             projectResource.setId("default");
             projectResource.setName("default");
