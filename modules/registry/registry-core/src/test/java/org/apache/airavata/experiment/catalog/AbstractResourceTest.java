@@ -19,10 +19,10 @@
  *
  */
 
-package org.apache.airavata.experiment.catalog;
+package org.apache.airavata.registry.core.experiment.catalog;
 
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.experiment.catalog.util.Initialize;
+import org.apache.airavata.registry.core.experiment.catalog.util.Initialize;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.resources.*;
 import org.apache.airavata.registry.core.experiment.catalog.resources.GatewayExperimentCatResource;

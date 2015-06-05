@@ -27,11 +27,11 @@ import java.net.URL;
 
 import javax.swing.*;
 
-import org.apache.airavata.experiment.catalog.ResourceType;
-import org.apache.airavata.experiment.catalog.ResourceUtils;
-import org.apache.airavata.experiment.catalog.resources.GatewayResource;
-import org.apache.airavata.experiment.catalog.resources.UserResource;
-import org.apache.airavata.experiment.catalog.resources.WorkerResource;
+import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
+import org.apache.airavata.registry.core.experiment.catalog.ResourceUtils;
+import org.apache.airavata.registry.core.experiment.catalog.resources.GatewayResource;
+import org.apache.airavata.registry.core.experiment.catalog.resources.UserResource;
+import org.apache.airavata.registry.core.experiment.catalog.resources.WorkerResource;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.ui.dialogs.XBayaDialog;
 import org.apache.airavata.xbaya.ui.widgets.GridPanel;

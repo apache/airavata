@@ -27,7 +27,7 @@
 //import org.apache.airavata.orchestrator.core.utils.OrchestratorConstants;
 //import org.apache.airavata.orchestrator.cpi.Orchestrator;
 //import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
-//import org.apache.airavata.experiment.registry.jpa.impl.RegistryFactory;
+//import org.apache.airavata.registry.core.experiment.registry.jpa.impl.RegistryFactory;
 //import org.apache.airavata.registry.cpi.ParentDataType;
 //import org.apache.airavata.registry.cpi.Registry;
 //import org.junit.Assert;

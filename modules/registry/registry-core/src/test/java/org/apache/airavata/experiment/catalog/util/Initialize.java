@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.experiment.catalog.util;
+package org.apache.airavata.registry.core.experiment.catalog.util;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
