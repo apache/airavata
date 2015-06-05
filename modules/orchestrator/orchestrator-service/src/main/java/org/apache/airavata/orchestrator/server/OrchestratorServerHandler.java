@@ -21,11 +21,10 @@
 
 package org.apache.airavata.orchestrator.server;
 
+import org.apache.airavata.registry.core.app.catalog.resources.AppCatAbstractResource;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.ComputeResource;
-import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
-import org.apache.aiaravata.application.catalog.data.resources.AbstractResource;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.logger.AiravataLogger;
@@ -123,7 +122,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			// first constructing the monitorManager and orchestrator, then fill
 			// the required properties
 			orchestrator = new SimpleOrchestratorImpl();
-			experimentCatalog = RegistryFactory.getDefaultRegistry();
+			experimentCatalog = RegistryFactory.getDefaultExpCatalog();
 			orchestrator.initialize();
 			orchestrator.getOrchestratorContext().setPublisher(this.publisher);
             startProcessConsumer();
@@ -322,7 +321,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			throws AppCatalogException, OrchestratorException,
 			ClassNotFoundException, ApplicationSettingsException,
 			InstantiationException, IllegalAccessException {
-		AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
+		AppCatalog appCatalog = RegistryFactory.getAppCatalog();
 		String selectedModuleId = getModuleId(appCatalog, applicationId);
 		ApplicationDeploymentDescription applicationDeploymentDescription = getAppDeployment(
 				appCatalog, taskData, selectedModuleId);
@@ -335,9 +334,9 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			ApplicationSettingsException, InstantiationException,
 			IllegalAccessException {
 		Map<String, String> moduleIdFilter = new HashMap<String, String>();
-		moduleIdFilter.put(AbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, selectedModuleId);
+		moduleIdFilter.put(AppCatAbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, selectedModuleId);
 		if (taskData.getTaskScheduling()!=null && taskData.getTaskScheduling().getResourceHostId() != null) {
-		    moduleIdFilter.put(AbstractResource.ApplicationDeploymentConstants.COMPUTE_HOST_ID, taskData.getTaskScheduling().getResourceHostId());
+		    moduleIdFilter.put(AppCatAbstractResource.ApplicationDeploymentConstants.COMPUTE_HOST_ID, taskData.getTaskScheduling().getResourceHostId());
 		}
 		List<ApplicationDeploymentDescription> applicationDeployements = appCatalog.getApplicationDeployment().getApplicationDeployements(moduleIdFilter);
 		Map<ComputeResourceDescription, ApplicationDeploymentDescription> deploymentMap = new HashMap<ComputeResourceDescription, ApplicationDeploymentDescription>();

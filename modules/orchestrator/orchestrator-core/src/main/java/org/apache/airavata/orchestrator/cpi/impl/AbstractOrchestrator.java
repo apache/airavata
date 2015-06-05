@@ -73,7 +73,7 @@ public abstract class AbstractOrchestrator implements Orchestrator {
         	orchestratorConfiguration = OrchestratorUtils.loadOrchestratorConfiguration();
             setGatewayProperties();
             /* initializing the Orchestratorcontext object */
-//            airavataRegistry = AiravataRegistryFactory.getRegistry(new Gateway(getGatewayName()), new AiravataUser(getAiravataUserName()));
+//            airavataRegistry = AiravataRegistryFactory.getExperimentCatalog(new Gateway(getGatewayName()), new AiravataUser(getAiravataUserName()));
             // todo move this code to gfac service mode Jobsubmitter,
             // todo this is ugly, SHOULD fix these isEmbedded mode code from Orchestrator
 //            if (!orchestratorConfiguration.isEmbeddedMode()) {

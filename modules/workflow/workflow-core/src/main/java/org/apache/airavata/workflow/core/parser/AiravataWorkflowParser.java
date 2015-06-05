@@ -21,16 +21,11 @@
 
 package org.apache.airavata.workflow.core.parser;
 
-import org.airavata.appcatalog.cpi.AppCatalogException;
-import org.airavata.appcatalog.cpi.WorkflowCatalog;
-import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.Registry;
-import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.airavata.registry.cpi.RegistryModelType;
+import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.workflow.core.WorkflowParser;
 import org.apache.airavata.workflow.core.dag.edge.DirectedEdge;
 import org.apache.airavata.workflow.core.dag.edge.Edge;
@@ -261,8 +256,8 @@ public class AiravataWorkflowParser implements WorkflowParser {
     }
 
     private Experiment getExperiment(String experimentId) throws RegistryException {
-        Registry registry = RegistryFactory.getDefaultRegistry();
-        return (Experiment)registry.get(RegistryModelType.EXPERIMENT, experimentId);
+        Registry registry = RegistryFactory.getRegistry();
+        return (Experiment)registry.getExperimentCatalog().get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
     }
 
     private Workflow getWorkflowFromExperiment(Experiment experiment) throws RegistryException, AppCatalogException, GraphException, ComponentException {
@@ -271,7 +266,7 @@ public class AiravataWorkflowParser implements WorkflowParser {
     }
 
     private WorkflowCatalog getWorkflowCatalog() throws AppCatalogException {
-        return AppCatalogFactory.getAppCatalog().getWorkflowCatalog();
+        return RegistryFactory.getAppCatalog().getWorkflowCatalog();
     }
 
     private ArrayList<Node> getInputNodes(Workflow wf) {

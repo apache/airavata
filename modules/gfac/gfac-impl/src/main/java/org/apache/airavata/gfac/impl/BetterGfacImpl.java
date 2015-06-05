@@ -20,9 +20,9 @@
 */
 package org.apache.airavata.gfac.impl;
 
+import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -188,7 +188,7 @@ public class BetterGfacImpl implements GFac {
             throw new GFacException("Error executing the job. The required Application deployment Id is missing");
         }
 
-        AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
+        AppCatalog appCatalog = RegistryFactory.getAppCatalog();
 
         //fetch the compute resource, application interface and deployment information from app catalog
         ApplicationInterfaceDescription applicationInterface = appCatalog.

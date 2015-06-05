@@ -46,7 +46,7 @@ public class OrchestratorClientFactoryTest {
         try {
             service = (new OrchestratorServer());
             service.start();
-            registry = RegistryFactory.getDefaultRegistry();
+            registry = RegistryFactory.getDefaultExpCatalog();
             documentCreator = new DocumentCreatorNew(getAiravataClient());
             documentCreator.createLocalHostDocs();
         } catch (Exception e) {

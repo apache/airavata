@@ -23,9 +23,9 @@ package org.apache.airavata.workflow.engine;
 
 import java.util.List;
 
+import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.ApplicationInterface;
-import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.util.ExecutionType;
@@ -38,7 +38,7 @@ public class WorkflowUtils {
     private static final Logger logger = LoggerFactory.getLogger(WorkflowUtils.class);
 	public static ExecutionType getExecutionType(Experiment experiment){
 		try {
-			ApplicationInterface applicationInterface = AppCatalogFactory.getAppCatalog().getApplicationInterface();
+			ApplicationInterface applicationInterface = RegistryFactory.getAppCatalog().getApplicationInterface();
 			List<String> allApplicationInterfaceIds = applicationInterface.getAllApplicationInterfaceIds();
 			String applicationId = experiment.getApplicationId();
 			if (allApplicationInterfaceIds.contains(applicationId)){

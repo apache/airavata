@@ -199,12 +199,12 @@ public class XBayaUtil {
 		return parameters;
 	}*/
 
-//    public static AiravataRegistry2 getRegistry(URL url) throws IOException, RepositoryException, URISyntaxException {
+//    public static AiravataRegistry2 getExperimentCatalog(URL url) throws IOException, RepositoryException, URISyntaxException {
 //        Properties properties = new Properties();
 //        properties.load(url.openStream());
 //        JCRComponentRegistry jcrComponentRegistry = new JCRComponentRegistry(new URI((String) properties.get(JCR_URL)),
 //                (String) properties.get(JCR_USER),(String) properties.get(JCR_PASS));
-//        return jcrComponentRegistry.getRegistry();
+//        return jcrComponentRegistry.getExperimentCatalog();
 //    }
 
 }

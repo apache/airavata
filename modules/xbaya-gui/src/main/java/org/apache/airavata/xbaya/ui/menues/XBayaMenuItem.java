@@ -318,7 +318,7 @@ public class XBayaMenuItem implements XBayaExecutionModeListener {
 //                    	serviceDescriptionDialog.open();
 ////                        ServiceDescriptionDialog serviceDescriptionDialog = new ServiceDescriptionDialog(
 ////                                engine.getConfiguration().getJcrComponentRegistry()
-////                                        .getRegistry());
+////                                        .getExperimentCatalog());
 ////                        serviceDescriptionDialog.open();
 //                    	if (serviceDescriptionDialog.isServiceCreated()){
 ////                    		engine.reloadRegistry();

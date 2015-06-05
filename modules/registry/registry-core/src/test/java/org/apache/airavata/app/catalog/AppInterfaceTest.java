@@ -29,8 +29,8 @@ import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDes
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
-import org.apache.airavata.registry.core.app.catalog.impl.AppCatalogFactory;
 import org.apache.airavata.registry.core.app.catalog.resources.AppCatAbstractResource;
+import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.ApplicationInterface;
@@ -58,7 +58,7 @@ public class AppInterfaceTest {
         try {
             initialize = new Initialize("appcatalog-derby.sql");
             initialize.initializeDB();
-            appcatalog = AppCatalogFactory.getAppCatalog();
+            appcatalog = RegistryFactory.getAppCatalog();
         } catch (AppCatalogException e) {
             logger.error(e.getMessage(), e);
         }

@@ -43,7 +43,7 @@ public abstract class AbstractProvider implements GFacProvider{
         log.debug("Initializing " + this.getClass().getName());
         if(jobExecutionContext.getExperimentCatalog() == null) {
             try {
-                experimentCatalog = RegistryFactory.getDefaultRegistry();
+                experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             } catch (RegistryException e) {
                 throw new GFacException("Unable to create registry instance", e);
             }

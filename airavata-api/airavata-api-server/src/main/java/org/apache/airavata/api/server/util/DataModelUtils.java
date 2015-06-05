@@ -21,9 +21,9 @@
 
 package org.apache.airavata.api.server.util;
 
+import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.ApplicationInterface;
-import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.util.ExecutionType;
 import org.apache.airavata.model.workspace.experiment.Experiment;
@@ -36,13 +36,13 @@ public class DataModelUtils {
     private static final Logger logger = LoggerFactory.getLogger(DataModelUtils.class);
 	public static ExecutionType getExecutionType(Experiment experiment) throws Exception{
 		try {
-			ApplicationInterface applicationInterface = AppCatalogFactory.getAppCatalog().getApplicationInterface();
+			ApplicationInterface applicationInterface = RegistryFactory.getAppCatalog().getApplicationInterface();
 			List<String> allApplicationInterfaceIds = applicationInterface.getAllApplicationInterfaceIds();
 			String applicationId = experiment.getApplicationId();
 			if (allApplicationInterfaceIds.contains(applicationId)){
 				return ExecutionType.SINGLE_APP;
 			} else {
-				List<String> allWorkflows = AppCatalogFactory.getAppCatalog().getWorkflowCatalog().getAllWorkflows(ServerSettings.getDefaultUserGateway());
+				List<String> allWorkflows = RegistryFactory.getAppCatalog().getWorkflowCatalog().getAllWorkflows(ServerSettings.getDefaultUserGateway());
 				if (allWorkflows.contains(applicationId)){
 					return ExecutionType.WORKFLOW;
 				}

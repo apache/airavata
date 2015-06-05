@@ -123,9 +123,9 @@ public class MonitorEventHandler implements ChangeListener {
 //        try {
 //            if (this.getClass().getClassLoader().getResource("airavata-server.properties") != null) {
 //                this.workflowNodeStatusUpdater =
-//                        new WorkflowNodeStatusUpdater(XBayaUtil.getRegistry(this.getClass().getClassLoader().getResource("airavata-server.properties")));
+//                        new WorkflowNodeStatusUpdater(XBayaUtil.getExperimentCatalog(this.getClass().getClassLoader().getResource("airavata-server.properties")));
 //                this.workflowStatusUpdater =
-//                        new WorkflowStatusUpdater(XBayaUtil.getRegistry(this.getClass().getClassLoader().getResource("airavata-server.properties")));
+//                        new WorkflowStatusUpdater(XBayaUtil.getExperimentCatalog(this.getClass().getClassLoader().getResource("airavata-server.properties")));
 //            }
 //        } catch (IOException e) {
 //            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.

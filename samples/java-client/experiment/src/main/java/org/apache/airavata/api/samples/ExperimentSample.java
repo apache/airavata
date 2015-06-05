@@ -64,7 +64,7 @@ public class ExperimentSample {
     }
 	public static void main(String[] args) throws Exception {
 	AiravataAPI airavataAPI = getAiravataAPI();
-	DocumentCreatorNew documentCreatorNew = new DocumentCreatorNew(AppCatalogFactory.getAppCatalog());
+	DocumentCreatorNew documentCreatorNew = new DocumentCreatorNew(RegistryFactory.getAppCatalog());
         documentCreatorNew.createLocalHostDocs();
         String user = "admin";
 

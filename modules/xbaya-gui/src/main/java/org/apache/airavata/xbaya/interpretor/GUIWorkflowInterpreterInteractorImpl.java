@@ -142,7 +142,7 @@
 //		switch (messageType) {
 //		case INPUT_WORKFLOWINTERPRETER_FOR_WORKFLOW:
 //			Workflow subWorkflow= (Workflow) data;
-//            WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(subWorkflow,config.getTopic(),config.getMessageBoxURL(), config.getMessageBrokerURL(), config.getRegistry(), config.getConfiguration(), config.getGUI(), this.engine.getMonitor());
+//            WorkflowInterpreterConfiguration workflowInterpreterConfiguration = new WorkflowInterpreterConfiguration(subWorkflow,config.getTopic(),config.getMessageBoxURL(), config.getMessageBrokerURL(), config.getExperimentCatalog(), config.getConfiguration(), config.getGUI(), this.engine.getMonitor());
 //            workflowInterpreterConfiguration.setActOnProvenance(config.isActOnProvenance());
 //            workflowInterpreterConfiguration.setSubWorkflow(true);
 //            if (config.isTestMode()){

@@ -54,7 +54,7 @@ public class ExperimentUseCaseTest {
     public static void setupBeforeClass() throws RegistryException, SQLException {
         initialize = new Initialize("expcatalog-derby.sql");
         initialize.initializeDB();
-        experimentCatalog = RegistryFactory.getDefaultRegistry();
+        experimentCatalog = RegistryFactory.getDefaultExpCatalog();
     }
 
     @Test

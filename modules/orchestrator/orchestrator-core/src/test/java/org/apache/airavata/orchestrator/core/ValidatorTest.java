@@ -86,7 +86,7 @@
 //        userConfigurationData.setComputationalResourceScheduling(scheduling);
 //        simpleExperiment.setUserConfigurationData(userConfigurationData);
 //
-//        Registry defaultRegistry = RegistryFactory.getDefaultRegistry();
+//        Registry defaultRegistry = RegistryFactory.getDefaultExpCatalog();
 //        String experimentId = (String)defaultRegistry.add(ParentDataType.EXPERIMENT, simpleExperiment);
 //
 //        simpleExperiment.setExperimentID(experimentId);

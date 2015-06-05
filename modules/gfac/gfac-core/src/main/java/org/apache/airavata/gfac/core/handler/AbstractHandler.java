@@ -51,7 +51,7 @@ public abstract class AbstractHandler implements GFacHandler {
 		experimentCatalog = jobExecutionContext.getExperimentCatalog();
         if(experimentCatalog == null){
             try {
-                experimentCatalog = RegistryFactory.getDefaultRegistry();
+                experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             } catch (RegistryException e) {
                 throw new GFacHandlerException("unable to create registry instance", e);
             }

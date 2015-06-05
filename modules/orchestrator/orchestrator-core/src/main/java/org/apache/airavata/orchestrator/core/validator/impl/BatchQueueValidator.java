@@ -20,9 +20,6 @@
 */
 package org.apache.airavata.orchestrator.core.validator.impl;
 
-import org.airavata.appcatalog.cpi.AppCatalog;
-import org.airavata.appcatalog.cpi.AppCatalogException;
-import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.error.ValidationResults;
@@ -30,8 +27,7 @@ import org.apache.airavata.model.error.ValidatorResult;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.Registry;
-import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.cpi.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,15 +37,15 @@ import java.util.List;
 public class BatchQueueValidator implements JobMetadataValidator {
     private final static Logger logger = LoggerFactory.getLogger(BatchQueueValidator.class);
 
-    private Registry registry;
+    private ExperimentCatalog experimentCatalog;
     private AppCatalog appCatalog;
 
     public BatchQueueValidator() {
         try {
-            this.registry = RegistryFactory.getDefaultRegistry();
-            this.appCatalog = AppCatalogFactory.getAppCatalog();
+            this.experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            this.appCatalog = RegistryFactory.getAppCatalog();
         } catch (RegistryException e) {
-            logger.error("Unable to initialize registry", e);
+            logger.error("Unable to initialize experimentCatalog", e);
         } catch (AppCatalogException e) {
             logger.error("Unable to initialize Application Catalog", e);
         }

@@ -22,7 +22,6 @@ package org.apache.airavata.gfac.server;
 
 import com.google.common.eventbus.EventBus;
 import org.apache.airavata.registry.cpi.AppCatalog;
-import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.logger.AiravataLogger;
@@ -114,8 +113,8 @@ public class GfacServerHandler implements GfacService.Iface {
                     + ":" + ServerSettings.getSetting(Constants.GFAC_SERVER_PORT);
             storeServerConfig();
             publisher = new MonitorPublisher(new EventBus());
-            experimentCatalog = RegistryFactory.getDefaultRegistry();
-            appCatalog = AppCatalogFactory.getAppCatalog();
+            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            appCatalog = RegistryFactory.getAppCatalog();
             setGatewayProperties();
             startDaemonHandlers();
             // initializing Better Gfac Instance
