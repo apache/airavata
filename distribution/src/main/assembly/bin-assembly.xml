@@ -106,26 +106,6 @@
 			</includes>
 		</fileSet>
 
-		<!-- ********************** Copy Axis2 startup scripts to stand alone server 
-			********************** -->
-		<fileSet>
-			<directory>src/main/resources/axis2-standalone-bin</directory>
-			<outputDirectory>bin</outputDirectory>
-			<fileMode>777</fileMode>
-			<includes>
-				<include>*.sh</include>
-				<include>*.bat</include>
-			</includes>
-		</fileSet>
-
-		<fileSet>
-			<directory>src/main/resources/conf</directory>
-			<outputDirectory>bin</outputDirectory>
-			<includes>
-				<include>**/*</include>
-			</includes>
-		</fileSet>
-
 		<!-- ********************** Copy samples ********************** -->
 		<fileSet>
 			<directory>${project.build.directory}/samples/applications
