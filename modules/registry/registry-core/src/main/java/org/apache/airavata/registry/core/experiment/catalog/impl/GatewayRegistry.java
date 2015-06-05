@@ -26,7 +26,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
-import org.apache.airavata.registry.core.experiment.catalog.resources.GatewayExperimentCatResource;
+import org.apache.airavata.registry.core.experiment.catalog.resources.GatewayResource;
 import org.apache.airavata.registry.core.experiment.catalog.utils.ThriftDataModelConversion;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
@@ -38,17 +38,17 @@ import java.util.List;
 public class GatewayRegistry {
 
     private final static Logger logger = LoggerFactory.getLogger(GatewayRegistry.class);
-    public GatewayExperimentCatResource getDefaultGateway () throws ApplicationSettingsException, RegistryException {
-        return (GatewayExperimentCatResource) ExpCatResourceUtils.getGateway(ServerSettings.getDefaultUserGateway());
+    public GatewayResource getDefaultGateway () throws ApplicationSettingsException, RegistryException {
+        return (GatewayResource) ExpCatResourceUtils.getGateway(ServerSettings.getDefaultUserGateway());
     }
 
-    public GatewayExperimentCatResource getExistingGateway (String gatewayName) throws RegistryException {
-        return (GatewayExperimentCatResource) ExpCatResourceUtils.getGateway(gatewayName);
+    public GatewayResource getExistingGateway (String gatewayName) throws RegistryException {
+        return (GatewayResource) ExpCatResourceUtils.getGateway(gatewayName);
     }
 
     public String addGateway (Gateway gateway) throws RegistryException{
         try {
-            GatewayExperimentCatResource resource = (GatewayExperimentCatResource) ExpCatResourceUtils.createGateway(gateway.getGatewayId());
+            GatewayResource resource = (GatewayResource) ExpCatResourceUtils.createGateway(gateway.getGatewayId());
             resource.setGatewayName(gateway.getGatewayName());
             resource.setEmailAddress(gateway.getEmailAddress());
             resource.setDomain(gateway.getDomain());
@@ -62,7 +62,7 @@ public class GatewayRegistry {
 
     public void updateGateway (String gatewayId, Gateway updatedGateway) throws RegistryException{
         try {
-            GatewayExperimentCatResource existingGateway = (GatewayExperimentCatResource) ExpCatResourceUtils.getGateway(gatewayId);
+            GatewayResource existingGateway = (GatewayResource) ExpCatResourceUtils.getGateway(gatewayId);
             existingGateway.setGatewayName(updatedGateway.getGatewayName());
             existingGateway.setEmailAddress(updatedGateway.getEmailAddress());
             existingGateway.setDomain(updatedGateway.getDomain());
@@ -75,7 +75,7 @@ public class GatewayRegistry {
 
     public Gateway getGateway (String gatewayId) throws RegistryException{
         try {
-            GatewayExperimentCatResource resource = (GatewayExperimentCatResource) ExpCatResourceUtils.getGateway(gatewayId);
+            GatewayResource resource = (GatewayResource) ExpCatResourceUtils.getGateway(gatewayId);
             return ThriftDataModelConversion.getGateway(resource);
         }catch (RegistryException e){
             logger.error("Error while getting gateway", e);

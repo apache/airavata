@@ -28,8 +28,8 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
-import org.apache.airavata.registry.core.experiment.catalog.resources.GatewayExperimentCatResource;
-import org.apache.airavata.registry.core.experiment.catalog.resources.UserExperimentCatResource;
+import org.apache.airavata.registry.core.experiment.catalog.resources.GatewayResource;
+import org.apache.airavata.registry.core.experiment.catalog.resources.UserResource;
 import org.apache.airavata.registry.cpi.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +39,8 @@ import java.util.List;
 import java.util.Map;
 
 public class ExperimentCatalogImpl implements ExperimentCatalog {
-    private GatewayExperimentCatResource gatewayResource;
-    private UserExperimentCatResource user;
+    private GatewayResource gatewayResource;
+    private UserResource user;
     private final static Logger logger = LoggerFactory.getLogger(ExperimentCatalogImpl.class);
     private ExperimentRegistry experimentRegistry = null;
     private ProjectRegistry projectRegistry = null;
@@ -49,18 +49,18 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
     public ExperimentCatalogImpl() throws RegistryException{
         try {
             if (!ExpCatResourceUtils.isGatewayExist(ServerSettings.getDefaultUserGateway())){
-                gatewayResource = (GatewayExperimentCatResource) ExpCatResourceUtils.createGateway(ServerSettings.getDefaultUserGateway());
+                gatewayResource = (GatewayResource) ExpCatResourceUtils.createGateway(ServerSettings.getDefaultUserGateway());
                 gatewayResource.setGatewayName(ServerSettings.getDefaultUserGateway());
                 gatewayResource.save();
             }else {
-                gatewayResource = (GatewayExperimentCatResource) ExpCatResourceUtils.getGateway(ServerSettings.getDefaultUserGateway());
+                gatewayResource = (GatewayResource) ExpCatResourceUtils.getGateway(ServerSettings.getDefaultUserGateway());
             }
 
             if (!ExpCatResourceUtils.isUserExist(ServerSettings.getDefaultUser())){
                 user = ExpCatResourceUtils.createUser(ServerSettings.getDefaultUser(), ServerSettings.getDefaultUserPassword());
                 user.save();
             }else {
-                user = (UserExperimentCatResource) ExpCatResourceUtils.getUser(ServerSettings.getDefaultUser());
+                user = (UserResource) ExpCatResourceUtils.getUser(ServerSettings.getDefaultUser());
             }
             experimentRegistry = new ExperimentRegistry(gatewayResource, user);
             projectRegistry = new ProjectRegistry(gatewayResource, user);
@@ -73,17 +73,17 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
 
     public ExperimentCatalogImpl(String gateway, String username, String password) throws RegistryException{
         if (!ExpCatResourceUtils.isGatewayExist(gateway)){
-            gatewayResource = (GatewayExperimentCatResource) ExpCatResourceUtils.createGateway(gateway);
+            gatewayResource = (GatewayResource) ExpCatResourceUtils.createGateway(gateway);
             gatewayResource.save();
         }else {
-            gatewayResource = (GatewayExperimentCatResource) ExpCatResourceUtils.getGateway(gateway);
+            gatewayResource = (GatewayResource) ExpCatResourceUtils.getGateway(gateway);
         }
 
         if (!ExpCatResourceUtils.isUserExist(username)){
             user = ExpCatResourceUtils.createUser(username, password);
             user.save();
         }else {
-            user = (UserExperimentCatResource) ExpCatResourceUtils.getUser(username);
+            user = (UserResource) ExpCatResourceUtils.getUser(username);
         }
         experimentRegistry = new ExperimentRegistry(gatewayResource, user);
         projectRegistry = new ProjectRegistry(gatewayResource, user);

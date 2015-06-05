@@ -23,8 +23,8 @@ package org.apache.airavata.orchestrator.core.util;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
-import org.apache.airavata.registry.core.experiment.catalog.resources.*;
+import org.apache.airavata.experiment.catalog.ResourceType;
+import org.apache.airavata.experiment.catalog.resources.*;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.derby.drda.NetworkServerControl;
 import org.slf4j.Logger;
@@ -41,7 +41,7 @@ import java.util.StringTokenizer;
 public class Initialize {
     private static final Logger logger = LoggerFactory.getLogger(Initialize.class);
     public static final String DERBY_SERVER_MODE_SYS_PROPERTY = "derby.drda.startNetworkServer";
-    public  String scriptName = "registry-derby.sql";
+    public  String scriptName = "expcatalog-derby.sql";
     private NetworkServerControl server;
     private static final String delimiter = ";";
     public static final String PERSISTANT_DATA = "Configuration";

@@ -41,7 +41,7 @@ import java.util.List;
 public class ThriftDataModelConversion {
     private final static Logger logger = LoggerFactory.getLogger(ThriftDataModelConversion.class);
 
-    public static Project getProject (ProjectExperimentCatResource pr) throws RegistryException {
+    public static Project getProject (ProjectResource pr) throws RegistryException {
         if (pr != null) {
             Project project = new Project();
             project.setProjectID(pr.getId());
@@ -51,10 +51,10 @@ public class ThriftDataModelConversion {
 			}
 			project.setDescription(pr.getDescription());
             project.setOwner(pr.getWorker().getUser());
-            List<ProjectUserExperimentCatResource> projectUserList = pr.getProjectUserList();
+            List<ProjectUserResource> projectUserList = pr.getProjectUserList();
             List<String> sharedUsers = new ArrayList<String>();
             if (projectUserList != null && !projectUserList.isEmpty()){
-                for (ProjectUserExperimentCatResource resource : projectUserList){
+                for (ProjectUserResource resource : projectUserList){
                     sharedUsers.add(resource.getUserName());
                 }
             }
@@ -64,7 +64,7 @@ public class ThriftDataModelConversion {
         return null;
     }
 
-    public static Gateway getGateway (GatewayExperimentCatResource resource){
+    public static Gateway getGateway (GatewayResource resource){
         Gateway gateway = new Gateway();
         gateway.setGatewayId(resource.getGatewayId());
         gateway.setGatewayName(resource.getGatewayName());
@@ -76,13 +76,13 @@ public class ThriftDataModelConversion {
     public static List<Gateway> getAllGateways (List<ExperimentCatResource> gatewayList){
         List<Gateway> gateways = new ArrayList<Gateway>();
         for (ExperimentCatResource resource : gatewayList){
-            gateways.add(getGateway((GatewayExperimentCatResource)resource));
+            gateways.add(getGateway((GatewayResource)resource));
         }
         return gateways;
     }
 
 
-    public static Experiment getExperiment(ExperimentExperimentCatResource experimentResource) throws RegistryException {
+    public static Experiment getExperiment(ExperimentResource experimentResource) throws RegistryException {
         if (experimentResource != null){
             Experiment experiment = new Experiment();
             experiment.setProjectID(experimentResource.getProjectId());
@@ -97,34 +97,34 @@ public class ThriftDataModelConversion {
             experiment.setEnableEmailNotification(experimentResource.isEnableEmailNotifications());
             experiment.setGatewayExecutionId(experimentResource.getGatewayExecutionId());
             if (experiment.isEnableEmailNotification()){
-                List<NotificationEmailExperimentCatResource> notificationEmails = experimentResource.getNotificationEmails();
+                List<NotificationEmailResource> notificationEmails = experimentResource.getNotificationEmails();
                 experiment.setEmailAddresses(getEmailAddresses(notificationEmails));
             }
             experiment.setWorkflowTemplateVersion(experimentResource.getWorkflowTemplateVersion());
             experiment.setWorkflowExecutionInstanceId(experimentResource.getWorkflowExecutionId());
-            List<ExperimentInputExperimentCatResource> experimentInputs = experimentResource.getExperimentInputs();
+            List<ExperimentInputResource> experimentInputs = experimentResource.getExperimentInputs();
             experiment.setExperimentInputs(getExpInputs(experimentInputs));
-            List<ExperimentOutputExperimentCatResource> experimentOutputs = experimentResource.getExperimentOutputs();
+            List<ExperimentOutputResource> experimentOutputs = experimentResource.getExperimentOutputs();
             experiment.setExperimentOutputs(getExpOutputs(experimentOutputs));
-            StatusExperimentCatResource experimentStatus = experimentResource.getExperimentStatus();
+            StatusResource experimentStatus = experimentResource.getExperimentStatus();
             if (experimentStatus != null){
                 experiment.setExperimentStatus(getExperimentStatus(experimentStatus));
             }
-            List<StatusExperimentCatResource> changeList = experimentResource.getWorkflowNodeStatuses();
+            List<StatusResource> changeList = experimentResource.getWorkflowNodeStatuses();
             if (changeList != null && !changeList.isEmpty()){
                 experiment.setStateChangeList(getWorkflowNodeStatusList(changeList));
             }
 
-            List<WorkflowNodeDetailExperimentCatResource> workflowNodeDetails = experimentResource.getWorkflowNodeDetails();
+            List<WorkflowNodeDetailResource> workflowNodeDetails = experimentResource.getWorkflowNodeDetails();
             if (workflowNodeDetails != null && !workflowNodeDetails.isEmpty()){
                 experiment.setWorkflowNodeDetailsList(getWfNodeList(workflowNodeDetails));
             }
-            List<ErrorDetailExperimentCatResource> errorDetails = experimentResource.getErrorDetails();
+            List<ErrorDetailResource> errorDetails = experimentResource.getErrorDetails();
             if (errorDetails!= null && !errorDetails.isEmpty()){
                 experiment.setErrors(getErrorDetailList(errorDetails));
             }
             if (experimentResource.isExists(ResourceType.CONFIG_DATA, experimentResource.getExpID())){
-                ConfigDataExperimentCatResource userConfigData = experimentResource.getUserConfigData(experimentResource.getExpID());
+                ConfigDataResource userConfigData = experimentResource.getUserConfigData(experimentResource.getExpID());
                 experiment.setUserConfigurationData(getUserConfigData(userConfigData));
             }
             return experiment;
@@ -132,7 +132,7 @@ public class ThriftDataModelConversion {
         return null;
     }
 
-    public static ExperimentSummary getExperimentSummary(ExperimentSummaryExperimentCatResource experimentSummaryResource) throws RegistryException {
+    public static ExperimentSummary getExperimentSummary(ExperimentSummaryResource experimentSummaryResource) throws RegistryException {
         if (experimentSummaryResource != null){
             ExperimentSummary experimentSummary = new ExperimentSummary();
             experimentSummary.setProjectID(experimentSummaryResource.getProjectID());
@@ -142,7 +142,7 @@ public class ThriftDataModelConversion {
             experimentSummary.setName(experimentSummaryResource.getExpName());
             experimentSummary.setDescription(experimentSummaryResource.getDescription());
             experimentSummary.setApplicationId(experimentSummaryResource.getApplicationId());
-            StatusExperimentCatResource experimentStatus = experimentSummaryResource.getStatus();
+            StatusResource experimentStatus = experimentSummaryResource.getStatus();
             if (experimentStatus != null){
                 experimentSummary.setExperimentStatus(getExperimentStatus(experimentStatus));
             }
@@ -154,8 +154,8 @@ public class ThriftDataModelConversion {
     public static InputDataObjectType getInput(Object object){
         if (object != null){
             InputDataObjectType dataObjectType = new InputDataObjectType();
-            if (object instanceof ExperimentInputExperimentCatResource){
-                ExperimentInputExperimentCatResource expInput = (ExperimentInputExperimentCatResource) object;
+            if (object instanceof ExperimentInputResource){
+                ExperimentInputResource expInput = (ExperimentInputResource) object;
                 dataObjectType.setName(expInput.getExperimentKey());
                 dataObjectType.setValue(expInput.getValue());
                 if (expInput.getDataType() != null){
@@ -170,8 +170,8 @@ public class ThriftDataModelConversion {
                 dataObjectType.setRequiredToAddedToCommandLine(expInput.getRequiredToCMD());
                 dataObjectType.setDataStaged(expInput.isDataStaged());
                 return dataObjectType;
-            }else if (object instanceof NodeInputExperimentCatResource){
-                NodeInputExperimentCatResource nodeInputResource = (NodeInputExperimentCatResource)object;
+            }else if (object instanceof NodeInputResource){
+                NodeInputResource nodeInputResource = (NodeInputResource)object;
                 dataObjectType.setName(nodeInputResource.getInputKey());
                 dataObjectType.setValue(nodeInputResource.getValue());
                 if (nodeInputResource.getDataType() != null){
@@ -186,8 +186,8 @@ public class ThriftDataModelConversion {
                 dataObjectType.setRequiredToAddedToCommandLine(nodeInputResource.getRequiredToCMD());
                 dataObjectType.setDataStaged(nodeInputResource.isDataStaged());
                 return dataObjectType;
-            }else if (object instanceof ApplicationInputExperimentCatResource){
-                ApplicationInputExperimentCatResource inputResource = (ApplicationInputExperimentCatResource)object;
+            }else if (object instanceof ApplicationInputResource){
+                ApplicationInputResource inputResource = (ApplicationInputResource)object;
                 dataObjectType.setName(inputResource.getInputKey());
                 dataObjectType.setValue(inputResource.getValue());
                 if (inputResource.getDataType() != null){
@@ -212,8 +212,8 @@ public class ThriftDataModelConversion {
     public static OutputDataObjectType getOutput(Object object){
         if (object != null){
             OutputDataObjectType dataObjectType = new OutputDataObjectType();
-            if (object instanceof ExperimentOutputExperimentCatResource){
-                ExperimentOutputExperimentCatResource expOutput = (ExperimentOutputExperimentCatResource)object;
+            if (object instanceof ExperimentOutputResource){
+                ExperimentOutputResource expOutput = (ExperimentOutputResource)object;
                 dataObjectType.setName(expOutput.getExperimentKey());
                 dataObjectType.setValue(expOutput.getValue());
                 if (expOutput.getDataType() != null){
@@ -226,8 +226,8 @@ public class ThriftDataModelConversion {
                 dataObjectType.setSearchQuery(expOutput.getSearchQuery());
                 dataObjectType.setApplicationArgument(expOutput.getAppArgument());
                 return dataObjectType;
-            }else if (object instanceof NodeOutputExperimentCatResource){
-                NodeOutputExperimentCatResource nodeOutputResource = (NodeOutputExperimentCatResource)object;
+            }else if (object instanceof NodeOutputResource){
+                NodeOutputResource nodeOutputResource = (NodeOutputResource)object;
                 dataObjectType.setName(nodeOutputResource.getOutputKey());
                 dataObjectType.setValue(nodeOutputResource.getValue());
                 if (nodeOutputResource.getDataType() != null){
@@ -240,8 +240,8 @@ public class ThriftDataModelConversion {
                 dataObjectType.setSearchQuery(nodeOutputResource.getSearchQuery());
                 dataObjectType.setApplicationArgument(nodeOutputResource.getAppArgument());
                 return dataObjectType;
-            }else if (object instanceof ApplicationOutputExperimentCatResource){
-                ApplicationOutputExperimentCatResource outputResource = (ApplicationOutputExperimentCatResource)object;
+            }else if (object instanceof ApplicationOutputResource){
+                ApplicationOutputResource outputResource = (ApplicationOutputResource)object;
                 dataObjectType.setName(outputResource.getOutputKey());
                 dataObjectType.setValue(outputResource.getValue());
                 dataObjectType.setIsRequired(outputResource.isRequired());
@@ -261,20 +261,20 @@ public class ThriftDataModelConversion {
         return null;
     }
 
-    public static List<String> getEmailAddresses (List<NotificationEmailExperimentCatResource> resourceList){
+    public static List<String> getEmailAddresses (List<NotificationEmailResource> resourceList){
         List<String> emailAddresses = new ArrayList<String>();
         if (resourceList != null && !resourceList.isEmpty()){
-            for (NotificationEmailExperimentCatResource emailResource : resourceList){
+            for (NotificationEmailResource emailResource : resourceList){
                 emailAddresses.add(emailResource.getEmailAddress());
             }
         }
         return emailAddresses;
     }
 
-    public static List<InputDataObjectType> getExpInputs (List<ExperimentInputExperimentCatResource> exInputList){
+    public static List<InputDataObjectType> getExpInputs (List<ExperimentInputResource> exInputList){
         List<InputDataObjectType> expInputs = new ArrayList<InputDataObjectType>();
         if (exInputList != null && !exInputList.isEmpty()){
-            for (ExperimentInputExperimentCatResource inputResource : exInputList){
+            for (ExperimentInputResource inputResource : exInputList){
                 InputDataObjectType exInput = getInput(inputResource);
                 expInputs.add(exInput);
             }
@@ -282,10 +282,10 @@ public class ThriftDataModelConversion {
         return expInputs;
     }
 
-    public static List<OutputDataObjectType> getExpOutputs (List<ExperimentOutputExperimentCatResource> experimentOutputResourceList){
+    public static List<OutputDataObjectType> getExpOutputs (List<ExperimentOutputResource> experimentOutputResourceList){
         List<OutputDataObjectType> exOutputs = new ArrayList<OutputDataObjectType>();
         if (experimentOutputResourceList != null && !experimentOutputResourceList.isEmpty()){
-            for (ExperimentOutputExperimentCatResource outputResource : experimentOutputResourceList){
+            for (ExperimentOutputResource outputResource : experimentOutputResourceList){
                 OutputDataObjectType output = getOutput(outputResource);
                 exOutputs.add(output);
             }
@@ -293,10 +293,10 @@ public class ThriftDataModelConversion {
         return exOutputs;
     }
 
-    public static List<InputDataObjectType> getNodeInputs (List<NodeInputExperimentCatResource> nodeInputResources){
+    public static List<InputDataObjectType> getNodeInputs (List<NodeInputResource> nodeInputResources){
         List<InputDataObjectType> nodeInputs = new ArrayList<InputDataObjectType>();
         if (nodeInputResources != null && !nodeInputResources.isEmpty()){
-            for (NodeInputExperimentCatResource inputResource : nodeInputResources){
+            for (NodeInputResource inputResource : nodeInputResources){
                 InputDataObjectType nodeInput = getInput(inputResource);
                 nodeInputs.add(nodeInput);
             }
@@ -304,10 +304,10 @@ public class ThriftDataModelConversion {
         return nodeInputs;
     }
 
-    public static List<OutputDataObjectType> getNodeOutputs (List<NodeOutputExperimentCatResource> nodeOutputResourceList){
+    public static List<OutputDataObjectType> getNodeOutputs (List<NodeOutputResource> nodeOutputResourceList){
         List<OutputDataObjectType> nodeOutputs = new ArrayList<OutputDataObjectType>();
         if (nodeOutputResourceList != null && !nodeOutputResourceList.isEmpty()){
-            for (NodeOutputExperimentCatResource outputResource : nodeOutputResourceList){
+            for (NodeOutputResource outputResource : nodeOutputResourceList){
                 OutputDataObjectType output = getOutput(outputResource);
                 nodeOutputs.add(output);
             }
@@ -315,10 +315,10 @@ public class ThriftDataModelConversion {
         return nodeOutputs;
     }
 
-    public static List<InputDataObjectType> getApplicationInputs (List<ApplicationInputExperimentCatResource> applicationInputResources){
+    public static List<InputDataObjectType> getApplicationInputs (List<ApplicationInputResource> applicationInputResources){
         List<InputDataObjectType> appInputs = new ArrayList<InputDataObjectType>();
         if (applicationInputResources != null && !applicationInputResources.isEmpty()){
-            for (ApplicationInputExperimentCatResource inputResource : applicationInputResources){
+            for (ApplicationInputResource inputResource : applicationInputResources){
                 InputDataObjectType appInput = getInput(inputResource);
                 appInputs.add(appInput);
             }
@@ -326,10 +326,10 @@ public class ThriftDataModelConversion {
         return appInputs;
     }
 
-    public static List<OutputDataObjectType> getApplicationOutputs (List<ApplicationOutputExperimentCatResource> outputResources){
+    public static List<OutputDataObjectType> getApplicationOutputs (List<ApplicationOutputResource> outputResources){
         List<OutputDataObjectType> appOutputs = new ArrayList<OutputDataObjectType>();
         if (outputResources != null && !outputResources.isEmpty()){
-            for (ApplicationOutputExperimentCatResource outputResource : outputResources){
+            for (ApplicationOutputResource outputResource : outputResources){
                 OutputDataObjectType output = getOutput(outputResource);
                 appOutputs.add(output);
             }
@@ -337,7 +337,7 @@ public class ThriftDataModelConversion {
         return appOutputs;
     }
 
-    public static ExperimentStatus getExperimentStatus(StatusExperimentCatResource status){
+    public static ExperimentStatus getExperimentStatus(StatusResource status){
         if (status != null){
             ExperimentStatus experimentStatus = new ExperimentStatus();
             if (status.getState() == null || status.getState().equals("")){
@@ -350,7 +350,7 @@ public class ThriftDataModelConversion {
         return null;
     }
 
-    public static WorkflowNodeStatus getWorkflowNodeStatus (StatusExperimentCatResource status){
+    public static WorkflowNodeStatus getWorkflowNodeStatus (StatusResource status){
         if (status != null){
             WorkflowNodeStatus workflowNodeStatus = new WorkflowNodeStatus();
             if (status.getState() == null || status.getState().equals("")){
@@ -363,7 +363,7 @@ public class ThriftDataModelConversion {
         return null;
     }
 
-    public static TaskStatus getTaskStatus (StatusExperimentCatResource status){
+    public static TaskStatus getTaskStatus (StatusResource status){
         if (status != null){
             TaskStatus taskStatus = new TaskStatus();
             if (status.getState() == null || status.getState().equals("")){
@@ -376,7 +376,7 @@ public class ThriftDataModelConversion {
         return null;
     }
 
-    public static JobStatus getJobStatus (StatusExperimentCatResource status){
+    public static JobStatus getJobStatus (StatusResource status){
         if (status != null){
             JobStatus jobStatus = new JobStatus();
             if (status.getState() == null || status.getState().equals("")){
@@ -393,7 +393,7 @@ public class ThriftDataModelConversion {
         return null;
     }
 
-    public static TransferStatus getTransferStatus (StatusExperimentCatResource status){
+    public static TransferStatus getTransferStatus (StatusResource status){
         if (status != null){
             TransferStatus transferStatus = new TransferStatus();
             if (status.getState() == null || status.getState().equals("")){
@@ -406,7 +406,7 @@ public class ThriftDataModelConversion {
         return null;
     }
 
-    public static ApplicationStatus getApplicationStatus (StatusExperimentCatResource status){
+    public static ApplicationStatus getApplicationStatus (StatusResource status){
         if (status != null){
             ApplicationStatus applicationStatus = new ApplicationStatus();
             if (status.getState() == null || status.getState().equals("")){
@@ -419,30 +419,30 @@ public class ThriftDataModelConversion {
         return null;
     }
 
-    public static List<WorkflowNodeStatus> getWorkflowNodeStatusList(List<StatusExperimentCatResource> statuses){
+    public static List<WorkflowNodeStatus> getWorkflowNodeStatusList(List<StatusResource> statuses){
         List<WorkflowNodeStatus> wfNodeStatuses = new ArrayList<WorkflowNodeStatus>();
         if (statuses != null && !statuses.isEmpty()){
-            for (StatusExperimentCatResource statusResource : statuses){
+            for (StatusResource statusResource : statuses){
                 wfNodeStatuses.add(getWorkflowNodeStatus(statusResource));
             }
         }
         return wfNodeStatuses;
     }
 
-    public static WorkflowNodeDetails getWorkflowNodeDetails(WorkflowNodeDetailExperimentCatResource nodeDetailResource) throws RegistryException {
+    public static WorkflowNodeDetails getWorkflowNodeDetails(WorkflowNodeDetailResource nodeDetailResource) throws RegistryException {
         if (nodeDetailResource != null){
             WorkflowNodeDetails wfNode = new WorkflowNodeDetails();
             wfNode.setNodeInstanceId(nodeDetailResource.getNodeInstanceId());
             wfNode.setCreationTime(nodeDetailResource.getCreationTime().getTime());
             wfNode.setNodeName(nodeDetailResource.getNodeName());
-            List<NodeInputExperimentCatResource> nodeInputs = nodeDetailResource.getNodeInputs();
+            List<NodeInputResource> nodeInputs = nodeDetailResource.getNodeInputs();
             wfNode.setNodeInputs(getNodeInputs(nodeInputs));
-            List<NodeOutputExperimentCatResource> nodeOutputs = nodeDetailResource.getNodeOutputs();
+            List<NodeOutputResource> nodeOutputs = nodeDetailResource.getNodeOutputs();
             wfNode.setNodeOutputs(getNodeOutputs(nodeOutputs));
-            List<TaskDetailExperimentCatResource> taskDetails = nodeDetailResource.getTaskDetails();
+            List<TaskDetailResource> taskDetails = nodeDetailResource.getTaskDetails();
             wfNode.setTaskDetailsList(getTaskDetailsList(taskDetails));
             wfNode.setWorkflowNodeStatus(getWorkflowNodeStatus(nodeDetailResource.getWorkflowNodeStatus()));
-            List<ErrorDetailExperimentCatResource> errorDetails = nodeDetailResource.getErrorDetails();
+            List<ErrorDetailResource> errorDetails = nodeDetailResource.getErrorDetails();
             wfNode.setErrors(getErrorDetailList(errorDetails));
             wfNode.setExecutionUnit(ExecutionUnit.valueOf(nodeDetailResource.getExecutionUnit()));
             wfNode.setExecutionUnitData(nodeDetailResource.getExecutionUnitData());
@@ -451,50 +451,50 @@ public class ThriftDataModelConversion {
         return null;
     }
 
-    public static List<WorkflowNodeDetails> getWfNodeList (List<WorkflowNodeDetailExperimentCatResource> resources) throws RegistryException {
+    public static List<WorkflowNodeDetails> getWfNodeList (List<WorkflowNodeDetailResource> resources) throws RegistryException {
         List<WorkflowNodeDetails> workflowNodeDetailsList = new ArrayList<WorkflowNodeDetails>();
         if (resources != null && !resources.isEmpty()){
-            for (WorkflowNodeDetailExperimentCatResource resource : resources){
+            for (WorkflowNodeDetailResource resource : resources){
                 workflowNodeDetailsList.add(getWorkflowNodeDetails(resource));
             }
         }
         return workflowNodeDetailsList;
     }
 
-    public static TaskDetails getTaskDetail (TaskDetailExperimentCatResource taskDetailResource) throws RegistryException {
+    public static TaskDetails getTaskDetail (TaskDetailResource taskDetailResource) throws RegistryException {
         if (taskDetailResource != null){
             TaskDetails taskDetails = new TaskDetails();
             String taskId = taskDetailResource.getTaskId();
             taskDetails.setTaskID(taskId);
             taskDetails.setApplicationId(taskDetailResource.getApplicationId());
             taskDetails.setApplicationVersion(taskDetailResource.getApplicationVersion());
-            List<ApplicationInputExperimentCatResource> applicationInputs = taskDetailResource.getApplicationInputs();
+            List<ApplicationInputResource> applicationInputs = taskDetailResource.getApplicationInputs();
             taskDetails.setApplicationInputs(getApplicationInputs(applicationInputs));
-            List<ApplicationOutputExperimentCatResource> applicationOutputs = taskDetailResource.getApplicationOutputs();
+            List<ApplicationOutputResource> applicationOutputs = taskDetailResource.getApplicationOutputs();
             taskDetails.setApplicationOutputs(getApplicationOutputs(applicationOutputs));
             taskDetails.setEnableEmailNotification(taskDetailResource.isEnableEmailNotifications());
             if (taskDetails.isEnableEmailNotification()){
-                List<NotificationEmailExperimentCatResource> notificationEmails = taskDetailResource.getNotificationEmails();
+                List<NotificationEmailResource> notificationEmails = taskDetailResource.getNotificationEmails();
                 taskDetails.setEmailAddresses(getEmailAddresses(notificationEmails));
             }
             taskDetails.setApplicationDeploymentId(taskDetailResource.getApplicationDeploymentId());
             if (taskDetailResource.isExists(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING, taskId)){
-                ComputationSchedulingExperimentCatResource computationScheduling = taskDetailResource.getComputationScheduling(taskId);
+                ComputationSchedulingResource computationScheduling = taskDetailResource.getComputationScheduling(taskId);
                 taskDetails.setTaskScheduling(getComputationalResourceScheduling(computationScheduling));
             }
 
             if (taskDetailResource.isExists(ResourceType.ADVANCE_INPUT_DATA_HANDLING, taskId)){
-                AdvanceInputDataHandlingExperimentCatResource inputDataHandling = taskDetailResource.getInputDataHandling(taskId);
+                AdvanceInputDataHandlingResource inputDataHandling = taskDetailResource.getInputDataHandling(taskId);
                 taskDetails.setAdvancedInputDataHandling(getAdvanceInputDataHandling(inputDataHandling));
             }
 
             if (taskDetailResource.isExists(ResourceType.ADVANCE_OUTPUT_DATA_HANDLING, taskId)){
-                AdvancedOutputDataHandlingExperimentCatResource outputDataHandling = taskDetailResource.getOutputDataHandling(taskId);
+                AdvancedOutputDataHandlingResource outputDataHandling = taskDetailResource.getOutputDataHandling(taskId);
                 taskDetails.setAdvancedOutputDataHandling(getAdvanceOutputDataHandling(outputDataHandling));
             }
 
             taskDetails.setTaskStatus(getTaskStatus(taskDetailResource.getTaskStatus()));
-            List<JobDetailExperimentCatResource> jobDetailList = taskDetailResource.getJobDetailList();
+            List<JobDetailResource> jobDetailList = taskDetailResource.getJobDetailList();
             taskDetails.setJobDetailsList(getJobDetailsList(jobDetailList));
             taskDetails.setErrors(getErrorDetailList(taskDetailResource.getErrorDetailList()));
             taskDetails.setDataTransferDetailsList(getDataTransferlList(taskDetailResource.getDataTransferDetailList()));
@@ -503,20 +503,20 @@ public class ThriftDataModelConversion {
         return null;
     }
 
-    public static List<TaskDetails> getTaskDetailsList (List<TaskDetailExperimentCatResource> resources) throws RegistryException {
+    public static List<TaskDetails> getTaskDetailsList (List<TaskDetailResource> resources) throws RegistryException {
         List<TaskDetails> taskDetailsList = new ArrayList<TaskDetails>();
         if (resources != null && !resources.isEmpty()){
-            for (TaskDetailExperimentCatResource resource : resources){
+            for (TaskDetailResource resource : resources){
                 taskDetailsList.add(getTaskDetail(resource));
             }
         }
         return taskDetailsList;
     }
 
-    public static List<JobDetails> getJobDetailsList(List<JobDetailExperimentCatResource> jobs) throws RegistryException {
+    public static List<JobDetails> getJobDetailsList(List<JobDetailResource> jobs) throws RegistryException {
         List<JobDetails> jobDetailsList = new ArrayList<JobDetails>();
         if (jobs != null && !jobs.isEmpty()){
-            for (JobDetailExperimentCatResource resource : jobs){
+            for (JobDetailResource resource : jobs){
                 jobDetailsList.add(getJobDetail(resource));
             }
         }
@@ -524,19 +524,19 @@ public class ThriftDataModelConversion {
     }
 
 
-    public static JobDetails getJobDetail(JobDetailExperimentCatResource jobDetailResource) throws RegistryException {
+    public static JobDetails getJobDetail(JobDetailResource jobDetailResource) throws RegistryException {
         if (jobDetailResource != null){
             JobDetails jobDetails = new JobDetails();
             jobDetails.setJobID(jobDetailResource.getJobId());
             jobDetails.setJobDescription(jobDetailResource.getJobDescription());
             jobDetails.setCreationTime(jobDetailResource.getCreationTime().getTime());
-            StatusExperimentCatResource jobStatus = jobDetailResource.getJobStatus();
+            StatusResource jobStatus = jobDetailResource.getJobStatus();
             jobDetails.setJobStatus(getJobStatus(jobStatus));
             jobDetails.setJobName(jobDetailResource.getJobName());
             jobDetails.setWorkingDir(jobDetailResource.getWorkingDir());
-            StatusExperimentCatResource applicationStatus = jobDetailResource.getApplicationStatus();
+            StatusResource applicationStatus = jobDetailResource.getApplicationStatus();
             jobDetails.setApplicationStatus(getApplicationStatus(applicationStatus));
-            List<ErrorDetailExperimentCatResource> errorDetails = jobDetailResource.getErrorDetails();
+            List<ErrorDetailResource> errorDetails = jobDetailResource.getErrorDetails();
             jobDetails.setErrors(getErrorDetailList(errorDetails));
             jobDetails.setComputeResourceConsumed(jobDetailResource.getComputeResourceConsumed());
             return jobDetails;
@@ -544,7 +544,7 @@ public class ThriftDataModelConversion {
         return null;
     }
 
-    public static ErrorDetails getErrorDetails (ErrorDetailExperimentCatResource resource){
+    public static ErrorDetails getErrorDetails (ErrorDetailResource resource){
         if (resource != null){
             ErrorDetails errorDetails = new ErrorDetails();
             errorDetails.setErrorID(String.valueOf(resource.getErrorId()));
@@ -560,17 +560,17 @@ public class ThriftDataModelConversion {
         return null;
     }
 
-    public static List<ErrorDetails> getErrorDetailList (List<ErrorDetailExperimentCatResource> errorDetailResources){
+    public static List<ErrorDetails> getErrorDetailList (List<ErrorDetailResource> errorDetailResources){
         List<ErrorDetails> errorDetailsList = new ArrayList<ErrorDetails>();
         if (errorDetailResources != null && !errorDetailResources.isEmpty()){
-            for (ErrorDetailExperimentCatResource errorDetailResource : errorDetailResources){
+            for (ErrorDetailResource errorDetailResource : errorDetailResources){
                 errorDetailsList.add(getErrorDetails(errorDetailResource));
             }
         }
         return errorDetailsList;
     }
 
-    public static DataTransferDetails getDataTransferDetail (DataTransferDetailExperimentCatResource resource) throws RegistryException {
+    public static DataTransferDetails getDataTransferDetail (DataTransferDetailResource resource) throws RegistryException {
         if (resource != null){
             DataTransferDetails details = new DataTransferDetails();
             details.setTransferID(resource.getTransferId());
@@ -582,10 +582,10 @@ public class ThriftDataModelConversion {
         return null;
     }
 
-    public static List<DataTransferDetails> getDataTransferlList (List<DataTransferDetailExperimentCatResource> resources) throws RegistryException {
+    public static List<DataTransferDetails> getDataTransferlList (List<DataTransferDetailResource> resources) throws RegistryException {
         List<DataTransferDetails> transferDetailsList = new ArrayList<DataTransferDetails>();
         if (resources != null && !resources.isEmpty()){
-            for (DataTransferDetailExperimentCatResource resource : resources){
+            for (DataTransferDetailResource resource : resources){
                 transferDetailsList.add(getDataTransferDetail(resource));
             }
         }
@@ -593,7 +593,7 @@ public class ThriftDataModelConversion {
     }
 
 
-    public static UserConfigurationData getUserConfigData (ConfigDataExperimentCatResource resource) throws RegistryException {
+    public static UserConfigurationData getUserConfigData (ConfigDataResource resource) throws RegistryException {
         if (resource != null){
             UserConfigurationData data = new UserConfigurationData();
             data.setAiravataAutoSchedule(resource.isAiravataAutoSchedule());
@@ -602,25 +602,25 @@ public class ThriftDataModelConversion {
             data.setUserDN(resource.getUserDn());
             data.setGenerateCert(resource.isGenerateCert());
             String expID = resource.getExperimentId();
-            ExperimentExperimentCatResource experimentResource = new ExperimentExperimentCatResource();
+            ExperimentResource experimentResource = new ExperimentResource();
             experimentResource.setExpID(expID);
             if (experimentResource.isExists(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING, expID)){
-                ComputationSchedulingExperimentCatResource computationScheduling = experimentResource.getComputationScheduling(expID);
+                ComputationSchedulingResource computationScheduling = experimentResource.getComputationScheduling(expID);
                 data.setComputationalResourceScheduling(getComputationalResourceScheduling(computationScheduling));
             }
 
             if (experimentResource.isExists(ResourceType.ADVANCE_INPUT_DATA_HANDLING, expID)){
-                AdvanceInputDataHandlingExperimentCatResource inputDataHandling = experimentResource.getInputDataHandling(expID);
+                AdvanceInputDataHandlingResource inputDataHandling = experimentResource.getInputDataHandling(expID);
                 data.setAdvanceInputDataHandling(getAdvanceInputDataHandling(inputDataHandling));
             }
 
             if (experimentResource.isExists(ResourceType.ADVANCE_OUTPUT_DATA_HANDLING, expID)){
-                AdvancedOutputDataHandlingExperimentCatResource outputDataHandling = experimentResource.getOutputDataHandling(expID);
+                AdvancedOutputDataHandlingResource outputDataHandling = experimentResource.getOutputDataHandling(expID);
                 data.setAdvanceOutputDataHandling(getAdvanceOutputDataHandling(outputDataHandling));
             }
 
             if (experimentResource.isExists(ResourceType.QOS_PARAM, expID)){
-                QosParamExperimentCatResource qoSparams = experimentResource.getQOSparams(expID);
+                QosParamResource qoSparams = experimentResource.getQOSparams(expID);
                 data.setQosParams(getQOSParams(qoSparams));
             }
             return data;
@@ -629,7 +629,7 @@ public class ThriftDataModelConversion {
     }
 
 
-    public static ComputationalResourceScheduling getComputationalResourceScheduling (ComputationSchedulingExperimentCatResource csr){
+    public static ComputationalResourceScheduling getComputationalResourceScheduling (ComputationSchedulingResource csr){
         if (csr != null){
             ComputationalResourceScheduling scheduling = new ComputationalResourceScheduling();
             scheduling.setResourceHostId(csr.getResourceHostId());
@@ -647,7 +647,7 @@ public class ThriftDataModelConversion {
         return null;
     }
 
-    public static AdvancedInputDataHandling getAdvanceInputDataHandling(AdvanceInputDataHandlingExperimentCatResource adhr){
+    public static AdvancedInputDataHandling getAdvanceInputDataHandling(AdvanceInputDataHandlingResource adhr){
         if (adhr != null){
             AdvancedInputDataHandling adih = new AdvancedInputDataHandling();
             adih.setStageInputFilesToWorkingDir(adhr.isStageInputFiles());
@@ -659,7 +659,7 @@ public class ThriftDataModelConversion {
         return null;
     }
 
-    public static AdvancedOutputDataHandling getAdvanceOutputDataHandling(AdvancedOutputDataHandlingExperimentCatResource adodh){
+    public static AdvancedOutputDataHandling getAdvanceOutputDataHandling(AdvancedOutputDataHandlingResource adodh){
         if (adodh != null){
             AdvancedOutputDataHandling outputDataHandling = new AdvancedOutputDataHandling();
             outputDataHandling.setOutputDataDir(adodh.getOutputDataDir());
@@ -670,7 +670,7 @@ public class ThriftDataModelConversion {
         return null;
     }
 
-    public static QualityOfServiceParams getQOSParams (QosParamExperimentCatResource qos){
+    public static QualityOfServiceParams getQOSParams (QosParamResource qos){
         if (qos != null){
             QualityOfServiceParams qosParams = new QualityOfServiceParams();
             qosParams.setStartExecutionAt(qos.getStartExecutionAt());

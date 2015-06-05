@@ -42,7 +42,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
     @Override
     public String addGatewayResourceProfile(org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile gatewayProfile) throws AppCatalogException {
         try {
-            GatewayProfileAppCatalogResourceAppCat profileResource = new GatewayProfileAppCatalogResourceAppCat();
+            GatewayProfileResource profileResource = new GatewayProfileResource();
             if (!gatewayProfile.getGatewayID().equals("") && !gatewayProfile.getGatewayID().equals(gatewayResourceProfileModelConstants.DEFAULT_ID)){
                 profileResource.setGatewayID(gatewayProfile.getGatewayID());
             }
@@ -51,11 +51,11 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
             List<ComputeResourcePreference> computeResourcePreferences = gatewayProfile.getComputeResourcePreferences();
             if (computeResourcePreferences != null && !computeResourcePreferences.isEmpty()){
                 for (ComputeResourcePreference preference : computeResourcePreferences ){
-                    ComputeHostPreferenceAppCatalogResourceAppCat resource = new ComputeHostPreferenceAppCatalogResourceAppCat();
+                    ComputeHostPreferenceResource resource = new ComputeHostPreferenceResource();
                     resource.setGatewayProfile(profileResource);
                     resource.setResourceId(preference.getComputeResourceId());
-                    ComputeResourceAppCatalogResourceAppCat computeHostResource = new ComputeResourceAppCatalogResourceAppCat();
-                    resource.setComputeHostResource((ComputeResourceAppCatalogResourceAppCat)computeHostResource.get(preference.getComputeResourceId()));
+                    ComputeResourceResource computeHostResource = new ComputeResourceResource();
+                    resource.setComputeHostResource((ComputeResourceResource)computeHostResource.get(preference.getComputeResourceId()));
                     resource.setGatewayId(profileResource.getGatewayID());
                     resource.setOverrideByAiravata(preference.isOverridebyAiravata());
                     resource.setLoginUserName(preference.getLoginUserName());
@@ -83,18 +83,18 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
     @Override
     public void updateGatewayResourceProfile(String gatewayId, org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile updatedProfile) throws AppCatalogException {
         try {
-            GatewayProfileAppCatalogResourceAppCat profileResource = new GatewayProfileAppCatalogResourceAppCat();
-            GatewayProfileAppCatalogResourceAppCat existingGP = (GatewayProfileAppCatalogResourceAppCat)profileResource.get(gatewayId);
+            GatewayProfileResource profileResource = new GatewayProfileResource();
+            GatewayProfileResource existingGP = (GatewayProfileResource)profileResource.get(gatewayId);
             existingGP.save();
 
             List<ComputeResourcePreference> computeResourcePreferences = updatedProfile.getComputeResourcePreferences();
             if (computeResourcePreferences != null && !computeResourcePreferences.isEmpty()){
                 for (ComputeResourcePreference preference : computeResourcePreferences ){
-                    ComputeHostPreferenceAppCatalogResourceAppCat resource = new ComputeHostPreferenceAppCatalogResourceAppCat();
+                    ComputeHostPreferenceResource resource = new ComputeHostPreferenceResource();
                     resource.setGatewayProfile(existingGP);
                     resource.setResourceId(preference.getComputeResourceId());
-                    ComputeResourceAppCatalogResourceAppCat computeHostResource = new ComputeResourceAppCatalogResourceAppCat();
-                    resource.setComputeHostResource((ComputeResourceAppCatalogResourceAppCat)computeHostResource.get(preference.getComputeResourceId()));
+                    ComputeResourceResource computeHostResource = new ComputeResourceResource();
+                    resource.setComputeHostResource((ComputeResourceResource)computeHostResource.get(preference.getComputeResourceId()));
                     resource.setGatewayId(gatewayId);
                     resource.setLoginUserName(preference.getLoginUserName());
                     resource.setOverrideByAiravata(preference.isOverridebyAiravata());
@@ -120,9 +120,9 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
     @Override
     public GatewayResourceProfile getGatewayProfile(String gatewayId) throws AppCatalogException {
         try {
-            GatewayProfileAppCatalogResourceAppCat resource = new GatewayProfileAppCatalogResourceAppCat();
-            GatewayProfileAppCatalogResourceAppCat gwresource = (GatewayProfileAppCatalogResourceAppCat)resource.get(gatewayId);
-            ComputeHostPreferenceAppCatalogResourceAppCat prefResource = new ComputeHostPreferenceAppCatalogResourceAppCat();
+            GatewayProfileResource resource = new GatewayProfileResource();
+            GatewayProfileResource gwresource = (GatewayProfileResource)resource.get(gatewayId);
+            ComputeHostPreferenceResource prefResource = new ComputeHostPreferenceResource();
             List<AppCatalogResource> computePrefList = prefResource.get(AppCatAbstractResource.ComputeResourcePreferenceConstants.GATEWAY_ID, gatewayId);
             List<ComputeResourcePreference> computeResourcePreferences = AppCatalogThriftConversion.getComputeResourcePreferences(computePrefList);
             return AppCatalogThriftConversion.getGatewayResourceProfile(gwresource, computeResourcePreferences);
@@ -135,7 +135,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
     @Override
     public boolean removeGatewayResourceProfile(String gatewayId) throws AppCatalogException {
        try {
-           GatewayProfileAppCatalogResourceAppCat resource = new GatewayProfileAppCatalogResourceAppCat();
+           GatewayProfileResource resource = new GatewayProfileResource();
            resource.remove(gatewayId);
            return true;
        }catch (Exception e) {
@@ -147,7 +147,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
     @Override
     public boolean removeComputeResourcePreferenceFromGateway(String gatewayId, String preferenceId) throws AppCatalogException {
         try {
-            ComputeHostPreferenceAppCatalogResourceAppCat resource = new ComputeHostPreferenceAppCatalogResourceAppCat();
+            ComputeHostPreferenceResource resource = new ComputeHostPreferenceResource();
             Map<String, String> ids = new HashMap<String, String>();
             ids.put(AppCatAbstractResource.ComputeResourcePreferenceConstants.GATEWAY_ID, gatewayId);
             ids.put(AppCatAbstractResource.ComputeResourcePreferenceConstants.RESOURCE_ID, preferenceId);
@@ -162,7 +162,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
     @Override
     public boolean isGatewayResourceProfileExists(String gatewayId) throws AppCatalogException {
         try {
-            GatewayProfileAppCatalogResourceAppCat resource = new GatewayProfileAppCatalogResourceAppCat();
+            GatewayProfileResource resource = new GatewayProfileResource();
             return resource.isExists(gatewayId);
         }catch (Exception e) {
             logger.error("Error while retrieving gateway profile...", e);
@@ -178,10 +178,10 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
     @Override
     public ComputeResourcePreference getComputeResourcePreference(String gatewayId, String hostId) throws AppCatalogException {
         try {
-            ComputeHostPreferenceAppCatalogResourceAppCat prefResource = new ComputeHostPreferenceAppCatalogResourceAppCat();
+            ComputeHostPreferenceResource prefResource = new ComputeHostPreferenceResource();
             List<AppCatalogResource> computePrefList = prefResource.get(AppCatAbstractResource.ComputeResourcePreferenceConstants.GATEWAY_ID, gatewayId);
             for (AppCatalogResource resource : computePrefList){
-                ComputeHostPreferenceAppCatalogResourceAppCat cmP = (ComputeHostPreferenceAppCatalogResourceAppCat) resource;
+                ComputeHostPreferenceResource cmP = (ComputeHostPreferenceResource) resource;
                 if (cmP.getResourceId() != null && !cmP.getResourceId().equals("")){
                     if (cmP.getResourceId().equals(hostId)){
                         return AppCatalogThriftConversion.getComputeResourcePreference(cmP);
@@ -202,7 +202,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
     @Override
     public List<ComputeResourcePreference> getAllComputeResourcePreferences(String gatewayId) throws AppCatalogException {
         try {
-            ComputeHostPreferenceAppCatalogResourceAppCat prefResource = new ComputeHostPreferenceAppCatalogResourceAppCat();
+            ComputeHostPreferenceResource prefResource = new ComputeHostPreferenceResource();
             List<AppCatalogResource> computePrefList = prefResource.get(AppCatAbstractResource.ComputeResourcePreferenceConstants.GATEWAY_ID, gatewayId);
             return AppCatalogThriftConversion.getComputeResourcePreferences(computePrefList);
         }catch (Exception e) {
@@ -214,12 +214,12 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
     @Override
     public List<String> getGatewayProfileIds(String gatewayName) throws AppCatalogException {
         try {
-            GatewayProfileAppCatalogResourceAppCat profileResource = new GatewayProfileAppCatalogResourceAppCat();
+            GatewayProfileResource profileResource = new GatewayProfileResource();
             List<AppCatalogResource> resourceList = profileResource.get(AppCatAbstractResource.GatewayProfileConstants.GATEWAY_ID, gatewayName);
             List<String> gatewayIds = new ArrayList<String>();
             if (resourceList != null && !resourceList.isEmpty()){
                 for (AppCatalogResource resource : resourceList){
-                    gatewayIds.add(((GatewayProfileAppCatalogResourceAppCat)resource).getGatewayID());
+                    gatewayIds.add(((GatewayProfileResource)resource).getGatewayID());
                 }
             }
             return gatewayIds;
@@ -233,11 +233,11 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
     public List<GatewayResourceProfile> getAllGatewayProfiles() throws AppCatalogException {
         try {
             List<GatewayResourceProfile> gatewayResourceProfileList = new ArrayList<GatewayResourceProfile>();
-            GatewayProfileAppCatalogResourceAppCat profileResource = new GatewayProfileAppCatalogResourceAppCat();
+            GatewayProfileResource profileResource = new GatewayProfileResource();
             List<AppCatalogResource> resourceList = profileResource.getAll();
             if (resourceList != null && !resourceList.isEmpty()){
                 for (AppCatalogResource resource : resourceList){
-                    GatewayProfileAppCatalogResourceAppCat gatewayProfileResource = (GatewayProfileAppCatalogResourceAppCat)resource;
+                    GatewayProfileResource gatewayProfileResource = (GatewayProfileResource)resource;
                     List<ComputeResourcePreference> computeResourcePreferences = getAllComputeResourcePreferences(gatewayProfileResource.getGatewayID());
                     GatewayResourceProfile gatewayResourceProfile = AppCatalogThriftConversion.getGatewayResourceProfile(gatewayProfileResource, computeResourcePreferences);
                     gatewayResourceProfileList.add(gatewayResourceProfile);

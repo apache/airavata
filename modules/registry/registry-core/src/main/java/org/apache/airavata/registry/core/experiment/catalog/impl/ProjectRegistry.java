@@ -36,20 +36,20 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 public class ProjectRegistry {
-    private GatewayExperimentCatResource gatewayResource;
-    private WorkerExperimentCatResource workerResource;
+    private GatewayResource gatewayResource;
+    private WorkerResource workerResource;
     private final static Logger logger = LoggerFactory.getLogger(ProjectRegistry.class);
 
-    public ProjectRegistry(GatewayExperimentCatResource gatewayResource, UserExperimentCatResource user) throws RegistryException {
+    public ProjectRegistry(GatewayResource gatewayResource, UserResource user) throws RegistryException {
         if (!ExpCatResourceUtils.isGatewayExist(gatewayResource.getGatewayId())){
             this.gatewayResource = gatewayResource;
         }else {
-            this.gatewayResource = (GatewayExperimentCatResource) ExpCatResourceUtils.getGateway(gatewayResource.getGatewayId());
+            this.gatewayResource = (GatewayResource) ExpCatResourceUtils.getGateway(gatewayResource.getGatewayId());
         }
         if (!gatewayResource.isExists(ResourceType.GATEWAY_WORKER, user.getUserName())){
             workerResource = ExpCatResourceUtils.addGatewayWorker(gatewayResource, user);
         }else {
-            workerResource = (WorkerExperimentCatResource) ExpCatResourceUtils.getWorker(gatewayResource.getGatewayId(),
+            workerResource = (WorkerResource) ExpCatResourceUtils.getWorker(gatewayResource.getGatewayId(),
                     user.getUserName());
         }
     }
@@ -60,7 +60,7 @@ public class ProjectRegistry {
             if (!ExpCatResourceUtils.isUserExist(project.getOwner())){
                 ExpCatResourceUtils.addUser(project.getOwner(), null);
             }
-            ProjectExperimentCatResource projectResource = new ProjectExperimentCatResource();
+            ProjectResource projectResource = new ProjectResource();
             projectId = getProjectId(project.getName());
             projectResource.setId(projectId);
             project.setProjectID(projectId);
@@ -68,10 +68,10 @@ public class ProjectRegistry {
             projectResource.setDescription(project.getDescription());
             projectResource.setCreationTime(AiravataUtils.getTime(project.getCreationTime()));
             projectResource.setGatewayId(gatewayId);
-            WorkerExperimentCatResource worker = new WorkerExperimentCatResource(project.getOwner(), gatewayId);
+            WorkerResource worker = new WorkerResource(project.getOwner(), gatewayId);
             projectResource.setWorker(worker);
             projectResource.save();
-            ProjectUserExperimentCatResource resource = (ProjectUserExperimentCatResource)projectResource.create(
+            ProjectUserResource resource = (ProjectUserResource)projectResource.create(
                     ResourceType.PROJECT_USER);
             resource.setProjectId(project.getProjectID());
             resource.setUserName(project.getOwner());
@@ -87,7 +87,7 @@ public class ProjectRegistry {
             List<String> sharedUsers = project.getSharedUsers();
             if (sharedUsers != null && !sharedUsers.isEmpty()){
                 for (String username : sharedUsers){
-                    ProjectUserExperimentCatResource pr = (ProjectUserExperimentCatResource)projectResource.
+                    ProjectUserResource pr = (ProjectUserResource)projectResource.
                             create(ResourceType.PROJECT_USER);
                     pr.setUserName(username);
                     pr.save();
@@ -107,21 +107,21 @@ public class ProjectRegistry {
 
     public void updateProject (Project project, String projectId) throws RegistryException{
         try {
-            ProjectExperimentCatResource existingProject = workerResource.getProject(projectId);
+            ProjectResource existingProject = workerResource.getProject(projectId);
             existingProject.setDescription(project.getDescription());
             existingProject.setName(project.getName());
 //            existingProject.setGateway(gatewayResource);
-            UserExperimentCatResource user = (UserExperimentCatResource) ExpCatResourceUtils.getUser(project.getOwner());
+            UserResource user = (UserResource) ExpCatResourceUtils.getUser(project.getOwner());
             if (!gatewayResource.isExists(ResourceType.GATEWAY_WORKER, user.getUserName())){
                 workerResource = ExpCatResourceUtils.addGatewayWorker(gatewayResource, user);
             }else {
-                workerResource = (WorkerExperimentCatResource) ExpCatResourceUtils.getWorker(
+                workerResource = (WorkerResource) ExpCatResourceUtils.getWorker(
                         gatewayResource.getGatewayName(), user.getUserName());
             }
-            WorkerExperimentCatResource worker = new WorkerExperimentCatResource(project.getOwner(), gatewayResource.getGatewayId());
+            WorkerResource worker = new WorkerResource(project.getOwner(), gatewayResource.getGatewayId());
             existingProject.setWorker(worker);
             existingProject.save();
-            ProjectUserExperimentCatResource resource = (ProjectUserExperimentCatResource)existingProject.create(
+            ProjectUserResource resource = (ProjectUserResource)existingProject.create(
                     ResourceType.PROJECT_USER);
             resource.setProjectId(projectId);
             resource.setUserName(project.getOwner());
@@ -137,7 +137,7 @@ public class ProjectRegistry {
             List<String> sharedUsers = project.getSharedUsers();
             if (sharedUsers != null && !sharedUsers.isEmpty()){
                 for (String username : sharedUsers){
-                    ProjectUserExperimentCatResource pr = (ProjectUserExperimentCatResource)existingProject.create(
+                    ProjectUserResource pr = (ProjectUserResource)existingProject.create(
                             ResourceType.PROJECT_USER);
                     pr.setUserName(username);
                     pr.save();
@@ -151,7 +151,7 @@ public class ProjectRegistry {
 
     public Project getProject (String projectId) throws RegistryException{
         try {
-            ProjectExperimentCatResource project = workerResource.getProject(projectId);
+            ProjectResource project = workerResource.getProject(projectId);
             if (project != null){
                 return ThriftDataModelConversion.getProject(project);
             }
@@ -190,9 +190,9 @@ public class ProjectRegistry {
         try {
             if (fieldName.equals(Constants.FieldConstants.ProjectConstants.OWNER)){
                 workerResource.setUser((String)value);
-                List<ProjectExperimentCatResource> projectList = workerResource.getProjects();
+                List<ProjectResource> projectList = workerResource.getProjects();
                 if (projectList != null && !projectList.isEmpty()){
-                    for (ProjectExperimentCatResource pr : projectList){
+                    for (ProjectResource pr : projectList){
                         projects.add(ThriftDataModelConversion.getProject(pr));
                     }
                 }
@@ -237,19 +237,19 @@ public class ProjectRegistry {
             try {
                 for (String field : filters.keySet()){
                     if (field.equals(Constants.FieldConstants.ProjectConstants.PROJECT_NAME)){
-                        fil.put(AbstractExperimentCatResource.ProjectConstants.PROJECT_NAME, filters.get(field));
+                        fil.put(AbstractExpCatResource.ProjectConstants.PROJECT_NAME, filters.get(field));
                     }else if (field.equals(Constants.FieldConstants.ProjectConstants.OWNER)){
-                        fil.put(AbstractExperimentCatResource.ProjectConstants.USERNAME, filters.get(field));
+                        fil.put(AbstractExpCatResource.ProjectConstants.USERNAME, filters.get(field));
                     }else if (field.equals(Constants.FieldConstants.ProjectConstants.DESCRIPTION)){
-                        fil.put(AbstractExperimentCatResource.ProjectConstants.DESCRIPTION, filters.get(field));
+                        fil.put(AbstractExpCatResource.ProjectConstants.DESCRIPTION, filters.get(field));
                     }else if (field.equals(Constants.FieldConstants.ProjectConstants.GATEWAY_ID)){
-                        fil.put(AbstractExperimentCatResource.ProjectConstants.GATEWAY_ID, filters.get(field));
+                        fil.put(AbstractExpCatResource.ProjectConstants.GATEWAY_ID, filters.get(field));
                     }
                 }
-                List<ProjectExperimentCatResource> projectResources = workerResource
+                List<ProjectResource> projectResources = workerResource
                         .searchProjects(fil, limit, offset, orderByIdentifier, resultOrderType);
                 if (projectResources != null && !projectResources.isEmpty()){
-                    for (ProjectExperimentCatResource pr : projectResources){
+                    for (ProjectResource pr : projectResources){
                         projects.add(ThriftDataModelConversion.getProject(pr));
                     }
                 }
@@ -267,9 +267,9 @@ public class ProjectRegistry {
         try {
             if (fieldName.equals(Constants.FieldConstants.ProjectConstants.OWNER)){
                 workerResource.setUser((String)value);
-                List<ProjectExperimentCatResource> projectList = workerResource.getProjects();
+                List<ProjectResource> projectList = workerResource.getProjects();
                 if (projectList != null && !projectList.isEmpty()){
-                    for (ProjectExperimentCatResource pr : projectList){
+                    for (ProjectResource pr : projectList){
                         projectIds.add(pr.getName());
                     }
                 }

@@ -24,16 +24,16 @@ package org.apache.airavata.registry.core.experiment.catalog.impl;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
-import org.apache.airavata.registry.core.experiment.catalog.resources.WorkerExperimentCatResource;
+import org.apache.airavata.registry.core.experiment.catalog.resources.WorkerResource;
 import org.apache.airavata.registry.cpi.RegistryException;
 
 public class UserReg {
-    public WorkerExperimentCatResource getSystemUser() throws ApplicationSettingsException, RegistryException {
-        return (WorkerExperimentCatResource) ExpCatResourceUtils.getWorker(ServerSettings.getDefaultUserGateway(), ServerSettings.getDefaultUser());
+    public WorkerResource getSystemUser() throws ApplicationSettingsException, RegistryException {
+        return (WorkerResource) ExpCatResourceUtils.getWorker(ServerSettings.getDefaultUserGateway(), ServerSettings.getDefaultUser());
     }
 
-    public WorkerExperimentCatResource getExistingUser (String gatewayName, String userName) throws RegistryException {
-        return (WorkerExperimentCatResource) ExpCatResourceUtils.getWorker(gatewayName, userName);
+    public WorkerResource getExistingUser (String gatewayName, String userName) throws RegistryException {
+        return (WorkerResource) ExpCatResourceUtils.getWorker(gatewayName, userName);
     }
 
 

@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceContext;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,6 +44,7 @@ public class AppCatalogJPAUtils {
     private static final String APPCATALOG_JDBC_PWD = "appcatalog.jdbc.password";
     private static final String APPCATALOG_VALIDATION_QUERY = "appcatalog.validationQuery";
     private static final String JPA_CACHE_SIZE = "jpa.cache.size";
+    @PersistenceContext(unitName="appcatalog_data")
     protected static EntityManagerFactory factory;
 
     public static EntityManager getEntityManager() throws ApplicationSettingsException {
@@ -375,7 +377,7 @@ public class AppCatalogJPAUtils {
     }
 	
 	private static AppCatalogResource createLocalDataMovement(LocalDataMovement o) {
-		LocalDataMovementAppCatalogResourceAppCat localDataMovementResource = new LocalDataMovementAppCatalogResourceAppCat();
+		LocalDataMovementResource localDataMovementResource = new LocalDataMovementResource();
         if (o != null){
             localDataMovementResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
         }
@@ -383,10 +385,10 @@ public class AppCatalogJPAUtils {
 	}
 	
     private static AppCatalogResource createLocalSubmission(LocalSubmission o) {
-		LocalSubmissionAppCatalogResourceAppCat localSubmissionResource = new LocalSubmissionAppCatalogResourceAppCat();
+		LocalSubmissionResource localSubmissionResource = new LocalSubmissionResource();
         if (o != null){
             localSubmissionResource.setResourceJobManagerId(o.getResourceJobManagerId());
-            localSubmissionResource.setResourceJobManagerResource((ResourceJobManagerAppCatalogResourceAppCat)createResourceJobManager(o.getResourceJobManager()));
+            localSubmissionResource.setResourceJobManagerResource((ResourceJobManagerResource)createResourceJobManager(o.getResourceJobManager()));
             localSubmissionResource.setJobSubmissionInterfaceId(o.getJobSubmissionInterfaceId());
             localSubmissionResource.setCreatedTime(o.getCreationTime());
             if (o.getUpdateTime() != null){
@@ -397,10 +399,10 @@ public class AppCatalogJPAUtils {
 	}
     
     private static AppCatalogResource createJobManagerCommand(JobManagerCommand o) {
-		JobManagerCommandAppCatalogResourceAppCat jobManagerCommandResource = new JobManagerCommandAppCatalogResourceAppCat();
+		JobManagerCommandResource jobManagerCommandResource = new JobManagerCommandResource();
         if (o != null){
             jobManagerCommandResource.setResourceJobManagerId(o.getResourceJobManagerId());
-            jobManagerCommandResource.setResourceJobManagerResource((ResourceJobManagerAppCatalogResourceAppCat)createResourceJobManager(o.getResourceJobManager()));
+            jobManagerCommandResource.setResourceJobManagerResource((ResourceJobManagerResource)createResourceJobManager(o.getResourceJobManager()));
             jobManagerCommandResource.setCommandType(o.getCommandType());
             jobManagerCommandResource.setCommand(o.getCommand());
         }
@@ -408,7 +410,7 @@ public class AppCatalogJPAUtils {
 	}
     
     private static AppCatalogResource createResourceJobManager(ResourceJobManager o) {
-		ResourceJobManagerAppCatalogResourceAppCat resourceJobManagerResource = new ResourceJobManagerAppCatalogResourceAppCat();
+		ResourceJobManagerResource resourceJobManagerResource = new ResourceJobManagerResource();
         if (o != null) {
             resourceJobManagerResource.setResourceJobManagerId(o.getResourceJobManagerId());
             resourceJobManagerResource.setPushMonitoringEndpoint(o.getPushMonitoringEndpoint());
@@ -423,10 +425,10 @@ public class AppCatalogJPAUtils {
 	}
     
     private static AppCatalogResource createDataMovementInterface(DataMovementInterface o) {
-		DataMovementInterfaceAppCatalogResourceAppCat dataMovementInterfaceResource = new DataMovementInterfaceAppCatalogResourceAppCat();
+		DataMovementInterfaceResource dataMovementInterfaceResource = new DataMovementInterfaceResource();
         if (o != null) {
             dataMovementInterfaceResource.setComputeResourceId(o.getComputeResourceId());
-            dataMovementInterfaceResource.setComputeHostResource((ComputeResourceAppCatalogResourceAppCat)createComputeResource(o.getComputeResource()));
+            dataMovementInterfaceResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
             dataMovementInterfaceResource.setDataMovementProtocol(o.getDataMovementProtocol());
             dataMovementInterfaceResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
             dataMovementInterfaceResource.setPriorityOrder(o.getPriorityOrder());
@@ -439,11 +441,11 @@ public class AppCatalogJPAUtils {
 	}
     
     private static AppCatalogResource createJobSubmissionInterface(JobSubmissionInterface o) {
-		JobSubmissionInterfaceAppCatalogResourceAppCat jobSubmissionInterfaceResource = new JobSubmissionInterfaceAppCatalogResourceAppCat();
+		JobSubmissionInterfaceResource jobSubmissionInterfaceResource = new JobSubmissionInterfaceResource();
         if (o != null) {
             jobSubmissionInterfaceResource.setJobSubmissionInterfaceId(o.getJobSubmissionInterfaceId());
             jobSubmissionInterfaceResource.setComputeResourceId(o.getComputeResourceId());
-            jobSubmissionInterfaceResource.setComputeHostResource((ComputeResourceAppCatalogResourceAppCat)createComputeResource(o.getComputeResource()));
+            jobSubmissionInterfaceResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
             jobSubmissionInterfaceResource.setJobSubmissionProtocol(o.getJobSubmissionProtocol());
             jobSubmissionInterfaceResource.setPriorityOrder(o.getPriorityOrder());
             jobSubmissionInterfaceResource.setCreatedTime(o.getCreationTime());
@@ -455,10 +457,10 @@ public class AppCatalogJPAUtils {
 	}
     
     private static AppCatalogResource createComputeResourceFileSystem(ComputeResourceFileSystem o) {
-		ComputeResourceFileSystemAppCatalogResourceAppCat computeResourceFileSystemResource = new ComputeResourceFileSystemAppCatalogResourceAppCat();
+		ComputeResourceFileSystemResource computeResourceFileSystemResource = new ComputeResourceFileSystemResource();
         if (o != null){
             computeResourceFileSystemResource.setComputeResourceId(o.getComputeResourceId());
-            computeResourceFileSystemResource.setComputeHostResource((ComputeResourceAppCatalogResourceAppCat)createComputeResource(o.getComputeResource()));
+            computeResourceFileSystemResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
             computeResourceFileSystemResource.setPath(o.getPath());
             computeResourceFileSystemResource.setFileSystem(o.getFileSystem());
         }
@@ -466,10 +468,10 @@ public class AppCatalogJPAUtils {
 	}
     
     private static AppCatalogResource createBatchQueue(BatchQueue o) {
-		BatchQueueAppCatalogResourceAppCat batchQueueResource = new BatchQueueAppCatalogResourceAppCat();
+		BatchQueueResource batchQueueResource = new BatchQueueResource();
         if (o != null){
             batchQueueResource.setComputeResourceId(o.getComputeResourceId());
-            batchQueueResource.setComputeHostResource((ComputeResourceAppCatalogResourceAppCat)createComputeResource(o.getComputeResource()));
+            batchQueueResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
             batchQueueResource.setMaxRuntime(o.getMaxRuntime());
             batchQueueResource.setMaxJobInQueue(o.getMaxJobInQueue());
             batchQueueResource.setQueueDescription(o.getQueueDescription());
@@ -481,7 +483,7 @@ public class AppCatalogJPAUtils {
 		return batchQueueResource;
 	}
     private static AppCatalogResource createComputeResource(ComputeResource o) {
-		ComputeResourceAppCatalogResourceAppCat computeResourceResource = new ComputeResourceAppCatalogResourceAppCat();
+		ComputeResourceResource computeResourceResource = new ComputeResourceResource();
         if (o != null) {
             computeResourceResource.setResourceDescription(o.getResourceDescription());
             computeResourceResource.setResourceId(o.getResourceId());
@@ -496,27 +498,27 @@ public class AppCatalogJPAUtils {
 	}
 
     private static AppCatalogResource createHostAlias(HostAlias o) {
-        HostAliasAppCatalogResourceAppCat aliasResource = new HostAliasAppCatalogResourceAppCat();
+        HostAliasAppResource aliasResource = new HostAliasAppResource();
         if (o != null){
             aliasResource.setResourceID(o.getResourceID());
             aliasResource.setAlias(o.getAlias());
-            aliasResource.setComputeHostResource((ComputeResourceAppCatalogResourceAppCat)createComputeResource(o.getComputeResource()));
+            aliasResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
         }
         return aliasResource;
     }
 
     private static AppCatalogResource createHostIPAddress(HostIPAddress o) {
-        HostIPAddressAppCatalogResourceAppCat ipAddressResource = new HostIPAddressAppCatalogResourceAppCat();
+        HostIPAddressResource ipAddressResource = new HostIPAddressResource();
         if (o != null){
             ipAddressResource.setResourceID(o.getResourceID());
             ipAddressResource.setIpaddress(o.getIpaddress());
-            ipAddressResource.setComputeHostResource((ComputeResourceAppCatalogResourceAppCat)createComputeResource(o.getComputeResource()));
+            ipAddressResource.setComputeHostResource((ComputeResourceResource)createComputeResource(o.getComputeResource()));
         }
         return ipAddressResource;
     }
 
     private static AppCatalogResource createGSSISSHSubmission(GSISSHSubmission o) {
-        GSISSHSubmissionAppCatalogResourceAppCat submissionResource = new GSISSHSubmissionAppCatalogResourceAppCat();
+        GSISSHSubmissionResource submissionResource = new GSISSHSubmissionResource();
         if (o != null) {
             submissionResource.setSubmissionID(o.getSubmissionID());
             submissionResource.setResourceJobManager(o.getResourceJobManager());
@@ -529,7 +531,7 @@ public class AppCatalogJPAUtils {
     
     
     private static AppCatalogResource createUnicoreJobSubmission(UnicoreJobSubmission o) {
-        UnicoreJobSubmissionAppCatalogResourceAppCat submissionResource = new UnicoreJobSubmissionAppCatalogResourceAppCat();
+        UnicoreJobSubmissionResource submissionResource = new UnicoreJobSubmissionResource();
         if (o != null) {
             submissionResource.setjobSubmissionInterfaceId(o.getSubmissionID());
             submissionResource.setUnicoreEndpointUrl(o.getUnicoreEndpointUrl());
@@ -539,7 +541,7 @@ public class AppCatalogJPAUtils {
     }
 
     private static AppCatalogResource createUnicoreDataMovement(UnicoreDataMovement o) {
-        UnicoreDataMovementAppCatalogResourceAppCat dataMovementResource = new UnicoreDataMovementAppCatalogResourceAppCat();
+        UnicoreDataMovementResource dataMovementResource = new UnicoreDataMovementResource();
         if (o != null) {
             dataMovementResource.setDataMovementId(o.getDataMovementId());
             dataMovementResource.setUnicoreEndpointUrl(o.getUnicoreEndpointUrl());
@@ -549,37 +551,37 @@ public class AppCatalogJPAUtils {
     }
     
     private static AppCatalogResource createGSISSHExport(GSISSHExport o){
-        GSISSHExportAppCatalogResourceAppCat resource = new GSISSHExportAppCatalogResourceAppCat();
+        GSISSHExportResource resource = new GSISSHExportResource();
         if (o != null) {
             resource.setSubmissionID(o.getSubmissionID());
             resource.setExport(o.getExport());
-            resource.setGsisshSubmissionResource((GSISSHSubmissionAppCatalogResourceAppCat)createGSSISSHSubmission(o.getGsisshJobSubmission()));
+            resource.setGsisshSubmissionResource((GSISSHSubmissionResource)createGSSISSHSubmission(o.getGsisshJobSubmission()));
         }
         return resource;
     }
 
     private static AppCatalogResource createPreJobCommand(PreJobCommand o){
-        PreJobCommandAppCatalogResourceAppCat resource = new PreJobCommandAppCatalogResourceAppCat();
+        PreJobCommandResource resource = new PreJobCommandResource();
         if (o != null) {
             resource.setAppDeploymentId(o.getDeploymentId());
             resource.setCommand(o.getCommand());
-            resource.setAppDeploymentResource((AppDeploymentAppCatalogResourceAppCat) createApplicationDeployment(o.getApplicationDeployment()));
+            resource.setAppDeploymentResource((AppDeploymentResource) createApplicationDeployment(o.getApplicationDeployment()));
         }
         return resource;
     }
 
     private static AppCatalogResource createPostJObCommand(PostJobCommand o){
-        PostJobCommandAppCatalogResourceAppCat resource = new PostJobCommandAppCatalogResourceAppCat();
+        PostJobCommandResource resource = new PostJobCommandResource();
         if (o != null){
             resource.setAppDeploymentId(o.getDeploymentId());
             resource.setCommand(o.getCommand());
-            resource.setAppDeploymentResource((AppDeploymentAppCatalogResourceAppCat) createApplicationDeployment(o.getDeployment()));
+            resource.setAppDeploymentResource((AppDeploymentResource) createApplicationDeployment(o.getDeployment()));
         }
         return resource;
     }
 
     private static AppCatalogResource createGlobusJobSubmission(GlobusJobSubmission o) {
-        GlobusJobSubmissionAppCatalogResourceAppCat resource = new GlobusJobSubmissionAppCatalogResourceAppCat();
+        GlobusJobSubmissionResource resource = new GlobusJobSubmissionResource();
         if (o != null){
             resource.setSubmissionID(o.getSubmissionID());
             resource.setResourceJobManager(o.getResourceJobManager());
@@ -589,20 +591,20 @@ public class AppCatalogJPAUtils {
     }
 
     private static AppCatalogResource createGlobusEndpoint(GlobusGKEndpoint o) {
-        GlobusGKEndpointAppCatalogResourceAppCat resource = new GlobusGKEndpointAppCatalogResourceAppCat();
+        GlobusGKEndpointResource resource = new GlobusGKEndpointResource();
         if (o != null){
             resource.setSubmissionID(o.getSubmissionID());
             resource.setEndpoint(o.getEndpoint());
-            resource.setGlobusJobSubmissionResource((GlobusJobSubmissionAppCatalogResourceAppCat)createGlobusJobSubmission(o.getGlobusSubmission()));
+            resource.setGlobusJobSubmissionResource((GlobusJobSubmissionResource)createGlobusJobSubmission(o.getGlobusSubmission()));
         }
         return resource;
     }
 	
 	private static AppCatalogResource createSshJobSubmission(SshJobSubmission o) {
-        SshJobSubmissionAppCatalogResourceAppCat sshJobSubmissionResource = new SshJobSubmissionAppCatalogResourceAppCat();
+        SshJobSubmissionResource sshJobSubmissionResource = new SshJobSubmissionResource();
         if (o != null) {
             sshJobSubmissionResource.setResourceJobManagerId(o.getResourceJobManagerId());
-            sshJobSubmissionResource.setResourceJobManagerResource((ResourceJobManagerAppCatalogResourceAppCat) createResourceJobManager(o.getResourceJobManager()));
+            sshJobSubmissionResource.setResourceJobManagerResource((ResourceJobManagerResource) createResourceJobManager(o.getResourceJobManager()));
             sshJobSubmissionResource.setJobSubmissionInterfaceId(o.getJobSubmissionInterfaceId());
             sshJobSubmissionResource.setAlternativeSshHostname(o.getAlternativeSshHostname());
             sshJobSubmissionResource.setSecurityProtocol(o.getSecurityProtocol());
@@ -617,7 +619,7 @@ public class AppCatalogJPAUtils {
     }
 
     private static AppCatalogResource createScpDataMovement(ScpDataMovement o) {
-		ScpDataMovementAppCatalogResourceAppCat scpDataMovementResource = new ScpDataMovementAppCatalogResourceAppCat();
+		ScpDataMovementResource scpDataMovementResource = new ScpDataMovementResource();
         if (o != null){
             scpDataMovementResource.setQueueDescription(o.getQueueDescription());
             scpDataMovementResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
@@ -633,7 +635,7 @@ public class AppCatalogJPAUtils {
 	}
 
     private static AppCatalogResource createGridftpDataMovement(GridftpDataMovement o) {
-		GridftpDataMovementAppCatalogResourceAppCat gridftpDataMovementResource = new GridftpDataMovementAppCatalogResourceAppCat();
+		GridftpDataMovementResource gridftpDataMovementResource = new GridftpDataMovementResource();
         if (o != null){
             gridftpDataMovementResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
             gridftpDataMovementResource.setSecurityProtocol(o.getSecurityProtocol());
@@ -646,11 +648,11 @@ public class AppCatalogJPAUtils {
 	}
 
     private static AppCatalogResource createGridftpEndpoint(GridftpEndpoint o) {
-		GridftpEndpointAppCatalogResourceAppCat gridftpEndpointResource = new GridftpEndpointAppCatalogResourceAppCat();
+		GridftpEndpointResource gridftpEndpointResource = new GridftpEndpointResource();
         if (o != null){
             gridftpEndpointResource.setEndpoint(o.getEndpoint());
             gridftpEndpointResource.setDataMovementInterfaceId(o.getDataMovementInterfaceId());
-            gridftpEndpointResource.setGridftpDataMovementResource((GridftpDataMovementAppCatalogResourceAppCat)createGridftpDataMovement(o.getGridftpDataMovement()));
+            gridftpEndpointResource.setGridftpDataMovementResource((GridftpDataMovementResource)createGridftpDataMovement(o.getGridftpDataMovement()));
             gridftpEndpointResource.setCreatedTime(o.getCreationTime());
             if (o.getUpdateTime() != null){
                 gridftpEndpointResource.setUpdatedTime(o.getUpdateTime());
@@ -682,7 +684,7 @@ public class AppCatalogJPAUtils {
 //    }
 
     private static AppCatalogResource createApplicationModule(ApplicationModule o) {
-        AppModuleAppCatalogResourceAppCat moduleResource = new AppModuleAppCatalogResourceAppCat();
+        AppModuleResource moduleResource = new AppModuleResource();
         if (o != null){
             moduleResource.setModuleId(o.getModuleID());
             moduleResource.setModuleDesc(o.getModuleDesc());
@@ -698,7 +700,7 @@ public class AppCatalogJPAUtils {
     }
 
     private static AppCatalogResource createApplicationDeployment(ApplicationDeployment o) {
-        AppDeploymentAppCatalogResourceAppCat resource = new AppDeploymentAppCatalogResourceAppCat();
+        AppDeploymentResource resource = new AppDeploymentResource();
         if (o != null){
             resource.setDeploymentId(o.getDeploymentID());
             resource.setAppDes(o.getApplicationDesc());
@@ -707,8 +709,8 @@ public class AppCatalogJPAUtils {
             resource.setExecutablePath(o.getExecutablePath());
             resource.setGatewayId(o.getGatewayId());
             resource.setParallelism(o.getParallelism());
-            resource.setModuleResource((AppModuleAppCatalogResourceAppCat) createApplicationModule(o.getApplicationModule()));
-            resource.setHostResource((ComputeResourceAppCatalogResourceAppCat) createComputeResource(o.getComputeResource()));
+            resource.setModuleResource((AppModuleResource) createApplicationModule(o.getApplicationModule()));
+            resource.setHostResource((ComputeResourceResource) createComputeResource(o.getComputeResource()));
             resource.setCreatedTime(o.getCreationTime());
             if (o.getUpdateTime() != null){
                 resource.setUpdatedTime(o.getUpdateTime());
@@ -718,40 +720,40 @@ public class AppCatalogJPAUtils {
     }
 
     private static AppCatalogResource createLibraryPrepPathResource(LibraryPrepandPath o) {
-        LibraryPrepandPathAppCatalogResourceAppCat resource = new LibraryPrepandPathAppCatalogResourceAppCat();
+        LibraryPrepandPathResource resource = new LibraryPrepandPathResource();
         if (o != null){
             resource.setDeploymentId(o.getDeploymentID());
             resource.setName(o.getName());
             resource.setValue(o.getValue());
-            resource.setAppDeploymentResource((AppDeploymentAppCatalogResourceAppCat) createApplicationDeployment(o.getApplicationDeployment()));
+            resource.setAppDeploymentResource((AppDeploymentResource) createApplicationDeployment(o.getApplicationDeployment()));
         }
         return resource;
     }
 
     private static AppCatalogResource createLibraryApendPathResource(LibraryApendPath o) {
-        LibraryApendPathAppCatalogResourceAppCat resource = new LibraryApendPathAppCatalogResourceAppCat();
+        LibraryApendPathResource resource = new LibraryApendPathResource();
         if (o != null){
             resource.setDeploymentId(o.getDeploymentID());
             resource.setName(o.getName());
             resource.setValue(o.getValue());
-            resource.setAppDeploymentResource((AppDeploymentAppCatalogResourceAppCat)createApplicationDeployment(o.getApplicationDeployment()));
+            resource.setAppDeploymentResource((AppDeploymentResource)createApplicationDeployment(o.getApplicationDeployment()));
         }
         return resource;
     }
 
     private static AppCatalogResource createAppEnvironmentResource(AppEnvironment o) {
-        AppEnvironmentAppCatalogResourceAppCat resource = new AppEnvironmentAppCatalogResourceAppCat();
+        AppEnvironmentResource resource = new AppEnvironmentResource();
         if (o != null){
             resource.setDeploymentId(o.getDeploymentID());
             resource.setName(o.getName());
             resource.setValue(o.getValue());
-            resource.setAppDeploymentResource((AppDeploymentAppCatalogResourceAppCat)createApplicationDeployment(o.getApplicationDeployment()));
+            resource.setAppDeploymentResource((AppDeploymentResource)createApplicationDeployment(o.getApplicationDeployment()));
         }
         return resource;
     }
 
     private static AppCatalogResource createAppInterfaceResource(ApplicationInterface o) {
-        AppInterfaceAppCatalogResourceAppCat resource = new AppInterfaceAppCatalogResourceAppCat();
+        AppInterfaceResource resource = new AppInterfaceResource();
         if (o != null){
             resource.setInterfaceId(o.getInterfaceID());
             resource.setAppName(o.getAppName());
@@ -775,7 +777,7 @@ public class AppCatalogJPAUtils {
     }
 
     private static AppCatalogResource createApplicationInput(ApplicationInput o) {
-        ApplicationInputAppCatalogResourceAppCat resource = new ApplicationInputAppCatalogResourceAppCat();
+        ApplicationInputResource resource = new ApplicationInputResource();
         if (o != null){
             resource.setInterfaceID(o.getInterfaceID());
             resource.setInputKey(o.getInputKey());
@@ -789,13 +791,13 @@ public class AppCatalogJPAUtils {
             resource.setRequired(o.isRequired());
             resource.setRequiredToCMD(o.isRequiredToCMD());
             resource.setDataStaged(o.isDataStaged());
-            resource.setAppInterfaceResource((AppInterfaceAppCatalogResourceAppCat)createAppInterfaceResource(o.getApplicationInterface()));
+            resource.setAppInterfaceResource((AppInterfaceResource)createAppInterfaceResource(o.getApplicationInterface()));
         }
         return resource;
     }
 
     private static AppCatalogResource createWorflowInput(WorkflowInput o) {
-        WorkflowInputAppCatalogResourceAppCat resource = new WorkflowInputAppCatalogResourceAppCat();
+        WorkflowInputResource resource = new WorkflowInputResource();
         if (o != null){
             resource.setWfTemplateId(o.getWfTemplateId());
             resource.setInputKey(o.getInputKey());
@@ -811,13 +813,13 @@ public class AppCatalogJPAUtils {
             resource.setRequired(o.isRequired());
             resource.setRequiredToCMD(o.isRequiredToCMD());
             resource.setDataStaged(o.isDataStaged());
-            resource.setWorkflowResource((WorkflowAppCatalogResourceAppCat)createWorkflow(o.getWorkflow()));
+            resource.setWorkflowResource((WorkflowResource)createWorkflow(o.getWorkflow()));
         }
         return resource;
     }
 
     private static AppCatalogResource createApplicationOutput(ApplicationOutput o) {
-        ApplicationOutputAppCatalogResourceAppCat resource = new ApplicationOutputAppCatalogResourceAppCat();
+        ApplicationOutputResource resource = new ApplicationOutputResource();
         if (o != null){
             resource.setInterfaceID(o.getInterfaceID());
             resource.setOutputKey(o.getOutputKey());
@@ -829,13 +831,13 @@ public class AppCatalogJPAUtils {
             resource.setDataNameLocation(o.getDataNameLocation());
             resource.setSearchQuery(o.getSearchQuery());
             resource.setAppArgument(o.getApplicationArgument());
-            resource.setAppInterfaceResource((AppInterfaceAppCatalogResourceAppCat)createAppInterfaceResource(o.getApplicationInterface()));
+            resource.setAppInterfaceResource((AppInterfaceResource)createAppInterfaceResource(o.getApplicationInterface()));
         }
         return resource;
     }
 
     private static AppCatalogResource createWorkflowOutput(WorkflowOutput o) {
-        WorkflowOutputAppCatalogResourceAppCat resource = new WorkflowOutputAppCatalogResourceAppCat();
+        WorkflowOutputResource resource = new WorkflowOutputResource();
         if (o != null){
             resource.setWfTemplateId(o.getWfTemplateId());
             resource.setOutputKey(o.getOutputKey());
@@ -846,13 +848,13 @@ public class AppCatalogJPAUtils {
             resource.setValidityType(o.getValidityType());
             resource.setDataMovement(o.isDataMovement());
             resource.setDataNameLocation(o.getDataNameLocation());
-            resource.setWorkflowResource((WorkflowAppCatalogResourceAppCat)createWorkflow(o.getWorkflow()));
+            resource.setWorkflowResource((WorkflowResource)createWorkflow(o.getWorkflow()));
         }
         return resource;
     }
 
     private static AppCatalogResource createGatewayProfile(GatewayProfile o) {
-        GatewayProfileAppCatalogResourceAppCat resource = new GatewayProfileAppCatalogResourceAppCat();
+        GatewayProfileResource resource = new GatewayProfileResource();
         if (o != null) {
             resource.setGatewayID(o.getGatewayID());
             resource.setCreatedTime(o.getCreationTime());
@@ -864,7 +866,7 @@ public class AppCatalogJPAUtils {
     }
 
     private static AppCatalogResource createComputeResourcePref(ComputeResourcePreference o) {
-        ComputeHostPreferenceAppCatalogResourceAppCat resource = new ComputeHostPreferenceAppCatalogResourceAppCat();
+        ComputeHostPreferenceResource resource = new ComputeHostPreferenceResource();
         if (o != null) {
             resource.setGatewayId(o.getGatewayId());
             resource.setResourceId(o.getResourceId());
@@ -875,24 +877,24 @@ public class AppCatalogJPAUtils {
             resource.setScratchLocation(o.getScratchLocation());
             resource.setProjectNumber(o.getProjectNumber());
             resource.setLoginUserName(o.getLoginUserName());
-            resource.setComputeHostResource((ComputeResourceAppCatalogResourceAppCat) createComputeResource(o.getComputeHostResource()));
-            resource.setGatewayProfile((GatewayProfileAppCatalogResourceAppCat) createGatewayProfile(o.getGatewayProfile()));
+            resource.setComputeHostResource((ComputeResourceResource) createComputeResource(o.getComputeHostResource()));
+            resource.setGatewayProfile((GatewayProfileResource) createGatewayProfile(o.getGatewayProfile()));
         }
         return resource;
     }
 
     private static AppCatalogResource createModuleLoadCmd(ModuleLoadCmd o) {
-        ModuleLoadCmdAppCatalogResourceAppCat moduleLoadCmdResource = new ModuleLoadCmdAppCatalogResourceAppCat();
+        ModuleLoadCmdResource moduleLoadCmdResource = new ModuleLoadCmdResource();
         if (o != null){
             moduleLoadCmdResource.setCmd(o.getCmd());
             moduleLoadCmdResource.setAppDeploymentId(o.getAppDeploymentId());
-            moduleLoadCmdResource.setAppDeploymentResource((AppDeploymentAppCatalogResourceAppCat)createApplicationDeployment(o.getApplicationDeployment()));
+            moduleLoadCmdResource.setAppDeploymentResource((AppDeploymentResource)createApplicationDeployment(o.getApplicationDeployment()));
         }
         return moduleLoadCmdResource;
     }
 
     private static AppCatalogResource createWorkflow(Workflow o) {
-        WorkflowAppCatalogResourceAppCat workflowResource = new WorkflowAppCatalogResourceAppCat();
+        WorkflowResource workflowResource = new WorkflowResource();
         workflowResource.setWfName(o.getWfName());
         workflowResource.setCreatedUser(o.getCreatedUser());
         if (o.getGraph() != null){
