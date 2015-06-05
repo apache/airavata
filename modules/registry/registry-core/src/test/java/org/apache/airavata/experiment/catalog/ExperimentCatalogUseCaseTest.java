@@ -18,7 +18,7 @@
  * under the License.
  *
 */
-package org.apache.airavata.experiment.catalog;
+package org.apache.airavata.registry.core.experiment.catalog;
 
 import junit.framework.Assert;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -27,8 +27,8 @@ import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.*;
-import org.apache.airavata.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.experiment.catalog.util.Initialize;
+import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
+import org.apache.airavata.registry.core.experiment.catalog.util.Initialize;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.junit.BeforeClass;

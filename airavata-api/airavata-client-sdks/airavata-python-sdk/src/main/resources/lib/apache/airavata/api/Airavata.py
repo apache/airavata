@@ -619,7 +619,7 @@ class Iface:
          the ExperimentMetadata is a required field.
 
     @return
-      The server-side generated airavata experiment globally unique identifier.
+      The server-side generated.airavata.registry.core.experiment.globally unique identifier.
 
     @throws org.apache.airavata.model.error.InvalidRequestException
        For any incorrect forming of the request itself.
@@ -870,7 +870,7 @@ class Iface:
          should be shared public by default.
 
     @return
-      The server-side generated airavata experiment globally unique identifier for the newly cloned experiment.
+      The server-side generated.airavata.registry.core.experiment.globally unique identifier for the newly cloned experiment.
 
     @throws org.apache.airavata.model.error.InvalidRequestException
        For any incorrect forming of the request itself.
@@ -3832,7 +3832,7 @@ class Client(Iface):
          the ExperimentMetadata is a required field.
 
     @return
-      The server-side generated airavata experiment globally unique identifier.
+      The server-side generated.airavata.registry.core.experiment.globally unique identifier.
 
     @throws org.apache.airavata.model.error.InvalidRequestException
        For any incorrect forming of the request itself.
@@ -4467,7 +4467,7 @@ class Client(Iface):
          should be shared public by default.
 
     @return
-      The server-side generated airavata experiment globally unique identifier for the newly cloned experiment.
+      The server-side generated.airavata.registry.core.experiment.globally unique identifier for the newly cloned experiment.
 
     @throws org.apache.airavata.model.error.InvalidRequestException
        For any incorrect forming of the request itself.

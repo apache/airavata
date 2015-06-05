@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.airavata.experiment.catalog;
+package org.apache.airavata.registry.core.experiment.catalog;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
