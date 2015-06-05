@@ -182,7 +182,7 @@
 
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-experiment-catalog</artifactId>
+            <artifactId.airavata.registry.core.experiment.catalog</artifactId>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>

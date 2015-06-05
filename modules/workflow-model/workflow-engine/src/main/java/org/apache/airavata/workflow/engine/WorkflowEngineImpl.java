@@ -30,7 +30,7 @@ import org.apache.airavata.model.error.AiravataClientConnectException;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.orchestrator.client.OrchestratorClientFactory;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
-import org.apache.airavata.experiment.catalog.impl.RegistryFactory;
+import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.airavata.registry.cpi.RegistryException;

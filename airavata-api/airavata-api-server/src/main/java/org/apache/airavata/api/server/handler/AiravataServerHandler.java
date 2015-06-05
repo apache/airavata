@@ -1145,7 +1145,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      * has to subsequently configure and launch the created experiment. No action is taken on Airavata Server except
      * registering the experiment in a persistent store.
      *
-     * @param experiment@return The server-side generated airavata experiment globally unique identifier.
+     * @param experiment@return The server-side generated.airavata.registry.core.experiment.globally unique identifier.
      * @throws org.apache.airavata.model.error.InvalidRequestException For any incorrect forming of the request itself.
      * @throws org.apache.airavata.model.error.AiravataClientException The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
      *                                                               <p/>
@@ -1685,7 +1685,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      *   experiment name that should be used in the cloned experiment
      *
      * @return
-     *   The server-side generated airavata experiment globally unique identifier for the newly cloned experiment.
+     *   The server-side generated.airavata.registry.core.experiment.globally unique identifier for the newly cloned experiment.
      *
      * @throws org.apache.airavata.model.error.InvalidRequestException
      *    For any incorrect forming of the request itself.
