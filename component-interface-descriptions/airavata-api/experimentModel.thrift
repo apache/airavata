@@ -27,7 +27,7 @@ namespace cpp apache.airavata.model.workspace.experiment
 namespace py apache.airavata.model.workspace.experiment
 
 /*
- * This file describes the definitions of the Airavata Experiment Data Structures. Each of the
+ * This file describes the definitions of the.airavata.registry.core.experiment.Data Structures. Each of the
  *   language specific Airavata Client SDK's will translate this neutral data model into an
  *   appropriate form for passing to the Airavata Server Execution API Calls.
  * 

@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.experiment.catalog;
+package org.apache.airavata.registry.core.experiment.catalog;
 
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
 import org.apache.airavata.registry.core.experiment.catalog.resources.ComputationSchedulingExperimentCatResource;

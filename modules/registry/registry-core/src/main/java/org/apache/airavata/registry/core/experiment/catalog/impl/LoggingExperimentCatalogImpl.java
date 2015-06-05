@@ -18,7 +18,7 @@
  * under the License.
  *
 */
-package org.apache.airavata.experiment.catalog.impl;
+package org.apache.airavata.registry.core.experiment.catalog.impl;
 
 import org.apache.airavata.registry.cpi.*;
 import org.slf4j.Logger;
