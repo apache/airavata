@@ -26,7 +26,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential;
 import org.apache.airavata.credential.store.store.CredentialReader;
-import org.apache.airavata.gfac.core.AbstractSecurityContext;
+import org.apache.airavata.gfac.core.context.AbstractSecurityContext;
 import org.apache.airavata.gfac.core.Constants;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.RequestData;
