@@ -177,14 +177,19 @@ public class SSHProvider extends AbstractProvider {
                         }
                     } else {
                         jobExecutionContext.setJobDetails(jobDetails);
-                        String verifyJobId = verifyJobSubmission(cluster, jobDetails);
-                        if (verifyJobId != null && !verifyJobId.isEmpty()) {
-                            // JobStatus either changed from SUBMITTED to QUEUED or directly to QUEUED
-                            jobID = verifyJobId;
-                            jobDetails.setJobID(jobID);
-                            monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
-                                    , GfacExperimentState.JOBSUBMITTED));
-                            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.QUEUED, monitorPublisher);
+                        int verificationTryCount = 0;
+                        while (verificationTryCount++ < 3) {
+                            String verifyJobId = verifyJobSubmission(cluster, jobDetails);
+                            if (verifyJobId != null && !verifyJobId.isEmpty()) {
+                                // JobStatus either changed from SUBMITTED to QUEUED or directly to QUEUED
+                                jobID = verifyJobId;
+                                jobDetails.setJobID(jobID);
+                                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
+                                        , GfacExperimentState.JOBSUBMITTED));
+                                GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.QUEUED, monitorPublisher);
+                                break;
+                            }
+                            Thread.sleep(verificationTryCount*1000);
                         }
                     }
 
