@@ -78,7 +78,7 @@ public class RegistryInitUtil {
         try {
             conn = db.connect();
             if (!DatabaseCreator.isDatabaseStructureCreated(CONFIGURATION_TABLE, conn)) {
-                DatabaseCreator.createRegistryDatabase("database_scripts/registry", conn);
+                DatabaseCreator.createRegistryDatabase("database_scripts/expcatalog", conn);
                 logger.info("New Database created for Registry");
             } else {
                 logger.info("Database already created for Registry!");

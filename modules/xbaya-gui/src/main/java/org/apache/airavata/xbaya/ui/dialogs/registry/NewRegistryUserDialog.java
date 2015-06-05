@@ -27,8 +27,8 @@ import java.net.URL;
 
 import javax.swing.*;
 
+import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
-import org.apache.airavata.registry.core.experiment.catalog.ResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.resources.GatewayResource;
 import org.apache.airavata.registry.core.experiment.catalog.resources.UserResource;
 import org.apache.airavata.registry.core.experiment.catalog.resources.WorkerResource;
@@ -111,7 +111,7 @@ public class NewRegistryUserDialog {
         if (status == null) {
             try {
 //                Properties properties = Utils.loadProperties();
-                GatewayResource gatewayResource = (GatewayResource)ResourceUtils.getGateway(getGatewayName());
+                GatewayResource gatewayResource = (GatewayResource) ExpCatResourceUtils.getGateway(getGatewayName());
                 UserResource userResource = (UserResource) gatewayResource.create(ResourceType.USER);
                 userResource.setUserName(getUsername());
                 userResource.setPassword(getPassword());
