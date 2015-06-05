@@ -25,9 +25,9 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential;
 import org.apache.airavata.credential.store.store.CredentialReader;
-import org.apache.airavata.gfac.Constants;
-import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.RequestData;
+import org.apache.airavata.gfac.core.Constants;
+import org.apache.airavata.gfac.core.GFacException;
+import org.apache.airavata.gfac.core.RequestData;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.authentication.GSIAuthenticationInfo;
 import org.globus.gsi.X509Credential;
@@ -208,7 +208,7 @@ public class TokenizedMyProxyAuthInfo extends GSIAuthenticationInfo {
      * > myproxy-init -A --cert /tmp/x509up_u501 --key /tmp/x509up_u501 -l ogce -s myproxy.teragrid.org
      *
      * @return Renewed credentials.
-     * @throws org.apache.airavata.gfac.GFacException                            If an error occurred while renewing credentials.
+     * @throws GFacException                            If an error occurred while renewing credentials.
      * @throws org.apache.airavata.common.exception.ApplicationSettingsException
      */
     public GSSCredential renewCredentialsAsATrustedHost() throws GFacException, ApplicationSettingsException {
@@ -229,7 +229,7 @@ public class TokenizedMyProxyAuthInfo extends GSIAuthenticationInfo {
      * Gets the default proxy certificate.
      *
      * @return Default my proxy credentials.
-     * @throws org.apache.airavata.gfac.GFacException                            If an error occurred while retrieving credentials.
+     * @throws GFacException                            If an error occurred while retrieving credentials.
      * @throws org.apache.airavata.common.exception.ApplicationSettingsException
      */
     public GSSCredential getDefaultCredentials() throws GFacException, ApplicationSettingsException {
@@ -248,7 +248,7 @@ public class TokenizedMyProxyAuthInfo extends GSIAuthenticationInfo {
      * use user name and password to renew credentials.
      *
      * @return Renewed credentials.
-     * @throws org.apache.airavata.gfac.GFacException                            If an error occurred while renewing credentials.
+     * @throws GFacException                            If an error occurred while renewing credentials.
      * @throws org.apache.airavata.common.exception.ApplicationSettingsException
      */
     public GSSCredential renewCredentials() throws GFacException, ApplicationSettingsException {
@@ -268,7 +268,7 @@ public class TokenizedMyProxyAuthInfo extends GSIAuthenticationInfo {
      * Gets a new proxy certificate given current credentials.
      *
      * @return The short lived GSSCredentials
-     * @throws org.apache.airavata.gfac.GFacException                            If an error is occurred while retrieving credentials.
+     * @throws GFacException                            If an error is occurred while retrieving credentials.
      * @throws org.apache.airavata.common.exception.ApplicationSettingsException
      */
     public GSSCredential getProxyCredentials() throws GFacException, ApplicationSettingsException {

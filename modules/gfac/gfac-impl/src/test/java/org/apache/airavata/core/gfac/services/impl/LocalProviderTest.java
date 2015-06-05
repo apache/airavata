@@ -30,8 +30,8 @@
 //import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 //import org.apache.airavata.commons.gfac.type.HostDescription;
 //import org.apache.airavata.commons.gfac.type.ServiceDescription;
-//import org.apache.airavata.gfac.GFacConfiguration;
-//import org.apache.airavata.gfac.GFacException;
+//import org.apache.airavata.gfac.core.GFacConfiguration;
+//import org.apache.airavata.gfac.core.GFacException;
 //import org.apache.airavata.gfac.core.context.ApplicationContext;
 //import org.apache.airavata.gfac.core.context.JobExecutionContext;
 //import org.apache.airavata.gfac.core.context.MessageContext;

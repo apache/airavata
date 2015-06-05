@@ -18,7 +18,7 @@
  * under the License.
  *
 */
-package org.apache.airavata.gfac;
+package org.apache.airavata.gfac.core;
 
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;

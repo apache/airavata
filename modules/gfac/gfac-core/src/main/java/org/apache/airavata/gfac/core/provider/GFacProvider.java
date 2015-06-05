@@ -23,7 +23,7 @@ package org.apache.airavata.gfac.core.provider;
 
 import java.util.Map;
 
-import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 
 public interface GFacProvider{

@@ -20,8 +20,8 @@
 */
 package org.apache.airavata.gfac.monitor.impl.pull.qstat;
 
-import org.apache.airavata.gfac.GFacException;
-import org.apache.airavata.gfac.SecurityContext;
+import org.apache.airavata.gfac.core.GFacException;
+import org.apache.airavata.gfac.core.SecurityContext;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.gsi.ssh.impl.PBSCluster;

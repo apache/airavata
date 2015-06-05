@@ -26,7 +26,7 @@ import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
 
-import org.apache.airavata.gfac.SecurityContext;
+import org.apache.airavata.gfac.core.SecurityContext;
 import org.apache.airavata.gfac.core.cluster.Cluster;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

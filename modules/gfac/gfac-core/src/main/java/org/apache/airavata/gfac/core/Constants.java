@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.gfac;
+package org.apache.airavata.gfac.core;
 
 public class Constants {
 	public static final String XPATH_EXPR_GLOBAL_INFLOW_HANDLERS = "/GFac/GlobalHandlers/InHandlers/Handler";

@@ -18,18 +18,9 @@
  * under the License.
  *
 */
-package org.apache.airavata.gfac;
 
+package org.apache.airavata.gfac.core;
 
-/**
- * Exception for all utilities
- */
-public class ToolsException extends GFacException {
+public interface SecurityContext {
 
-    public ToolsException(String message){
-        super(message,new Throwable(message));
-    }
-    public ToolsException(String message, Throwable cause) {
-        super(message, cause);
-    }
 }

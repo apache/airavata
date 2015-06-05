@@ -22,7 +22,7 @@ package org.apache.airavata.gfac.gsissh.handler;
 
 //import org.apache.airavata.commons.gfac.type.ActualParameter;
 //import org.apache.airavata.commons.gfac.type.MappingFactory;
-import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;

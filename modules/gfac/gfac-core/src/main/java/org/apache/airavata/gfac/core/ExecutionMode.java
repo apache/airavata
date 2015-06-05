@@ -18,31 +18,22 @@
  * under the License.
  *
 */
+package org.apache.airavata.gfac.core;
 
-package org.apache.airavata.gfac;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+/**
+ * These are the different modes of execution chains in gfac
+ * if the mode is SYNCHRONOUS then gfac will waits until the provider invoke mthod returns and then
+ * invoke the out handlers explicitly, otherwise gfac will not invoke out hanlders, implementation
+ * has to handler when to invoke out handlers, and default execution mode is synchronous.
+ */
+public enum ExecutionMode {
+    SYNCHRONOUS,ASYNCHRONOUS;
 
-public class GFacException extends Exception {
-    private static final Logger log = LoggerFactory.getLogger(GFacException.class);
-
-    /**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-
-	public GFacException(String s) {
-        super(s);
-    }
-
-    public GFacException(Exception e) {
-        super(e);
-        log.error(e.getMessage(),e);
-    }
-
-	public GFacException(String s, Throwable throwable) {
-        super(s, throwable);
-        log.error(s,throwable);
+    public static ExecutionMode fromString(String mode){
+        if("async".equals(mode) ||  "asynchronous".equals(mode)){
+            return ExecutionMode.ASYNCHRONOUS;
+        }
+        return ExecutionMode.SYNCHRONOUS;
     }
 }

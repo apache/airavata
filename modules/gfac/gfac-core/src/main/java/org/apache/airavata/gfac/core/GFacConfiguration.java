@@ -19,7 +19,7 @@
  *
  */
 
-package org.apache.airavata.gfac;
+package org.apache.airavata.gfac.core;
 
 import java.io.File;
 import java.io.IOException;

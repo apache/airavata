@@ -21,7 +21,7 @@
 
 package org.apache.airavata.gfac.core.provider;
 
-import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobStatus;

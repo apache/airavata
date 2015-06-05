@@ -21,7 +21,7 @@
 package org.apache.airavata.gfac.impl;
 
 import org.apache.airavata.common.utils.MonitorPublisher;
-import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.GFac;
 import org.apache.airavata.gfac.core.monitor.MonitorID;

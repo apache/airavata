@@ -19,8 +19,30 @@
  *
 */
 
-package org.apache.airavata.gfac;
+package org.apache.airavata.gfac.core;
 
-public interface SecurityContext {
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+public class GFacException extends Exception {
+    private static final Logger log = LoggerFactory.getLogger(GFacException.class);
+
+    /**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public GFacException(String s) {
+        super(s);
+    }
+
+    public GFacException(Exception e) {
+        super(e);
+        log.error(e.getMessage(),e);
+    }
+
+	public GFacException(String s, Throwable throwable) {
+        super(s, throwable);
+        log.error(s,throwable);
+    }
 }

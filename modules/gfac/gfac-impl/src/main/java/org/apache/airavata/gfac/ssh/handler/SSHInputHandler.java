@@ -21,7 +21,7 @@
 package org.apache.airavata.gfac.ssh.handler;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.gfac.GFacException;
+import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.cluster.Cluster;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
