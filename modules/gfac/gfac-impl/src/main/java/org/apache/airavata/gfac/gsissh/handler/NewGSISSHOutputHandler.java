@@ -12,7 +12,7 @@ import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gfac.gsissh.util.GFACGSISSHUtils;
 import org.apache.airavata.gfac.ssh.util.HandleOutputs;
-import org.apache.airavata.gfac.core.cluster.Cluster;
+import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
@@ -39,11 +39,11 @@ public class NewGSISSHOutputHandler extends AbstractHandler{
 	            log.error(e.getMessage());
 	            throw new GFacHandlerException("Error while creating SSHSecurityContext", e, e.getLocalizedMessage());
 	        }
-	        Cluster cluster = null;
+	        RemoteCluster remoteCluster = null;
 	        
 	        try {
-	            cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getPbsCluster();
-	            if (cluster == null) {
+	            remoteCluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getRemoteCluster();
+	            if (remoteCluster == null) {
 	                GFacUtils.saveErrorDetails(jobExecutionContext, "Security context is not set properly", CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE);
 	                
 	                throw new GFacProviderException("Security context is not set properly");
@@ -61,7 +61,7 @@ public class NewGSISSHOutputHandler extends AbstractHandler{
 	        }
 
 	        super.invoke(jobExecutionContext);
-	        List<OutputDataObjectType> outputArray =  HandleOutputs.handleOutputs(jobExecutionContext, cluster);
+	        List<OutputDataObjectType> outputArray =  HandleOutputs.handleOutputs(jobExecutionContext, remoteCluster);
             try {
 				experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
 			} catch (RegistryException e) {

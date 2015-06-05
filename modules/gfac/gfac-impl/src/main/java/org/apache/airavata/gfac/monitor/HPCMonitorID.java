@@ -63,13 +63,13 @@ public class HPCMonitorID extends MonitorID {
                 ServerInfo serverInfo = null;
                 if (securityContext != null) {
                     if (securityContext instanceof  GSISecurityContext){
-                        serverInfo = (((GSISecurityContext) securityContext).getPbsCluster()).getServerInfo();
+                        serverInfo = (((GSISecurityContext) securityContext).getRemoteCluster()).getServerInfo();
                         if (serverInfo.getUserName() != null) {
                             setUserName(serverInfo.getUserName());
                         }
                     }
                     if (securityContext instanceof SSHSecurityContext){
-                        serverInfo = (((SSHSecurityContext) securityContext).getPbsCluster()).getServerInfo();
+                        serverInfo = (((SSHSecurityContext) securityContext).getRemoteCluster()).getServerInfo();
                         if (serverInfo.getUserName() != null) {
                             setUserName(serverInfo.getUserName());
                         }

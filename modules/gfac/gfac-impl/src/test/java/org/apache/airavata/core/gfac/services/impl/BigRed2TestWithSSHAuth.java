@@ -32,12 +32,12 @@
 //import org.apache.airavata.gfac.core.context.MessageContext;
 //import org.apache.airavata.gfac.impl.BetterGfacImpl;
 //import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
-//import org.apache.airavata.gfac.ssh.api.Cluster;
+//import org.apache.airavata.gfac.ssh.api.RemoteCluster;
 //import org.apache.airavata.gfac.ssh.api.SSHApiException;
 //import org.apache.airavata.gfac.ssh.api.ServerInfo;
 //import AuthenticationInfo;
 //import org.apache.airavata.gfac.ssh.api.job.JobManagerConfiguration;
-//import org.apache.airavata.gfac.ssh.impl.PBSCluster;
+//import org.apache.airavata.gfac.ssh.impl.HPCRemoteCluster;
 //import org.apache.airavata.gfac.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
 //import org.apache.airavata.gfac.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
 //import org.apache.airavata.gfac.ssh.util.CommonUtils;
@@ -222,15 +222,15 @@
 //        // Server info
 //        ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
 //
-//        Cluster pbsCluster = null;
+//        RemoteCluster pbsCluster = null;
 //        SSHSecurityContext sshSecurityContext = null;
 //
 //            JobManagerConfiguration pbsJobManager = CommonUtils.getPBSJobManager(app.getInstalledParentPath());
-//            pbsCluster = new PBSCluster(serverInfo, authenticationInfo, pbsJobManager);
+//            pbsCluster = new HPCRemoteCluster(serverInfo, authenticationInfo, pbsJobManager);
 //
 //
 //            sshSecurityContext = new SSHSecurityContext();
-//            sshSecurityContext.setPbsCluster(pbsCluster);
+//            sshSecurityContext.setRemoteCluster(pbsCluster);
 //            sshSecurityContext.setUsername(userName);
 //            sshSecurityContext.setKeyPass(passPhrase);
 //            sshSecurityContext.setPrivateKeyLoc(privateKeyPath);

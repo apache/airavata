@@ -33,14 +33,14 @@ import org.slf4j.LoggerFactory;
  * this has most of the methods to be used by the end user of the
  * library.
  */
-public class PBSCluster extends GSISSHAbstractCluster {
-    private static final Logger log = LoggerFactory.getLogger(PBSCluster.class);
+public class HPCRemoteCluster extends GSISSHAbstractCluster {
+    private static final Logger log = LoggerFactory.getLogger(HPCRemoteCluster.class);
 
 
-    public PBSCluster(JobManagerConfiguration jobManagerConfiguration) {
+    public HPCRemoteCluster(JobManagerConfiguration jobManagerConfiguration) {
         super(jobManagerConfiguration);
     }
-    public PBSCluster(ServerInfo serverInfo, AuthenticationInfo authenticationInfo, JobManagerConfiguration config) throws SSHApiException {
+    public HPCRemoteCluster(ServerInfo serverInfo, AuthenticationInfo authenticationInfo, JobManagerConfiguration config) throws SSHApiException {
         super(serverInfo, authenticationInfo,config);
     }
 }

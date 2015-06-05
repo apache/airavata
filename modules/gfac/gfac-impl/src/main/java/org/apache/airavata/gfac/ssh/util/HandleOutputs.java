@@ -8,7 +8,7 @@ import java.util.List;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.GFacUtils;
-import org.apache.airavata.gfac.core.cluster.Cluster;
+import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.slf4j.Logger;
@@ -21,14 +21,14 @@ import org.slf4j.LoggerFactory;
 public class HandleOutputs {
 	private static final Logger log = LoggerFactory.getLogger(HandleOutputs.class);
 
-	public static List<OutputDataObjectType> handleOutputs(JobExecutionContext jobExecutionContext, Cluster cluster) throws GFacHandlerException {
+	public static List<OutputDataObjectType> handleOutputs(JobExecutionContext jobExecutionContext, RemoteCluster remoteCluster) throws GFacHandlerException {
 		List<OutputDataObjectType> outputArray = new ArrayList<OutputDataObjectType>();
 		try {
 			String outputDataDir = File.separator + "tmp" + File.separator + jobExecutionContext.getExperimentID();
 			(new File(outputDataDir)).mkdirs();
 
 			List<OutputDataObjectType> outputs = jobExecutionContext.getTaskData().getApplicationOutputs();
-			List<String> outputList = cluster.listDirectory(jobExecutionContext.getWorkingDir());
+			List<String> outputList = remoteCluster.listDirectory(jobExecutionContext.getWorkingDir());
 			boolean missingOutput = false;
 
 			for (OutputDataObjectType output : outputs) {
@@ -45,7 +45,7 @@ public class HandleOutputs {
 					if (output.getLocation() == null && !outputList.contains(fileName) && output.isIsRequired()) {
 						missingOutput = true;
 					} else {
-						cluster.scpFrom(outputFile, outputDataDir);
+						remoteCluster.scpFrom(outputFile, outputDataDir);
 						String localFile = outputDataDir + File.separator + fileName;
 						jobExecutionContext.addOutputFile(localFile);
 						output.setValue(localFile);
@@ -55,7 +55,7 @@ public class HandleOutputs {
 				} else if (DataType.STDOUT == output.getType()) {
 					String downloadFile = jobExecutionContext.getStandardOutput();
 					String fileName = downloadFile.substring(downloadFile.lastIndexOf(File.separatorChar) + 1, downloadFile.length());
-					cluster.scpFrom(downloadFile, outputDataDir);
+					remoteCluster.scpFrom(downloadFile, outputDataDir);
 					String localFile = outputDataDir + File.separator + fileName;
 					jobExecutionContext.addOutputFile(localFile);
 					jobExecutionContext.setStandardOutput(localFile);
@@ -65,7 +65,7 @@ public class HandleOutputs {
 				} else if (DataType.STDERR == output.getType()) {
 					String downloadFile = jobExecutionContext.getStandardError();
 					String fileName = downloadFile.substring(downloadFile.lastIndexOf(File.separatorChar) + 1, downloadFile.length());
-					cluster.scpFrom(downloadFile, outputDataDir);
+					remoteCluster.scpFrom(downloadFile, outputDataDir);
 					String localFile = outputDataDir + File.separator + fileName;
 					jobExecutionContext.addOutputFile(localFile);
 					jobExecutionContext.setStandardError(localFile);

@@ -28,11 +28,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This interface represents a Cluster machine
+ * This interface represents a RemoteCluster machine
  * End users of the API can implement this and come up with their own
  * implementations, but mostly this interface is for internal usage.
  */
-public interface Cluster {
+public interface RemoteCluster {
 
     /**
      * This will submit a job to the cluster with a given pbs file and some parameters

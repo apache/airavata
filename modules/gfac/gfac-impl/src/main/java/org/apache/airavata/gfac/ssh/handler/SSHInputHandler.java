@@ -22,7 +22,7 @@ package org.apache.airavata.gfac.ssh.handler;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.gfac.core.GFacException;
-import org.apache.airavata.gfac.core.cluster.Cluster;
+import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
@@ -60,7 +60,7 @@ public class SSHInputHandler extends AbstractHandler {
         List<String> oldFiles = new ArrayList<String>();
         StringBuffer data = new StringBuffer("|");
         MessageContext inputNew = new MessageContext();
-        Cluster cluster = null;
+        RemoteCluster remoteCluster = null;
         
         try {
             String hostAddress = jobExecutionContext.getHostName();
@@ -80,8 +80,8 @@ public class SSHInputHandler extends AbstractHandler {
                 }
             }
 
-            cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getPbsCluster();
-            if (cluster == null) {
+            remoteCluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getRemoteCluster();
+            if (remoteCluster == null) {
                 throw new GFacException("Security context is not set properly");
             } else {
                 log.info("Successfully retrieved the Security Context");
@@ -102,7 +102,7 @@ public class SSHInputHandler extends AbstractHandler {
                         inputParamType.setValue(oldFiles.get(index));
                         data.append(oldFiles.get(index++)).append(","); // we get already transfered file and increment the index
                     } else {
-                        String stageInputFile = stageInputFiles(cluster, jobExecutionContext, paramValue);
+                        String stageInputFile = stageInputFiles(remoteCluster, jobExecutionContext, paramValue);
                         inputParamType.setValue(stageInputFile);
                         StringBuffer temp = new StringBuffer(data.append(stageInputFile).append(",").toString());
                         status.setTransferState(TransferState.UPLOAD);
@@ -122,7 +122,7 @@ public class SSHInputHandler extends AbstractHandler {
 //                	List<String> split = Arrays.asList(StringUtil.getElementsFromString(paramValue));
 //                    List<String> newFiles = new ArrayList<String>();
 //                    for (String paramValueEach : split) {
-//                        String stageInputFiles = stageInputFiles(cluster,jobExecutionContext, paramValueEach);
+//                        String stageInputFiles = stageInputFiles(remoteCluster,jobExecutionContext, paramValueEach);
 //                        status.setTransferState(TransferState.UPLOAD);
 //                        detail.setTransferStatus(status);
 //                        detail.setTransferDescription("Input Data Staged: " + stageInputFiles);
@@ -158,14 +158,14 @@ public class SSHInputHandler extends AbstractHandler {
         // TODO: Auto generated method body.
     }
 
-    private static String stageInputFiles(Cluster cluster, JobExecutionContext jobExecutionContext, String paramValue) throws IOException, GFacException {
+    private static String stageInputFiles(RemoteCluster remoteCluster, JobExecutionContext jobExecutionContext, String paramValue) throws IOException, GFacException {
         int i = paramValue.lastIndexOf(File.separator);
         String substring = paramValue.substring(i + 1);
         try {
             String targetFile = jobExecutionContext.getInputDir() + File.separator + substring;
             if(paramValue.startsWith("scp:")){
             	paramValue = paramValue.substring(paramValue.indexOf(":") + 1, paramValue.length());
-            	cluster.scpThirdParty(paramValue, targetFile);
+            	remoteCluster.scpThirdParty(paramValue, targetFile);
             }else{
             if(paramValue.startsWith("file")){
                 paramValue = paramValue.substring(paramValue.indexOf(":") + 1, paramValue.length());
@@ -174,7 +174,7 @@ public class SSHInputHandler extends AbstractHandler {
             int j = 1;
             while(!success){
             try {
-				cluster.scpTo(targetFile, paramValue);
+				remoteCluster.scpTo(targetFile, paramValue);
 				success = true;
 			} catch (Exception e) {
 				log.info(e.getLocalizedMessage());

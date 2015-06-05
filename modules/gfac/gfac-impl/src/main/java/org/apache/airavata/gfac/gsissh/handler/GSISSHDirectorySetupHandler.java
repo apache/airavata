@@ -21,13 +21,13 @@
 package org.apache.airavata.gfac.gsissh.handler;
 
 import org.apache.airavata.gfac.core.GFacException;
+import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gfac.gsissh.util.GFACGSISSHUtils;
-import org.apache.airavata.gfac.core.cluster.Cluster;
 import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.registry.cpi.ExpCatChildDataType;
 import org.slf4j.Logger;
@@ -62,11 +62,11 @@ public class GSISSHDirectorySetupHandler extends AbstractHandler {
         makeDirectory(jobExecutionContext);
 	}
 	private void makeDirectory(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
-        Cluster cluster = null;
+        RemoteCluster remoteCluster = null;
         try {
             String hostAddress = jobExecutionContext.getHostName();
-            cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getPbsCluster();
-            if (cluster == null) {
+            remoteCluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getRemoteCluster();
+            if (remoteCluster == null) {
                 try {
                     GFacUtils.saveErrorDetails(jobExecutionContext, "Security context is not set properly", CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
                 } catch (GFacException e1) {
@@ -78,11 +78,11 @@ public class GSISSHDirectorySetupHandler extends AbstractHandler {
             }
 
             String workingDirectory = jobExecutionContext.getWorkingDir();
-            cluster.makeDirectory(workingDirectory);
+            remoteCluster.makeDirectory(workingDirectory);
             if(!jobExecutionContext.getInputDir().equals(workingDirectory))
-                cluster.makeDirectory(jobExecutionContext.getInputDir());
+                remoteCluster.makeDirectory(jobExecutionContext.getInputDir());
             if(!jobExecutionContext.getOutputDir().equals(workingDirectory))
-            	cluster.makeDirectory(jobExecutionContext.getOutputDir());
+            	remoteCluster.makeDirectory(jobExecutionContext.getOutputDir());
             
             DataTransferDetails detail = new DataTransferDetails();
             TransferStatus status = new TransferStatus();

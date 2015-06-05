@@ -33,7 +33,7 @@ import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gfac.gsissh.util.GFACGSISSHUtils;
 import org.apache.airavata.gfac.monitor.email.EmailBasedMonitor;
 import org.apache.airavata.gfac.monitor.email.EmailMonitorFactory;
-import org.apache.airavata.gfac.core.cluster.Cluster;
+import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.JobDescriptor;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
@@ -84,25 +84,25 @@ public class GSISSHProvider extends AbstractProvider {
         ApplicationDeploymentDescription appDeployDesc = jobExecutionContext.getApplicationContext()
                 .getApplicationDeploymentDescription();
         JobDetails jobDetails = new JobDetails();
-        Cluster cluster = null;
+        RemoteCluster remoteCluster = null;
 
         try {
             if (jobExecutionContext.getSecurityContext(jobExecutionContext.getHostName()) != null) {
-                cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(jobExecutionContext.getHostName())).getPbsCluster();
+                remoteCluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(jobExecutionContext.getHostName())).getRemoteCluster();
             }
-            if (cluster == null) {
+            if (remoteCluster == null) {
                 throw new GFacProviderException("Security context is not set properly");
             } else {
                 log.info("Successfully retrieved the Security Context");
             }
             // This installed path is a mandetory field, because this could change based on the computing resource
-            JobDescriptor jobDescriptor = GFACGSISSHUtils.createJobDescriptor(jobExecutionContext, cluster);
+            JobDescriptor jobDescriptor = GFACGSISSHUtils.createJobDescriptor(jobExecutionContext, remoteCluster);
             jobDetails.setJobName(jobDescriptor.getJobName());
 
             log.info(jobDescriptor.toXML());
             data.append("jobDesc=").append(jobDescriptor.toXML());
             jobDetails.setJobDescription(jobDescriptor.toXML());
-            String jobID = cluster.submitBatchJob(jobDescriptor);
+            String jobID = remoteCluster.submitBatchJob(jobDescriptor);
             jobExecutionContext.setJobDetails(jobDetails);
             if (jobID == null) {
                 jobDetails.setJobID("none");
@@ -179,12 +179,12 @@ public class GSISSHProvider extends AbstractProvider {
         JobDetails jobDetails = jobExecutionContext.getJobDetails();
         String hostName = jobExecutionContext.getHostName();
         try {
-            Cluster cluster = null;
+            RemoteCluster remoteCluster = null;
             if (jobExecutionContext.getSecurityContext(hostName) == null) {
                 GFACGSISSHUtils.addSecurityContext(jobExecutionContext);
             }
-            cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(hostName)).getPbsCluster();
-            if (cluster == null) {
+            remoteCluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(hostName)).getRemoteCluster();
+            if (remoteCluster == null) {
                 throw new GFacProviderException("Security context is not set properly");
             } else {
                 log.info("Successfully retrieved the Security Context");
@@ -196,7 +196,7 @@ public class GSISSHProvider extends AbstractProvider {
             }
             if (jobDetails.getJobID() != null) {
                 // if this operation success without any exceptions, we can assume cancel operation succeeded.
-                cluster.cancelJob(jobDetails.getJobID());
+                remoteCluster.cancelJob(jobDetails.getJobID());
             } else {
                 log.error("No Job Id is set, so cannot perform the cancel operation !!!");
                 return false;

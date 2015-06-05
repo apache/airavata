@@ -20,6 +20,8 @@
 */
 package org.apache.airavata.gfac.gsissh.util;
 
+import org.apache.airavata.gfac.core.cluster.RemoteCluster;
+import org.apache.airavata.gfac.gsi.ssh.impl.HPCRemoteCluster;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -30,10 +32,8 @@ import org.apache.airavata.gfac.core.RequestData;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
 import org.apache.airavata.gfac.core.GFacUtils;
-import org.apache.airavata.gfac.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gfac.gsissh.security.TokenizedMyProxyAuthInfo;
-import org.apache.airavata.gfac.core.cluster.Cluster;
 import org.apache.airavata.gfac.core.cluster.ServerInfo;
 import org.apache.airavata.gfac.core.JobDescriptor;
 import org.apache.airavata.gfac.core.JobManagerConfiguration;
@@ -64,7 +64,7 @@ public class GFACGSISSHUtils {
     public static final String LSF_JOB_MANAGER = "lsf";
 
     public static int maxClusterCount = 5;
-    public static Map<String, List<Cluster>> clusters = new HashMap<String, List<Cluster>>();
+    public static Map<String, List<RemoteCluster>> clusters = new HashMap<String, List<RemoteCluster>>();
 
     public static void addSecurityContext(JobExecutionContext jobExecutionContext) throws GFacException, ApplicationSettingsException {
         JobSubmissionInterface jobSubmissionInterface = jobExecutionContext.getPreferredJobSubmissionInterface();
@@ -79,7 +79,7 @@ public class GFACGSISSHUtils {
                 String credentialStoreToken = jobExecutionContext.getCredentialStoreToken(); // this is set by the framework
                 RequestData requestData = new RequestData(jobExecutionContext.getGatewayID());
                 requestData.setTokenId(credentialStoreToken);
-                PBSCluster pbsCluster = null;
+                HPCRemoteCluster HPCRemoteCluster = null;
                 GSISecurityContext context = null;
 
                 TokenizedMyProxyAuthInfo tokenizedMyProxyAuthInfo = new TokenizedMyProxyAuthInfo(requestData);
@@ -103,22 +103,22 @@ public class GFACGSISSHUtils {
                     } else if (clusters.containsKey(key)) {
                         int i = new Random().nextInt(Integer.MAX_VALUE) % maxClusterCount;
                         if (clusters.get(key).get(i).getSession().isConnected()) {
-                            pbsCluster = (PBSCluster) clusters.get(key).get(i);
+                            HPCRemoteCluster = (HPCRemoteCluster) clusters.get(key).get(i);
                         } else {
                             clusters.get(key).remove(i);
                             recreate = true;
                         }
                         if (!recreate) {
                             try {
-                                pbsCluster.listDirectory("~/"); // its hard to trust isConnected method, so we try to connect if it works we are good,else we recreate
+                                HPCRemoteCluster.listDirectory("~/"); // its hard to trust isConnected method, so we try to connect if it works we are good,else we recreate
                             } catch (Exception e) {
                                 clusters.get(key).remove(i);
                                 logger.info("Connection found the connection map is expired, so we create from the scratch");
                                 maxClusterCount++;
-                                recreate = true; // we make the pbsCluster to create again if there is any exception druing connection
+                                recreate = true; // we make the HPCRemoteCluster to create again if there is any exception druing connection
                             }
                             logger.info("Re-using the same connection used with the connection string:" + key);
-                            context = new GSISecurityContext(tokenizedMyProxyAuthInfo.getCredentialReader(), requestData, pbsCluster);
+                            context = new GSISecurityContext(tokenizedMyProxyAuthInfo.getCredentialReader(), requestData, HPCRemoteCluster);
                         }
                     } else {
                         recreate = true;
@@ -145,16 +145,16 @@ public class GFACGSISSHUtils {
                                 jConfig = CommonUtils.getLSFJobManager(installedParentPath);
                             }
                         }
-                        pbsCluster = new PBSCluster(serverInfo, tokenizedMyProxyAuthInfo, jConfig);
-                        context = new GSISecurityContext(tokenizedMyProxyAuthInfo.getCredentialReader(), requestData, pbsCluster);
-                        List<Cluster> pbsClusters = null;
+                        HPCRemoteCluster = new HPCRemoteCluster(serverInfo, tokenizedMyProxyAuthInfo, jConfig);
+                        context = new GSISecurityContext(tokenizedMyProxyAuthInfo.getCredentialReader(), requestData, HPCRemoteCluster);
+                        List<RemoteCluster> pbsRemoteClusters = null;
                         if (!(clusters.containsKey(key))) {
-                            pbsClusters = new ArrayList<Cluster>();
+                            pbsRemoteClusters = new ArrayList<RemoteCluster>();
                         } else {
-                            pbsClusters = clusters.get(key);
+                            pbsRemoteClusters = clusters.get(key);
                         }
-                        pbsClusters.add(pbsCluster);
-                        clusters.put(key, pbsClusters);
+                        pbsRemoteClusters.add(HPCRemoteCluster);
+                        clusters.put(key, pbsRemoteClusters);
                     }
                 }
 
@@ -165,7 +165,7 @@ public class GFACGSISSHUtils {
         }
     }
 
-    public static JobDescriptor createJobDescriptor(JobExecutionContext jobExecutionContext, Cluster cluster) {
+    public static JobDescriptor createJobDescriptor(JobExecutionContext jobExecutionContext, RemoteCluster remoteCluster) {
         JobDescriptor jobDescriptor = new JobDescriptor();
         TaskDetails taskData = jobExecutionContext.getTaskData();
         ResourceJobManager resourceJobManager = jobExecutionContext.getResourceJobManager();
@@ -274,10 +274,10 @@ public class GFACGSISSHUtils {
         }
         jobDescriptor.setInputValues(inputValues);
 
-        jobDescriptor.setUserName(((GSISSHAbstractCluster) cluster).getServerInfo().getUserName());
+        jobDescriptor.setUserName(((GSISSHAbstractCluster) remoteCluster).getServerInfo().getUserName());
         jobDescriptor.setShellName("/bin/bash");
         jobDescriptor.setAllEnvExport(true);
-        jobDescriptor.setOwner(((PBSCluster) cluster).getServerInfo().getUserName());
+        jobDescriptor.setOwner(((HPCRemoteCluster) remoteCluster).getServerInfo().getUserName());
 
         ComputationalResourceScheduling taskScheduling = taskData.getTaskScheduling();
         if (taskScheduling != null) {

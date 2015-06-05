@@ -23,7 +23,7 @@ package org.apache.airavata.gfac.ssh.handler;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.SSHApiException;
-import org.apache.airavata.gfac.core.cluster.Cluster;
+import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
@@ -94,7 +94,7 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
 
     @Override
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
-    	Cluster pbsCluster = null;
+    	RemoteCluster remoteCluster = null;
         AuthenticationInfo authenticationInfo = null;
         if (password != null) {
             authenticationInfo = new DefaultPasswordAuthenticationInfo(this.password);
@@ -134,14 +134,14 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                 }
             }
             String key = GFACSSHUtils.prepareSecurityContext(jobExecutionContext, authenticationInfo, this.userName, this.hostName, DEFAULT_SSH_PORT);
-            pbsCluster = ((SSHSecurityContext)jobExecutionContext.getSecurityContext(key)).getPbsCluster();
+            remoteCluster = ((SSHSecurityContext)jobExecutionContext.getSecurityContext(key)).getRemoteCluster();
             if(jobExecutionContext.getTaskData().getAdvancedOutputDataHandling() != null && !jobExecutionContext.getTaskData().getAdvancedOutputDataHandling().isPersistOutputData()){
             outputPath = outputPath + File.separator + jobExecutionContext.getExperimentID() + "-" + jobExecutionContext.getTaskData().getTaskID()
                     + File.separator;
-                pbsCluster.makeDirectory(outputPath);
+                remoteCluster.makeDirectory(outputPath);
             }
-            pbsCluster.scpTo(outputPath, standardError);
-            pbsCluster.scpTo(outputPath, standardOutput);
+            remoteCluster.scpTo(outputPath, standardError);
+            remoteCluster.scpTo(outputPath, standardOutput);
             List<OutputDataObjectType> outputArray = new ArrayList<OutputDataObjectType>();
             Map<String, Object> output = jobExecutionContext.getOutMessageContext().getParameters();
             Set<String> keys = output.keySet();
@@ -157,7 +157,7 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                         GFacUtils.saveErrorDetails(jobExecutionContext, "Empty Output returned from the application", CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
                 		throw new GFacHandlerException("Empty Output returned from the application.." );
                 	}
-                	pbsCluster.scpTo(outputPath, downloadFile);
+                	remoteCluster.scpTo(outputPath, downloadFile);
                     String fileName = downloadFile.substring(downloadFile.lastIndexOf(File.separatorChar)+1, downloadFile.length());
                     OutputDataObjectType dataObjectType = new OutputDataObjectType();
                     dataObjectType.setValue(outputPath + File.separatorChar + fileName);
@@ -169,7 +169,7 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                     dataObjectType.setSearchQuery(outputDataObjectType.getSearchQuery());
                     outputArray.add(dataObjectType);
                 }else if (outputDataObjectType.getType() == DataType.STDOUT) {
-                    pbsCluster.scpTo(outputPath, standardOutput);
+                    remoteCluster.scpTo(outputPath, standardOutput);
                     String fileName = standardOutput.substring(standardOutput.lastIndexOf(File.separatorChar)+1, standardOutput.length());
                     OutputDataObjectType dataObjectType = new OutputDataObjectType();
                     dataObjectType.setValue(outputPath + File.separatorChar + fileName);
@@ -181,7 +181,7 @@ public class AdvancedSCPOutputHandler extends AbstractHandler {
                     dataObjectType.setSearchQuery(outputDataObjectType.getSearchQuery());
                     outputArray.add(dataObjectType);
                 }else if (outputDataObjectType.getType() == DataType.STDERR) {
-                    pbsCluster.scpTo(outputPath, standardError);
+                    remoteCluster.scpTo(outputPath, standardError);
                     String fileName = standardError.substring(standardError.lastIndexOf(File.separatorChar)+1, standardError.length());
                     OutputDataObjectType dataObjectType = new OutputDataObjectType();
                     dataObjectType.setValue(outputPath + File.separatorChar + fileName);

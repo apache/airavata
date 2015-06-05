@@ -23,7 +23,7 @@ package org.apache.airavata.gfac.ssh.handler;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.core.Constants;
 import org.apache.airavata.gfac.core.GFacException;
-import org.apache.airavata.gfac.core.cluster.Cluster;
+import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
@@ -79,10 +79,10 @@ public class SSHOutputHandler extends AbstractHandler {
         detail.setTransferDescription("Output data staging");
         TransferStatus status = new TransferStatus();
 
-        Cluster cluster = null;
+        RemoteCluster remoteCluster = null;
         try {
-             cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getPbsCluster();
-            if (cluster == null) {
+             remoteCluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getRemoteCluster();
+            if (remoteCluster == null) {
                 throw new GFacProviderException("Security context is not set properly");
             } else {
                 log.info("Successfully retrieved the Security Context");
@@ -108,12 +108,12 @@ public class SSHOutputHandler extends AbstractHandler {
 
             localStdOutFile = new File(outputDataDir + File.separator + timeStampedExperimentID + "stdout");
             localStdErrFile = new File(outputDataDir + File.separator + timeStampedExperimentID + "stderr");
-//            cluster.makeDirectory(outputDataDir);
+//            remoteCluster.makeDirectory(outputDataDir);
             int i = 0;
             String stdOutStr = "";
             while (stdOutStr.isEmpty()) {
                 try {
-                    cluster.scpFrom(jobExecutionContext.getStandardOutput(), localStdOutFile.getAbsolutePath());
+                    remoteCluster.scpFrom(jobExecutionContext.getStandardOutput(), localStdOutFile.getAbsolutePath());
                     stdOutStr = GFacUtils.readFileToString(localStdOutFile.getAbsolutePath());
                 } catch (Exception e) {
                     log.error(e.getLocalizedMessage());
@@ -123,7 +123,7 @@ public class SSHOutputHandler extends AbstractHandler {
                 if (i == 3) break;
             }
             Thread.sleep(1000);
-            cluster.scpFrom(jobExecutionContext.getStandardError(), localStdErrFile.getAbsolutePath());
+            remoteCluster.scpFrom(jobExecutionContext.getStandardError(), localStdErrFile.getAbsolutePath());
             Thread.sleep(1000);
 
             String stdErrStr = GFacUtils.readFileToString(localStdErrFile.getAbsolutePath());
@@ -147,7 +147,7 @@ public class SSHOutputHandler extends AbstractHandler {
                     List<String> outputList = null;
                     int retry = 3;
                     while (retry > 0) {
-                        outputList = cluster.listDirectory(jobExecutionContext.getOutputDir());
+                        outputList = remoteCluster.listDirectory(jobExecutionContext.getOutputDir());
                         if (outputList.size() > 0) {
                             break;
                         }
@@ -163,7 +163,7 @@ public class SSHOutputHandler extends AbstractHandler {
                             OutputDataObjectType actualParameter1 = (OutputDataObjectType) output.get(key);
                             if (DataType.URI == actualParameter1.getType()) {
                                 String downloadFile = actualParameter1.getValue();
-                                cluster.scpFrom(downloadFile, outputDataDir);
+                                remoteCluster.scpFrom(downloadFile, outputDataDir);
                                 String fileName = downloadFile.substring(downloadFile.lastIndexOf(File.separatorChar) + 1, downloadFile.length());
                                 String localFile = outputDataDir + File.separator + fileName;
                                 jobExecutionContext.addOutputFile(localFile);
@@ -198,7 +198,7 @@ public class SSHOutputHandler extends AbstractHandler {
                         break;
                     } else if (outputList.size() == 1) {//FIXME: Ultrascan case
                         String valueList = outputList.get(0);
-                        cluster.scpFrom(jobExecutionContext.getOutputDir() + File.separator + valueList, outputDataDir);
+                        remoteCluster.scpFrom(jobExecutionContext.getOutputDir() + File.separator + valueList, outputDataDir);
                         String outputPath = outputDataDir + File.separator + valueList;
                         jobExecutionContext.addOutputFile(outputPath);
                         actualParameter.setValue(outputPath);
