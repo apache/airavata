@@ -58,34 +58,7 @@
 
 		<!-- ********************** copy database scripts ********************** -->
 		<fileSet>
-			<directory>../../ws-messenger/messagebroker/src/main/resources/database_scripts
-			</directory>
-			<outputDirectory>bin/database_scripts
-			</outputDirectory>
-			<includes>
-				<include>*sql*</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../../ws-messenger/messagebox/src/main/resources/database_scripts
-			</directory>
-			<outputDirectory>bin/database_scripts
-			</outputDirectory>
-			<includes>
-				<include>*sql*</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../../registry/airavata-jpa-registry/src/main/resources
-			</directory>
-			<outputDirectory>bin/database_scripts
-			</outputDirectory>
-			<includes>
-				<include>*sql*</include>
-			</includes>
-		</fileSet>
-		<fileSet>
-			<directory>../../app-catalog/app-catalog-data/src/main/resources
+			<directory>../modules/registry/airavata-registry-core/src/main/resources
 			</directory>
 			<outputDirectory>bin/database_scripts
 			</outputDirectory>

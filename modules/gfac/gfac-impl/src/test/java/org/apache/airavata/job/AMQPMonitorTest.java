@@ -126,7 +126,7 @@ public class AMQPMonitorTest {
         SSHJobSubmission sshJobSubmission = new SSHJobSubmission("TestSSHJobSubmissionInterfaceId", SecurityProtocol.GSI,
                 resourceJobManager);
 
-        AppCatalog appCatalog = AppCatalogFactory.getAppCatalog();
+        AppCatalog appCatalog = RegistryFactory.getAppCatalog();
         String jobSubmissionID = appCatalog.getComputeResource().addSSHJobSubmission(sshJobSubmission);
 
         JobSubmissionInterface jobSubmissionInterface = new JobSubmissionInterface(jobSubmissionID, JobSubmissionProtocol.SSH, 1);
