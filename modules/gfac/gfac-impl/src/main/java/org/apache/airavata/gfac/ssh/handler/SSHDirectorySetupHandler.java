@@ -21,7 +21,7 @@
 package org.apache.airavata.gfac.ssh.handler;
 
 import org.apache.airavata.gfac.core.GFacException;
-import org.apache.airavata.gfac.core.cluster.Cluster;
+import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
@@ -70,21 +70,21 @@ public class SSHDirectorySetupHandler extends AbstractHandler {
     }
 
     private void makeDirectory(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
-		Cluster cluster = null;
+		RemoteCluster remoteCluster = null;
 		try{
             String hostAddress = jobExecutionContext.getHostName();
-            cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getPbsCluster();
-        if (cluster == null) {
+            remoteCluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getRemoteCluster();
+        if (remoteCluster == null) {
             throw new GFacHandlerException("Security context is not set properly");
         } else {
             log.info("Successfully retrieved the Security Context");
         }
             String workingDirectory = jobExecutionContext.getWorkingDir();
-            cluster.makeDirectory(workingDirectory);
+            remoteCluster.makeDirectory(workingDirectory);
             if(!jobExecutionContext.getInputDir().equals(workingDirectory))
-            	cluster.makeDirectory(jobExecutionContext.getInputDir());
+            	remoteCluster.makeDirectory(jobExecutionContext.getInputDir());
             if(!jobExecutionContext.getOutputDir().equals(workingDirectory))
-            	cluster.makeDirectory(jobExecutionContext.getOutputDir());
+            	remoteCluster.makeDirectory(jobExecutionContext.getOutputDir());
             
             DataTransferDetails detail = new DataTransferDetails();
             TransferStatus status = new TransferStatus();

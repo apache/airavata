@@ -31,7 +31,7 @@ import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.impl.OutputUtils;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gfac.gsissh.util.GFACGSISSHUtils;
-import org.apache.airavata.gfac.core.cluster.Cluster;
+import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
@@ -78,11 +78,11 @@ public class GSISSHOutputHandler extends AbstractHandler {
         DataTransferDetails detail = new DataTransferDetails();
         TransferStatus status = new TransferStatus();
 
-        Cluster cluster = null;
+        RemoteCluster remoteCluster = null;
         
         try {
-            cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getPbsCluster();
-            if (cluster == null) {
+            remoteCluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getRemoteCluster();
+            if (remoteCluster == null) {
                 GFacUtils.saveErrorDetails(jobExecutionContext, "Security context is not set properly", CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.FILE_SYSTEM_FAILURE);
                 
                 throw new GFacProviderException("Security context is not set properly");
@@ -132,7 +132,7 @@ public class GSISSHOutputHandler extends AbstractHandler {
                 localStdOutFile = new File(outputDataDir + File.separator + jobExecutionContext.getApplicationName() + ".stdout");
                 while(stdOutStr.isEmpty()){
                 try {
-                	cluster.scpFrom(jobExecutionContext.getStandardOutput(), localStdOutFile.getAbsolutePath());
+                	remoteCluster.scpFrom(jobExecutionContext.getStandardOutput(), localStdOutFile.getAbsolutePath());
                 	stdOutStr = GFacUtils.readFileToString(localStdOutFile.getAbsolutePath());
 				} catch (Exception e) {
 					log.error(e.getLocalizedMessage());
@@ -150,7 +150,7 @@ public class GSISSHOutputHandler extends AbstractHandler {
                 data.append(oldFiles.get(index++)).append(",");
             } else {
                 localStdErrFile = new File(outputDataDir + File.separator + jobExecutionContext.getApplicationName() + ".stderr");
-                cluster.scpFrom(jobExecutionContext.getStandardError(), localStdErrFile.getAbsolutePath());
+                remoteCluster.scpFrom(jobExecutionContext.getStandardError(), localStdErrFile.getAbsolutePath());
                 StringBuffer temp = new StringBuffer(data.append(localStdErrFile.getAbsolutePath()).append(",").toString());
                 GFacUtils.saveHandlerData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
             }
@@ -177,7 +177,7 @@ public class GSISSHOutputHandler extends AbstractHandler {
                     List<String> outputList = null;
                     int retry=3;
                     while(retry>0){
-                    	 outputList = cluster.listDirectory(jobExecutionContext.getOutputDir());
+                    	 outputList = remoteCluster.listDirectory(jobExecutionContext.getOutputDir());
                         if (outputList.size() == 1 && outputList.get(0).isEmpty()) {
                             Thread.sleep(10000);
                         } else if (outputList.size() > 0) {
@@ -203,7 +203,7 @@ public class GSISSHOutputHandler extends AbstractHandler {
                                     localFile = oldFiles.get(index);
                                     data.append(oldFiles.get(index++)).append(",");
                                 } else {
-                                    cluster.scpFrom(downloadFile, outputDataDir);
+                                    remoteCluster.scpFrom(downloadFile, outputDataDir);
                                     String fileName = downloadFile.substring(downloadFile.lastIndexOf(File.separatorChar) + 1, downloadFile.length());
                                     localFile = outputDataDir + File.separator + fileName;
                                     StringBuffer temp = new StringBuffer(data.append(localFile).append(",").toString());
@@ -262,7 +262,7 @@ public class GSISSHOutputHandler extends AbstractHandler {
                             outputFile = oldFiles.get(index);
                             data.append(oldFiles.get(index++)).append(",");
                         } else {
-                            cluster.scpFrom(jobExecutionContext.getOutputDir() + File.separator + valueList, outputDataDir);
+                            remoteCluster.scpFrom(jobExecutionContext.getOutputDir() + File.separator + valueList, outputDataDir);
                             outputFile = outputDataDir + File.separator + valueList;
                             jobExecutionContext.addOutputFile(outputFile);
                             StringBuffer temp = new StringBuffer(data.append(outputFile).append(",").toString());

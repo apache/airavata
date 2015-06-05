@@ -21,6 +21,7 @@
 
 package org.apache.airavata.gfac.ssh.provider.impl;
 
+import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -29,7 +30,6 @@ import org.apache.airavata.gfac.core.Constants;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.JobDescriptor;
 import org.apache.airavata.gfac.core.SSHApiException;
-import org.apache.airavata.gfac.core.cluster.Cluster;
 import org.apache.airavata.gfac.core.cluster.JobStatus;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
@@ -73,7 +73,7 @@ import java.util.*;
  */
 public class SSHProvider extends AbstractProvider {
     private static final Logger log = LoggerFactory.getLogger(SSHProvider.class);
-    private Cluster cluster;
+    private RemoteCluster remoteCluster;
     private String jobID = null;
     private String taskID = null;
     // we keep gsisshprovider to support qsub submission incase of hpc scenario with ssh
@@ -93,20 +93,20 @@ public class SSHProvider extends AbstractProvider {
             JobSubmissionProtocol preferredJobSubmissionProtocol = jobExecutionContext.getPreferredJobSubmissionProtocol();
             if (preferredJobSubmissionProtocol == JobSubmissionProtocol.SSH && resourceJobManagerType == ResourceJobManagerType.FORK) {
                 jobID = "SSH_" + jobExecutionContext.getHostName() + "_" + Calendar.getInstance().getTimeInMillis();
-                cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getPbsCluster();
+                remoteCluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getRemoteCluster();
 
                 String remoteFile = jobExecutionContext.getWorkingDir() + File.separatorChar + Constants.EXECUTABLE_NAME;
                 details.setJobID(taskID);
                 details.setJobDescription(remoteFile);
                 jobExecutionContext.setJobDetails(details);
-                // FIXME : Why cluster is passed as null
-                JobDescriptor jobDescriptor = GFACSSHUtils.createJobDescriptor(jobExecutionContext, cluster);
+                // FIXME : Why remoteCluster is passed as null
+                JobDescriptor jobDescriptor = GFACSSHUtils.createJobDescriptor(jobExecutionContext, remoteCluster);
                 details.setJobDescription(jobDescriptor.toXML());
 
                 GFacUtils.saveJobStatus(jobExecutionContext, details, JobState.SETUP);
                 log.info(remoteFile);
                 File runscript = createShellScript(jobExecutionContext);
-                cluster.scpTo(remoteFile, runscript.getAbsolutePath());
+                remoteCluster.scpTo(remoteFile, runscript.getAbsolutePath());
             } else {
                 hpcType = true;
             }
@@ -130,7 +130,7 @@ public class SSHProvider extends AbstractProvider {
                 RawCommandInfo rawCommandInfo = new RawCommandInfo("/bin/chmod 755 " + executable + "; " + executable);
                 StandardOutReader jobIDReaderCommandOutput = new StandardOutReader();
                 log.info("Executing RawCommand : " + rawCommandInfo.getCommand());
-                CommandExecutor.executeCommand(rawCommandInfo, cluster.getSession(), jobIDReaderCommandOutput);
+                CommandExecutor.executeCommand(rawCommandInfo, remoteCluster.getSession(), jobIDReaderCommandOutput);
                 String stdOutputString = getOutputifAvailable(jobIDReaderCommandOutput, "Error submitting job to resource");
                 log.info("stdout=" + stdOutputString);
             } catch (Exception e) {
@@ -143,36 +143,36 @@ public class SSHProvider extends AbstractProvider {
                 String hostAddress = jobExecutionContext.getHostName();
                 MonitorPublisher monitorPublisher = jobExecutionContext.getMonitorPublisher();
                 try {
-                    Cluster cluster = null;
+                    RemoteCluster remoteCluster = null;
                     if (jobExecutionContext.getSecurityContext(hostAddress) == null) {
                         GFACSSHUtils.addSecurityContext(jobExecutionContext);
                     }
-                    cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getPbsCluster();
-                    if (cluster == null) {
+                    remoteCluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getRemoteCluster();
+                    if (remoteCluster == null) {
                         throw new GFacProviderException("Security context is not set properly");
                     } else {
                         log.info("Successfully retrieved the Security Context");
                     }
                     // This installed path is a mandetory field, because this could change based on the computing resource
-                    JobDescriptor jobDescriptor = GFACSSHUtils.createJobDescriptor(jobExecutionContext, cluster);
+                    JobDescriptor jobDescriptor = GFACSSHUtils.createJobDescriptor(jobExecutionContext, remoteCluster);
                     jobDetails.setJobName(jobDescriptor.getJobName());
                     log.info(jobDescriptor.toXML());
                     jobDetails.setJobDescription(jobDescriptor.toXML());
-                    String jobID = cluster.submitBatchJob(jobDescriptor);
+                    String jobID = remoteCluster.submitBatchJob(jobDescriptor);
                     if (jobID != null && !jobID.isEmpty()) {
                         jobDetails.setJobID(jobID);
                         GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SUBMITTED);
                                 monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
                                         , GfacExperimentState.JOBSUBMITTED));
                         jobExecutionContext.setJobDetails(jobDetails);
-                        if (verifyJobSubmissionByJobId(cluster, jobID)) {
+                        if (verifyJobSubmissionByJobId(remoteCluster, jobID)) {
                             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
                                     , GfacExperimentState.JOBSUBMITTED));
                             GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.QUEUED);
                         }
                     } else {
                         jobExecutionContext.setJobDetails(jobDetails);
-                        String verifyJobId = verifyJobSubmission(cluster, jobDetails);
+                        String verifyJobId = verifyJobSubmission(remoteCluster, jobDetails);
                         if (verifyJobId != null && !verifyJobId.isEmpty()) {
                             // JobStatus either changed from SUBMITTED to QUEUED or directly to QUEUED
                             jobID = verifyJobId;
@@ -216,16 +216,16 @@ public class SSHProvider extends AbstractProvider {
         }
     }
 
-    private boolean verifyJobSubmissionByJobId(Cluster cluster, String jobID) throws SSHApiException {
-        JobStatus status = cluster.getJobStatus(jobID);
+    private boolean verifyJobSubmissionByJobId(RemoteCluster remoteCluster, String jobID) throws SSHApiException {
+        JobStatus status = remoteCluster.getJobStatus(jobID);
         return status != null &&  status != JobStatus.U;
     }
 
-    private String verifyJobSubmission(Cluster cluster, JobDetails jobDetails) {
+    private String verifyJobSubmission(RemoteCluster remoteCluster, JobDetails jobDetails) {
         String jobName = jobDetails.getJobName();
         String jobId = null;
         try {
-          jobId  = cluster.getJobIdByJobName(jobName, cluster.getServerInfo().getUserName());
+          jobId  = remoteCluster.getJobIdByJobName(jobName, remoteCluster.getServerInfo().getUserName());
         } catch (SSHApiException e) {
             log.error("Error while verifying JobId from JobName");
         }
@@ -243,8 +243,8 @@ public class SSHProvider extends AbstractProvider {
         if (!hpcType) {
             throw new NotImplementedException();
         } else {
-            Cluster cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getPbsCluster();
-            if (cluster == null) {
+            RemoteCluster remoteCluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getRemoteCluster();
+            if (remoteCluster == null) {
                 throw new GFacProviderException("Security context is not set properly");
             } else {
                 log.info("Successfully retrieved the Security Context");
@@ -256,7 +256,7 @@ public class SSHProvider extends AbstractProvider {
             }
             try {
                 if (jobDetails.getJobID() != null) {
-                    if (cluster.cancelJob(jobDetails.getJobID()) != null) {
+                    if (remoteCluster.cancelJob(jobDetails.getJobID()) != null) {
                         // if this operation success without any exceptions, we can assume cancel operation succeeded.
                         GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.CANCELED);
                         return true;

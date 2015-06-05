@@ -24,7 +24,7 @@ import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.SecurityContext;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
-import org.apache.airavata.gfac.gsi.ssh.impl.PBSCluster;
+import org.apache.airavata.gfac.gsi.ssh.impl.HPCRemoteCluster;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gfac.monitor.HostMonitorData;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
@@ -42,7 +42,7 @@ import java.util.TreeMap;
 public class ResourceConnection {
     private static final Logger log = LoggerFactory.getLogger(ResourceConnection.class);
 
-    private PBSCluster cluster;
+    private HPCRemoteCluster cluster;
 
     private AuthenticationInfo authenticationInfo;
 
@@ -54,11 +54,11 @@ public class ResourceConnection {
             if(securityContext != null) {
                 if (securityContext instanceof GSISecurityContext) {
                     GSISecurityContext gsiSecurityContext = (GSISecurityContext) securityContext;
-                    cluster = (PBSCluster) gsiSecurityContext.getPbsCluster();
+                    cluster = (HPCRemoteCluster) gsiSecurityContext.getRemoteCluster();
                 } else if (securityContext instanceof  SSHSecurityContext) {
                     SSHSecurityContext sshSecurityContext = (SSHSecurityContext)
                             securityContext;
-                    cluster = (PBSCluster) sshSecurityContext.getPbsCluster();
+                    cluster = (HPCRemoteCluster) sshSecurityContext.getRemoteCluster();
                 }
             }
             // we just use cluster configuration from the incoming request and construct a new cluster because for monitoring
@@ -74,11 +74,11 @@ public class ResourceConnection {
         try {
             GSISecurityContext securityContext = (GSISecurityContext)
                     monitorID.getJobExecutionContext().getSecurityContext(monitorID.getComputeResourceDescription().getHostName());
-            cluster = (PBSCluster) securityContext.getPbsCluster();
+            cluster = (HPCRemoteCluster) securityContext.getRemoteCluster();
 
             // we just use cluster configuration from the incoming request and construct a new cluster because for monitoring
             // we are using our own credentials and not using one users account to do everything.
-            cluster = new PBSCluster(cluster.getServerInfo(), authenticationInfo, cluster.getJobManagerConfiguration());
+            cluster = new HPCRemoteCluster(cluster.getServerInfo(), authenticationInfo, cluster.getJobManagerConfiguration());
         } catch (GFacException e) {
             log.error("Error reading data from job ExecutionContext");
         }
@@ -140,11 +140,11 @@ public class ResourceConnection {
         return JobState.UNKNOWN;
     }
 
-    public PBSCluster getCluster() {
+    public HPCRemoteCluster getCluster() {
         return cluster;
     }
 
-    public void setCluster(PBSCluster cluster) {
+    public void setCluster(HPCRemoteCluster cluster) {
         this.cluster = cluster;
     }
 

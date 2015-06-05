@@ -22,16 +22,16 @@ package org.apache.airavata.job;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.apache.airavata.gfac.core.cluster.RemoteCluster;
+import org.apache.airavata.gfac.gsi.ssh.impl.HPCRemoteCluster;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.aiaravata.application.catalog.data.impl.AppCatalogFactory;
 import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.gfac.core.JobDescriptor;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.authentication.GSIAuthenticationInfo;
-import org.apache.airavata.gfac.core.cluster.Cluster;
 import org.apache.airavata.gfac.core.cluster.ServerInfo;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
-import org.apache.airavata.gfac.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gfac.gsi.ssh.impl.authentication.MyProxyAuthenticationInfo;
 import org.apache.airavata.gfac.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.gfac.monitor.impl.push.amqp.AMQPMonitor;
@@ -148,8 +148,8 @@ public class AMQPMonitorTest {
         ServerInfo serverInfo = new ServerInfo("ogce", "login1.stampede.tacc.utexas.edu",2222);
 
 
-        Cluster pbsCluster = new
-                PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/usr/bin/"));
+        RemoteCluster pbsRemoteCluster = new
+                HPCRemoteCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/usr/bin/"));
 
 
         // Execute command
@@ -176,7 +176,7 @@ public class AMQPMonitorTest {
         jobDescriptor.setInputValues(inputs);
         //finished construction of job object
         System.out.println(jobDescriptor.toXML());
-        String jobID = pbsCluster.submitBatchJob(jobDescriptor);
+        String jobID = pbsRemoteCluster.submitBatchJob(jobDescriptor);
         System.out.println(jobID);
         try {
             pushQueue.add(new MonitorID(computeResourceDescription, jobID,null,null,null, "ogce", jobName));

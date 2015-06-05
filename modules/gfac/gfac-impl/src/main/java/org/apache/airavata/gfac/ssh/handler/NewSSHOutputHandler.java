@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.apache.airavata.gfac.core.GFacException;
-import org.apache.airavata.gfac.core.cluster.Cluster;
+import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
@@ -29,14 +29,14 @@ public class NewSSHOutputHandler extends AbstractHandler{
 
 	    public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
 	        String hostAddress = jobExecutionContext.getHostName();
-	      	Cluster cluster = null;
+	      	RemoteCluster remoteCluster = null;
 	      	// Security Context and connection
 	        try {
 	            if (jobExecutionContext.getSecurityContext(hostAddress) == null) {
 	                GFACSSHUtils.addSecurityContext(jobExecutionContext);
 	            }
-	            cluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getPbsCluster();
-	            if (cluster == null) {
+	            remoteCluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getRemoteCluster();
+	            if (remoteCluster == null) {
 	                throw new GFacProviderException("Security context is not set properly");
 	            } else {
 	                log.info("Successfully retrieved the Security Context");
@@ -54,7 +54,7 @@ public class NewSSHOutputHandler extends AbstractHandler{
 	        }
 
 	        super.invoke(jobExecutionContext);
-	        List<OutputDataObjectType> outputArray =  HandleOutputs.handleOutputs(jobExecutionContext, cluster);
+	        List<OutputDataObjectType> outputArray =  HandleOutputs.handleOutputs(jobExecutionContext, remoteCluster);
 	        try {
 				experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_OUTPUT, outputArray, jobExecutionContext.getExperimentID());
 			} catch (RegistryException e) {

@@ -37,7 +37,7 @@
 //import org.apache.airavata.gfac.ssh.security.TokenizedSSHAuthInfo;
 //import org.apache.airavata.gfac.ssh.api.SSHApiException;
 //import org.apache.airavata.gfac.ssh.api.ServerInfo;
-//import org.apache.airavata.gfac.ssh.impl.PBSCluster;
+//import org.apache.airavata.gfac.ssh.impl.HPCRemoteCluster;
 //import org.apache.airavata.gfac.ssh.util.CommonUtils;
 //import org.apache.airavata.registry.api.AiravataRegistry2;
 //import org.apache.airavata.registry.api.AiravataRegistryFactory;
@@ -91,7 +91,7 @@
 //            SSHCredential credentials = tokenizedSSHAuthInfo.getCredentials();
 //            ServerInfo serverInfo = new ServerInfo("cgateway", "bigred2.uits.iu.edu");
 //
-//            PBSCluster pbsCluster = new PBSCluster(serverInfo, tokenizedSSHAuthInfo, CommonUtils.getPBSJobManager("/opt/torque/bin/"));
+//            HPCRemoteCluster pbsCluster = new HPCRemoteCluster(serverInfo, tokenizedSSHAuthInfo, CommonUtils.getPBSJobManager("/opt/torque/bin/"));
 //            Assert.assertNotNull(pbsCluster);
 //            return;
 //

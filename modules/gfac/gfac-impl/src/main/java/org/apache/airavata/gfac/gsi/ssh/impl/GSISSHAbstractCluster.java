@@ -36,7 +36,7 @@ import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
 import org.apache.airavata.gfac.core.authentication.SSHPasswordAuthentication;
 import org.apache.airavata.gfac.core.authentication.SSHPublicKeyAuthentication;
 import org.apache.airavata.gfac.core.authentication.SSHPublicKeyFileAuthentication;
-import org.apache.airavata.gfac.core.cluster.Cluster;
+import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.cluster.JobStatus;
 import org.apache.airavata.gfac.core.cluster.OutputParser;
 import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
@@ -69,7 +69,7 @@ import java.security.SecureRandom;
 import java.util.List;
 import java.util.Map;
 
-public class GSISSHAbstractCluster implements Cluster {
+public class GSISSHAbstractCluster implements RemoteCluster {
 
     private static final Logger log = LoggerFactory.getLogger(GSISSHAbstractCluster.class);
     public static final String X509_CERT_DIR = "X509_CERT_DIR";

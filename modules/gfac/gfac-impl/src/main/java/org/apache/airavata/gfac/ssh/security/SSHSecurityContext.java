@@ -27,7 +27,7 @@ import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.userauth.keyprovider.KeyProvider;
 
 import org.apache.airavata.gfac.core.SecurityContext;
-import org.apache.airavata.gfac.core.cluster.Cluster;
+import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +43,7 @@ public class SSHSecurityContext implements SecurityContext {
 	private SSHClient sshClient;
 	private Session session;
 
-    private Cluster pbsCluster;
+    private RemoteCluster remoteCluster;
 
 	public String getUsername() {
 		return username;
@@ -108,11 +108,11 @@ public class SSHSecurityContext implements SecurityContext {
 		return sshClient;
 	}
 
-    public void setPbsCluster(Cluster pbsCluster) {
-        this.pbsCluster = pbsCluster;
+    public void setRemoteCluster(RemoteCluster remoteCluster) {
+        this.remoteCluster = remoteCluster;
     }
 
-    public Cluster getPbsCluster() {
-        return this.pbsCluster;
+    public RemoteCluster getRemoteCluster() {
+        return this.remoteCluster;
     }
 }

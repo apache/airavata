@@ -23,7 +23,7 @@ package org.apache.airavata.gfac.gsissh.security;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.core.AbstractSecurityContext;
 import org.apache.airavata.gfac.core.RequestData;
-import org.apache.airavata.gfac.core.cluster.Cluster;
+import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,12 +37,12 @@ public class GSISecurityContext extends AbstractSecurityContext {
      * context name
      */
 
-    private Cluster pbsCluster = null;
+    private RemoteCluster remoteCluster = null;
 
 
-    public GSISecurityContext(CredentialReader credentialReader, RequestData requestData, Cluster pbsCluster) {
+    public GSISecurityContext(CredentialReader credentialReader, RequestData requestData, RemoteCluster remoteCluster) {
         super(credentialReader, requestData);
-        this.pbsCluster = pbsCluster;
+        this.remoteCluster = remoteCluster;
     }
 
 
@@ -51,17 +51,17 @@ public class GSISecurityContext extends AbstractSecurityContext {
     }
 
 
-    public GSISecurityContext(Cluster pbsCluster) {
-        this.setPbsCluster(pbsCluster);
+    public GSISecurityContext(RemoteCluster remoteCluster) {
+        this.setRemoteCluster(remoteCluster);
     }
 
 
 
-    public Cluster getPbsCluster() {
-        return pbsCluster;
+    public RemoteCluster getRemoteCluster() {
+        return remoteCluster;
     }
 
-    public void setPbsCluster(Cluster pbsCluster) {
-        this.pbsCluster = pbsCluster;
+    public void setRemoteCluster(RemoteCluster remoteCluster) {
+        this.remoteCluster = remoteCluster;
     }
 }

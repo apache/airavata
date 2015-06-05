@@ -22,6 +22,7 @@ package org.apache.airavata.gfac.gsissh.handler;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.gfac.core.GFacException;
+import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
@@ -29,7 +30,6 @@ import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gfac.gsissh.util.GFACGSISSHUtils;
-import org.apache.airavata.gfac.core.cluster.Cluster;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
@@ -66,7 +66,7 @@ public class GSISSHInputHandler extends AbstractHandler {
         DataTransferDetails detail = new DataTransferDetails();
         TransferStatus status = new TransferStatus();
         StringBuffer data = new StringBuffer("|");
-        Cluster cluster = null;
+        RemoteCluster remoteCluster = null;
 
         try {
             String hostAddress = jobExecutionContext.getHostName();
@@ -74,8 +74,8 @@ public class GSISSHInputHandler extends AbstractHandler {
                 GFACGSISSHUtils.addSecurityContext(jobExecutionContext);
             }
 
-            cluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getPbsCluster();
-            if (cluster == null) {
+            remoteCluster = ((GSISecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getRemoteCluster();
+            if (remoteCluster == null) {
                 throw new GFacException("Security context is not set properly");
             } else {
                 log.info("Successfully retrieved the Security Context");
@@ -123,7 +123,7 @@ public class GSISSHInputHandler extends AbstractHandler {
                         inputParamType.setValue(oldFiles.get(index));
                         data.append(oldFiles.get(index++)).append(","); // we get already transfered file and increment the index
                     } else {
-                        String stageInputFile = stageInputFiles(cluster, jobExecutionContext, paramValue);
+                        String stageInputFile = stageInputFiles(remoteCluster, jobExecutionContext, paramValue);
                         inputParamType.setValue(stageInputFile);
                         StringBuffer temp = new StringBuffer(data.append(stageInputFile).append(",").toString());
                         status.setTransferState(TransferState.UPLOAD);
@@ -143,7 +143,7 @@ public class GSISSHInputHandler extends AbstractHandler {
 //                            newFiles.add(oldFiles.get(index));
 //                            data.append(oldFiles.get(index++)).append(",");
 //                        } else {
-//                            String stageInputFiles = stageInputFiles(cluster, jobExecutionContext, paramValueEach);
+//                            String stageInputFiles = stageInputFiles(remoteCluster, jobExecutionContext, paramValueEach);
 //                            status.setTransferState(TransferState.UPLOAD);
 //                            detail.setTransferStatus(status);
 //                            detail.setTransferDescription("Input Data Staged: " + stageInputFiles);
@@ -174,7 +174,7 @@ public class GSISSHInputHandler extends AbstractHandler {
         jobExecutionContext.setInMessageContext(inputNew);
     }
 
-    private static String stageInputFiles(Cluster cluster, JobExecutionContext jobExecutionContext, String paramValue) throws IOException, GFacException {
+    private static String stageInputFiles(RemoteCluster remoteCluster, JobExecutionContext jobExecutionContext, String paramValue) throws IOException, GFacException {
         int i = paramValue.lastIndexOf(File.separator);
         String substring = paramValue.substring(i + 1);
         try {
@@ -186,7 +186,7 @@ public class GSISSHInputHandler extends AbstractHandler {
             int j = 1;
             while(!success){
             try {
-				cluster.scpTo(targetFile, paramValue);
+				remoteCluster.scpTo(targetFile, paramValue);
 				success = true;
 			} catch (Exception e) {
 				log.info(e.getLocalizedMessage());

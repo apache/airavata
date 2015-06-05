@@ -23,9 +23,9 @@ package org.apache.airavata.gfac.ssh.impl;
 
 import org.apache.airavata.gfac.core.JobDescriptor;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
-import org.apache.airavata.gfac.core.cluster.Cluster;
+import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.cluster.ServerInfo;
-import org.apache.airavata.gfac.gsi.ssh.impl.PBSCluster;
+import org.apache.airavata.gfac.gsi.ssh.impl.HPCRemoteCluster;
 import org.apache.airavata.gfac.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
 import org.apache.airavata.gfac.gsi.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
 import org.apache.airavata.gfac.gsi.ssh.util.CommonUtils;
@@ -112,7 +112,7 @@ public class VanilaTestWithSSHAuth {
         }
         // Server info
         ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
-        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager(path));
+        RemoteCluster pbsRemoteCluster = new HPCRemoteCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager(path));
 
         String date = new Date().toString();
         date = date.replaceAll(" ", "_");
@@ -122,16 +122,16 @@ public class VanilaTestWithSSHAuth {
 
         workingDirectory = workingDirectory + File.separator
                 + date + "_" + UUID.randomUUID();
-        pbsCluster.makeDirectory(workingDirectory);
+        pbsRemoteCluster.makeDirectory(workingDirectory);
         Thread.sleep(1000);
-        pbsCluster.makeDirectory(workingDirectory + File.separator + "inputs");
+        pbsRemoteCluster.makeDirectory(workingDirectory + File.separator + "inputs");
         Thread.sleep(1000);
-        pbsCluster.makeDirectory(workingDirectory + File.separator + "outputs");
+        pbsRemoteCluster.makeDirectory(workingDirectory + File.separator + "outputs");
 
 
         // doing file transfer to the remote resource
         String remoteLocation = workingDirectory + File.separator + "inputs";
-        pbsCluster.scpTo(remoteLocation, pomFile);
+        pbsRemoteCluster.scpTo(remoteLocation, pomFile);
 
         int i = pomFile.lastIndexOf(File.separator);
         String fileName = pomFile.substring(i + 1);
@@ -156,12 +156,12 @@ public class VanilaTestWithSSHAuth {
         //finished construction of job object
         System.out.println(jobDescriptor.toXML());
         if(hostName.contains("trestles")){
-        String jobID = pbsCluster.submitBatchJob(jobDescriptor);
+        String jobID = pbsRemoteCluster.submitBatchJob(jobDescriptor);
         System.out.println("JobID returned : " + jobID);
 
-//        Cluster cluster = sshApi.getCluster(serverInfo, authenticationInfo);
+//        RemoteCluster cluster = sshApi.getCluster(serverInfo, authenticationInfo);
         Thread.sleep(1000);
-        JobDescriptor jobById = pbsCluster.getJobDescriptorById(jobID);
+        JobDescriptor jobById = pbsRemoteCluster.getJobDescriptorById(jobID);
 
         //printing job data got from previous call
         AssertJUnit.assertEquals(jobById.getJobId(), jobID);
@@ -224,8 +224,8 @@ public class VanilaTestWithSSHAuth {
         jobDescriptor.setInputValues(inputs);
         //finished construction of job object
         System.out.println(jobDescriptor.toXML());
-        Cluster pbsCluster = new PBSCluster(CommonUtils.getLSFJobManager(""));
-        ((PBSCluster) pbsCluster).generateJobScript(jobDescriptor);
+        RemoteCluster pbsRemoteCluster = new HPCRemoteCluster(CommonUtils.getLSFJobManager(""));
+        ((HPCRemoteCluster) pbsRemoteCluster).generateJobScript(jobDescriptor);
     }
 
     @Test
@@ -240,8 +240,8 @@ public class VanilaTestWithSSHAuth {
         }
         // Server info
         ServerInfo serverInfo = new ServerInfo(this.userName, this.hostName);
-        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager(path));
-        new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager(path));;
+        RemoteCluster pbsRemoteCluster = new HPCRemoteCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager(path));
+        new HPCRemoteCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager(path));;
 
         String date = new Date().toString();
         date = date.replaceAll(" ", "_");
@@ -256,9 +256,9 @@ public class VanilaTestWithSSHAuth {
         // resource
         workingDirectory = workingDirectory + File.separator
                 + date + "_" + UUID.randomUUID();
-        pbsCluster.makeDirectory(workingDirectory);
-        pbsCluster.scpTo(workingDirectory, pomFile);
+        pbsRemoteCluster.makeDirectory(workingDirectory);
+        pbsRemoteCluster.scpTo(workingDirectory, pomFile);
         Thread.sleep(1000);
-        pbsCluster.scpFrom(workingDirectory + File.separator + "pom.xml", (new File(".")).getAbsolutePath());
+        pbsRemoteCluster.scpFrom(workingDirectory + File.separator + "pom.xml", (new File(".")).getAbsolutePath());
     }
 }

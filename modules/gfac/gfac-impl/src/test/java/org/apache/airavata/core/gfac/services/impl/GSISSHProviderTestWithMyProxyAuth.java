@@ -44,7 +44,7 @@
 //import org.apache.airavata.gfac.ssh.api.SSHApiException;
 //import org.apache.airavata.gfac.ssh.api.ServerInfo;
 //import GSIAuthenticationInfo;
-//import org.apache.airavata.gfac.ssh.impl.PBSCluster;
+//import org.apache.airavata.gfac.ssh.impl.HPCRemoteCluster;
 //import org.apache.airavata.gfac.ssh.impl.authentication.MyProxyAuthenticationInfo;
 //import org.apache.airavata.gfac.ssh.util.CommonUtils;
 //import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
@@ -211,7 +211,7 @@
 //        ServerInfo serverInfo = new ServerInfo("ogce", "trestles.sdsc.edu");
 //        Cluster pbsCluster = null;
 //        try {
-//            pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager(app.getInstalledParentPath()));
+//            pbsCluster = new HPCRemoteCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager(app.getInstalledParentPath()));
 //        } catch (SSHApiException e) {
 //            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
 //        }

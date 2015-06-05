@@ -20,6 +20,8 @@
 */
 package org.apache.airavata.gfac.ssh.util;
 
+import org.apache.airavata.gfac.core.cluster.RemoteCluster;
+import org.apache.airavata.gfac.gsi.ssh.impl.HPCRemoteCluster;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -30,14 +32,12 @@ import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.RequestData;
 import org.apache.airavata.gfac.core.JobDescriptor;
 import org.apache.airavata.gfac.core.JobManagerConfiguration;
-import org.apache.airavata.gfac.core.cluster.Cluster;
 import org.apache.airavata.gfac.core.cluster.ServerInfo;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.gsi.ssh.impl.GSISSHAbstractCluster;
-import org.apache.airavata.gfac.gsi.ssh.impl.PBSCluster;
 import org.apache.airavata.gfac.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
 import org.apache.airavata.gfac.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.gfac.ssh.context.SSHAuthWrapper;
@@ -66,7 +66,7 @@ import java.util.*;
 public class GFACSSHUtils {
     private final static Logger logger = LoggerFactory.getLogger(GFACSSHUtils.class);
 
-    public static Map<String, List<Cluster>> clusters = new HashMap<String, List<Cluster>>();
+    public static Map<String, List<RemoteCluster>> clusters = new HashMap<String, List<RemoteCluster>>();
 
     public static final String PBS_JOB_MANAGER = "pbs";
     public static final String SLURM_JOB_MANAGER = "slurm";
@@ -99,7 +99,7 @@ public class GFACSSHUtils {
 
                     ServerInfo serverInfo = new ServerInfo(null, jobExecutionContext.getHostName());
 
-                    Cluster pbsCluster = null;
+                    RemoteCluster pbsRemoteCluster = null;
                     try {
                         AuthenticationInfo tokenizedSSHAuthInfo = new TokenizedSSHAuthInfo(requestData);
                         String installedParentPath = jobExecutionContext.getResourceJobManager().getJobManagerBinPath();
@@ -132,19 +132,19 @@ public class GFACSSHUtils {
                             } else if (clusters.containsKey(key)) {
                                 int i = new Random().nextInt(Integer.MAX_VALUE) % maxClusterCount;
                                 if (clusters.get(key).get(i).getSession().isConnected()) {
-                                    pbsCluster = clusters.get(key).get(i);
+                                    pbsRemoteCluster = clusters.get(key).get(i);
                                 } else {
                                     clusters.get(key).remove(i);
                                     recreate = true;
                                 }
                                 if (!recreate) {
                                     try {
-                                        pbsCluster.listDirectory("~/"); // its hard to trust isConnected method, so we try to connect if it works we are good,else we recreate
+                                        pbsRemoteCluster.listDirectory("~/"); // its hard to trust isConnected method, so we try to connect if it works we are good,else we recreate
                                     } catch (Exception e) {
                                         clusters.get(key).remove(i);
                                         logger.info("Connection found the connection map is expired, so we create from the scratch");
                                         maxClusterCount++;
-                                        recreate = true; // we make the pbsCluster to create again if there is any exception druing connection
+                                        recreate = true; // we make the pbsRemoteCluster to create again if there is any exception druing connection
                                     }
                                 }
                                 logger.info("Re-using the same connection used with the connection string:" + key);
@@ -169,21 +169,21 @@ public class GFACSSHUtils {
                                      }
                                  }
 
-                                pbsCluster = new PBSCluster(serverInfo, tokenizedSSHAuthInfo,jConfig);
-                                List<Cluster> pbsClusters = null;
+                                pbsRemoteCluster = new HPCRemoteCluster(serverInfo, tokenizedSSHAuthInfo,jConfig);
+                                List<RemoteCluster> pbsRemoteClusters = null;
                                 if (!(clusters.containsKey(key))) {
-                                    pbsClusters = new ArrayList<Cluster>();
+                                    pbsRemoteClusters = new ArrayList<RemoteCluster>();
                                 } else {
-                                    pbsClusters = clusters.get(key);
+                                    pbsRemoteClusters = clusters.get(key);
                                 }
-                                pbsClusters.add(pbsCluster);
-                                clusters.put(key, pbsClusters);
+                                pbsRemoteClusters.add(pbsRemoteCluster);
+                                clusters.put(key, pbsRemoteClusters);
                             }
                         }
                     } catch (Exception e) {
                         throw new GFacException("Error occurred...", e);
                     }
-                    sshSecurityContext.setPbsCluster(pbsCluster);
+                    sshSecurityContext.setRemoteCluster(pbsRemoteCluster);
                     jobExecutionContext.addSecurityContext(jobExecutionContext.getHostName(), sshSecurityContext);
                 }
             } catch (AppCatalogException e) {
@@ -214,7 +214,7 @@ public class GFACSSHUtils {
 				 logger.error("Not able to get SSHJobSubmission from registry");
 			}
 
-            Cluster pbsCluster = null;
+            RemoteCluster pbsRemoteCluster = null;
             String key=sshAuth.getKey();
             boolean recreate = false;
             synchronized (clusters) {
@@ -223,19 +223,19 @@ public class GFACSSHUtils {
                 } else if (clusters.containsKey(key)) {
                     int i = new Random().nextInt(Integer.MAX_VALUE) % maxClusterCount;
                     if (clusters.get(key).get(i).getSession().isConnected()) {
-                        pbsCluster = clusters.get(key).get(i);
+                        pbsRemoteCluster = clusters.get(key).get(i);
                     } else {
                         clusters.get(key).remove(i);
                         recreate = true;
                     }
                     if (!recreate) {
                         try {
-                            pbsCluster.listDirectory("~/"); // its hard to trust isConnected method, so we try to connect if it works we are good,else we recreate
+                            pbsRemoteCluster.listDirectory("~/"); // its hard to trust isConnected method, so we try to connect if it works we are good,else we recreate
                         } catch (Exception e) {
                             clusters.get(key).remove(i);
                             logger.info("Connection found the connection map is expired, so we create from the scratch");
                             maxClusterCount++;
-                            recreate = true; // we make the pbsCluster to create again if there is any exception druing connection
+                            recreate = true; // we make the pbsRemoteCluster to create again if there is any exception druing connection
                         }
                     }
                     logger.info("Re-using the same connection used with the connection string:" + key);
@@ -268,19 +268,19 @@ public class GFACSSHUtils {
 							}
 						}
 					}
-                    pbsCluster = new PBSCluster(sshAuth.getServerInfo(), sshAuth.getAuthenticationInfo(),jConfig);
+                    pbsRemoteCluster = new HPCRemoteCluster(sshAuth.getServerInfo(), sshAuth.getAuthenticationInfo(),jConfig);
                     key = sshAuth.getKey();
-                    List<Cluster> pbsClusters = null;
+                    List<RemoteCluster> pbsRemoteClusters = null;
                     if (!(clusters.containsKey(key))) {
-                        pbsClusters = new ArrayList<Cluster>();
+                        pbsRemoteClusters = new ArrayList<RemoteCluster>();
                     } else {
-                        pbsClusters = clusters.get(key);
+                        pbsRemoteClusters = clusters.get(key);
                     }
-                    pbsClusters.add(pbsCluster);
-                    clusters.put(key, pbsClusters);
+                    pbsRemoteClusters.add(pbsRemoteCluster);
+                    clusters.put(key, pbsRemoteClusters);
                 }
             }
-            sshSecurityContext.setPbsCluster(pbsCluster);
+            sshSecurityContext.setRemoteCluster(pbsRemoteCluster);
             jobExecutionContext.addSecurityContext(key, sshSecurityContext);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -289,7 +289,7 @@ public class GFACSSHUtils {
     }
 
 
-    public static JobDescriptor createJobDescriptor(JobExecutionContext jobExecutionContext, Cluster cluster) throws AppCatalogException, ApplicationSettingsException {
+    public static JobDescriptor createJobDescriptor(JobExecutionContext jobExecutionContext, RemoteCluster remoteCluster) throws AppCatalogException, ApplicationSettingsException {
         JobDescriptor jobDescriptor = new JobDescriptor();
         TaskDetails taskData = jobExecutionContext.getTaskData();
 
@@ -415,10 +415,10 @@ public class GFACSSHUtils {
         }
 
         jobDescriptor.setInputValues(inputValues);
-        jobDescriptor.setUserName(((GSISSHAbstractCluster) cluster).getServerInfo().getUserName());
+        jobDescriptor.setUserName(((GSISSHAbstractCluster) remoteCluster).getServerInfo().getUserName());
         jobDescriptor.setShellName("/bin/bash");
         jobDescriptor.setAllEnvExport(true);
-        jobDescriptor.setOwner(((PBSCluster) cluster).getServerInfo().getUserName());
+        jobDescriptor.setOwner(((HPCRemoteCluster) remoteCluster).getServerInfo().getUserName());
 
         ResourceJobManager resourceJobManager = jobExecutionContext.getResourceJobManager();
 

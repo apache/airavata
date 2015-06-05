@@ -37,7 +37,7 @@
 //import org.apache.airavata.gfac.ssh.api.ServerInfo;
 //import org.apache.airavata.gfac.ssh.api.authentication.GSIAuthenticationInfo;
 //import org.apache.airavata.gfac.ssh.api.job.JobDescriptor;
-//import org.apache.airavata.gfac.ssh.impl.PBSCluster;
+//import org.apache.airavata.gfac.ssh.impl.HPCRemoteCluster;
 //import org.apache.airavata.gfac.ssh.impl.authentication.MyProxyAuthenticationInfo;
 //import org.apache.airavata.gfac.ssh.util.CommonUtils;
 //import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
@@ -119,7 +119,7 @@
 //        ServerInfo serverInfo = new ServerInfo("ogce", hostDescription.getType().getHostAddress());
 //
 //
-//        Cluster pbsCluster = new PBSCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/bin/"));
+//        Cluster pbsCluster = new HPCRemoteCluster(serverInfo, authenticationInfo, CommonUtils.getPBSJobManager("/opt/torque/bin/"));
 //
 //
 //        // Execute command

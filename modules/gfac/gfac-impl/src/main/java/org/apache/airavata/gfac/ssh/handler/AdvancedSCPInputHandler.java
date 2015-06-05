@@ -22,7 +22,7 @@ package org.apache.airavata.gfac.ssh.handler;
 
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.SSHApiException;
-import org.apache.airavata.gfac.core.cluster.Cluster;
+import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.MessageContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
@@ -93,7 +93,7 @@ public class AdvancedSCPInputHandler extends AbstractHandler {
         List<String> oldFiles = new ArrayList<String>();
         MessageContext inputNew = new MessageContext();
         StringBuffer data = new StringBuffer("|");
-        Cluster pbsCluster = null;
+        RemoteCluster remoteCluster = null;
 
         try {
             String pluginData = GFacUtils.getHandlerData(jobExecutionContext, this.getClass().getName());
@@ -146,12 +146,12 @@ public class AdvancedSCPInputHandler extends AbstractHandler {
                         URL file = new URL(paramValue);
                         String key = file.getUserInfo() + file.getHost() + DEFAULT_SSH_PORT;
                         GFACSSHUtils.prepareSecurityContext(jobExecutionContext, authenticationInfo, file.getUserInfo(), file.getHost(), DEFAULT_SSH_PORT);
-                        pbsCluster = ((SSHSecurityContext)jobExecutionContext.getSecurityContext(key)).getPbsCluster();
+                        remoteCluster = ((SSHSecurityContext)jobExecutionContext.getSecurityContext(key)).getRemoteCluster();
                         paramValue = file.getPath();
                     } catch (MalformedURLException e) {
                         String key = this.userName + this.hostName + DEFAULT_SSH_PORT;
                         GFACSSHUtils.prepareSecurityContext(jobExecutionContext, authenticationInfo, this.userName, this.hostName, DEFAULT_SSH_PORT);
-                        pbsCluster = ((SSHSecurityContext)jobExecutionContext.getSecurityContext(key)).getPbsCluster();
+                        remoteCluster = ((SSHSecurityContext)jobExecutionContext.getSecurityContext(key)).getRemoteCluster();
                         log.error(e.getLocalizedMessage(), e);
                     }
 
@@ -160,7 +160,7 @@ public class AdvancedSCPInputHandler extends AbstractHandler {
                         inputParamType.setValue(oldFiles.get(index));
                         data.append(oldFiles.get(index++)).append(","); // we get already transfered file and increment the index
                     } else {
-                        String stageInputFile = stageInputFiles(pbsCluster, paramValue, parentPath);
+                        String stageInputFile = stageInputFiles(remoteCluster, paramValue, parentPath);
                         inputParamType.setValue(stageInputFile);
                         StringBuffer temp = new StringBuffer(data.append(stageInputFile).append(",").toString());
                         status.setTransferState(TransferState.UPLOAD);
@@ -189,7 +189,7 @@ public class AdvancedSCPInputHandler extends AbstractHandler {
 //                            newFiles.add(oldFiles.get(index));
 //                            data.append(oldFiles.get(index++)).append(",");
 //                        } else {
-//                            String stageInputFiles = stageInputFiles(pbsCluster, paramValueEach, parentPath);
+//                            String stageInputFiles = stageInputFiles(remoteCluster, paramValueEach, parentPath);
 //                            StringBuffer temp = new StringBuffer(data.append(stageInputFiles).append(",").toString());
 //                            GFacUtils.savePluginData(jobExecutionContext, temp.insert(0, ++index), this.getClass().getName());
 //                            newFiles.add(stageInputFiles);
@@ -217,9 +217,9 @@ public class AdvancedSCPInputHandler extends AbstractHandler {
         this.invoke(jobExecutionContext);
     }
 
-    private String stageInputFiles(Cluster cluster, String paramValue, String parentPath) throws GFacException {
+    private String stageInputFiles(RemoteCluster remoteCluster, String paramValue, String parentPath) throws GFacException {
         try {
-            cluster.scpFrom(paramValue, parentPath);
+            remoteCluster.scpFrom(paramValue, parentPath);
             return "file://" + parentPath + File.separator + (new File(paramValue)).getName();
         } catch (SSHApiException e) {
             log.error("Error tranfering remote file to local file, remote path: " + paramValue);
