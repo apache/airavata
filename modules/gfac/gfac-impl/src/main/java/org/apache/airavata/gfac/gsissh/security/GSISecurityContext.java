@@ -21,7 +21,7 @@
 package org.apache.airavata.gfac.gsissh.security;
 
 import org.apache.airavata.credential.store.store.CredentialReader;
-import org.apache.airavata.gfac.core.AbstractSecurityContext;
+import org.apache.airavata.gfac.core.context.AbstractSecurityContext;
 import org.apache.airavata.gfac.core.RequestData;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.slf4j.Logger;
