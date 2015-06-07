@@ -75,11 +75,11 @@ public class ExperimentDao{
         collection.createIndex(new BasicDBObject(WORKFLOW_NODE_ID, 1));
         collection.createIndex(new BasicDBObject(TASK_ID, 1));
 
-//        //Defining a full-text index on experiment name and experiment description
-//        BasicDBObject object = new BasicDBObject();
-//        object.put(EXPERIMENT_NAME, "text");
-//        object.put(EXPERIMENT_DESCRIPTION, "text");
-//        collection.createIndex (object);
+        //Defining a full-text index on experiment name and experiment description
+        BasicDBObject object = new BasicDBObject();
+        object.put(EXPERIMENT_NAME, "text");
+        object.put(EXPERIMENT_DESCRIPTION, "text");
+        collection.createIndex (object);
     }
 
     public List<Experiment> getAllExperiments() throws RegistryException{
