@@ -33,16 +33,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PBSEmailParser implements EmailParser {
-
     private static final Logger log = LoggerFactory.getLogger(PBSEmailParser.class);
-
-
-    private static final String REGEX = "[a-zA-Z ]*:[ ]*(?<" +  JOBID + ">[a-zA-Z0-9-\\.]*)\\s+[a-zA-Z ]*:[ ]*(?<"+
-            JOBNAME + ">[a-zA-Z0-9-\\.]*)\\s+.*\\s+(?<" + STATUS + ">[a-zA-Z\\ ]*)";
-    private static final String REGEX_EXIT_STATUS = "Exit_status=(?<" + EXIT_STATUS + ">[\\d]+)";
     public static final String BEGUN_EXECUTION = "Begun execution";
     public static final String EXECUTION_TERMINATED = "Execution terminated";
     public static final String ABORTED_BY_PBS_SERVER = "Aborted by PBS Server";
+
+    private static final String REGEX = "[a-zA-Z ]*:[ ]*(?<" + JOBID + ">[a-zA-Z0-9-\\.]*)\\s+[a-zA-Z ]*:[ ]*(?<" +
+            JOBNAME  + ">[a-zA-Z0-9-\\.]*)\\s[\\S|\\s]*(?<" + STATUS + ">" + BEGUN_EXECUTION + "|" +
+            EXECUTION_TERMINATED + "|"  + ABORTED_BY_PBS_SERVER + ")";
+
+    private static final String REGEX_EXIT_STATUS = "Exit_status=(?<" + EXIT_STATUS + ">[\\d]+)";
 
     @Override
     public JobStatusResult parseEmail(Message message) throws MessagingException, AiravataException {
