@@ -242,6 +242,9 @@ public class GSISSHAbstractCluster implements Cluster {
             log.info("Validation before cancel is failed, couldn't found job in remote host to cancel. Job may be already completed|failed|canceled");
             return null;
         }
+        if(jobID.contains(".")){
+    		jobID = jobID.substring(0, jobID.indexOf("."));
+    	}
         RawCommandInfo rawCommandInfo = jobManagerConfiguration.getCancelCommand(jobID);
 
         StandardOutReader stdOutReader = new StandardOutReader();
@@ -408,6 +411,9 @@ public class GSISSHAbstractCluster implements Cluster {
 
 
     public synchronized JobDescriptor getJobDescriptorById(String jobID) throws SSHApiException {
+    	if(jobID.contains(".")){
+    		jobID = jobID.substring(0, jobID.indexOf("."));
+    	}
         RawCommandInfo rawCommandInfo = jobManagerConfiguration.getMonitorCommand(jobID);
         StandardOutReader stdOutReader = new StandardOutReader();
         log.info("Executing RawCommand : " + rawCommandInfo.getCommand());
@@ -419,6 +425,9 @@ public class GSISSHAbstractCluster implements Cluster {
     }
 
     public synchronized JobStatus getJobStatus(String jobID) throws SSHApiException {
+    	if(jobID.contains(".")){
+    		jobID = jobID.substring(0, jobID.indexOf("."));
+    	}
         RawCommandInfo rawCommandInfo = jobManagerConfiguration.getMonitorCommand(jobID);
         StandardOutReader stdOutReader = new StandardOutReader();
         log.info("Executing RawCommand : " + rawCommandInfo.getCommand());

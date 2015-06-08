@@ -21,6 +21,18 @@
 
 package org.apache.airavata.gfac.ssh.provider.impl;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -60,18 +72,14 @@ import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerTy
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
 import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
 import org.apache.airavata.model.workspace.experiment.ErrorCategory;
-import org.apache.airavata.model.workspace.experiment.ExperimentState;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.model.workspace.experiment.TaskState;
 import org.apache.xmlbeans.XmlException;
-import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.io.*;
-import java.util.*;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 /**
  * Execute application using remote SSH
@@ -170,26 +178,26 @@ public class SSHProvider extends AbstractProvider {
                         monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
                                 , GfacExperimentState.JOBSUBMITTED));
                         jobExecutionContext.setJobDetails(jobDetails);
-                        if (verifyJobSubmissionByJobId(cluster, jobID)) {
+                        try {
+							boolean verifyJobSubmissionByJobId = verifyJobSubmissionByJobId(cluster, jobID);
+							if (verifyJobSubmissionByJobId) {
+							    monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
+							            , GfacExperimentState.JOBSUBMITTED));
+							    GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.QUEUED, monitorPublisher);
+							}
+						} catch (SSHApiException e) {
+							log.error("Not able to find job " + jobID , e);
+						}
+                    } else {
+                        jobExecutionContext.setJobDetails(jobDetails);
+                        String verifyJobId = verifyJobSubmission(cluster, jobDetails);
+                        if (verifyJobId != null && !verifyJobId.isEmpty()) {
+                            // JobStatus either changed from SUBMITTED to QUEUED or directly to QUEUED
+                            jobID = verifyJobId;
+                            jobDetails.setJobID(jobID);
                             monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
                                     , GfacExperimentState.JOBSUBMITTED));
                             GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.QUEUED, monitorPublisher);
-                        }
-                    } else {
-                        jobExecutionContext.setJobDetails(jobDetails);
-                        int verificationTryCount = 0;
-                        while (verificationTryCount++ < 3) {
-                            String verifyJobId = verifyJobSubmission(cluster, jobDetails);
-                            if (verifyJobId != null && !verifyJobId.isEmpty()) {
-                                // JobStatus either changed from SUBMITTED to QUEUED or directly to QUEUED
-                                jobID = verifyJobId;
-                                jobDetails.setJobID(jobID);
-                                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
-                                        , GfacExperimentState.JOBSUBMITTED));
-                                GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.QUEUED, monitorPublisher);
-                                break;
-                            }
-                            Thread.sleep(verificationTryCount*1000);
                         }
                     }
 
