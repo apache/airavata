@@ -631,6 +631,7 @@ public class GSISSHAbstractCluster implements RemoteCluster {
         return files;
     }
 
+    @Deprecated
     public synchronized void getJobStatuses(String userName, Map<String,JobStatus> jobIDs)throws SSHApiException {
         int retry = 3;
         RawCommandInfo rawCommandInfo = jobManagerConfiguration.getUserBasedMonitorCommand(userName);

@@ -101,7 +101,7 @@ public class PBSJobConfiguration implements JobManagerConfiguration {
     @Override
     public RawCommandInfo getJobIdMonitorCommand(String jobName, String userName) {
         // For PBS there is no option to get jobDetails by JobName, so we search with userName
-        return new RawCommandInfo(this.installedPath + "qstat -u " + userName);
+        return new RawCommandInfo(this.installedPath + "qstat -u " + userName + " -f  | grep \"Job_Name = " + jobName + "\" -B1");
     }
 
     @Override
