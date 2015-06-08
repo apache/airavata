@@ -22,6 +22,7 @@
 package org.apache.airavata.gfac.ssh.provider.impl;
 
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
+import org.apache.airavata.model.workspace.experiment.TaskState;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -172,20 +173,28 @@ public class SSHProvider extends AbstractProvider {
                         }
                     } else {
                         jobExecutionContext.setJobDetails(jobDetails);
-                        String verifyJobId = verifyJobSubmission(remoteCluster, jobDetails);
-                        if (verifyJobId != null && !verifyJobId.isEmpty()) {
-                            // JobStatus either changed from SUBMITTED to QUEUED or directly to QUEUED
-                            jobID = verifyJobId;
-                            jobDetails.setJobID(jobID);
-                            monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
-                                    , GfacExperimentState.JOBSUBMITTED));
-                            GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.QUEUED);
+                        int verificationTryCount = 0;
+                        while (verificationTryCount++ < 3) {
+                            String verifyJobId = verifyJobSubmission(remoteCluster, jobDetails);
+                            if (verifyJobId != null && !verifyJobId.isEmpty()) {
+                                // JobStatus either changed from SUBMITTED to QUEUED or directly to QUEUED
+                                jobID = verifyJobId;
+                                jobDetails.setJobID(jobID);
+                                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
+                                        , GfacExperimentState.JOBSUBMITTED));
+                                GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.QUEUED);
+                                break;
+                            }
+                            Thread.sleep(verificationTryCount * 1000);
                         }
                     }
 
                     if (jobID == null || jobID.isEmpty()) {
-                        log.error("Couldn't find remote jobId for JobName:" + jobDetails.getJobName() + ", ExperimentId:" + jobExecutionContext.getExperimentID());
-                        GFacUtils.updateExperimentStatus(jobExecutionContext.getExperimentID(), ExperimentState.FAILED);
+                        String msg = "expId:" + jobExecutionContext.getExperimentID() + " Couldn't find remote jobId for JobName:"
+                                + jobDetails.getJobName() + ", both submit and verify steps doesn't return a valid JobId. Hence changing experiment state to Failed";
+                        log.error(msg);
+                        GFacUtils.saveErrorDetails(jobExecutionContext, msg, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
+                        GFacUtils.publishTaskStatus(jobExecutionContext, monitorPublisher, TaskState.FAILED);
                         return;
                     }
                     data.append("jobDesc=").append(jobDescriptor.toXML());

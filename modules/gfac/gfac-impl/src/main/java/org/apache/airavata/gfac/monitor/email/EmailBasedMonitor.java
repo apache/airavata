@@ -24,6 +24,8 @@ import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.logger.AiravataLogger;
 import org.apache.airavata.common.logger.AiravataLoggerFactory;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.gfac.core.GFacException;
+import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.GFacThreadPoolExecutor;
 import org.apache.airavata.gfac.core.monitor.JobStatusResult;
@@ -36,6 +38,8 @@ import org.apache.airavata.gfac.monitor.email.parser.UGEEmailParser;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeRequestEvent;
+import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
+import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.model.workspace.experiment.JobStatus;
 
@@ -284,6 +288,11 @@ public class EmailBasedMonitor implements Runnable{
             jobMonitorMap.remove(jobStatusResult.getJobId());
             runOutHandlers = true;
             log.info("[EJM]: Job failed email received , removed job from job monitoring. " + jobDetails);
+            try {
+                GFacUtils.saveErrorDetails(jEC, "Job runs on remote compute resource failed", CorrectiveAction.RETRY_SUBMISSION, ErrorCategory.APPLICATION_FAILURE);
+            } catch (GFacException e) {
+                log.info("[EJM]: Error while saving error details for jobId:{}, expId: {}", jEC.getJobDetails().getJobID(), jEC.getExperimentID());
+            }
         }else if (resultState == JobState.CANCELED) {
             jobMonitorMap.remove(jobStatusResult.getJobId());
             runOutHandlers = false; // Do we need to run out handlers in canceled case?
