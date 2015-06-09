@@ -33,7 +33,7 @@ public class ApplicationDeployment implements Serializable {
     private String deploymentID;
     @Column(name = "APP_MODULE_ID")
     private String appModuleID;
-    @Column(name = "COMPUTE_HOST_ID")
+    @Column(name = "COMPUTE_HOSTID")
     private String hostID;
     @Column(name = "EXECUTABLE_PATH")
     private String executablePath;

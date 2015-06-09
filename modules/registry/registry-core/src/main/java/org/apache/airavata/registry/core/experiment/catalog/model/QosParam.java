@@ -28,7 +28,7 @@ import java.io.Serializable;
 
 @DataCache
 @Entity
-@Table(name = "QOS_PARAMS")
+@Table(name = "QOS_PARAM")
 public class QosParam implements Serializable {
     @Id
     @GeneratedValue
