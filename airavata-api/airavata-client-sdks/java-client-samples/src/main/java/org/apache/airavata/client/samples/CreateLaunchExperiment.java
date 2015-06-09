@@ -84,7 +84,7 @@ public class CreateLaunchExperiment {
         AuthzToken token = new AuthzToken("empty_token");
         System.out.println("API version is " + airavataClient.getAPIVersion(token));
         registerApplications(); // run this only the first time
-        createAndLaunchExp();
+//        createAndLaunchExp();
     }
 
     private static String fsdResourceId;

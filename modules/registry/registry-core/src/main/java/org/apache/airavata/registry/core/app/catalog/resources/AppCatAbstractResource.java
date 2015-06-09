@@ -47,9 +47,9 @@ public abstract class AppCatAbstractResource implements AppCatalogResource {
     public static final String APP_ENVIRONMENT = "AppEnvironment";
     public static final String APPLICATION_INTERFACE = "ApplicationInterface";
     public static final String APP_MODULE_MAPPING = "AppModuleMapping";
-    public static final String APPLICATION_INPUT = "ApplicationInput";
+    public static final String APPLICATION_INPUT = "ApplicationIntInput";
     public static final String WORKFLOW_INPUT = "WorkflowInput";
-    public static final String APPLICATION_OUTPUT = "ApplicationOutput";
+    public static final String APPLICATION_OUTPUT = "ApplicationIntOutput";
     public static final String WORKFLOW_OUTPUT = "WorkflowOutput";
     public static final String GATEWAY_PROFILE = "GatewayProfile";
     public static final String COMPUTE_RESOURCE_PREFERENCE = "ComputeResourcePreference";
