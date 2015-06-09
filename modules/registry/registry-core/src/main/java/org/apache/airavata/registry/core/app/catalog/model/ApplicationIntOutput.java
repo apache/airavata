@@ -28,7 +28,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "APPLICATION_OUTPUT")
 @IdClass(AppOutput_PK.class)
-public class ApplicationOutput implements Serializable {
+public class ApplicationIntOutput implements Serializable {
     @Id
     @Column(name = "INTERFACE_ID")
     private String interfaceID;

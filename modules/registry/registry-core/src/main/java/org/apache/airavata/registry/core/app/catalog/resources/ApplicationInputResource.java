@@ -21,7 +21,7 @@ package org.apache.airavata.registry.core.app.catalog.resources;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.registry.core.app.catalog.model.AppInput_PK;
-import org.apache.airavata.registry.core.app.catalog.model.ApplicationInput;
+import org.apache.airavata.registry.core.app.catalog.model.ApplicationIntInput;
 import org.apache.airavata.registry.core.app.catalog.model.ApplicationInterface;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogJPAUtils;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogQueryGenerator;
@@ -108,7 +108,7 @@ public class ApplicationInputResource extends AppCatAbstractResource {
             generator.setParameter(AppInputConstants.INTERFACE_ID, ids.get(AppInputConstants.INTERFACE_ID));
             generator.setParameter(AppInputConstants.INPUT_KEY, ids.get(AppInputConstants.INPUT_KEY));
             Query q = generator.selectQuery(em);
-            ApplicationInput applicationInput = (ApplicationInput) q.getSingleResult();
+            ApplicationIntInput applicationInput = (ApplicationIntInput) q.getSingleResult();
             ApplicationInputResource applicationInputResource =
                     (ApplicationInputResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.APPLICATION_INPUT
                             , applicationInput);
@@ -143,7 +143,7 @@ public class ApplicationInputResource extends AppCatAbstractResource {
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        ApplicationInput applicationInput = (ApplicationInput) result;
+                        ApplicationIntInput applicationInput = (ApplicationIntInput) result;
                         ApplicationInputResource applicationInputResource =
                                 (ApplicationInputResource) AppCatalogJPAUtils.getResource(
                                         AppCatalogResourceType.APPLICATION_INPUT, applicationInput);
@@ -156,7 +156,7 @@ public class ApplicationInputResource extends AppCatAbstractResource {
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        ApplicationInput applicationInput = (ApplicationInput) result;
+                        ApplicationIntInput applicationInput = (ApplicationIntInput) result;
                         ApplicationInputResource applicationInputResource =
                                 (ApplicationInputResource) AppCatalogJPAUtils.getResource(
                                         AppCatalogResourceType.APPLICATION_INPUT, applicationInput);
@@ -169,7 +169,7 @@ public class ApplicationInputResource extends AppCatAbstractResource {
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        ApplicationInput applicationInput = (ApplicationInput) result;
+                        ApplicationIntInput applicationInput = (ApplicationIntInput) result;
                         ApplicationInputResource applicationInputResource =
                                 (ApplicationInputResource) AppCatalogJPAUtils.getResource(
                                         AppCatalogResourceType.APPLICATION_INPUT, applicationInput);
@@ -223,7 +223,7 @@ public class ApplicationInputResource extends AppCatAbstractResource {
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        ApplicationInput applicationInput = (ApplicationInput) result;
+                        ApplicationIntInput applicationInput = (ApplicationIntInput) result;
                         appInputResourceIDs.add(applicationInput.getInterfaceID());
                     }
                 }
@@ -233,7 +233,7 @@ public class ApplicationInputResource extends AppCatAbstractResource {
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        ApplicationInput applicationInput = (ApplicationInput) result;
+                        ApplicationIntInput applicationInput = (ApplicationIntInput) result;
                         appInputResourceIDs.add(applicationInput.getInterfaceID());
                     }
                 }
@@ -243,7 +243,7 @@ public class ApplicationInputResource extends AppCatAbstractResource {
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        ApplicationInput applicationInput = (ApplicationInput) result;
+                        ApplicationIntInput applicationInput = (ApplicationIntInput) result;
                         appInputResourceIDs.add(applicationInput.getInterfaceID());
                     }
                 }
@@ -273,13 +273,13 @@ public class ApplicationInputResource extends AppCatAbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            ApplicationInput existingApplicationInput = em.find(ApplicationInput.class, new AppInput_PK(interfaceID, inputKey));
+            ApplicationIntInput existingApplicationInput = em.find(ApplicationIntInput.class, new AppInput_PK(interfaceID, inputKey));
             em.close();
-            ApplicationInput applicationInput;
+            ApplicationIntInput applicationInput;
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             if (existingApplicationInput == null) {
-                applicationInput = new ApplicationInput();
+                applicationInput = new ApplicationIntInput();
             } else {
             	applicationInput=existingApplicationInput;
             }
@@ -329,7 +329,7 @@ public class ApplicationInputResource extends AppCatAbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            ApplicationInput applicationInput = em.find(ApplicationInput.class, new AppInput_PK(
+            ApplicationIntInput applicationInput = em.find(ApplicationIntInput.class, new AppInput_PK(
                     ids.get(AppInputConstants.INTERFACE_ID),
                     ids.get(AppInputConstants.INPUT_KEY)));
 

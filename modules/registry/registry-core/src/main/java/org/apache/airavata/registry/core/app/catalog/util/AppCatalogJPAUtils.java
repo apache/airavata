@@ -28,10 +28,7 @@ import org.apache.airavata.registry.core.app.catalog.resources.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.PersistenceContext;
+import javax.persistence.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,8 +41,10 @@ public class AppCatalogJPAUtils {
     private static final String APPCATALOG_JDBC_PWD = "appcatalog.jdbc.password";
     private static final String APPCATALOG_VALIDATION_QUERY = "appcatalog.validationQuery";
     private static final String JPA_CACHE_SIZE = "jpa.cache.size";
-    @PersistenceContext(unitName="appcatalog_data")
+    @PersistenceUnit(unitName="appcatalog_data")
     protected static EntityManagerFactory factory;
+    @PersistenceContext(unitName="appcatalog_data")
+    private static EntityManager appCatEntityManager;
 
     public static EntityManager getEntityManager() throws ApplicationSettingsException {
         if (factory == null) {
@@ -56,7 +55,6 @@ public class AppCatalogJPAUtils {
                     ",validationQuery=" + readServerProperties(APPCATALOG_VALIDATION_QUERY);
             System.out.println(connectionProperties);
             Map<String, String> properties = new HashMap<String, String>();
-            properties.put("persistenceXmlLocation", "META-INF/persistence.xml");
             properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp.BasicDataSource");
             properties.put("openjpa.ConnectionProperties", connectionProperties);
             properties.put("openjpa.DynamicEnhancementAgent", "true");
@@ -65,12 +63,13 @@ public class AppCatalogJPAUtils {
             properties.put("openjpa.QueryCache","true(CacheSize=" + Integer.valueOf(readServerProperties(JPA_CACHE_SIZE))  + ", SoftReferenceSize=0)");
             properties.put("openjpa.RemoteCommitProvider","sjvm");
             properties.put("openjpa.Log","DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
-            properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
+//            properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
             properties.put("openjpa.jdbc.QuerySQLCache", "false");
             properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=31536000,  autoReconnect=true");
             factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
         }
-        return factory.createEntityManager();
+        appCatEntityManager = factory.createEntityManager();
+        return appCatEntityManager;
     }
 
     private static String readServerProperties (String propertyName) throws ApplicationSettingsException {
@@ -259,8 +258,8 @@ public class AppCatalogJPAUtils {
                     throw new IllegalArgumentException("Object should be a AppModuleMapping.");
                 }
             case APPLICATION_OUTPUT:
-                if (o instanceof ApplicationOutput){
-                    return createApplicationOutput((ApplicationOutput) o);
+                if (o instanceof ApplicationIntOutput){
+                    return createApplicationOutput((ApplicationIntOutput) o);
                 }else {
                     logger.error("Object should be a ApplicationOutput.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a ApplicationOutput.");
@@ -280,8 +279,8 @@ public class AppCatalogJPAUtils {
                     throw new IllegalArgumentException("Object should be a Compute Resource Preference.");
                 }
             case APPLICATION_INPUT:
-                if (o instanceof ApplicationInput){
-                    return createApplicationInput((ApplicationInput) o);
+                if (o instanceof ApplicationIntInput){
+                    return createApplicationInput((ApplicationIntInput) o);
                 }else {
                     logger.error("Object should be a ApplicationInput.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a ApplicationInput.");
@@ -776,7 +775,7 @@ public class AppCatalogJPAUtils {
         return resource;
     }
 
-    private static AppCatalogResource createApplicationInput(ApplicationInput o) {
+    private static AppCatalogResource createApplicationInput(ApplicationIntInput o) {
         ApplicationInputResource resource = new ApplicationInputResource();
         if (o != null){
             resource.setInterfaceID(o.getInterfaceID());
@@ -818,7 +817,7 @@ public class AppCatalogJPAUtils {
         return resource;
     }
 
-    private static AppCatalogResource createApplicationOutput(ApplicationOutput o) {
+    private static AppCatalogResource createApplicationOutput(ApplicationIntOutput o) {
         ApplicationOutputResource resource = new ApplicationOutputResource();
         if (o != null){
             resource.setInterfaceID(o.getInterfaceID());
