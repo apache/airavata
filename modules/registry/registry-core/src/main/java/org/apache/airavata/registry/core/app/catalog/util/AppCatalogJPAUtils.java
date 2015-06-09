@@ -41,6 +41,7 @@ public class AppCatalogJPAUtils {
     private static final String APPCATALOG_JDBC_PWD = "appcatalog.jdbc.password";
     private static final String APPCATALOG_VALIDATION_QUERY = "appcatalog.validationQuery";
     private static final String JPA_CACHE_SIZE = "jpa.cache.size";
+    private static final String JPA_CACHE_ENABLED = "cache.enable";
     @PersistenceUnit(unitName="appcatalog_data")
     protected static EntityManagerFactory factory;
     @PersistenceContext(unitName="appcatalog_data")
@@ -59,8 +60,8 @@ public class AppCatalogJPAUtils {
             properties.put("openjpa.ConnectionProperties", connectionProperties);
             properties.put("openjpa.DynamicEnhancementAgent", "true");
             properties.put("openjpa.RuntimeUnenhancedClasses", "unsupported");
-            properties.put("openjpa.DataCache","true(CacheSize=" + Integer.valueOf(readServerProperties(JPA_CACHE_SIZE))  + ", SoftReferenceSize=0)");
-            properties.put("openjpa.QueryCache","true(CacheSize=" + Integer.valueOf(readServerProperties(JPA_CACHE_SIZE))  + ", SoftReferenceSize=0)");
+            properties.put("openjpa.DataCache","" + readServerProperties(JPA_CACHE_ENABLED) + "(CacheSize=" + Integer.valueOf(readServerProperties(JPA_CACHE_SIZE)) + ", SoftReferenceSize=0)");
+            properties.put("openjpa.QueryCache","" + readServerProperties(JPA_CACHE_ENABLED) + "(CacheSize=" + Integer.valueOf(readServerProperties(JPA_CACHE_SIZE)) + ", SoftReferenceSize=0)");
             properties.put("openjpa.RemoteCommitProvider","sjvm");
             properties.put("openjpa.Log","DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
             properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");

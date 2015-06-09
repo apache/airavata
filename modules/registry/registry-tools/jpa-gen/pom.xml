@@ -12,8 +12,8 @@
 
     <parent>
         <groupId>org.apache.airavata</groupId>
-        <artifactId>registry</artifactId>
-        <version>0.13-SNAPSHOT</version>
+        <artifactId>airavata-registry-tools</artifactId>
+        <version>0.16-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
