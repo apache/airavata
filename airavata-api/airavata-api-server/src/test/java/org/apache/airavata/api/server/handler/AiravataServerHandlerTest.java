@@ -52,7 +52,7 @@ public class AiravataServerHandlerTest {
     public static void setupBeforeClass() throws Exception{
         AppCatInit appCatInit = new AppCatInit("appcatalog-derby.sql");
         appCatInit.initializeDB();
-        ExpCatInit expCatInit = new ExpCatInit("appcatalog-derby.sql");
+        ExpCatInit expCatInit = new ExpCatInit("expcatalog-derby.sql");
         expCatInit.initializeDB();
         airavataServerHandler = new AiravataServerHandler();
 
