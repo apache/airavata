@@ -124,6 +124,9 @@ public class PBSOutputParser implements OutputParser {
 
     public String parseJobSubmission(String rawOutput) {
         log.debug(rawOutput);
+        if(rawOutput.contains(".")){
+        	 rawOutput = rawOutput.substring(0, rawOutput.indexOf("."));
+        } 
         return rawOutput;  //In PBS stdout is going to be directly the jobID
     }
 

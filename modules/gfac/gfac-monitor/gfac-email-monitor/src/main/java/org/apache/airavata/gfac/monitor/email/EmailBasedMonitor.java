@@ -157,10 +157,9 @@ public class EmailBasedMonitor implements Runnable{
             default:
                 if (addressStr.contains("ls4.tacc.utexas.edu>")) { // lonestar
                     return ResourceJobManagerType.UGE;
-                } else if (addressStr.contains("blacklight.psc.xsede.org")){
-                	 return ResourceJobManagerType.PBS;
-                }
-                	else {
+                } else if (addressStr.contains("blacklight.psc.xsede.org")) {
+                    return ResourceJobManagerType.PBS;
+                } else {
                     throw new AiravataException("[EJM]: Couldn't identify Resource job manager type from address " + addressStr);
                 }
         }
