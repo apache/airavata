@@ -57,6 +57,7 @@ import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.curator.utils.ZKPaths;
 import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 import org.apache.zookeeper.CreateMode;
@@ -329,7 +330,20 @@ public class GfacServerHandler implements GfacService.Iface {
                         submitJob(event.getExperimentId(), event.getTaskId(), event.getGatewayId(), event.getTokenId());
                     } catch (Exception e) {
                         logger.error(e.getMessage(), e);
+                        String experimentPath = experimentNode + File.separator + nodeName + File.separator + event.getExperimentId();
                         rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
+                        try {
+                            if (curatorClient.checkExists().forPath(experimentPath + AiravataZKUtils.DELIVERY_TAG_POSTFIX) != null) {
+                                ZKPaths.deleteChildren(curatorClient.getZookeeperClient().getZooKeeper(),
+                                        experimentPath + AiravataZKUtils.DELIVERY_TAG_POSTFIX, true);
+                            }
+
+                            if (curatorClient.checkExists().forPath(experimentPath) != null) {
+                                ZKPaths.deleteChildren(curatorClient.getZookeeperClient().getZooKeeper(), experimentPath, true);
+                            }
+                        } catch (Exception e1) {
+                            logger.error("Error while deleting experiment node in zookeeper, expId : {}" , experimentPath);
+                        }
                     }
                 } catch (TException e) {
                     logger.error(e.getMessage(), e); //nobody is listening so nothing to throw
