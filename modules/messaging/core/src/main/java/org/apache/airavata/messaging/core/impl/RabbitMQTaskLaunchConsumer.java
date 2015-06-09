@@ -85,6 +85,7 @@ public class RabbitMQTaskLaunchConsumer {
             connection = connectionFactory.newConnection();
             connection.addShutdownListener(new ShutdownListener() {
                 public void shutdownCompleted(ShutdownSignalException cause) {
+                    log.info("RabbitMQ connection shutting down");
                 }
             });
             log.info("connected to rabbitmq: " + connection + " for " + taskLaunchExchangeName);
