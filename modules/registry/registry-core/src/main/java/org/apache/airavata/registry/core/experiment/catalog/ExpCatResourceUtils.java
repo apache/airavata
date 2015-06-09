@@ -36,18 +36,21 @@ import java.util.Map;
 public class ExpCatResourceUtils {
     private final static Logger logger = LoggerFactory.getLogger(ExpCatResourceUtils.class);
     private static final String PERSISTENCE_UNIT_NAME = "experiment_data";
+    @PersistenceUnit(unitName="experiment_data")
+    protected static EntityManagerFactory expCatFactory;
     @PersistenceContext(unitName="experiment_data")
-    protected static EntityManagerFactory factory;
+    private static EntityManager expCatEntityManager;
 
     public static void reset(){
-    	factory=null;
+        expCatFactory=null;
     }
     
     public static EntityManager getEntityManager(){
-        if (factory == null) {
-            String connectionProperties = "DriverClassName=" + Utils.getJDBCDriver() + "," + "Url=" + Utils.getJDBCURL() + "?autoReconnect=true,," +
-                    "Username=" + Utils.getJDBCUser() + "," + "Password=" + Utils.getJDBCPassword() + ",validationQuery=" +
-            Utils.getValidationQuery();
+        if (expCatFactory == null) {
+            String connectionProperties = "DriverClassName=" + Utils.getJDBCDriver() + "," + "Url=" +
+                    Utils.getJDBCURL() + "?autoReconnect=true," +
+                    "Username=" + Utils.getJDBCUser() + "," + "Password=" + Utils.getJDBCPassword() +
+                    ",validationQuery=" + Utils.getValidationQuery();
             System.out.println(connectionProperties);
             Map<String, String> properties = new HashMap<String, String>();
             properties.put("openjpa.ConnectionDriverName", "org.apache.commons.dbcp.BasicDataSource");
@@ -58,17 +61,13 @@ public class ExpCatResourceUtils {
             properties.put("openjpa.QueryCache","" + Utils.isCachingEnabled() + "(CacheSize=" + Utils.getJPACacheSize() + ", SoftReferenceSize=0)");
             properties.put("openjpa.RemoteCommitProvider","sjvm");
             properties.put("openjpa.Log","DefaultLevel=INFO, Runtime=INFO, Tool=INFO, SQL=INFO");
-            properties.put("openjpa.jdbc.DBDictionary","SupportsMultipleNontransactionalResultSets=false");
-//            properties.put("openjpa.ReadLockLevel", "none");
-//            properties.put("openjpa.WriteLockLevel", "none");
-//            properties.put("openjpa.LockTimeout", "30000");
-//            properties.put("openjpa.LockManager", "none");
-            properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
+//            properties.put("openjpa.jdbc.SynchronizeMappings", "buildSchema(ForeignKeys=true)");
             properties.put("openjpa.ConnectionFactoryProperties", "PrettyPrint=true, PrettyPrintLineLength=72, PrintParameters=true, MaxActive=10, MaxIdle=5, MinIdle=2, MaxWait=31536000,  autoReconnect=true");
 			properties.put("openjpa.jdbc.QuerySQLCache", "false");
-            factory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
+            expCatFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
         }
-		return factory.createEntityManager();
+        expCatEntityManager = expCatFactory.createEntityManager();
+        return expCatEntityManager;
     }
 
     /**

@@ -46,8 +46,8 @@
         <class>org.apache.airavata.registry.core.app.catalog.model.AppEnvironment</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.ApplicationInterface</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.AppModuleMapping</class>
-        <class>org.apache.airavata.registry.core.app.catalog.model.ApplicationInput</class>
-        <class>org.apache.airavata.registry.core.app.catalog.model.ApplicationOutput</class>
+        <class>org.apache.airavata.registry.core.app.catalog.model.ApplicationIntInput</class>
+        <class>org.apache.airavata.registry.core.app.catalog.model.ApplicationIntOutput</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.GatewayProfile</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.ComputeResourcePreference</class>
         <class>org.apache.airavata.registry.core.app.catalog.model.BatchQueue</class>

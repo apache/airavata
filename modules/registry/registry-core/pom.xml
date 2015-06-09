@@ -28,11 +28,11 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-        <!--dependency>
+        <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-common-utils</artifactId>
             <version>${project.version}</version>
-        </dependency-->
+        </dependency>
         <!-- Test -->
         <dependency>
             <groupId>junit</groupId>

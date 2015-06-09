@@ -21,8 +21,8 @@ package org.apache.airavata.registry.core.app.catalog.resources;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.registry.core.app.catalog.model.AppOutput_PK;
+import org.apache.airavata.registry.core.app.catalog.model.ApplicationIntOutput;
 import org.apache.airavata.registry.core.app.catalog.model.ApplicationInterface;
-import org.apache.airavata.registry.core.app.catalog.model.ApplicationOutput;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogJPAUtils;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogQueryGenerator;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogResourceType;
@@ -106,7 +106,7 @@ public class ApplicationOutputResource extends AppCatAbstractResource {
             generator.setParameter(AppOutputConstants.INTERFACE_ID, ids.get(AppOutputConstants.INTERFACE_ID));
             generator.setParameter(AppOutputConstants.OUTPUT_KEY, ids.get(AppOutputConstants.OUTPUT_KEY));
             Query q = generator.selectQuery(em);
-            ApplicationOutput applicationOutput = (ApplicationOutput) q.getSingleResult();
+            ApplicationIntOutput applicationOutput = (ApplicationIntOutput) q.getSingleResult();
             ApplicationOutputResource applicationOutputResource =
                     (ApplicationOutputResource) AppCatalogJPAUtils.getResource(AppCatalogResourceType.APPLICATION_OUTPUT
                             , applicationOutput);
@@ -141,7 +141,7 @@ public class ApplicationOutputResource extends AppCatAbstractResource {
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        ApplicationOutput applicationOutput = (ApplicationOutput) result;
+                        ApplicationIntOutput applicationOutput = (ApplicationIntOutput) result;
                         ApplicationOutputResource applicationOutputResource =
                                 (ApplicationOutputResource) AppCatalogJPAUtils.getResource(
                                         AppCatalogResourceType.APPLICATION_OUTPUT, applicationOutput);
@@ -154,7 +154,7 @@ public class ApplicationOutputResource extends AppCatAbstractResource {
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        ApplicationOutput applicationOutput = (ApplicationOutput) result;
+                        ApplicationIntOutput applicationOutput = (ApplicationIntOutput) result;
                         ApplicationOutputResource applicationOutputResource =
                                 (ApplicationOutputResource) AppCatalogJPAUtils.getResource(
                                         AppCatalogResourceType.APPLICATION_OUTPUT, applicationOutput);
@@ -167,7 +167,7 @@ public class ApplicationOutputResource extends AppCatAbstractResource {
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        ApplicationOutput applicationOutput = (ApplicationOutput) result;
+                        ApplicationIntOutput applicationOutput = (ApplicationIntOutput) result;
                         ApplicationOutputResource applicationOutputResource =
                                 (ApplicationOutputResource) AppCatalogJPAUtils.getResource(
                                         AppCatalogResourceType.APPLICATION_OUTPUT, applicationOutput);
@@ -221,7 +221,7 @@ public class ApplicationOutputResource extends AppCatAbstractResource {
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        ApplicationOutput applicationOutput = (ApplicationOutput) result;
+                        ApplicationIntOutput applicationOutput = (ApplicationIntOutput) result;
                         appOutputResourceIDs.add(applicationOutput.getInterfaceID());
                     }
                 }
@@ -232,7 +232,7 @@ public class ApplicationOutputResource extends AppCatAbstractResource {
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        ApplicationOutput applicationOutput = (ApplicationOutput) result;
+                        ApplicationIntOutput applicationOutput = (ApplicationIntOutput) result;
                         appOutputResourceIDs.add(applicationOutput.getInterfaceID());
                     }
                 }
@@ -242,7 +242,7 @@ public class ApplicationOutputResource extends AppCatAbstractResource {
                 results = q.getResultList();
                 if (results.size() != 0) {
                     for (Object result : results) {
-                        ApplicationOutput applicationOutput = (ApplicationOutput) result;
+                        ApplicationIntOutput applicationOutput = (ApplicationIntOutput) result;
                         appOutputResourceIDs.add(applicationOutput.getInterfaceID());
                     }
                 }
@@ -272,15 +272,15 @@ public class ApplicationOutputResource extends AppCatAbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            ApplicationOutput existingApplicationOutput = em.find(ApplicationOutput.class,
+            ApplicationIntOutput existingApplicationOutput = em.find(ApplicationIntOutput.class,
                     new AppOutput_PK(interfaceID, outputKey));
             em.close();
 
-            ApplicationOutput applicationOutput;
+            ApplicationIntOutput applicationOutput;
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             if (existingApplicationOutput == null) {
-                applicationOutput = new ApplicationOutput();
+                applicationOutput = new ApplicationIntOutput();
             } else {
                 applicationOutput = existingApplicationOutput;
             }
@@ -324,7 +324,7 @@ public class ApplicationOutputResource extends AppCatAbstractResource {
         EntityManager em = null;
         try {
             em = AppCatalogJPAUtils.getEntityManager();
-            ApplicationOutput applicationOutput = em.find(ApplicationOutput.class, new AppOutput_PK(
+            ApplicationIntOutput applicationOutput = em.find(ApplicationIntOutput.class, new AppOutput_PK(
                     ids.get(AppOutputConstants.INTERFACE_ID),
                     ids.get(AppOutputConstants.OUTPUT_KEY)));
 

@@ -21,6 +21,8 @@
 package org.apache.airavata.api.server.handler;
 
 import junit.framework.Assert;
+import org.apache.airavata.api.server.handler.utils.AppCatInit;
+import org.apache.airavata.api.server.handler.utils.ExpCatInit;
 import org.apache.airavata.api.server.util.RegistryInitUtil;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
@@ -48,7 +50,10 @@ public class AiravataServerHandlerTest {
 
     @BeforeClass
     public static void setupBeforeClass() throws Exception{
-        RegistryInitUtil.initializeDB();
+        AppCatInit appCatInit = new AppCatInit("appcatalog-derby.sql");
+        appCatInit.initializeDB();
+        ExpCatInit expCatInit = new ExpCatInit("appcatalog-derby.sql");
+        expCatInit.initializeDB();
         airavataServerHandler = new AiravataServerHandler();
 
         Gateway gateway = new Gateway();
