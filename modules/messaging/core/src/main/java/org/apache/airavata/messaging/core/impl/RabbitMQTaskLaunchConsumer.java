@@ -82,16 +82,25 @@ public class RabbitMQTaskLaunchConsumer {
             ConnectionFactory connectionFactory = new ConnectionFactory();
             connectionFactory.setUri(url);
             connectionFactory.setAutomaticRecoveryEnabled(true);
+            connectionFactory.setRequestedHeartbeat(5);
+            connectionFactory.setConnectionTimeout(5000);
+            connectionFactory.setNetworkRecoveryInterval(100);
             connection = connectionFactory.newConnection();
             connection.addShutdownListener(new ShutdownListener() {
                 public void shutdownCompleted(ShutdownSignalException cause) {
-                    log.info("RabbitMQ connection shutting down");
+                    log.error("**************** ######## RabbitMQ connection shutting down ********** #######");
                 }
             });
             log.info("connected to rabbitmq: " + connection + " for " + taskLaunchExchangeName);
 
             channel = connection.createChannel();
             channel.basicQos(prefetchCount);
+            channel.addShutdownListener(new ShutdownListener() {
+                @Override
+                public void shutdownCompleted(ShutdownSignalException e) {
+                    log.error("************ ######### RabbitMQ channel shutting down ********** #######");
+                }
+            });
 
 //            channel.exchangeDeclare(taskLaunchExchangeName, "fanout");
 
