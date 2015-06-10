@@ -89,19 +89,20 @@ public class RabbitMQTaskLaunchConsumer {
             connection.addShutdownListener(new ShutdownListener() {
                 public void shutdownCompleted(ShutdownSignalException cause) {
                     log.error("**************** ######## RabbitMQ connection shutting down ********** #######");
+
                 }
             });
             log.info("connected to rabbitmq: " + connection + " for " + taskLaunchExchangeName);
 
             channel = connection.createChannel();
+            channel.basicRecover(true);
             channel.basicQos(prefetchCount);
             channel.addShutdownListener(new ShutdownListener() {
                 @Override
                 public void shutdownCompleted(ShutdownSignalException e) {
-                    log.error("************ ######### RabbitMQ channel shutting down ********** #######");
+                    log.error("************ ######### RabbitMQ channel shutting down ********** #######", e);
                 }
             });
-
 //            channel.exchangeDeclare(taskLaunchExchangeName, "fanout");
 
         } catch (Exception e) {
@@ -114,6 +115,7 @@ public class RabbitMQTaskLaunchConsumer {
     public void reconnect() throws AiravataException{
         if(messageHandler!=null) {
             try {
+                createConnection();
                 listen(messageHandler);
             } catch (AiravataException e) {
                 String msg = "could not open channel for exchange " + taskLaunchExchangeName;
