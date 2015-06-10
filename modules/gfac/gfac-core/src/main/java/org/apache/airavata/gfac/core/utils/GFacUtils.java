@@ -423,9 +423,10 @@ public class GFacUtils {
 		} else {
 			log.error("ExperimentID: " + experimentID + " taskID: " + taskID + " was running by some Gfac instance,but it failed");
             removeCancelDeliveryTagNode(oldExperimentPath, curatorClient); // remove previous cancel deliveryTagNode
-            if(newExperimentPath.equals(oldExperimentPath)){
-                log.info("Re-launch experiment came to the same GFac instance");
-            }else {
+            if(newExperimentPath.equals(oldExperimentPath)) {
+				updateDeliveryTag(oldExperimentPath, curatorClient, deliveryTag);
+				log.info("Re-launch experiment came to the same GFac instance");
+			}else {
 				log.info("Re-launch experiment came to a new GFac instance so we are moving data to new gfac node");
 				curatorClient.create().withMode(CreateMode.PERSISTENT).withACL(OPEN_ACL_UNSAFE).forPath(newExperimentPath,
 						curatorClient.getData().storingStatIn(exists1).forPath(oldExperimentPath)); // recursively copy children
@@ -448,7 +449,17 @@ public class GFacUtils {
 		return true;
 	}
 
-    private static void removeCancelDeliveryTagNode(String experimentPath, CuratorFramework curatorClient) throws Exception {
+	private static void updateDeliveryTag(String oldExperimentPath, CuratorFramework curatorClient, long deliveryTag) throws Exception {
+		Stat stat = curatorClient.checkExists().forPath(oldExperimentPath + AiravataZKUtils.DELIVERY_TAG_POSTFIX);
+		if (stat != null) {
+			curatorClient.setData().withVersion(-1).forPath(oldExperimentPath + AiravataZKUtils.DELIVERY_TAG_POSTFIX, longToBytes(deliveryTag));
+		} else {
+			curatorClient.create().withMode(CreateMode.PERSISTENT).withACL(OPEN_ACL_UNSAFE)
+					.forPath(oldExperimentPath + AiravataZKUtils.DELIVERY_TAG_POSTFIX, longToBytes(deliveryTag));
+		}
+	}
+
+	private static void removeCancelDeliveryTagNode(String experimentPath, CuratorFramework curatorClient) throws Exception {
         Stat exists = curatorClient.checkExists().forPath(experimentPath + AiravataZKUtils.CANCEL_DELIVERY_TAG_POSTFIX);
         if (exists != null) {
 			ZKPaths.deleteChildren(curatorClient.getZookeeperClient().getZooKeeper(), experimentPath + AiravataZKUtils.CANCEL_DELIVERY_TAG_POSTFIX, true);
