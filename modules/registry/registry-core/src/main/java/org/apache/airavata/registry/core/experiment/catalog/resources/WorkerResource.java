@@ -49,7 +49,7 @@ import java.util.UUID;
 public class WorkerResource extends AbstractExpCatResource {
     private final static Logger logger = LoggerFactory.getLogger(WorkerResource.class);
     private String user;
-	private String gatewayId;
+    private String gatewayId;
 
     public WorkerResource() {
     }
@@ -69,38 +69,38 @@ public class WorkerResource extends AbstractExpCatResource {
 
     /**
      * Gateway worker can create child data structures such as projects and user workflows
+     *
      * @param type child resource type
-     * @return  child resource
+     * @return child resource
      */
-	public ExperimentCatResource create(ResourceType type) throws RegistryException{
-		ExperimentCatResource result = null;
-		switch (type) {
-			case PROJECT:
-				ProjectResource projectResource = new ProjectResource();
-				projectResource.setWorker(this);
-				projectResource.setGatewayId(gatewayId);
-				result=projectResource;
-				break;
+    public ExperimentCatResource create(ResourceType type) throws RegistryException {
+        ExperimentCatResource result = null;
+        switch (type) {
+            case PROJECT:
+                ProjectResource projectResource = new ProjectResource();
+                projectResource.setWorker(this);
+                projectResource.setGatewayId(gatewayId);
+                result = projectResource;
+                break;
             case EXPERIMENT:
                 ExperimentResource experimentResource = new ExperimentResource();
                 experimentResource.setExecutionUser(user);
                 experimentResource.setGatewayId(gatewayId);
                 result = experimentResource;
                 break;
-			default:
+            default:
                 logger.error("Unsupported resource type for worker resource.", new IllegalArgumentException());
                 throw new IllegalArgumentException("Unsupported resource type for worker resource.");
 
-		}
-		return result;
-	}
+        }
+        return result;
+    }
 
     /**
-     *
      * @param type child resource type
      * @param name child resource name
      */
-	public void remove(ResourceType type, Object name) throws RegistryException{
+    public void remove(ResourceType type, Object name) throws RegistryException {
         EntityManager em = null;
         try {
             em = ExpCatResourceUtils.getEntityManager();
@@ -131,7 +131,7 @@ public class WorkerResource extends AbstractExpCatResource {
             throw new RegistryException(e.getMessage());
         } finally {
             if (em != null && em.isOpen()) {
-                if (em.getTransaction().isActive()){
+                if (em.getTransaction().isActive()) {
                     em.getTransaction().rollback();
                 }
                 em.close();
@@ -140,12 +140,11 @@ public class WorkerResource extends AbstractExpCatResource {
     }
 
     /**
-     *
      * @param type child resource type
      * @param name child resource name
      * @return child resource
      */
-	public ExperimentCatResource get(ResourceType type, Object name) throws RegistryException{
+    public ExperimentCatResource get(ResourceType type, Object name) throws RegistryException {
         ExperimentCatResource result = null;
         EntityManager em = null;
         try {
@@ -178,7 +177,7 @@ public class WorkerResource extends AbstractExpCatResource {
             throw new RegistryException(e);
         } finally {
             if (em != null && em.isOpen()) {
-                if (em.getTransaction().isActive()){
+                if (em.getTransaction().isActive()) {
                     em.getTransaction().rollback();
                 }
                 em.close();
@@ -231,14 +230,14 @@ public class WorkerResource extends AbstractExpCatResource {
      * @param type child resource type
      * @return list of child resources
      */
-    public List<ExperimentCatResource> get(ResourceType type) throws RegistryException{
+    public List<ExperimentCatResource> get(ResourceType type) throws RegistryException {
         return get(type, -1, -1, null, null);
     }
 
     /**
      * Method get all results of the given child resource type with paginaltion and ordering
      *
-     * @param type child resource type
+     * @param type              child resource type
      * @param limit
      * @param offset
      * @param orderByIdentifier
@@ -247,7 +246,7 @@ public class WorkerResource extends AbstractExpCatResource {
      * @throws RegistryException
      */
     public List<ExperimentCatResource> get(ResourceType type, int limit, int offset, Object orderByIdentifier,
-                              ResultOrderType resultOrderType) throws RegistryException{
+                                           ResultOrderType resultOrderType) throws RegistryException {
         List<ExperimentCatResource> result = new ArrayList<ExperimentCatResource>();
         EntityManager em = null;
         try {
@@ -261,20 +260,20 @@ public class WorkerResource extends AbstractExpCatResource {
                     Users users = em.find(Users.class, getUser());
                     Gateway gatewayModel = em.find(Gateway.class, gatewayId);
                     generator.setParameter("users", users);
-                    if (gatewayModel != null){
+                    if (gatewayModel != null) {
                         generator.setParameter("gateway", gatewayModel);
                     }
 
                     //ordering - only supported only by CREATION_TIME
-                    if(orderByIdentifier != null && resultOrderType != null
+                    if (orderByIdentifier != null && resultOrderType != null
                             && orderByIdentifier.equals(Constants.FieldConstants.ProjectConstants.CREATION_TIME)) {
                         q = generator.selectQuery(em, ProjectConstants.CREATION_TIME, resultOrderType);
-                    }else{
+                    } else {
                         q = generator.selectQuery(em);
                     }
 
                     //pagination
-                    if(limit>0 && offset>=0){
+                    if (limit > 0 && offset >= 0) {
                         q.setFirstResult(offset);
                         q.setMaxResults(limit);
                     }
@@ -290,15 +289,15 @@ public class WorkerResource extends AbstractExpCatResource {
                     generator.setParameter(ExperimentConstants.EXECUTION_USER, getUser());
 
                     //ordering - only supported only by CREATION_TIME
-                    if(orderByIdentifier != null && resultOrderType != null
+                    if (orderByIdentifier != null && resultOrderType != null
                             && orderByIdentifier.equals(Constants.FieldConstants.ProjectConstants.CREATION_TIME)) {
                         q = generator.selectQuery(em, ExperimentConstants.CREATION_TIME, resultOrderType);
-                    }else{
+                    } else {
                         q = generator.selectQuery(em);
                     }
 
                     //pagination
-                    if(limit>0 && offset>=0){
+                    if (limit > 0 && offset >= 0) {
                         q.setFirstResult(offset);
                         q.setMaxResults(limit);
                     }
@@ -320,7 +319,7 @@ public class WorkerResource extends AbstractExpCatResource {
             throw new RegistryException(e);
         } finally {
             if (em != null && em.isOpen()) {
-                if (em.getTransaction().isActive()){
+                if (em.getTransaction().isActive()) {
                     em.getTransaction().rollback();
                 }
                 em.close();
@@ -332,7 +331,7 @@ public class WorkerResource extends AbstractExpCatResource {
     /**
      * save gateway worker to database
      */
-	public void save() throws RegistryException{
+    public void save() throws RegistryException {
         EntityManager em = null;
         try {
             em = ExpCatResourceUtils.getEntityManager();
@@ -361,7 +360,7 @@ public class WorkerResource extends AbstractExpCatResource {
             throw new RegistryException(e);
         } finally {
             if (em != null && em.isOpen()) {
-                if (em.getTransaction().isActive()){
+                if (em.getTransaction().isActive()) {
                     em.getTransaction().rollback();
                 }
                 em.close();
@@ -370,40 +369,36 @@ public class WorkerResource extends AbstractExpCatResource {
     }
 
     /**
-     *
      * @return user name
      */
-	public String getUser() {
-		return user;
-	}
+    public String getUser() {
+        return user;
+    }
 
     /**
-     *
      * @param user user name
      */
     public void setUser(String user) {
-		this.user = user;
-	}
+        this.user = user;
+    }
 
     /**
-     *
-     * @param id  project id
+     * @param id project id
      * @return whether the project is available under the user
      */
-    public boolean isProjectExists(String id) throws RegistryException{
-		return isExists(ResourceType.PROJECT, id);
-	}
+    public boolean isProjectExists(String id) throws RegistryException {
+        return isExists(ResourceType.PROJECT, id);
+    }
 
     /**
-     *
      * @param projectId project id
      * @return project resource for the user
      */
-	public ProjectResource createProject(String projectId) throws RegistryException{
-		ProjectResource project=(ProjectResource)create(ResourceType.PROJECT);
+    public ProjectResource createProject(String projectId) throws RegistryException {
+        ProjectResource project = (ProjectResource) create(ResourceType.PROJECT);
         project.setId(projectId);
-		return project;
-	}
+        return project;
+    }
 
     public String getProjectID(String projectName) {
         String pro = projectName.replaceAll("\\s", "");
@@ -411,39 +406,38 @@ public class WorkerResource extends AbstractExpCatResource {
     }
 
     /**
-     *
      * @param id project id
      * @return project resource
      */
-	public ProjectResource getProject(String id) throws RegistryException{
-		return (ProjectResource)get(ResourceType.PROJECT, id);
-	}
+    public ProjectResource getProject(String id) throws RegistryException {
+        return (ProjectResource) get(ResourceType.PROJECT, id);
+    }
 
     /**
-     *
      * @param id project id
      */
-	public void removeProject(String id) throws RegistryException{
-		remove(ResourceType.PROJECT, id);
-	}
+    public void removeProject(String id) throws RegistryException {
+        remove(ResourceType.PROJECT, id);
+    }
 
     /**
      * Get projects list of user
-     * @return  list of projects for the user
+     *
+     * @return list of projects for the user
      */
-    public List<ProjectResource> getProjects() throws RegistryException{
-		return getProjects(-1, -1, null, null);
-	}
+    public List<ProjectResource> getProjects() throws RegistryException {
+        return getProjects(-1, -1, null, null);
+    }
 
 
     /**
      * Get projects list of user with pagination and ordering
      *
-     * @return  list of projects for the user
+     * @return list of projects for the user
      */
     public List<ProjectResource> getProjects(int limit, int offset, Object orderByIdentifier,
-                                             ResultOrderType resultOrderType) throws RegistryException{
-        List<ProjectResource> result=new ArrayList<ProjectResource>();
+                                             ResultOrderType resultOrderType) throws RegistryException {
+        List<ProjectResource> result = new ArrayList<ProjectResource>();
         List<ExperimentCatResource> list = get(ResourceType.PROJECT, limit, offset, orderByIdentifier, resultOrderType);
         for (ExperimentCatResource resource : list) {
             result.add((ProjectResource) resource);
@@ -452,23 +446,21 @@ public class WorkerResource extends AbstractExpCatResource {
     }
 
     /**
-     *
      * @param name experiment name
      * @return whether experiment is already exist for the given user
      */
-	public boolean isExperimentExists(String name) throws RegistryException{
-		return isExists(ResourceType.EXPERIMENT, name);
-	}
-	
+    public boolean isExperimentExists(String name) throws RegistryException {
+        return isExists(ResourceType.EXPERIMENT, name);
+    }
+
 
     /**
-     *
      * @param name experiment name
      * @return experiment resource
      */
-    public ExperimentResource getExperiment(String name) throws RegistryException{
-		return (ExperimentResource)get(ResourceType.EXPERIMENT, name);
-	}
+    public ExperimentResource getExperiment(String name) throws RegistryException {
+        return (ExperimentResource) get(ResourceType.EXPERIMENT, name);
+    }
 //
 //    public GFacJobDataResource getGFacJob(String jobId){
 //    	return (GFacJobDataResource)get(ResourceType.GFAC_JOB_DATA,jobId);
@@ -476,14 +468,16 @@ public class WorkerResource extends AbstractExpCatResource {
 
     /**
      * Method to get list of expeirments of user
+     *
      * @return list of experiments for the user
      */
-	public List<ExperimentResource> getExperiments() throws RegistryException{
-		return getExperiments(-1, -1, null, null);
-	}
+    public List<ExperimentResource> getExperiments() throws RegistryException {
+        return getExperiments(-1, -1, null, null);
+    }
 
     /**
      * Method to get list of experiments of user with pagination and ordering
+     *
      * @param limit
      * @param offset
      * @param orderByIdentifier
@@ -492,8 +486,8 @@ public class WorkerResource extends AbstractExpCatResource {
      * @throws RegistryException
      */
     public List<ExperimentResource> getExperiments(int limit, int offset, Object orderByIdentifier,
-                                                   ResultOrderType resultOrderType) throws RegistryException{
-        List<ExperimentResource> result=new ArrayList<ExperimentResource>();
+                                                   ResultOrderType resultOrderType) throws RegistryException {
+        List<ExperimentResource> result = new ArrayList<ExperimentResource>();
         List<ExperimentCatResource> list = get(ResourceType.EXPERIMENT, limit, offset, orderByIdentifier, resultOrderType);
         for (ExperimentCatResource resource : list) {
             result.add((ExperimentResource) resource);
@@ -502,12 +496,11 @@ public class WorkerResource extends AbstractExpCatResource {
     }
 
     /**
-     *
-     * @param experimentId  experiment name
+     * @param experimentId experiment name
      */
-	public void removeExperiment(String experimentId) throws RegistryException{
-		remove(ResourceType.EXPERIMENT, experimentId);
-	}
+    public void removeExperiment(String experimentId) throws RegistryException {
+        remove(ResourceType.EXPERIMENT, experimentId);
+    }
 
     /**
      * To search the projects of user with the given filter criteria and retrieve the results with
@@ -524,7 +517,7 @@ public class WorkerResource extends AbstractExpCatResource {
      * @throws RegistryException
      */
     public List<ProjectResource> searchProjects(Map<String, String> filters, int limit,
-             int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
+                                                int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
         List<ProjectResource> result = new ArrayList<ProjectResource>();
         EntityManager em = null;
         try {
@@ -534,10 +527,10 @@ public class WorkerResource extends AbstractExpCatResource {
                     String filterVal = filters.get(field);
                     if (field.equals(ProjectConstants.USERNAME)) {
                         query += "p." + field + "= '" + filterVal + "' AND ";
-                    }else if (field.equals(ProjectConstants.GATEWAY_ID)) {
+                    } else if (field.equals(ProjectConstants.GATEWAY_ID)) {
                         query += "p." + field + "= '" + filterVal + "' AND ";
-                    }else {
-                        if (filterVal.contains("*")){
+                    } else {
+                        if (filterVal.contains("*")) {
                             filterVal = filterVal.replaceAll("\\*", "");
                         }
                         query += "p." + field + " LIKE '%" + filterVal + "%' AND ";
@@ -547,8 +540,8 @@ public class WorkerResource extends AbstractExpCatResource {
             query = query.substring(0, query.length() - 5);
 
             //ordering
-            if( orderByIdentifier != null && resultOrderType != null
-                    && orderByIdentifier.equals(Constants.FieldConstants.ProjectConstants.CREATION_TIME)){
+            if (orderByIdentifier != null && resultOrderType != null
+                    && orderByIdentifier.equals(Constants.FieldConstants.ProjectConstants.CREATION_TIME)) {
                 String order = (resultOrderType == ResultOrderType.ASC) ? "ASC" : "DESC";
                 query += " ORDER BY p." + ProjectConstants.CREATION_TIME + " " + order;
             }
@@ -558,9 +551,9 @@ public class WorkerResource extends AbstractExpCatResource {
             Query q;
 
             //pagination
-            if(offset>=0 && limit >=0){
+            if (offset >= 0 && limit >= 0) {
                 q = em.createQuery(query).setFirstResult(offset).setMaxResults(limit);
-            }else{
+            } else {
                 q = em.createQuery(query);
             }
 
@@ -578,7 +571,7 @@ public class WorkerResource extends AbstractExpCatResource {
             throw new RegistryException(e);
         } finally {
             if (em != null && em.isOpen()) {
-                if (em.getTransaction().isActive()){
+                if (em.getTransaction().isActive()) {
                     em.getTransaction().rollback();
                 }
                 em.close();
@@ -604,20 +597,20 @@ public class WorkerResource extends AbstractExpCatResource {
      * @throws RegistryException
      */
     public List<ExperimentSummaryResource> searchExperiments(Timestamp fromTime, Timestamp toTime, Map<String, String> filters, int limit,
-                                                      int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
+                                                             int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
         List<ExperimentSummaryResource> result = new ArrayList();
         EntityManager em = null;
         try {
             String query = "SELECT e, s FROM Experiment e " +
                     ",Status s WHERE e.expId=s.expId AND " +
                     "s.statusType='" + StatusType.EXPERIMENT + "' AND ";
-            if(filters.get(StatusConstants.STATE) != null) {
+            if (filters.get(StatusConstants.STATE) != null) {
                 String experimentState = ExperimentState.valueOf(filters.get(StatusConstants.STATE)).toString();
                 query += "s.state='" + experimentState + "' AND ";
             }
 
-            if(toTime != null && fromTime != null && toTime.after(fromTime)){
-                query += "e.creationTime > '" + fromTime +  "' " + "AND e.creationTime <'" + toTime + "' AND ";
+            if (toTime != null && fromTime != null && toTime.after(fromTime)) {
+                query += "e.creationTime > '" + fromTime + "' " + "AND e.creationTime <'" + toTime + "' AND ";
             }
 
             filters.remove(StatusConstants.STATE);
@@ -626,12 +619,12 @@ public class WorkerResource extends AbstractExpCatResource {
                     String filterVal = filters.get(field);
                     if (field.equals(ExperimentConstants.EXECUTION_USER)) {
                         query += "e." + field + "= '" + filterVal + "' AND ";
-                    }else if (field.equals(ExperimentConstants.GATEWAY_ID)) {
+                    } else if (field.equals(ExperimentConstants.GATEWAY_ID)) {
                         query += "e." + field + "= '" + filterVal + "' AND ";
                     } else if (field.equals(ExperimentConstants.PROJECT_ID)) {
                         query += "e." + field + "= '" + filterVal + "' AND ";
                     } else {
-                        if (filterVal.contains("*")){
+                        if (filterVal.contains("*")) {
                             filterVal = filterVal.replaceAll("\\*", "");
                         }
                         query += "e." + field + " LIKE '%" + filterVal + "%' AND ";
@@ -641,8 +634,8 @@ public class WorkerResource extends AbstractExpCatResource {
             query = query.substring(0, query.length() - 5);
 
             //ordering
-            if( orderByIdentifier != null && resultOrderType != null
-                    && orderByIdentifier.equals(Constants.FieldConstants.ExperimentConstants.CREATION_TIME)){
+            if (orderByIdentifier != null && resultOrderType != null
+                    && orderByIdentifier.equals(Constants.FieldConstants.ExperimentConstants.CREATION_TIME)) {
                 String order = (resultOrderType == ResultOrderType.ASC) ? "ASC" : "DESC";
                 query += " ORDER BY e." + ExperimentConstants.CREATION_TIME + " " + order;
             }
@@ -652,9 +645,9 @@ public class WorkerResource extends AbstractExpCatResource {
             Query q;
 
             //pagination
-            if(offset>=0 && limit >=0){
+            if (offset >= 0 && limit >= 0) {
                 q = em.createQuery(query).setFirstResult(offset).setMaxResults(limit);
-            }else{
+            } else {
                 q = em.createQuery(query);
             }
             OpenJPAQuery kq = OpenJPAPersistence.cast(q);
@@ -663,8 +656,8 @@ public class WorkerResource extends AbstractExpCatResource {
 
             List resultList = q.getResultList();
             for (Object o : resultList) {
-                Experiment experiment = (Experiment) ((Object[])o)[0];
-                Status experimentStatus = (Status) ((Object[])o)[1];
+                Experiment experiment = (Experiment) ((Object[]) o)[0];
+                Status experimentStatus = (Status) ((Object[]) o)[1];
                 experiment.setExperimentStatus(experimentStatus);
                 ExperimentSummaryResource experimentSummaryResource =
                         (ExperimentSummaryResource) Utils.getResource(ResourceType.EXPERIMENT_SUMMARY, experiment);
@@ -677,7 +670,84 @@ public class WorkerResource extends AbstractExpCatResource {
             throw new RegistryException(e);
         } finally {
             if (em != null && em.isOpen()) {
-                if (em.getTransaction().isActive()){
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+        return result;
+    }
+
+
+    /**
+     * Method to get experiment statistics for a gateway
+     *
+     * @param gatewayId
+     * @param fromTime
+     * @param toTime
+     * @return
+     * @throws RegistryException
+     */
+    public ExperimentStatisticsResource getExperimentStatistics(String gatewayId, Timestamp fromTime, Timestamp toTime) throws RegistryException {
+        ExperimentStatisticsResource experimentStatisticsResource = new ExperimentStatisticsResource();
+        List<ExperimentSummaryResource> allExperiments = getExperimentStatisticsForState(null, gatewayId, fromTime, toTime);
+        experimentStatisticsResource.setAllExperimentCount(allExperiments.size());
+        experimentStatisticsResource.setAllExperiments(allExperiments);
+
+        List<ExperimentSummaryResource> completedExperiments = getExperimentStatisticsForState(ExperimentState.COMPLETED, gatewayId, fromTime, toTime);
+        experimentStatisticsResource.setCompletedExperimentCount(completedExperiments.size());
+        experimentStatisticsResource.setCompletedExperiments(completedExperiments);
+
+        List<ExperimentSummaryResource> failedExperiments = getExperimentStatisticsForState(ExperimentState.FAILED, gatewayId, fromTime, toTime);
+        experimentStatisticsResource.setFailedExperimentCount(failedExperiments.size());
+        experimentStatisticsResource.setFailedExperiments(failedExperiments);
+
+        List<ExperimentSummaryResource> cancelledExperiments = getExperimentStatisticsForState(ExperimentState.CANCELED, gatewayId, fromTime, toTime);
+        experimentStatisticsResource.setCancelledExperimentCount(cancelledExperiments.size());
+        experimentStatisticsResource.setCancelledExperiments(cancelledExperiments);
+
+        return experimentStatisticsResource;
+    }
+
+    private List<ExperimentSummaryResource> getExperimentStatisticsForState(
+            ExperimentState expState, String gatewayId, Timestamp fromTime, Timestamp toTime) throws RegistryException {
+        EntityManager em = null;
+        List<ExperimentSummaryResource> result = new ArrayList();
+        try {
+            String query = "SELECT e, s FROM Experiment e " +
+                    ",Status s WHERE e.expId=s.expId AND " +
+                    "s.statusType='" + StatusType.EXPERIMENT + "' AND ";
+            if (expState != null) {
+                query += "s.state='" + expState.toString() + "' AND ";
+            }
+            query += "e.creationTime > '" + fromTime + "' " + "AND e.creationTime <'" + toTime + "' AND ";
+            query += "e." + ExperimentConstants.GATEWAY_ID + "= '" + gatewayId + "'";
+
+            em = ExpCatResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            Query q = em.createQuery(query);
+            OpenJPAQuery kq = OpenJPAPersistence.cast(q);
+            JDBCFetchPlan fetch = (JDBCFetchPlan) kq.getFetchPlan();
+            fetch.setEagerFetchMode(FetchMode.JOIN);
+
+            List resultList = q.getResultList();
+            for (Object o : resultList) {
+                Experiment experiment = (Experiment) ((Object[]) o)[0];
+                Status experimentStatus = (Status) ((Object[]) o)[1];
+                experiment.setExperimentStatus(experimentStatus);
+                ExperimentSummaryResource experimentSummaryResource =
+                        (ExperimentSummaryResource) Utils.getResource(ResourceType.EXPERIMENT_SUMMARY, experiment);
+                result.add(experimentSummaryResource);
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()) {
                     em.getTransaction().rollback();
                 }
                 em.close();
@@ -687,10 +757,9 @@ public class WorkerResource extends AbstractExpCatResource {
     }
 
     /**
-     *
      * @return list of experiments for the user
      */
-    public List<ExperimentResource> getExperimentsByCaching(String user) throws RegistryException{
+    public List<ExperimentResource> getExperimentsByCaching(String user) throws RegistryException {
         List<ExperimentResource> result = new ArrayList<ExperimentResource>();
         EntityManager em = null;
         try {
@@ -714,7 +783,7 @@ public class WorkerResource extends AbstractExpCatResource {
             throw new RegistryException(e);
         } finally {
             if (em != null && em.isOpen()) {
-                if (em.getTransaction().isActive()){
+                if (em.getTransaction().isActive()) {
                     em.getTransaction().rollback();
                 }
                 em.close();

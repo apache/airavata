@@ -544,6 +544,9 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                         result.add(ex);
                     }
                     return result;
+                case EXPERIMENT_STATISTICS:
+                    result.add(experimentRegistry.getExperimentStatistics(filters));
+                    return result;
                 default:
                     logger.error("Unsupported data type...", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();

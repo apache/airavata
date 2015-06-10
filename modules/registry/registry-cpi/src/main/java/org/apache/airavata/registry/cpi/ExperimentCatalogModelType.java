@@ -26,6 +26,7 @@ public enum ExperimentCatalogModelType {
     PROJECT,
     GATEWAY,
     EXPERIMENT,
+    EXPERIMENT_STATISTICS,
     EXPERIMENT_INPUT,
     EXPERIMENT_OUTPUT,
     EXPERIMENT_STATUS,

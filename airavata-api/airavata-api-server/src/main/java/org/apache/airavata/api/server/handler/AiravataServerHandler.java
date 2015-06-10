@@ -1003,6 +1003,42 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     /**
+     * Get Experiment execution statisitics by sending the gateway id and the time period interested in.
+     * This method will retrun an ExperimentStatistics object which contains the number of successfully
+     * completed experiments, failed experiments etc.
+     * @param gatewayId
+     * @param fromTime
+     * @param toTime
+     * @return
+     * @throws InvalidRequestException
+     * @throws AiravataClientException
+     * @throws AiravataSystemException
+     * @throws TException
+     */
+    @Override
+    public ExperimentStatistics getExperimentStatistics(String gatewayId, long fromTime, long toTime) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        if (!isGatewayExist(gatewayId)){
+            logger.error("Gateway does not exist.Please provide a valid gateway id...");
+            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+        }
+        try {
+            Map<String, String> filters = new HashMap();
+            filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);
+            filters.put(Constants.FieldConstants.ExperimentConstants.FROM_DATE, fromTime+"");
+            filters.put(Constants.FieldConstants.ExperimentConstants.TO_DATE, toTime+"");
+
+            List<Object> results = experimentCatalog.search(ExperimentCatalogModelType.EXPERIMENT_STATISTICS, filters);
+            return (ExperimentStatistics) results.get(0);
+        }catch (Exception e) {
+            logger.error("Error while retrieving experiments", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving experiments. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
      * Get all Experiments within a Project
      *
      * @param projectId

@@ -409,3 +409,14 @@ struct ExperimentSummary {
     7: optional string applicationId,
     8: optional ExperimentStatus experimentStatus,
 }
+
+struct ExperimentStatistics {
+    1: required i32 allExperimentCount,
+    2: required i32 completedExperimentCount,
+    3: optional i32 cancelledExperimentCount,
+    4: required i32 failedExperimentCount,
+    5: required list<ExperimentSummary> allExperiments,
+    6: optional list<ExperimentSummary> completedExperiments,
+    7: optional list<ExperimentSummary> failedExperiments,
+    8: optional list<ExperimentSummary> cancelledExperiments,
+}
