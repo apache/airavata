@@ -525,6 +525,21 @@ service Airavata {
                         2: airavataErrors.AiravataClientException ace,
                         3: airavataErrors.AiravataSystemException ase)
 
+    /**
+     * Get Experiment Statisitics for the given gateway for a specific time period
+     * @param gatewayId
+     *       Identifier of the requested gateway
+     * @param fromTime
+     *       Starting date time
+     * @param toTime
+     *       Ending data time
+     **/
+    experimentModel.ExperimentStatistics getExperimentStatistics(1: required string gatewayId,
+                            2: required i64 fromTime, 3: required i64 toTime)
+                throws (1: airavataErrors.InvalidRequestException ire,
+                        2: airavataErrors.AiravataClientException ace,
+                        3: airavataErrors.AiravataSystemException ase)
+
    /**
     * Get all Experiments within a Project
     *

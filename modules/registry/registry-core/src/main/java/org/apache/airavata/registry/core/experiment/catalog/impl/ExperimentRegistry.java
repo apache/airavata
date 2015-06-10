@@ -2940,6 +2940,57 @@ public class ExperimentRegistry {
         return null;
     }
 
+    /**
+     * Method to get experiment execution statistics for a specific time period
+     * @param filters
+     * @return
+     * @throws RegistryException
+     */
+    public ExperimentStatistics getExperimentStatistics(Map<String,String> filters) throws RegistryException {
+        try {
+            ExperimentStatistics experimentStatistics = new ExperimentStatistics();
+            ExperimentStatisticsResource experimentStatisticsResource = workerResource.getExperimentStatistics(
+                    filters.get(Constants.FieldConstants.ExperimentConstants.GATEWAY),
+                    new Timestamp(Long.parseLong(filters.get(Constants.FieldConstants.ExperimentConstants.FROM_DATE))),
+                    new Timestamp(Long.parseLong(filters.get(Constants.FieldConstants.ExperimentConstants.TO_DATE)))
+            );
+
+            experimentStatistics.setAllExperimentCount(experimentStatisticsResource.getAllExperimentCount());
+            experimentStatistics.setCompletedExperimentCount(experimentStatisticsResource.getCompletedExperimentCount());
+            experimentStatistics.setFailedExperimentCount(experimentStatisticsResource.getFailedExperimentCount());
+            experimentStatistics.setCancelledExperimentCount(experimentStatisticsResource.getCancelledExperimentCount());
+
+            ArrayList<ExperimentSummary> experimentSummaries = new ArrayList();
+            for (ExperimentSummaryResource ex : experimentStatisticsResource.getAllExperiments()) {
+                experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
+            }
+            experimentStatistics.setAllExperiments(experimentSummaries);
+
+            experimentSummaries = new ArrayList();
+            for (ExperimentSummaryResource ex : experimentStatisticsResource.getCompletedExperiments()) {
+                experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
+            }
+            experimentStatistics.setCompletedExperiments(experimentSummaries);
+
+            experimentSummaries = new ArrayList();
+            for (ExperimentSummaryResource ex : experimentStatisticsResource.getFailedExperiments()) {
+                experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
+            }
+            experimentStatistics.setFailedExperiments(experimentSummaries);
+
+            experimentSummaries = new ArrayList();
+            for (ExperimentSummaryResource ex : experimentStatisticsResource.getCancelledExperiments()) {
+                experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
+            }
+            experimentStatistics.setCancelledExperiments(experimentSummaries);
+
+            return experimentStatistics;
+        } catch (RegistryException e) {
+            logger.error("Error while retrieving experiment statistics from registry", e);
+            throw new RegistryException(e);
+        }
+    }
+
     public boolean isValidStatusTransition(ExperimentState oldState, ExperimentState nextState) {
         if (nextState == null) {
             return false;
