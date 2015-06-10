@@ -331,6 +331,7 @@ public class GfacServerHandler implements GfacService.Iface {
                     } catch (Exception e) {
                         logger.error(e.getMessage(), e);
                         String experimentPath = experimentNode + File.separator + nodeName + File.separator + event.getExperimentId();
+                        logger.info("GFacServerHandler Launchtask - Acknowledging delivery Tag - " + message.getDeliveryTag());
                         rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
                         try {
                             if (curatorClient.checkExists().forPath(experimentPath + AiravataZKUtils.DELIVERY_TAG_POSTFIX) != null) {
@@ -377,6 +378,7 @@ public class GfacServerHandler implements GfacService.Iface {
                                 if (!rabbitMQTaskLaunchConsumer.isOpen()) {
                                     rabbitMQTaskLaunchConsumer.reconnect();
                                 }
+                                logger.info("GFacServerHandler TerminateTask - Acknowledging cancel delivery Tag - " + message.getDeliveryTag());
                                 rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
                             }
                         } catch (Exception e) {

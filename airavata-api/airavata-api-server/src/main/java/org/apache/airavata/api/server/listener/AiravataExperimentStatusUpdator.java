@@ -140,6 +140,7 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
                 }
                 try {
                     if (consumer.isOpen()) {
+                        logger.info("Clean up task - Acknowledging delivery Tag - " + deliveryTag);
                         consumer.sendAck(deliveryTag);
                     }
                 } catch (Exception e) {
@@ -170,6 +171,7 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
             }
             try {
                 if (consumer.isOpen()) {
+                    logger.info("Clean up task - Acknowledging cancel delivery Tag - " + deliveryTag);
                     consumer.sendAck(cancelDT);
                 }
             } catch (Exception e) {
