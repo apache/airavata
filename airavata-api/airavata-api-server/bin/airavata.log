@@ -1,0 +1,76 @@
+2015-06-04 19:20:26,441 [main] INFO  org.apache.airavata.common.utils.ApplicationSettings  - Settings loaded from jar:file:/Users/Doug/Code/gsoc/airavata/airavata/modules/configuration/server/target/airavata-server-configuration-0.16-SNAPSHOT.jar!/airavata-server.properties
+2015-06-04 19:20:27,724 [main] INFO  org.apache.airavata.api.server.util.DatabaseCreator  - Script file not found at database_scripts/registry-derby.sql. Uses default database script file
+2015-06-04 19:20:28,517 [main] INFO  org.apache.airavata.api.server.util.RegistryInitUtil  - New Database created for Registry
+2015-06-04 19:20:31,123 [main] INFO  org.apache.airavata.messaging.core.impl.RabbitMQProducer  - connection failed to rabbitmq: null for airavata_rabbitmq_exchange
+2015-06-04 19:20:31,123 [main] ERROR org.apache.airavata.messaging.core.impl.RabbitMQProducer  - could not open channel for exchange airavata_rabbitmq_exchange
+2015-06-04 19:20:31,123 [main] ERROR org.apache.airavata.messaging.core.PublisherFactory  - Failed to load the publisher from the publisher class property: org.apache.airavata.messaging.core.impl.RabbitMQStatusPublisher
+java.lang.Exception: could not open channel for exchange airavata_rabbitmq_exchange
+	at org.apache.airavata.messaging.core.impl.RabbitMQProducer.open(RabbitMQProducer.java:123)
+	at org.apache.airavata.messaging.core.impl.RabbitMQStatusPublisher.<init>(RabbitMQStatusPublisher.java:56)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:408)
+	at java.lang.Class.newInstance(Class.java:438)
+	at org.apache.airavata.messaging.core.PublisherFactory.createActivityPublisher(PublisherFactory.java:43)
+	at org.apache.airavata.api.server.handler.AiravataServerHandler.<init>(AiravataServerHandler.java:79)
+	at org.apache.airavata.api.server.handler.AiravataServerHandlerTest.setupBeforeClass(AiravataServerHandlerTest.java:52)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:483)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:24)
+	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:283)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:173)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:153)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:128)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:203)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:155)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:103)
+Caused by: java.lang.NullPointerException
+	at org.apache.airavata.messaging.core.impl.RabbitMQProducer.open(RabbitMQProducer.java:111)
+	... 26 more
+2015-06-04 19:20:31,127 [main] ERROR org.apache.airavata.api.server.handler.AiravataServerHandler  - Error occured while reading airavata-server properties..
+org.apache.airavata.common.exception.AiravataException: Failed to load the publisher from the publisher class property: org.apache.airavata.messaging.core.impl.RabbitMQStatusPublisher
+	at org.apache.airavata.messaging.core.PublisherFactory.createActivityPublisher(PublisherFactory.java:47)
+	at org.apache.airavata.api.server.handler.AiravataServerHandler.<init>(AiravataServerHandler.java:79)
+	at org.apache.airavata.api.server.handler.AiravataServerHandlerTest.setupBeforeClass(AiravataServerHandlerTest.java:52)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:483)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:24)
+	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:27)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:283)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:173)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:153)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:128)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:203)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:155)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:103)
+Caused by: java.lang.Exception: could not open channel for exchange airavata_rabbitmq_exchange
+	at org.apache.airavata.messaging.core.impl.RabbitMQProducer.open(RabbitMQProducer.java:123)
+	at org.apache.airavata.messaging.core.impl.RabbitMQStatusPublisher.<init>(RabbitMQStatusPublisher.java:56)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:408)
+	at java.lang.Class.newInstance(Class.java:438)
+	at org.apache.airavata.messaging.core.PublisherFactory.createActivityPublisher(PublisherFactory.java:43)
+	... 19 more
+Caused by: java.lang.NullPointerException
+	at org.apache.airavata.messaging.core.impl.RabbitMQProducer.open(RabbitMQProducer.java:111)
+	... 26 more
+2015-06-04 19:20:31,689 [main] INFO  org.apache.airavata.api.server.handler.AiravataServerHandler  - Id:TestExperiment1433460031245_5a9f5ca3-fc7e-4937-a1ff-b94ae4292168 : Created new experiment with experiment name TestExperiment1433460031245
+2015-06-04 19:20:32,230 [main] INFO  org.apache.airavata.api.server.handler.AiravataServerHandler  - Id:TestExperiment1433460031245_5a9f5ca3-fc7e-4937-a1ff-b94ae4292168 : Successfully updated experiment NewExperimentName1433460031245 
+2015-06-04 19:20:32,274 [main] INFO  org.apache.airavata.api.server.handler.AiravataServerHandler  - Id:TestExperiment21433460031245_29ead357-51a0-4cbe-9aa8-d02216056a13 : Created new experiment with experiment name TestExperiment21433460031245
+2015-06-04 19:20:32,315 [main] INFO  org.apache.airavata.api.server.handler.AiravataServerHandler  - Id:TestExperiment31433460031245_6d5b78f6-0b16-4ada-ad0f-600353ad7b8a : Created new experiment with experiment name TestExperiment31433460031245

@@ -947,7 +947,7 @@ class DataMovementInterface {
 void swap(DataMovementInterface &a, DataMovementInterface &b);
 
 typedef struct _ComputeResourceDescription__isset {
-  _ComputeResourceDescription__isset() : hostAliases(false), ipAddresses(false), resourceDescription(false), batchQueues(false), fileSystems(false), jobSubmissionInterfaces(false), dataMovementInterfaces(false), maxMemoryPerNode(false) {}
+  _ComputeResourceDescription__isset() : hostAliases(false), ipAddresses(false), resourceDescription(false), batchQueues(false), fileSystems(false), jobSubmissionInterfaces(false), dataMovementInterfaces(false), maxMemoryPerNode(false), active(true) {}
   bool hostAliases;
   bool ipAddresses;
   bool resourceDescription;
@@ -956,15 +956,16 @@ typedef struct _ComputeResourceDescription__isset {
   bool jobSubmissionInterfaces;
   bool dataMovementInterfaces;
   bool maxMemoryPerNode;
+  bool active;
 } _ComputeResourceDescription__isset;
 
 class ComputeResourceDescription {
  public:
 
-  static const char* ascii_fingerprint; // = "3CD4212965217787DCD6081F1744069F";
-  static const uint8_t binary_fingerprint[16]; // = {0x3C,0xD4,0x21,0x29,0x65,0x21,0x77,0x87,0xDC,0xD6,0x08,0x1F,0x17,0x44,0x06,0x9F};
+  static const char* ascii_fingerprint; // = "28D04BA1A4ECF552B2DD0DDC56EDF79D";
+  static const uint8_t binary_fingerprint[16]; // = {0x28,0xD0,0x4B,0xA1,0xA4,0xEC,0xF5,0x52,0xB2,0xDD,0x0D,0xDC,0x56,0xED,0xF7,0x9D};
 
-  ComputeResourceDescription() : computeResourceId("DO_NOT_SET_AT_CLIENTS"), hostName(), resourceDescription(), maxMemoryPerNode(0) {
+  ComputeResourceDescription() : computeResourceId("DO_NOT_SET_AT_CLIENTS"), hostName(), resourceDescription(), maxMemoryPerNode(0), active(true) {
   }
 
   virtual ~ComputeResourceDescription() throw() {}
@@ -979,6 +980,7 @@ class ComputeResourceDescription {
   std::vector<JobSubmissionInterface>  jobSubmissionInterfaces;
   std::vector<DataMovementInterface>  dataMovementInterfaces;
   int32_t maxMemoryPerNode;
+  bool active;
 
   _ComputeResourceDescription__isset __isset;
 
@@ -1030,6 +1032,11 @@ class ComputeResourceDescription {
     __isset.maxMemoryPerNode = true;
   }
 
+  void __set_active(const bool val) {
+    active = val;
+    __isset.active = true;
+  }
+
   bool operator == (const ComputeResourceDescription & rhs) const
   {
     if (!(computeResourceId == rhs.computeResourceId))
@@ -1067,6 +1074,10 @@ class ComputeResourceDescription {
     if (__isset.maxMemoryPerNode != rhs.__isset.maxMemoryPerNode)
       return false;
     else if (__isset.maxMemoryPerNode && !(maxMemoryPerNode == rhs.maxMemoryPerNode))
+      return false;
+    if (__isset.active != rhs.__isset.active)
+      return false;
+    else if (__isset.active && !(active == rhs.active))
       return false;
     return true;
   }

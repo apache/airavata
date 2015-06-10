@@ -55,6 +55,9 @@ public class ComputeResource implements Serializable {
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
 
+    @Column(name = "ACTIVE")
+    private boolean active;
+
     public Timestamp getCreationTime() {
         return creationTime;
     }
@@ -102,4 +105,8 @@ public class ComputeResource implements Serializable {
     public void setMaxMemoryPerNode(int maxMemoryPerNode) {
         this.maxMemoryPerNode = maxMemoryPerNode;
     }
+
+    public boolean getActive() { return active;}
+
+    public void setActive(boolean active) { this.active=active;}
 }

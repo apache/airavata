@@ -46,8 +46,8 @@ public class RegisterSampleApplications {
 //    public static final int THRIFT_SERVER_PORT = 9930;
     public static final int THRIFT_SERVER_PORT = 8930;
     private final static Logger logger = LoggerFactory.getLogger(RegisterSampleApplications.class);
-//    private static final String DEFAULT_GATEWAY = "default";
-    private static final String DEFAULT_GATEWAY = "php_reference_gateway";
+    private static final String DEFAULT_GATEWAY = "default";
+    //private static final String DEFAULT_GATEWAY = "php_reference_gateway";
     private static Airavata.Client airavataClient;
 
     //Host Id's

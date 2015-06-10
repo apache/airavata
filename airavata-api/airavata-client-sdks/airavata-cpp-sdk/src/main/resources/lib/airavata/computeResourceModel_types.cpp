@@ -1624,8 +1624,8 @@ void swap(DataMovementInterface &a, DataMovementInterface &b) {
   swap(a.priorityOrder, b.priorityOrder);
 }
 
-const char* ComputeResourceDescription::ascii_fingerprint = "3CD4212965217787DCD6081F1744069F";
-const uint8_t ComputeResourceDescription::binary_fingerprint[16] = {0x3C,0xD4,0x21,0x29,0x65,0x21,0x77,0x87,0xDC,0xD6,0x08,0x1F,0x17,0x44,0x06,0x9F};
+const char* ComputeResourceDescription::ascii_fingerprint = "28D04BA1A4ECF552B2DD0DDC56EDF79D";
+const uint8_t ComputeResourceDescription::binary_fingerprint[16] = {0x28,0xD0,0x4B,0xA1,0xA4,0xEC,0xF5,0x52,0xB2,0xDD,0x0D,0xDC,0x56,0xED,0xF7,0x9D};
 
 uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -1806,6 +1806,14 @@ uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol*
           xfer += iprot->skip(ftype);
         }
         break;
+      case 11:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->active);
+          this->__isset.active = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -1923,6 +1931,11 @@ uint32_t ComputeResourceDescription::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeI32(this->maxMemoryPerNode);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.active) {
+    xfer += oprot->writeFieldBegin("active", ::apache::thrift::protocol::T_BOOL, 11);
+    xfer += oprot->writeBool(this->active);
+    xfer += oprot->writeFieldEnd();
+  }
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   return xfer;
@@ -1940,6 +1953,7 @@ void swap(ComputeResourceDescription &a, ComputeResourceDescription &b) {
   swap(a.jobSubmissionInterfaces, b.jobSubmissionInterfaces);
   swap(a.dataMovementInterfaces, b.dataMovementInterfaces);
   swap(a.maxMemoryPerNode, b.maxMemoryPerNode);
+  swap(a.active, b.active);
   swap(a.__isset, b.__isset);
 }
 

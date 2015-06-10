@@ -1757,6 +1757,7 @@ class ComputeResourceDescription:
    - jobSubmissionInterfaces
    - dataMovementInterfaces
    - maxMemoryPerNode
+   - active
   """
 
   thrift_spec = (
@@ -1771,9 +1772,10 @@ class ComputeResourceDescription:
     (8, TType.LIST, 'jobSubmissionInterfaces', (TType.STRUCT,(JobSubmissionInterface, JobSubmissionInterface.thrift_spec)), None, ), # 8
     (9, TType.LIST, 'dataMovementInterfaces', (TType.STRUCT,(DataMovementInterface, DataMovementInterface.thrift_spec)), None, ), # 9
     (10, TType.I32, 'maxMemoryPerNode', None, None, ), # 10
+    (11, TType.BOOL, 'active', None, True, ), # 11
   )
 
-  def __init__(self, computeResourceId=thrift_spec[1][4], hostName=None, hostAliases=None, ipAddresses=None, resourceDescription=None, batchQueues=None, fileSystems=None, jobSubmissionInterfaces=None, dataMovementInterfaces=None, maxMemoryPerNode=None,):
+  def __init__(self, computeResourceId=thrift_spec[1][4], hostName=None, hostAliases=None, ipAddresses=None, resourceDescription=None, batchQueues=None, fileSystems=None, jobSubmissionInterfaces=None, dataMovementInterfaces=None, maxMemoryPerNode=None, active=thrift_spec[11][4],):
     self.computeResourceId = computeResourceId
     self.hostName = hostName
     self.hostAliases = hostAliases
@@ -1784,6 +1786,7 @@ class ComputeResourceDescription:
     self.jobSubmissionInterfaces = jobSubmissionInterfaces
     self.dataMovementInterfaces = dataMovementInterfaces
     self.maxMemoryPerNode = maxMemoryPerNode
+    self.active = active
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -1878,6 +1881,11 @@ class ComputeResourceDescription:
           self.maxMemoryPerNode = iprot.readI32();
         else:
           iprot.skip(ftype)
+      elif fid == 11:
+        if ftype == TType.BOOL:
+          self.active = iprot.readBool();
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -1946,6 +1954,10 @@ class ComputeResourceDescription:
     if self.maxMemoryPerNode is not None:
       oprot.writeFieldBegin('maxMemoryPerNode', TType.I32, 10)
       oprot.writeI32(self.maxMemoryPerNode)
+      oprot.writeFieldEnd()
+    if self.active is not None:
+      oprot.writeFieldBegin('active', TType.BOOL, 11)
+      oprot.writeBool(self.active)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()

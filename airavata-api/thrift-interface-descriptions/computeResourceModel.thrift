@@ -442,4 +442,5 @@ struct ComputeResourceDescription {
     8: optional list<JobSubmissionInterface> jobSubmissionInterfaces,
     9: optional list<DataMovementInterface> dataMovementInterfaces,
     10: optional i32 maxMemoryPerNode
+    11: optional bool active = 1;
 }

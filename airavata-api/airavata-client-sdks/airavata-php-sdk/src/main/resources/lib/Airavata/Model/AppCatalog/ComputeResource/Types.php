@@ -1898,6 +1898,7 @@ class ComputeResourceDescription {
   public $jobSubmissionInterfaces = null;
   public $dataMovementInterfaces = null;
   public $maxMemoryPerNode = null;
+  public $active = true;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -1973,6 +1974,10 @@ class ComputeResourceDescription {
           'var' => 'maxMemoryPerNode',
           'type' => TType::I32,
           ),
+        11 => array(
+          'var' => 'active',
+          'type' => TType::BOOL,
+          ),
         );
     }
     if (is_array($vals)) {
@@ -2005,6 +2010,9 @@ class ComputeResourceDescription {
       }
       if (isset($vals['maxMemoryPerNode'])) {
         $this->maxMemoryPerNode = $vals['maxMemoryPerNode'];
+      }
+      if (isset($vals['active'])) {
+        $this->active = $vals['active'];
       }
     }
   }
@@ -2164,6 +2172,13 @@ class ComputeResourceDescription {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 11:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->active);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -2298,6 +2313,11 @@ class ComputeResourceDescription {
     if ($this->maxMemoryPerNode !== null) {
       $xfer += $output->writeFieldBegin('maxMemoryPerNode', TType::I32, 10);
       $xfer += $output->writeI32($this->maxMemoryPerNode);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->active !== null) {
+      $xfer += $output->writeFieldBegin('active', TType::BOOL, 11);
+      $xfer += $output->writeBool($this->active);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

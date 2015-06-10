@@ -16,6 +16,8 @@
 *.ipr
 *.iws
 *.iml
+*.pyc
+.DS_store
 *target
 ## Additional for IntelliJ
 out/
