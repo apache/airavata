@@ -252,9 +252,10 @@ public class GFacUtils {
 			status.setTimeOfStateChange(Calendar.getInstance()
 					.getTimeInMillis());
 			details.setJobStatus(status);
+            CompositeIdentifier identifier = new CompositeIdentifier(jobExecutionContext.getTaskData().getTaskID(), details.getJobID());
 			registry.update(
 					org.apache.airavata.registry.cpi.RegistryModelType.JOB_DETAIL,
-					details, details.getJobID());
+					details, identifier);
 		} catch (Exception e) {
 			throw new GFacException("Error persisting job status"
 					+ e.getLocalizedMessage(), e);
