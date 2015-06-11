@@ -22,20 +22,13 @@
 package org.apache.airavata.xbaya.core.generators;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Map;
-import java.util.Set;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
-import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.WSDLUtil;
-import org.apache.airavata.workflow.model.component.ComponentException;
-import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaConstants;
 import org.apache.airavata.xbaya.XBayaEngine;
@@ -44,10 +37,6 @@ import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.gpel.model.GpelProcess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xmlpull.infoset.XmlElement;
-
-import xsul5.XmlConstants;
-import xsul5.wsdl.WsdlDefinitions;
 
 public class ODEScriptFiler {
 

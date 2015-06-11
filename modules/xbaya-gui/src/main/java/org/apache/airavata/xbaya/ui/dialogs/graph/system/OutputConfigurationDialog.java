@@ -36,7 +36,6 @@ import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextArea;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
-import org.xmlpull.infoset.XmlElement;
 
 public class OutputConfigurationDialog {
 

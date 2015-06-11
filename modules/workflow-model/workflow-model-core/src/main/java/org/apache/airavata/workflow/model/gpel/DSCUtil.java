@@ -23,23 +23,13 @@ package org.apache.airavata.workflow.model.gpel;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.exception.UtilsException;
 import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
-import org.apache.airavata.workflow.model.gpel.script.BPELScript;
-import org.apache.airavata.workflow.model.graph.Graph;
-import org.apache.airavata.workflow.model.graph.util.GraphUtil;
-import org.apache.airavata.workflow.model.graph.ws.WSNode;
-import org.apache.airavata.workflow.model.wf.Workflow;
 
 //import xsul5.wsdl.WsdlDefinitions;
 //import xsul5.wsdl.WsdlPortType;

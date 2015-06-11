@@ -25,8 +25,6 @@ import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerTy
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 public class EmailMonitorFactory {
 

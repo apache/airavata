@@ -23,8 +23,6 @@ package org.apache.airavata.workflow.model.graph.system;
 
 import java.util.List;
 
-import javax.xml.namespace.QName;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.airavata.common.utils.WSConstants;

@@ -27,14 +27,11 @@ import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
-import org.apache.airavata.model.messaging.event.Message;
-import org.apache.airavata.model.messaging.event.MessageLevel;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.messaging.event.TaskIdentifier;
 import org.apache.airavata.model.messaging.event.TaskStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.WorkflowIdentifier;
 import org.apache.airavata.model.messaging.event.WorkflowNodeStatusChangeEvent;
-import org.apache.thrift.TException;
 
 import java.util.Date;
 

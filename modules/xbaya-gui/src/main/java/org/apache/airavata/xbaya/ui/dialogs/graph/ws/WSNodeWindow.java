@@ -37,8 +37,6 @@ import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextArea;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
 
-import xsul5.wsdl.WsdlDefinitions;
-
 public class WSNodeWindow {
 
     private XBayaEngine engine;

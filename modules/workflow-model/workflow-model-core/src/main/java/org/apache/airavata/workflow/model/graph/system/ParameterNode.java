@@ -24,8 +24,6 @@ package org.apache.airavata.workflow.model.graph.system;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.namespace.QName;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.airavata.common.exception.UtilsException;

@@ -23,7 +23,6 @@
 
 package org.apache.airavata.security.userstore;
 
-import junit.framework.TestCase;
 import org.apache.airavata.common.utils.DatabaseTestCases;
 import org.apache.airavata.common.utils.DerbyUtil;
 import org.junit.*;
@@ -32,7 +31,6 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.File;
 import java.io.InputStream;
 
 /**

@@ -24,7 +24,6 @@ package org.apache.airavata.workflow.model.component.ws;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +33,6 @@ import org.apache.airavata.workflow.model.component.ComponentReference;
 import org.apache.airavata.workflow.model.component.ComponentRegistry;
 import org.apache.airavata.workflow.model.component.ComponentRegistryException;
 import org.apache.airavata.workflow.model.component.system.SubWorkflowComponent;
-import org.apache.airavata.workflow.model.component.url.URLComponentReference;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

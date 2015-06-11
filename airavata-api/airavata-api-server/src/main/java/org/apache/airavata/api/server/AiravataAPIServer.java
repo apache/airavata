@@ -21,10 +21,7 @@
 
 package org.apache.airavata.api.server;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.Random;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.server.handler.AiravataServerHandler;
@@ -43,8 +40,6 @@ import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
-import org.apache.zookeeper.*;
-import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
