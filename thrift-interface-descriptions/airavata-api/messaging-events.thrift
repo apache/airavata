@@ -18,8 +18,8 @@
  *
  */
 
-include "experimentModel.thrift"
-include "applicationInterfaceModel.thrift"
+include "experiment-model.thrift"
+include "application-interface-model.thrift"
 
 namespace java org.apache.airavata.model.messaging.event
 namespace php Airavata.Model.Messaging.Event
