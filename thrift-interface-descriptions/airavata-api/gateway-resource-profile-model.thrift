@@ -23,7 +23,7 @@ namespace php Airavata.Model.AppCatalog.GatewayProfile
 namespace cpp apache.airavata.model.appcatalog.gatewayprofile
 namespace py apache.airavata.model.appcatalog.gatewayprofile
 
-include "computeResourceModel.thrift"
+include "compute-resource-model.thrift"
 
 /**
  * Gateway specific preferences for a Computer Resource

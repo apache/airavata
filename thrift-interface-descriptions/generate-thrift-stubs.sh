@@ -56,7 +56,7 @@ if [ "$VERSION" -ne 1 ] ; then
 fi
 
 # Global Constants used across the script
-THRIFT_IDL_DIR='thrift-interface-descriptions'
+AIRAVATA_API_IDL_DIR='airavata-api'
 BASE_TARGET_DIR='target'
 DATAMODEL_SRC_DIR='../airavata-api/airavata-data-models/src/main/java'
 JAVA_API_SDK_DIR='../airavata-api/airavata-api-stubs/src/main/java'
@@ -85,11 +85,6 @@ add_license_header() {
 
     # Fetch the generated code directory passed as the argument
     GENERATED_CODE_DIR=$1
-
-    # For all generated thrift code, add the suppress all warnings annotation
-    #  NOTE: In order to save the original file as a backup, use sed -i.orig in place of sed -i ''
-    find ${GENERATED_CODE_DIR} -name '*.java' -print0 | xargs -0 sed -i '' -e 's/public class /@SuppressWarnings("all") public class /'
-    find ${GENERATED_CODE_DIR} -name '*.java' -print0 | xargs -0 sed -i '' -e 's/public enum /@SuppressWarnings("all") public enum /'
 
     # For each source file within the generated directory, add the ASF V2 LICENSE header
     FILE_SUFFIXES=(.php .java .h .cpp)
@@ -151,12 +146,12 @@ generate_java_stubs() {
 
     # Generate the Airavata Data Model using thrift Java Beans generator. This will take generate the classes in bean style
     #   with members being private and setters returning voids.
-    #   The airavataDataModel.thrift includes rest of data models.
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans ${THRIFT_IDL_DIR}/airavataDataModel.thrift || fail unable to generate java bean thrift classes on base data model
+    #   The airavata-data-models.thrift includes rest of data models.
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans ${AIRAVATA_API_IDL_DIR}/airavata-data-models.thrift || fail unable to generate java bean thrift classes on base data model
 
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans ${THRIFT_IDL_DIR}/appCatalogModels.thrift || fail unable to generate java bean thrift classes on app catalog data models
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans ${AIRAVATA_API_IDL_DIR}/app-catalog-models.thrift || fail unable to generate java bean thrift classes on app catalog data models
 
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans ${THRIFT_IDL_DIR}/workflowDataModel.thrift || fail unable to generate java bean thrift classes on app workflow data models
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans ${AIRAVATA_API_IDL_DIR}/workflow-data-model.thrift || fail unable to generate java bean thrift classes on app workflow data models
 
     # For the generated java beans add the ASF V2 License header
     add_license_header $JAVA_BEAN_GEN_DIR
@@ -176,10 +171,10 @@ generate_java_stubs() {
     rm -rf ${JAVA_GEN_DIR}
 
     # Using thrift Java generator, generate the java classes based on Airavata API. This
-    #   The airavataAPI.thrift includes rest of data models.
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java ${THRIFT_IDL_DIR}/airavataAPI.thrift || fail unable to generate java thrift classes on AiravataAPI
+    #   The airavata-api.thrift includes rest of data models.
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen java ${AIRAVATA_API_IDL_DIR}/airavata-api.thrift || fail unable to generate java thrift classes on AiravataAPI
 
-    #$THRIFT_EXEC ${THRIFT_ARGS} --gen java ${THRIFT_IDL_DIR}/workflowAPI.thrift || fail unable to generate java thrift classes on WorkflowAPI
+    #$THRIFT_EXEC ${THRIFT_ARGS} --gen java ${AIRAVATA_API_IDL_DIR}/workflow-api.thrift || fail unable to generate java thrift classes on WorkflowAPI
 
     # For the generated java classes add the ASF V2 License header
     add_license_header $JAVA_GEN_DIR
@@ -204,10 +199,10 @@ generate_php_stubs() {
     rm -rf ${PHP_GEN_DIR}
 
     # Using thrift Java generator, generate the java classes based on Airavata API. This
-    #   The airavataAPI.thrift includes rest of data models.
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${THRIFT_IDL_DIR}/airavataAPI.thrift || fail unable to generate PHP thrift classes
+    #   The airavata-api.thrift includes rest of data models.
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${AIRAVATA_API_IDL_DIR}/airavata-api.thrift || fail unable to generate PHP thrift classes
 
-    #$THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${THRIFT_IDL_DIR}/workflowAPI.thrift || fail unable to generate PHP thrift classes for WorkflowAPI
+    #$THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${AIRAVATA_API_IDL_DIR}/workflow-api.thrift || fail unable to generate PHP thrift classes for WorkflowAPI
     # For the generated java classes add the ASF V2 License header
     ## TODO Write PHP license parser
 
@@ -230,10 +225,10 @@ generate_cpp_stubs() {
     rm -rf ${CPP_GEN_DIR}
 
     # Using thrift Java generator, generate the java classes based on Airavata API. This
-    #   The airavataAPI.thrift includes rest of data models.
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen cpp ${THRIFT_IDL_DIR}/airavataAPI.thrift || fail unable to generate C++ thrift classes
+    #   The airavata-api.thrift includes rest of data models.
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen cpp ${AIRAVATA_API_IDL_DIR}/airavata-api.thrift || fail unable to generate C++ thrift classes
 
-    #$THRIFT_EXEC ${THRIFT_ARGS} --gen cpp ${THRIFT_IDL_DIR}/workflowAPI.thrift || fail unable to generate C++ thrift classes for WorkflowAPI
+    #$THRIFT_EXEC ${THRIFT_ARGS} --gen cpp ${AIRAVATA_API_IDL_DIR}/workflow-api.thrift || fail unable to generate C++ thrift classes for WorkflowAPI
     # For the generated CPP classes add the ASF V2 License header
     add_license_header $CPP_GEN_DIR
 
@@ -256,8 +251,8 @@ generate_python_stubs() {
     rm -rf ${PYTHON_GEN_DIR}
 
     # Using thrift Python generator, generate the python classes based on Airavata API. This
-    #   The airavataAPI.thrift includes rest of data models.
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen py ${THRIFT_IDL_DIR}/airavataAPI.thrift || fail unable to generate Python thrift classes
+    #   The airavata-api.thrift includes rest of data models.
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen py ${AIRAVATA_API_IDL_DIR}/airavata-api.thrift || fail unable to generate Python thrift classes
 
     # For the generated CPP classes add the ASF V2 License header
     #add_license_header #PYTHON_GEN_DIR
