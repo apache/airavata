@@ -18,21 +18,7 @@
  *
  */
 
-include "workspaceModel.thrift"
-include "airavataErrors.thrift"
-include "messagingEvents.thrift"
-include "securityModel.thrift"
-
-namespace java org.apache.airavata.model
-namespace php Airavata.Model
-namespace cpp apache.airavata.model
-namespace py apache.airavata.model
-
-/*
- * This file describes the definitions of the Airavata Execution Data Structures. Each of the
- *   language specific Airavata Client SDK's will translate this neutral data model into an
- *   appropriate form for passing to the Airavata Server Execution API Calls.
-*/
-
-
-
+include "compute-resource-model.thrift"
+include "application-deployment-model.thrift"
+include "application-interface-model.thrift"
+include "gateway-resource-profile-model.thrift"
