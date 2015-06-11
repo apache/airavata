@@ -18,15 +18,12 @@
  *
  */
 
-include "workspace-model.thrift"
-include "airavata-errors.thrift"
-include "messaging-events.thrift"
-include "security-model.thrift"
 
 namespace java org.apache.airavata.model
 namespace php Airavata.Model
-namespace cpp apache.airavata.model
-namespace py apache.airavata.model
+namespace py apache.airavata.model.workflow
+
+include "application_interface_model.thrift"
 
 /*
  * This file describes the definitions of the Airavata Execution Data Structures. Each of the
@@ -34,5 +31,13 @@ namespace py apache.airavata.model
  *   appropriate form for passing to the Airavata Server Execution API Calls.
 */
 
+const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 
-
+struct Workflow {
+    1: required string templateId = DEFAULT_ID,
+    2: required string name,
+    3: optional string graph,
+    4: optional binary image,
+    5: optional list<application_interface_model.InputDataObjectType> workflowInputs,
+    6: optional list<application_interface_model.OutputDataObjectType> workflowOutputs
+}

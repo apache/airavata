@@ -23,7 +23,7 @@ namespace php Airavata.Model.AppCatalog.GatewayProfile
 namespace cpp apache.airavata.model.appcatalog.gatewayprofile
 namespace py apache.airavata.model.appcatalog.gatewayprofile
 
-include "compute-resource-model.thrift"
+include "compute_resource_model.thrift"
 
 /**
  * Gateway specific preferences for a Computer Resource
@@ -59,8 +59,8 @@ struct ComputeResourcePreference {
     1: required string computeResourceId,
     2: required bool overridebyAiravata = 1,
     3: optional string loginUserName,
-    4: optional computeResourceModel.JobSubmissionProtocol preferredJobSubmissionProtocol,
-    5: optional computeResourceModel.DataMovementProtocol preferredDataMovementProtocol,
+    4: optional compute_resource_model.JobSubmissionProtocol preferredJobSubmissionProtocol,
+    5: optional compute_resource_model.DataMovementProtocol preferredDataMovementProtocol,
     6: optional string preferredBatchQueue,
     7: optional string scratchLocation,
     8: optional string allocationProjectNumber

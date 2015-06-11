@@ -146,12 +146,12 @@ generate_java_stubs() {
 
     # Generate the Airavata Data Model using thrift Java Beans generator. This will take generate the classes in bean style
     #   with members being private and setters returning voids.
-    #   The airavata-data-models.thrift includes rest of data models.
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans ${AIRAVATA_API_IDL_DIR}/airavata-data-models.thrift || fail unable to generate java bean thrift classes on base data model
+    #   The airavata_data_models.thrift includes rest of data models.
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans ${AIRAVATA_API_IDL_DIR}/airavata_data_models.thrift || fail unable to generate java bean thrift classes on base data model
 
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans ${AIRAVATA_API_IDL_DIR}/app-catalog-models.thrift || fail unable to generate java bean thrift classes on app catalog data models
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans ${AIRAVATA_API_IDL_DIR}/app_catalog_models.thrift || fail unable to generate java bean thrift classes on app catalog data models
 
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans ${AIRAVATA_API_IDL_DIR}/workflow-data-model.thrift || fail unable to generate java bean thrift classes on app workflow data models
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen java:beans ${AIRAVATA_API_IDL_DIR}/workflow_data_model.thrift || fail unable to generate java bean thrift classes on app workflow data models
 
     # For the generated java beans add the ASF V2 License header
     add_license_header $JAVA_BEAN_GEN_DIR
@@ -171,10 +171,10 @@ generate_java_stubs() {
     rm -rf ${JAVA_GEN_DIR}
 
     # Using thrift Java generator, generate the java classes based on Airavata API. This
-    #   The airavata-api.thrift includes rest of data models.
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen java ${AIRAVATA_API_IDL_DIR}/airavata-api.thrift || fail unable to generate java thrift classes on AiravataAPI
+    #   The airavata_api.thrift includes rest of data models.
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen java ${AIRAVATA_API_IDL_DIR}/airavata_api.thrift || fail unable to generate java thrift classes on AiravataAPI
 
-    #$THRIFT_EXEC ${THRIFT_ARGS} --gen java ${AIRAVATA_API_IDL_DIR}/workflow-api.thrift || fail unable to generate java thrift classes on WorkflowAPI
+    #$THRIFT_EXEC ${THRIFT_ARGS} --gen java ${AIRAVATA_API_IDL_DIR}/workflow_api.thrift || fail unable to generate java thrift classes on WorkflowAPI
 
     # For the generated java classes add the ASF V2 License header
     add_license_header $JAVA_GEN_DIR
@@ -199,10 +199,10 @@ generate_php_stubs() {
     rm -rf ${PHP_GEN_DIR}
 
     # Using thrift Java generator, generate the java classes based on Airavata API. This
-    #   The airavata-api.thrift includes rest of data models.
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${AIRAVATA_API_IDL_DIR}/airavata-api.thrift || fail unable to generate PHP thrift classes
+    #   The airavata_api.thrift includes rest of data models.
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${AIRAVATA_API_IDL_DIR}/airavata_api.thrift || fail unable to generate PHP thrift classes
 
-    #$THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${AIRAVATA_API_IDL_DIR}/workflow-api.thrift || fail unable to generate PHP thrift classes for WorkflowAPI
+    #$THRIFT_EXEC ${THRIFT_ARGS} --gen php:autoload ${AIRAVATA_API_IDL_DIR}/workflow_api.thrift || fail unable to generate PHP thrift classes for WorkflowAPI
     # For the generated java classes add the ASF V2 License header
     ## TODO Write PHP license parser
 
@@ -225,10 +225,10 @@ generate_cpp_stubs() {
     rm -rf ${CPP_GEN_DIR}
 
     # Using thrift Java generator, generate the java classes based on Airavata API. This
-    #   The airavata-api.thrift includes rest of data models.
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen cpp ${AIRAVATA_API_IDL_DIR}/airavata-api.thrift || fail unable to generate C++ thrift classes
+    #   The airavata_api.thrift includes rest of data models.
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen cpp ${AIRAVATA_API_IDL_DIR}/airavata_api.thrift || fail unable to generate C++ thrift classes
 
-    #$THRIFT_EXEC ${THRIFT_ARGS} --gen cpp ${AIRAVATA_API_IDL_DIR}/workflow-api.thrift || fail unable to generate C++ thrift classes for WorkflowAPI
+    #$THRIFT_EXEC ${THRIFT_ARGS} --gen cpp ${AIRAVATA_API_IDL_DIR}/workflow_api.thrift || fail unable to generate C++ thrift classes for WorkflowAPI
     # For the generated CPP classes add the ASF V2 License header
     add_license_header $CPP_GEN_DIR
 
@@ -251,8 +251,8 @@ generate_python_stubs() {
     rm -rf ${PYTHON_GEN_DIR}
 
     # Using thrift Python generator, generate the python classes based on Airavata API. This
-    #   The airavata-api.thrift includes rest of data models.
-    $THRIFT_EXEC ${THRIFT_ARGS} --gen py ${AIRAVATA_API_IDL_DIR}/airavata-api.thrift || fail unable to generate Python thrift classes
+    #   The airavata_api.thrift includes rest of data models.
+    $THRIFT_EXEC ${THRIFT_ARGS} --gen py ${AIRAVATA_API_IDL_DIR}/airavata_api.thrift || fail unable to generate Python thrift classes
 
     # For the generated CPP classes add the ASF V2 License header
     #add_license_header #PYTHON_GEN_DIR
