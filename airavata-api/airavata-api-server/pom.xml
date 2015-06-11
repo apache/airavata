@@ -23,7 +23,7 @@
     <artifactId>airavata-api-server</artifactId>
     <packaging>jar</packaging>
     <url>http://airavata.apache.org/</url>
-
+    
     <dependencies>
 
         <dependency>
