@@ -24,14 +24,14 @@
  *   described in respective thrift files.
 */
 
-include "airavataErrors.thrift"
-include "airavataDataModel.thrift"
-include "experimentModel.thrift"
-include "workspaceModel.thrift"
-include "computeResourceModel.thrift"
-include "applicationDeploymentModel.thrift"
-include "applicationInterfaceModel.thrift"
-include "workflowDataModel.thrift"
+include "airavata-errors.thrift"
+include "airavata-data-models.thrift"
+include "experiment-model.thrift"
+include "workspace-model.thrift"
+include "compute-resource-model.thrift"
+include "application-deployment-model.thrift"
+include "application-interface-model.thrift"
+include "workflow-data-model.thrift"
 
 namespace java org.apache.airavata.api.workflow
 namespace php Airavata.API.Workflow
