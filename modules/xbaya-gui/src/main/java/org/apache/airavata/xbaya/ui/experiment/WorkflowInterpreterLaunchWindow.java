@@ -67,7 +67,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EtchedBorder;
-import javax.xml.namespace.QName;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Collection;

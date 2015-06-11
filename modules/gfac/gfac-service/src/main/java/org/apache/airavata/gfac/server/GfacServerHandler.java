@@ -102,6 +102,7 @@ public class GfacServerHandler implements GfacService.Iface {
 
     public GfacServerHandler() throws Exception {
         try {
+
             // start curator client
             String zkhostPort = AiravataZKUtils.getZKhostPort();
             RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 5);

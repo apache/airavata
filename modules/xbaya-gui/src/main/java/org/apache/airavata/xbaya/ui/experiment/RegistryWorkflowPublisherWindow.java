@@ -21,7 +21,6 @@
 
 package org.apache.airavata.xbaya.ui.experiment;
 
-import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
@@ -35,11 +34,6 @@ import javax.swing.border.TitledBorder;
 import org.apache.airavata.api.Airavata.Client;
 import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.model.error.AiravataClientConnectException;
-import org.apache.airavata.model.error.AiravataClientException;
-import org.apache.airavata.model.error.AiravataSystemException;
-import org.apache.airavata.model.error.InvalidRequestException;
-import org.apache.airavata.workflow.catalog.WorkflowCatalogFactory;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.ThriftClientData;
 import org.apache.airavata.xbaya.ThriftServiceType;
@@ -50,7 +44,6 @@ import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextArea;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
-import org.apache.thrift.TException;
 
 public class RegistryWorkflowPublisherWindow {
 

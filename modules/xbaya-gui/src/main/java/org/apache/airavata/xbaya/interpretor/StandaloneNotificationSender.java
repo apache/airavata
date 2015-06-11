@@ -31,11 +31,9 @@ import org.apache.airavata.workflow.model.graph.system.OutputNode;
 import org.apache.airavata.workflow.model.graph.util.GraphUtil;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.XBayaConstants;
-import org.apache.airavata.xbaya.graph.controller.NodeController;
 import org.apache.airavata.xbaya.jython.lib.ServiceNotifiable;
 import org.apache.airavata.xbaya.jython.lib.StandaloneServiceNotificationSender;
 import org.apache.airavata.xbaya.jython.lib.WorkflowNotifiable;
-import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler.NodeState;
 import org.apache.axis2.addressing.EndpointReference;
 import org.python.core.PyObject;
 

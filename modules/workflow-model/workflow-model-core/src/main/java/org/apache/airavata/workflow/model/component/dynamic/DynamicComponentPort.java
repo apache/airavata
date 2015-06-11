@@ -21,8 +21,6 @@
 
 package org.apache.airavata.workflow.model.component.dynamic;
 
-import javax.xml.namespace.QName;
-
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.workflow.model.component.ComponentDataPort;
 import org.apache.airavata.workflow.model.graph.DataPort;

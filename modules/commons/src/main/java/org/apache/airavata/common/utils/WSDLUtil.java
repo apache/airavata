@@ -21,16 +21,9 @@
 
 package org.apache.airavata.common.utils;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.LinkedList;
 import java.util.List;
-
-import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.exception.UtilsException;
 import org.slf4j.Logger;

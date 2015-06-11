@@ -23,8 +23,6 @@ package org.apache.airavata.workflow.model.graph.system;
 
 import java.util.List;
 
-import javax.xml.namespace.QName;
-
 import com.google.gson.JsonObject;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;

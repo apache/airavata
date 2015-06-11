@@ -21,7 +21,6 @@
 package org.apache.airavata.gfac.impl;
 
 import org.apache.airavata.common.utils.StringUtil;
-import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 
