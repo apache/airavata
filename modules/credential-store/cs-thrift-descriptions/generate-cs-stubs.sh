@@ -116,7 +116,7 @@ JAVA_GEN_DIR=${BASE_TARGET_DIR}/gen-java
 rm -rf ${JAVA_GEN_DIR}
 
 # Using thrift Java generator, generate the java classes based on Airavata API. This
-#   The airavata-api.thrift includes rest of data models.
+#   The airavata_api.thrift includes rest of data models.
 thrift ${THRIFT_ARGS} --gen java credentialStoreCPI.thrift || fail unable to generate java thrift classes
 thrift ${THRIFT_ARGS} --gen java credentialStoreDataModel.thrift || fail unable to generate java thrift classes
 
