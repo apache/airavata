@@ -18,8 +18,8 @@
  *
  */
 
-include "compute-resource-model.thrift"
-include "application-interface-model.thrift"
+include "compute_resource_model.thrift"
+include "application_interface_model.thrift"
 
 namespace java org.apache.airavata.model.workspace.experiment
 namespace php Airavata.Model.Workspace.Experiment
@@ -303,8 +303,8 @@ struct TaskDetails {
     3: optional string applicationId,
     4: optional string applicationVersion,
     5: optional string applicationDeploymentId,
-    6: optional list<applicationInterfaceModel.InputDataObjectType> applicationInputs,
-    7: optional list<applicationInterfaceModel.OutputDataObjectType> applicationOutputs,
+    6: optional list<application_interface_model.InputDataObjectType> applicationInputs,
+    7: optional list<application_interface_model.OutputDataObjectType> applicationOutputs,
     8: optional ComputationalResourceScheduling taskScheduling,
     9: optional AdvancedInputDataHandling advancedInputDataHandling,
     10: optional AdvancedOutputDataHandling advancedOutputDataHandling,
@@ -334,8 +334,8 @@ struct WorkflowNodeDetails {
     3: required string nodeName = SINGLE_APP_NODE_NAME,
     4: required ExecutionUnit executionUnit = ExecutionUnit.APPLICATION,
     5: optional string executionUnitData,
-    6: optional list<applicationInterfaceModel.InputDataObjectType> nodeInputs,
-    7: optional list<applicationInterfaceModel.OutputDataObjectType> nodeOutputs,
+    6: optional list<application_interface_model.InputDataObjectType> nodeInputs,
+    7: optional list<application_interface_model.OutputDataObjectType> nodeOutputs,
     8: optional WorkflowNodeStatus workflowNodeStatus,
     9: optional list<TaskDetails> taskDetailsList,
     10: optional list<ErrorDetails> errors
@@ -391,8 +391,8 @@ struct Experiment {
     13: optional list<string> emailAddresses,
     14: optional UserConfigurationData userConfigurationData,
     15: optional string workflowExecutionInstanceId,
-    16: optional list<applicationInterfaceModel.InputDataObjectType> experimentInputs,
-    17: optional list<applicationInterfaceModel.OutputDataObjectType> experimentOutputs,
+    16: optional list<application_interface_model.InputDataObjectType> experimentInputs,
+    17: optional list<application_interface_model.OutputDataObjectType> experimentOutputs,
     18: optional ExperimentStatus experimentStatus,
     19: optional list<WorkflowNodeStatus> stateChangeList,
     20: optional list<WorkflowNodeDetails> workflowNodeDetailsList,

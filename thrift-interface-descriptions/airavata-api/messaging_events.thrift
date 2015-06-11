@@ -18,8 +18,8 @@
  *
  */
 
-include "experiment-model.thrift"
-include "application-interface-model.thrift"
+include "experiment_model.thrift"
+include "application_interface_model.thrift"
 
 namespace java org.apache.airavata.model.messaging.event
 namespace php Airavata.Model.Messaging.Event
@@ -46,7 +46,7 @@ enum MessageType {
 }
 
 struct ExperimentStatusChangeEvent {
-    1: required experimentModel.ExperimentState state;
+    1: required experiment_model.ExperimentState state;
     2: required string experimentId;
     3: required string gatewayId;
 }
@@ -58,7 +58,7 @@ struct WorkflowIdentifier {
 }
 
 struct WorkflowNodeStatusChangeEvent {
-    1: required experimentModel.WorkflowNodeState state;
+    1: required experiment_model.WorkflowNodeState state;
     2: required WorkflowIdentifier workflowNodeIdentity;
 }
 
@@ -70,17 +70,17 @@ struct TaskIdentifier {
 }
 
 struct TaskStatusChangeEvent {
-    1: required experimentModel.TaskState state;
+    1: required experiment_model.TaskState state;
     2: required TaskIdentifier  taskIdentity;
 }
 
 struct TaskStatusChangeRequestEvent {
-    1: required experimentModel.TaskState state;
+    1: required experiment_model.TaskState state;
     2: required TaskIdentifier taskIdentity;
 }
 
 struct TaskOutputChangeEvent {
-    1: required list<applicationInterfaceModel.OutputDataObjectType> output;
+    1: required list<application_interface_model.OutputDataObjectType> output;
     2: required TaskIdentifier taskIdentity;
 }
 
@@ -124,12 +124,12 @@ struct TaskTerminateEvent{
 }
 
 struct JobStatusChangeEvent {
-    1: required experimentModel.JobState state;
+    1: required experiment_model.JobState state;
     2: required JobIdentifier jobIdentity;
 }
 
 struct JobStatusChangeRequestEvent {
-    1: required experimentModel.JobState state;
+    1: required experiment_model.JobState state;
     2: required JobIdentifier jobIdentity;
 }
 

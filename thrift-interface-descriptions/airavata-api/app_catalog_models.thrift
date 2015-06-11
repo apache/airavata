@@ -18,7 +18,7 @@
  *
  */
 
-include "compute-resource-model.thrift"
-include "application-deployment-model.thrift"
-include "application-interface-model.thrift"
-include "gateway-resource-profile-model.thrift"
+include "compute_resource_model.thrift"
+include "application_deployment_model.thrift"
+include "application_interface_model.thrift"
+include "gateway_resource_profile_model.thrift"
