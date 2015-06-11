@@ -132,14 +132,17 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
             }
             CreateActivityDocument cad = CreateActivityDocument.Factory.newInstance();
             JobDefinitionDocument jobDefDoc = JobDefinitionDocument.Factory.newInstance();
-
+            
             // create storage
             StorageCreator storageCreator = new StorageCreator(secProperties, factoryUrl, 5, null);
             sc = storageCreator.createStorage();
 
             JobDefinitionType jobDefinition = JSDLGenerator.buildJSDLInstance(jobExecutionContext, sc.getUrl()).getJobDefinition();
             cad.addNewCreateActivity().addNewActivityDocument().setJobDefinition(jobDefinition);
-            log.info("JSDL" + jobDefDoc.toString());
+            
+            log.debug("Submitted JSDL: " + jobDefDoc.getJobDefinition().getJobDescription());
+            
+            
 
             // upload files if any
             DataTransferrer dt = new DataTransferrer(jobExecutionContext, sc);

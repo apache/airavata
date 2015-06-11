@@ -113,9 +113,13 @@ public class UASDataStagingProcessor {
 		List<OutputDataObjectType> applicationOutputs = context.getTaskData().getApplicationOutputs();
 		 if (applicationOutputs != null && !applicationOutputs.isEmpty()){
              for (OutputDataObjectType output : applicationOutputs){
-            	 if(output.getType().equals(DataType.URI) && !output.getValue().startsWith("file:")) {
+ 				if("".equals(output.getValue()) || output.getValue() == null) {
+					continue;
+				}
+
+            	if(output.getType().equals(DataType.URI)) {
             		 createOutURIElement(value, output.getValue());
-            	 }
+            	}
              }
 		 }
 		return value;
@@ -128,8 +132,10 @@ public class UASDataStagingProcessor {
 		
 		if (applicationInputs != null && !applicationInputs.isEmpty()){
 			for (InputDataObjectType input : applicationInputs){
+				if("".equals(input.getValue()) || input.getValue() == null) {
+					continue;
+				}
 				if(input.getType().equals(DataType.URI)){
-					//TODO: set the in sms url
 					createInURISMSElement(value, smsUrl, input.getValue());
 				}
 				else if(input.getType().equals(DataType.STRING)){

@@ -95,26 +95,56 @@ public class DataTransferrer {
 			file.mkdirs();	
 		}
 
-		Map<String, Object> output = jobContext.getOutMessageContext().getParameters();
-        Set<String> keys = output.keySet();
-        
-		for (String outPrm : keys) {
-			OutputDataObjectType actualParameter = (OutputDataObjectType) output.get(outPrm);
-				if (DataType.STDERR == actualParameter.getType()) continue;
-				if (DataType.STDOUT == actualParameter.getType()) continue;
-				
-				String value = actualParameter.getValue();
-				FileDownloader fileDownloader = new FileDownloader(value,downloadLocation, Mode.overwrite);
-				try {
-					fileDownloader.perform(storageClient);
-					String outputPath = downloadLocation + File.separator + value.substring(value.lastIndexOf('/')+1);
-					actualParameter.setValue(outputPath);
-					actualParameter.setType(DataType.URI);
-					jobContext.addOutputFile(outputPath);
-				} catch (Exception e) {
-					throw new GFacProviderException(e.getLocalizedMessage(),e);
+//		Map<String, Object> output = jobContext.getOutMessageContext().getParameters();
+//        Set<String> keys = output.keySet();
+//        
+//		for (String outPrm : keys) {
+//			OutputDataObjectType actualParameter = (OutputDataObjectType) output.get(outPrm);
+//				if (DataType.STDERR == actualParameter.getType() ||
+//					DataType.STDOUT == actualParameter.getType() ||
+//					DataType.URI == actualParameter.getType())  {
+//					continue;
+//				}
+//				
+//				String value = actualParameter.getValue();
+//				FileDownloader fileDownloader = new FileDownloader(value,downloadLocation, Mode.overwrite);
+//				try {
+//					fileDownloader.perform(storageClient);
+//					String outputPath = downloadLocation + File.separator + value.substring(value.lastIndexOf('/')+1);
+//					actualParameter.setValue(outputPath);
+//					actualParameter.setType(DataType.URI);
+//					jobContext.addOutputFile(outputPath);
+//				} catch (Exception e) {
+//					throw new GFacProviderException(e.getLocalizedMessage(),e);
+//				}
+//		}
+		
+		List<OutputDataObjectType> applicationOutputs = jobContext.getTaskData().getApplicationOutputs();
+		 if (applicationOutputs != null && !applicationOutputs.isEmpty()){
+            for (OutputDataObjectType output : applicationOutputs){
+				if("".equals(output.getValue()) || output.getValue() == null) {
+					continue;
 				}
-		}
+
+	           	if(output.getType().equals(DataType.STRING)) {
+					String value = output.getValue();
+					FileDownloader fileDownloader = new FileDownloader(value,downloadLocation, Mode.overwrite);
+					try {
+						fileDownloader.perform(storageClient);
+						String outputPath = downloadLocation + File.separator + value;
+						jobContext.addOutputFile(outputPath);
+					} catch (Exception e) {
+						throw new GFacProviderException(e.getLocalizedMessage(),e);
+					}
+	           	}
+            }
+		 }
+		
+
+		
+		
+		
+		
 		downloadStdOuts();
 	}
 	

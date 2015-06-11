@@ -89,14 +89,13 @@ public class UNICORESecurityContext extends X509SecurityContext {
 			boolean genCert = userData.isGenerateCert();
 				if(genCert) {
 					String userDN = userData.getUserDN();
-					if (userDN == null && "".equals(userDN)){
-						log.warn("Cannot generate cert, falling back to container configured MyProxy credentials");
+					if (userDN == null || "".equals(userDN)){
+						log.warn("Cannot generate cert, falling back to GFAC configured MyProxy credentials");
 						return getDefaultConfiguration(enableMessageLogging);
 					}
 					else {
 						log.info("Generating X.509 certificate for: "+userDN);
 						try {
-							
 							String caCertPath = ServerSettings.getSetting(BESConstants.PROP_CA_CERT_PATH, "");
 							String caKeyPath = ServerSettings.getSetting(BESConstants.PROP_CA_KEY_PATH, "");
 							String caKeyPass = ServerSettings.getSetting(BESConstants.PROP_CA_KEY_PASS, "");

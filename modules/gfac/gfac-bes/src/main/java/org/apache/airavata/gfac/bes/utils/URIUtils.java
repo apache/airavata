@@ -106,7 +106,8 @@ public class URIUtils {
 		fragment = URIUtil.encode(fragment, URI.allowed_fragment);
 		return beforeFragment+fragment;
 	}
-    public static java.net.URI createGsiftpURI(String host, String localPath) throws URISyntaxException {
+    
+	public static java.net.URI createGsiftpURI(String host, String localPath) throws URISyntaxException {
         StringBuffer buf = new StringBuffer();
         if (!host.startsWith("gsiftp://"))
             buf.append("gsiftp://");
