@@ -34,9 +34,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.exception.ApplicationSettingsLoadException;
-import org.apache.airavata.common.exception.ApplicationSettingsStoreException;
-import org.apache.airavata.common.exception.UnspecifiedApplicationSettingsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,13 +113,13 @@ public class ApplicationSettings {
 		INSTANCE=settingsInstance;
 	}
 	
-	private void saveProperties() throws ApplicationSettingsStoreException{
+	private void saveProperties() throws ApplicationSettingsException{
 		URL url = getPropertyFileURL();
 		if (url.getProtocol().equalsIgnoreCase("file")){
 			try {
 				properties.store(new FileOutputStream(url.getPath()), Calendar.getInstance().toString());
 			} catch (Exception e) {
-				throw new ApplicationSettingsStoreException(url.getPath(), e);
+				throw new ApplicationSettingsException(url.getPath(), e);
 			}
 		}else{
 			logger.warn("Properties cannot be updated to location "+url.toString());
@@ -131,7 +128,7 @@ public class ApplicationSettings {
 	
     private void validateSuccessfulPropertyFileLoad() throws ApplicationSettingsException{
     	if (propertyLoadException!=null){
-    		throw new ApplicationSettingsLoadException(propertyLoadException);
+    		throw new ApplicationSettingsException(propertyLoadException.getMessage(), propertyLoadException);
     	}
     }
 
@@ -190,7 +187,7 @@ public class ApplicationSettings {
 	    	if (properties.containsKey(key)){
 	    		rawValue=properties.getProperty(key);
 	    	}else{
-	    		throw new UnspecifiedApplicationSettingsException(key);		
+	    		throw new ApplicationSettingsException(key);
 	    	}
     	}
     	return deriveAbsoluteValueImpl(rawValue);

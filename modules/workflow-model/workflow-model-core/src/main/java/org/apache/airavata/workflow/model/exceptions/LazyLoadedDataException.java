@@ -19,20 +19,14 @@
  *
  */
 
-package org.apache.airavata.common.exception;
+package org.apache.airavata.workflow.model.exceptions;
 
-public class ApplicationSettingsLoadException extends ApplicationSettingsException {
+import org.apache.airavata.common.exception.AiravataException;
 
-	private static final long serialVersionUID = -5102090895499711299L;
-	public ApplicationSettingsLoadException(String message) {
+public class LazyLoadedDataException extends AiravataException {
+	private static final long serialVersionUID = -3164776318582067936L;
+	public LazyLoadedDataException(String message) {
 		super(message);
 	}
-	
-	public ApplicationSettingsLoadException(Throwable e) {
-		this(e.getMessage(),e);
-	}
-	
-	public ApplicationSettingsLoadException(String message, Throwable e) {
-		super(message,e);
-	}
+
 }
