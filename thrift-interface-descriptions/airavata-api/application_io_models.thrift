@@ -19,7 +19,6 @@
  */
 
 include "compute_resource_model.thrift"
-include "application_interface_model.thrift"
 
 namespace java org.apache.airavata.model.application.io
 namespace php Airavata.Model.Application.Io

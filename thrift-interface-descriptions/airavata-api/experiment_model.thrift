@@ -74,8 +74,8 @@ struct UserConfigurationDataModel {
 */
 
 struct ExperimentModel {
-    1: required string experimentId = DEFAULT_ID,
-    2: required string projectId = DEFAULT_PROJECT_NAME,
+    1: required string experimentId,
+    2: required string projectId,
     3: required ExperimentType experimentType = ExperimentType.SINGLE_APPLICATION;
     4: required string userName,
     5: required string experimentName,
