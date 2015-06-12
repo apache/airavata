@@ -18,26 +18,22 @@
  *
  */
 
+namespace java org.apache.airavata.model.scheduling
+namespace php Airavata.Model.Scheduling
+namespace cpp apache.airavata.model.scheduling
+namespace py apache.airavata.model.scheduling
 
-namespace java org.apache.airavata.model
-namespace php Airavata.Model
-namespace py apache.airavata.model.workflow
-
-include "application_io_models.thrift"
-
-/*
- * This file describes the definitions of the Airavata Execution Data Structures. Each of the
- *   language specific Airavata Client SDK's will translate this neutral data model into an
- *   appropriate form for passing to the Airavata Server Execution API Calls.
+/**
+ * ComputationalResourceSchedulingModel:
+ *
+ *
 */
-
-const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
-
-struct Workflow {
-    1: required string templateId = DEFAULT_ID,
-    2: required string name,
-    3: optional string graph,
-    4: optional binary image,
-    5: optional list<application_io_models.InputDataObjectType> workflowInputs,
-    6: optional list<application_io_models.OutputDataObjectType> workflowOutputs
+struct ComputationalResourceSchedulingModel {
+    1: optional string resourceHostId,
+    2: optional i32 totalCPUCount,
+    3: optional i32 nodeCount,
+    4: optional i32 numberOfThreads,
+    5: optional string queueName,
+    6: optional i32 wallTimeLimit,
+    7: optional i32 totalPhysicalMemory,
 }

@@ -26,6 +26,7 @@
 
 include "airavata_errors.thrift"
 include "airavata_data_models.thrift"
+include "status_models.thrift"
 include "experiment_model.thrift"
 include "workspace_model.thrift"
 include "compute_resource_model.thrift"
@@ -312,7 +313,7 @@ service Airavata {
     *       Instead use searchExperimentsByNameWithPagination
     *
     */
-  list<experiment_model.ExperimentSummary> searchExperimentsByName (1: required string gatewayId,
+  list<experiment_model.ExperimentSummaryModel> searchExperimentsByName (1: required string gatewayId,
                           2: required string userName, 3: required string expName)
             throws (1: airavata_errors.InvalidRequestException ire,
                     2: airavata_errors.AiravataClientException ace,
@@ -333,7 +334,7 @@ service Airavata {
     * @param offset
     *       The starting point of the results to be fetched
     */
-  list<experiment_model.ExperimentSummary> searchExperimentsByNameWithPagination (1: required string gatewayId,
+  list<experiment_model.ExperimentSummaryModel> searchExperimentsByNameWithPagination (1: required string gatewayId,
                           2: required string userName, 3: required string expName, 4: required i32 limit,
                           5: required i32 offset)
             throws (1: airavata_errors.InvalidRequestException ire,
@@ -352,7 +353,7 @@ service Airavata {
     * @deprecated
     *       Instead use searchExperimentsByDescWithPagination
   */
-  list<experiment_model.ExperimentSummary> searchExperimentsByDesc (1: required string gatewayId,
+  list<experiment_model.ExperimentSummaryModel> searchExperimentsByDesc (1: required string gatewayId,
                             2: required string userName, 3: required string description)
               throws (1: airavata_errors.InvalidRequestException ire,
                       2: airavata_errors.AiravataClientException ace,
@@ -373,7 +374,7 @@ service Airavata {
     * @param offset
     *       The starting point of the results to be fetched
     */
-  list<experiment_model.ExperimentSummary> searchExperimentsByDescWithPagination (1: required string gatewayId,
+  list<experiment_model.ExperimentSummaryModel> searchExperimentsByDescWithPagination (1: required string gatewayId,
                             2: required string userName, 3: required string description, 4: required i32 limit,
                             5: required i32 offset)
               throws (1: airavata_errors.InvalidRequestException ire,
@@ -393,7 +394,7 @@ service Airavata {
    * @deprecated
    *       Instead use searchExperimentsByApplicationWithPagination
    */
-  list<experiment_model.ExperimentSummary> searchExperimentsByApplication (1: required string gatewayId,
+  list<experiment_model.ExperimentSummaryModel> searchExperimentsByApplication (1: required string gatewayId,
                              2: required string userName, 3: required string applicationId)
               throws (1: airavata_errors.InvalidRequestException ire,
                       2: airavata_errors.AiravataClientException ace,
@@ -413,7 +414,7 @@ service Airavata {
    * @param offset
    *       The starting point of the results to be fetched
    */
-  list<experiment_model.ExperimentSummary> searchExperimentsByApplicationWithPagination (1: required string gatewayId,
+  list<experiment_model.ExperimentSummaryModel> searchExperimentsByApplicationWithPagination (1: required string gatewayId,
                              2: required string userName, 3: required string applicationId, 4: required i32 limit,
                              5: required i32 offset)
               throws (1: airavata_errors.InvalidRequestException ire,
@@ -431,8 +432,8 @@ service Airavata {
     * @deprecated
     *       Instead use searchExperimentsByStatusWithPagination
     */
-    list<experiment_model.ExperimentSummary> searchExperimentsByStatus (1: required string gatewayId,
-                            2: required string userName, 3: required experiment_model.ExperimentState experimentState)
+    list<experiment_model.ExperimentSummaryModel> searchExperimentsByStatus (1: required string gatewayId,
+                            2: required string userName, 3: required status_models.ExperimentState experimentState)
                 throws (1: airavata_errors.InvalidRequestException ire,
                         2: airavata_errors.AiravataClientException ace,
                         3: airavata_errors.AiravataSystemException ase)
@@ -452,8 +453,8 @@ service Airavata {
    * @param offset
    *       The starting point of the results to be fetched
    */
-    list<experiment_model.ExperimentSummary> searchExperimentsByStatusWithPagination (1: required string gatewayId,
-                            2: required string userName, 3: required experiment_model.ExperimentState experimentState,
+    list<experiment_model.ExperimentSummaryModel> searchExperimentsByStatusWithPagination (1: required string gatewayId,
+                            2: required string userName, 3: required status_models.ExperimentState experimentState,
                             4: required i32 limit, 5: required i32 offset)
                 throws (1: airavata_errors.InvalidRequestException ire,
                         2: airavata_errors.AiravataClientException ace,
@@ -473,7 +474,7 @@ service Airavata {
    * @deprecated
    *       Instead use searchExperimentsByCreationTimeWithPagination
    */
-    list<experiment_model.ExperimentSummary> searchExperimentsByCreationTime (1: required string gatewayId,
+    list<experiment_model.ExperimentSummaryModel> searchExperimentsByCreationTime (1: required string gatewayId,
                             2: required string userName, 3: required i64 fromTime, 4: required i64 toTime)
                 throws (1: airavata_errors.InvalidRequestException ire,
                         2: airavata_errors.AiravataClientException ace,
@@ -496,7 +497,7 @@ service Airavata {
    * @param offset
    *       The starting point of the results to be fetched
    */
-    list<experiment_model.ExperimentSummary> searchExperimentsByCreationTimeWithPagination (1: required string gatewayId,
+    list<experiment_model.ExperimentSummaryModel> searchExperimentsByCreationTimeWithPagination (1: required string gatewayId,
                             2: required string userName, 3: required i64 fromTime, 4: required i64 toTime,
                             5: required i32 limit, 6: required i32 offset)
                 throws (1: airavata_errors.InvalidRequestException ire,
@@ -518,7 +519,7 @@ service Airavata {
    * @param offset
    *       The starting point of the results to be fetched
    */
-    list<experiment_model.ExperimentSummary> searchExperiments(1: required string gatewayId,
+    list<experiment_model.ExperimentSummaryModel> searchExperiments(1: required string gatewayId,
                             2: required string userName, 3: map<experiment_model.ExperimentSearchFields, string> filters,
                             4: required i32 limit, 5: required i32 offset)
                 throws (1: airavata_errors.InvalidRequestException ire,
