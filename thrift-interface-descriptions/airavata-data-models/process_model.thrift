@@ -45,10 +45,11 @@ struct ProcessModel {
     3: optional i64 lastUpdateTime,
     4: optional status_models.Status processStatus,
     5: optional string processDetail,
-    6: optional list<application_io_models.InputDataObjectType> processInputs,
-    7: optional list<application_io_models.OutputDataObjectType> processOutputs,
-    8: optional scheduling_model.ComputationalResourceSchedulingModel resourceSchedule,
-    9: optional list<task_model.TaskModel> tasks,
-    10: optional string taskDag
-    11: optional airavata_commons.ErrorDetails processErrorDetails
+    6: optional string applicationInterfaceId,
+    7: optional list<application_io_models.InputDataObjectType> processInputs,
+    8: optional list<application_io_models.OutputDataObjectType> processOutputs,
+    9: optional scheduling_model.ComputationalResourceSchedulingModel resourceSchedule,
+    10: optional list<task_model.TaskModel> tasks,
+    11: optional string taskDag,
+    12: optional airavata_commons.ErrorDetails processErrorDetails
 }
