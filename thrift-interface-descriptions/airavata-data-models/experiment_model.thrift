@@ -33,6 +33,14 @@ enum ExperimentType {
     WORKFLOW
 }
 
+enum ExperimentSearchFields {
+    EXPERIMENT_NAME,
+    EXPERIMENT_DESC,
+    APPLICATION_ID,
+    FROM_DATE,
+    TO_DATE,
+    STATUS
+}
 /**
  * A structure holding the experiment configuration.
  *
@@ -95,13 +103,3 @@ struct ExperimentSummaryModel {
     8: optional status_models.ExperimentStatus experimentStatus,
 }
 
-struct ExperimentStatistics {
-    1: required i32 allExperimentCount,
-    2: required i32 completedExperimentCount,
-    3: optional i32 cancelledExperimentCount,
-    4: required i32 failedExperimentCount,
-    5: required list<ExperimentSummaryModel> allExperiments,
-    6: optional list<ExperimentSummaryModel> completedExperiments,
-    7: optional list<ExperimentSummaryModel> failedExperiments,
-    8: optional list<ExperimentSummaryModel> cancelledExperiments,
-}
