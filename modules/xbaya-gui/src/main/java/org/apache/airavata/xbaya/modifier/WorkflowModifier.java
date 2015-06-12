@@ -29,8 +29,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.airavata.common.exception.UtilsException;
-import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.workflow.model.component.system.InputComponent;
 import org.apache.airavata.workflow.model.component.ws.WSComponent;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
@@ -51,10 +49,6 @@ import org.apache.airavata.xbaya.messaging.MonitorException;
 import org.apache.airavata.xbaya.ui.monitor.MonitorEventHandler.NodeState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xmlpull.infoset.XmlElement;
-
-import xsul.XmlConstants;
-import xsul5.wsdl.WsdlPortTypeOperation;
 
 public class WorkflowModifier {
 

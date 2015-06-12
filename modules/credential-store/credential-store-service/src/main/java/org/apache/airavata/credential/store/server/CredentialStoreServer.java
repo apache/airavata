@@ -34,7 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 
 public class CredentialStoreServer  implements IServer {
     private final static Logger logger = LoggerFactory.getLogger(CredentialStoreServer.class);

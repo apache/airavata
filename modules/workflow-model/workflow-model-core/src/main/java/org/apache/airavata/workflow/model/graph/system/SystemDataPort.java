@@ -21,8 +21,6 @@
 
 package org.apache.airavata.workflow.model.graph.system;
 
-import javax.xml.namespace.QName;
-
 import com.google.gson.JsonObject;
 import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;

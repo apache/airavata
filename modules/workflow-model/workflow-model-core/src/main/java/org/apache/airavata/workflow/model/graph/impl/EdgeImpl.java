@@ -21,7 +21,6 @@
 
 package org.apache.airavata.workflow.model.graph.impl;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.graph.Edge;

@@ -23,41 +23,26 @@ package org.apache.airavata.xbaya.util;
 
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.Airavata.Client;
 import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.model.error.AiravataClientConnectException;
-import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.graph.DataPort;
 import org.apache.airavata.workflow.model.graph.Node;
-import org.apache.airavata.workflow.model.graph.amazon.InstanceNode;
-import org.apache.airavata.workflow.model.graph.system.ConstantNode;
 import org.apache.airavata.workflow.model.graph.system.EndForEachNode;
-import org.apache.airavata.workflow.model.graph.system.EndifNode;
 import org.apache.airavata.workflow.model.graph.system.ForEachNode;
-import org.apache.airavata.workflow.model.graph.system.InputNode;
-import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.ThriftClientData;
 import org.apache.airavata.xbaya.ThriftServiceType;
-import org.apache.airavata.xbaya.XBayaConfiguration;
 import org.apache.airavata.xbaya.XBayaEngine;
 import org.apache.airavata.xbaya.ui.dialogs.registry.RegistryWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xmlpull.infoset.XmlElement;
-
-import xsul.lead.LeadContextHeader;
-import xsul.lead.LeadResourceMapping;
-import xsul5.XmlConstants;
 
 public class XBayaUtil {
 

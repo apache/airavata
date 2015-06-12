@@ -21,33 +21,25 @@
 
 package org.apache.airavata.workflow.model.gpel.script;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.apache.airavata.common.exception.UtilsException;
+import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.workflow.model.exceptions.UtilsException;
 import org.apache.airavata.common.utils.WSConstants;
-import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
-import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
-import org.apache.airavata.workflow.model.graph.DataPort;
 import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.Node;
 import org.apache.airavata.workflow.model.graph.system.InputNode;
 import org.apache.airavata.workflow.model.graph.system.ParameterNode;
-import org.apache.airavata.workflow.model.graph.system.ReceiveNode;
 import org.apache.airavata.workflow.model.graph.system.SystemDataPort;
-import org.apache.airavata.workflow.model.graph.util.GraphUtil;
 import org.apache.airavata.workflow.model.graph.ws.WSGraph;
 import org.apache.airavata.workflow.model.utils.WorkflowConstants;
-import org.apache.airavata.workflow.model.utils.ApplicationVersion;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xmlpull.infoset.XmlComment;
 import org.xmlpull.infoset.XmlElement;
 import org.xmlpull.infoset.XmlNamespace;
 
@@ -334,7 +326,7 @@ public class WorkflowWSDL {
             XmlElement annotation = element.addElement(WSConstants.ANNOTATION_TAG);
             try {
                 annotation.addElement(XMLUtil.deepClone(appinfo));
-            } catch (UtilsException e) {
+            } catch (AiravataException e) {
                 log.error(e.getMessage(), e);
             }
         }
@@ -377,7 +369,7 @@ public class WorkflowWSDL {
             XmlElement annotation = element.element(null, WSConstants.ANNOTATION_TAG, true);
             try {
                 annotation.addElement(XMLUtil.deepClone(appinfo));
-            } catch (UtilsException e) {
+            } catch (AiravataException e) {
                 log.error(e.getMessage(), e);
             }
         }
@@ -396,7 +388,7 @@ public class WorkflowWSDL {
                 XmlElement valueElement = null;
                 try {
                     valueElement = XMLUtil.deepClone((XmlElement) value);
-                } catch (UtilsException e) {
+                } catch (AiravataException e) {
                     log.error(e.getMessage(), e);
                 }
                 XmlElement annotation = element.element(null, WSConstants.ANNOTATION_TAG, true);

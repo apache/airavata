@@ -28,21 +28,18 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.xml.namespace.QName;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import org.apache.airavata.common.exception.UtilsException;
+import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.workflow.model.exceptions.UtilsException;
 import org.apache.airavata.common.utils.JSONUtil;
-import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.component.Component;
 import org.apache.airavata.workflow.model.component.ComponentException;
@@ -52,8 +49,6 @@ import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.gpel.script.BPELScript;
-import org.apache.airavata.workflow.model.gpel.script.BPELScriptType;
-import org.apache.airavata.workflow.model.graph.Graph;
 import org.apache.airavata.workflow.model.graph.GraphException;
 import org.apache.airavata.workflow.model.graph.GraphSchema;
 import org.apache.airavata.workflow.model.graph.Node;
@@ -671,7 +666,7 @@ public class Workflow implements Cloneable {
         } catch (WorkflowException e) {
             // This should not happen.
             throw new WorkflowRuntimeException(e);
-        } catch (UtilsException e) {
+        } catch (AiravataException e) {
             // This should not happen.
             throw new WorkflowRuntimeException(e);
         }

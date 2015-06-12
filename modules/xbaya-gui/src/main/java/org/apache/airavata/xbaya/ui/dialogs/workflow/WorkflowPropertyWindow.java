@@ -22,7 +22,6 @@
 package org.apache.airavata.xbaya.ui.dialogs.workflow;
 
 import java.awt.event.ActionEvent;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,9 +30,6 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import org.apache.airavata.common.utils.JSONUtil;
 import org.apache.airavata.common.utils.StringUtil;
 import org.apache.airavata.common.utils.WSConstants;
@@ -46,7 +42,6 @@ import org.apache.airavata.xbaya.ui.widgets.GridPanel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaLabel;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextArea;
 import org.apache.airavata.xbaya.ui.widgets.XBayaTextField;
-import org.xmlpull.infoset.XmlElement;
 
 public class WorkflowPropertyWindow {
 

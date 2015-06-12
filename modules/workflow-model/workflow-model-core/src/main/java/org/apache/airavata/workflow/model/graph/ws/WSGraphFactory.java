@@ -24,7 +24,6 @@ package org.apache.airavata.workflow.model.graph.ws;
 import java.io.File;
 import java.io.IOException;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.airavata.common.utils.IOUtil;
 import org.apache.airavata.common.utils.JSONUtil;

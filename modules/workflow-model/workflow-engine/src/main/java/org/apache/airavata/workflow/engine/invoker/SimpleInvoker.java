@@ -21,13 +21,10 @@
 
 package org.apache.airavata.workflow.engine.invoker;
 
-import java.util.Iterator;
-
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xmlpull.v1.builder.XmlElement;
 
 //import xsul.wsdl.WsdlDefinitions;
 //import xsul.wsif.WSIFMessage;
