@@ -26,7 +26,6 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.xml.namespace.QName;
 
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;

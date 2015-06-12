@@ -56,7 +56,6 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.airavata.common.utils.JSONUtil;
 import org.apache.airavata.common.utils.SwingUtil;
@@ -92,7 +91,6 @@ import org.apache.airavata.xbaya.ui.utils.ErrorMessages;
 import org.apache.airavata.xbaya.ui.widgets.component.ComponentSourceTransferable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xmlpull.infoset.XmlElement;
 
 
 /**

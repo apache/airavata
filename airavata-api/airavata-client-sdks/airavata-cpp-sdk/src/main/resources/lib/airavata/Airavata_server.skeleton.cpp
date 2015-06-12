@@ -39,6 +39,11 @@ class AiravataHandler : virtual public AiravataIf {
     // Your initialization goes here
   }
 
+  /**
+   * Fetch Apache Airavata API version
+   * 
+   * @param authzToken
+   */
   void getAPIVersion(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) {
     // Your implementation goes here
     printf("getAPIVersion\n");
@@ -74,6 +79,25 @@ class AiravataHandler : virtual public AiravataIf {
     printf("isGatewayExist\n");
   }
 
+  /**
+   * Generate and Register SSH Key Pair with Airavata Credential Store.
+   * 
+   * @param gatewayId
+   *    The identifier for the requested gateway.
+   * 
+   * @param userName
+   *    The User for which the credential should be registered. For community accounts, this user is the name of the
+   *    community user name. For computational resources, this user name need not be the same user name on resoruces.
+   * 
+   * @return airavataCredStoreToken
+   *   An SSH Key pair is generated and stored in the credential store and associated with users or community account
+   *   belonging to a gateway.
+   * 
+   * 
+   * 
+   * @param gatewayId
+   * @param userName
+   */
   void generateAndRegisterSSHKeys(std::string& _return, const std::string& gatewayId, const std::string& userName) {
     // Your implementation goes here
     printf("generateAndRegisterSSHKeys\n");
@@ -89,16 +113,43 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getAllUserSSHPubKeys\n");
   }
 
+  /**
+   * Creates a Project with basic metadata.
+   *    A Project is a container of experiments.
+   * 
+   * @param gatewayId
+   *    The identifier for the requested gateway.
+   * 
+   * @param Project
+   *    The Project Object described in the workspace_model
+   * 
+   * 
+   * @param gatewayId
+   * @param project
+   */
   void createProject(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project) {
     // Your implementation goes here
     printf("createProject\n");
   }
 
+  /**
+   * Update a Project
+   * 
+   * 
+   * @param projectId
+   * @param updatedProject
+   */
   void updateProject(const std::string& projectId, const  ::apache::airavata::model::workspace::Project& updatedProject) {
     // Your implementation goes here
     printf("updateProject\n");
   }
 
+  /**
+   * Get a Project by ID
+   * 
+   * 
+   * @param projectId
+   */
   void getProject( ::apache::airavata::model::workspace::Project& _return, const std::string& projectId) {
     // Your implementation goes here
     printf("getProject\n");
@@ -109,121 +160,628 @@ class AiravataHandler : virtual public AiravataIf {
     printf("deleteProject\n");
   }
 
+  /**
+   *   * Get all Project by user
+   *   *
+   *   * @param gatewayId
+   *   *    The identifier for the requested gateway.
+   *   *
+   *   * @param userName
+   *   *    The Project Object described in the workspace_model
+   *   * @deprecated Instead use getAllUserProjectsWithPagination
+   * *
+   * 
+   * @param gatewayId
+   * @param userName
+   */
   void getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName) {
     // Your implementation goes here
     printf("getAllUserProjects\n");
   }
 
+  /**
+   *   * Get all Project by user with pagination. Results will be ordered based
+   *   * on creation time DESC
+   *   *
+   *   * @param gatewayId
+   *   *    The identifier for the requested gateway.
+   *   * @param userName
+   *   *    The identifier of the user
+   *   * @param limit
+   *   *    The amount results to be fetched
+   *   * @param offset
+   *   *    The starting point of the results to be fetched
+   * *
+   * 
+   * @param gatewayId
+   * @param userName
+   * @param limit
+   * @param offset
+   */
   void getAllUserProjectsWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
     printf("getAllUserProjectsWithPagination\n");
   }
 
+  /**
+   * Get all Project for user by project name
+   * 
+   * @param gatewayId
+   *    The identifier for the requested gateway.
+   * @param userName
+   *    The identifier of the user
+   * @param projectName
+   *    The name of the project on which the results to be fetched
+   * @deprecated Instead use searchProjectsByProjectNameWithPagination
+   * 
+   * @param gatewayId
+   * @param userName
+   * @param projectName
+   */
   void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& projectName) {
     // Your implementation goes here
     printf("searchProjectsByProjectName\n");
   }
 
+  /**
+   * Get all Project for user by project name with pagination.Results will be ordered based
+   * on creation time DESC
+   * 
+   * @param gatewayId
+   *    The identifier for the requested gateway.
+   * @param userName
+   *    The identifier of the user
+   * @param projectName
+   *    The name of the project on which the results to be fetched
+   * @param limit
+   *    The amount results to be fetched
+   * @param offset
+   *    The starting point of the results to be fetched
+   * 
+   * @param gatewayId
+   * @param userName
+   * @param projectName
+   * @param limit
+   * @param offset
+   */
   void searchProjectsByProjectNameWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
     printf("searchProjectsByProjectNameWithPagination\n");
   }
 
+  /**
+   * Get all Project for user by project description
+   * @param gatewayId
+   *    The identifier for the requested gateway.
+   * @param userName
+   *    The identifier of the user
+   * @param description
+   *    The description to be matched
+   * @deprecated Instead use searchProjectsByProjectDescWithPagination
+   * 
+   * @param gatewayId
+   * @param userName
+   * @param description
+   */
   void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description) {
     // Your implementation goes here
     printf("searchProjectsByProjectDesc\n");
   }
 
+  /**
+   * Search and get all Projects for user by project description with pagination. Results
+   * will be ordered based on creation time DESC
+   * 
+   * @param gatewayId
+   *    The identifier for the requested gateway.
+   * @param userName
+   *    The identifier of the user
+   * @param description
+   *    The description to be matched
+   * @param limit
+   *    The amount results to be fetched
+   * @param offset
+   *    The starting point of the results to be fetched
+   * 
+   * @param gatewayId
+   * @param userName
+   * @param description
+   * @param limit
+   * @param offset
+   */
   void searchProjectsByProjectDescWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
     printf("searchProjectsByProjectDescWithPagination\n");
   }
 
+  /**
+   * Search Experiments by experiment name
+   * 
+   * @param gatewayId
+   *       Identifier of the requested gateway
+   * @param useNname
+   *       Username of the requested user
+   * @param expName
+   *       Experiment name to be matched
+   * @deprecated
+   *       Instead use searchExperimentsByNameWithPagination
+   * 
+   * 
+   * @param gatewayId
+   * @param userName
+   * @param expName
+   */
   void searchExperimentsByName(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& expName) {
     // Your implementation goes here
     printf("searchExperimentsByName\n");
   }
 
+  /**
+   * Search Experiments by experiment name with pagination. Results will be sorted
+   * based on creation time DESC
+   * 
+   * @param gatewayId
+   *       Identifier of the requested gateway
+   * @param userName
+   *       Username of the requested user
+   * @param expName
+   *       Experiment name to be matched
+   * @param limit
+   *       Amount of results to be fetched
+   * @param offset
+   *       The starting point of the results to be fetched
+   * 
+   * @param gatewayId
+   * @param userName
+   * @param expName
+   * @param limit
+   * @param offset
+   */
   void searchExperimentsByNameWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
     printf("searchExperimentsByNameWithPagination\n");
   }
 
+  /**
+   * Search Experiments by experiment name
+   * 
+   * @param gatewayId
+   *       Identifier of the requested gateway
+   * @param userName
+   *       Username of the requested user
+   * @param description
+   *       Experiment description to be matched
+   * @deprecated
+   *       Instead use searchExperimentsByDescWithPagination
+   * 
+   * @param gatewayId
+   * @param userName
+   * @param description
+   */
   void searchExperimentsByDesc(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description) {
     // Your implementation goes here
     printf("searchExperimentsByDesc\n");
   }
 
+  /**
+   * Search Experiments by experiment name with pagination. Results will be sorted
+   * based on creation time DESC
+   * 
+   * @param gatewayId
+   *       Identifier of the requested gateway
+   * @param userName
+   *       Username of the requested user
+   * @param description
+   *       Experiment description to be matched
+   * @param limit
+   *       Amount of results to be fetched
+   * @param offset
+   *       The starting point of the results to be fetched
+   * 
+   * @param gatewayId
+   * @param userName
+   * @param description
+   * @param limit
+   * @param offset
+   */
   void searchExperimentsByDescWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
     printf("searchExperimentsByDescWithPagination\n");
   }
 
+  /**
+   * Search Experiments by application id
+   * 
+   * @param gatewayId
+   *       Identifier of the requested gateway
+   * @param userName
+   *       Username of the requested user
+   * @param applicationId
+   *       Application id to be matched
+   * @deprecated
+   *       Instead use searchExperimentsByApplicationWithPagination
+   * 
+   * @param gatewayId
+   * @param userName
+   * @param applicationId
+   */
   void searchExperimentsByApplication(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& applicationId) {
     // Your implementation goes here
     printf("searchExperimentsByApplication\n");
   }
 
+  /**
+   * Search Experiments by application id with pagination. Results will be sorted
+   * based on creation time DESC
+   * 
+   * @param gatewayId
+   *       Identifier of the requested gateway
+   * @param userName
+   *       Username of the requested user
+   * @param applicationId
+   *       Application id to be matched
+   * @param limit
+   *       Amount of results to be fetched
+   * @param offset
+   *       The starting point of the results to be fetched
+   * 
+   * @param gatewayId
+   * @param userName
+   * @param applicationId
+   * @param limit
+   * @param offset
+   */
   void searchExperimentsByApplicationWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
     printf("searchExperimentsByApplicationWithPagination\n");
   }
 
+  /**
+   * Search Experiments by experiment status
+   * 
+   * @param gatewayId
+   *       Identifier of the requested gateway
+   * @param userName
+   *       Username of the requested user
+   * @param experimentState
+   *       Experiement state to be matched
+   * @deprecated
+   *       Instead use searchExperimentsByStatusWithPagination
+   * 
+   * @param gatewayId
+   * @param userName
+   * @param experimentState
+   */
   void searchExperimentsByStatus(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState) {
     // Your implementation goes here
     printf("searchExperimentsByStatus\n");
   }
 
+  /**
+   * Search Experiments by experiment status with pagination. Results will be sorted
+   * based on creation time DESC
+   * 
+   * @param gatewayId
+   *       Identifier of the requested gateway
+   * @param userName
+   *       Username of the requested user
+   * @param experimentState
+   *       Experiement state to be matched
+   * @param limit
+   *       Amount of results to be fetched
+   * @param offset
+   *       The starting point of the results to be fetched
+   * 
+   * @param gatewayId
+   * @param userName
+   * @param experimentState
+   * @param limit
+   * @param offset
+   */
   void searchExperimentsByStatusWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
     printf("searchExperimentsByStatusWithPagination\n");
   }
 
+  /**
+   * Search Experiments by experiment creation time
+   * 
+   * @param gatewayId
+   *       Identifier of the requested gateway
+   * @param userName
+   *       Username of the requested user
+   * @param fromTime
+   *       Start time of the experiments creation time
+   * @param toTime
+   *       End time of the  experiement creation time
+   * @deprecated
+   *       Instead use searchExperimentsByCreationTimeWithPagination
+   * 
+   * @param gatewayId
+   * @param userName
+   * @param fromTime
+   * @param toTime
+   */
   void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime) {
     // Your implementation goes here
     printf("searchExperimentsByCreationTime\n");
   }
 
+  /**
+   * Search Experiments by experiment creation time with pagination. Results will be sorted
+   * based on creation time DESC
+   * 
+   * @param gatewayId
+   *       Identifier of the requested gateway
+   * @param userName
+   *       Username of the requested user
+   * @param fromTime
+   *       Start time of the experiments creation time
+   * @param toTime
+   *       End time of the  experiement creation time
+   * @param limit
+   *       Amount of results to be fetched
+   * @param offset
+   *       The starting point of the results to be fetched
+   * 
+   * @param gatewayId
+   * @param userName
+   * @param fromTime
+   * @param toTime
+   * @param limit
+   * @param offset
+   */
   void searchExperimentsByCreationTimeWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
     printf("searchExperimentsByCreationTimeWithPagination\n");
   }
 
+  /**
+   * Search Experiments by using multiple filter criteria with pagination. Results will be sorted
+   * based on creation time DESC
+   * 
+   * @param gatewayId
+   *       Identifier of the requested gateway
+   * @param userName
+   *       Username of the requested user
+   * @param filters
+   *       map of multiple filter criteria.
+   * @param limit
+   *       Amount of results to be fetched
+   * @param offset
+   *       The starting point of the results to be fetched
+   * 
+   * @param gatewayId
+   * @param userName
+   * @param filters
+   * @param limit
+   * @param offset
+   */
   void searchExperiments(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::workspace::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
     printf("searchExperiments\n");
   }
 
+  /**
+   * Get Experiment Statisitics for the given gateway for a specific time period
+   * @param gatewayId
+   *       Identifier of the requested gateway
+   * @param fromTime
+   *       Starting date time
+   * @param toTime
+   *       Ending data time
+   * 
+   * 
+   * @param gatewayId
+   * @param fromTime
+   * @param toTime
+   */
+  void getExperimentStatistics( ::apache::airavata::model::workspace::experiment::ExperimentStatistics& _return, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime) {
+    // Your implementation goes here
+    printf("getExperimentStatistics\n");
+  }
+
+  /**
+   * Get all Experiments within a Project
+   * 
+   * @param projectId
+   *       Identifier of the project
+   * @deprecated
+   *       Instead use  getAllExperimentsInProjectWithPagination
+   * 
+   * @param projectId
+   */
   void getAllExperimentsInProject(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& projectId) {
     // Your implementation goes here
     printf("getAllExperimentsInProject\n");
   }
 
+  /**
+   * Get all Experiments within project with pagination. Results will be sorted
+   * based on creation time DESC
+   * 
+   * @param projectId
+   *       Identifier of the project
+   * @param limit
+   *       Amount of results to be fetched
+   * @param offset
+   *       The starting point of the results to be fetched
+   * 
+   * @param projectId
+   * @param limit
+   * @param offset
+   */
   void getAllExperimentsInProjectWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& projectId, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
     printf("getAllExperimentsInProjectWithPagination\n");
   }
 
+  /**
+   * Get all Experiments by user
+   * 
+   * @param gatewayId
+   *       Identifier of the requesting gateway
+   * @param userName
+   *       Username of the requested user
+   * @deprecated
+   *       Instead use getAllUserExperimentsWithPagination
+   * 
+   * @param gatewayId
+   * @param userName
+   */
   void getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& gatewayId, const std::string& userName) {
     // Your implementation goes here
     printf("getAllUserExperiments\n");
   }
 
+  /**
+   * Get all Experiments by user pagination. Results will be sorted
+   * based on creation time DESC
+   * 
+   * @param gatewayId
+   *       Identifier of the requesting gateway
+   * @param userName
+   *       Username of the requested user
+   * @param limit
+   *       Amount of results to be fetched
+   * @param offset
+   *       The starting point of the results to be fetched
+   * 
+   * @param gatewayId
+   * @param userName
+   * @param limit
+   * @param offset
+   */
   void getAllUserExperimentsWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
     printf("getAllUserExperimentsWithPagination\n");
   }
 
+  /**
+   * Create an experiment for the specified user belonging to the gateway. The gateway identity is not explicitly passed
+   *   but inferred from the authentication header. This experiment is just a persistent place holder. The client
+   *   has to subsequently configure and launch the created experiment. No action is taken on Airavata Server except
+   *   registering the experiment in a persistent store.
+   * 
+   * @param basicExperimentMetadata
+   *    The create experiment will require the basic experiment metadata like the name and description, intended user,
+   *      the gateway identifer and if the experiment should be shared public by defualt. During the creation of an experiment
+   *      the ExperimentMetadata is a required field.
+   * 
+   * @return
+   *   The server-side generated.airavata.registry.core.experiment.globally unique identifier.
+   * 
+   * @throws org.apache.airavata.model.error.InvalidRequestException
+   *    For any incorrect forming of the request itself.
+   * 
+   * @throws org.apache.airavata.model.error.AiravataClientException
+   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   * 
+   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
+   *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
+   *         gateway registration steps and retry this request.
+   * 
+   *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
+   *         For now this is a place holder.
+   * 
+   *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
+   *         is implemented, the authorization will be more substantial.
+   * 
+   * @throws org.apache.airavata.model.error.AiravataSystemException
+   *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+   *       rather an Airavata Administrator will be notified to take corrective action.
+   * 
+   * 
+   * @param gatewayId
+   * @param experiment
+   */
   void createExperiment(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment) {
     // Your implementation goes here
     printf("createExperiment\n");
   }
 
+  /**
+   * Fetch previously created experiment metadata.
+   * 
+   * @param airavataExperimentId
+   *    The identifier for the requested experiment. This is returned during the create experiment step.
+   * 
+   * @return experimentMetada
+   *   This method will return the previously stored experiment metadata.
+   * 
+   * @throws org.apache.airavata.model.error.InvalidRequestException
+   *    For any incorrect forming of the request itself.
+   * 
+   * @throws org.apache.airavata.model.error.ExperimentNotFoundException
+   *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+   * 
+   * @throws org.apache.airavata.model.error.AiravataClientException
+   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   *      
+   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
+   *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
+   *         gateway registration steps and retry this request.
+   * 
+   *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
+   *         For now this is a place holder.
+   * 
+   *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
+   *         is implemented, the authorization will be more substantial.
+   * 
+   * @throws org.apache.airavata.model.error.AiravataSystemException
+   *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+   *       rather an Airavata Administrator will be notified to take corrective action.
+   * 
+   * 
+   * @param airavataExperimentId
+   */
   void getExperiment( ::apache::airavata::model::workspace::experiment::Experiment& _return, const std::string& airavataExperimentId) {
     // Your implementation goes here
     printf("getExperiment\n");
   }
 
+  /**
+   * Configure a previously created experiment with required inputs, scheduling and other quality of service
+   *   parameters. This method only updates the experiment object within the registry. The experiment has to be launched
+   *   to make it actionable by the server.
+   * 
+   * @param airavataExperimentId
+   *    The identifier for the requested experiment. This is returned during the create experiment step.
+   * 
+   * @param experimentConfigurationData
+   *    The configuration information of the experiment with application input parameters, computational resource scheduling
+   *      information, special input output handling and additional quality of service parameters.
+   * 
+   * @return
+   *   This method call does not have a return value.
+   * 
+   * @throws org.apache.airavata.model.error.InvalidRequestException
+   *    For any incorrect forming of the request itself.
+   * 
+   * @throws org.apache.airavata.model.error.ExperimentNotFoundException
+   *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+   * 
+   * @throws org.apache.airavata.model.error.AiravataClientException
+   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   *      
+   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
+   *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
+   *         gateway registration steps and retry this request.
+   * 
+   *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
+   *         For now this is a place holder.
+   * 
+   *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
+   *         is implemented, the authorization will be more substantial.
+   * 
+   * @throws org.apache.airavata.model.error.AiravataSystemException
+   *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+   *       rather an Airavata Administrator will be notified to take corrective action.
+   * 
+   * 
+   * @param airavataExperimentId
+   * @param experiment
+   */
   void updateExperiment(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment) {
     // Your implementation goes here
     printf("updateExperiment\n");
@@ -239,11 +797,68 @@ class AiravataHandler : virtual public AiravataIf {
     printf("updateResourceScheduleing\n");
   }
 
+  /**
+   *  *
+   *  * Validate experiment configuration. A true in general indicates, the experiment is ready to be launched.
+   *  *
+   *  * @param experimentID
+   *  * @return sucess/failure
+   *  *
+   * *
+   * 
+   * @param airavataExperimentId
+   */
   bool validateExperiment(const std::string& airavataExperimentId) {
     // Your implementation goes here
     printf("validateExperiment\n");
   }
 
+  /**
+   * Launch a previously created and configured experiment. Airavata Server will then start processing the request and appropriate
+   *   notifications and intermediate and output data will be subsequently available for this experiment.
+   * 
+   * @param airavataExperimentId
+   *    The identifier for the requested experiment. This is returned during the create experiment step.
+   * 
+   * @param airavataCredStoreToken:
+   *   A requirement to execute experiments within Airavata is to first register the targeted remote computational account
+   *     credentials with Airavata Credential Store. The administrative API (related to credential store) will return a
+   *     generated token associated with the registered credentials. The client has to security posses this token id and is
+   *     required to pass it to Airavata Server for all execution requests.
+   *   Note: At this point only the credential store token is required so the string is directly passed here. In future if
+   *     if more security credentials are enables, then the structure ExecutionSecurityParameters should be used.
+   *   Note: This parameter is not persisted within Airavata Registry for security reasons.
+   * 
+   * @return
+   *   This method call does not have a return value.
+   * 
+   * @throws org.apache.airavata.model.error.InvalidRequestException
+   *    For any incorrect forming of the request itself.
+   * 
+   * @throws org.apache.airavata.model.error.ExperimentNotFoundException
+   *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+   * 
+   * @throws org.apache.airavata.model.error.AiravataClientException
+   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   *      
+   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
+   *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
+   *         gateway registration steps and retry this request.
+   * 
+   *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
+   *         For now this is a place holder.
+   * 
+   *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
+   *         is implemented, the authorization will be more substantial.
+   * 
+   * @throws org.apache.airavata.model.error.AiravataSystemException
+   *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+   *       rather an Airavata Administrator will be notified to take corrective action.
+   * 
+   * 
+   * @param airavataExperimentId
+   * @param airavataCredStoreToken
+   */
   void launchExperiment(const std::string& airavataExperimentId, const std::string& airavataCredStoreToken) {
     // Your implementation goes here
     printf("launchExperiment\n");
@@ -279,26 +894,145 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getDataTransferDetails\n");
   }
 
+  /**
+   * Clone an specified experiment with a new name. A copy of the experiment configuration is made and is persisted with new metadata.
+   *   The client has to subsequently update this configuration if needed and launch the cloned experiment.
+   * 
+   * @param newExperimentName
+   *    experiment name that should be used in the cloned experiment
+   * 
+   * @param updatedExperiment
+   *    Once an experiment is cloned, to disambiguate, the users are suggested to provide new metadata. This will again require
+   *      the basic experiment metadata like the name and description, intended user, the gateway identifier and if the experiment
+   *      should be shared public by default.
+   * 
+   * @return
+   *   The server-side generated.airavata.registry.core.experiment.globally unique identifier for the newly cloned experiment.
+   * 
+   * @throws org.apache.airavata.model.error.InvalidRequestException
+   *    For any incorrect forming of the request itself.
+   * 
+   * @throws org.apache.airavata.model.error.ExperimentNotFoundException
+   *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+   * 
+   * @throws org.apache.airavata.model.error.AiravataClientException
+   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   *      
+   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
+   *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
+   *         gateway registration steps and retry this request.
+   * 
+   *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
+   *         For now this is a place holder.
+   * 
+   *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
+   *         is implemented, the authorization will be more substantial.
+   * 
+   * @throws org.apache.airavata.model.error.AiravataSystemException
+   *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+   *       rather an Airavata Administrator will be notified to take corrective action.
+   * 
+   * 
+   * @param existingExperimentID
+   * @param newExperimentName
+   */
   void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const std::string& newExperimentName) {
     // Your implementation goes here
     printf("cloneExperiment\n");
   }
 
+  /**
+   * Terminate a running experiment.
+   * 
+   * @param airavataExperimentId
+   *    The identifier for the requested experiment. This is returned during the create experiment step.
+   * 
+   * @return
+   *   This method call does not have a return value.
+   * 
+   * @throws org.apache.airavata.model.error.InvalidRequestException
+   *    For any incorrect forming of the request itself.
+   * 
+   * @throws org.apache.airavata.model.error.ExperimentNotFoundException
+   *    If the specified experiment is not previously created, then an Experiment Not Found Exception is thrown.
+   * 
+   * @throws org.apache.airavata.model.error.AiravataClientException
+   *    The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
+   *      
+   *      UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
+   *         step, then Airavata Registry will not have a provenance area setup. The client has to follow
+   *         gateway registration steps and retry this request.
+   * 
+   *      AUTHENTICATION_FAILURE - How Authentication will be implemented is yet to be determined.
+   *         For now this is a place holder.
+   * 
+   *      INVALID_AUTHORIZATION - This will throw an authorization exception. When a more robust security hand-shake
+   *         is implemented, the authorization will be more substantial.
+   * 
+   * @throws org.apache.airavata.model.error.AiravataSystemException
+   *    This exception will be thrown for any Airavata Server side issues and if the problem cannot be corrected by the client
+   *       rather an Airavata Administrator will be notified to take corrective action.
+   * 
+   * 
+   * @param airavataExperimentId
+   * @param tokenId
+   */
   void terminateExperiment(const std::string& airavataExperimentId, const std::string& tokenId) {
     // Your implementation goes here
     printf("terminateExperiment\n");
   }
 
+  /**
+   * Register a Application Module.
+   * 
+   * @param applicationModule
+   *    Application Module Object created from the datamodel.
+   * 
+   * @return appModuleId
+   *   Returns a server-side generated airavata appModule globally unique identifier.
+   * 
+   * 
+   * @param gatewayId
+   * @param applicationModule
+   */
   void registerApplicationModule(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) {
     // Your implementation goes here
     printf("registerApplicationModule\n");
   }
 
+  /**
+   * Fetch a Application Module.
+   * 
+   * @param appModuleId
+   *   The identifier for the requested application module
+   * 
+   * @return applicationModule
+   *   Returns a application Module Object.
+   * 
+   * 
+   * @param appModuleId
+   */
   void getApplicationModule( ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& _return, const std::string& appModuleId) {
     // Your implementation goes here
     printf("getApplicationModule\n");
   }
 
+  /**
+   * Update a Application Module.
+   * 
+   * @param appModuleId
+   *   The identifier for the requested application module to be updated.
+   * 
+   * @param applicationModule
+   *    Application Module Object created from the datamodel.
+   * 
+   * @return status
+   *   Returns a success/failure of the update.
+   * 
+   * 
+   * @param appModuleId
+   * @param applicationModule
+   */
   bool updateApplicationModule(const std::string& appModuleId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) {
     // Your implementation goes here
     printf("updateApplicationModule\n");
@@ -309,161 +1043,587 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getAllAppModules\n");
   }
 
+  /**
+   * Delete a Application Module.
+   * 
+   * @param appModuleId
+   *   The identifier for the requested application module to be deleted.
+   * 
+   * @return status
+   *   Returns a success/failure of the deletion.
+   * 
+   * 
+   * @param appModuleId
+   */
   bool deleteApplicationModule(const std::string& appModuleId) {
     // Your implementation goes here
     printf("deleteApplicationModule\n");
   }
 
+  /**
+   * Register a Application Deployment.
+   * 
+   * @param applicationModule
+   *    Application Module Object created from the datamodel.
+   * 
+   * @return appDeploymentId
+   *   Returns a server-side generated airavata appDeployment globally unique identifier.
+   * 
+   * 
+   * @param gatewayId
+   * @param applicationDeployment
+   */
   void registerApplicationDeployment(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment) {
     // Your implementation goes here
     printf("registerApplicationDeployment\n");
   }
 
+  /**
+   * Fetch a Application Deployment.
+   * 
+   * @param appDeploymentId
+   *   The identifier for the requested application module
+   * 
+   * @return applicationDeployment
+   *   Returns a application Deployment Object.
+   * 
+   * 
+   * @param appDeploymentId
+   */
   void getApplicationDeployment( ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& _return, const std::string& appDeploymentId) {
     // Your implementation goes here
     printf("getApplicationDeployment\n");
   }
 
+  /**
+   * Update a Application Deployment.
+   * 
+   * @param appDeploymentId
+   *   The identifier for the requested application deployment to be updated.
+   * 
+   * @param appDeployment
+   *    Application Deployment Object created from the datamodel.
+   * 
+   * @return status
+   *   Returns a success/failure of the update.
+   * 
+   * 
+   * @param appDeploymentId
+   * @param applicationDeployment
+   */
   bool updateApplicationDeployment(const std::string& appDeploymentId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment) {
     // Your implementation goes here
     printf("updateApplicationDeployment\n");
   }
 
+  /**
+   * Delete a Application deployment.
+   * 
+   * @param appDeploymentId
+   *   The identifier for the requested application deployment to be deleted.
+   * 
+   * @return status
+   *   Returns a success/failure of the deletion.
+   * 
+   * 
+   * @param appDeploymentId
+   */
   bool deleteApplicationDeployment(const std::string& appDeploymentId) {
     // Your implementation goes here
     printf("deleteApplicationDeployment\n");
   }
 
+  /**
+   * Fetch all Application Deployment Descriptions.
+   * 
+   * @return list<applicationDeployment.
+   *   Returns the list of all application Deployment Objects.
+   * 
+   * 
+   * @param gatewayId
+   */
   void getAllApplicationDeployments(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> & _return, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getAllApplicationDeployments\n");
   }
 
+  /**
+   * Fetch a list of Deployed Compute Hosts.
+   * 
+   * @param appModuleId
+   *   The identifier for the requested application module
+   * 
+   * @return list<string>
+   *   Returns a list of Deployed Resources.
+   * 
+   * 
+   * @param appModuleId
+   */
   void getAppModuleDeployedResources(std::vector<std::string> & _return, const std::string& appModuleId) {
     // Your implementation goes here
     printf("getAppModuleDeployedResources\n");
   }
 
+  /**
+   * Register a Application Interface.
+   * 
+   * @param applicationModule
+   *    Application Module Object created from the datamodel.
+   * 
+   * @return appInterfaceId
+   *   Returns a server-side generated airavata application interface globally unique identifier.
+   * 
+   * 
+   * @param gatewayId
+   * @param applicationInterface
+   */
   void registerApplicationInterface(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface) {
     // Your implementation goes here
     printf("registerApplicationInterface\n");
   }
 
+  /**
+   * Fetch a Application Interface.
+   * 
+   * @param appInterfaceId
+   *   The identifier for the requested application module
+   * 
+   * @return applicationInterface
+   *   Returns a application Interface Object.
+   * 
+   * 
+   * 
+   * @param appInterfaceId
+   */
   void getApplicationInterface( ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& _return, const std::string& appInterfaceId) {
     // Your implementation goes here
     printf("getApplicationInterface\n");
   }
 
+  /**
+   * Update a Application Interface.
+   * 
+   * @param appInterfaceId
+   *   The identifier for the requested application deployment to be updated.
+   * 
+   * @param appInterface
+   *    Application Interface Object created from the datamodel.
+   * 
+   * @return status
+   *   Returns a success/failure of the update.
+   * 
+   * 
+   * 
+   * @param appInterfaceId
+   * @param applicationInterface
+   */
   bool updateApplicationInterface(const std::string& appInterfaceId, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface) {
     // Your implementation goes here
     printf("updateApplicationInterface\n");
   }
 
+  /**
+   * Delete a Application Interface.
+   * 
+   * @param appInterfaceId
+   *   The identifier for the requested application interface to be deleted.
+   * 
+   * @return status
+   *   Returns a success/failure of the deletion.
+   * 
+   * 
+   * 
+   * @param appInterfaceId
+   */
   bool deleteApplicationInterface(const std::string& appInterfaceId) {
     // Your implementation goes here
     printf("deleteApplicationInterface\n");
   }
 
+  /**
+   * Fetch name and id of  Application Interface documents.
+   * 
+   * 
+   * @return map<applicationId, applicationInterfaceNames>
+   *   Returns a list of application interfaces with corresponsing id's
+   * 
+   * 
+   * @param gatewayId
+   */
   void getAllApplicationInterfaceNames(std::map<std::string, std::string> & _return, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getAllApplicationInterfaceNames\n");
   }
 
+  /**
+   * Fetch all Application Interface documents.
+   * 
+   * 
+   * @return map<applicationId, applicationInterfaceNames>
+   *   Returns a list of application interfaces documents
+   * 
+   * 
+   * @param gatewayId
+   */
   void getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & _return, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getAllApplicationInterfaces\n");
   }
 
+  /**
+   * Fetch the list of Application Inputs.
+   * 
+   * @param appInterfaceId
+   *   The identifier for the requested application interface
+   * 
+   * @return list<application_interface_model.InputDataObjectType>
+   *   Returns a list of application inputs.
+   * 
+   * 
+   * @param appInterfaceId
+   */
   void getApplicationInputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> & _return, const std::string& appInterfaceId) {
     // Your implementation goes here
     printf("getApplicationInputs\n");
   }
 
+  /**
+   * Fetch the list of Application Outputs.
+   * 
+   * @param appInterfaceId
+   *   The identifier for the requested application interface
+   * 
+   * @return list<application_interface_model.OutputDataObjectType>
+   *   Returns a list of application outputs.
+   * 
+   * 
+   * @param appInterfaceId
+   */
   void getApplicationOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& appInterfaceId) {
     // Your implementation goes here
     printf("getApplicationOutputs\n");
   }
 
+  /**
+   * Fetch a list of all deployed Compute Hosts for a given application interfaces.
+   * 
+   * @param appInterfaceId
+   *   The identifier for the requested application interface
+   * 
+   * @return map<computeResourceId, computeResourceName>
+   *   A map of registered compute resource id's and their corresponding hostnames.
+   *    Deployments of each modules listed within the interfaces will be listed.
+   * 
+   * 
+   * @param appInterfaceId
+   */
   void getAvailableAppInterfaceComputeResources(std::map<std::string, std::string> & _return, const std::string& appInterfaceId) {
     // Your implementation goes here
     printf("getAvailableAppInterfaceComputeResources\n");
   }
 
+  /**
+   * Register a Compute Resource.
+   * 
+   * @param computeResourceDescription
+   *    Compute Resource Object created from the datamodel.
+   * 
+   * @return computeResourceId
+   *   Returns a server-side generated airavata compute resource globally unique identifier.
+   * 
+   * 
+   * @param computeResourceDescription
+   */
   void registerComputeResource(std::string& _return, const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& computeResourceDescription) {
     // Your implementation goes here
     printf("registerComputeResource\n");
   }
 
+  /**
+   * Fetch the given Compute Resource.
+   * 
+   * @param computeResourceId
+   *   The identifier for the requested compute resource
+   * 
+   * @return computeResourceDescription
+   *    Compute Resource Object created from the datamodel..
+   * 
+   * 
+   * @param computeResourceId
+   */
   void getComputeResource( ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& _return, const std::string& computeResourceId) {
     // Your implementation goes here
     printf("getComputeResource\n");
   }
 
+  /**
+   * Fetch all registered Compute Resources.
+   * 
+   * @return A map of registered compute resource id's and thier corresponding hostnames.
+   *    Compute Resource Object created from the datamodel..
+   * 
+   */
   void getAllComputeResourceNames(std::map<std::string, std::string> & _return) {
     // Your implementation goes here
     printf("getAllComputeResourceNames\n");
   }
 
+  /**
+   * Update a Compute Resource.
+   * 
+   * @param computeResourceId
+   *   The identifier for the requested compute resource to be updated.
+   * 
+   * @param computeResourceDescription
+   *    Compute Resource Object created from the datamodel.
+   * 
+   * @return status
+   *   Returns a success/failure of the update.
+   * 
+   * 
+   * @param computeResourceId
+   * @param computeResourceDescription
+   */
   bool updateComputeResource(const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& computeResourceDescription) {
     // Your implementation goes here
     printf("updateComputeResource\n");
   }
 
+  /**
+   * Delete a Compute Resource.
+   * 
+   * @param computeResourceId
+   *   The identifier for the requested compute resource to be deleted.
+   * 
+   * @return status
+   *   Returns a success/failure of the deletion.
+   * 
+   * 
+   * @param computeResourceId
+   */
   bool deleteComputeResource(const std::string& computeResourceId) {
     // Your implementation goes here
     printf("deleteComputeResource\n");
   }
 
+  /**
+   * Add a Local Job Submission details to a compute resource
+   *  App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
+   * 
+   * @param computeResourceId
+   *   The identifier of the compute resource to which JobSubmission protocol to be added
+   * 
+   * @param priorityOrder
+   *   Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+   * 
+   * @param localSubmission
+   *   The LOCALSubmission object to be added to the resource.
+   * 
+   * @return status
+   *   Returns the unique job submission id.
+   * 
+   * 
+   * @param computeResourceId
+   * @param priorityOrder
+   * @param localSubmission
+   */
   void addLocalSubmissionDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission) {
     // Your implementation goes here
     printf("addLocalSubmissionDetails\n");
   }
 
+  /**
+   * Update the given Local Job Submission details
+   * 
+   * @param jobSubmissionInterfaceId
+   *   The identifier of the JobSubmission Interface to be updated.
+   * 
+   * @param localSubmission
+   *   The LOCALSubmission object to be updated.
+   * 
+   * @return status
+   *   Returns a success/failure of the deletion.
+   * 
+   * 
+   * @param jobSubmissionInterfaceId
+   * @param localSubmission
+   */
   bool updateLocalSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission) {
     // Your implementation goes here
     printf("updateLocalSubmissionDetails\n");
   }
 
+  /**
+   * This method returns localJobSubmission object
+   * @param jobSubmissionInterfaceId
+   *   The identifier of the JobSubmission Interface to be retrieved.
+   *  @return LOCALSubmission instance
+   * 
+   * 
+   * @param jobSubmissionId
+   */
   void getLocalJobSubmission( ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& _return, const std::string& jobSubmissionId) {
     // Your implementation goes here
     printf("getLocalJobSubmission\n");
   }
 
+  /**
+   * Add a SSH Job Submission details to a compute resource
+   *  App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
+   * 
+   * @param computeResourceId
+   *   The identifier of the compute resource to which JobSubmission protocol to be added
+   * 
+   * @param priorityOrder
+   *   Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+   * 
+   * @param sshJobSubmission
+   *   The SSHJobSubmission object to be added to the resource.
+   * 
+   * @return status
+   *   Returns the unique job submission id.
+   * 
+   * 
+   * @param computeResourceId
+   * @param priorityOrder
+   * @param sshJobSubmission
+   */
   void addSSHJobSubmissionDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission) {
     // Your implementation goes here
     printf("addSSHJobSubmissionDetails\n");
   }
 
+  /**
+   * This method returns SSHJobSubmission object
+   * @param jobSubmissionInterfaceId
+   *   The identifier of the JobSubmission Interface to be retrieved.
+   *  @return SSHJobSubmission instance
+   * 
+   * 
+   * @param jobSubmissionId
+   */
   void getSSHJobSubmission( ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& _return, const std::string& jobSubmissionId) {
     // Your implementation goes here
     printf("getSSHJobSubmission\n");
   }
 
+  /**
+   * Add a UNICORE Job Submission details to a compute resource
+   *  App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
+   * 
+   * @param computeResourceId
+   *   The identifier of the compute resource to which JobSubmission protocol to be added
+   * 
+   * @param priorityOrder
+   *   Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+   * 
+   * @param unicoreJobSubmission
+   *   The UnicoreJobSubmission object to be added to the resource.
+   * 
+   * @return status
+   *  Returns the unique job submission id.
+   * 
+   * 
+   * @param computeResourceId
+   * @param priorityOrder
+   * @param unicoreJobSubmission
+   */
   void addUNICOREJobSubmissionDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& unicoreJobSubmission) {
     // Your implementation goes here
     printf("addUNICOREJobSubmissionDetails\n");
   }
 
+  /**
+   *   * This method returns UnicoreJobSubmission object
+   *   * @param jobSubmissionInterfaceId
+   *   *   The identifier of the JobSubmission Interface to be retrieved.
+   *   *  @return UnicoreJobSubmission instance
+   * *
+   * 
+   * @param jobSubmissionId
+   */
   void getUnicoreJobSubmission( ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& _return, const std::string& jobSubmissionId) {
     // Your implementation goes here
     printf("getUnicoreJobSubmission\n");
   }
 
+  /**
+   *    * Add a Cloud Job Submission details to a compute resource
+   *    *  App catalog will return a jobSubmissionInterfaceId which will be added to the jobSubmissionInterfaces.
+   *    *
+   *    * @param computeResourceId
+   *    *   The identifier of the compute resource to which JobSubmission protocol to be added
+   *    *
+   *    * @param priorityOrder
+   *    *   Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+   *    *
+   *    * @param sshJobSubmission
+   *    *   The SSHJobSubmission object to be added to the resource.
+   *    *
+   *    * @return status
+   *    *   Returns the unique job submission id.
+   * *
+   * 
+   * @param computeResourceId
+   * @param priorityOrder
+   * @param cloudSubmission
+   */
   void addCloudJobSubmissionDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& cloudSubmission) {
     // Your implementation goes here
     printf("addCloudJobSubmissionDetails\n");
   }
 
+  /**
+   *    * This method returns cloudJobSubmission object
+   *    * @param jobSubmissionInterfaceI
+   *        *   The identifier of the JobSubmission Interface to be retrieved.
+   *    *  @return CloudJobSubmission instance
+   * *
+   * 
+   * @param jobSubmissionId
+   */
   void getCloudJobSubmission( ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& _return, const std::string& jobSubmissionId) {
     // Your implementation goes here
     printf("getCloudJobSubmission\n");
   }
 
+  /**
+   * Update the given SSH Job Submission details
+   * 
+   * @param jobSubmissionInterfaceId
+   *   The identifier of the JobSubmission Interface to be updated.
+   * 
+   * @param sshJobSubmission
+   *   The SSHJobSubmission object to be updated.
+   * 
+   * @return status
+   *   Returns a success/failure of the deletion.
+   * 
+   * 
+   * @param jobSubmissionInterfaceId
+   * @param sshJobSubmission
+   */
   bool updateSSHJobSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission) {
     // Your implementation goes here
     printf("updateSSHJobSubmissionDetails\n");
   }
 
+  /**
+   * Update the given SSH Job Submission details
+   * 
+   * @param jobSubmissionInterfaceId
+   *   The identifier of the JobSubmission Interface to be updated.
+   * 
+   * @param cloudJobSubmission
+   *   The CloudJobSubmission object to be updated.
+   * 
+   * @return status
+   *   Returns a success/failure of the deletion.
+   * 
+   * 
+   * @param jobSubmissionInterfaceId
+   * @param sshJobSubmission
+   */
   bool updateCloudJobSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& sshJobSubmission) {
     // Your implementation goes here
     printf("updateCloudJobSubmissionDetails\n");
@@ -474,31 +1634,124 @@ class AiravataHandler : virtual public AiravataIf {
     printf("updateUnicoreJobSubmissionDetails\n");
   }
 
+  /**
+   * Add a Local data movement details to a compute resource
+   *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
+   * 
+   * @param computeResourceId
+   *   The identifier of the compute resource to which JobSubmission protocol to be added
+   * 
+   * @param priorityOrder
+   *   Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+   * 
+   * @param localDataMovement
+   *   The LOCALDataMovement object to be added to the resource.
+   * 
+   * @return status
+   *   Returns the unique job submission id.
+   * 
+   * 
+   * @param computeResourceId
+   * @param priorityOrder
+   * @param localDataMovement
+   */
   void addLocalDataMovementDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement) {
     // Your implementation goes here
     printf("addLocalDataMovementDetails\n");
   }
 
+  /**
+   * Update the given Local data movement details
+   * 
+   * @param dataMovementInterfaceId
+   *   The identifier of the data movement Interface to be updated.
+   * 
+   * @param localDataMovement
+   *   The LOCALDataMovement object to be updated.
+   * 
+   * @return status
+   *   Returns a success/failure of the update.
+   * 
+   * 
+   * @param dataMovementInterfaceId
+   * @param localDataMovement
+   */
   bool updateLocalDataMovementDetails(const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement) {
     // Your implementation goes here
     printf("updateLocalDataMovementDetails\n");
   }
 
+  /**
+   *         * This method returns local datamovement object
+   *         * @param dataMovementId
+   *         *   The identifier of the datamovement Interface to be retrieved.
+   *         *  @return LOCALDataMovement instance
+   * *
+   * 
+   * @param dataMovementId
+   */
   void getLocalDataMovement( ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& _return, const std::string& dataMovementId) {
     // Your implementation goes here
     printf("getLocalDataMovement\n");
   }
 
+  /**
+   * Add a SCP data movement details to a compute resource
+   *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
+   * 
+   * @param computeResourceId
+   *   The identifier of the compute resource to which JobSubmission protocol to be added
+   * 
+   * @param priorityOrder
+   *   Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+   * 
+   * @param scpDataMovement
+   *   The SCPDataMovement object to be added to the resource.
+   * 
+   * @return status
+   *   Returns the unique job submission id.
+   * 
+   * 
+   * @param computeResourceId
+   * @param priorityOrder
+   * @param scpDataMovement
+   */
   void addSCPDataMovementDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement) {
     // Your implementation goes here
     printf("addSCPDataMovementDetails\n");
   }
 
+  /**
+   * Update the given scp data movement details
+   *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
+   * 
+   * @param dataMovementInterfaceId
+   *   The identifier of the data movement Interface to be updated.
+   * 
+   * @param scpDataMovement
+   *   The SCPDataMovement object to be updated.
+   * 
+   * @return status
+   *   Returns a success/failure of the update.
+   * 
+   * 
+   * @param dataMovementInterfaceId
+   * @param scpDataMovement
+   */
   bool updateSCPDataMovementDetails(const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement) {
     // Your implementation goes here
     printf("updateSCPDataMovementDetails\n");
   }
 
+  /**
+   *   * This method returns SCP datamovement object
+   *   * @param dataMovementId
+   *      *   The identifier of the datamovement Interface to be retrieved.
+   *      *  @return SCPDataMovement instance
+   * *
+   * 
+   * @param dataMovementId
+   */
   void getSCPDataMovement( ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& _return, const std::string& dataMovementId) {
     // Your implementation goes here
     printf("getSCPDataMovement\n");
@@ -519,46 +1772,175 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getUnicoreDataMovement\n");
   }
 
+  /**
+   * Add a GridFTP data movement details to a compute resource
+   *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
+   * 
+   * @param computeResourceId
+   *   The identifier of the compute resource to which JobSubmission protocol to be added
+   * 
+   * @param priorityOrder
+   *   Specify the priority of this job manager. If this is the only jobmanager, the priority can be zero.
+   * 
+   * @param gridFTPDataMovement
+   *   The GridFTPDataMovement object to be added to the resource.
+   * 
+   * @return status
+   *   Returns the unique job submission id.
+   * 
+   * 
+   * @param computeResourceId
+   * @param priorityOrder
+   * @param gridFTPDataMovement
+   */
   void addGridFTPDataMovementDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement) {
     // Your implementation goes here
     printf("addGridFTPDataMovementDetails\n");
   }
 
+  /**
+   * Update the given GridFTP data movement details to a compute resource
+   *  App catalog will return a dataMovementInterfaceId which will be added to the dataMovementInterfaces.
+   * 
+   * @param dataMovementInterfaceId
+   *   The identifier of the data movement Interface to be updated.
+   * 
+   * @param gridFTPDataMovement
+   *   The GridFTPDataMovement object to be updated.
+   * 
+   * @return status
+   *   Returns a success/failure of the updation.
+   * 
+   * 
+   * @param dataMovementInterfaceId
+   * @param gridFTPDataMovement
+   */
   bool updateGridFTPDataMovementDetails(const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement) {
     // Your implementation goes here
     printf("updateGridFTPDataMovementDetails\n");
   }
 
+  /**
+   *   * This method returns GridFTP datamovement object
+   *   * @param dataMovementId
+   *      *   The identifier of the datamovement Interface to be retrieved.
+   *   *  @return GridFTPDataMovement instance
+   * *
+   * 
+   * @param dataMovementId
+   */
   void getGridFTPDataMovement( ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& _return, const std::string& dataMovementId) {
     // Your implementation goes here
     printf("getGridFTPDataMovement\n");
   }
 
+  /**
+   * Change the priority of a given job submisison interface
+   * 
+   * @param jobSubmissionInterfaceId
+   *   The identifier of the JobSubmission Interface to be changed
+   * 
+   * @param priorityOrder
+   *   The new priority of the job manager interface.
+   * 
+   * @return status
+   *   Returns a success/failure of the change.
+   * 
+   * 
+   * @param jobSubmissionInterfaceId
+   * @param newPriorityOrder
+   */
   bool changeJobSubmissionPriority(const std::string& jobSubmissionInterfaceId, const int32_t newPriorityOrder) {
     // Your implementation goes here
     printf("changeJobSubmissionPriority\n");
   }
 
+  /**
+   * Change the priority of a given data movement interface
+   * 
+   * @param dataMovementInterfaceId
+   *   The identifier of the DataMovement Interface to be changed
+   * 
+   * @param priorityOrder
+   *   The new priority of the data movement interface.
+   * 
+   * @return status
+   *   Returns a success/failure of the change.
+   * 
+   * 
+   * @param dataMovementInterfaceId
+   * @param newPriorityOrder
+   */
   bool changeDataMovementPriority(const std::string& dataMovementInterfaceId, const int32_t newPriorityOrder) {
     // Your implementation goes here
     printf("changeDataMovementPriority\n");
   }
 
+  /**
+   * Change the priorities of a given set of job submission interfaces
+   * 
+   * @param jobSubmissionPriorityMap
+   *   A Map of identifiers of the JobSubmission Interfaces and thier associated priorities to be set.
+   * 
+   * @return status
+   *   Returns a success/failure of the changes.
+   * 
+   * 
+   * @param jobSubmissionPriorityMap
+   */
   bool changeJobSubmissionPriorities(const std::map<std::string, int32_t> & jobSubmissionPriorityMap) {
     // Your implementation goes here
     printf("changeJobSubmissionPriorities\n");
   }
 
+  /**
+   * Change the priorities of a given set of data movement interfaces
+   * 
+   * @param dataMovementPriorityMap
+   *   A Map of identifiers of the DataMovement Interfaces and thier associated priorities to be set.
+   * 
+   * @return status
+   *   Returns a success/failure of the changes.
+   * 
+   * 
+   * @param dataMovementPriorityMap
+   */
   bool changeDataMovementPriorities(const std::map<std::string, int32_t> & dataMovementPriorityMap) {
     // Your implementation goes here
     printf("changeDataMovementPriorities\n");
   }
 
+  /**
+   * Delete a given job submisison interface
+   * 
+   * @param jobSubmissionInterfaceId
+   *   The identifier of the JobSubmission Interface to be changed
+   * 
+   * @return status
+   *   Returns a success/failure of the deletion.
+   * 
+   * 
+   * @param computeResourceId
+   * @param jobSubmissionInterfaceId
+   */
   bool deleteJobSubmissionInterface(const std::string& computeResourceId, const std::string& jobSubmissionInterfaceId) {
     // Your implementation goes here
     printf("deleteJobSubmissionInterface\n");
   }
 
+  /**
+   * Delete a given data movement interface
+   * 
+   * @param dataMovementInterfaceId
+   *   The identifier of the DataMovement Interface to be changed
+   * 
+   * @return status
+   *   Returns a success/failure of the deletion.
+   * 
+   * 
+   * @param computeResourceId
+   * @param dataMovementInterfaceId
+   */
   bool deleteDataMovementInterface(const std::string& computeResourceId, const std::string& dataMovementInterfaceId) {
     // Your implementation goes here
     printf("deleteDataMovementInterface\n");
@@ -589,51 +1971,194 @@ class AiravataHandler : virtual public AiravataIf {
     printf("deleteBatchQueue\n");
   }
 
+  /**
+   * Register a Gateway Resource Profile.
+   * 
+   * @param gatewayResourceProfile
+   *    Gateway Resource Profile Object.
+   *    The GatewayID should be obtained from Airavata gateway registration and passed to register a corresponding
+   *      resource profile.
+   * 
+   * @return status
+   *   Returns a success/failure of the update.
+   * 
+   * 
+   * @param gatewayResourceProfile
+   */
   void registerGatewayResourceProfile(std::string& _return, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile) {
     // Your implementation goes here
     printf("registerGatewayResourceProfile\n");
   }
 
+  /**
+   * Fetch the given Gateway Resource Profile.
+   * 
+   * @param gatewayID
+   *   The identifier for the requested gateway resource
+   * 
+   * @return gatewayResourceProfile
+   *    Gateway Resource Profile Object.
+   * 
+   * 
+   * @param gatewayID
+   */
   void getGatewayResourceProfile( ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& _return, const std::string& gatewayID) {
     // Your implementation goes here
     printf("getGatewayResourceProfile\n");
   }
 
+  /**
+   * Update a Gateway Resource Profile.
+   * 
+   * @param gatewayID
+   *   The identifier for the requested gateway resource to be updated.
+   * 
+   * @param gatewayResourceProfile
+   *    Gateway Resource Profile Object.
+   * 
+   * @return status
+   *   Returns a success/failure of the update.
+   * 
+   * 
+   * @param gatewayID
+   * @param gatewayResourceProfile
+   */
   bool updateGatewayResourceProfile(const std::string& gatewayID, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile) {
     // Your implementation goes here
     printf("updateGatewayResourceProfile\n");
   }
 
+  /**
+   * Delete the given Gateway Resource Profile.
+   * 
+   * @param gatewayID
+   *   The identifier for the requested gateway resource to be deleted.
+   * 
+   * @return status
+   *   Returns a success/failure of the deletion.
+   * 
+   * 
+   * @param gatewayID
+   */
   bool deleteGatewayResourceProfile(const std::string& gatewayID) {
     // Your implementation goes here
     printf("deleteGatewayResourceProfile\n");
   }
 
+  /**
+   * Add a Compute Resource Preference to a registered gateway profile.
+   * 
+   * @param gatewayID
+   *   The identifier for the gateway profile to be added.
+   * 
+   * @param computeResourceId
+   *   Preferences related to a particular compute resource
+   * 
+   * @param computeResourcePreference
+   *   The ComputeResourcePreference object to be added to the resource profile.
+   * 
+   * @return status
+   *   Returns a success/failure of the addition. If a profile already exists, this operation will fail.
+   *    Instead an update should be used.
+   * 
+   * 
+   * @param gatewayID
+   * @param computeResourceId
+   * @param computeResourcePreference
+   */
   bool addGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& computeResourcePreference) {
     // Your implementation goes here
     printf("addGatewayComputeResourcePreference\n");
   }
 
+  /**
+   * Fetch a Compute Resource Preference of a registered gateway profile.
+   * 
+   * @param gatewayID
+   *   The identifier for the gateway profile to be requested
+   * 
+   * @param computeResourceId
+   *   Preferences related to a particular compute resource
+   * 
+   * @return computeResourcePreference
+   *   Returns the ComputeResourcePreference object.
+   * 
+   * 
+   * @param gatewayID
+   * @param computeResourceId
+   */
   void getGatewayComputeResourcePreference( ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& _return, const std::string& gatewayID, const std::string& computeResourceId) {
     // Your implementation goes here
     printf("getGatewayComputeResourcePreference\n");
   }
 
+  /**
+   * Fetch all Compute Resource Preferences of a registered gateway profile.
+   * 
+   * @param gatewayID
+   *   The identifier for the gateway profile to be requested
+   * 
+   * @return computeResourcePreference
+   *   Returns the ComputeResourcePreference object.
+   * 
+   * 
+   * @param gatewayID
+   */
   void getAllGatewayComputeResourcePreferences(std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference> & _return, const std::string& gatewayID) {
     // Your implementation goes here
     printf("getAllGatewayComputeResourcePreferences\n");
   }
 
+  /**
+   * Fetch all gateway profiles registered
+   * 
+   */
   void getAllGatewayComputeResources(std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile> & _return) {
     // Your implementation goes here
     printf("getAllGatewayComputeResources\n");
   }
 
+  /**
+   * Update a Compute Resource Preference to a registered gateway profile.
+   * 
+   * @param gatewayID
+   *   The identifier for the gateway profile to be updated.
+   * 
+   * @param computeResourceId
+   *   Preferences related to a particular compute resource
+   * 
+   * @param computeResourcePreference
+   *   The ComputeResourcePreference object to be updated to the resource profile.
+   * 
+   * @return status
+   *   Returns a success/failure of the updation.
+   * 
+   * 
+   * @param gatewayID
+   * @param computeResourceId
+   * @param computeResourcePreference
+   */
   bool updateGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& computeResourcePreference) {
     // Your implementation goes here
     printf("updateGatewayComputeResourcePreference\n");
   }
 
+  /**
+   * Delete the Compute Resource Preference of a registered gateway profile.
+   * 
+   * @param gatewayID
+   *   The identifier for the gateway profile to be deleted.
+   * 
+   * @param computeResourceId
+   *   Preferences related to a particular compute resource
+   * 
+   * @return status
+   *   Returns a success/failure of the deletion.
+   * 
+   * 
+   * @param gatewayID
+   * @param computeResourceId
+   */
   bool deleteGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId) {
     // Your implementation goes here
     printf("deleteGatewayComputeResourcePreference\n");

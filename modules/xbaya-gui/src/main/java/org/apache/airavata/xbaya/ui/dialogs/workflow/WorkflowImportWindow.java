@@ -41,8 +41,6 @@ import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.InvalidRequestException;
-import org.apache.airavata.workflow.model.graph.ws.WSGraph;
-import org.apache.airavata.workflow.model.graph.ws.WSGraphFactory;
 import org.apache.airavata.workflow.model.wf.Workflow;
 import org.apache.airavata.xbaya.ThriftClientData;
 import org.apache.airavata.xbaya.ThriftServiceType;

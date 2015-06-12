@@ -21,13 +21,7 @@
 
 package org.apache.airavata.workflow.model.wf;
 
-import java.util.LinkedList;
-
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.workflow.model.xsd.GFacSimpleTypesXSD;
-import org.apache.airavata.workflow.model.xsd.LeadContextHeaderXSD;
-import org.apache.airavata.workflow.model.xsd.LeadCrosscutXSD;
-import org.xmlpull.infoset.XmlElement;
 
 //import xsul5.wsdl.WsdlDefinitions;
 

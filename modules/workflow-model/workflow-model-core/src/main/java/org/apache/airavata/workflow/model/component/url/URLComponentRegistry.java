@@ -31,7 +31,6 @@ import org.apache.airavata.workflow.model.component.ComponentReference;
 import org.apache.airavata.workflow.model.component.ComponentRegistry;
 import org.apache.airavata.workflow.model.component.ComponentRegistryException;
 import org.apache.airavata.workflow.model.component.ws.WSComponent;
-import org.apache.airavata.workflow.model.component.ws.WSComponentFactory;
 
 //import xsul.wsdl.WsdlDefinitions;
 //import xsul.wsdl.WsdlResolver;

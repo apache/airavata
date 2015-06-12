@@ -23,7 +23,7 @@
  *
 */
 
-include "../airavata-api/airavata-errors.thrift"
+include "../airavata-api/airavata_errors.thrift"
 namespace java org.apache.airavata.orchestrator.cpi
 
 const string ORCHESTRATOR_CPI_VERSION = "0.13.0"
@@ -65,7 +65,7 @@ service OrchestratorService {
      *
     **/
   bool validateExperiment(1: required string experimentId)
-  throws (1: airavataErrors.LaunchValidationException lve)
+  throws (1: airavata_errors.LaunchValidationException lve)
     /**
      *
      * Terminate the running experiment.

@@ -42,7 +42,7 @@
         <!--</dependency>-->
         <dependency>
             <groupId>org.apache.airavata</groupId>
-            <artifactId>airavata-common-utils</artifactId>
+            <artifactId>airavata-commons</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

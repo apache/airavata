@@ -21,8 +21,6 @@
 
 package org.apache.airavata.workflow.model.component.amazon;
 
-import javax.xml.namespace.QName;
-
 import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.workflow.model.component.ComponentDataPort;

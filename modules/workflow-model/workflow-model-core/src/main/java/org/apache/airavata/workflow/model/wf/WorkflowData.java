@@ -21,11 +21,12 @@
 
 package org.apache.airavata.workflow.model.wf;
 
+import org.apache.airavata.workflow.model.exceptions.LazyLoadedDataException;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.airavata.common.exception.LazyLoadedDataException;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
