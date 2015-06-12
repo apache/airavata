@@ -23,7 +23,7 @@ package org.apache.airavata.gfac.monitor.impl.pull.qstat;
 import com.google.common.eventbus.EventBus;
 import org.apache.airavata.common.logger.AiravataLogger;
 import org.apache.airavata.common.logger.AiravataLoggerFactory;
-import org.apache.airavata.common.utils.MonitorPublisher;
+import org.apache.airavata.common.utils.LocalEventPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
 import org.apache.airavata.gfac.core.SSHApiException;
@@ -64,7 +64,7 @@ public class HPCPullMonitor extends PullMonitor {
 
     private Map<String, ResourceConnection> connections;
 
-    private MonitorPublisher publisher;
+    private LocalEventPublisher publisher;
 
     private LinkedBlockingQueue<String> cancelJobList;
 
@@ -79,17 +79,17 @@ public class HPCPullMonitor extends PullMonitor {
     public HPCPullMonitor() {
         connections = new HashMap<String, ResourceConnection>();
         queue = new LinkedBlockingDeque<UserMonitorData>();
-        publisher = new MonitorPublisher(new EventBus());
+        publisher = new LocalEventPublisher(new EventBus());
         cancelJobList = new LinkedBlockingQueue<String>();
         completedJobsFromPush = new ArrayList<String>();
         (new SimpleJobFinishConsumer(this.completedJobsFromPush)).listen();
         removeList = new ArrayList<MonitorID>();
     }
 
-    public HPCPullMonitor(MonitorPublisher monitorPublisher, AuthenticationInfo authInfo) {
+    public HPCPullMonitor(LocalEventPublisher localEventPublisher, AuthenticationInfo authInfo) {
         connections = new HashMap<String, ResourceConnection>();
         queue = new LinkedBlockingDeque<UserMonitorData>();
-        publisher = monitorPublisher;
+        publisher = localEventPublisher;
         authenticationInfo = authInfo;
         cancelJobList = new LinkedBlockingQueue<String>();
         this.completedJobsFromPush = new ArrayList<String>();
@@ -97,7 +97,7 @@ public class HPCPullMonitor extends PullMonitor {
         removeList = new ArrayList<MonitorID>();
     }
 
-    public HPCPullMonitor(BlockingQueue<UserMonitorData> queue, MonitorPublisher publisher) {
+    public HPCPullMonitor(BlockingQueue<UserMonitorData> queue, LocalEventPublisher publisher) {
         this.queue = queue;
         this.publisher = publisher;
         connections = new HashMap<String, ResourceConnection>();
@@ -396,11 +396,11 @@ public class HPCPullMonitor extends PullMonitor {
         return true;
     }
 
-    public MonitorPublisher getPublisher() {
+    public LocalEventPublisher getPublisher() {
         return publisher;
     }
 
-    public void setPublisher(MonitorPublisher publisher) {
+    public void setPublisher(LocalEventPublisher publisher) {
         this.publisher = publisher;
     }
 

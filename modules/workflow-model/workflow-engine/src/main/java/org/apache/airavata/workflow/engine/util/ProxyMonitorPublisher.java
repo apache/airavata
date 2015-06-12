@@ -21,7 +21,7 @@
 
 package org.apache.airavata.workflow.engine.util;
 
-import org.apache.airavata.common.utils.MonitorPublisher;
+import org.apache.airavata.common.utils.LocalEventPublisher;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
 
 public class ProxyMonitorPublisher implements AbstractActivityListener{
@@ -33,11 +33,11 @@ public class ProxyMonitorPublisher implements AbstractActivityListener{
 		setupConfigurations=configurations;
 	}
 	
-	private static MonitorPublisher getPublisher(){
+	private static LocalEventPublisher getPublisher(){
 		if (setupConfigurations!=null) {
 			for (Object configuration : setupConfigurations) {
-				if (configuration instanceof MonitorPublisher){
-					return (MonitorPublisher) configuration;
+				if (configuration instanceof LocalEventPublisher){
+					return (LocalEventPublisher) configuration;
 				}
 			}
 		}

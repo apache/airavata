@@ -20,7 +20,7 @@
 */
 package org.apache.airavata.gfac.monitor.impl.push.amqp;
 
-import org.apache.airavata.common.utils.MonitorPublisher;
+import org.apache.airavata.common.utils.LocalEventPublisher;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.monitor.core.MessageParser;
 import org.apache.airavata.gfac.monitor.exception.AiravataMonitorException;
@@ -37,9 +37,9 @@ public class BasicConsumer implements Consumer {
 
     private MessageParser parser;
 
-    private MonitorPublisher publisher;
+    private LocalEventPublisher publisher;
 
-    public BasicConsumer(MessageParser parser, MonitorPublisher publisher) {
+    public BasicConsumer(MessageParser parser, LocalEventPublisher publisher) {
         this.parser = parser;
         this.publisher = publisher;
     }

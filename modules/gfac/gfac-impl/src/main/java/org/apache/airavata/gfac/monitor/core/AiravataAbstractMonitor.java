@@ -20,7 +20,6 @@
 */
 package org.apache.airavata.gfac.monitor.core;
 
-import org.apache.airavata.common.utils.MonitorPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * This is the abstract Monitor which needs to be used by
  * any Monitoring implementation which expect nto consume
  * to store the status to registry. Because they have to
- * use the MonitorPublisher to publish the monitoring statuses
+ * use the LocalEventPublisher to publish the monitoring statuses
  * to the Event Bus. All the Monitor statuses publish to the eventbus
  * will be saved to the Registry.
  */

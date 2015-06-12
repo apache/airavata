@@ -20,7 +20,7 @@
 */
 package org.apache.airavata.gfac.impl;
 
-import org.apache.airavata.common.utils.MonitorPublisher;
+import org.apache.airavata.common.utils.LocalEventPublisher;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.GFac;
@@ -44,20 +44,20 @@ public class OutHandlerWorker implements Runnable {
 
     private MonitorID monitorID;
 
-    private MonitorPublisher monitorPublisher;
+    private LocalEventPublisher localEventPublisher;
     private JobExecutionContext jEC;
 
-    public OutHandlerWorker(GFac gfac, MonitorID monitorID,MonitorPublisher monitorPublisher) {
+    public OutHandlerWorker(GFac gfac, MonitorID monitorID,LocalEventPublisher localEventPublisher) {
         this.gfac = gfac;
         this.monitorID = monitorID;
-        this.monitorPublisher = monitorPublisher;
+        this.localEventPublisher = localEventPublisher;
         this.jEC = monitorID.getJobExecutionContext();
     }
 
     public OutHandlerWorker(JobExecutionContext jEC) {
         this.jEC = jEC;
         this.gfac = jEC.getGfac();
-        this.monitorPublisher = jEC.getMonitorPublisher();
+        this.localEventPublisher = jEC.getLocalEventPublisher();
     }
 
     @Override
@@ -69,7 +69,7 @@ public class OutHandlerWorker implements Runnable {
             logger.error(e.getMessage(),e);
             TaskIdentifier taskIdentifier = new TaskIdentifier(monitorID.getTaskID(), monitorID.getWorkflowNodeID(),monitorID.getExperimentID(), monitorID.getJobExecutionContext().getGatewayID());
             //FIXME this is a case where the output retrieving fails even if the job execution was a success. Thus updating the task status
-            monitorPublisher.publish(new TaskStatusChangeRequestEvent(TaskState.FAILED, taskIdentifier));
+            localEventPublisher.publish(new TaskStatusChangeRequestEvent(TaskState.FAILED, taskIdentifier));
             try {
                 StringWriter errors = new StringWriter();
                 e.printStackTrace(new PrintWriter(errors));
@@ -81,8 +81,8 @@ public class OutHandlerWorker implements Runnable {
             // Save error details to registry
 
         }
-//        monitorPublisher.publish(monitorID.getStatus());
-        monitorPublisher.publish(jEC.getJobDetails().getJobStatus());
+//        localEventPublisher.publish(monitorID.getStatus());
+        localEventPublisher.publish(jEC.getJobDetails().getJobStatus());
 
     }
 }

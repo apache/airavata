@@ -27,7 +27,7 @@ import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
-import org.apache.airavata.gfac.core.Constants;
+import org.apache.airavata.gfac.core.GFacConstants;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.RequestData;
 import org.apache.airavata.gfac.core.JobDescriptor;
@@ -111,7 +111,7 @@ public class GFACSSHUtils {
                         if(credentials.getPrivateKey()==null || credentials.getPublicKey()==null){
                             // now we fall back to username password authentication
                             Properties configurationProperties = ServerSettings.getProperties();
-                            tokenizedSSHAuthInfo = new DefaultPasswordAuthenticationInfo(configurationProperties.getProperty(Constants.SSH_PASSWORD));
+                            tokenizedSSHAuthInfo = new DefaultPasswordAuthenticationInfo(configurationProperties.getProperty(GFacConstants.SSH_PASSWORD));
                         }
                         // This should be the login user name from compute resource preference
                         String loginUser = jobExecutionContext.getLoginUserName();

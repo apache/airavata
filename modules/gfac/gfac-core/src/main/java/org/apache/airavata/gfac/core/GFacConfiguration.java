@@ -94,15 +94,15 @@ public class GFacConfiguration {
 
     public void setInHandlers(String providerName, String applicationName) {
         try {
-            this.inHandlers = getHandlerConfig(handlerDoc, Constants.XPATH_EXPR_GLOBAL_INFLOW_HANDLERS, Constants.GFAC_CONFIG_CLASS_ATTRIBUTE);
+            this.inHandlers = getHandlerConfig(handlerDoc, GFacConstants.XPATH_EXPR_GLOBAL_INFLOW_HANDLERS, GFacConstants.GFAC_CONFIG_CLASS_ATTRIBUTE);
             if (applicationName != null) {
-                String xPath = Constants.XPATH_EXPR_APPLICATION_HANDLERS_START + applicationName + Constants.XPATH_EXPR_APPLICATION_INFLOW_HANDLERS_END;
-                List<GFacHandlerConfig> handlers = getHandlerConfig(handlerDoc, xPath, Constants.GFAC_CONFIG_CLASS_ATTRIBUTE);
+                String xPath = GFacConstants.XPATH_EXPR_APPLICATION_HANDLERS_START + applicationName + GFacConstants.XPATH_EXPR_APPLICATION_INFLOW_HANDLERS_END;
+                List<GFacHandlerConfig> handlers = getHandlerConfig(handlerDoc, xPath, GFacConstants.GFAC_CONFIG_CLASS_ATTRIBUTE);
                 this.inHandlers.addAll(handlers);
             }
             if (providerName != null) {
-                String xPath = Constants.XPATH_EXPR_PROVIDER_HANDLERS_START + providerName + Constants.XPATH_EXPR_PROVIDER_INFLOW_HANDLERS_END;
-                List<GFacHandlerConfig> handlers = getHandlerConfig(handlerDoc, xPath, Constants.GFAC_CONFIG_APPLICATION_NAME_ATTRIBUTE);
+                String xPath = GFacConstants.XPATH_EXPR_PROVIDER_HANDLERS_START + providerName + GFacConstants.XPATH_EXPR_PROVIDER_INFLOW_HANDLERS_END;
+                List<GFacHandlerConfig> handlers = getHandlerConfig(handlerDoc, xPath, GFacConstants.GFAC_CONFIG_APPLICATION_NAME_ATTRIBUTE);
                 this.inHandlers.addAll(handlers);
             }
         } catch (XPathExpressionException e) {
@@ -112,15 +112,15 @@ public class GFacConfiguration {
 
     public void setOutHandlers(String providerName, String applicationName) {
         try {
-            this.outHandlers = getHandlerConfig(handlerDoc, Constants.XPATH_EXPR_GLOBAL_OUTFLOW_HANDLERS, Constants.GFAC_CONFIG_CLASS_ATTRIBUTE);
+            this.outHandlers = getHandlerConfig(handlerDoc, GFacConstants.XPATH_EXPR_GLOBAL_OUTFLOW_HANDLERS, GFacConstants.GFAC_CONFIG_CLASS_ATTRIBUTE);
             if (applicationName != null) {
-                String xPath = Constants.XPATH_EXPR_APPLICATION_HANDLERS_START + applicationName + Constants.XPATH_EXPR_APPLICATION_OUTFLOW_HANDLERS_END;
-                List<GFacHandlerConfig> handlers = getHandlerConfig(handlerDoc, xPath, Constants.GFAC_CONFIG_CLASS_ATTRIBUTE);
+                String xPath = GFacConstants.XPATH_EXPR_APPLICATION_HANDLERS_START + applicationName + GFacConstants.XPATH_EXPR_APPLICATION_OUTFLOW_HANDLERS_END;
+                List<GFacHandlerConfig> handlers = getHandlerConfig(handlerDoc, xPath, GFacConstants.GFAC_CONFIG_CLASS_ATTRIBUTE);
                 this.outHandlers.addAll(handlers);
             }
             if(providerName != null) {
-                String xPath = Constants.XPATH_EXPR_PROVIDER_HANDLERS_START + providerName + Constants.XPATH_EXPR_PROVIDER_OUTFLOW_HANDLERS_END;
-                List<GFacHandlerConfig> handlers = getHandlerConfig(handlerDoc, xPath, Constants.GFAC_CONFIG_CLASS_ATTRIBUTE);
+                String xPath = GFacConstants.XPATH_EXPR_PROVIDER_HANDLERS_START + providerName + GFacConstants.XPATH_EXPR_PROVIDER_OUTFLOW_HANDLERS_END;
+                List<GFacHandlerConfig> handlers = getHandlerConfig(handlerDoc, xPath, GFacConstants.GFAC_CONFIG_CLASS_ATTRIBUTE);
                 this.outHandlers.addAll(handlers);
             }
         } catch (XPathExpressionException e) {
@@ -200,9 +200,9 @@ public class GFacConfiguration {
             className = ((Element) nl.item(i)).getAttribute(attribute);
             NodeList childNodes = (nl.item(i)).getChildNodes();
             for(int j = 0;j < childNodes.getLength();j++){
-               if(Constants.PROPERTY.equals(childNodes.item(j).getNodeName())) {
-                   String name = ((Element) childNodes.item(j)).getAttribute(Constants.NAME);
-                   String value = ((Element) childNodes.item(j)).getAttribute(Constants.VALUE);
+               if(GFacConstants.PROPERTY.equals(childNodes.item(j).getNodeName())) {
+                   String name = ((Element) childNodes.item(j)).getAttribute(GFacConstants.NAME);
+                   String value = ((Element) childNodes.item(j)).getAttribute(GFacConstants.VALUE);
                    properties.put(name, value);
                }
             }
@@ -226,9 +226,9 @@ public class GFacConfiguration {
             if (className != null && !className.equals("")) {
                 NodeList childNodes = (nl.item(i)).getChildNodes();
                 for (int j = 0; j < childNodes.getLength(); j++) {
-                    if (Constants.PROPERTY.equals(childNodes.item(j).getNodeName())) {
-                        String name = ((Element) childNodes.item(j)).getAttribute(Constants.NAME);
-                        String value = ((Element) childNodes.item(j)).getAttribute(Constants.VALUE);
+                    if (GFacConstants.PROPERTY.equals(childNodes.item(j).getNodeName())) {
+                        String name = ((Element) childNodes.item(j)).getAttribute(GFacConstants.NAME);
+                        String value = ((Element) childNodes.item(j)).getAttribute(GFacConstants.VALUE);
                         properties.put(name, value);
                     }
                 }
@@ -273,7 +273,7 @@ public class GFacConfiguration {
        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
         handlerDoc = docBuilder.parse(configFile);
-        return getHandlerConfig(handlerDoc, Constants.XPATH_EXPR_DAEMON_HANDLERS, Constants.GFAC_CONFIG_CLASS_ATTRIBUTE);
+        return getHandlerConfig(handlerDoc, GFacConstants.XPATH_EXPR_DAEMON_HANDLERS, GFacConstants.GFAC_CONFIG_CLASS_ATTRIBUTE);
     }
     public static Document getHandlerDoc() {
         return handlerDoc;

@@ -22,7 +22,7 @@ package org.apache.airavata.gfac.impl;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.MonitorPublisher;
+import org.apache.airavata.common.utils.LocalEventPublisher;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
@@ -44,7 +44,7 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
     private final static Logger logger = LoggerFactory.getLogger(AiravataWorkflowNodeStatusUpdator.class);
 
     private ExperimentCatalog airavataExperimentCatalog;
-    private MonitorPublisher monitorPublisher;
+    private LocalEventPublisher localEventPublisher;
     private Publisher publisher;
 
 
@@ -88,7 +88,7 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
                                                                          taskStatus.getTaskIdentity().getExperimentId(),
                                                                          taskStatus.getTaskIdentity().getGatewayId());
             WorkflowNodeStatusChangeEvent event = new WorkflowNodeStatusChangeEvent(state, workflowIdentity);
-            monitorPublisher.publish(event);
+            localEventPublisher.publish(event);
             String messageId = AiravataUtils.getId("WFNODE");
             MessageContext msgCntxt = new MessageContext(event, MessageType.WORKFLOWNODE, messageId, taskStatus.getTaskIdentity().getGatewayId());
             msgCntxt.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
@@ -119,8 +119,8 @@ public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListen
 		for (Object configuration : configurations) {
 			if (configuration instanceof ExperimentCatalog){
 				this.airavataExperimentCatalog =(ExperimentCatalog)configuration;
-			} else if (configuration instanceof MonitorPublisher){
-				this.monitorPublisher=(MonitorPublisher) configuration;
+			} else if (configuration instanceof LocalEventPublisher){
+				this.localEventPublisher =(LocalEventPublisher) configuration;
 			}  else if (configuration instanceof Publisher){
                 this.publisher=(Publisher) configuration;
             }

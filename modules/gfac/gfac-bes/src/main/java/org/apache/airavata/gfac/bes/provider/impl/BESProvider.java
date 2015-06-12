@@ -449,6 +449,6 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
         log.debug(jobStatus.getJobIdentity().getJobId(), "Published job status change request, " +
                 "experiment {} , task {}", jobStatus.getJobIdentity().getExperimentId(),
         jobStatus.getJobIdentity().getTaskId());
-        jobExecutionContext.getMonitorPublisher().publish(jobStatus);
+        jobExecutionContext.getLocalEventPublisher().publish(jobStatus);
     }
 }

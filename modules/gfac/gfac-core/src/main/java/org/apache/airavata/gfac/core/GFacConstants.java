@@ -21,7 +21,7 @@
 
 package org.apache.airavata.gfac.core;
 
-public class Constants {
+public class GFacConstants {
 	public static final String XPATH_EXPR_GLOBAL_INFLOW_HANDLERS = "/GFac/GlobalHandlers/InHandlers/Handler";
 	public static final String XPATH_EXPR_GLOBAL_OUTFLOW_HANDLERS = "/GFac/GlobalHandlers/OutHandlers/Handler";
     public static final String XPATH_EXPR_DAEMON_HANDLERS = "/GFac/DaemonHandlers/Handler";
@@ -49,6 +49,10 @@ public class Constants {
 	public static final int DEFAULT_GSI_FTP_PORT = 2811;
 	public static final String _127_0_0_1 = "127.0.0.1";
 	public static final String LOCALHOST = "localhost";
+
+	public static final String ZOOKEEPER_SERVERS_NODE = "/servers";
+	public static final String ZOOKEEPER_GFAC_SERVER_NODE = "/gfac";
+	public static final String ZOOKEEPER_EXPERIMENT_NODE = "/experiments";
 
 	public static final String PROP_WORKFLOW_INSTANCE_ID = "workflow.instance.id";
 	public static final String PROP_WORKFLOW_NODE_ID = "workflow.node.id";
