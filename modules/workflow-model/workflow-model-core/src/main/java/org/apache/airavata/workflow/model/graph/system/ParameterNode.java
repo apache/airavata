@@ -26,7 +26,8 @@ import java.util.List;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import org.apache.airavata.common.exception.UtilsException;
+import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.workflow.model.exceptions.UtilsException;
 import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.workflow.model.graph.DataEdge;
@@ -167,7 +168,7 @@ abstract public class ParameterNode extends SystemNode {
         // clone and detach from the parent
         try {
             this.metadata = XMLUtil.deepClone(metadata);
-        } catch (UtilsException e) {
+        } catch (AiravataException e) {
             log.error(e.getMessage(), e);
         }
 
@@ -329,7 +330,7 @@ abstract public class ParameterNode extends SystemNode {
             // called multiple times.
             try {
                 metadataElement.addChild(XMLUtil.deepClone(this.metadata));
-            } catch (UtilsException e) {
+            } catch (AiravataException e) {
                 log.error(e.getMessage(), e);
             }
         }

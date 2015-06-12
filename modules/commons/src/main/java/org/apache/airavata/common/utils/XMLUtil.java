@@ -38,7 +38,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.airavata.common.exception.UtilsException;
+import org.apache.airavata.common.exception.AiravataException;
 import org.apache.xmlbeans.XmlError;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
@@ -245,14 +245,14 @@ public class XMLUtil {
      * @return The cloned XmlElement.
      */
     public static org.xmlpull.infoset.XmlElement deepClone(org.xmlpull.infoset.XmlElement element)
-            throws UtilsException {
+            throws AiravataException {
         try {
             XmlElement clonedElement = element.clone();
             clonedElement.setParent(null);
             return clonedElement;
         } catch (CloneNotSupportedException e) {
             // This should not happen because we don't put any special Objects.
-            throw new UtilsException(e);
+            throw new AiravataException(e.getMessage(), e);
         }
     }
 
@@ -319,7 +319,7 @@ public class XMLUtil {
      * 
      * @param xmlObject
      */
-    public static void validate(XmlObject xmlObject) throws UtilsException {
+    public static void validate(XmlObject xmlObject) throws AiravataException {
         XmlOptions validateOptions = new XmlOptions();
         ArrayList errorList = new ArrayList();
         validateOptions.setErrorListener(errorList);
@@ -339,7 +339,7 @@ public class XMLUtil {
             stringBuilder.append("Message:" + error.getMessage());
             stringBuilder.append("Location of invalid XML: " + error.getCursorLocation().xmlText());
         }
-        throw new UtilsException(stringBuilder.toString());
+        throw new AiravataException(stringBuilder.toString());
     }
 
     /**

@@ -29,8 +29,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.airavata.common.exception.UtilsException;
-import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.workflow.model.component.system.InputComponent;
 import org.apache.airavata.workflow.model.component.ws.WSComponent;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;

@@ -27,8 +27,6 @@ import java.net.URLEncoder;
 
 import javax.xml.namespace.QName;
 
-import org.apache.airavata.common.exception.UtilsException;
-import org.apache.airavata.common.utils.WSDLUtil;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 
 //import xsul5.wsdl.WsdlDefinitions;
