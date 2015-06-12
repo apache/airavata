@@ -20,9 +20,8 @@
 */
 package org.apache.airavata.gfac.core;
 
-import org.apache.airavata.gfac.core.context.ProcessContext;
-import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.common.utils.LocalEventPublisher;
+import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.curator.framework.CuratorFramework;
@@ -34,33 +33,44 @@ import org.apache.curator.framework.CuratorFramework;
 public interface GFac {
 
     /**
-     * Launching a process, this method run process inflow task and job submission task.
+     * Initialized method, this method must call one time before use any other method.
+     * @param experimentCatalog
+     * @param appCatalog
+     * @param curatorClient
+     * @param publisher
+     * @return
+     */
+    public boolean init(ExperimentCatalog experimentCatalog, AppCatalog appCatalog, CuratorFramework curatorClient, LocalEventPublisher publisher);
+
+    /**
+     * This is the job launching method outsiders of GFac can use, this will invoke the GFac handler chain and providers
+     * And update the registry occordingly, so the users can query the database to retrieve status and output from Registry
      *
-     * @param processContext
+     * @param experimentID
      * @return boolean Successful acceptence of the jobExecution returns a true value
      * @throws GFacException
      */
-    public boolean submitProcess(ProcessContext processContext) throws GFacException;
+    public boolean submitJob(String experimentID,String taskID, String gatewayID, String tokenId) throws GFacException;
 
     /**
-     *  This will invoke outflow tasks for a given process.
-     * @param processContext
+     * This method can be used in a handler to ivvoke outhandler asynchronously
+     * @param jobExecutionContext
      * @throws GFacException
      */
-    public void invokeProcessOutFlow(ProcessContext processContext) throws GFacException;
+    public void invokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException;
 
     /**
-     * This will reInvoke outflow tasks for a given process.
-     * @param processContext
+     * This method can be used to handle re-run case asynchronously
+     * @param jobExecutionContext
      * @throws GFacException
      */
-    public void reInvokeProcessOutFlow(ProcessContext processContext) throws GFacException;
+    public void reInvokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException;
 
     /**
-     * This operation can be used to cancel an already running process.
+     * This operation can be used to cancel an already running experiment
      * @return Successful cancellation will return true
      * @throws GFacException
      */
-    public boolean cancelProcess(ProcessContext processContext)throws GFacException;
+    public boolean cancel(String experimentID, String taskID, String gatewayID, String tokenId)throws GFacException;
 
 }

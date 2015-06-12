@@ -117,6 +117,7 @@ public class BetterGfacImpl implements GFac {
         return gfacInstance;
     }
 
+    @Override
     public boolean init(ExperimentCatalog experimentCatalog, AppCatalog appCatalog, CuratorFramework curatorClient,
                         LocalEventPublisher publisher) {
         this.experimentCatalog = experimentCatalog;

@@ -20,6 +20,7 @@
  */
 package org.apache.airavata.gfac.core;
 
+import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -98,6 +99,10 @@ public class GFacUtils {
 	public static final ArrayList<ACL> OPEN_ACL_UNSAFE = ZooDefs.Ids.OPEN_ACL_UNSAFE;
 
 	private GFacUtils() {
+	}
+
+	public static ProcessContext populateProcessContext(ProcessContext processContext) {
+		return processContext;
 	}
 
 	/**
