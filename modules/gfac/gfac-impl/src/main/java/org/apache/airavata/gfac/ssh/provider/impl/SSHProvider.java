@@ -26,8 +26,8 @@ import org.apache.airavata.model.workspace.experiment.TaskState;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.MonitorPublisher;
-import org.apache.airavata.gfac.core.Constants;
+import org.apache.airavata.common.utils.LocalEventPublisher;
+import org.apache.airavata.gfac.core.GFacConstants;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.JobDescriptor;
 import org.apache.airavata.gfac.core.SSHApiException;
@@ -95,7 +95,7 @@ public class SSHProvider extends AbstractProvider {
                 jobID = "SSH_" + jobExecutionContext.getHostName() + "_" + Calendar.getInstance().getTimeInMillis();
                 remoteCluster = ((SSHSecurityContext) jobExecutionContext.getSecurityContext(hostAddress)).getRemoteCluster();
 
-                String remoteFile = jobExecutionContext.getWorkingDir() + File.separatorChar + Constants.EXECUTABLE_NAME;
+                String remoteFile = jobExecutionContext.getWorkingDir() + File.separatorChar + GFacConstants.EXECUTABLE_NAME;
                 details.setJobID(taskID);
                 details.setJobDescription(remoteFile);
                 jobExecutionContext.setJobDetails(details);
@@ -125,7 +125,7 @@ public class SSHProvider extends AbstractProvider {
                 /*
                  * Execute
                  */
-                String executable = jobExecutionContext.getWorkingDir() + File.separatorChar + Constants.EXECUTABLE_NAME;
+                String executable = jobExecutionContext.getWorkingDir() + File.separatorChar + GFacConstants.EXECUTABLE_NAME;
                 details.setJobDescription(executable);
                 RawCommandInfo rawCommandInfo = new RawCommandInfo("/bin/chmod 755 " + executable + "; " + executable);
                 StandardOutReader jobIDReaderCommandOutput = new StandardOutReader();
@@ -141,7 +141,7 @@ public class SSHProvider extends AbstractProvider {
                 StringBuffer data = new StringBuffer();
                 JobDetails jobDetails = new JobDetails();
                 String hostAddress = jobExecutionContext.getHostName();
-                MonitorPublisher monitorPublisher = jobExecutionContext.getMonitorPublisher();
+                LocalEventPublisher localEventPublisher = jobExecutionContext.getLocalEventPublisher();
                 try {
                     RemoteCluster remoteCluster = null;
                     if (jobExecutionContext.getSecurityContext(hostAddress) == null) {
@@ -162,11 +162,11 @@ public class SSHProvider extends AbstractProvider {
                     if (jobID != null && !jobID.isEmpty()) {
                         jobDetails.setJobID(jobID);
                         GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SUBMITTED);
-                                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
+                                localEventPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
                                         , GfacExperimentState.JOBSUBMITTED));
                         jobExecutionContext.setJobDetails(jobDetails);
                         if (verifyJobSubmissionByJobId(remoteCluster, jobID)) {
-                            monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
+                            localEventPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
                                     , GfacExperimentState.JOBSUBMITTED));
                             GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.QUEUED);
                         }
@@ -179,7 +179,7 @@ public class SSHProvider extends AbstractProvider {
                                 // JobStatus either changed from SUBMITTED to QUEUED or directly to QUEUED
                                 jobID = verifyJobId;
                                 jobDetails.setJobID(jobID);
-                                monitorPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
+                                localEventPublisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
                                         , GfacExperimentState.JOBSUBMITTED));
                                 GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.QUEUED);
                                 break;
@@ -193,7 +193,7 @@ public class SSHProvider extends AbstractProvider {
                                 + jobDetails.getJobName() + ", both submit and verify steps doesn't return a valid JobId. Hence changing experiment state to Failed";
                         log.error(msg);
                         GFacUtils.saveErrorDetails(jobExecutionContext, msg, CorrectiveAction.CONTACT_SUPPORT, ErrorCategory.AIRAVATA_INTERNAL_ERROR);
-                        GFacUtils.publishTaskStatus(jobExecutionContext, monitorPublisher, TaskState.FAILED);
+                        GFacUtils.publishTaskStatus(jobExecutionContext, localEventPublisher, TaskState.FAILED);
                         return;
                     }
                     data.append("jobDesc=").append(jobDescriptor.toXML());
@@ -303,8 +303,8 @@ public class SSHProvider extends AbstractProvider {
 
         out.write("#!/bin/bash\n".getBytes());
         out.write(("cd " + jobExecutionContext.getWorkingDir() + "\n").getBytes());
-        out.write(("export " + Constants.INPUT_DATA_DIR_VAR_NAME + "=" + jobExecutionContext.getInputDir() + "\n").getBytes());
-        out.write(("export " + Constants.OUTPUT_DATA_DIR_VAR_NAME + "=" + jobExecutionContext.getOutputDir() + "\n")
+        out.write(("export " + GFacConstants.INPUT_DATA_DIR_VAR_NAME + "=" + jobExecutionContext.getInputDir() + "\n").getBytes());
+        out.write(("export " + GFacConstants.OUTPUT_DATA_DIR_VAR_NAME + "=" + jobExecutionContext.getOutputDir() + "\n")
                 .getBytes());
         // get the env of the host and the application
         List<SetEnvPaths> envPathList = jobExecutionContext.getApplicationContext().getApplicationDeploymentDescription().getSetEnvironment();

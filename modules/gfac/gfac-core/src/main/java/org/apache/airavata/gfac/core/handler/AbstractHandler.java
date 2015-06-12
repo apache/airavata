@@ -20,7 +20,7 @@
 */
 package org.apache.airavata.gfac.core.handler;
 
-import org.apache.airavata.common.utils.MonitorPublisher;
+import org.apache.airavata.common.utils.LocalEventPublisher;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.states.GfacHandlerState;
 import org.apache.airavata.gfac.core.GFacUtils;
@@ -39,11 +39,11 @@ public abstract class AbstractHandler implements GFacHandler {
     private static final Logger logger = LoggerFactory.getLogger(AbstractHandler.class);
     protected ExperimentCatalog experimentCatalog = null;
 
-    protected MonitorPublisher publisher = null;
+    protected LocalEventPublisher publisher = null;
 
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         try {
-            publisher = jobExecutionContext.getMonitorPublisher();
+            publisher = jobExecutionContext.getLocalEventPublisher();
             GFacUtils.updateHandlerState(jobExecutionContext.getCuratorClient(), jobExecutionContext, this.getClass().getName(), GfacHandlerState.INVOKED);
         } catch (Exception e) {
             logger.error("Error saving Recoverable provider state", e);

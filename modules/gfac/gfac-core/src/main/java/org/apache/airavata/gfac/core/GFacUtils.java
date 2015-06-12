@@ -25,7 +25,7 @@ import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.DBUtil;
-import org.apache.airavata.common.utils.MonitorPublisher;
+import org.apache.airavata.common.utils.LocalEventPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
@@ -196,7 +196,7 @@ public class GFacUtils {
 			String temp = null;
 			while ((temp = instream.readLine()) != null) {
 				buff.append(temp);
-				buff.append(Constants.NEWLINE);
+				buff.append(GFacConstants.NEWLINE);
 			}
 			return buff.toString();
 		} finally {
@@ -214,7 +214,7 @@ public class GFacUtils {
 			throws UnknownHostException {
 		String localHost = InetAddress.getLocalHost().getCanonicalHostName();
 		return (localHost.equals(appHost)
-				|| Constants.LOCALHOST.equals(appHost) || Constants._127_0_0_1
+				|| GFacConstants.LOCALHOST.equals(appHost) || GFacConstants._127_0_0_1
 					.equals(appHost));
 	}
 
@@ -267,7 +267,7 @@ public class GFacUtils {
                     jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(), jobExecutionContext.getExperimentID(),
                     jobExecutionContext.getGatewayID());
             JobStatusChangeRequestEvent jobStatusChangeRequestEvent = new JobStatusChangeRequestEvent(state, identifier);
-            jobExecutionContext.getMonitorPublisher().publish(jobStatusChangeRequestEvent);
+            jobExecutionContext.getLocalEventPublisher().publish(jobStatusChangeRequestEvent);
         } catch (Exception e) {
 			throw new GFacException("Error persisting job status"
 					+ e.getLocalizedMessage(), e);
@@ -510,7 +510,7 @@ public class GFacUtils {
 	 * @throws InterruptedException
 	 */
 	public static String findExperimentEntry(String experimentID, CuratorFramework curatorClient) throws Exception {
-		String experimentNode = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE, "/gfac-experiments");
+		String experimentNode = GFacConstants.ZOOKEEPER_EXPERIMENT_NODE;
 		List<String> children = curatorClient.getChildren().forPath(experimentNode);
 		for (String pickedChild : children) {
 			String experimentPath = experimentNode + File.separator + pickedChild;
@@ -729,11 +729,15 @@ public class GFacUtils {
         return false;
     }
 
-    public static void publishTaskStatus (JobExecutionContext jobExecutionContext, MonitorPublisher publisher, TaskState state){
+    public static void publishTaskStatus (JobExecutionContext jobExecutionContext, LocalEventPublisher publisher, TaskState state){
         TaskIdentifier taskIdentity = new TaskIdentifier(jobExecutionContext.getTaskData().getTaskID(),
                 jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(),
                 jobExecutionContext.getExperimentID(),
                 jobExecutionContext.getGatewayID());
         publisher.publish(new TaskStatusChangeRequestEvent(state, taskIdentity));
     }
+
+	public static String getZKGfacServersParentPath() {
+		return GFacConstants.ZOOKEEPER_SERVERS_NODE + GFacConstants.ZOOKEEPER_GFAC_SERVER_NODE;
+	}
 }

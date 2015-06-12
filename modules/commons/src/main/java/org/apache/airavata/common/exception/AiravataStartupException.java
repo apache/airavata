@@ -19,21 +19,28 @@
  *
  */
 
-package org.apache.airavata.common.utils;
+package org.apache.airavata.common.exception;
 
-/**
- * Constants used in Airavata should go here.
- */
-public final class Constants {
+public class AiravataStartupException extends Exception {
+    private static final long serialVersionUID = 495204868100143133L;
 
-    public static final String USER_IN_SESSION = "userName";
+    public AiravataStartupException() {
+        super();
+    }
 
+    public AiravataStartupException(String message) {
+        super(message);
+    }
 
-    public static final String STAT = "stat";
-    public static final String JOB = "job";
-    //API security relates property names
-    public static final String IS_API_SECURED = "api.secured";
-    public static final String REMOTE_OAUTH_SERVER_URL = "remote.oauth.authorization.server";
-    public static final String ADMIN_USERNAME = "admin.user.name";
-    public static final String ADMIN_PASSWORD = "admin.password";
+    public AiravataStartupException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public AiravataStartupException(Throwable cause) {
+        super(cause);
+    }
+
+    protected AiravataStartupException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
 }

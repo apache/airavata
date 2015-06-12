@@ -26,8 +26,8 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.credential.impl.certificate.CertificateCredential;
 import org.apache.airavata.credential.store.store.CredentialReader;
+import org.apache.airavata.gfac.core.GFacConstants;
 import org.apache.airavata.gfac.core.context.AbstractSecurityContext;
-import org.apache.airavata.gfac.core.Constants;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.RequestData;
 import org.apache.airavata.gfac.bes.utils.MyProxyLogon;
@@ -105,13 +105,13 @@ public class X509SecurityContext extends AbstractSecurityContext {
             log.info("Current directory " + f.getAbsolutePath());
             throw new RuntimeException("Cannot read trusted certificate path " + trustedCertificatePath);
         } else {
-            System.setProperty(Constants.TRUSTED_CERTIFICATE_SYSTEM_PROPERTY, file.getAbsolutePath());
+            System.setProperty(GFacConstants.TRUSTED_CERTIFICATE_SYSTEM_PROPERTY, file.getAbsolutePath());
         }
     }
 
     private static void setUpTrustedCertificatePath() throws ApplicationSettingsException {
 
-        String trustedCertificatePath  = ServerSettings.getSetting(Constants.TRUSTED_CERT_LOCATION);
+        String trustedCertificatePath  = ServerSettings.getSetting(GFacConstants.TRUSTED_CERT_LOCATION);
 
         setUpTrustedCertificatePath(trustedCertificatePath);
     }
@@ -122,7 +122,7 @@ public class X509SecurityContext extends AbstractSecurityContext {
      * @return The trusted certificate path as a string.
      */
     public static String getTrustedCertificatePath() {
-        return System.getProperty(Constants.TRUSTED_CERTIFICATE_SYSTEM_PROPERTY);
+        return System.getProperty(GFacConstants.TRUSTED_CERTIFICATE_SYSTEM_PROPERTY);
     }
 
 

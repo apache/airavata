@@ -323,7 +323,7 @@ public class EmailBasedMonitor implements Runnable{
                         "experiment {} , task {}", jobStatus.getJobIdentity().getExperimentId(),
                 jobStatus.getJobIdentity().getTaskId());
 
-        jobExecutionContext.getMonitorPublisher().publish(jobStatus);
+        jobExecutionContext.getLocalEventPublisher().publish(jobStatus);
     }
 
     private void writeEnvelopeOnError(Message m) throws MessagingException {

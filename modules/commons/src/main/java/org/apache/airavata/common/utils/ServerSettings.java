@@ -33,8 +33,24 @@ public class ServerSettings extends ApplicationSettings {
     private static final String DEFAULT_USER_GATEWAY = "default.registry.gateway";
 
     private static final String SERVER_CONTEXT_ROOT = "server.context-root";
-    public static final String EMBEDDED_ZK = "embedded.zk";
     public static final String IP = "ip";
+    // Orchestrator Constants
+    public static final String ORCHESTRATOR_SERVER_HOST = "orchestrator.server.host";
+
+    public static final String ORCHESTRATOR_SERVER_PORT = "orchestrator.server.port";
+    // Gfac constants
+    public static final String GFAC_SERVER_HOST = "gfac.server.host";
+    public static final String GFAC_SERVER_PORT = "gfac.server.port";
+    public static final String GFAC_SERVER_NAME = "gfac.server.name";
+    public static final String GFAC_CONFIG_XML = "gfac-config.xml";
+    // Credential Store constants
+    public static final String CREDENTIAL_SERVER_HOST = "credential.store.server.host";
+    public static final String CREDENTIAL_SERVER_PORT = "credential.store.server.port";
+    // Zookeeper + curator constants
+    public static final String EMBEDDED_ZK = "embedded.zk";
+    public static final String ZOOKEEPER_SERVER_CONNECTION = "zookeeper.server.connection";
+    public static final String ZOOKEEPER_TIMEOUT = "zookeeper.timeout";
+
 
     private static final String CREDENTIAL_STORE_DB_URL = "credential.store.jdbc.url";
     private static final String CREDENTIAL_STORE_DB_USER = "credential.store.jdbc.user";
@@ -57,7 +73,6 @@ public class ServerSettings extends ApplicationSettings {
     public static final String JOB_NOTIFICATION_ENABLE = "job.notification.enable";
     public static final String JOB_NOTIFICATION_EMAILIDS = "job.notification.emailids";
     public static final String JOB_NOTIFICATION_FLAGS = "job.notification.flags";
-    public static final String GFAC_PASSIVE = "gfac.passive"; // by default this is desabled
     public static final String LAUNCH_QUEUE_NAME = "launch.queue.name";
     public static final String CANCEL_QUEUE_NAME = "cancel.queue.name";
 
@@ -186,11 +201,6 @@ public class ServerSettings extends ApplicationSettings {
         return getSetting(TASK_LAUNCH_PUBLISHER);
     }
 
-    public static boolean isGFacPassiveMode()throws ApplicationSettingsException {
-        String setting = getSetting(GFAC_PASSIVE);
-        return Boolean.parseBoolean(setting);
-    }
-
     public static boolean isEmbeddedZK() {
         return Boolean.parseBoolean(getSetting(EMBEDDED_ZK, "true"));
     }
@@ -267,4 +277,21 @@ public class ServerSettings extends ApplicationSettings {
     public static String getAdminPassword() throws ApplicationSettingsException {
         return getSetting(Constants.ADMIN_PASSWORD);
     }
+
+    public static String getZookeeperConnection() throws ApplicationSettingsException {
+        return getSetting(ZOOKEEPER_SERVER_CONNECTION, "localhost:2181");
+    }
+
+    public static String getGFacServerName() throws ApplicationSettingsException {
+        return getSetting(GFAC_SERVER_NAME);
+    }
+
+    public static String getGfacServerHost() throws ApplicationSettingsException {
+        return getSetting(GFAC_SERVER_HOST);
+    }
+
+    public static String getGFacServerPort() throws ApplicationSettingsException {
+        return getSetting(GFAC_SERVER_PORT);
+    }
+
 }

@@ -25,7 +25,7 @@
 //import java.util.ArrayList;
 //import java.util.List;
 //
-//import org.apache.airavata.common.utils.MonitorPublisher;
+//import org.apache.airavata.common.utils.LocalEventPublisher;
 //import org.apache.airavata.commons.gfac.type.ActualParameter;
 //import org.apache.airavata.commons.gfac.type.ApplicationDescription;
 //import org.apache.airavata.commons.gfac.type.HostDescription;
@@ -176,7 +176,7 @@
 //        LocalDirectorySetupHandler localDirectorySetupHandler = new LocalDirectorySetupHandler();
 //        localDirectorySetupHandler.invoke(jobExecutionContext);
 //        LocalProvider localProvider = new LocalProvider();
-//        localProvider.setMonitorPublisher(new MonitorPublisher(new EventBus()));
+//        localProvider.setLocalEventPublisher(new LocalEventPublisher(new EventBus()));
 //        localProvider.initialize(jobExecutionContext);
 //        localProvider.execute(jobExecutionContext);
 //        localProvider.dispose(jobExecutionContext);

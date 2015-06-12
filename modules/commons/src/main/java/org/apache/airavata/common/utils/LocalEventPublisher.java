@@ -17,23 +17,31 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- */
-
+*/
 package org.apache.airavata.common.utils;
 
-/**
- * Constants used in Airavata should go here.
- */
-public final class Constants {
+import com.google.common.eventbus.EventBus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-    public static final String USER_IN_SESSION = "userName";
+public class LocalEventPublisher {
+    private final static Logger logger = LoggerFactory.getLogger(LocalEventPublisher.class);
+    private EventBus eventBus;
+    
+    public LocalEventPublisher(EventBus eventBus) {
+        this.eventBus = eventBus;
+    }
 
+    public void registerListener(Object listener) {
+        eventBus.register(listener);
+    }
+    
+    public void unregisterListener(Object listener) {
+        eventBus.unregister(listener);
+    }
 
-    public static final String STAT = "stat";
-    public static final String JOB = "job";
-    //API security relates property names
-    public static final String IS_API_SECURED = "api.secured";
-    public static final String REMOTE_OAUTH_SERVER_URL = "remote.oauth.authorization.server";
-    public static final String ADMIN_USERNAME = "admin.user.name";
-    public static final String ADMIN_PASSWORD = "admin.password";
+    public void publish(Object o) {
+        eventBus.post(o);
+    }
+
 }

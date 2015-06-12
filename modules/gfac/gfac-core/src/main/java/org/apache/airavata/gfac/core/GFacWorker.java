@@ -17,31 +17,21 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
-package org.apache.airavata.common.utils;
+ */
 
-import com.google.common.eventbus.EventBus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package org.apache.airavata.gfac.core;
 
-public class MonitorPublisher{
-    private final static Logger logger = LoggerFactory.getLogger(MonitorPublisher.class);
-    private EventBus eventBus;
-    
-    public MonitorPublisher(EventBus eventBus) {
-        this.eventBus = eventBus;
+import org.apache.airavata.gfac.core.context.ProcessContext;
+
+public class GFacWorker implements Runnable {
+
+
+    public GFacWorker(ProcessContext processContext) {
+
     }
 
-    public void registerListener(Object listener) {
-        eventBus.register(listener);
-    }
-    
-    public void unregisterListener(Object listener) {
-        eventBus.unregister(listener);
-    }
+    @Override
+    public void run() {
 
-    public void publish(Object o) {
-        eventBus.post(o);
     }
-
 }
