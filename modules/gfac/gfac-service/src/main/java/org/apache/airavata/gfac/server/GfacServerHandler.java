@@ -24,15 +24,14 @@ import com.google.common.eventbus.EventBus;
 import org.apache.airavata.common.exception.AiravataStartupException;
 import org.apache.airavata.common.utils.LocalEventPublisher;
 import org.apache.airavata.gfac.core.GFacConstants;
-import org.apache.airavata.gfac.core.GFacWorker;
+import org.apache.airavata.gfac.impl.GFacWorker;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.logger.AiravataLogger;
-import org.apache.airavata.common.logger.AiravataLoggerFactory;
+import org.apache.airavata.common.log.AiravataLogger;
+import org.apache.airavata.common.log.AiravataLoggerFactory;
 import org.apache.airavata.common.utils.AiravataZKUtils;
-import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
@@ -45,7 +44,6 @@ import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.cpi.GfacService;
 import org.apache.airavata.gfac.cpi.gfac_cpi_serviceConstants;
 import org.apache.airavata.gfac.impl.BetterGfacImpl;
-import org.apache.airavata.gfac.impl.InputHandlerWorker;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.messaging.core.MessagingConstants;
@@ -69,6 +67,8 @@ import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.ZooDefs;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -77,9 +77,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class GfacServerHandler implements GfacService.Iface {
-    private final static AiravataLogger logger = AiravataLoggerFactory.getLogger(GfacServerHandler.class);
+    private final static Logger log = LoggerFactory.getLogger(GfacServerHandler.class);
     private RabbitMQTaskLaunchConsumer rabbitMQTaskLaunchConsumer;
     private static int requestCount=0;
     private ExperimentCatalog experimentCatalog;
@@ -92,13 +94,15 @@ public class GfacServerHandler implements GfacService.Iface {
     private static File gfacConfigFile;
     private static List<ThreadedHandler> daemonHandlers = new ArrayList<ThreadedHandler>();
     private static List<AbstractActivityListener> activityListeners = new ArrayList<AbstractActivityListener>();
+    private ExecutorService executorService;
 
     public GfacServerHandler() throws AiravataStartupException {
         try {
             startCuratorClient();
             initZkDataStructure();
             initAMQPClient();
-            localEventPublisher = new LocalEventPublisher(new EventBus());
+	        executorService = Executors.newFixedThreadPool(ServerSettings.getGFacThreadPoolSize());
+	        localEventPublisher = new LocalEventPublisher(new EventBus());
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             appCatalog = RegistryFactory.getAppCatalog();
             startStatusUpdators(experimentCatalog, curatorClient, localEventPublisher, rabbitMQTaskLaunchConsumer);
@@ -126,38 +130,21 @@ public class GfacServerHandler implements GfacService.Iface {
         *        - /gfac-node0 (localhost:2181)
         *|/experiments
          */
-        airavataServerHostPort = ServerSettings.getGfacServerHost()  + ":" + ServerSettings.getGFacServerPort();
+        airavataServerHostPort = ServerSettings.getGfacServerHost() + ":" + ServerSettings.getGFacServerPort();
         // create PERSISTENT nodes
         ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), GFacUtils.getZKGfacServersParentPath());
         ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), GFacConstants.ZOOKEEPER_EXPERIMENT_NODE);
         // create EPHEMERAL server name node
         String gfacName = ServerSettings.getGFacServerName();
-        if (curatorClient.checkExists().forPath(GFacUtils.getZKGfacServersParentPath() + (gfacName.startsWith("/") ? gfacName : "/" + gfacName)) == null) {
+        if (curatorClient.checkExists().forPath(GFacUtils.getZKGfacServersParentPath() + (gfacName.startsWith("/") ?
+                gfacName : "/" + gfacName)) == null) {
             curatorClient.create().withMode(CreateMode.EPHEMERAL).withACL(ZooDefs.Ids.OPEN_ACL_UNSAFE)
-                    .forPath(GFacUtils.getZKGfacServersParentPath() + (gfacName.startsWith("/") ? gfacName : "/" + gfacName));
+                    .forPath(GFacUtils.getZKGfacServersParentPath() + (gfacName.startsWith("/") ? gfacName : "/" +
+                            gfacName));
 
         }
         curatorClient.setData().withVersion(-1).forPath(GFacUtils.getZKGfacServersParentPath() +
                 (gfacName.startsWith("/") ? gfacName : "/" + gfacName), new String(airavataServerHostPort).getBytes());
-    }
-
-    public static void main(String[] args) {
-        RabbitMQTaskLaunchConsumer rabbitMQTaskLaunchConsumer = null;
-        try {
-            rabbitMQTaskLaunchConsumer = new RabbitMQTaskLaunchConsumer();
-            rabbitMQTaskLaunchConsumer.listen(new TestHandler());
-        } catch (AiravataException e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
-
-    private long ByateArrayToLong(byte[] data) {
-        long value = 0;
-        for (int i = 0; i < data.length; i++)
-        {
-            value += ((long) data[i] & 0xffL) << (8 * i);
-        }
-        return value;
     }
 
     public String getGFACServiceVersion() throws TException {
@@ -181,42 +168,38 @@ public class GfacServerHandler implements GfacService.Iface {
      * @param processId - processModel id in registry
      * @param gatewayId - gateway Identification
      */
-    public boolean submitJob(String experimentId, String processId, String gatewayId, String tokenId) throws TException {
+    public boolean submitJob(String experimentId, String processId, String gatewayId, String tokenId) throws
+            TException {
         requestCount++;
-        logger.info("-----------------------------------------------------" + requestCount + "-----------------------------------------------------");
-        logger.infoId(experimentId, "GFac Received submit job request for the Experiment: {} process: {}", experimentId, processId);
+        log.info("-----------------------------------" + requestCount + "-----------------------------------------");
+        log.info(experimentId, "GFac Received submit job request for the Experiment: {} process: {}", experimentId,
+                processId);
         ProcessContext processContext = new ProcessContext(processId, gatewayId, tokenId);
         processContext.setAppCatalog(appCatalog);
         processContext.setExperimentCatalog(experimentCatalog);
         processContext.setCuratorClient(curatorClient);
         processContext.setLocalEventPublisher(localEventPublisher);
-
-        GFacWorker worker = new GFacWorker(processContext);
-        InputHandlerWorker inputHandlerWorker = new InputHandlerWorker(BetterGfacImpl.getInstance(), experimentId,
-                processId, gatewayId, tokenId);
-//        try {
-//            if( gfac.submitJob(experimentId, taskId, gatewayId)){
-        logger.debugId(experimentId, "Submitted job to the Gfac Implementation, experiment {}, task {}, gateway " +
-                "{}", experimentId, processId, gatewayId);
-
-        GFacThreadPoolExecutor.getCachedThreadPool().execute(inputHandlerWorker);
-
-        // we immediately return when we have a threadpool
+        try {
+	        executorService.execute(new GFacWorker(processContext));
+        } catch (AiravataException e) {
+            log.error("Failed to submit process", e);
+            return false;
+        }
         return true;
     }
 
     public boolean cancelJob(String experimentId, String taskId, String gatewayId, String tokenId) throws TException {
-        logger.infoId(experimentId, "GFac Received cancel job request for Experiment: {} TaskId: {} ", experimentId, taskId);
+        log.info(experimentId, "GFac Received cancel job request for Experiment: {} TaskId: {} ", experimentId, taskId);
         try {
             if (BetterGfacImpl.getInstance().cancel(experimentId, taskId, gatewayId, tokenId)) {
-                logger.debugId(experimentId, "Successfully cancelled job, experiment {} , task {}", experimentId, taskId);
+                log.debug(experimentId, "Successfully cancelled job, experiment {} , task {}", experimentId, taskId);
                 return true;
             } else {
-                logger.errorId(experimentId, "Job cancellation failed, experiment {} , task {}", experimentId, taskId);
+                log.error(experimentId, "Job cancellation failed, experiment {} , task {}", experimentId, taskId);
                 return false;
             }
         } catch (Exception e) {
-            logger.errorId(experimentId, "Error cancelling the experiment {}.", experimentId);
+            log.error(experimentId, "Error cancelling the experiment {}.", experimentId);
             throw new TException("Error cancelling the experiment : " + e.getMessage(), e);
         }
     }
@@ -247,11 +230,11 @@ public class GfacServerHandler implements GfacService.Iface {
                 AbstractActivityListener abstractActivityListener = aClass.newInstance();
                 activityListeners.add(abstractActivityListener);
                 abstractActivityListener.setup(publisher, experimentCatalog, curatorClient, rabbitMQPublisher, rabbitMQTaskLaunchConsumer);
-                logger.info("Registering listener: " + listenerClass);
+                log.info("Registering listener: " + listenerClass);
                 publisher.registerListener(abstractActivityListener);
             }
         } catch (Exception e) {
-            logger.error("Error loading the listener classes configured in airavata-server.properties", e);
+            log.error("Error loading the listener classes configured in airavata-server.properties", e);
         }
     }
     private static  class TestHandler implements MessageHandler{
@@ -276,7 +259,7 @@ public class GfacServerHandler implements GfacService.Iface {
                 ThriftUtils.createThriftFromBytes(bytes, event);
                 System.out.println(event.getExperimentId());
             } catch (TException e) {
-                logger.error(e.getMessage(), e);
+                log.error(e.getMessage(), e);
             }
         }
     }
@@ -320,13 +303,13 @@ public class GfacServerHandler implements GfacService.Iface {
                         AiravataZKUtils.getExpStatePath(event.getExperimentId());
                         submitJob(event.getExperimentId(), event.getTaskId(), event.getGatewayId(), event.getTokenId());
                     } catch (Exception e) {
-                        logger.error(e.getMessage(), e);
+                        log.error(e.getMessage(), e);
                         rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
                     }
                 } catch (TException e) {
-                    logger.error(e.getMessage(), e); //nobody is listening so nothing to throw
+                    log.error(e.getMessage(), e); //nobody is listening so nothing to throw
                 } catch (RegistryException e) {
-                    logger.error("Error while updating experiment status", e);
+                    log.error("Error while updating experiment status", e);
                 }
             } else if (message.getType().equals(MessageType.TERMINATETASK)) {
                 boolean cancelSuccess = false;
@@ -345,7 +328,7 @@ public class GfacServerHandler implements GfacService.Iface {
                                 "This happens when another cancel operation is being processed or experiment is in one of final states, complete|failed|cancelled.");
                     }
                 } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
+                    log.error(e.getMessage(), e);
                 }finally {
                     if (cancelSuccess) {
                         // if cancel success , AiravataExperimentStatusUpdator will send an ack to this message.
@@ -358,7 +341,7 @@ public class GfacServerHandler implements GfacService.Iface {
                                 rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
                             }
                         } catch (Exception e) {
-                            logger.error("Error while ack to cancel request, experimentId: " + event.getExperimentId());
+                            log.error("Error while ack to cancel request, experimentId: " + event.getExperimentId());
                         }
                     }
                 }

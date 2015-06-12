@@ -17,21 +17,37 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- */
+*/
 
-package org.apache.airavata.gfac.core;
+package org.apache.airavata.gfac.impl;
 
+import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 
-public class GFacWorker implements Runnable {
+public class GFacEngine {
+
+	public static void createTaskChain(ProcessContext processContext) throws GFacException {
+
+	}
+
+	public static void executeProcess(ProcessContext processContext) throws GFacException {
 
 
-    public GFacWorker(ProcessContext processContext) {
+	}
 
-    }
+	public static void recoverProcess(ProcessContext processContext) throws GFacException {
 
-    @Override
-    public void run() {
+	}
 
-    }
+	public static void runProcessOutflow(ProcessContext processContext) throws GFacException {
+
+	}
+
+	public static void recoverProcessOutflow(ProcessContext processContext) throws GFacException {
+
+	}
+
+	public static void cancelProcess() throws GFacException {
+
+	}
 }

@@ -25,8 +25,12 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ServerSettings extends ApplicationSettings {
+
+	private static final Logger log = LoggerFactory.getLogger(ServerSettings.class);
 
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_USER_PASSWORD = "default.registry.password";
@@ -42,6 +46,8 @@ public class ServerSettings extends ApplicationSettings {
     public static final String GFAC_SERVER_HOST = "gfac.server.host";
     public static final String GFAC_SERVER_PORT = "gfac.server.port";
     public static final String GFAC_SERVER_NAME = "gfac.server.name";
+    public static final String GFAC_THREAD_POOL_SIZE = "gfac.thread.pool.size";
+	public static final int DEFAULT_GFAC_THREAD_POOL_SIZE = 50;
     public static final String GFAC_CONFIG_XML = "gfac-config.xml";
     // Credential Store constants
     public static final String CREDENTIAL_SERVER_HOST = "credential.store.server.host";
@@ -292,6 +298,22 @@ public class ServerSettings extends ApplicationSettings {
 
     public static String getGFacServerPort() throws ApplicationSettingsException {
         return getSetting(GFAC_SERVER_PORT);
+    }
+
+    public static int getGFacThreadPoolSize() {
+        try {
+            String threadPoolSize = getSetting(GFAC_THREAD_POOL_SIZE);
+	        if (threadPoolSize != null && !threadPoolSize.isEmpty()) {
+		        return Integer.valueOf(threadPoolSize);
+	        } else {
+		        log.warn("Thread pool size is not configured, use default gfac thread pool size " +
+				        DEFAULT_GFAC_THREAD_POOL_SIZE);
+	        }
+        } catch (ApplicationSettingsException e) {
+	        log.warn("Couldn't read thread pool size from configuration on exception, use default gfac thread pool " +
+			        "size " + DEFAULT_GFAC_THREAD_POOL_SIZE);
+        }
+	    return DEFAULT_GFAC_THREAD_POOL_SIZE;
     }
 
 }
