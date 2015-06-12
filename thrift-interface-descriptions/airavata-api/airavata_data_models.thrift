@@ -22,6 +22,9 @@ include "workspace_model.thrift"
 include "airavata_errors.thrift"
 include "messaging_events.thrift"
 include "security_model.thrift"
+include "job_model.thrift"
+include "task_model.thrift"
+include "process_model.thrift"
 
 namespace java org.apache.airavata.model
 namespace php Airavata.Model
