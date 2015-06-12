@@ -33,6 +33,14 @@ enum ExperimentType {
     WORKFLOW
 }
 
+enum ExperimentSearchFields {
+    EXPERIMENT_NAME,
+    EXPERIMENT_DESC,
+    APPLICATION_ID,
+    FROM_DATE,
+    TO_DATE,
+    STATUS
+}
 /**
  * A structure holding the experiment configuration.
  *

@@ -27,9 +27,12 @@
 include "airavata_errors.thrift"
 include "airavata_data_models.thrift"
 include "status_models.thrift"
+include "job_model.thrift"
 include "experiment_model.thrift"
 include "workspace_model.thrift"
 include "compute_resource_model.thrift"
+include "scheduling_model.thrift"
+include "application_io_models.thrift"
 include "application_deployment_model.thrift"
 include "application_interface_model.thrift"
 include "gateway_resource_profile_model.thrift"
@@ -549,7 +552,7 @@ service Airavata {
     * @deprecated
     *       Instead use  getAllExperimentsInProjectWithPagination
     */
-  list<experiment_model.Experiment> getAllExperimentsInProject(1: required string projectId)
+  list<experiment_model.ExperimentModel> getAllExperimentsInProject(1: required string projectId)
           throws (1: airavata_errors.InvalidRequestException ire,
                   2: airavata_errors.AiravataClientException ace,
                   3: airavata_errors.AiravataSystemException ase,
@@ -566,7 +569,7 @@ service Airavata {
    * @param offset
    *       The starting point of the results to be fetched
    */
-  list<experiment_model.Experiment> getAllExperimentsInProjectWithPagination(1: required string projectId,
+  list<experiment_model.ExperimentModel> getAllExperimentsInProjectWithPagination(1: required string projectId,
                   2: required i32 limit, 3: required i32 offset)
           throws (1: airavata_errors.InvalidRequestException ire,
                   2: airavata_errors.AiravataClientException ace,
@@ -584,7 +587,7 @@ service Airavata {
    * @deprecated
    *       Instead use getAllUserExperimentsWithPagination
    */
-  list<experiment_model.Experiment> getAllUserExperiments(1: required string gatewayId,
+  list<experiment_model.ExperimentModel> getAllUserExperiments(1: required string gatewayId,
                         2: required string userName)
             throws (1: airavata_errors.InvalidRequestException ire,
                     2: airavata_errors.AiravataClientException ace,
@@ -603,7 +606,7 @@ service Airavata {
    * @param offset
    *       The starting point of the results to be fetched
    */
-  list<experiment_model.Experiment> getAllUserExperimentsWithPagination(1: required string gatewayId,
+  list<experiment_model.ExperimentModel> getAllUserExperimentsWithPagination(1: required string gatewayId,
                         2: required string userName, 3: required i32 limit, 4: required i32 offset)
             throws (1: airavata_errors.InvalidRequestException ire,
                     2: airavata_errors.AiravataClientException ace,
@@ -646,7 +649,7 @@ service Airavata {
     */
 
   string createExperiment(1: required string gatewayId,
-                          2: required experiment_model.Experiment experiment)
+                          2: required experiment_model.ExperimentModel experiment)
     throws (1: airavata_errors.InvalidRequestException ire,
             2: airavata_errors.AiravataClientException ace,
             3: airavata_errors.AiravataSystemException ase)
@@ -684,7 +687,7 @@ service Airavata {
    *       rather an Airavata Administrator will be notified to take corrective action.
    *
   */
-  experiment_model.Experiment getExperiment(1: required string airavataExperimentId)
+  experiment_model.ExperimentModel getExperiment(1: required string airavataExperimentId)
     throws (1: airavata_errors.InvalidRequestException ire,
             2: airavata_errors.ExperimentNotFoundException enf,
             3: airavata_errors.AiravataClientException ace,
@@ -730,17 +733,17 @@ service Airavata {
    *
   */
   void updateExperiment(1: required string airavataExperimentId,
-                        2: required experiment_model.Experiment experiment)
+                        2: required experiment_model.ExperimentModel experiment)
     throws (1: airavata_errors.InvalidRequestException ire,
             2: airavata_errors.ExperimentNotFoundException enf,
             3: airavata_errors.AiravataClientException ace,
             4: airavata_errors.AiravataSystemException ase)
 
   void updateExperimentConfiguration(1: required string airavataExperimentId,
-                                     2: required experiment_model.UserConfigurationData userConfiguration)
+                                     2: required experiment_model.UserConfigurationDataModel userConfiguration)
 
   void updateResourceScheduleing(1: required string airavataExperimentId,
-                                 2: required experiment_model.ComputationalResourceScheduling resourceScheduling)
+                                 2: required scheduling_model.ComputationalResourceSchedulingModel resourceScheduling)
 
     /**
      *
@@ -804,46 +807,40 @@ service Airavata {
     throws (1: airavata_errors.InvalidRequestException ire,
             2: airavata_errors.ExperimentNotFoundException enf,
             3: airavata_errors.AiravataClientException ace,
-            4: airavata_errors.AiravataSystemException ase,
-            5: airavata_errors.LaunchValidationException lve)
+            4: airavata_errors.AiravataSystemException ase)
 
 
-    experiment_model.ExperimentStatus getExperimentStatus(1: required string airavataExperimentId)
+   status_models.ExperimentStatus getExperimentStatus(1: required string airavataExperimentId)
       throws (1: airavata_errors.InvalidRequestException ire,
               2: airavata_errors.ExperimentNotFoundException enf,
               3: airavata_errors.AiravataClientException ace,
               4: airavata_errors.AiravataSystemException ase)
 
-  list<application_interface_model.OutputDataObjectType> getExperimentOutputs (1: required string airavataExperimentId)
+  list<application_io_models.OutputDataObjectType> getExperimentOutputs (1: required string airavataExperimentId)
       throws (1: airavata_errors.InvalidRequestException ire,
               2: airavata_errors.ExperimentNotFoundException enf,
               3: airavata_errors.AiravataClientException ace,
               4: airavata_errors.AiravataSystemException ase)
 
-   list<application_interface_model.OutputDataObjectType> getIntermediateOutputs (1: required string airavataExperimentId)
+   list<application_io_models.OutputDataObjectType> getIntermediateOutputs (1: required string airavataExperimentId)
         throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.ExperimentNotFoundException enf,
                 3: airavata_errors.AiravataClientException ace,
                 4: airavata_errors.AiravataSystemException ase)
 
 
-  map<string, experiment_model.JobStatus> getJobStatuses(1: required string airavataExperimentId)
+  map<string, status_models.JobStatus> getJobStatuses(1: required string airavataExperimentId)
               throws (1: airavata_errors.InvalidRequestException ire,
                       2: airavata_errors.ExperimentNotFoundException enf,
                       3: airavata_errors.AiravataClientException ace,
                       4: airavata_errors.AiravataSystemException ase)
 
-  list<experiment_model.JobDetails> getJobDetails(1: required string airavataExperimentId)
+  list<job_model.JobModel> getJobDetails(1: required string airavataExperimentId)
                 throws (1: airavata_errors.InvalidRequestException ire,
                         2: airavata_errors.ExperimentNotFoundException enf,
                         3: airavata_errors.AiravataClientException ace,
                         4: airavata_errors.AiravataSystemException ase)
 
-  list<experiment_model.DataTransferDetails> getDataTransferDetails(1: required string airavataExperimentId)
-                throws (1: airavata_errors.InvalidRequestException ire,
-                        2: airavata_errors.ExperimentNotFoundException enf,
-                        3: airavata_errors.AiravataClientException ace,
-                        4: airavata_errors.AiravataSystemException ase)
 
   /**
    * Clone an specified experiment with a new name. A copy of the experiment configuration is made and is persisted with new metadata.
@@ -1221,7 +1218,7 @@ service Airavata {
    *   Returns a list of application inputs.
    *
   */
-  list<application_interface_model.InputDataObjectType> getApplicationInputs(1: required string appInterfaceId)
+  list<application_io_models.InputDataObjectType> getApplicationInputs(1: required string appInterfaceId)
       	throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.AiravataClientException ace,
                 3: airavata_errors.AiravataSystemException ase)
@@ -1236,7 +1233,7 @@ service Airavata {
    *   Returns a list of application outputs.
    *
   */
-  list<application_interface_model.OutputDataObjectType> getApplicationOutputs(1: required string appInterfaceId)
+  list<application_io_models.OutputDataObjectType> getApplicationOutputs(1: required string appInterfaceId)
       	throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.AiravataClientException ace,
                 3: airavata_errors.AiravataSystemException ase)
