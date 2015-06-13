@@ -42,33 +42,49 @@ public class GFacWorker implements Runnable {
 
     @Override
     public void run() {
-	    ProcessType type = getProcessType(processContext);
 	    try {
-		    switch (type){
-			    case NEW:
-				    GFacUtils.populateProcessContext(processContext);
-				    GFacEngine.createTaskChain(processContext);
-				    GFacEngine.executeProcess(processContext);
-				    break;
-			    case RECOVER:
-				    // recover the process
-				    GFacEngine.recoverProcess(processContext);
-				    break;
-			    case OUTFLOW:
-				    // run the outflow task
-				    GFacEngine.runProcessOutflow(processContext);
-				    break;
-			    case RECOVER_OUTFLOW:
-				    // recover  outflow task;
-				    GFacEngine.recoverProcessOutflow(processContext);
+		    GFacEngine engine = GFacEngine.getInstance();
+		    ProcessType type = getProcessType(processContext);
+		    try {
+			    switch (type) {
+				    case NEW:
+					    engine.populateProcessContext(processContext);
+					    engine.createTaskChain(processContext);
+					    engine.executeProcess(processContext);
+					    break;
+				    case RECOVER:
+					    // recover the process
+					    engine.populateProcessContext(processContext);
+					    engine.createTaskChain(processContext);
+					    engine.recoverProcess(processContext);
+					    break;
+				    case OUTFLOW:
+					    // run the outflow task
+					    engine.runProcessOutflow(processContext);
+					    break;
+				    case RECOVER_OUTFLOW:
+					    // recover  outflow task;
+					    engine.populateProcessContext(processContext);
+					    engine.recoverProcessOutflow(processContext);
+			    }
+		    } catch (GFacException e) {
+			    switch (type) {
+				    case NEW:
+					    log.error("Process execution error", e);
+					    break;
+				    case RECOVER:
+					    log.error("Process recover error ", e);
+					    break;
+				    case OUTFLOW:
+					    log.error("Process outflow execution error", e);
+					    break;
+				    case RECOVER_OUTFLOW:
+					    log.error("Process outflow recover error", e);
+					    break;
+			    }
 		    }
 	    } catch (GFacException e) {
-		    switch (type) {
-			    case NEW: log.error("Process execution error", e); break;
-			    case RECOVER: log.error("Process recover error ", e); break;
-			    case OUTFLOW: log.error("Process outflow execution error",e); break;
-			    case RECOVER_OUTFLOW: log.error("Process outflow recover error",e); break;
-		    }
+		    log.error("GFac Worker throws an exception", e);
 	    }
     }
 

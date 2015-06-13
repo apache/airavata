@@ -22,6 +22,7 @@
 package org.apache.airavata.gfac.core.context;
 
 import org.apache.airavata.common.utils.LocalEventPublisher;
+import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.curator.framework.CuratorFramework;
@@ -35,12 +36,14 @@ public class ProcessContext {
 	private final String processId;
 	private final String gatewayId;
 	private final String tokenId;
+	private ProcessModel processModel;
 
 	public ProcessContext(String processId, String gatewayId, String tokenId) {
 		this.processId = processId;
 		this.gatewayId = gatewayId;
 		this.tokenId = tokenId;
 	}
+
 
 	// Getters and Setters
 	public ExperimentCatalog getExperimentCatalog() {
@@ -85,5 +88,13 @@ public class ProcessContext {
 
 	public void setLocalEventPublisher(LocalEventPublisher localEventPublisher) {
 		this.localEventPublisher = localEventPublisher;
+	}
+
+	public ProcessModel getProcessModel() {
+		return processModel;
+	}
+
+	public void setProcessModel(ProcessModel processModel) {
+		this.processModel = processModel;
 	}
 }
