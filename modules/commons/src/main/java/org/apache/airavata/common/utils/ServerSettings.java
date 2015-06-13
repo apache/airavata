@@ -40,9 +40,9 @@ public class ServerSettings extends ApplicationSettings {
     public static final String IP = "ip";
     // Orchestrator Constants
     public static final String ORCHESTRATOR_SERVER_HOST = "orchestrator.server.host";
-
     public static final String ORCHESTRATOR_SERVER_PORT = "orchestrator.server.port";
-    // Gfac constants
+	public static final String ORCHESTRATOR_SERVER_NAME = "orchestrator.server.name";
+	// Gfac constants
     public static final String GFAC_SERVER_HOST = "gfac.server.host";
     public static final String GFAC_SERVER_PORT = "gfac.server.port";
     public static final String GFAC_SERVER_NAME = "gfac.server.name";
@@ -316,4 +316,15 @@ public class ServerSettings extends ApplicationSettings {
 	    return DEFAULT_GFAC_THREAD_POOL_SIZE;
     }
 
+	public static String getOrchestratorServerName() throws ApplicationSettingsException {
+		return getSetting(ORCHESTRATOR_SERVER_NAME);
+	}
+
+	public static String getOrchestratorServerHost() throws ApplicationSettingsException {
+		return getSetting(ORCHESTRATOR_SERVER_HOST);
+	}
+
+	public static int getOrchestratorServerPort() throws ApplicationSettingsException {
+		return Integer.valueOf(getSetting(ORCHESTRATOR_SERVER_PORT));
+	}
 }
