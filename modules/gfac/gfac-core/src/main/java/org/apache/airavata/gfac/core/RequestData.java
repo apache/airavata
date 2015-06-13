@@ -90,7 +90,7 @@ public class RequestData {
 
     public String getMyProxyServerUrl() throws ApplicationSettingsException {
         if (myProxyServerUrl == null) {
-            myProxyServerUrl = ServerSettings.getSetting(Constants.MYPROXY_SERVER);
+            myProxyServerUrl = ServerSettings.getSetting(GFacConstants.MYPROXY_SERVER);
         }
         return myProxyServerUrl;
     }
@@ -102,7 +102,7 @@ public class RequestData {
     public int getMyProxyPort() {
 
         if (myProxyPort == 0) {
-            String sPort = ServerSettings.getSetting(Constants.MYPROXY_SERVER_PORT, Integer.toString(DEFAULT_MY_PROXY_PORT));
+            String sPort = ServerSettings.getSetting(GFacConstants.MYPROXY_SERVER_PORT, Integer.toString(DEFAULT_MY_PROXY_PORT));
             myProxyPort = Integer.parseInt(sPort);
         }
 
@@ -115,7 +115,7 @@ public class RequestData {
 
     public String getMyProxyUserName() throws ApplicationSettingsException {
         if (myProxyUserName == null) {
-            myProxyUserName = ServerSettings.getSetting(Constants.MYPROXY_USER);
+            myProxyUserName = ServerSettings.getSetting(GFacConstants.MYPROXY_USER);
         }
 
         return myProxyUserName;
@@ -128,14 +128,14 @@ public class RequestData {
     public String getMyProxyPassword() throws ApplicationSettingsException {
 
         if (myProxyPassword == null) {
-            myProxyPassword = ServerSettings.getSetting(Constants.MYPROXY_PASS);
+            myProxyPassword = ServerSettings.getSetting(GFacConstants.MYPROXY_PASS);
         }
 
         return myProxyPassword;
     }
 
     public int getMyProxyLifeTime() {
-        String life = ServerSettings.getSetting(Constants.MYPROXY_LIFE,Integer.toString(myProxyLifeTime));
+        String life = ServerSettings.getSetting(GFacConstants.MYPROXY_LIFE,Integer.toString(myProxyLifeTime));
         myProxyLifeTime = Integer.parseInt(life);
         return myProxyLifeTime;
     }

@@ -23,7 +23,7 @@ package org.apache.airavata.gfac.impl;
 import com.google.common.eventbus.Subscribe;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.MonitorPublisher;
+import org.apache.airavata.common.utils.LocalEventPublisher;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
@@ -45,7 +45,7 @@ import java.util.Calendar;
 public class AiravataTaskStatusUpdator implements AbstractActivityListener {
     private final static Logger logger = LoggerFactory.getLogger(AiravataTaskStatusUpdator.class);
     private ExperimentCatalog airavataExperimentCatalog;
-    private MonitorPublisher monitorPublisher;
+    private LocalEventPublisher localEventPublisher;
     private Publisher publisher;
     
     public ExperimentCatalog getAiravataExperimentCatalog() {
@@ -63,7 +63,7 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
             logger.debug("expId - {}: Publishing task status for " + taskStatus.getTaskIdentity().getTaskId() + ":"
                     + taskStatus.getState().toString(), taskStatus.getTaskIdentity().getExperimentId());
             TaskStatusChangeEvent event = new TaskStatusChangeEvent(taskStatus.getState(), taskStatus.getTaskIdentity());
-            monitorPublisher.publish(event);
+            localEventPublisher.publish(event);
             String messageId = AiravataUtils.getId("TASK");
             MessageContext msgCntxt = new MessageContext(event, MessageType.TASK, messageId, taskStatus.getTaskIdentity().getGatewayId());
             msgCntxt.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
@@ -107,7 +107,7 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
                                                          jobStatus.getJobIdentity().getExperimentId(),
                                                          jobStatus.getJobIdentity().getGatewayId());
             TaskStatusChangeEvent event = new TaskStatusChangeEvent(state, taskIdentity);
-            monitorPublisher.publish(event);
+            localEventPublisher.publish(event);
             String messageId = AiravataUtils.getId("TASK");
             MessageContext msgCntxt = new MessageContext(event, MessageType.TASK, messageId,jobStatus.getJobIdentity().getGatewayId());
             msgCntxt.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
@@ -144,8 +144,8 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
 		for (Object configuration : configurations) {
 			if (configuration instanceof ExperimentCatalog){
 				this.airavataExperimentCatalog =(ExperimentCatalog)configuration;
-			} else if (configuration instanceof MonitorPublisher){
-				this.monitorPublisher=(MonitorPublisher) configuration;
+			} else if (configuration instanceof LocalEventPublisher){
+				this.localEventPublisher =(LocalEventPublisher) configuration;
 			} else if (configuration instanceof Publisher){
                 this.publisher=(Publisher) configuration;
             }

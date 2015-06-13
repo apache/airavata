@@ -26,7 +26,7 @@
 //import java.util.concurrent.BlockingQueue;
 //import java.util.concurrent.LinkedBlockingQueue;
 //
-//import org.apache.airavata.common.utils.MonitorPublisher;
+//import org.apache.airavata.common.utils.LocalEventPublisher;
 //import org.apache.airavata.commons.gfac.type.HostDescription;
 //import org.apache.airavata.gfac.core.monitor.MonitorID;
 //import org.apache.airavata.gfac.monitor.HPCMonitorID;
@@ -55,7 +55,7 @@
 //    private String pbsFilePath;
 //    private String workingDirectory;
 //    private HostDescription hostDescription;
-//    private MonitorPublisher monitorPublisher;
+//    private LocalEventPublisher monitorPublisher;
 //    private BlockingQueue<UserMonitorData> pullQueue;
 //    private Thread monitorThread;
 //
@@ -76,7 +76,7 @@
 //            throw new Exception("Need my proxy user name password to run tests.");
 //        }
 //
-//        monitorPublisher =  new MonitorPublisher(new EventBus());
+//        monitorPublisher =  new LocalEventPublisher(new EventBus());
 //        class InnerClassQstat {
 //
 //            @Subscribe

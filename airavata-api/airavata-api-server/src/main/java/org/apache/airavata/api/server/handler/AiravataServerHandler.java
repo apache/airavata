@@ -23,11 +23,10 @@ package org.apache.airavata.api.server.handler;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.airavataAPIConstants;
-import org.apache.airavata.api.server.security.*;
+import org.apache.airavata.api.server.security.AiravataSecurityManager;
+import org.apache.airavata.api.server.security.SecurityManagerFactory;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.logger.AiravataLogger;
-import org.apache.airavata.common.logger.AiravataLoggerFactory;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.messaging.core.MessageContext;
@@ -37,28 +36,77 @@ import org.apache.airavata.model.Workflow;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationModule;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
-import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
-import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
-import org.apache.airavata.model.appcatalog.computeresource.*;
+import org.apache.airavata.model.appcatalog.computeresource.CloudJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
+import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.GridFTPDataMovement;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALDataMovement;
+import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
+import org.apache.airavata.model.appcatalog.computeresource.SCPDataMovement;
+import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.UnicoreDataMovement;
+import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
-import org.apache.airavata.model.error.*;
+import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.error.AiravataClientException;
+import org.apache.airavata.model.error.AiravataErrorType;
+import org.apache.airavata.model.error.AiravataSystemException;
+import org.apache.airavata.model.error.AuthorizationException;
+import org.apache.airavata.model.error.ExperimentNotFoundException;
+import org.apache.airavata.model.error.InvalidRequestException;
+import org.apache.airavata.model.error.ProjectNotFoundException;
+import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.experiment.ExperimentSearchFields;
+import org.apache.airavata.model.experiment.ExperimentStatistics;
+import org.apache.airavata.model.experiment.ExperimentSummaryModel;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
+import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.model.status.ExperimentState;
+import org.apache.airavata.model.status.ExperimentStatus;
+import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.workspace.experiment.*;
 import org.apache.airavata.orchestrator.client.OrchestratorClientFactory;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService.Client;
-import org.apache.airavata.registry.core.app.catalog.resources.*;
+import org.apache.airavata.registry.core.app.catalog.resources.AppCatAbstractResource;
+import org.apache.airavata.registry.core.app.catalog.resources.CloudSubmissionResource;
+import org.apache.airavata.registry.core.app.catalog.resources.GridftpDataMovementResource;
+import org.apache.airavata.registry.core.app.catalog.resources.LocalDataMovementResource;
+import org.apache.airavata.registry.core.app.catalog.resources.LocalSubmissionResource;
+import org.apache.airavata.registry.core.app.catalog.resources.ScpDataMovementResource;
+import org.apache.airavata.registry.core.app.catalog.resources.SshJobSubmissionResource;
+import org.apache.airavata.registry.core.app.catalog.resources.UnicoreDataMovementResource;
+import org.apache.airavata.registry.core.app.catalog.resources.UnicoreJobSubmissionResource;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
-import org.apache.airavata.registry.cpi.*;
+import org.apache.airavata.registry.cpi.AppCatalog;
+import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.ApplicationDeployment;
+import org.apache.airavata.registry.cpi.ComputeResource;
+import org.apache.airavata.registry.cpi.ExpCatChildDataType;
+import org.apache.airavata.registry.cpi.ExpCatParentDataType;
+import org.apache.airavata.registry.cpi.ExperimentCatalog;
+import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
+import org.apache.airavata.registry.cpi.GwyResourceProfile;
+import org.apache.airavata.registry.cpi.RegistryException;
+import org.apache.airavata.registry.cpi.ResultOrderType;
+import org.apache.airavata.registry.cpi.WorkflowCatalog;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.thrift.TException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,7 +114,7 @@ import java.util.List;
 import java.util.Map;
 
 public class AiravataServerHandler implements Airavata.Iface {
-    private static final AiravataLogger logger = AiravataLoggerFactory.getLogger(AiravataServerHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(AiravataServerHandler.class);
     private ExperimentCatalog experimentCatalog;
     private AppCatalog appCatalog;
     private Publisher publisher;
@@ -557,7 +605,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Deprecated
     @Override
-    public List<ExperimentSummary> searchExperimentsByName(String gatewayId, String userName, String expName) throws InvalidRequestException,
+    public List<ExperimentSummaryModel> searchExperimentsByName(String gatewayId, String userName, String expName) throws InvalidRequestException,
                                                                                                    AiravataClientException,
                                                                                                    AiravataSystemException,
                                                                                                    TException {
@@ -580,7 +628,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      *       The starting point of the results to be fetched
      */
     @Override
-    public List<ExperimentSummary> searchExperimentsByNameWithPagination(String gatewayId, String userName, String expName, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public List<ExperimentSummaryModel> searchExperimentsByNameWithPagination(String gatewayId, String userName, String expName, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -600,7 +648,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 exception.setMessage("User does not exist in the system. Please provide a valid user..");
                 throw exception;
             }
-            List<ExperimentSummary> summaries = new ArrayList<ExperimentSummary>();
+            List<ExperimentSummaryModel> summaries = new ArrayList<ExperimentSummaryModel>();
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             Map<String, String> filters = new HashMap<String, String>();
             filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
@@ -609,7 +657,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             List<Object> results = experimentCatalog.search(ExperimentCatalogModelType.EXPERIMENT, filters, limit,
                     offset, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             for (Object object : results) {
-                summaries.add((ExperimentSummary) object);
+                summaries.add((ExperimentSummaryModel) object);
             }
             return summaries;
         }catch (Exception e) {
@@ -635,7 +683,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Deprecated
     @Override
-    public List<ExperimentSummary> searchExperimentsByDesc(String gatewayId, String userName, String description) throws InvalidRequestException,
+    public List<ExperimentSummaryModel> searchExperimentsByDesc(String gatewayId, String userName, String description) throws InvalidRequestException,
                                                                                                        AiravataClientException,
                                                                                                        AiravataSystemException,
                                                                                                        TException {
@@ -658,7 +706,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      *       The starting point of the results to be fetched
      */
     @Override
-    public List<ExperimentSummary> searchExperimentsByDescWithPagination(String gatewayId, String userName, String description, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public List<ExperimentSummaryModel> searchExperimentsByDescWithPagination(String gatewayId, String userName, String description, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -678,7 +726,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 exception.setMessage("User does not exist in the system. Please provide a valid user..");
                 throw exception;
             }
-            List<ExperimentSummary> summaries = new ArrayList<ExperimentSummary>();
+            List<ExperimentSummaryModel> summaries = new ArrayList<ExperimentSummaryModel>();
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             Map<String, String> filters = new HashMap<String, String>();
             filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
@@ -687,7 +735,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             List<Object> results = experimentCatalog.search(ExperimentCatalogModelType.EXPERIMENT, filters, limit,
                     offset, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             for (Object object : results) {
-                summaries.add((ExperimentSummary) object);
+                summaries.add((ExperimentSummaryModel) object);
             }
             return summaries;
         }catch (Exception e) {
@@ -713,7 +761,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Deprecated
     @Override
-    public List<ExperimentSummary> searchExperimentsByApplication(String gatewayId, String userName, String applicationId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public List<ExperimentSummaryModel> searchExperimentsByApplication(String gatewayId, String userName, String applicationId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         return searchExperimentsByApplicationWithPagination(gatewayId, userName, applicationId, -1, -1);
     }
 
@@ -733,7 +781,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      *       The starting point of the results to be fetched
      */
     @Override
-    public List<ExperimentSummary> searchExperimentsByApplicationWithPagination(String gatewayId, String userName, String applicationId, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public List<ExperimentSummaryModel> searchExperimentsByApplicationWithPagination(String gatewayId, String userName, String applicationId, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -753,7 +801,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 exception.setMessage("User does not exist in the system. Please provide a valid user..");
                 throw exception;
             }
-            List<ExperimentSummary> summaries = new ArrayList<ExperimentSummary>();
+            List<ExperimentSummaryModel> summaries = new ArrayList<ExperimentSummaryModel>();
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             Map<String, String> filters = new HashMap<String, String>();
             filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
@@ -762,7 +810,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             List<Object> results = experimentCatalog.search(ExperimentCatalogModelType.EXPERIMENT, filters, limit,
                     offset, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             for (Object object : results) {
-                summaries.add((ExperimentSummary) object);
+                summaries.add((ExperimentSummaryModel) object);
             }
             return summaries;
         }catch (Exception e) {
@@ -788,7 +836,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Deprecated
     @Override
-    public List<ExperimentSummary> searchExperimentsByStatus(String gatewayId, String userName, ExperimentState experimentState) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public List<ExperimentSummaryModel> searchExperimentsByStatus(String gatewayId, String userName, ExperimentState experimentState) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         return searchExperimentsByStatusWithPagination(gatewayId, userName, experimentState, -1, -1);
     }
 
@@ -808,7 +856,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      *       The starting point of the results to be fetched
      */
     @Override
-    public List<ExperimentSummary> searchExperimentsByStatusWithPagination(String gatewayId, String userName, ExperimentState experimentState, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public List<ExperimentSummaryModel> searchExperimentsByStatusWithPagination(String gatewayId, String userName, ExperimentState experimentState, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -828,7 +876,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 exception.setMessage("User does not exist in the system. Please provide a valid user..");
                 throw exception;
             }
-            List<ExperimentSummary> summaries = new ArrayList<ExperimentSummary>();
+            List<ExperimentSummaryModel> summaries = new ArrayList<ExperimentSummaryModel>();
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             Map<String, String> filters = new HashMap<String, String>();
             filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
@@ -837,7 +885,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             List<Object> results = experimentCatalog.search(ExperimentCatalogModelType.EXPERIMENT, filters, limit,
                     offset, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             for (Object object : results) {
-                summaries.add((ExperimentSummary) object);
+                summaries.add((ExperimentSummaryModel) object);
             }
             return summaries;
         }catch (Exception e) {
@@ -865,7 +913,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Deprecated
     @Override
-    public List<ExperimentSummary> searchExperimentsByCreationTime(String gatewayId, String userName, long fromTime, long toTime) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public List<ExperimentSummaryModel> searchExperimentsByCreationTime(String gatewayId, String userName, long fromTime, long toTime) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         return searchExperimentsByCreationTimeWithPagination(gatewayId, userName, fromTime, toTime, -1, -1);
     }
 
@@ -887,7 +935,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      *       The starting point of the results to be fetched
      */
     @Override
-    public List<ExperimentSummary> searchExperimentsByCreationTimeWithPagination(String gatewayId, String userName, long fromTime, long toTime, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public List<ExperimentSummaryModel> searchExperimentsByCreationTimeWithPagination(String gatewayId, String userName, long fromTime, long toTime, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -907,7 +955,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 exception.setMessage("User does not exist in the system. Please provide a valid user..");
                 throw exception;
             }
-            List<ExperimentSummary> summaries = new ArrayList<ExperimentSummary>();
+            List<ExperimentSummaryModel> summaries = new ArrayList<ExperimentSummaryModel>();
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             Map<String, String> filters = new HashMap<String, String>();
             filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
@@ -917,7 +965,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             List<Object> results = experimentCatalog.search(ExperimentCatalogModelType.EXPERIMENT, filters, limit,
                     offset, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             for (Object object : results) {
-                summaries.add((ExperimentSummary) object);
+                summaries.add((ExperimentSummaryModel) object);
             }
             return summaries;
         }catch (Exception e) {
@@ -945,7 +993,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      *       The starting point of the results to be fetched
      */
     @Override
-    public List<ExperimentSummary> searchExperiments(String gatewayId, String userName, Map<ExperimentSearchFields, String> filters, int limit, int offset)
+    public List<ExperimentSummaryModel> searchExperiments(String gatewayId, String userName, Map<ExperimentSearchFields, String> filters, int limit, int offset)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
@@ -966,7 +1014,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 exception.setMessage("User does not exist in the system. Please provide a valid user..");
                 throw exception;
             }
-            List<ExperimentSummary> summaries = new ArrayList<ExperimentSummary>();
+            List<ExperimentSummaryModel> summaries = new ArrayList<ExperimentSummaryModel>();
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             Map<String, String> regFilters = new HashMap();
             regFilters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
@@ -990,7 +1038,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             List<Object> results = experimentCatalog.search(ExperimentCatalogModelType.EXPERIMENT, regFilters, limit,
                     offset, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             for (Object object : results) {
-                summaries.add((ExperimentSummary) object);
+                summaries.add((ExperimentSummaryModel) object);
             }
             return summaries;
         }catch (Exception e) {
@@ -1048,7 +1096,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Deprecated
     @Override
-    public List<Experiment> getAllExperimentsInProject(String projectId) throws InvalidRequestException,
+    public List<ExperimentModel> getAllExperimentsInProject(String projectId) throws InvalidRequestException,
                                                                                 AiravataClientException,
                                                                                 AiravataSystemException,
                                                                                 ProjectNotFoundException,
@@ -1068,7 +1116,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      *       The starting point of the results to be fetched
      */
     @Override
-    public List<Experiment> getAllExperimentsInProjectWithPagination(String projectId, int limit, int offset)
+    public List<ExperimentModel> getAllExperimentsInProjectWithPagination(String projectId, int limit, int offset)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, ProjectNotFoundException, TException {
         if (!validateString(projectId)){
             logger.error("Project id cannot be empty. Please provide a valid project ID...");
@@ -1085,13 +1133,13 @@ public class AiravataServerHandler implements Airavata.Iface {
                 exception.setMessage("Project does not exist in the system. Please provide a valid project ID...");
                 throw exception;
             }
-            List<Experiment> experiments = new ArrayList<Experiment>();
+            List<ExperimentModel> experiments = new ArrayList<ExperimentModel>();
             List<Object> list = experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT,
                     Constants.FieldConstants.ExperimentConstants.PROJECT_ID, projectId, limit, offset,
                     Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             if (list != null && !list.isEmpty()) {
                 for (Object o : list) {
-                    experiments.add((Experiment) o);
+                    experiments.add((ExperimentModel) o);
                 }
             }
             return experiments;
@@ -1116,7 +1164,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Deprecated
     @Override
-    public List<Experiment> getAllUserExperiments(String gatewayId, String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public List<ExperimentModel> getAllUserExperiments(String gatewayId, String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         return getAllUserExperimentsWithPagination(gatewayId, userName, -1, -1);
     }
 
@@ -1134,7 +1182,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      *       The starting point of the results to be fetched
      */
     @Override
-    public List<Experiment> getAllUserExperimentsWithPagination(String gatewayId, String userName, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public List<ExperimentModel> getAllUserExperimentsWithPagination(String gatewayId, String userName, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -1154,14 +1202,14 @@ public class AiravataServerHandler implements Airavata.Iface {
                 exception.setMessage("User does not exist in the system. Please provide a valid user..");
                 throw exception;
             }
-            List<Experiment> experiments = new ArrayList<Experiment>();
+            List<ExperimentModel> experiments = new ArrayList<ExperimentModel>();
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             List<Object> list = experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT,
                     Constants.FieldConstants.ExperimentConstants.USER_NAME, userName, limit, offset,
                     Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             if (list != null && !list.isEmpty()){
                 for (Object o : list){
-                    experiments.add((Experiment)o);
+                    experiments.add((ExperimentModel)o);
                 }
             }
             return experiments;
@@ -1197,10 +1245,10 @@ public class AiravataServerHandler implements Airavata.Iface {
      *                                                               rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
-    public String createExperiment(String gatewayId, Experiment experiment) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public String createExperiment(String gatewayId, ExperimentModel experiment) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
-            if (!validateString(experiment.getName())){
+            if (!validateString(experiment.getExperimentName())){
                 logger.error("Cannot create experiments with empty experiment name");
                 AiravataSystemException exception = new AiravataSystemException();
                 exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
@@ -1221,10 +1269,10 @@ public class AiravataServerHandler implements Airavata.Iface {
             if(publisher!=null) {
                 publisher.publish(messageContext);
             }
-            logger.infoId(experimentId, "Created new experiment with experiment name {}", experiment.getName());
+            logger.info(experimentId, "Created new experiment with experiment name {}", experiment.getExperimentName());
             return experimentId;
         } catch (Exception e) {
-            logger.error("Error while creating the experiment with experiment name {}", experiment.getName());
+            logger.error("Error while creating the experiment with experiment name {}", experiment.getExperimentName());
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while creating the experiment. More info : " + e.getMessage());
@@ -1255,13 +1303,13 @@ public class AiravataServerHandler implements Airavata.Iface {
      *                                                                   rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
-    public Experiment getExperiment(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+    public ExperimentModel getExperiment(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
         try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
-            return (Experiment) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId);
+            return (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId);
         } catch (Exception e) {
             logger.error("Error while retrieving the experiment", e);
             AiravataSystemException exception = new AiravataSystemException();
@@ -1297,23 +1345,23 @@ public class AiravataServerHandler implements Airavata.Iface {
      *                                                                   rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
-    public void updateExperiment(String airavataExperimentId, Experiment experiment) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+    public void updateExperiment(String airavataExperimentId, ExperimentModel experiment) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
         try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)) {
-                logger.errorId(airavataExperimentId, "Update request failed, Experiment {} doesn't exist.", airavataExperimentId);
+                logger.error(airavataExperimentId, "Update request failed, Experiment {} doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
             ExperimentStatus experimentStatus = getExperimentStatus(airavataExperimentId);
             if (experimentStatus != null){
-                ExperimentState experimentState = experimentStatus.getExperimentState();
+                ExperimentState experimentState = experimentStatus.getState();
                 switch (experimentState){
-                    case CREATED: case VALIDATED:case UNKNOWN:
+                    case CREATED: case VALIDATED:
                         experimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT, experiment, airavataExperimentId);
-                        logger.infoId(airavataExperimentId, "Successfully updated experiment {} ", experiment.getName());
+                        logger.info(airavataExperimentId, "Successfully updated experiment {} ", experiment.getExperimentName());
                         break;
                     default:
-                        logger.errorId(airavataExperimentId, "Error while updating experiment. Update experiment is only valid for experiments " +
+                        logger.error(airavataExperimentId, "Error while updating experiment. Update experiment is only valid for experiments " +
                                 "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given " +
                                 "experiment is in one of above statuses... ");
                         AiravataSystemException exception = new AiravataSystemException();
@@ -1325,7 +1373,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 }
             }
         } catch (Exception e) {
-            logger.errorId(airavataExperimentId, "Error while updating experiment", e);
+            logger.error(airavataExperimentId, "Error while updating experiment", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while updating experiment. More info : " + e.getMessage());
@@ -1334,23 +1382,23 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public void updateExperimentConfiguration(String airavataExperimentId, UserConfigurationData userConfiguration) throws TException {
+    public void updateExperimentConfiguration(String airavataExperimentId, UserConfigurationDataModel userConfiguration) throws TException {
         try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
-                logger.errorId(airavataExperimentId, "Update experiment configuration failed, experiment {} doesn't exist.", airavataExperimentId);
+                logger.error(airavataExperimentId, "Update experiment configuration failed, experiment {} doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
             ExperimentStatus experimentStatus = getExperimentStatus(airavataExperimentId);
             if (experimentStatus != null){
-                ExperimentState experimentState = experimentStatus.getExperimentState();
+                ExperimentState experimentState = experimentStatus.getState();
                 switch (experimentState){
-                    case CREATED: case VALIDATED: case CANCELED: case FAILED: case UNKNOWN:
+                    case CREATED: case VALIDATED: case CANCELED: case FAILED:
                         experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_CONFIGURATION_DATA, userConfiguration, airavataExperimentId);
-                        logger.infoId(airavataExperimentId, "Successfully updated experiment configuration for experiment {}.", airavataExperimentId);
+                        logger.info(airavataExperimentId, "Successfully updated experiment configuration for experiment {}.", airavataExperimentId);
                         break;
                     default:
-                        logger.errorId(airavataExperimentId, "Error while updating experiment {}. Update experiment is only valid for experiments " +
+                        logger.error(airavataExperimentId, "Error while updating experiment {}. Update experiment is only valid for experiments " +
                                 "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given " +
                                 "experiment is in one of above statuses... ", airavataExperimentId);
                         AiravataSystemException exception = new AiravataSystemException();
@@ -1362,7 +1410,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 }
             }
         } catch (Exception e) {
-            logger.errorId(airavataExperimentId, "Error while updating user configuration", e);
+            logger.error(airavataExperimentId, "Error while updating user configuration", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while updating user configuration. " +
@@ -1374,23 +1422,23 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public void updateResourceScheduleing(String airavataExperimentId, ComputationalResourceScheduling resourceScheduling) throws TException {
+    public void updateResourceScheduleing(String airavataExperimentId, ComputationalResourceSchedulingModel resourceScheduling) throws TException {
         try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
-                logger.infoId(airavataExperimentId, "Update resource scheduling failed, experiment {} doesn't exist.", airavataExperimentId);
+                logger.info(airavataExperimentId, "Update resource scheduling failed, experiment {} doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
             ExperimentStatus experimentStatus = getExperimentStatus(airavataExperimentId);
             if (experimentStatus != null){
-                ExperimentState experimentState = experimentStatus.getExperimentState();
+                ExperimentState experimentState = experimentStatus.getState();
                 switch (experimentState){
-                    case CREATED: case VALIDATED: case CANCELED: case FAILED: case UNKNOWN:
+                    case CREATED: case VALIDATED: case CANCELED: case FAILED:
                         experimentCatalog.add(ExpCatChildDataType.COMPUTATIONAL_RESOURCE_SCHEDULING, resourceScheduling, airavataExperimentId);
-                        logger.infoId(airavataExperimentId, "Successfully updated resource scheduling for the experiment {}.", airavataExperimentId);
+                        logger.info(airavataExperimentId, "Successfully updated resource scheduling for the experiment {}.", airavataExperimentId);
                         break;
                     default:
-                        logger.errorId(airavataExperimentId, "Error while updating scheduling info. Update experiment is only valid for experiments " +
+                        logger.error(airavataExperimentId, "Error while updating scheduling info. Update experiment is only valid for experiments " +
                                 "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given " +
                                 "experiment is in one of above statuses... ");
                         AiravataSystemException exception = new AiravataSystemException();
@@ -1402,7 +1450,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 }
             }
         } catch (Exception e) {
-            logger.errorId(airavataExperimentId, "Error while updating scheduling info", e);
+            logger.error(airavataExperimentId, "Error while updating scheduling info", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while updating scheduling info. " +
@@ -1429,11 +1477,11 @@ public class AiravataServerHandler implements Airavata.Iface {
      	try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
  			if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)) {
-                logger.errorId(airavataExperimentId, "Experiment validation failed , experiment {} doesn't exist.", airavataExperimentId);
+                logger.error(airavataExperimentId, "Experiment validation failed , experiment {} doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
         } catch (RegistryException e1) {
- 			  logger.errorId(airavataExperimentId, "Error while retrieving projects", e1);
+ 			  logger.error(airavataExperimentId, "Error while retrieving projects", e1);
  	            AiravataSystemException exception = new AiravataSystemException();
  	            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
  	            exception.setMessage("Error while retrieving projects. More info : " + e1.getMessage());
@@ -1443,10 +1491,10 @@ public class AiravataServerHandler implements Airavata.Iface {
         Client orchestratorClient = getOrchestratorClient();
         try{
         if (orchestratorClient.validateExperiment(airavataExperimentId)) {
-            logger.infoId(airavataExperimentId, "Experiment validation succeed.");
+            logger.info(airavataExperimentId, "Experiment validation succeed.");
             return true;
         } else {
-            logger.infoId(airavataExperimentId, "Experiment validation failed.");
+            logger.info(airavataExperimentId, "Experiment validation failed.");
             return false;
         }}catch (TException e){
             throw e;
@@ -1489,13 +1537,13 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
-                logger.errorId(airavataExperimentId, "Error while retrieving experiment status, experiment {} doesn't exist.", airavataExperimentId);
+                logger.error(airavataExperimentId, "Error while retrieving experiment status, experiment {} doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId +
                                                       " does not exist in the system..");
             }
             return (ExperimentStatus) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT_STATUS, airavataExperimentId);
         } catch (Exception e) {
-            logger.errorId(airavataExperimentId, "Error while retrieving the experiment status", e);
+            logger.error(airavataExperimentId, "Error while retrieving the experiment status", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while retrieving the experiment status. More info : " + e.getMessage());
@@ -1508,12 +1556,12 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
-                logger.errorId(airavataExperimentId, "Get experiment outputs failed, experiment {} doesn't exit.", airavataExperimentId);
+                logger.error(airavataExperimentId, "Get experiment outputs failed, experiment {} doesn't exit.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
             return (List<OutputDataObjectType>) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT_OUTPUT, airavataExperimentId);
         } catch (Exception e) {
-            logger.errorId(airavataExperimentId, "Error while retrieving the experiment outputs", e);
+            logger.error(airavataExperimentId, "Error while retrieving the experiment outputs", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while retrieving the experiment outputs. More info : " + e.getMessage());
@@ -1528,10 +1576,11 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     public Map<String, JobStatus> getJobStatuses(String airavataExperimentId) throws TException {
         Map<String, JobStatus> jobStatus = new HashMap<String, JobStatus>();
-        try {
+	    // FIXME : implement this method with new data model
+/*        try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
-                logger.errorId(airavataExperimentId, "Error while retrieving job status, the experiment {} doesn't exist.", airavataExperimentId);
+                logger.error(airavataExperimentId, "Error while retrieving job status, the experiment {} doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
             List<Object> workflowNodes = experimentCatalog.get(ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL, Constants.FieldConstants.WorkflowNodeConstants.EXPERIMENT_ID, airavataExperimentId);
@@ -1554,22 +1603,23 @@ public class AiravataServerHandler implements Airavata.Iface {
                 }
             }
         } catch (Exception e) {
-            logger.errorId(airavataExperimentId, "Error while retrieving the job statuses", e);
+            logger.error(airavataExperimentId, "Error while retrieving the job statuses", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while retrieving the job statuses. More info : " + e.getMessage());
             throw exception;
-        }
+        }*/
         return jobStatus;
     }
 
     @Override
-    public List<JobDetails> getJobDetails(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
-        List<JobDetails> jobDetailsList = new ArrayList<JobDetails>();
-        try {
+    public List<JobModel> getJobDetails(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+        List<JobModel> jobDetailsList = new ArrayList<JobModel>();
+	    // FIXME : fix this method with new data model.
+      /*  try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
-                logger.errorId(airavataExperimentId, "Error while retrieving job details, experiment {} doesn't exist.", airavataExperimentId);
+                logger.error(airavataExperimentId, "Error while retrieving job details, experiment {} doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
             List<Object> workflowNodes = experimentCatalog.get(ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL, Constants.FieldConstants.WorkflowNodeConstants.EXPERIMENT_ID, airavataExperimentId);
@@ -1591,51 +1641,15 @@ public class AiravataServerHandler implements Airavata.Iface {
                 }
             }
         } catch (Exception e) {
-            logger.errorId(airavataExperimentId, "Error while retrieving the job details", e);
+            logger.error(airavataExperimentId, "Error while retrieving the job details", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while retrieving the job details. More info : " + e.getMessage());
             throw exception;
-        }
+        }*/
         return jobDetailsList;
     }
 
-    @Override
-    public List<DataTransferDetails> getDataTransferDetails(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
-        List<DataTransferDetails> dataTransferDetailList = new ArrayList<DataTransferDetails>();
-        try {
-            experimentCatalog = RegistryFactory.getDefaultExpCatalog();
-            if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)) {
-                logger.errorId(airavataExperimentId, "Error while retrieving data transfer details, experiment {} doesn't exit.", airavataExperimentId);
-                throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
-            }
-            List<Object> workflowNodes = experimentCatalog.get(ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL, Constants.FieldConstants.WorkflowNodeConstants.EXPERIMENT_ID, airavataExperimentId);
-            if (workflowNodes != null && !workflowNodes.isEmpty()){
-                for (Object wf : workflowNodes){
-                    String nodeInstanceId = ((WorkflowNodeDetails) wf).getNodeInstanceId();
-                    List<Object> taskDetails = experimentCatalog.get(ExperimentCatalogModelType.TASK_DETAIL, Constants.FieldConstants.TaskDetailConstants.NODE_ID, nodeInstanceId);
-                    if (taskDetails != null && !taskDetails.isEmpty()){
-                        for (Object ts : taskDetails){
-                            String taskID = ((TaskDetails) ts).getTaskID();
-                            List<Object> dataTransferDetails = experimentCatalog.get(ExperimentCatalogModelType.DATA_TRANSFER_DETAIL, Constants.FieldConstants.JobDetaisConstants.TASK_ID, taskID);
-                            if (dataTransferDetails != null && !dataTransferDetails.isEmpty()){
-                                for (Object dataTransfer : dataTransferDetails){
-                                    dataTransferDetailList.add((DataTransferDetails) dataTransfer);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            logger.errorId(airavataExperimentId, "Error while retrieving the data transfer details", e);
-            AiravataSystemException exception = new AiravataSystemException();
-            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
-            exception.setMessage("Error while retrieving the data transfer details. More info : " + e.getMessage());
-            throw exception;
-        }
-        return dataTransferDetailList;
-    }
 
     /**
      * Launch a previously created and configured experiment. Airavata Server will then start processing the request and appropriate
@@ -1677,36 +1691,36 @@ public class AiravataServerHandler implements Airavata.Iface {
     	try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
 			if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)) {
-                logger.errorId(airavataExperimentId, "Error while launching experiment, experiment {} doesn't exist.", airavataExperimentId);
+                logger.error(airavataExperimentId, "Error while launching experiment, experiment {} doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
         } catch (RegistryException e1) {
-            logger.errorId(airavataExperimentId, "Error while instantiate the registry instance", e1);
+            logger.error(airavataExperimentId, "Error while instantiate the registry instance", e1);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while instantiate the registry instance. More info : " + e1.getMessage());
             throw exception;
         }
-    	Experiment experiment = getExperiment(airavataExperimentId);
+    	ExperimentModel experiment = getExperiment(airavataExperimentId);
     	OrchestratorService.Client orchestratorClient = getOrchestratorClient();
     	if (orchestratorClient.validateExperiment(airavataExperimentId)) {
     		orchestratorClient.launchExperiment(airavataExperimentId, airavataCredStoreToken);
     	}else {
-            logger.errorId(airavataExperimentId, "Couldn't identify experiment type, experiment {} is neither single application nor workflow.", airavataExperimentId);
-            throw new InvalidRequestException("Experiment '" + airavataExperimentId + "' launch failed. Unable to figureout execution type for application " + experiment.getApplicationId());
+            logger.error(airavataExperimentId, "Couldn't identify experiment type, experiment {} is neither single application nor workflow.", airavataExperimentId);
+            throw new InvalidRequestException("Experiment '" + airavataExperimentId + "' launch failed. Unable to figureout execution type for application " + experiment.getExecutionId());
         }
     }
 
 
-    private OrchestratorService.Client getOrchestratorClient() throws TException{
-		final int serverPort = Integer.parseInt(ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ORCHESTRATOR_SERVER_PORT,"8940"));
-        final String serverHost = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ORCHESTRATOR_SERVER_HOST, null);
-        try {
-			return OrchestratorClientFactory.createOrchestratorClient(serverHost, serverPort);
-		} catch (AiravataClientConnectException e) {
-			throw new TException(e);
-		}
-	}
+    private OrchestratorService.Client getOrchestratorClient() throws TException {
+	    try {
+		    final String serverHost = ServerSettings.getOrchestratorServerHost();
+		    final int serverPort = ServerSettings.getOrchestratorServerPort();
+		    return OrchestratorClientFactory.createOrchestratorClient(serverHost, serverPort);
+	    } catch (AiravataException e) {
+		    throw new TException(e);
+	    }
+    }
 
     /**
      * Clone an specified experiment with a new name. A copy of the experiment configuration is made and is persisted with new metadata.
@@ -1754,28 +1768,25 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, existingExperimentID)){
-                logger.errorId(existingExperimentID, "Error while cloning experiment {}, experiment doesn't exist.", existingExperimentID);
+                logger.error(existingExperimentID, "Error while cloning experiment {}, experiment doesn't exist.", existingExperimentID);
                 throw new ExperimentNotFoundException("Requested experiment id " + existingExperimentID + " does not exist in the system..");
             }
-            Experiment existingExperiment = (Experiment) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, existingExperimentID);
+            ExperimentModel existingExperiment = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, existingExperimentID);
             String gatewayId = (String) experimentCatalog.getValue(ExperimentCatalogModelType.EXPERIMENT, existingExperimentID, Constants.FieldConstants.ExperimentConstants.GATEWAY);
             existingExperiment.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
-            if (existingExperiment.getApplicationId() != null){
-                List<OutputDataObjectType> applicationOutputs = getApplicationOutputs(existingExperiment.getApplicationId());
+            if (existingExperiment.getExecutionId() != null){
+                List<OutputDataObjectType> applicationOutputs = getApplicationOutputs(existingExperiment.getExecutionId());
                 existingExperiment.setExperimentOutputs(applicationOutputs);
             }
             if (validateString(newExperiementName)){
-                existingExperiment.setName(newExperiementName);
-            }
-            if (existingExperiment.getWorkflowNodeDetailsList() != null){
-                existingExperiment.getWorkflowNodeDetailsList().clear();
+                existingExperiment.setExperimentName(newExperiementName);
             }
             if (existingExperiment.getErrors() != null ){
                 existingExperiment.getErrors().clear();
             }
             return (String) experimentCatalog.add(ExpCatParentDataType.EXPERIMENT, existingExperiment, gatewayId);
         } catch (Exception e) {
-            logger.errorId(existingExperimentID, "Error while cloning the experiment with existing configuration...", e);
+            logger.error(existingExperimentID, "Error while cloning the experiment with existing configuration...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while cloning the experiment with existing configuration. More info : " + e.getMessage());
@@ -1814,7 +1825,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             Client client = getOrchestratorClient();
             client.terminateExperiment(airavataExperimentId, tokenId);
         } catch (RegistryException e) {
-            logger.errorId(airavataExperimentId, "Error while cancelling the experiment...", e);
+            logger.error(airavataExperimentId, "Error while cancelling the experiment...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while cancelling the experiment. More info : " + e.getMessage());
@@ -1860,7 +1871,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getApplicationInterface().getApplicationModule(appModuleId);
         } catch (AppCatalogException e) {
-            logger.errorId(appModuleId, "Error while retrieving application module...", e);
+            logger.error(appModuleId, "Error while retrieving application module...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while retrieving the adding application module. More info : " + e.getMessage());
@@ -1883,7 +1894,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             appCatalog.getApplicationInterface().updateApplicationModule(appModuleId, applicationModule);
             return true;
         } catch (AppCatalogException e) {
-            logger.errorId(appModuleId, "Error while updating application module...", e);
+            logger.error(appModuleId, "Error while updating application module...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while updating application module. More info : " + e.getMessage());
@@ -1922,7 +1933,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getApplicationInterface().removeApplicationModule(appModuleId);
         } catch (AppCatalogException e) {
-            logger.errorId(appModuleId, "Error while deleting application module...", e);
+            logger.error(appModuleId, "Error while deleting application module...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while deleting the application module. More info : " + e.getMessage());
@@ -1967,7 +1978,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getApplicationDeployment().getApplicationDeployement(appDeploymentId);
         } catch (AppCatalogException e) {
-            logger.errorId(appDeploymentId, "Error while retrieving application deployment...", e);
+            logger.error(appDeploymentId, "Error while retrieving application deployment...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while retrieving application deployment. More info : " + e.getMessage());
@@ -1990,7 +2001,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             appCatalog.getApplicationDeployment().updateApplicationDeployment(appDeploymentId, applicationDeployment);
             return true;
         } catch (AppCatalogException e) {
-            logger.errorId(appDeploymentId, "Error while updating application deployment...", e);
+            logger.error(appDeploymentId, "Error while updating application deployment...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while updating application deployment. More info : " + e.getMessage());
@@ -2012,7 +2023,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             appCatalog.getApplicationDeployment().removeAppDeployment(appDeploymentId);
             return true;
         } catch (AppCatalogException e) {
-            logger.errorId(appDeploymentId, "Error while deleting application deployment...", e);
+            logger.error(appDeploymentId, "Error while deleting application deployment...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while deleting application deployment. More info : " + e.getMessage());
@@ -2064,7 +2075,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
             return appDeployments;
         } catch (AppCatalogException e) {
-            logger.errorId(appModuleId, "Error while retrieving application deployments...", e);
+            logger.error(appModuleId, "Error while retrieving application deployments...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while retrieving application deployment. More info : " + e.getMessage());
@@ -2109,7 +2120,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getApplicationInterface().getApplicationInterface(appInterfaceId);
         } catch (AppCatalogException e) {
-            logger.errorId(appInterfaceId, "Error while retrieving application interface...", e);
+            logger.error(appInterfaceId, "Error while retrieving application interface...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while retrieving application interface. More info : " + e.getMessage());
@@ -2132,7 +2143,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             appCatalog.getApplicationInterface().updateApplicationInterface(appInterfaceId, applicationInterface);
             return true;
         } catch (AppCatalogException e) {
-            logger.errorId(appInterfaceId, "Error while updating application interface...", e);
+            logger.error(appInterfaceId, "Error while updating application interface...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while updating application interface. More info : " + e.getMessage());
@@ -2153,7 +2164,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getApplicationInterface().removeApplicationInterface(appInterfaceId);
         } catch (AppCatalogException e) {
-            logger.errorId(appInterfaceId, "Error while deleting application interface...", e);
+            logger.error(appInterfaceId, "Error while deleting application interface...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while deleting application interface. More info : " + e.getMessage());
@@ -2229,7 +2240,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getApplicationInterface().getApplicationInputs(appInterfaceId);
         } catch (AppCatalogException e) {
-            logger.errorId(appInterfaceId, "Error while retrieving application inputs...", e);
+            logger.error(appInterfaceId, "Error while retrieving application inputs...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while retrieving application inputs. More info : " + e.getMessage());
@@ -2250,7 +2261,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getApplicationInterface().getApplicationOutputs(appInterfaceId);
         } catch (AppCatalogException e) {
-            logger.errorId(appInterfaceId, "Error while retrieving application outputs...", e);
+            logger.error(appInterfaceId, "Error while retrieving application outputs...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while retrieving application outputs. More info : " + e.getMessage());
@@ -2292,7 +2303,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
             return availableComputeResources;
         } catch (AppCatalogException e) {
-            logger.errorId(appInterfaceId, "Error while saving compute resource...", e);
+            logger.error(appInterfaceId, "Error while saving compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while saving compute resource. More info : " + e.getMessage());
@@ -2334,7 +2345,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getComputeResource().getComputeResource(computeResourceId);
         } catch (AppCatalogException e) {
-            logger.errorId(computeResourceId, "Error while retrieving compute resource...", e);
+            logger.error(computeResourceId, "Error while retrieving compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while retrieving compute resource. More info : " + e.getMessage());
@@ -2377,7 +2388,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             appCatalog.getComputeResource().updateComputeResource(computeResourceId, computeResourceDescription);
             return true;
         } catch (AppCatalogException e) {
-            logger.errorId(computeResourceId, "Error while updating compute resource...", e);
+            logger.error(computeResourceId, "Error while updating compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while updaing compute resource. More info : " + e.getMessage());
@@ -2399,7 +2410,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             appCatalog.getComputeResource().removeComputeResource(computeResourceId);
             return true;
         } catch (AppCatalogException e) {
-            logger.errorId(computeResourceId, "Error while deleting compute resource...", e);
+            logger.error(computeResourceId, "Error while deleting compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while deleting compute resource. More info : " + e.getMessage());
@@ -2425,7 +2436,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             return addJobSubmissionInterface(computeResource, computeResourceId,
             		computeResource.addLocalJobSubmission(localSubmission), JobSubmissionProtocol.LOCAL, priorityOrder);
         } catch (AppCatalogException e) {
-            logger.errorId(computeResourceId, "Error while adding job submission interface to resource compute resource...", e);
+            logger.error(computeResourceId, "Error while adding job submission interface to resource compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
@@ -2449,7 +2460,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             submission.save();
             return true;
         } catch (Exception e) {
-            logger.errorId(jobSubmissionInterfaceId, "Error while adding job submission interface to resource compute resource...", e);
+            logger.error(jobSubmissionInterfaceId, "Error while adding job submission interface to resource compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
@@ -2464,7 +2475,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             return appCatalog.getComputeResource().getLocalJobSubmission(jobSubmissionId);
         } catch (AppCatalogException e) {
             String errorMsg = "Error while retrieving local job submission interface to resource compute resource...";
-            logger.errorId(jobSubmissionId, errorMsg, e);
+            logger.error(jobSubmissionId, errorMsg, e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(errorMsg + e.getMessage());
@@ -2501,7 +2512,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             return addJobSubmissionInterface(computeResource, computeResourceId,
             		computeResource.addSSHJobSubmission(sshJobSubmission), JobSubmissionProtocol.SSH, priorityOrder);
         } catch (AppCatalogException e) {
-            logger.errorId(computeResourceId, "Error while adding job submission interface to resource compute resource...", e);
+            logger.error(computeResourceId, "Error while adding job submission interface to resource compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
@@ -2516,7 +2527,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             return appCatalog.getComputeResource().getSSHJobSubmission(jobSubmissionId);
         } catch (AppCatalogException e) {
             String errorMsg = "Error while retrieving SSH job submission interface to resource compute resource...";
-            logger.errorId(jobSubmissionId, errorMsg, e);
+            logger.error(jobSubmissionId, errorMsg, e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(errorMsg + e.getMessage());
@@ -2542,7 +2553,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             return addJobSubmissionInterface(computeResource, computeResourceId,
                     computeResource.addCloudJobSubmission(cloudJobSubmission), JobSubmissionProtocol.CLOUD, priorityOrder);
         } catch (AppCatalogException e) {
-            logger.errorId(computeResourceId, "Error while adding job submission interface to resource compute resource...", e);
+            logger.error(computeResourceId, "Error while adding job submission interface to resource compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
@@ -2557,7 +2568,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             return appCatalog.getComputeResource().getCloudJobSubmission(jobSubmissionId);
         } catch (AppCatalogException e) {
             String errorMsg = "Error while retrieving Cloud job submission interface to resource compute resource...";
-            logger.errorId(jobSubmissionId, errorMsg, e);
+            logger.error(jobSubmissionId, errorMsg, e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(errorMsg + e.getMessage());
@@ -2591,7 +2602,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             return appCatalog.getComputeResource().getUNICOREJobSubmission(jobSubmissionId);
         } catch (AppCatalogException e) {
             String errorMsg = "Error while retrieving Unicore job submission interface to resource compute resource...";
-            logger.errorId(jobSubmissionId, errorMsg, e);
+            logger.error(jobSubmissionId, errorMsg, e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(errorMsg + e.getMessage());
@@ -2615,7 +2626,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             submission.save();
             return true;
         } catch (Exception e) {
-            logger.errorId(jobSubmissionInterfaceId, "Error while adding job submission interface to resource compute resource...", e);
+            logger.error(jobSubmissionInterfaceId, "Error while adding job submission interface to resource compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
@@ -2639,7 +2650,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             submission.save();
             return true;
         } catch (Exception e) {
-            logger.errorId(jobSubmissionInterfaceId, "Error while adding job submission interface to resource compute resource...", e);
+            logger.error(jobSubmissionInterfaceId, "Error while adding job submission interface to resource compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
@@ -2655,7 +2666,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             submission.save();
             return true;
         } catch (Exception e) {
-            logger.errorId(jobSubmissionInterfaceId, "Error while adding job submission interface to resource compute resource...", e);
+            logger.error(jobSubmissionInterfaceId, "Error while adding job submission interface to resource compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
@@ -2681,7 +2692,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             return addDataMovementInterface(computeResource, computeResourceId,
             		computeResource.addLocalDataMovement(localDataMovement), DataMovementProtocol.LOCAL, priorityOrder);
         } catch (AppCatalogException e) {
-            logger.errorId(computeResourceId, "Error while adding data movement interface to resource compute resource...", e);
+            logger.error(computeResourceId, "Error while adding data movement interface to resource compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while adding data movement interface to resource compute resource. More info : " + e.getMessage());
@@ -2705,7 +2716,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             movment.save();
             return true;
         } catch (Exception e) {
-            logger.errorId(jobSubmissionInterfaceId, "Error while adding job submission interface to resource compute resource...", e);
+            logger.error(jobSubmissionInterfaceId, "Error while adding job submission interface to resource compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
@@ -2720,7 +2731,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             return appCatalog.getComputeResource().getLocalDataMovement(dataMovementId);
         } catch (AppCatalogException e) {
             String errorMsg = "Error while retrieving local data movement interface to resource compute resource...";
-            logger.errorId(dataMovementId, errorMsg, e);
+            logger.error(dataMovementId, errorMsg, e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(errorMsg + e.getMessage());
@@ -2757,7 +2768,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             return addDataMovementInterface(computeResource, computeResourceId,
             		computeResource.addScpDataMovement(scpDataMovement), DataMovementProtocol.SCP, priorityOrder);
         } catch (AppCatalogException e) {
-            logger.errorId(computeResourceId, "Error while adding data movement interface to resource compute resource...", e);
+            logger.error(computeResourceId, "Error while adding data movement interface to resource compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while adding data movement interface to resource compute resource. More info : " + e.getMessage());
@@ -2782,7 +2793,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             movment.save();
             return true;
         } catch (Exception e) {
-            logger.errorId(jobSubmissionInterfaceId, "Error while adding job submission interface to resource compute resource...", e);
+            logger.error(jobSubmissionInterfaceId, "Error while adding job submission interface to resource compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
@@ -2797,7 +2808,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             return appCatalog.getComputeResource().getSCPDataMovement(dataMovementId);
         } catch (AppCatalogException e) {
             String errorMsg = "Error while retrieving SCP data movement interface to resource compute resource...";
-            logger.errorId(dataMovementId, errorMsg, e);
+            logger.error(dataMovementId, errorMsg, e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(errorMsg + e.getMessage());
@@ -2813,7 +2824,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             return addDataMovementInterface(computeResource, computeResourceId,
                     computeResource.addUnicoreDataMovement(unicoreDataMovement), DataMovementProtocol.UNICORE_STORAGE_SERVICE, priorityOrder);
         } catch (AppCatalogException e) {
-            logger.errorId(computeResourceId, "Error while adding data movement interface to resource compute resource...", e);
+            logger.error(computeResourceId, "Error while adding data movement interface to resource compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while adding data movement interface to resource compute resource. More info : " + e.getMessage());
@@ -2829,7 +2840,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             movment.save();
             return true;
         } catch (Exception e) {
-            logger.errorId(dataMovementInterfaceId, "Error while updating unicore data movement to compute resource...", e);
+            logger.error(dataMovementInterfaceId, "Error while updating unicore data movement to compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while updating unicore data movement to compute resource. More info : " + e.getMessage());
@@ -2844,7 +2855,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             return appCatalog.getComputeResource().getUNICOREDataMovement(dataMovementId);
         } catch (AppCatalogException e) {
             String errorMsg = "Error while retrieving UNICORE data movement interface...";
-            logger.errorId(dataMovementId, errorMsg, e);
+            logger.error(dataMovementId, errorMsg, e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(errorMsg + e.getMessage());
@@ -2870,7 +2881,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             return addDataMovementInterface(computeResource, computeResourceId,
             		computeResource.addGridFTPDataMovement(gridFTPDataMovement), DataMovementProtocol.GridFTP, priorityOrder);
         } catch (AppCatalogException e) {
-            logger.errorId(computeResourceId, "Error while adding data movement interface to resource compute resource...", e);
+            logger.error(computeResourceId, "Error while adding data movement interface to resource compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while adding data movement interface to resource compute resource. More info : " + e.getMessage());
@@ -2895,7 +2906,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             movment.save();
             return true;
         } catch (Exception e) {
-            logger.errorId(jobSubmissionInterfaceId, "Error while adding job submission interface to resource compute resource...", e);
+            logger.error(jobSubmissionInterfaceId, "Error while adding job submission interface to resource compute resource...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while adding job submission interface to resource compute resource. More info : " + e.getMessage());
@@ -2910,7 +2921,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             return appCatalog.getComputeResource().getGridFTPDataMovement(dataMovementId);
         } catch (AppCatalogException e) {
             String errorMsg = "Error while retrieving GridFTP data movement interface to resource compute resource...";
-            logger.errorId(dataMovementId, errorMsg, e);
+            logger.error(dataMovementId, errorMsg, e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage(errorMsg + e.getMessage());
@@ -2982,7 +2993,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             appCatalog.getComputeResource().removeJobSubmissionInterface(computeResourceId, jobSubmissionInterfaceId);
             return true;
         } catch (AppCatalogException e) {
-            logger.errorId(jobSubmissionInterfaceId, "Error while deleting job submission interface...", e);
+            logger.error(jobSubmissionInterfaceId, "Error while deleting job submission interface...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while deleting job submission interface. More info : " + e.getMessage());
@@ -3004,7 +3015,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             appCatalog.getComputeResource().removeDataMovementInterface(computeResourceId, dataMovementInterfaceId);
             return true;
         } catch (AppCatalogException e) {
-            logger.errorId(dataMovementInterfaceId, "Error while deleting data movement interface...", e);
+            logger.error(dataMovementInterfaceId, "Error while deleting data movement interface...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while deleting data movement interface. More info : " + e.getMessage());
@@ -3018,7 +3029,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getComputeResource().addResourceJobManager(resourceJobManager);
         } catch (AppCatalogException e) {
-            logger.errorId(resourceJobManager.getResourceJobManagerId(), "Error while adding resource job manager...", e);
+            logger.error(resourceJobManager.getResourceJobManagerId(), "Error while adding resource job manager...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while adding resource job manager. More info : " + e.getMessage());
@@ -3033,7 +3044,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             appCatalog.getComputeResource().updateResourceJobManager(resourceJobManagerId, updatedResourceJobManager);
             return true;
         } catch (AppCatalogException e) {
-            logger.errorId(resourceJobManagerId, "Error while updating resource job manager...", e);
+            logger.error(resourceJobManagerId, "Error while updating resource job manager...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while updating resource job manager. More info : " + e.getMessage());
@@ -3047,7 +3058,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getComputeResource().getResourceJobManager(resourceJobManagerId);
         } catch (AppCatalogException e) {
-            logger.errorId(resourceJobManagerId, "Error while retrieving resource job manager...", e);
+            logger.error(resourceJobManagerId, "Error while retrieving resource job manager...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while retrieving resource job manager. More info : " + e.getMessage());
@@ -3062,7 +3073,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             appCatalog.getComputeResource().deleteResourceJobManager(resourceJobManagerId);
             return true;
         } catch (AppCatalogException e) {
-            logger.errorId(resourceJobManagerId, "Error while deleting resource job manager...", e);
+            logger.error(resourceJobManagerId, "Error while deleting resource job manager...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while deleting resource job manager. More info : " + e.getMessage());
@@ -3077,7 +3088,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             appCatalog.getComputeResource().removeBatchQueue(computeResourceId, queueName);
             return true;
         } catch (AppCatalogException e) {
-            logger.errorId(computeResourceId, "Error while deleting batch queue...", e);
+            logger.error(computeResourceId, "Error while deleting batch queue...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while deleting batch queue. More info : " + e.getMessage());
@@ -3138,7 +3149,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
             return gatewayProfile.getGatewayProfile(gatewayID);
         } catch (AppCatalogException e) {
-            logger.errorId(gatewayID, "Error while retrieving gateway resource profile...", e);
+            logger.error(gatewayID, "Error while retrieving gateway resource profile...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while retrieving gateway resource profile. More info : " + e.getMessage());
@@ -3166,7 +3177,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             gatewayProfile.updateGatewayResourceProfile(gatewayID, gatewayResourceProfile);
             return true;
         } catch (AppCatalogException e) {
-            logger.errorId(gatewayID, "Error while updating gateway resource profile...", e);
+            logger.error(gatewayID, "Error while updating gateway resource profile...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while updating gateway resource profile. More info : " + e.getMessage());
@@ -3193,7 +3204,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             gatewayProfile.removeGatewayResourceProfile(gatewayID);
             return true;
         } catch (AppCatalogException e) {
-            logger.errorId(gatewayID, "Error while removing gateway resource profile...", e);
+            logger.error(gatewayID, "Error while removing gateway resource profile...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while removing gateway resource profile. More info : " + e.getMessage());
@@ -3229,7 +3240,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             gatewayProfile.updateGatewayResourceProfile(gatewayID, profile);
             return true;
         } catch (AppCatalogException e) {
-            logger.errorId(gatewayID, "Error while registering gateway resource profile preference...", e);
+            logger.error(gatewayID, "Error while registering gateway resource profile preference...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while registering gateway resource profile preference. More info : " + e.getMessage());
@@ -3256,14 +3267,14 @@ public class AiravataServerHandler implements Airavata.Iface {
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
             ComputeResource computeResource = appCatalog.getComputeResource();
             if (!gatewayProfile.isGatewayResourceProfileExists(gatewayID)){
-                logger.errorId(gatewayID, "Given gateway profile does not exist in the system. Please provide a valid gateway id...");
+                logger.error(gatewayID, "Given gateway profile does not exist in the system. Please provide a valid gateway id...");
                 AiravataSystemException exception = new AiravataSystemException();
                 exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
                 exception.setMessage("Given gateway profile does not exist in the system. Please provide a valid gateway id...");
                 throw exception;
             }
             if (!computeResource.isComputeResourceExists(computeResourceId)){
-                logger.errorId(computeResourceId, "Given compute resource does not exist in the system. Please provide a valid compute resource id...");
+                logger.error(computeResourceId, "Given compute resource does not exist in the system. Please provide a valid compute resource id...");
                 AiravataSystemException exception = new AiravataSystemException();
                 exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
                 exception.setMessage("Given compute resource does not exist in the system. Please provide a valid compute resource id...");
@@ -3271,7 +3282,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
             return gatewayProfile.getComputeResourcePreference(gatewayID, computeResourceId);
         } catch (AppCatalogException e) {
-            logger.errorId(gatewayID, "Error while reading gateway compute resource preference...", e);
+            logger.error(gatewayID, "Error while reading gateway compute resource preference...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while reading gateway compute resource preference. More info : " + e.getMessage());
@@ -3297,7 +3308,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
             return gatewayProfile.getGatewayProfile(gatewayID).getComputeResourcePreferences();
         } catch (AppCatalogException e) {
-            logger.errorId(gatewayID, "Error while reading gateway compute resource preferences...", e);
+            logger.error(gatewayID, "Error while reading gateway compute resource preferences...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while reading gateway compute resource preferences. More info : " + e.getMessage());
@@ -3354,7 +3365,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             gatewayProfile.updateGatewayResourceProfile(gatewayID, profile);
             return true;
         } catch (AppCatalogException e) {
-            logger.errorId(gatewayID, "Error while reading gateway compute resource preference...", e);
+            logger.error(gatewayID, "Error while reading gateway compute resource preference...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while updating gateway compute resource preference. More info : " + e.getMessage());
@@ -3381,7 +3392,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
             return gatewayProfile.removeComputeResourcePreferenceFromGateway(gatewayID, computeResourceId);
         } catch (AppCatalogException e) {
-            logger.errorId(gatewayID, "Error while reading gateway compute resource preference...", e);
+            logger.error(gatewayID, "Error while reading gateway compute resource preference...", e);
             AiravataSystemException exception = new AiravataSystemException();
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while updating gateway compute resource preference. More info : " + e.getMessage());

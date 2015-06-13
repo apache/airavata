@@ -27,10 +27,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.airavata.common.utils.LocalEventPublisher;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.gfac.core.GFacConfiguration;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.SecurityContext;
@@ -144,7 +144,7 @@ public class JobExecutionContext extends AbstractContext implements Serializable
     private String status;
     private List<String> outputFileList;
     private ExperimentCatalog experimentCatalog;
-    private MonitorPublisher monitorPublisher;
+    private LocalEventPublisher localEventPublisher;
 
     public String getGatewayID() {
         return gatewayID;
@@ -486,11 +486,11 @@ public class JobExecutionContext extends AbstractContext implements Serializable
         this.loginUserName = loginUserName;
     }
 
-    public MonitorPublisher getMonitorPublisher() {
-        return monitorPublisher;
+    public LocalEventPublisher getLocalEventPublisher() {
+        return localEventPublisher;
     }
 
-    public void setMonitorPublisher(MonitorPublisher monitorPublisher) {
-        this.monitorPublisher = monitorPublisher;
+    public void setLocalEventPublisher(LocalEventPublisher localEventPublisher) {
+        this.localEventPublisher = localEventPublisher;
     }
 }

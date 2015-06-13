@@ -23,7 +23,7 @@ namespace java org.apache.airavata.model
 namespace php Airavata.Model
 namespace py apache.airavata.model.workflow
 
-include "application_interface_model.thrift"
+include "application_io_models.thrift"
 
 /*
  * This file describes the definitions of the Airavata Execution Data Structures. Each of the
@@ -38,6 +38,6 @@ struct Workflow {
     2: required string name,
     3: optional string graph,
     4: optional binary image,
-    5: optional list<application_interface_model.InputDataObjectType> workflowInputs,
-    6: optional list<application_interface_model.OutputDataObjectType> workflowOutputs
+    5: optional list<application_io_models.InputDataObjectType> workflowInputs,
+    6: optional list<application_io_models.OutputDataObjectType> workflowOutputs
 }

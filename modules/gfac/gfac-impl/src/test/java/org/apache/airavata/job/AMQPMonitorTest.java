@@ -26,7 +26,7 @@ import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.gsi.ssh.impl.HPCRemoteCluster;
 import org.apache.airavata.registry.cpi.AppCatalog;
-import org.apache.airavata.common.utils.MonitorPublisher;
+import org.apache.airavata.common.utils.LocalEventPublisher;
 import org.apache.airavata.gfac.core.JobDescriptor;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.authentication.GSIAuthenticationInfo;
@@ -68,7 +68,7 @@ public class AMQPMonitorTest {
     private String certificateLocation;
     private String pbsFilePath;
     private String workingDirectory;
-    private MonitorPublisher monitorPublisher;
+    private LocalEventPublisher localEventPublisher;
     private BlockingQueue<MonitorID> finishQueue;
     private BlockingQueue<MonitorID> pushQueue;
     private Thread pushThread;
@@ -96,13 +96,13 @@ public class AMQPMonitorTest {
             throw new Exception("Need my proxy user name password to run tests.");
         }
 
-        monitorPublisher =  new MonitorPublisher(new EventBus());
+        localEventPublisher =  new LocalEventPublisher(new EventBus());
         pushQueue = new LinkedBlockingQueue<MonitorID>();
         finishQueue = new LinkedBlockingQueue<MonitorID>();
 
 
         final AMQPMonitor amqpMonitor = new
-                AMQPMonitor(monitorPublisher,
+                AMQPMonitor(localEventPublisher,
                 pushQueue, finishQueue,proxyFilePath,"xsede",
                 Arrays.asList("info1.dyn.teragrid.org,info2.dyn.teragrid.org".split(",")));
         try {
@@ -195,7 +195,7 @@ public class AMQPMonitorTest {
                 pushThread.interrupt();
             }
         }
-        monitorPublisher.registerListener(new InnerClassAMQP());
+        localEventPublisher.registerListener(new InnerClassAMQP());
 //        try {
 //            pushThread.join(5000);
 //            Iterator<MonitorID> iterator = pushQueue.iterator();

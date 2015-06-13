@@ -18,8 +18,6 @@
  *
  */
 
-include "experiment_model.thrift"
-
 namespace java org.apache.airavata.model.workspace
 namespace php Airavata.Model.Workspace
 namespace cpp apache.airavata.model.workspace
@@ -41,7 +39,7 @@ struct Group {
 }
 
 struct Project {
-    1: required string projectID = experiment_model.DEFAULT_PROJECT_NAME,
+    1: required string projectID,
     2: required string owner,
     3: required string name,
     4: optional string description

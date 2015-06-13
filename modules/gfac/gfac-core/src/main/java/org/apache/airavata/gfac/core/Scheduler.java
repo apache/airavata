@@ -101,7 +101,7 @@ public class Scheduler {
         String providerClassName = null;
         try {
             aClass = GFacConfiguration.getProviderConfig(handlerDoc,
-                    Constants.XPATH_EXPR_APPLICATION_HANDLERS_START + applicationName + "']", Constants.GFAC_CONFIG_APPLICATION_NAME_ATTRIBUTE);
+                    GFacConstants.XPATH_EXPR_APPLICATION_HANDLERS_START + applicationName + "']", GFacConstants.GFAC_CONFIG_APPLICATION_NAME_ATTRIBUTE);
             // This should be have a single element only.
             if (aClass != null && !aClass.isEmpty()) {
                 s = aClass.get(0);
@@ -136,13 +136,13 @@ public class Scheduler {
                     	unicoreSubmission = appCatalog.getComputeResource().getUNICOREJobSubmission(jobExecutionContext.getPreferredJobSubmissionInterface().getJobSubmissionInterfaceId());
                     	securityProtocol = unicoreSubmission.getSecurityProtocol().toString(); 
                     }
-                    List<Element> elements = GFacUtils.getElementList(GFacConfiguration.getHandlerDoc(), Constants.XPATH_EXPR_PROVIDER_ON_SUBMISSION + jobSubmissionProtocol + "']");
+                    List<Element> elements = GFacUtils.getElementList(GFacConfiguration.getHandlerDoc(), GFacConstants.XPATH_EXPR_PROVIDER_ON_SUBMISSION + jobSubmissionProtocol + "']");
                     for (Element element : elements) {
-                        String security = element.getAttribute(Constants.GFAC_CONFIG_SECURITY_ATTRIBUTE);
+                        String security = element.getAttribute(GFacConstants.GFAC_CONFIG_SECURITY_ATTRIBUTE);
                         if (security.equals("")) {
-                            providerClassName = element.getAttribute(Constants.GFAC_CONFIG_CLASS_ATTRIBUTE);
+                            providerClassName = element.getAttribute(GFacConstants.GFAC_CONFIG_CLASS_ATTRIBUTE);
                         }else if (securityProtocol != null && securityProtocol.equals(security)) {
-                            providerClassName = element.getAttribute(Constants.GFAC_CONFIG_CLASS_ATTRIBUTE);
+                            providerClassName = element.getAttribute(GFacConstants.GFAC_CONFIG_CLASS_ATTRIBUTE);
                         }
                     }
                     if (providerClassName == null) {
@@ -152,8 +152,8 @@ public class Scheduler {
                     Class<? extends GFacProvider> aClass1 = Class.forName(providerClassName).asSubclass(GFacProvider.class);
                     provider = aClass1.newInstance();
                     //loading the provider properties
-                    aClass = GFacConfiguration.getProviderConfig(GFacConfiguration.getHandlerDoc(), Constants.XPATH_EXPR_PROVIDER_HANDLERS_START +
-                            providerClassName + "']", Constants.GFAC_CONFIG_APPLICATION_NAME_ATTRIBUTE);
+                    aClass = GFacConfiguration.getProviderConfig(GFacConfiguration.getHandlerDoc(), GFacConstants.XPATH_EXPR_PROVIDER_HANDLERS_START +
+                            providerClassName + "']", GFacConstants.GFAC_CONFIG_APPLICATION_NAME_ATTRIBUTE);
                     if (!aClass.isEmpty()) {
                         provider.initProperties(aClass.get(0).getProperties());
                     }
@@ -200,18 +200,18 @@ public class Scheduler {
         String executionMode = "sync";
         try {
             executionMode = GFacConfiguration.getAttributeValue(handlerDoc,
-                    Constants.XPATH_EXPR_APPLICATION_HANDLERS_START + applicationName + "']", Constants.GFAC_CONFIG_EXECUTION_MODE_ATTRIBUTE);
+                    GFacConstants.XPATH_EXPR_APPLICATION_HANDLERS_START + applicationName + "']", GFacConstants.GFAC_CONFIG_EXECUTION_MODE_ATTRIBUTE);
             // This should be have a single element only.
 
             if (executionMode == null || "".equals(executionMode)) {
                 String hostClass = jobExecutionContext.getPreferredJobSubmissionProtocol().toString();
-                executionMode = GFacConfiguration.getAttributeValue(GFacConfiguration.getHandlerDoc(), Constants.XPATH_EXPR_PROVIDER_ON_HOST + hostClass + "']", Constants.GFAC_CONFIG_EXECUTION_MODE_ATTRIBUTE);
+                executionMode = GFacConfiguration.getAttributeValue(GFacConfiguration.getHandlerDoc(), GFacConstants.XPATH_EXPR_PROVIDER_ON_HOST + hostClass + "']", GFacConstants.GFAC_CONFIG_EXECUTION_MODE_ATTRIBUTE);
             }
 
             if (executionMode == null || "".equals(executionMode)) {
-                List<Element> elements = GFacUtils.getElementList(GFacConfiguration.getHandlerDoc(), Constants.XPATH_EXPR_PROVIDER_ON_SUBMISSION + jobSubmissionProtocol + "']");
+                List<Element> elements = GFacUtils.getElementList(GFacConfiguration.getHandlerDoc(), GFacConstants.XPATH_EXPR_PROVIDER_ON_SUBMISSION + jobSubmissionProtocol + "']");
                 for (Element element : elements) {
-                    executionMode = element.getAttribute(Constants.GFAC_CONFIG_EXECUTION_MODE_ATTRIBUTE);
+                    executionMode = element.getAttribute(GFacConstants.GFAC_CONFIG_EXECUTION_MODE_ATTRIBUTE);
                 }
             }
 

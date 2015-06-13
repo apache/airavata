@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.airavata.gfac.core.Constants;
+import org.apache.airavata.gfac.core.GFacConstants;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
@@ -209,7 +209,7 @@ public class DataTransferrer {
 		String temp = null;
 		while ((temp = instream.readLine()) != null) {
 			buff.append(temp);
-			buff.append(Constants.NEWLINE);
+			buff.append(GFacConstants.NEWLINE);
 		}
 
 		log.info("finish read file:" + localFile);

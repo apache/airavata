@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
-import org.apache.airavata.common.utils.MonitorPublisher;
+import org.apache.airavata.common.utils.LocalEventPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.monitor.core.PushMonitor;
@@ -62,9 +62,9 @@ public class AMQPMonitor extends PushMonitor {
     */
     private Map<String, Channel> availableChannels;
 
-    private MonitorPublisher publisher;
+    private LocalEventPublisher publisher;
 
-    private MonitorPublisher localPublisher;
+    private LocalEventPublisher localPublisher;
 
     private BlockingQueue<MonitorID> runningQueue;
 
@@ -81,7 +81,7 @@ public class AMQPMonitor extends PushMonitor {
     public AMQPMonitor(){
 
     }
-    public AMQPMonitor(MonitorPublisher publisher, BlockingQueue<MonitorID> runningQueue,
+    public AMQPMonitor(LocalEventPublisher publisher, BlockingQueue<MonitorID> runningQueue,
                        BlockingQueue<MonitorID> finishQueue,
                        String proxyPath,String connectionName,List<String> hosts) {
         this.publisher = publisher;
@@ -91,7 +91,7 @@ public class AMQPMonitor extends PushMonitor {
         this.connectionName = connectionName;
         this.proxyPath = proxyPath;
         this.amqpHosts = hosts;
-        this.localPublisher = new MonitorPublisher(new EventBus());
+        this.localPublisher = new LocalEventPublisher(new EventBus());
         this.localPublisher.registerListener(this);
     }
 
@@ -100,7 +100,7 @@ public class AMQPMonitor extends PushMonitor {
         this.connectionName = connectionName;
         this.proxyPath = proxyPath;
         this.amqpHosts = hosts;
-        this.localPublisher = new MonitorPublisher(new EventBus());
+        this.localPublisher = new LocalEventPublisher(new EventBus());
         this.localPublisher.registerListener(this);
     }
 
@@ -230,11 +230,11 @@ public class AMQPMonitor extends PushMonitor {
         this.availableChannels = availableChannels;
     }
 
-    public MonitorPublisher getPublisher() {
+    public LocalEventPublisher getPublisher() {
         return publisher;
     }
 
-    public void setPublisher(MonitorPublisher publisher) {
+    public void setPublisher(LocalEventPublisher publisher) {
         this.publisher = publisher;
     }
 
