@@ -65,6 +65,7 @@ import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentSearchFields;
 import org.apache.airavata.model.experiment.ExperimentStatistics;
 import org.apache.airavata.model.experiment.ExperimentSummaryModel;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
@@ -1355,7 +1356,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             if (experimentStatus != null){
                 ExperimentState experimentState = experimentStatus.getState();
                 switch (experimentState){
-                    case CREATED: case VALIDATED:case UNKNOWN:
+                    case CREATED: case VALIDATED:
                         experimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT, experiment, airavataExperimentId);
                         logger.info(airavataExperimentId, "Successfully updated experiment {} ", experiment.getExperimentName());
                         break;
@@ -1381,7 +1382,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public void updateExperimentConfiguration(String airavataExperimentId, UserConfigurationData userConfiguration) throws TException {
+    public void updateExperimentConfiguration(String airavataExperimentId, UserConfigurationDataModel userConfiguration) throws TException {
         try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
@@ -1390,9 +1391,9 @@ public class AiravataServerHandler implements Airavata.Iface {
             }
             ExperimentStatus experimentStatus = getExperimentStatus(airavataExperimentId);
             if (experimentStatus != null){
-                ExperimentState experimentState = experimentStatus.getExperimentState();
+                ExperimentState experimentState = experimentStatus.getState();
                 switch (experimentState){
-                    case CREATED: case VALIDATED: case CANCELED: case FAILED: case UNKNOWN:
+                    case CREATED: case VALIDATED: case CANCELED: case FAILED:
                         experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_CONFIGURATION_DATA, userConfiguration, airavataExperimentId);
                         logger.info(airavataExperimentId, "Successfully updated experiment configuration for experiment {}.", airavataExperimentId);
                         break;
@@ -1432,7 +1433,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             if (experimentStatus != null){
                 ExperimentState experimentState = experimentStatus.getState();
                 switch (experimentState){
-                    case CREATED: case VALIDATED: case CANCELED: case FAILED: case UNKNOWN:
+                    case CREATED: case VALIDATED: case CANCELED: case FAILED:
                         experimentCatalog.add(ExpCatChildDataType.COMPUTATIONAL_RESOURCE_SCHEDULING, resourceScheduling, airavataExperimentId);
                         logger.info(airavataExperimentId, "Successfully updated resource scheduling for the experiment {}.", airavataExperimentId);
                         break;
@@ -1575,7 +1576,8 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     public Map<String, JobStatus> getJobStatuses(String airavataExperimentId) throws TException {
         Map<String, JobStatus> jobStatus = new HashMap<String, JobStatus>();
-        try {
+	    // FIXME : implement this method with new data model
+/*        try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
                 logger.error(airavataExperimentId, "Error while retrieving job status, the experiment {} doesn't exist.", airavataExperimentId);
@@ -1606,14 +1608,15 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while retrieving the job statuses. More info : " + e.getMessage());
             throw exception;
-        }
+        }*/
         return jobStatus;
     }
 
     @Override
     public List<JobModel> getJobDetails(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
         List<JobModel> jobDetailsList = new ArrayList<JobModel>();
-        try {
+	    // FIXME : fix this method with new data model.
+      /*  try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
                 logger.error(airavataExperimentId, "Error while retrieving job details, experiment {} doesn't exist.", airavataExperimentId);
@@ -1643,7 +1646,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
             exception.setMessage("Error while retrieving the job details. More info : " + e.getMessage());
             throw exception;
-        }
+        }*/
         return jobDetailsList;
     }
 
@@ -1709,15 +1712,15 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
 
-    private OrchestratorService.Client getOrchestratorClient() throws TException{
-		final int serverPort = Integer.parseInt(ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ORCHESTRATOR_SERVER_PORT,"8940"));
-        final String serverHost = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.ORCHESTRATOR_SERVER_HOST, null);
-        try {
-			return OrchestratorClientFactory.createOrchestratorClient(serverHost, serverPort);
-		} catch (AiravataClientConnectException e) {
-			throw new TException(e);
-		}
-	}
+    private OrchestratorService.Client getOrchestratorClient() throws TException {
+	    try {
+		    final String serverHost = ServerSettings.getOrchestratorServerHost();
+		    final int serverPort = ServerSettings.getOrchestratorServerPort();
+		    return OrchestratorClientFactory.createOrchestratorClient(serverHost, serverPort);
+	    } catch (AiravataException e) {
+		    throw new TException(e);
+	    }
+    }
 
     /**
      * Clone an specified experiment with a new name. A copy of the experiment configuration is made and is persisted with new metadata.
