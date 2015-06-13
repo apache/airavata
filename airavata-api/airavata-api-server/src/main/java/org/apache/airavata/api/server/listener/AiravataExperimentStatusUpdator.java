@@ -17,7 +17,8 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+*//*
+
 package org.apache.airavata.api.server.listener;
 
 import com.google.common.eventbus.Subscribe;
@@ -26,7 +27,7 @@ import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.common.utils.MonitorPublisher;
+import org.apache.airavata.common.utils.LocalEventPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
 import org.apache.airavata.messaging.core.MessageContext;
@@ -51,7 +52,7 @@ import java.util.Calendar;
 public class AiravataExperimentStatusUpdator implements AbstractActivityListener {
     private final static Logger logger = LoggerFactory.getLogger(AiravataExperimentStatusUpdator.class);
     private ExperimentCatalog airavataExperimentCatalog;
-    private MonitorPublisher monitorPublisher;
+    private LocalEventPublisher localEventPublisher;
     private Publisher publisher;
     private CuratorFramework curatorClient;
     private RabbitMQTaskLaunchConsumer consumer;
@@ -111,7 +112,7 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
             ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(state,
                                                                                 nodeStatus.getWorkflowNodeIdentity().getExperimentId(),
                                                                                 nodeStatus.getWorkflowNodeIdentity().getGatewayId());
-            monitorPublisher.publish(event);
+            localEventPublisher.publish(event);
             String messageId = AiravataUtils.getId("EXPERIMENT");
             MessageContext msgCntxt = new MessageContext(event, MessageType.EXPERIMENT, messageId, nodeStatus.getWorkflowNodeIdentity().getGatewayId());
             msgCntxt.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
@@ -203,8 +204,8 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
 		for (Object configuration : configurations) {
 			if (configuration instanceof ExperimentCatalog){
 				this.airavataExperimentCatalog =(ExperimentCatalog)configuration;
-			} else if (configuration instanceof MonitorPublisher){
-				this.monitorPublisher=(MonitorPublisher) configuration;
+			} else if (configuration instanceof LocalEventPublisher){
+				this.localEventPublisher =(LocalEventPublisher) configuration;
 			} else if (configuration instanceof Publisher){
                 this.publisher=(Publisher) configuration;
             }else if (configuration instanceof RabbitMQTaskLaunchConsumer) {
@@ -216,3 +217,4 @@ public class AiravataExperimentStatusUpdator implements AbstractActivityListener
         }
 	}
 }
+*/

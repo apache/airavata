@@ -139,21 +139,6 @@ exception AiravataClientException {
   2:  optional  string parameter
 }
 
-struct ValidatorResult {
-    1: required bool result,
-    2: optional string errorDetails
-}
-
-struct ValidationResults {
-    1: required bool validationState,
-    2: required list<ValidatorResult> validationResultList
-}
-
-exception LaunchValidationException {
-  1: required ValidationResults validationResult;
-  2: optional string errorMessage;
-}
-
 /**
  * This exception is thrown by Airavata Services when a call fails as a result of
  * a problem in the service that could not be changed through client's action.

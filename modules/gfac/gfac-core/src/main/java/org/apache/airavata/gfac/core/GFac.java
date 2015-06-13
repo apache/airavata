@@ -20,8 +20,8 @@
 */
 package org.apache.airavata.gfac.core;
 
+import org.apache.airavata.common.utils.LocalEventPublisher;
 import org.apache.airavata.registry.cpi.AppCatalog;
-import org.apache.airavata.common.utils.MonitorPublisher;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.curator.framework.CuratorFramework;
@@ -40,7 +40,7 @@ public interface GFac {
      * @param publisher
      * @return
      */
-    public boolean init(ExperimentCatalog experimentCatalog, AppCatalog appCatalog, CuratorFramework curatorClient, MonitorPublisher publisher);
+    public boolean init(ExperimentCatalog experimentCatalog, AppCatalog appCatalog, CuratorFramework curatorClient, LocalEventPublisher publisher);
 
     /**
      * This is the job launching method outsiders of GFac can use, this will invoke the GFac handler chain and providers

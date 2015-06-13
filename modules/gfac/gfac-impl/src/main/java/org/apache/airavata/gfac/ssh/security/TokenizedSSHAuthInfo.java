@@ -26,7 +26,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.credential.Credential;
 import org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential;
 import org.apache.airavata.credential.store.store.CredentialReader;
-import org.apache.airavata.gfac.core.Constants;
+import org.apache.airavata.gfac.core.GFacConstants;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.RequestData;
 import org.apache.airavata.gfac.core.GFacUtils;
@@ -151,11 +151,11 @@ public class TokenizedSSHAuthInfo implements SSHPublicKeyFileAuthentication {
      */
     public SSHCredential getDefaultCredentials() throws GFacException, ApplicationSettingsException, IOException {
         Properties configurationProperties = ServerSettings.getProperties();
-        String sshUserName = configurationProperties.getProperty(Constants.SSH_USER_NAME);
+        String sshUserName = configurationProperties.getProperty(GFacConstants.SSH_USER_NAME);
         this.getRequestData().setRequestUser(sshUserName);
-        this.privateKeyFile = configurationProperties.getProperty(Constants.SSH_PRIVATE_KEY);
-        this.publicKeyFile = configurationProperties.getProperty(Constants.SSH_PUBLIC_KEY);
-        this.passPhrase = configurationProperties.getProperty(Constants.SSH_PRIVATE_KEY_PASS);
+        this.privateKeyFile = configurationProperties.getProperty(GFacConstants.SSH_PRIVATE_KEY);
+        this.publicKeyFile = configurationProperties.getProperty(GFacConstants.SSH_PUBLIC_KEY);
+        this.passPhrase = configurationProperties.getProperty(GFacConstants.SSH_PRIVATE_KEY_PASS);
         this.getRequestData().setRequestUser(sshUserName);
         return new SSHCredential(IOUtil.readToByteArray(new File(this.privateKeyFile)), IOUtil.readToByteArray(new File(this.publicKeyFile)), this.passPhrase, requestData.getGatewayId(), sshUserName);
     }

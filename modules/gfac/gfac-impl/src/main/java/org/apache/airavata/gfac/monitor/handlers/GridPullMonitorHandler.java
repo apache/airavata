@@ -75,7 +75,7 @@ public class GridPullMonitorHandler extends ThreadedHandler implements Watcher{
     public void invoke(JobExecutionContext jobExecutionContext) throws GFacHandlerException {
         super.invoke(jobExecutionContext);
         hpcPullMonitor.setGfac(jobExecutionContext.getGfac());
-        hpcPullMonitor.setPublisher(jobExecutionContext.getMonitorPublisher());
+        hpcPullMonitor.setPublisher(jobExecutionContext.getLocalEventPublisher());
         MonitorID monitorID = new HPCMonitorID(getAuthenticationInfo(), jobExecutionContext);
         try {
            /* ZooKeeper zk = jobExecutionContext.getZk();
