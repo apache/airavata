@@ -22,6 +22,11 @@ config:
  jobSubmitters:
    - submissionProtocol: SSH
      taskClass: org.apache.airavata.task.adapters.SSHJobSubmissionTask
+     properties:
+      - password: pwd123
+      - passPhrase: test
+      - privateKey: key
+      - publicKey: pubkey
 
    - submissionProtocol: GSISSH
      taskClass: org.apache.airavata.task.adapters.GSISSHJobSubmissionTask
@@ -36,6 +41,11 @@ config:
  fileTransferTasks:
    - transferProtocol: SCP
      taskClass: org.apache.airavata.task.adapters.SCPFileTransferTask
+     properties:
+      - password: pwd123
+      - passPhrase: test
+      - privateKey: key
+      - publicKey: pubkey
 
    - transferProtocol: HTTP
      taskClass: org.apache.airavata.task.adapters.HTTPFileTransferTask

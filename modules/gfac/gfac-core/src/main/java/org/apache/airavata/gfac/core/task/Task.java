@@ -20,5 +20,36 @@
  */
 package org.apache.airavata.gfac.core.task;
 
+import org.apache.airavata.gfac.core.context.TaskContext;
+import org.apache.airavata.model.status.TaskState;
+import org.apache.airavata.model.task.TaskModel;
+
+import java.util.Map;
+
+/**
+ * All Tasks should inherit this interface.
+ */
 public interface Task {
+
+	/**
+	 * Task initialization method, this method will be invoked after create a new task instance.
+	 * @param propertyMap
+	 */
+	public void init(Map<String, String> propertyMap);
+
+	/**
+	 * This method will be called at the first time of task chain execution. This method should called before recover
+	 * method. For a given task chain execute method only call one time. recover method may be called more than once.
+	 * @param taskContext
+	 * @return
+	 */
+	public TaskState execute(TaskContext taskContext);
+
+	/**
+	 * This methond will be invoked at recover path.Before this method is invoked, execute method should be invoked.
+	 * This method may be called zero or few time in a process chain.
+	 * @param taskContext
+	 * @return
+	 */
+	public TaskState recover(TaskContext taskContext);
 }

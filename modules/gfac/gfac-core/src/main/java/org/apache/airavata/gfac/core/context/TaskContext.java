@@ -18,11 +18,32 @@
  * under the License.
  *
  */
-package org.apache.airavata.gfac.core.task;
+package org.apache.airavata.gfac.core.context;
 
-public interface JobSubmissionTask extends Task {
+import org.apache.airavata.model.task.TaskModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class TaskContext {
+	private static final Logger log = LoggerFactory.getLogger(TaskContext.class);
+
+	private TaskModel taskModel;
+	private ProcessContext parentProcessContext;
+
+	public TaskModel getTaskModel() {
+		return taskModel;
+	}
+
+	public void setTaskModel(TaskModel taskModel) {
+		this.taskModel = taskModel;
+	}
+
+	public ProcessContext getParentProcessContext() {
+		return parentProcessContext;
+	}
+
+	public void setParentProcessContext(ProcessContext parentProcessContext) {
+		this.parentProcessContext = parentProcessContext;
+	}
 
 }
-
-
-

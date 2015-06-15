@@ -74,7 +74,8 @@ public class GFacEngine {
 	}
 
 	public ProcessContext populateProcessContext(ProcessContext processContext) {
-		processContext.setProcessModel(new ProcessModel());
+		processContext.setProcessModel(new ProcessModel()); // TODO: get rocess model from app catalog
+		// TODO: set datamovement protocol and jobsubmission protocol
 		return processContext;
 	}
 

@@ -22,10 +22,13 @@
 package org.apache.airavata.gfac.core.context;
 
 import org.apache.airavata.common.utils.LocalEventPublisher;
+import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.curator.framework.CuratorFramework;
+
+import java.util.List;
 
 public class ProcessContext {
 	// process model
@@ -37,6 +40,8 @@ public class ProcessContext {
 	private final String gatewayId;
 	private final String tokenId;
 	private ProcessModel processModel;
+	private String workingDir;
+	private List<Task> taskChain;
 
 	public ProcessContext(String processId, String gatewayId, String tokenId) {
 		this.processId = processId;
@@ -96,5 +101,21 @@ public class ProcessContext {
 
 	public void setProcessModel(ProcessModel processModel) {
 		this.processModel = processModel;
+	}
+
+	public String getWorkingDir() {
+		return workingDir;
+	}
+
+	public void setWorkingDir(String workingDir) {
+		this.workingDir = workingDir;
+	}
+
+	public List<Task> getTaskChain() {
+		return taskChain;
+	}
+
+	public void setTaskChain(List<Task> taskChain) {
+		this.taskChain = taskChain;
 	}
 }
