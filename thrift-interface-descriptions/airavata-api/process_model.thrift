@@ -47,13 +47,14 @@ struct ProcessModel {
     5: optional status_models.ProcessStatus processStatus,
     6: optional string processDetail,
     7: optional string applicationInterfaceId,
-    8: optional list<application_io_models.InputDataObjectType> processInputs,
-    9: optional list<application_io_models.OutputDataObjectType> processOutputs,
-    10: optional scheduling_model.ComputationalResourceSchedulingModel resourceSchedule,
-    11: optional list<task_model.TaskModel> tasks,
-    12: optional string taskDag,
-    13: optional airavata_commons.ErrorModel processError,
-    14: optional string gatewayExecutionId,
-    15: optional bool enableEmailNotification,
-    16: optional list<string> emailAddresses
+    8: optional string applicationDeploymentId,
+    9: optional list<application_io_models.InputDataObjectType> processInputs,
+    10: optional list<application_io_models.OutputDataObjectType> processOutputs,
+    11: optional scheduling_model.ComputationalResourceSchedulingModel resourceSchedule,
+    12: optional list<task_model.TaskModel> tasks,
+    13: optional string taskDag,
+    14: optional airavata_commons.ErrorModel processError,
+    15: optional string gatewayExecutionId,
+    16: optional bool enableEmailNotification,
+    17: optional list<string> emailAddresses
 }

@@ -23,11 +23,18 @@ package org.apache.airavata.registry.core.experiment.catalog.impl;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.commons.ErrorModel;
+import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.model.status.ExperimentStatus;
+import org.apache.airavata.model.status.JobStatus;
+import org.apache.airavata.model.status.TaskStatus;
+import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
+import org.apache.airavata.registry.core.experiment.catalog.model.AdvancedOutputDataHandling;
 import org.apache.airavata.registry.core.experiment.catalog.resources.GatewayResource;
 import org.apache.airavata.registry.core.experiment.catalog.resources.UserResource;
 import org.apache.airavata.registry.cpi.*;
@@ -106,7 +113,7 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                 case PROJECT:
                     return projectRegistry.addProject((Project)newObjectToAdd, gatewayId);
                 case EXPERIMENT:
-                    return experimentRegistry.addExperiment((Experiment) newObjectToAdd, gatewayId);
+                    return experimentRegistry.addExperiment((ExperimentModel) newObjectToAdd, gatewayId);
                 case GATEWAY:
                     return gatewayRegistry.addGateway((Gateway)newObjectToAdd);
                 default:
@@ -136,43 +143,43 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
         try {
             switch (dataType) {
                 case EXPERIMENT_CONFIGURATION_DATA:
-                    return experimentRegistry.addUserConfigData((UserConfigurationData) newObjectToAdd, (String) dependentIdentifier);
+                    return experimentRegistry.addUserConfigData((UserConfigurationDataModel) newObjectToAdd, (String) dependentIdentifier);
                 case EXPERIMENT_OUTPUT:
                     return experimentRegistry.addExpOutputs((List<OutputDataObjectType>) newObjectToAdd, (String) dependentIdentifier);
                 case EXPERIMENT_STATUS:
                     return experimentRegistry.updateExperimentStatus((ExperimentStatus) newObjectToAdd, (String) dependentIdentifier);
-                case WORKFLOW_NODE_DETAIL:
-                    return experimentRegistry.addWorkflowNodeDetails((WorkflowNodeDetails) newObjectToAdd, (String) dependentIdentifier);
-                case WORKFLOW_NODE_STATUS:
-                    return experimentRegistry.addWorkflowNodeStatus((WorkflowNodeStatus) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
-                case NODE_OUTPUT:
-                    return experimentRegistry.addNodeOutputs((List<OutputDataObjectType>) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
+//                case WORKFLOW_NODE_DETAIL:
+//                    return experimentRegistry.addWorkflowNodeDetails((WorkflowNodeDetails) newObjectToAdd, (String) dependentIdentifier);
+//                case WORKFLOW_NODE_STATUS:
+//                    return experimentRegistry.addWorkflowNodeStatus((WorkflowNodeStatus) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
+//                case NODE_OUTPUT:
+//                    return experimentRegistry.addNodeOutputs((List<OutputDataObjectType>) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
                 case TASK_DETAIL:
-                    return experimentRegistry.addTaskDetails((TaskDetails) newObjectToAdd, (String) dependentIdentifier);
+                    return experimentRegistry.addTaskDetails((TaskModel) newObjectToAdd, (String) dependentIdentifier);
                 case APPLICATION_OUTPUT:
                     return experimentRegistry.addApplicationOutputs((List<OutputDataObjectType>) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
                 case TASK_STATUS:
                     return experimentRegistry.addTaskStatus((TaskStatus) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
-                case JOB_DETAIL:
-                    return experimentRegistry.addJobDetails((JobDetails) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
+//                case JOB_DETAIL:
+//                    return experimentRegistry.addJobDetails((JobDetails) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
                 case JOB_STATUS:
                     return experimentRegistry.addJobStatus((JobStatus) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
-                case APPLICATION_STATUS:
-                    return experimentRegistry.addApplicationStatus((ApplicationStatus) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
-                case DATA_TRANSFER_DETAIL:
-                    return experimentRegistry.addDataTransferDetails((DataTransferDetails) newObjectToAdd, (String) dependentIdentifier);
-                case TRANSFER_STATUS:
-                    return experimentRegistry.addTransferStatus((TransferStatus) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
+//                case APPLICATION_STATUS:
+//                    return experimentRegistry.addApplicationStatus((ApplicationStatus) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
+//                case DATA_TRANSFER_DETAIL:
+//                    return experimentRegistry.addDataTransferDetails((DataTransferDetails) newObjectToAdd, (String) dependentIdentifier);
+//                case TRANSFER_STATUS:
+//                    return experimentRegistry.addTransferStatus((TransferStatus) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
                 case COMPUTATIONAL_RESOURCE_SCHEDULING:
-                    return experimentRegistry.addComputationalResourceScheduling((ComputationalResourceScheduling) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
-                case ADVANCE_OUTPUT_DATA_HANDLING:
-                    return experimentRegistry.addOutputDataHandling((AdvancedOutputDataHandling) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
-                case ADVANCE_INPUT_DATA_HANDLING:
-                    return experimentRegistry.addInputDataHandling((AdvancedInputDataHandling) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
-                case QOS_PARAM:
-                    return experimentRegistry.addQosParams((QualityOfServiceParams) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
+                    return experimentRegistry.addComputationalResourceScheduling((ComputationalResourceSchedulingModel) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
+//                case ADVANCE_OUTPUT_DATA_HANDLING:
+//                    return experimentRegistry.addOutputDataHandling((AdvancedOutputDataHandling) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
+//                case ADVANCE_INPUT_DATA_HANDLING:
+//                    return experimentRegistry.addInputDataHandling((AdvancedInputDataHandling) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
+//                case QOS_PARAM:
+//                    return experimentRegistry.addQosParams((QualityOfServiceParams) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
                 case ERROR_DETAIL:
-                    return experimentRegistry.addErrorDetails((ErrorDetails) newObjectToAdd, dependentIdentifier);
+                    return experimentRegistry.addErrorDetails((ErrorModel) newObjectToAdd, dependentIdentifier);
                 default:
                     logger.error("Unsupported dependent data type...", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
