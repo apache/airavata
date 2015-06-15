@@ -52,5 +52,8 @@ struct ProcessModel {
     10: optional scheduling_model.ComputationalResourceSchedulingModel resourceSchedule,
     11: optional list<task_model.TaskModel> tasks,
     12: optional string taskDag,
-    13: optional airavata_commons.ErrorModel processError
+    13: optional airavata_commons.ErrorModel processError,
+    14: optional string gatewayExecutionId,
+    15: optional bool enableEmailNotification,
+    16: optional list<string> emailAddresses
 }
