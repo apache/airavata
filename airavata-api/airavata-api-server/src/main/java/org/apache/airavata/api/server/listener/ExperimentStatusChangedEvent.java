@@ -22,7 +22,7 @@
 //
 //import org.apache.airavata.common.utils.listener.AbstractStateChangeRequest;
 //import org.apache.airavata.gfac.core.monitor.ExperimentIdentity;
-//import org.apache.airavata.model.workspace.experiment.ExperimentState;
+//import org.apache.airavata.model.experiment.ExperimentModelState;
 //
 ///**
 // * This is the primary job state object used in

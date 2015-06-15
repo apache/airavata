@@ -28,9 +28,7 @@ import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.model.messaging.event.TaskIdentifier;
 import org.apache.airavata.model.messaging.event.TaskStatusChangeRequestEvent;
-import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
-import org.apache.airavata.model.workspace.experiment.ErrorCategory;
-import org.apache.airavata.model.workspace.experiment.TaskState;
+import org.apache.airavata.model.status.TaskState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

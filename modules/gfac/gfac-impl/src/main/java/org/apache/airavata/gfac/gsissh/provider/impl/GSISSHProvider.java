@@ -41,10 +41,10 @@ import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescr
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
-import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
-import org.apache.airavata.model.workspace.experiment.ErrorCategory;
-import org.apache.airavata.model.workspace.experiment.JobDetails;
-import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.model.experiment.CorrectiveAction;
+import org.apache.airavata.model.experiment.ErrorCategory;
+import org.apache.airavata.model.experiment.JobDetails;
+import org.apache.airavata.model.experiment.JobState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

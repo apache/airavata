@@ -30,7 +30,7 @@ import org.apache.airavata.gfac.monitor.HostMonitorData;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.cluster.JobStatus;
-import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.model.experiment.JobState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

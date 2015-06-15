@@ -38,7 +38,7 @@ import org.apache.airavata.gfac.monitor.util.CommonUtils;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
-import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.model.experiment.JobState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

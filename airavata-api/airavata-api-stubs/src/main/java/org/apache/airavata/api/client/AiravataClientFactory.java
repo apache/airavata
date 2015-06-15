@@ -23,7 +23,7 @@ package org.apache.airavata.api.client;
 
 import org.apache.airavata.api.Airavata;
 
-import org.apache.airavata.model.error.AiravataClientConnectException;
+import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
@@ -36,7 +36,7 @@ public class AiravataClientFactory {
 
     private final static Logger logger = LoggerFactory.getLogger(AiravataClientFactory.class);
 
-    public static Airavata.Client createAiravataClient(String serverHost, int serverPort) throws AiravataClientConnectException{
+    public static Airavata.Client createAiravataClient(String serverHost, int serverPort) throws AiravataClientException{
         try {
             TTransport transport = new TSocket(serverHost, serverPort);
             transport.open();
@@ -44,7 +44,9 @@ public class AiravataClientFactory {
 //            TMultiplexedProtocol mp = new TMultiplexedProtocol(protocol, "APIServer");
             return new Airavata.Client(protocol);
         } catch (TTransportException e) {
-            throw new AiravataClientConnectException("Unable to connect to the server at "+serverHost+":"+serverPort);
+            AiravataClientException exception = new AiravataClientException();
+            exception.setParameter("Unable to connect to the server at "+serverHost+":"+serverPort);
+            throw exception;
         }
     }
 }

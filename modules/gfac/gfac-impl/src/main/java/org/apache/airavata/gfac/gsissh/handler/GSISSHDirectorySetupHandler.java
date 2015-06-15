@@ -28,7 +28,7 @@ import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.gsissh.security.GSISecurityContext;
 import org.apache.airavata.gfac.gsissh.util.GFACGSISSHUtils;
-import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.registry.cpi.ExpCatChildDataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

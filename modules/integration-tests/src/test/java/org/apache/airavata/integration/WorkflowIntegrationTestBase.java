@@ -26,7 +26,7 @@ import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.error.*;
-import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

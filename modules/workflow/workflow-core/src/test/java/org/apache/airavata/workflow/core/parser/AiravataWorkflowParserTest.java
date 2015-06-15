@@ -23,7 +23,7 @@ package org.apache.airavata.workflow.core.parser;
 
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
-import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.workflow.core.dag.nodes.ApplicationNode;
 import org.apache.airavata.workflow.core.dag.nodes.WorkflowInputNode;
 import org.apache.airavata.workflow.core.dag.nodes.WorkflowNode;

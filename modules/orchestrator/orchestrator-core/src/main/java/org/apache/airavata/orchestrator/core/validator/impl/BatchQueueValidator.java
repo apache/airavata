@@ -24,7 +24,7 @@ import org.apache.airavata.model.appcatalog.computeresource.BatchQueue;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.error.ValidationResults;
 import org.apache.airavata.model.error.ValidatorResult;
-import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.*;

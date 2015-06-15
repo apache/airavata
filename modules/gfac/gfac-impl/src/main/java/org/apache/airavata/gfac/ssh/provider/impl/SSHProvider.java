@@ -22,7 +22,7 @@
 package org.apache.airavata.gfac.ssh.provider.impl;
 
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
-import org.apache.airavata.model.workspace.experiment.TaskState;
+import org.apache.airavata.model.experiment.TaskState;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -56,10 +56,10 @@ import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
-import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
-import org.apache.airavata.model.workspace.experiment.ErrorCategory;
-import org.apache.airavata.model.workspace.experiment.JobDetails;
-import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.model.experiment.CorrectiveAction;
+import org.apache.airavata.model.experiment.ErrorCategory;
+import org.apache.airavata.model.experiment.JobDetails;
+import org.apache.airavata.model.experiment.JobState;
 import org.apache.xmlbeans.XmlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

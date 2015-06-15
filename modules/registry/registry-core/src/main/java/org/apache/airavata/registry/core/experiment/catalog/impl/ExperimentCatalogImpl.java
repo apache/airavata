@@ -26,7 +26,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.resources.GatewayResource;
 import org.apache.airavata.registry.core.experiment.catalog.resources.UserResource;

@@ -36,7 +36,7 @@ import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.util.ExperimentModelUtil;
-import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.ExpCatChildDataType;

@@ -26,7 +26,7 @@ import org.apache.airavata.common.logger.AiravataLoggerFactory;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
-import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;

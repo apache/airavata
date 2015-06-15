@@ -22,9 +22,9 @@ package org.apache.airavata.orchestrator.cpi;
 
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.error.ValidationResults;
-import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.model.workspace.experiment.TaskDetails;
-import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
+import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.experiment.TaskDetails;
+import org.apache.airavata.model.experiment.WorkflowNodeDetails;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 
 import javax.validation.Validation;

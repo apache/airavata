@@ -32,7 +32,7 @@ import org.apache.airavata.model.error.*;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.model.experiment.*;
 import org.apache.thrift.TException;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;

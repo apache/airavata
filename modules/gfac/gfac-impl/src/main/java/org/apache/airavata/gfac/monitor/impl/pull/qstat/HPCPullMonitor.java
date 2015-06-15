@@ -40,7 +40,7 @@ import org.apache.airavata.gfac.monitor.impl.push.amqp.SimpleJobFinishConsumer;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeRequestEvent;
-import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.model.experiment.JobState;
 
 import java.sql.Timestamp;
 import java.util.*;

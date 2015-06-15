@@ -29,11 +29,11 @@ import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
-import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.model.workspace.experiment.JobState;
-import org.apache.airavata.model.workspace.experiment.JobStatus;
-import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
+import org.apache.airavata.model.experiment.ComputationalResourceScheduling;
+import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.experiment.JobState;
+import org.apache.airavata.model.experiment.JobStatus;
+import org.apache.airavata.model.experiment.UserConfigurationData;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 

@@ -25,11 +25,15 @@ import org.apache.airavata.api.server.handler.utils.AppCatInit;
 import org.apache.airavata.api.server.handler.utils.ExpCatInit;
 import org.apache.airavata.api.server.util.RegistryInitUtil;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
-import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.experiment.ExperimentSummaryModel;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
+import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.workspace.experiment.*;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -185,25 +189,24 @@ public class AiravataServerHandlerTest {
             inputDataObjectType.setName("Input_to_Echo");
             inputDataObjectType.setValue("Hello World");
 
-            ComputationalResourceScheduling scheduling = new ComputationalResourceScheduling();
+            ComputationalResourceSchedulingModel scheduling = new ComputationalResourceSchedulingModel();
             scheduling.setResourceHostId(UUID.randomUUID().toString());
-            scheduling.setComputationalProjectAccount("TG-STA110014S");
             scheduling.setTotalCPUCount(1);
             scheduling.setNodeCount(1);
             scheduling.setWallTimeLimit(15);
             scheduling.setQueueName("normal");
 
-            UserConfigurationData userConfigurationData = new UserConfigurationData();
+            UserConfigurationDataModel userConfigurationData = new UserConfigurationDataModel();
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
             userConfigurationData.setComputationalResourceScheduling(scheduling);
 
-            Experiment experiment = new Experiment();
-            experiment.setProjectID(projectId1);
+            ExperimentModel experiment = new ExperimentModel();
+            experiment.setProjectId(projectId1);
             experiment.setUserName("TestUser" + TAG);
-            experiment.setName("TestExperiment"+TAG);
+            experiment.setExperimentName("TestExperiment" + TAG);
             experiment.setDescription("experiment");
-            experiment.setApplicationId(applicationId);
+            experiment.setExecutionId(applicationId);
             experiment.setUserConfigurationData(userConfigurationData);
             experiment.addToExperimentInputs(inputDataObjectType);
 
@@ -211,17 +214,17 @@ public class AiravataServerHandlerTest {
             Assert.assertNotNull(experimentId1);
 
             //retrieving the stored experiment
-            Experiment retrievedExperiment = airavataServerHandler.getExperiment(experimentId1);
+            ExperimentModel retrievedExperiment = airavataServerHandler.getExperiment(experimentId1);
             Assert.assertNotNull(retrievedExperiment);
-            Assert.assertEquals(retrievedExperiment.getProjectID(), experiment.getProjectID());
+            Assert.assertEquals(retrievedExperiment.getProjectId(), experiment.getProjectId());
             Assert.assertEquals(retrievedExperiment.getDescription(), experiment.getDescription());
-            Assert.assertEquals(retrievedExperiment.getName(), experiment.getName());
-            Assert.assertEquals(retrievedExperiment.getApplicationId(), experiment.getApplicationId());
+            Assert.assertEquals(retrievedExperiment.getExperimentName(), experiment.getExperimentName());
+            Assert.assertEquals(retrievedExperiment.getExecutionId(), experiment.getExecutionId());
             Assert.assertNotNull(retrievedExperiment.getUserConfigurationData());
             Assert.assertNotNull(retrievedExperiment.getExperimentInputs());
 
             //updating an existing experiment
-            experiment.setName("NewExperimentName"+TAG);
+            experiment.setExperimentName("NewExperimentName" + TAG);
             OutputDataObjectType outputDataObjectType = new OutputDataObjectType();
             outputDataObjectType.setName("Output_to_Echo");
             outputDataObjectType.setValue("Hello World");
@@ -229,24 +232,24 @@ public class AiravataServerHandlerTest {
             airavataServerHandler.updateExperiment(experimentId1, experiment);
 
             //creating more experiments
-            experiment = new Experiment();
-            experiment.setProjectID(projectId1);
+            experiment = new ExperimentModel();
+            experiment.setProjectId(projectId1);
             experiment.setUserName("TestUser" + TAG);
-            experiment.setName("TestExperiment2" + TAG);
+            experiment.setExperimentName("TestExperiment2" + TAG);
             experiment.setDescription("experiment");
-            experiment.setApplicationId(applicationId);
+            experiment.setExecutionId(applicationId);
             experiment.setUserConfigurationData(userConfigurationData);
             experiment.addToExperimentInputs(inputDataObjectType);
 
             String experimentId2 = airavataServerHandler.createExperiment(gatewayId, experiment);
             Assert.assertNotNull(experimentId2);
 
-            experiment = new Experiment();
-            experiment.setProjectID(projectId1);
+            experiment = new ExperimentModel();
+            experiment.setProjectId(projectId1);
             experiment.setUserName("TestUser" + TAG);
-            experiment.setName("TestExperiment3"+TAG);
+            experiment.setExperimentName("TestExperiment3" + TAG);
             experiment.setDescription("experiment");
-            experiment.setApplicationId(applicationId);
+            experiment.setExecutionId(applicationId);
             experiment.setUserConfigurationData(userConfigurationData);
             experiment.addToExperimentInputs(inputDataObjectType);
 
@@ -254,7 +257,7 @@ public class AiravataServerHandlerTest {
             Assert.assertNotNull(experimentId3);
 
             //searching experiments by name
-            List<ExperimentSummary> results = airavataServerHandler.searchExperimentsByName(gatewayId,
+            List<ExperimentSummaryModel> results = airavataServerHandler.searchExperimentsByName(gatewayId,
                     "TestUser" + TAG, "Experiment2");
             Assert.assertTrue(results.size()==1);
             //with pagination
@@ -302,7 +305,7 @@ public class AiravataServerHandlerTest {
 
 
             //retrieving all experiments in project
-            List<Experiment> list = airavataServerHandler.getAllExperimentsInProject(projectId1);
+            List<ExperimentModel> list = airavataServerHandler.getAllExperimentsInProject(projectId1);
             Assert.assertTrue(list.size()==3);
             //with pagination
             list = airavataServerHandler.getAllExperimentsInProjectWithPagination(projectId1, 2, 1);
@@ -316,8 +319,8 @@ public class AiravataServerHandlerTest {
                     gatewayId, "TestUser" + TAG, 2, 0);
             //testing time ordering
             Assert.assertTrue(list.size()==2);
-            Experiment exp1 = list.get(0);
-            Experiment exp2 = list.get(1);
+            ExperimentModel exp1 = list.get(0);
+            ExperimentModel exp2 = list.get(1);
             Assert.assertTrue(exp1.getCreationTime()-exp2.getCreationTime() > 0);
 
         } catch (Exception e) {
