@@ -25,6 +25,7 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
+import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.model.status.JobStatus;
@@ -154,8 +155,8 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
 //                    return experimentRegistry.addWorkflowNodeStatus((WorkflowNodeStatus) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
 //                case NODE_OUTPUT:
 //                    return experimentRegistry.addNodeOutputs((List<OutputDataObjectType>) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
-                case TASK_DETAIL:
-                    return experimentRegistry.addTaskDetails((TaskModel) newObjectToAdd, (String) dependentIdentifier);
+//                case TASK_DETAIL:
+//                    return experimentRegistry.addTaskDetails((TaskModel) newObjectToAdd, (String) dependentIdentifier);
                 case APPLICATION_OUTPUT:
                     return experimentRegistry.addApplicationOutputs((List<OutputDataObjectType>) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
                 case TASK_STATUS:
@@ -213,10 +214,10 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     gatewayRegistry.updateGateway((String)identifier, (Gateway)newObjectToUpdate);
                     break;
                 case EXPERIMENT:
-                    experimentRegistry.updateExperiment((Experiment) newObjectToUpdate, (String) identifier);
+                    experimentRegistry.updateExperiment((ExperimentModel) newObjectToUpdate, (String) identifier);
                     break;
                 case EXPERIMENT_CONFIGURATION_DATA:
-                    experimentRegistry.updateUserConfigData((UserConfigurationData) newObjectToUpdate, (String) identifier);
+                    experimentRegistry.updateUserConfigData((UserConfigurationDataModel) newObjectToUpdate, (String) identifier);
                     break;
                 case EXPERIMENT_OUTPUT:
                     experimentRegistry.updateExpOutputs((List<OutputDataObjectType>) newObjectToUpdate, (String) identifier);
@@ -224,18 +225,18 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                 case EXPERIMENT_STATUS:
                     experimentRegistry.updateExperimentStatus((ExperimentStatus) newObjectToUpdate, (String) identifier);
                     break;
-                case WORKFLOW_NODE_DETAIL:
-                    experimentRegistry.updateWorkflowNodeDetails((WorkflowNodeDetails) newObjectToUpdate, (String) identifier);
-                    break;
-                case WORKFLOW_NODE_STATUS:
-                    experimentRegistry.updateWorkflowNodeStatus((WorkflowNodeStatus) newObjectToUpdate, (String) identifier);
-                    break;
-                case NODE_OUTPUT:
-                    experimentRegistry.updateNodeOutputs((List<OutputDataObjectType>) newObjectToUpdate, (String) identifier);
-                    break;
-                case TASK_DETAIL:
-                    experimentRegistry.updateTaskDetails((TaskDetails) newObjectToUpdate, (String) identifier);
-                    break;
+//                case WORKFLOW_NODE_DETAIL:
+//                    experimentRegistry.updateWorkflowNodeDetails((WorkflowNodeDetails) newObjectToUpdate, (String) identifier);
+//                    break;
+//                case WORKFLOW_NODE_STATUS:
+//                    experimentRegistry.updateWorkflowNodeStatus((WorkflowNodeStatus) newObjectToUpdate, (String) identifier);
+//                    break;
+//                case NODE_OUTPUT:
+//                    experimentRegistry.updateNodeOutputs((List<OutputDataObjectType>) newObjectToUpdate, (String) identifier);
+//                    break;
+//                case TASK_DETAIL:
+//                    experimentRegistry.updateTaskDetails((TaskDetails) newObjectToUpdate, (String) identifier);
+//                    break;
                 case APPLICATION_OUTPUT:
                     experimentRegistry.updateAppOutputs((List<OutputDataObjectType>) newObjectToUpdate, (String) identifier);
                     break;
@@ -243,32 +244,32 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     experimentRegistry.updateTaskStatus((TaskStatus) newObjectToUpdate, (String) identifier);
                     break;
                 case JOB_DETAIL:
-                    experimentRegistry.updateJobDetails((JobDetails) newObjectToUpdate, (CompositeIdentifier) identifier);
+                    experimentRegistry.updateJobDetails((JobModel) newObjectToUpdate, (CompositeIdentifier) identifier);
                     break;
                 case JOB_STATUS:
                     experimentRegistry.updateJobStatus((JobStatus) newObjectToUpdate, (CompositeIdentifier) identifier);
                     break;
-                case APPLICATION_STATUS:
-                    experimentRegistry.updateApplicationStatus((ApplicationStatus) newObjectToUpdate, (String) identifier);
-                    break;
-                case DATA_TRANSFER_DETAIL:
-                    experimentRegistry.updateDataTransferDetails((DataTransferDetails) newObjectToUpdate, (String) identifier);
-                    break;
-                case TRANSFER_STATUS:
-                    experimentRegistry.updateTransferStatus((TransferStatus) newObjectToUpdate, (String) identifier);
-                    break;
+//                case APPLICATION_STATUS:
+//                    experimentRegistry.updateApplicationStatus((ApplicationStatus) newObjectToUpdate, (String) identifier);
+//                    break;
+//                case DATA_TRANSFER_DETAIL:
+//                    experimentRegistry.updateDataTransferDetails((DataTransferDetails) newObjectToUpdate, (String) identifier);
+//                    break;
+//                case TRANSFER_STATUS:
+//                    experimentRegistry.updateTransferStatus((TransferStatus) newObjectToUpdate, (String) identifier);
+//                    break;
                 case COMPUTATIONAL_RESOURCE_SCHEDULING:
-                    experimentRegistry.updateScheduling((ComputationalResourceScheduling) newObjectToUpdate, (String) identifier, dataType.toString());
+                    experimentRegistry.updateScheduling((ComputationalResourceSchedulingModel) newObjectToUpdate, (String) identifier, dataType.toString());
                     break;
-                case ADVANCE_INPUT_DATA_HANDLING:
-                    experimentRegistry.updateInputDataHandling((AdvancedInputDataHandling) newObjectToUpdate, (String) identifier, dataType.toString());
-                    break;
-                case ADVANCE_OUTPUT_DATA_HANDLING:
-                    experimentRegistry.updateOutputDataHandling((AdvancedOutputDataHandling) newObjectToUpdate, (String) identifier, dataType.toString());
-                    break;
-                case QOS_PARAM:
-                    experimentRegistry.updateQOSParams((QualityOfServiceParams) newObjectToUpdate, (String) identifier, dataType.toString());
-                    break;
+//                case ADVANCE_INPUT_DATA_HANDLING:
+//                    experimentRegistry.updateInputDataHandling((AdvancedInputDataHandling) newObjectToUpdate, (String) identifier, dataType.toString());
+//                    break;
+//                case ADVANCE_OUTPUT_DATA_HANDLING:
+//                    experimentRegistry.updateOutputDataHandling((AdvancedOutputDataHandling) newObjectToUpdate, (String) identifier, dataType.toString());
+//                    break;
+//                case QOS_PARAM:
+//                    experimentRegistry.updateQOSParams((QualityOfServiceParams) newObjectToUpdate, (String) identifier, dataType.toString());
+//                    break;
                 default:
                     logger.error("Unsupported data type...", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
@@ -340,12 +341,12 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     return experimentRegistry.getExperimentOutputs((String) identifier);
                 case EXPERIMENT_STATUS:
                     return experimentRegistry.getExperimentStatus((String) identifier);
-                case WORKFLOW_NODE_DETAIL:
-                    return experimentRegistry.getWorkflowNodeDetails((String) identifier);
-                case WORKFLOW_NODE_STATUS:
-                    return experimentRegistry.getWorkflowNodeStatus((String) identifier);
-                case NODE_OUTPUT:
-                    return experimentRegistry.getNodeOutputs((String) identifier);
+//                case WORKFLOW_NODE_DETAIL:
+//                    return experimentRegistry.getWorkflowNodeDetails((String) identifier);
+//                case WORKFLOW_NODE_STATUS:
+//                    return experimentRegistry.getWorkflowNodeStatus((String) identifier);
+//                case NODE_OUTPUT:
+//                    return experimentRegistry.getNodeOutputs((String) identifier);
                 case TASK_DETAIL:
                     return experimentRegistry.getTaskDetails((String) identifier);
                 case APPLICATION_OUTPUT:
@@ -356,20 +357,20 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     return experimentRegistry.getJobDetails((CompositeIdentifier) identifier);
                 case JOB_STATUS:
                     return experimentRegistry.getJobStatus((CompositeIdentifier) identifier);
-                case APPLICATION_STATUS:
-                    return experimentRegistry.getApplicationStatus((CompositeIdentifier) identifier);
-                case DATA_TRANSFER_DETAIL:
-                    return experimentRegistry.getDataTransferDetails((String) identifier);
-                case TRANSFER_STATUS:
-                    return experimentRegistry.getDataTransferStatus((String) identifier);
+//                case APPLICATION_STATUS:
+//                    return experimentRegistry.getApplicationStatus((CompositeIdentifier) identifier);
+//                case DATA_TRANSFER_DETAIL:
+//                    return experimentRegistry.getDataTransferDetails((String) identifier);
+//                case TRANSFER_STATUS:
+//                    return experimentRegistry.getDataTransferStatus((String) identifier);
                 case COMPUTATIONAL_RESOURCE_SCHEDULING:
                     return experimentRegistry.getComputationalScheduling(dataType, (String) identifier);
-                case ADVANCE_INPUT_DATA_HANDLING:
-                    return experimentRegistry.getInputDataHandling(dataType, (String) identifier);
-                case ADVANCE_OUTPUT_DATA_HANDLING:
-                    return experimentRegistry.getOutputDataHandling(dataType, (String) identifier);
-                case QOS_PARAM:
-                    return experimentRegistry.getQosParams(dataType, (String) identifier);
+//                case ADVANCE_INPUT_DATA_HANDLING:
+//                    return experimentRegistry.getInputDataHandling(dataType, (String) identifier);
+//                case ADVANCE_OUTPUT_DATA_HANDLING:
+//                    return experimentRegistry.getOutputDataHandling(dataType, (String) identifier);
+//                case QOS_PARAM:
+//                    return experimentRegistry.getQosParams(dataType, (String) identifier);
                 default:
                     logger.error("Unsupported data type...", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
@@ -408,44 +409,44 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     }
                     return result;
                 case EXPERIMENT:
-                    List<Experiment> experimentList = experimentRegistry.getExperimentList(fieldName, value);
-                    for (Experiment experiment : experimentList) {
+                    List<ExperimentModel> experimentList = experimentRegistry.getExperimentList(fieldName, value);
+                    for (ExperimentModel experiment : experimentList) {
                         result.add(experiment);
                     }
                     return result;
-                case WORKFLOW_NODE_DETAIL:
-                    List<WorkflowNodeDetails> wfNodeDetails = experimentRegistry.getWFNodeDetails(fieldName, value);
-                    for (WorkflowNodeDetails wf : wfNodeDetails) {
-                        result.add(wf);
-                    }
-                    return result;
-                case WORKFLOW_NODE_STATUS:
-                    List<WorkflowNodeStatus> wfNodeStatusList = experimentRegistry.getWFNodeStatusList(fieldName, value);
-                    for (WorkflowNodeStatus wfs : wfNodeStatusList) {
-                        result.add(wfs);
-                    }
-                    return result;
+//                case WORKFLOW_NODE_DETAIL:
+//                    List<WorkflowNodeDetails> wfNodeDetails = experimentRegistry.getWFNodeDetails(fieldName, value);
+//                    for (WorkflowNodeDetails wf : wfNodeDetails) {
+//                        result.add(wf);
+//                    }
+//                    return result;
+//                case WORKFLOW_NODE_STATUS:
+//                    List<WorkflowNodeStatus> wfNodeStatusList = experimentRegistry.getWFNodeStatusList(fieldName, value);
+//                    for (WorkflowNodeStatus wfs : wfNodeStatusList) {
+//                        result.add(wfs);
+//                    }
+//                    return result;
                 case TASK_DETAIL:
-                    List<TaskDetails> taskDetails = experimentRegistry.getTaskDetails(fieldName, value);
-                    for (TaskDetails task : taskDetails) {
+                    List<TaskModel> taskDetails = experimentRegistry.getTaskDetails(fieldName, value);
+                    for (TaskModel task : taskDetails) {
                         result.add(task);
                     }
                     return result;
                 case JOB_DETAIL:
-                    List<JobDetails> jobDetails = experimentRegistry.getJobDetails(fieldName, value);
-                    for (JobDetails job : jobDetails) {
+                    List<JobModel> jobDetails = experimentRegistry.getJobDetails(fieldName, value);
+                    for (JobModel job : jobDetails) {
                         result.add(job);
                     }
                     return result;
-                case DATA_TRANSFER_DETAIL:
-                    List<DataTransferDetails> dataTransferDetails = experimentRegistry.getDataTransferDetails(fieldName, value);
-                    for (DataTransferDetails transferDetails : dataTransferDetails) {
-                        result.add(transferDetails);
-                    }
-                    return result;
+//                case DATA_TRANSFER_DETAIL:
+//                    List<DataTransferDetails> dataTransferDetails = experimentRegistry.getDataTransferDetails(fieldName, value);
+//                    for (DataTransferDetails transferDetails : dataTransferDetails) {
+//                        result.add(transferDetails);
+//                    }
+//                    return result;
                 case ERROR_DETAIL:
-                    List<ErrorDetails> errorDetails = experimentRegistry.getErrorDetails(fieldName, value);
-                    for (ErrorDetails error : errorDetails) {
+                    List<ErrorModel> errorDetails = experimentRegistry.getErrorDetails(fieldName, value);
+                    for (ErrorModel error : errorDetails) {
                         result.add(error);
                     }
                     return result;
@@ -489,9 +490,9 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     }
                     return result;
                 case EXPERIMENT:
-                    List<Experiment> experimentList = experimentRegistry.getExperimentList(fieldName, value,
+                    List<ExperimentModel> experimentList = experimentRegistry.getExperimentList(fieldName, value,
                             limit, offset, orderByIdentifier, resultOrderType);
-                    for (Experiment experiment : experimentList) {
+                    for (ExperimentModel experiment : experimentList) {
                         result.add(experiment);
                     }
                     return result;
@@ -544,10 +545,10 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     }
                     return result;
                 case EXPERIMENT:
-                    List<ExperimentSummary> experimentSummaries = experimentRegistry
+                    List<ExperimentSummaryModel> experimentSummaries = experimentRegistry
                             .searchExperiments(filters, limit, offset, orderByIdentifier,
                                     resultOrderType);
-                    for (ExperimentSummary ex : experimentSummaries){
+                    for (ExperimentSummaryModel ex : experimentSummaries){
                         result.add(ex);
                     }
                     return result;
@@ -617,14 +618,14 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     return experimentRegistry.getExperimentIDs(fieldName, value);
                 case EXPERIMENT_CONFIGURATION_DATA:
                     return experimentRegistry.getExperimentIDs(fieldName, value);
-                case WORKFLOW_NODE_DETAIL:
-                    return experimentRegistry.getWorkflowNodeIds(fieldName, value);
+//                case WORKFLOW_NODE_DETAIL:
+//                    return experimentRegistry.getWorkflowNodeIds(fieldName, value);
                 case TASK_DETAIL:
                     return experimentRegistry.getTaskDetailIds(fieldName, value);
                 case JOB_DETAIL:
                     return experimentRegistry.getJobDetailIds(fieldName, value);
-                case DATA_TRANSFER_DETAIL:
-                    return experimentRegistry.getTransferDetailIds(fieldName, value);
+//                case DATA_TRANSFER_DETAIL:
+//                    return experimentRegistry.getTransferDetailIds(fieldName, value);
                 default:
                     logger.error("Unsupported data type...", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();

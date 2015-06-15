@@ -356,6 +356,19 @@ public class ThriftDataModelConversion {
         return null;
     }
 
+    public static TaskStatus getTaskStatus (StatusResource status){
+        if (status != null){
+            TaskStatus taskStatus = new TaskStatus();
+            if (status.getState() == null || status.getState().equals("")){
+                status.setState("UNKNOWN");
+            }
+            taskStatus.setState(TaskState.valueOf(status.getState()));
+            taskStatus.setTimeOfStateChange(status.getStatusUpdateTime().getTime());
+            return taskStatus;
+        }
+        return null;
+    }
+
     public static JobStatus getJobStatus (StatusResource status){
         if (status != null){
             JobStatus jobStatus = new JobStatus();
@@ -488,15 +501,15 @@ public class ThriftDataModelConversion {
         return model;
     }
 
-//    public static List<JobDetails> getJobDetailsList(List<JobDetailResource> jobs) throws RegistryException {
-//        List<JobDetails> jobDetailsList = new ArrayList<JobDetails>();
-//        if (jobs != null && !jobs.isEmpty()){
-//            for (JobDetailResource resource : jobs){
-//                jobDetailsList.add(getJobDetail(resource));
-//            }
-//        }
-//        return jobDetailsList;
-//    }
+    public static List<JobModel> getJobDetailsList(List<JobDetailResource> jobs) throws RegistryException {
+        List<JobModel> jobDetailsList = new ArrayList<JobModel>();
+        if (jobs != null && !jobs.isEmpty()){
+            for (JobDetailResource resource : jobs){
+                jobDetailsList.add(getJobDetail(resource));
+            }
+        }
+        return jobDetailsList;
+    }
 
 
     public static JobModel getJobDetail(JobDetailResource jobDetailResource) throws RegistryException {
@@ -511,8 +524,6 @@ public class ThriftDataModelConversion {
             jobDetails.setWorkingDir(jobDetailResource.getWorkingDir());
             StatusResource applicationStatus = jobDetailResource.getApplicationStatus();
             jobDetails.setJobStatus(getJobStatus(applicationStatus));
-            List<ErrorDetailResource> errorDetails = jobDetailResource.getErrorDetails();
-            jobDetails.setErrors(getErrorDetailList(errorDetails));
             jobDetails.setComputeResourceConsumed(jobDetailResource.getComputeResourceConsumed());
             return jobDetails;
         }
