@@ -38,6 +38,9 @@ import org.apache.airavata.model.appcatalog.computeresource.UnicoreDataMovement;
 import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.application.io.DataType;
+import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.registry.core.app.catalog.resources.*;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 
