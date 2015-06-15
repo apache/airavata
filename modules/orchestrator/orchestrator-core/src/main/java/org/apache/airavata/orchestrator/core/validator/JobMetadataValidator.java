@@ -21,9 +21,9 @@
 package org.apache.airavata.orchestrator.core.validator;
 
 import org.apache.airavata.model.error.ValidationResults;
-import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.model.workspace.experiment.TaskDetails;
-import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
+import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.experiment.TaskDetails;
+import org.apache.airavata.model.experiment.WorkflowNodeDetails;
 
 /**
  * This is the interface to implement a validation logic, users can implement their validation

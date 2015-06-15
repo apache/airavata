@@ -25,9 +25,6 @@ import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.client.tools.RegisterSampleApplicationsUtils;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
-import org.apache.airavata.model.appcatalog.appinterface.DataType;
-import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
-import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.DataMovementInterface;
 import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
@@ -38,7 +35,10 @@ import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
-import org.apache.airavata.model.error.AiravataClientConnectException;
+import org.apache.airavata.model.application.io.DataType;
+import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.thrift.TException;
 
@@ -64,7 +64,7 @@ public class RegisterSampleData {
 
     private String gatewayId;
 
-    public static void main(String[] args) throws AiravataClientConnectException, TException {
+    public static void main(String[] args) throws AiravataClientException, TException {
         RegisterSampleData registerSampleData = new RegisterSampleData();
         registerSampleData.init();
         registerSampleData.register();
@@ -81,7 +81,7 @@ public class RegisterSampleData {
         System.out.println(sampleScriptDir);
     }
 
-    public void register() throws AiravataClientConnectException, TException {
+    public void register() throws AiravataClientException, TException {
         airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
         gatewayId = registerGateway();
         registerLocalhost();

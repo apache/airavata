@@ -38,7 +38,7 @@ import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentD
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
-import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.model.experiment.TaskDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

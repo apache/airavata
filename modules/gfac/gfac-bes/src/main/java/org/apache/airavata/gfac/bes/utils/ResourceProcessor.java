@@ -23,8 +23,8 @@ package org.apache.airavata.gfac.bes.utils;
 
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
-import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
-import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.model.experiment.ComputationalResourceScheduling;
+import org.apache.airavata.model.experiment.TaskDetails;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionType;
 
 public class ResourceProcessor {

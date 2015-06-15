@@ -41,7 +41,7 @@
 //import org.apache.airavata.gfac.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
 //import org.apache.airavata.gfac.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
 //import org.apache.airavata.gfac.ssh.util.CommonUtils;
-//import org.apache.airavata.model.workspace.experiment.TaskDetails;
+//import org.apache.airavata.model.experiment.TaskDetails;
 //import org.apache.airavata.registry.core.experiment.registry.jpa.impl.RegistryFactory;
 //import org.apache.airavata.schemas.gfac.*;
 //import org.testng.annotations.BeforeClass;

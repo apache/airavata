@@ -38,10 +38,10 @@ import org.apache.airavata.gfac.monitor.email.parser.UGEEmailParser;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeRequestEvent;
-import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
-import org.apache.airavata.model.workspace.experiment.ErrorCategory;
-import org.apache.airavata.model.workspace.experiment.JobState;
-import org.apache.airavata.model.workspace.experiment.JobStatus;
+import org.apache.airavata.model.experiment.CorrectiveAction;
+import org.apache.airavata.model.experiment.ErrorCategory;
+import org.apache.airavata.model.experiment.JobState;
+import org.apache.airavata.model.experiment.JobStatus;
 
 import javax.mail.Address;
 import javax.mail.Flags;

@@ -27,9 +27,9 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.ExperimentNotFoundException;
 import org.apache.airavata.model.error.InvalidRequestException;
-import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.model.workspace.experiment.ExperimentState;
-import org.apache.airavata.model.workspace.experiment.ExperimentStatus;
+import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.experiment.ExperimentState;
+import org.apache.airavata.model.experiment.ExperimentStatus;
 import org.apache.thrift.TException;
 import org.junit.Assert;
 

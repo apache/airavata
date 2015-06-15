@@ -23,7 +23,7 @@ package org.apache.airavata.gfac.monitor.impl.push.amqp;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.airavata.gfac.monitor.core.MessageParser;
 import org.apache.airavata.gfac.monitor.exception.AiravataMonitorException;
-import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.model.experiment.JobState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

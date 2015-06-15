@@ -23,7 +23,7 @@ package org.apache.airavata.gfac.monitor.email.parser;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.gfac.core.monitor.EmailParser;
 import org.apache.airavata.gfac.core.monitor.JobStatusResult;
-import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.model.experiment.JobState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -21,7 +21,7 @@
 package org.apache.airavata.gfac.monitor.core;
 
 import org.apache.airavata.gfac.monitor.exception.AiravataMonitorException;
-import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.model.experiment.JobState;
 
 /**
  * This is an interface to implement messageparser, it could be

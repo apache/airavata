@@ -27,7 +27,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.impl.RabbitMQStatusPublisher;
 import org.apache.airavata.model.error.AiravataClientConnectException;
-import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.orchestrator.client.OrchestratorClientFactory;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;

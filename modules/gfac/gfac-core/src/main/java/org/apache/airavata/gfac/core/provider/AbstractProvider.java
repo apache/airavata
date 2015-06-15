@@ -23,8 +23,8 @@ package org.apache.airavata.gfac.core.provider;
 
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
-import org.apache.airavata.model.workspace.experiment.JobDetails;
-import org.apache.airavata.model.workspace.experiment.JobStatus;
+import org.apache.airavata.model.experiment.JobDetails;
+import org.apache.airavata.model.experiment.JobStatus;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.airavata.registry.cpi.RegistryException;

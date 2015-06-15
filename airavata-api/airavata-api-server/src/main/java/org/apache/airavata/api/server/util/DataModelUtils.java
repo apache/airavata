@@ -26,7 +26,7 @@ import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.registry.cpi.ApplicationInterface;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.util.ExecutionType;
-import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.experiment.ExperimentModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,11 +34,11 @@ import java.util.List;
 
 public class DataModelUtils {
     private static final Logger logger = LoggerFactory.getLogger(DataModelUtils.class);
-	public static ExecutionType getExecutionType(Experiment experiment) throws Exception{
+	public static ExecutionType getExecutionType(ExperimentModel experiment) throws Exception{
 		try {
 			ApplicationInterface applicationInterface = RegistryFactory.getAppCatalog().getApplicationInterface();
 			List<String> allApplicationInterfaceIds = applicationInterface.getAllApplicationInterfaceIds();
-			String applicationId = experiment.getApplicationId();
+			String applicationId = experiment.getExecutionId();
 			if (allApplicationInterfaceIds.contains(applicationId)){
 				return ExecutionType.SINGLE_APP;
 			} else {
@@ -48,8 +48,8 @@ public class DataModelUtils {
 				}
 			}
 		} catch (AppCatalogException e) {
-            logger.error("Error while retrieving execution type for experiment : " + experiment.getExperimentID(), e);
-            throw new Exception("Error while retrieving execution type for experiment : " + experiment.getExperimentID(), e);
+            logger.error("Error while retrieving execution type for experiment : " + experiment.getExperimentId(), e);
+            throw new Exception("Error while retrieving execution type for experiment : " + experiment.getExperimentId(), e);
 		}
 		return ExecutionType.UNKNOWN;
 	}

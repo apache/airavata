@@ -29,7 +29,7 @@ import org.apache.airavata.registry.cpi.ApplicationInterface;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.util.ExecutionType;
-import org.apache.airavata.model.workspace.experiment.Experiment;
+import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.workflow.catalog.WorkflowCatalogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

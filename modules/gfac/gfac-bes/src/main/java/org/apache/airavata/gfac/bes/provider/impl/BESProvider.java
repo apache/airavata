@@ -43,8 +43,8 @@ import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtoco
 import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
 import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeRequestEvent;
-import org.apache.airavata.model.workspace.experiment.JobDetails;
-import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.model.experiment.JobDetails;
+import org.apache.airavata.model.experiment.JobState;
 import org.apache.xmlbeans.XmlCursor;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.ggf.schemas.bes.x2006.x08.besFactory.ActivityStateEnumeration;
