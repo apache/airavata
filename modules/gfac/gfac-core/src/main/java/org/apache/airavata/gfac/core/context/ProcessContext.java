@@ -22,7 +22,9 @@
 package org.apache.airavata.gfac.core.context;
 
 import org.apache.airavata.common.utils.LocalEventPublisher;
+import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.task.Task;
+import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
@@ -42,6 +44,8 @@ public class ProcessContext {
 	private ProcessModel processModel;
 	private String workingDir;
 	private List<Task> taskChain;
+	private GatewayResourceProfile gatewayResourceProfile;
+	private RemoteCluster remoteCluster;
 
 	public ProcessContext(String processId, String gatewayId, String tokenId) {
 		this.processId = processId;
@@ -117,5 +121,21 @@ public class ProcessContext {
 
 	public void setTaskChain(List<Task> taskChain) {
 		this.taskChain = taskChain;
+	}
+
+	public GatewayResourceProfile getGatewayResourceProfile() {
+		return gatewayResourceProfile;
+	}
+
+	public void setGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) {
+		this.gatewayResourceProfile = gatewayResourceProfile;
+	}
+
+	public RemoteCluster getRemoteCluster() {
+		return remoteCluster;
+	}
+
+	public void setRemoteCluster(RemoteCluster remoteCluster) {
+		this.remoteCluster = remoteCluster;
 	}
 }
