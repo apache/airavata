@@ -32,7 +32,7 @@ import java.util.Map;
  * End users of the API can implement this and come up with their own
  * implementations, but mostly this interface is for internal usage.
  */
-public interface RemoteCluster {
+public interface RemoteCluster { // FIXME: replace SSHApiException with suitable exception.
 
     /**
      * This will submit a job to the cluster with a given pbs file and some parameters
