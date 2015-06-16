@@ -21,13 +21,27 @@
 package org.apache.airavata.gfac.impl;
 
 import com.google.common.eventbus.EventBus;
+import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.LocalEventPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
+import org.apache.airavata.gfac.core.JobManagerConfiguration;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.cluster.ServerInfo;
+import org.apache.airavata.gfac.core.monitor.JobMonitor;
+import org.apache.airavata.gfac.impl.job.LSFJobConfiguration;
+import org.apache.airavata.gfac.impl.job.LSFOutputParser;
+import org.apache.airavata.gfac.impl.job.PBSJobConfiguration;
+import org.apache.airavata.gfac.impl.job.PBSOutputParser;
+import org.apache.airavata.gfac.impl.job.SlurmJobConfiguration;
+import org.apache.airavata.gfac.impl.job.SlurmOutputParser;
+import org.apache.airavata.gfac.impl.job.UGEJobConfiguration;
+import org.apache.airavata.gfac.impl.job.UGEOutputParser;
+import org.apache.airavata.gfac.monitor.email.EmailBasedMonitor;
+import org.apache.airavata.gfac.monitor.email.EmailMonitorFactory;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
@@ -38,6 +52,10 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 public abstract class Factory {
@@ -46,6 +64,8 @@ public abstract class Factory {
 	private static Map<String, RemoteCluster> remoteClusterMap;
 	private static LocalEventPublisher localEventPublisher;
 	private static CuratorFramework curatorClient;
+	private static EmailBasedMonitor emailBasedMonitor;
+	private static Date startMonitorDate = Calendar.getInstance().getTime();
 
 	public static GFacEngine getGFacEngine() throws GFacException {
 		if (engine == null) {
@@ -92,5 +112,38 @@ public abstract class Factory {
 			}
 		}
 		return curatorClient;
+	}
+
+	public static JobMonitor getJobMonitor(ResourceJobManagerType resourceJobManagerType) throws AiravataException {
+		if (resourceJobManagerType == ResourceJobManagerType.FORK) {
+			return null; // TODO write a job monitor for this.
+		} else {
+			if (emailBasedMonitor == null) {
+				synchronized (EmailMonitorFactory.class){
+					if (emailBasedMonitor == null) {
+						emailBasedMonitor = new EmailBasedMonitor(resourceJobManagerType);
+						emailBasedMonitor.setDate(startMonitorDate);
+						new Thread(emailBasedMonitor).start();
+					}
+				}
+			}
+			return emailBasedMonitor;
+		}
+	}
+
+	public static JobManagerConfiguration getPBSJobManager(String installedPath) {
+		return new PBSJobConfiguration("PBSTemplate.xslt",".pbs", installedPath, new PBSOutputParser());
+	}
+
+	public static JobManagerConfiguration getSLURMJobManager(String installedPath) {
+		return new SlurmJobConfiguration("SLURMTemplate.xslt", ".slurm", installedPath, new SlurmOutputParser());
+	}
+
+	public static JobManagerConfiguration getUGEJobManager(String installedPath) {
+		return new UGEJobConfiguration("UGETemplate.xslt", ".pbs", installedPath, new UGEOutputParser());
+	}
+
+	public static JobManagerConfiguration getLSFJobManager(String installedPath) {
+		return new LSFJobConfiguration("LSFTemplate.xslt", ".lsf", installedPath, new LSFOutputParser());
 	}
 }

@@ -25,7 +25,6 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.apache.airavata.gfac.core.SSHApiException;
-import org.apache.airavata.gfac.gsi.ssh.impl.StandardOutReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

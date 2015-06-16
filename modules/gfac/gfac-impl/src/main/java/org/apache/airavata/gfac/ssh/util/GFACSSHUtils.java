@@ -21,7 +21,7 @@
 package org.apache.airavata.gfac.ssh.util;
 
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
-import org.apache.airavata.gfac.gsi.ssh.impl.HPCRemoteCluster;
+import org.apache.airavata.gfac.impl.HPCRemoteCluster;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;

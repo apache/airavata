@@ -42,7 +42,7 @@ import org.apache.airavata.gfac.core.provider.GFacProviderException;
 import org.apache.airavata.gfac.core.states.GfacExperimentState;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.gsi.ssh.api.CommandExecutor;
-import org.apache.airavata.gfac.gsi.ssh.impl.StandardOutReader;
+import org.apache.airavata.gfac.impl.StandardOutReader;
 import org.apache.airavata.gfac.monitor.email.EmailBasedMonitor;
 import org.apache.airavata.gfac.monitor.email.EmailMonitorFactory;
 import org.apache.airavata.gfac.ssh.security.SSHSecurityContext;
