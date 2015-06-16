@@ -18,27 +18,23 @@
  * under the License.
  *
  */
+package org.apache.airavata.gfac.core;
 
-package org.apache.airavata.gfac.core.authentication;
+import org.apache.airavata.gfac.core.cluster.OutputParser;
+import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
 
-/**
- * Password authentication for vanilla SSH.
- */
-public class SSHPasswordAuthentication implements AuthenticationInfo {
+import java.util.Map;
 
-	private String userName;
-	private String password;
+public abstract class AbstractJobManagerConfiguration implements JobManagerConfiguration {
+	final String jobManagerBinPath;
+	final Map<JobManagerCommand, String> jobManagerCommands;
+	final OutputParser outputParser;
 
-	public SSHPasswordAuthentication(String userName, String password) {
-		this.userName = userName;
-		this.password = password;
+	public AbstractJobManagerConfiguration(String jobManagerBinDir, Map<JobManagerCommand, String> jobManagerCommands,
+	                                       OutputParser outputParser) {
+		this.jobManagerBinPath = jobManagerBinDir;
+		this.jobManagerCommands = jobManagerCommands;
+		this.outputParser = outputParser;
 	}
 
-	public String getUserName() {
-		return userName;
-	}
-
-	public String getPassword() {
-		return password;
-	}
 }

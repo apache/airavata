@@ -21,9 +21,8 @@
 
 package org.apache.airavata.gfac.impl;
 
-import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
-import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,30 +30,42 @@ import org.slf4j.LoggerFactory;
 public class GFacWorker implements Runnable {
 
 	private static final Logger log = LoggerFactory.getLogger(GFacWorker.class);
-	private final ProcessContext processContext;
+	private ProcessContext processContext;
+	private String experimentId;
+	private String processId;
+	private String gatewayId;
+	private String tokenId;
 
-    public   GFacWorker(ProcessContext processContext) throws AiravataException {
+
+    public   GFacWorker(ProcessContext processContext) throws GFacException {
         if (processContext == null) {
-            throw new AiravataException("Worker must initialize with valide processContext, Process context is null");
+            throw new GFacException("Worker must initialize with valide processContext, Process context is null");
         }
 	    this.processContext = processContext;
     }
+	public GFacWorker(String experimentId, String processId, String gatewayId, String tokenId) throws GFacException {
+		this.experimentId = experimentId;
+		this.processId = processId;
+		this.gatewayId = gatewayId;
+		this.tokenId = tokenId;
+	}
 
     @Override
     public void run() {
 	    try {
-		    GFacEngine engine = GFacEngine.getInstance();
+		    GFacEngine engine = Factory.getGFacEngine();
 		    ProcessType type = getProcessType(processContext);
+		    if (processContext == null) {
+			    processContext = engine.populateProcessContext(experimentId, processId, gatewayId, tokenId);
+		    }
 		    try {
 			    switch (type) {
 				    case NEW:
-					    engine.populateProcessContext(processContext);
 					    engine.createTaskChain(processContext);
 					    engine.executeProcess(processContext);
 					    break;
 				    case RECOVER:
 					    // recover the process
-					    engine.populateProcessContext(processContext);
 					    engine.createTaskChain(processContext);
 					    engine.recoverProcess(processContext);
 					    break;
@@ -64,7 +75,6 @@ public class GFacWorker implements Runnable {
 					    break;
 				    case RECOVER_OUTFLOW:
 					    // recover  outflow task;
-					    engine.populateProcessContext(processContext);
 					    engine.recoverProcessOutflow(processContext);
 			    }
 		    } catch (GFacException e) {

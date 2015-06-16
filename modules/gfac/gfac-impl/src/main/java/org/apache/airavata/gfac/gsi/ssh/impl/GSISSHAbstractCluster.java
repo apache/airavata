@@ -37,7 +37,6 @@ import org.apache.airavata.gfac.core.authentication.SSHPasswordAuthentication;
 import org.apache.airavata.gfac.core.authentication.SSHPublicKeyAuthentication;
 import org.apache.airavata.gfac.core.authentication.SSHPublicKeyFileAuthentication;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
-import org.apache.airavata.gfac.core.cluster.JobStatus;
 import org.apache.airavata.gfac.core.cluster.OutputParser;
 import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
 import org.apache.airavata.gfac.core.cluster.ServerInfo;
@@ -47,6 +46,7 @@ import org.apache.airavata.gfac.gsi.ssh.jsch.ExtendedJSch;
 import org.apache.airavata.gfac.gsi.ssh.util.SSHAPIUIKeyboardInteractive;
 import org.apache.airavata.gfac.gsi.ssh.util.SSHKeyPasswordHandler;
 import org.apache.airavata.gfac.gsi.ssh.util.SSHUtils;
+import org.apache.airavata.model.status.JobStatus;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -235,11 +235,11 @@ public class GSISSHAbstractCluster implements RemoteCluster {
         }
     }
 
-    public synchronized JobDescriptor cancelJob(String jobID) throws SSHApiException {
+    public synchronized boolean cancelJob(String jobID) throws SSHApiException {
         JobStatus jobStatus = getJobStatus(jobID);
         if (jobStatus == null || jobStatus == JobStatus.U) {
             log.info("Validation before cancel is failed, couldn't found job in remote host to cancel. Job may be already completed|failed|canceled");
-            return null;
+            return false;
         }
         RawCommandInfo rawCommandInfo = jobManagerConfiguration.getCancelCommand(jobID);
 
@@ -249,15 +249,10 @@ public class GSISSHAbstractCluster implements RemoteCluster {
         String outputifAvailable = getOutputifAvailable(stdOutReader, "Error reading output of job submission", jobManagerConfiguration.getBaseCancelCommand());
         // this might not be the case for all teh resources, if so Cluster implementation can override this method
         // because here after cancelling we try to get the job description and return it back
-        try {
-            return this.getJobDescriptorById(jobID);
-        } catch (Exception e) {
-            //its ok to fail to get status when the job is gone
-            return null;
-        }
+	    return true;
     }
 
-    public synchronized String submitBatchJobWithScript(String scriptPath, String workingDirectory) throws SSHApiException {
+    public synchronized String submitBatchJob(String scriptPath, String workingDirectory) throws SSHApiException {
         this.scpTo(workingDirectory, scriptPath);
 
         // since this is a constant we do not ask users to fill this
@@ -277,85 +272,6 @@ public class GSISSHAbstractCluster implements RemoteCluster {
         OutputParser outputParser = jobManagerConfiguration.getParser();
         return  outputParser.parseJobSubmission(outputifAvailable);
     }
-
-
-    @Override
-    public synchronized String submitBatchJob(JobDescriptor jobDescriptor) throws SSHApiException {
-        TransformerFactory factory = TransformerFactory.newInstance();
-        URL resource = this.getClass().getClassLoader().getResource(jobManagerConfiguration.getJobDescriptionTemplateName());
-
-        if (resource == null) {
-            String error = "System configuration file '" + jobManagerConfiguration.getJobDescriptionTemplateName()
-                    + "' not found in the classpath";
-            throw new SSHApiException(error);
-        }
-
-        Source xslt = new StreamSource(new File(resource.getPath()));
-        Transformer transformer;
-        StringWriter results = new StringWriter();
-        File tempPBSFile = null;
-        try {
-            // generate the pbs script using xslt
-            transformer = factory.newTransformer(xslt);
-            Source text = new StreamSource(new ByteArrayInputStream(jobDescriptor.toXML().getBytes()));
-            transformer.transform(text, new StreamResult(results));
-            String scriptContent = results.toString().replaceAll("^[ |\t]*\n$", "");
-            if (scriptContent.startsWith("\n")) {
-                scriptContent = scriptContent.substring(1);
-            }
-//            log.debug("generated PBS:" + results.toString());
-
-            // creating a temporary file using pbs script generated above
-            int number = new SecureRandom().nextInt();
-            number = (number < 0 ? -number : number);
-
-            tempPBSFile = new File(Integer.toString(number) + jobManagerConfiguration.getScriptExtension());
-            FileUtils.writeStringToFile(tempPBSFile, scriptContent);
-
-            //reusing submitBatchJobWithScript method to submit a job
-            String jobID = null;
-            int retry = 3;
-            while(retry>0) {
-                try {
-                    jobID = this.submitBatchJobWithScript(tempPBSFile.getAbsolutePath(),
-                            jobDescriptor.getWorkingDirectory());
-                    retry=0;
-                } catch (SSHApiException e) {
-                    retry--;
-                    if(retry==0) {
-                        throw e;
-                    }else{
-                        try {
-                            Thread.sleep(5000);
-                        } catch (InterruptedException e1) {
-                            log.error(e1.getMessage(), e1);
-                        }
-                        log.error("Error occured during job submission but doing a retry");
-                    }
-                }
-            }
-            log.debug("Job has successfully submitted, JobID : " + jobID);
-            if (jobID != null) {
-                return jobID.replace("\n", "");
-            } else {
-                return null;
-            }
-            } catch (TransformerConfigurationException e) {
-            throw new SSHApiException("Error parsing PBS transformation", e);
-        } catch (TransformerException e) {
-            throw new SSHApiException("Error generating PBS script", e);
-        } catch (IOException e) {
-            throw new SSHApiException("An exception occurred while connecting to server." +
-                    "Connecting server - " + serverInfo.getHost() + ":" + serverInfo.getPort() +
-                    " connecting user name - "
-                    + serverInfo.getUserName(), e);
-        } finally {
-            if (tempPBSFile != null) {
-                tempPBSFile.delete();
-            }
-        }
-    }
-
 
     public void generateJobScript(JobDescriptor jobDescriptor) throws SSHApiException {
         TransformerFactory factory = TransformerFactory.newInstance();
@@ -767,4 +683,95 @@ public class GSISSHAbstractCluster implements RemoteCluster {
 			// Oh well. They don't have a known hosts in home.
 		}
 	}
+
+
+	/**
+	 * This will contains all the PBS specific job statuses.
+	 * C -  Job is completed after having run/
+	 * E -  Job is exiting after having run.
+	 * H -  Job is held.
+	 * Q -  job is queued, eligible to run or routed.
+	 * R -  job is running.
+	 * T -  job is being moved to new location.
+	 * W -  job is waiting for its execution time
+	 * (-a option) to be reached.
+	 * S -  (Unicos only) job is suspend.
+	 */
+	public enum HPCJobStatus {
+		C, E, H, Q, R, T, W, S,U,F,CA,CD,CF,CG,NF,PD,PR,TO,qw,t,r,h,Er,Eqw,PEND,RUN,PSUSP,USUSP,SSUSP,DONE,EXIT,UNKWN,ZOMBI;
+
+		public static HPCJobStatus fromString(String status){
+			if(status != null){
+				if("C".equals(status)){
+					return HPCJobStatus.C;
+				}else if("E".equals(status)){
+					return HPCJobStatus.E;
+				}else if("H".equals(status)){
+					return HPCJobStatus.H;
+				}else if("Q".equals(status)){
+					return HPCJobStatus.Q;
+				}else if("R".equals(status)){
+					return HPCJobStatus.R;
+				}else if("T".equals(status)){
+					return HPCJobStatus.T;
+				}else if("W".equals(status)){
+					return HPCJobStatus.W;
+				}else if("S".equals(status)){
+					return HPCJobStatus.S;
+				}else if("F".equals(status)){
+					return HPCJobStatus.F;
+				}else if("S".equals(status)){
+					return HPCJobStatus.S;
+				}else if("CA".equals(status)){
+					return HPCJobStatus.CA;
+				}else if("CF".equals(status)){
+					return HPCJobStatus.CF;
+				}else if("CD".equals(status)){
+					return HPCJobStatus.CD;
+				}else if("CG".equals(status)){
+					return HPCJobStatus.CG;
+				}else if("NF".equals(status)){
+					return HPCJobStatus.NF;
+				}else if("PD".equals(status)){
+					return HPCJobStatus.PD;
+				}else if("PR".equals(status)){
+					return HPCJobStatus.PR;
+				}else if("TO".equals(status)){
+					return HPCJobStatus.TO;
+				}else if("U".equals(status)){
+					return HPCJobStatus.U;
+				}else if("qw".equals(status)){
+					return HPCJobStatus.qw;
+				}else if("t".equals(status)){
+					return HPCJobStatus.t;
+				}else if("r".equals(status)){
+					return HPCJobStatus.r;
+				}else if("h".equals(status)){
+					return HPCJobStatus.h;
+				}else if("Er".equals(status)){
+					return HPCJobStatus.Er;
+				}else if("Eqw".equals(status)){
+					return HPCJobStatus.Er;
+				}else if("RUN".equals(status)){      // LSF starts here
+					return HPCJobStatus.RUN;
+				}else if("PEND".equals(status)){
+					return HPCJobStatus.PEND;
+				}else if("DONE".equals(status)){
+					return HPCJobStatus.DONE;
+				}else if("PSUSP".equals(status)){
+					return HPCJobStatus.PSUSP;
+				}else if("USUSP".equals(status)){
+					return HPCJobStatus.USUSP;
+				}else if("SSUSP".equals(status)){
+					return HPCJobStatus.SSUSP;
+				}else if("EXIT".equals(status)){
+					return HPCJobStatus.EXIT;
+				}else if("ZOMBI".equals(status)){
+					return HPCJobStatus.ZOMBI;
+				}
+			}
+			return HPCJobStatus.U;
+		}
+	}
+
 }

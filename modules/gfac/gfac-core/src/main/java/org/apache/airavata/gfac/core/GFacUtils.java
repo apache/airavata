@@ -101,9 +101,6 @@ public class GFacUtils {
 	private GFacUtils() {
 	}
 
-	public static ProcessContext populateProcessContext(ProcessContext processContext) {
-		return processContext;
-	}
 
 	/**
 	 * Read data from inputStream and convert it to String.
