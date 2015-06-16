@@ -28,7 +28,7 @@ import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
 import org.apache.airavata.gfac.core.cluster.ServerInfo;
 import org.apache.airavata.gfac.gsi.ssh.api.CommandExecutor;
 import org.apache.airavata.gfac.gsi.ssh.config.ConfigReader;
-import org.apache.airavata.gfac.gsi.ssh.impl.HPCRemoteCluster;
+import org.apache.airavata.gfac.impl.HPCRemoteCluster;
 import org.apache.airavata.gfac.gsi.ssh.impl.SystemCommandOutput;
 import org.apache.airavata.gfac.gsi.ssh.impl.authentication.DefaultPublicKeyAuthentication;
 import org.apache.commons.io.IOUtils;

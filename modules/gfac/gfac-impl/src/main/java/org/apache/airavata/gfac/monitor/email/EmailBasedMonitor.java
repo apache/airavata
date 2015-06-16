@@ -28,6 +28,8 @@ import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.GFacThreadPoolExecutor;
+import org.apache.airavata.gfac.core.context.ProcessContext;
+import org.apache.airavata.gfac.core.monitor.JobMonitor;
 import org.apache.airavata.gfac.core.monitor.JobStatusResult;
 import org.apache.airavata.gfac.core.monitor.EmailParser;
 import org.apache.airavata.gfac.impl.OutHandlerWorker;
@@ -42,6 +44,8 @@ import org.apache.airavata.model.experiment.CorrectiveAction;
 import org.apache.airavata.model.experiment.ErrorCategory;
 import org.apache.airavata.model.experiment.JobState;
 import org.apache.airavata.model.experiment.JobStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.mail.Address;
 import javax.mail.Flags;
@@ -60,8 +64,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class EmailBasedMonitor implements Runnable{
-    private static final AiravataLogger log = AiravataLoggerFactory.getLogger(EmailBasedMonitor.class);
+public class EmailBasedMonitor implements JobMonitor, Runnable{
+    private static final Logger log = LoggerFactory.getLogger(EmailBasedMonitor.class);
 
     public static final int COMPARISON = 6; // after and equal
     public static final String IMAPS = "imaps";
@@ -350,4 +354,14 @@ public class EmailBasedMonitor implements Runnable{
     public void setDate(Date date) {
         this.monitorStartDate = date;
     }
+
+	@Override
+	public void monitor(String jobId, ProcessContext processContext) {
+
+	}
+
+	@Override
+	public void stopMonitor(String jobId) {
+
+	}
 }
