@@ -24,6 +24,9 @@ package org.apache.airavata.gfac.core.context;
 import org.apache.airavata.common.utils.LocalEventPublisher;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.task.Task;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
+import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.registry.cpi.AppCatalog;
@@ -44,10 +47,17 @@ public class ProcessContext {
 	private final String tokenId;
 	private ProcessModel processModel;
 	private String workingDir;
+	private String inputDir;
+    private String outputDir;
 	private List<Task> taskChain;
 	private GatewayResourceProfile gatewayResourceProfile;
+    private ComputeResourceDescription computeResourceDescription;
+    private ApplicationDeploymentDescription applicationDeploymentDescription;
+    private ApplicationInterfaceDescription applicationInterfaceDescription;
 	private RemoteCluster remoteCluster;
 	private Map<String, String> sshProperties;
+    private String stdoutLocation;
+    private String stderrLocation;
 
 	public ProcessContext(String processId, String gatewayId, String tokenId) {
 		this.processId = processId;
@@ -148,4 +158,60 @@ public class ProcessContext {
 	public void setSshProperties(Map<String, String> sshProperties) {
 		this.sshProperties = sshProperties;
 	}
+
+    public ComputeResourceDescription getComputeResourceDescription() {
+        return computeResourceDescription;
+    }
+
+    public void setComputeResourceDescription(ComputeResourceDescription computeResourceDescription) {
+        this.computeResourceDescription = computeResourceDescription;
+    }
+
+    public ApplicationDeploymentDescription getApplicationDeploymentDescription() {
+        return applicationDeploymentDescription;
+    }
+
+    public void setApplicationDeploymentDescription(ApplicationDeploymentDescription applicationDeploymentDescription) {
+        this.applicationDeploymentDescription = applicationDeploymentDescription;
+    }
+
+    public ApplicationInterfaceDescription getApplicationInterfaceDescription() {
+        return applicationInterfaceDescription;
+    }
+
+    public void setApplicationInterfaceDescription(ApplicationInterfaceDescription applicationInterfaceDescription) {
+        this.applicationInterfaceDescription = applicationInterfaceDescription;
+    }
+
+    public String getStdoutLocation() {
+        return stdoutLocation;
+    }
+
+    public void setStdoutLocation(String stdoutLocation) {
+        this.stdoutLocation = stdoutLocation;
+    }
+
+    public String getStderrLocation() {
+        return stderrLocation;
+    }
+
+    public void setStderrLocation(String stderrLocation) {
+        this.stderrLocation = stderrLocation;
+    }
+
+    public void setOutputDir(String outputDir) {
+        this.outputDir = outputDir;
+    }
+
+    public String getOutputDir() {
+        return outputDir;
+    }
+
+    public String getInputDir() {
+        return inputDir;
+    }
+
+    public void setInputDir(String inputDir) {
+        this.inputDir = inputDir;
+    }
 }
