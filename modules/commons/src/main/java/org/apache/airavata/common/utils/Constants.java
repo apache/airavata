@@ -36,4 +36,9 @@ public final class Constants {
     public static final String REMOTE_OAUTH_SERVER_URL = "remote.oauth.authorization.server";
     public static final String ADMIN_USERNAME = "admin.user.name";
     public static final String ADMIN_PASSWORD = "admin.password";
+
+    public static final String PBS_JOB_MANAGER = "pbs";
+    public static final String SLURM_JOB_MANAGER = "slurm";
+    public static final String SUN_GRID_ENGINE_JOB_MANAGER = "UGE";
+    public static final String LSF_JOB_MANAGER = "LSF";
 }
