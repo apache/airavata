@@ -52,13 +52,10 @@ public class SSHUtils {
 	 *                   a dirctory we do copy it to that directory but we simply return the directory name
 	 *                   todo handle the directory name as input and return the proper final output file name
 	 * @param localFile  Local file to transfer, this can be a directory
-	 * @param session
 	 * @return returns the final remote file path, so that users can use the new file location
-	 * @throws IOException
-	 * @throws JSchException
-	 * @throws SSHApiException
 	 */
-	public static String scpTo(String remoteFile, String localFile, Session session) throws IOException, JSchException, SSHApiException {
+	public static String scpTo(String localFile, String remoteFile, Session session) throws IOException,
+			JSchException, SSHApiException {
 		FileInputStream fis = null;
 		String prefix = null;
 		if (new File(localFile).isDirectory()) {
@@ -119,7 +116,7 @@ public class SSHUtils {
 			throw new SSHApiException(error);
 		}
 
-		// send a content of lFile
+		// send a content of localFile
 		fis = new FileInputStream(localFile);
 		byte[] buf = new byte[1024];
 		while (true) {
@@ -155,10 +152,10 @@ public class SSHUtils {
 	 *
 	 * @param remoteFile remote file path, this has to be a full qualified path
 	 * @param localFile  This is the local file to copy, this can be a directory too
-	 * @param session
 	 * @return returns the final local file path of the new file came from the remote resource
 	 */
-	public static void scpFrom(String remoteFile, String localFile, Session session) throws IOException, JSchException, SSHApiException {
+	public static void scpFrom(String remoteFile, String localFile, Session session) throws IOException,
+			JSchException, SSHApiException {
 		FileOutputStream fos = null;
 		try {
 			String prefix = null;
@@ -269,11 +266,12 @@ public class SSHUtils {
 	 * This method will copy a remote file to a local directory
 	 *
 	 * @param remoteFileSource remote file path, this has to be a full qualified path
-	 * @param remoteFileTarget  This is the local file to copy, this can be a directory too
-	 * @param session JSch Session object
+	 * @param remoteFileTarget This is the local file to copy, this can be a directory too
+	 * @param session          JSch Session object
 	 * @return returns the final local file path of the new file came from the remote resource
 	 */
-	public static void scpThirdParty(String remoteFileSource, String remoteFileTarget, Session session) throws IOException, JSchException, SSHApiException {
+	public static void scpThirdParty(String remoteFileSource, String remoteFileTarget, Session session) throws
+			IOException, JSchException, SSHApiException {
 		FileOutputStream fos = null;
 		try {
 			String prefix = null;
@@ -384,7 +382,8 @@ public class SSHUtils {
 		channel.disconnect();
 	}
 
-	public static List<String> listDirectory(String path, Session session) throws IOException, JSchException, SSHApiException {
+	public static List<String> listDirectory(String path, Session session) throws IOException, JSchException,
+			SSHApiException {
 
 		// exec 'scp -t rfile' remotely
 		String command = "ls " + path;
