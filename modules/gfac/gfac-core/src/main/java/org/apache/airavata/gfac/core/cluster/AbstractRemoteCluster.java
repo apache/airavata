@@ -18,27 +18,22 @@
  * under the License.
  *
  */
+package org.apache.airavata.gfac.core.cluster;
 
-package org.apache.airavata.gfac.core.authentication;
+import org.apache.airavata.gfac.core.JobManagerConfiguration;
 
-/**
- * Password authentication for vanilla SSH.
- */
-public class SSHPasswordAuthentication implements AuthenticationInfo {
+import java.util.Map;
 
-	private String userName;
-	private String password;
+public class AbstractRemoteCluster {
 
-	public SSHPasswordAuthentication(String userName, String password) {
-		this.userName = userName;
-		this.password = password;
-	}
+	ServerInfo serverInfo;
+	JobManagerConfiguration jobManagerConfiguration;
+	Map<String,String> authenticationParam;
 
-	public String getUserName() {
-		return userName;
-	}
-
-	public String getPassword() {
-		return password;
+	public AbstractRemoteCluster(ServerInfo serverInfo, JobManagerConfiguration jobManagerConfiguration, Map<String,
+			String> authenticationParam) {
+		this.serverInfo = serverInfo;
+		this.jobManagerConfiguration = jobManagerConfiguration;
+		this.authenticationParam = authenticationParam;
 	}
 }

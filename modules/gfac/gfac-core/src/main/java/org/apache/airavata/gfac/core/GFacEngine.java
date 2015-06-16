@@ -18,27 +18,24 @@
  * under the License.
  *
  */
+package org.apache.airavata.gfac.core;
 
-package org.apache.airavata.gfac.core.authentication;
+import org.apache.airavata.gfac.core.context.ProcessContext;
 
-/**
- * Password authentication for vanilla SSH.
- */
-public class SSHPasswordAuthentication implements AuthenticationInfo {
+public interface GFacEngine {
 
-	private String userName;
-	private String password;
 
-	public SSHPasswordAuthentication(String userName, String password) {
-		this.userName = userName;
-		this.password = password;
-	}
+	public ProcessContext populateProcessContext(String experimentId, String processId, String gatewayId, String tokenId) throws GFacException;
 
-	public String getUserName() {
-		return userName;
-	}
+	public void createTaskChain(ProcessContext processContext) throws GFacException;
 
-	public String getPassword() {
-		return password;
-	}
+	public void executeProcess(ProcessContext processContext) throws GFacException ;
+
+	public void recoverProcess(ProcessContext processContext) throws GFacException ;
+
+	public void runProcessOutflow(ProcessContext processContext) throws GFacException ;
+
+	public void recoverProcessOutflow(ProcessContext processContext) throws GFacException ;
+
+	public void cancelProcess() throws GFacException ;
 }

@@ -22,6 +22,7 @@ package org.apache.airavata.gfac.core.cluster;
 
 import org.apache.airavata.gfac.core.JobDescriptor;
 import org.apache.airavata.gfac.core.SSHApiException;
+import org.apache.airavata.model.status.JobStatus;
 
 import java.util.Map;
 

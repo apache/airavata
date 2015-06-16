@@ -21,6 +21,7 @@
 
 package org.apache.airavata.gfac.impl;
 
+import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.config.DataTransferTaskConfig;
 import org.apache.airavata.gfac.core.config.GFacYamlConfigruation;
@@ -40,14 +41,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class GFacEngine {
-	private static GFacEngine engine;
+public class GFacEngineImpl implements GFacEngine {
+	private static GFacEngineImpl engine;
 	Map<JobSubmissionProtocol, Task> jobSubmissionTask;
 	Map<DataMovementProtocol, Task> dataMovementTask;
 	Map<ResourceJobManagerType, ResourceConfig> resources;
 
 
-	private GFacEngine() throws GFacException {
+	public GFacEngineImpl() throws GFacException {
 		GFacYamlConfigruation config = new GFacYamlConfigruation();
 		for (JobSubmitterTaskConfig jobSubmitterTaskConfig : config.getJobSbumitters()) {
 			jobSubmissionTask.put(jobSubmitterTaskConfig.getSubmissionProtocol(), null);
@@ -62,24 +63,19 @@ public class GFacEngine {
 		}
 	}
 
-	public static GFacEngine getInstance() throws GFacException {
-		if (engine == null) {
-			synchronized (GFacEngine.class) {
-				if (engine == null) {
-					engine = new GFacEngine();
-				}
-			}
-		}
-		return engine;
-	}
-
-	public ProcessContext populateProcessContext(ProcessContext processContext) {
-		processContext.setProcessModel(new ProcessModel()); // TODO: get rocess model from app catalog
+	@Override
+	public ProcessContext populateProcessContext(String experimentId, String processId, String gatewayId, String
+			tokenId) throws GFacException {
+		ProcessContext processContext = new ProcessContext(processId, gatewayId, tokenId);
+		processContext.setProcessModel(new ProcessModel());
+		// TODO: get process model from app catalog
 		// TODO: set datamovement protocol and jobsubmission protocol
-		//TODO: set up gatewayResourceProfile.
+		// TODO: set up gatewayResourceProfile.
+		// TODO: set RemoteCluster
 		return processContext;
 	}
 
+	@Override
 	public void createTaskChain(ProcessContext processContext) throws GFacException {
 		List<InputDataObjectType> processInputs = processContext.getProcessModel().getProcessInputs();
 		List<TaskModel> taskChain = new ArrayList<>();
@@ -95,6 +91,7 @@ public class GFacEngine {
 						break;
 					case URI:
 						// add URI type Task
+
 						break;
 					default:
 						// nothing to do
@@ -104,23 +101,27 @@ public class GFacEngine {
 		}
 	}
 
+	@Override
 	public void executeProcess(ProcessContext processContext) throws GFacException {
-
 
 	}
 
+	@Override
 	public void recoverProcess(ProcessContext processContext) throws GFacException {
 
 	}
 
+	@Override
 	public void runProcessOutflow(ProcessContext processContext) throws GFacException {
 
 	}
 
+	@Override
 	public void recoverProcessOutflow(ProcessContext processContext) throws GFacException {
 
 	}
 
+	@Override
 	public void cancelProcess() throws GFacException {
 
 	}

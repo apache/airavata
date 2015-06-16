@@ -1,4 +1,4 @@
-package org.apache.airavata.gfac.core.authentication;/*
+/*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,14 +19,11 @@ package org.apache.airavata.gfac.core.authentication;/*
  *
  */
 
-/**
- * User: AmilaJ (amilaj@apache.org)
- * Date: 10/4/13
- * Time: 11:25 AM
- */
+package org.apache.airavata.gfac.core.authentication;
 
 /**
  * An empty interface that represents authentication data to the API.
  */
 public interface AuthenticationInfo {
+
 }

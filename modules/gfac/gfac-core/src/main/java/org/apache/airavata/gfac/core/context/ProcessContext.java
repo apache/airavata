@@ -31,6 +31,7 @@ import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.curator.framework.CuratorFramework;
 
 import java.util.List;
+import java.util.Map;
 
 public class ProcessContext {
 	// process model
@@ -46,6 +47,7 @@ public class ProcessContext {
 	private List<Task> taskChain;
 	private GatewayResourceProfile gatewayResourceProfile;
 	private RemoteCluster remoteCluster;
+	private Map<String, String> sshProperties;
 
 	public ProcessContext(String processId, String gatewayId, String tokenId) {
 		this.processId = processId;
@@ -137,5 +139,13 @@ public class ProcessContext {
 
 	public void setRemoteCluster(RemoteCluster remoteCluster) {
 		this.remoteCluster = remoteCluster;
+	}
+
+	public Map<String, String> getSshProperties() {
+		return sshProperties;
+	}
+
+	public void setSshProperties(Map<String, String> sshProperties) {
+		this.sshProperties = sshProperties;
 	}
 }

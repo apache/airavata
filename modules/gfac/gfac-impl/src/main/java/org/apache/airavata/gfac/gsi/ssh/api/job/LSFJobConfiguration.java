@@ -20,6 +20,7 @@
 */
 package org.apache.airavata.gfac.gsi.ssh.api.job;
 
+import org.apache.airavata.gfac.core.AbstractJobManagerConfiguration;
 import org.apache.airavata.gfac.core.JobManagerConfiguration;
 import org.apache.airavata.gfac.core.cluster.OutputParser;
 import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
