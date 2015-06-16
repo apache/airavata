@@ -20,7 +20,8 @@
 */
 package org.apache.airavata.gfac.core.monitor;
 
-import org.apache.airavata.model.experiment.JobState;
+
+import org.apache.airavata.model.status.JobState;
 
 public class JobStatusResult {
     private JobState state;
