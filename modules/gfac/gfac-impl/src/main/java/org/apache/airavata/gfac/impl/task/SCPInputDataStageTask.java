@@ -25,7 +25,6 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.context.TaskContext;
-import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.gfac.impl.SSHUtils;
 import org.apache.airavata.model.status.TaskState;
@@ -34,29 +33,10 @@ import org.apache.airavata.model.task.DataStagingTaskModel;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Map;
 
-public class SCPFileTransferTask implements Task {
+public class SCPInputDataStageTask extends AbstractSCPTask {
 
-	public static final int DEFAULT_SSH_PORT = 22;
-	private String password;
-	private String publicKeyPath;
-	private String passPhrase;
-	private String privateKeyPath;
-	private String userName;
-	private String hostName;
-	private String inputPath;
-
-
-	@Override
-	public void init(Map<String, String> properties) throws TaskException {
-		password = properties.get("password");
-		passPhrase = properties.get("passPhrase");
-		privateKeyPath = properties.get("privateKeyPath");
-		publicKeyPath = properties.get("publicKeyPath");
-		userName = properties.get("userName");
-		hostName = properties.get("hostName");
-		inputPath = properties.get("inputPath");
+	public SCPInputDataStageTask() {
 	}
 
 	@Override
