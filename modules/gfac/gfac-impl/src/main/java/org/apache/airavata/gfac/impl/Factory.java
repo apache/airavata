@@ -31,6 +31,7 @@ import org.apache.airavata.gfac.core.JobManagerConfiguration;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.cluster.ServerInfo;
 import org.apache.airavata.gfac.core.monitor.JobMonitor;
+import org.apache.airavata.gfac.core.scheduler.HostScheduler;
 import org.apache.airavata.gfac.impl.job.LSFJobConfiguration;
 import org.apache.airavata.gfac.impl.job.LSFOutputParser;
 import org.apache.airavata.gfac.impl.job.PBSJobConfiguration;
@@ -40,7 +41,6 @@ import org.apache.airavata.gfac.impl.job.SlurmOutputParser;
 import org.apache.airavata.gfac.impl.job.UGEJobConfiguration;
 import org.apache.airavata.gfac.impl.job.UGEOutputParser;
 import org.apache.airavata.gfac.monitor.email.EmailBasedMonitor;
-import org.apache.airavata.gfac.monitor.email.EmailMonitorFactory;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalog;
@@ -119,7 +119,7 @@ public abstract class Factory {
 			return null; // TODO write a job monitor for this.
 		} else {
 			if (emailBasedMonitor == null) {
-				synchronized (EmailMonitorFactory.class){
+				synchronized (EmailBasedMonitor.class){
 					if (emailBasedMonitor == null) {
 						emailBasedMonitor = new EmailBasedMonitor(resourceJobManagerType);
 						emailBasedMonitor.setDate(startMonitorDate);
@@ -146,4 +146,9 @@ public abstract class Factory {
 	public static JobManagerConfiguration getLSFJobManager(String installedPath) {
 		return new LSFJobConfiguration("LSFTemplate.xslt", ".lsf", installedPath, new LSFOutputParser());
 	}
+
+	public static HostScheduler getHostScheduler() {
+		return new DefaultHostScheduler();
+	}
+
 }

@@ -17,36 +17,21 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 package org.apache.airavata.gfac.impl;
 
-import org.apache.airavata.gfac.core.GFac;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.airavata.gfac.core.scheduler.HostScheduler;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 
-public class InputHandlerWorker implements Runnable {
-    private static Logger log = LoggerFactory.getLogger(InputHandlerWorker.class);
+import java.util.List;
 
-    String experimentId;
-    String taskId;
-    String gatewayId;
-    String tokenId;
-
-    GFac gfac;
-    public InputHandlerWorker(GFac gfac, String experimentId,String taskId,String gatewayId, String tokenId) {
-        this.gfac = gfac;
-        this.experimentId = experimentId;
-        this.taskId = taskId;
-        this.gatewayId = gatewayId;
-        this.tokenId = tokenId;
-    }
-
-    @Override
-    public void run() {
-        try {
-            gfac.submitJob(experimentId, taskId, gatewayId, tokenId);
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-    }
+public class DefaultHostScheduler implements HostScheduler {
+	@Override
+	public ComputeResourceDescription schedule(List<ComputeResourceDescription> registeredHosts) {
+		if (registeredHosts == null || registeredHosts.isEmpty()) {
+			return null;
+		} else {
+			return registeredHosts.get(0); // return first schedulear in the list.
+		}
+	}
 }
