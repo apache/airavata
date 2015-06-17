@@ -51,26 +51,20 @@ public class AiravataZKUtils implements Watcher {
     }
 
     public static String getExpZnodePath(String experimentId) throws ApplicationSettingsException {
-        return ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE) +
-                File.separator +
-                ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME) + File.separator
-                + experimentId;
+        return  "/experiments" + File.separator + ServerSettings.getGFacServerName() + File.separator + experimentId;
     }
 
     public static String getExpZnodeHandlerPath(String experimentId, String className) throws ApplicationSettingsException {
-        return ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_EXPERIMENT_NODE) +
-                File.separator +
-                ServerSettings.getSetting(Constants.ZOOKEEPER_GFAC_SERVER_NAME) + File.separator
-                + experimentId + File.separator + className;
+	    return "/experiments" + File.separator + ServerSettings.getGFacServerName() + File.separator + experimentId +
+			    File.separator + className;
     }
 
     public static String getZKhostPort() throws ApplicationSettingsException {
-        return ServerSettings.getSetting(Constants.ZOOKEEPER_SERVER_HOST,"localhost")
-                + ":" + ServerSettings.getSetting(Constants.ZOOKEEPER_SERVER_PORT,"2181");
+	    return ServerSettings.getZookeeperConnection();
     }
 
     public static int getZKTimeout()throws ApplicationSettingsException {
-        return Integer.parseInt(ServerSettings.getSetting(Constants.ZOOKEEPER_TIMEOUT,"30000"));
+        return ServerSettings.getZookeeperTimeout();
     }
 
     public static String getExpStatePath(String experimentId) throws ApplicationSettingsException {

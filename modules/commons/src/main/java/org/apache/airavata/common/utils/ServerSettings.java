@@ -288,6 +288,10 @@ public class ServerSettings extends ApplicationSettings {
         return getSetting(ZOOKEEPER_SERVER_CONNECTION, "localhost:2181");
     }
 
+	public static int getZookeeperTimeout() {
+		return Integer.valueOf(getSetting(ZOOKEEPER_TIMEOUT, "3000"));
+	}
+
     public static String getGFacServerName() throws ApplicationSettingsException {
         return getSetting(GFAC_SERVER_NAME);
     }
