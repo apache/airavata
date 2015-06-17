@@ -34,10 +34,13 @@ import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtoco
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.task.TaskModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -78,7 +81,8 @@ public class GFacEngineImpl implements GFacEngine {
 	@Override
 	public void createTaskChain(ProcessContext processContext) throws GFacException {
 		List<InputDataObjectType> processInputs = processContext.getProcessModel().getProcessInputs();
-		List<TaskModel> taskChain = new ArrayList<>();
+		sortByInputOrder(processInputs);
+		List<Task> taskChain = new ArrayList<>();
 		if (processInputs != null) {
 			for (InputDataObjectType processInput : processInputs) {
 				DataType type = processInput.getType();
@@ -90,8 +94,8 @@ public class GFacEngineImpl implements GFacEngine {
 						//
 						break;
 					case URI:
-						// add URI type Task
-
+						// TODO : provide data staging data model
+						taskChain.add(dataMovementTask.get(processContext.getDataMovementProtocol()));
 						break;
 					default:
 						// nothing to do
@@ -99,7 +103,25 @@ public class GFacEngineImpl implements GFacEngine {
 				}
 			}
 		}
+		taskChain.add(jobSubmissionTask.get(processContext.getJobSubmissionProtocol()));
+		List<OutputDataObjectType> processOutputs = processContext.getProcessModel().getProcessOutputs();
+		for (OutputDataObjectType processOutput : processOutputs) {
+			DataType type = processOutput.getType();
+			switch (type) {
+				case STDERR:
+					break;
+				case STDOUT:
+					break;
+				case URI:
+					// TODO : Provide data staging data model
+					taskChain.add(dataMovementTask.get(processContext.getDataMovementProtocol()));
+					break;
+			}
+		}
+
+		processContext.setTaskChain(taskChain);
 	}
+
 
 	@Override
 	public void executeProcess(ProcessContext processContext) throws GFacException {
@@ -124,5 +146,18 @@ public class GFacEngineImpl implements GFacEngine {
 	@Override
 	public void cancelProcess() throws GFacException {
 
+	}
+
+	/**
+	 * Sort input data type by input order.
+	 * @param processInputs
+	 */
+	private void sortByInputOrder(List<InputDataObjectType> processInputs) {
+		Collections.sort(processInputs, new Comparator<InputDataObjectType>() {
+			@Override
+			public int compare(InputDataObjectType inputDT_1, InputDataObjectType inputDT_2) {
+				return inputDT_1.getInputOrder() - inputDT_2.getInputOrder();
+			}
+		});
 	}
 }

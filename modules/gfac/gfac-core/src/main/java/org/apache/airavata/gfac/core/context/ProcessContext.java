@@ -27,6 +27,8 @@ import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.registry.cpi.AppCatalog;
@@ -58,6 +60,8 @@ public class ProcessContext {
 	private Map<String, String> sshProperties;
     private String stdoutLocation;
     private String stderrLocation;
+	private JobSubmissionProtocol jobSubmissionProtocol;
+	private DataMovementProtocol dataMovementProtocol;
 
 	public ProcessContext(String processId, String gatewayId, String tokenId) {
 		this.processId = processId;
@@ -214,4 +218,20 @@ public class ProcessContext {
     public void setInputDir(String inputDir) {
         this.inputDir = inputDir;
     }
+
+	public JobSubmissionProtocol getJobSubmissionProtocol() {
+		return jobSubmissionProtocol;
+	}
+
+	public void setJobSubmissionProtocol(JobSubmissionProtocol jobSubmissionProtocol) {
+		this.jobSubmissionProtocol = jobSubmissionProtocol;
+	}
+
+	public DataMovementProtocol getDataMovementProtocol() {
+		return dataMovementProtocol;
+	}
+
+	public void setDataMovementProtocol(DataMovementProtocol dataMovementProtocol) {
+		this.dataMovementProtocol = dataMovementProtocol;
+	}
 }

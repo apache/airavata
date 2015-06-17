@@ -192,12 +192,6 @@ public class GfacServerHandler implements GfacService.Iface {
     }
 
 
-    private GFac getGfac() throws TException {
-        GFac gFac = BetterGfacImpl.getInstance();
-        gFac.init(experimentCatalog, appCatalog, curatorClient, localEventPublisher);
-        return gFac;
-    }
-
     public static void startStatusUpdators(ExperimentCatalog experimentCatalog, CuratorFramework curatorClient, LocalEventPublisher publisher,
 
                                            RabbitMQTaskLaunchConsumer rabbitMQTaskLaunchConsumer) {
