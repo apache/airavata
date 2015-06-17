@@ -100,6 +100,7 @@ struct ExperimentSummaryModel {
     5: required string name,
     6: optional string description,
     7: optional string applicationId,
-    8: optional status_models.ExperimentStatus experimentStatus,
+    8: optional string experimentStatus,
+    9: optional i64 statusUpdateTime
 }
 
