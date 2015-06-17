@@ -22,7 +22,7 @@
 package org.apache.airavata.xbaya.ui.monitor;
 
 import org.apache.airavata.model.messaging.event.MessageType;
-import org.apache.airavata.model.workspace.experiment.WorkflowNodeState;
+import org.apache.airavata.model.experiment.WorkflowNodeState;
 import org.apache.airavata.workflow.model.graph.EPRPort;
 import org.apache.airavata.workflow.model.graph.Edge;
 import org.apache.airavata.workflow.model.graph.Graph;

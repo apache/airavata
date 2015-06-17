@@ -38,10 +38,10 @@
 //import org.apache.airavata.gfac.core.provider.GFacProviderException;
 //import org.apache.airavata.gfac.local.handler.LocalDirectorySetupHandler;
 //import org.apache.airavata.gfac.local.provider.impl.LocalProvider;
-//import org.apache.airavata.model.workspace.experiment.ExecutionUnit;
-//import org.apache.airavata.model.workspace.experiment.Experiment;
-//import org.apache.airavata.model.workspace.experiment.TaskDetails;
-//import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
+//import org.apache.airavata.model.experiment.ExecutionUnit;
+//import org.apache.airavata.model.experiment.Experiment;
+//import org.apache.airavata.model.experiment.TaskDetails;
+//import org.apache.airavata.model.experiment.WorkflowNodeDetails;
 //import org.apache.airavata.registry.core.experiment.registry.jpa.impl.LoggingRegistryImpl;
 //import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 //import org.apache.airavata.schemas.gfac.InputParameterType;

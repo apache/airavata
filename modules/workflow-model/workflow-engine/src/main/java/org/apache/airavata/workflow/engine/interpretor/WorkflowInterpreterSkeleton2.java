@@ -45,7 +45,7 @@ package org.apache.airavata.workflow.engine.interpretor;
 //import org.apache.airavata.common.exception.ApplicationSettingsException;
 //import org.apache.airavata.common.utils.ServerSettings;
 //import org.apache.airavata.common.workflow.execution.context.WorkflowContextHeaderBuilder;
-//import org.apache.airavata.model.workspace.experiment.Experiment;
+//import org.apache.airavata.model.experiment.ExperimentModel;
 //import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 //import org.apache.airavata.schemas.wec.ContextHeaderDocument;
 //import org.apache.airavata.workflow.model.component.ComponentException;

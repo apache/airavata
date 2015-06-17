@@ -28,19 +28,34 @@ package org.apache.airavata.gfac.core.authentication;/*
 /**
  * Abstracts out common methods for SSH key authentication.
  */
-public interface SSHKeyAuthentication extends AuthenticationInfo {
+public class SSHKeyAuthentication implements AuthenticationInfo {
 
-    /**
-     * This is needed only if private key and public keys are encrypted.
-     * If they are not encrypted we can just return null.
-     * @return User should return pass phrase if keys are encrypted. If not null.
-     */
-    String getPassPhrase();
+	private String userName;
+	private String privateKeyFilePath;
+	private String publicKeyFilePath;
+	private String passphrase;
 
-    /**
-     * Callback with the banner message. API user can get hold of banner message
-     * by implementing this method.
-     * @param message The banner message.
-     */
-    void bannerMessage(String message);
+	public SSHKeyAuthentication(String userName, String privateKeyFilePath, String publicKeyFilePath, String
+			passphrase) {
+		this.userName = userName;
+		this.privateKeyFilePath = privateKeyFilePath;
+		this.publicKeyFilePath = publicKeyFilePath;
+		this.passphrase = passphrase;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public String getPrivateKeyFilePath() {
+		return privateKeyFilePath;
+	}
+
+	public String getPublicKeyFilePath() {
+		return publicKeyFilePath;
+	}
+
+	public String getPassphrase() {
+		return passphrase;
+	}
 }

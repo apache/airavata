@@ -23,7 +23,6 @@ package org.apache.airavata.registry.core.app.catalog.impl;
 
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
-import org.apache.airavata.model.appcatalog.gatewayprofile.gatewayResourceProfileModelConstants;
 import org.apache.airavata.registry.core.app.catalog.resources.*;
 import org.apache.airavata.registry.core.app.catalog.util.AppCatalogThriftConversion;
 import org.apache.airavata.registry.cpi.AppCatalogException;
@@ -43,7 +42,7 @@ public class GwyResourceProfileImpl implements GwyResourceProfile {
     public String addGatewayResourceProfile(org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile gatewayProfile) throws AppCatalogException {
         try {
             GatewayProfileResource profileResource = new GatewayProfileResource();
-            if (!gatewayProfile.getGatewayID().equals("") && !gatewayProfile.getGatewayID().equals(gatewayResourceProfileModelConstants.DEFAULT_ID)){
+            if (!gatewayProfile.getGatewayID().equals("")){
                 profileResource.setGatewayID(gatewayProfile.getGatewayID());
             }
 //            profileResource.setGatewayID(gatewayProfile.getGatewayID());

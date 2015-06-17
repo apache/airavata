@@ -21,7 +21,7 @@
 package org.apache.airavata.gfac.ssh.util;
 
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
-import org.apache.airavata.gfac.gsi.ssh.impl.HPCRemoteCluster;
+import org.apache.airavata.gfac.impl.HPCRemoteCluster;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
@@ -51,10 +51,10 @@ import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
-import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
-import org.apache.airavata.model.workspace.experiment.CorrectiveAction;
-import org.apache.airavata.model.workspace.experiment.ErrorCategory;
-import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.airavata.model.experiment.ComputationalResourceScheduling;
+import org.apache.airavata.model.experiment.CorrectiveAction;
+import org.apache.airavata.model.experiment.ErrorCategory;
+import org.apache.airavata.model.experiment.TaskDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

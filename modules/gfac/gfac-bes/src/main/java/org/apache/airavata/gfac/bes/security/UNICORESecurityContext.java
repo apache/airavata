@@ -34,7 +34,7 @@ import org.apache.airavata.gfac.core.RequestData;
 import org.apache.airavata.gfac.bes.utils.BESConstants;
 import org.apache.airavata.gfac.bes.utils.SecurityUtils;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
-import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
+import org.apache.airavata.model.experiment.UserConfigurationData;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
