@@ -28,13 +28,11 @@ import org.apache.airavata.common.utils.LocalEventPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
-import org.apache.airavata.gfac.core.GFac;
 import org.apache.airavata.gfac.core.GFacConstants;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.cpi.GfacService;
 import org.apache.airavata.gfac.cpi.gfac_cpi_serviceConstants;
-import org.apache.airavata.gfac.impl.BetterGfacImpl;
 import org.apache.airavata.gfac.impl.Factory;
 import org.apache.airavata.gfac.impl.GFacWorker;
 import org.apache.airavata.messaging.core.MessageContext;
@@ -119,15 +117,14 @@ public class GfacServerHandler implements GfacService.Iface {
         ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), GFacConstants.ZOOKEEPER_EXPERIMENT_NODE);
         // create EPHEMERAL server name node
         String gfacName = ServerSettings.getGFacServerName();
-        if (curatorClient.checkExists().forPath(GFacUtils.getZKGfacServersParentPath() + (gfacName.startsWith("/") ?
-                gfacName : "/" + gfacName)) == null) {
-            curatorClient.create().withMode(CreateMode.EPHEMERAL).withACL(ZooDefs.Ids.OPEN_ACL_UNSAFE)
-                    .forPath(GFacUtils.getZKGfacServersParentPath() + (gfacName.startsWith("/") ? gfacName : "/" +
-                            gfacName));
+        if (curatorClient.checkExists().forPath(ZKPaths.makePath(GFacUtils.getZKGfacServersParentPath() ,gfacName)) == null) {
+	        curatorClient.create().withMode(CreateMode.EPHEMERAL).withACL(ZooDefs.Ids.OPEN_ACL_UNSAFE)
+			        .forPath(ZKPaths.makePath(GFacUtils.getZKGfacServersParentPath(), gfacName));
 
         }
-        curatorClient.setData().withVersion(-1).forPath(GFacUtils.getZKGfacServersParentPath() +
-                (gfacName.startsWith("/") ? gfacName : "/" + gfacName), new String(airavataServerHostPort).getBytes());
+	    curatorClient.setData().withVersion(-1).forPath(ZKPaths.makePath(GFacUtils.getZKGfacServersParentPath(),
+			    gfacName), airavataServerHostPort.getBytes());
+
     }
 
     public String getGFACServiceVersion() throws TException {
@@ -159,16 +156,18 @@ public class GfacServerHandler implements GfacService.Iface {
                 processId);
 
         try {
-	        executorService.execute(new GFacWorker(experimentId,processId, gatewayId, tokenId));
+	        executorService.execute(new GFacWorker(experimentId, processId, gatewayId, tokenId));
         } catch (GFacException e) {
             log.error("Failed to submit process", e);
             return false;
+        } catch (Exception e) {
+	        log.error("Error creating zookeeper nodes");
         }
 	    return true;
     }
 
     public boolean cancelJob(String experimentId, String taskId, String gatewayId, String tokenId) throws TException {
-        log.info(experimentId, "GFac Received cancel job request for Experiment: {} TaskId: {} ", experimentId, taskId);
+    /*    log.info(experimentId, "GFac Received cancel job request for Experiment: {} TaskId: {} ", experimentId, taskId);
         try {
             if (BetterGfacImpl.getInstance().cancel(experimentId, taskId, gatewayId, tokenId)) {
                 log.debug(experimentId, "Successfully cancelled job, experiment {} , task {}", experimentId, taskId);
@@ -180,22 +179,17 @@ public class GfacServerHandler implements GfacService.Iface {
         } catch (Exception e) {
             log.error(experimentId, "Error cancelling the experiment {}.", experimentId);
             throw new TException("Error cancelling the experiment : " + e.getMessage(), e);
-        }
+        }*/
+	    return false;
     }
 
-    public ExperimentCatalog getExperimentCatalog() {
-        return experimentCatalog;
-    }
 
-    public void setExperimentCatalog(ExperimentCatalog experimentCatalog) {
-        this.experimentCatalog = experimentCatalog;
-    }
 
 
     public static void startStatusUpdators(ExperimentCatalog experimentCatalog, CuratorFramework curatorClient, LocalEventPublisher publisher,
 
                                            RabbitMQTaskLaunchConsumer rabbitMQTaskLaunchConsumer) {
-        try {
+       /* try {
             String[] listenerClassList = ServerSettings.getActivityListeners();
             Publisher rabbitMQPublisher = PublisherFactory.createActivityPublisher();
             for (String listenerClass : listenerClassList) {
@@ -208,42 +202,16 @@ public class GfacServerHandler implements GfacService.Iface {
             }
         } catch (Exception e) {
             log.error("Error loading the listener classes configured in airavata-server.properties", e);
-        }
-    }
-    private static  class TestHandler implements MessageHandler{
-        @Override
-        public Map<String, Object> getProperties() {
-            Map<String, Object> props = new HashMap<String, Object>();
-            ArrayList<String> keys = new ArrayList<String>();
-            keys.add(ServerSettings.getLaunchQueueName());
-            keys.add(ServerSettings.getCancelQueueName());
-            props.put(MessagingConstants.RABBIT_ROUTING_KEY, keys);
-            props.put(MessagingConstants.RABBIT_QUEUE, ServerSettings.getLaunchQueueName());
-            return props;
-        }
-
-        @Override
-        public void onMessage(MessageContext message) {
-            TaskSubmitEvent event = new TaskSubmitEvent();
-            TBase messageEvent = message.getEvent();
-            byte[] bytes = new byte[0];
-            try {
-                bytes = ThriftUtils.serializeThriftObject(messageEvent);
-                ThriftUtils.createThriftFromBytes(bytes, event);
-                System.out.println(event.getExperimentId());
-            } catch (TException e) {
-                log.error(e.getMessage(), e);
-            }
-        }
+        }*/
     }
 
     private class TaskLaunchMessageHandler implements MessageHandler {
         private String experimentNode;
-        private String nodeName;
+        private String gfacServerName;
 
         public TaskLaunchMessageHandler() throws ApplicationSettingsException {
             experimentNode = GFacConstants.ZOOKEEPER_EXPERIMENT_NODE;
-            nodeName = ServerSettings.getGFacServerName();
+            gfacServerName = ServerSettings.getGFacServerName();
         }
 
         public Map<String, Object> getProperties() {
@@ -271,9 +239,8 @@ public class GfacServerHandler implements GfacService.Iface {
                     status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
                     experimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT_STATUS, status, event.getExperimentId());
                     try {
-                        GFacUtils.createExperimentEntryForPassive(event.getExperimentId(), event.getTaskId(), curatorClient,
-                                experimentNode, nodeName, event.getTokenId(), message.getDeliveryTag());
-                        AiravataZKUtils.getExpStatePath(event.getExperimentId());
+	                    GFacUtils.createExperimentNode(curatorClient, gfacServerName, event.getExperimentId(), message.getDeliveryTag(),
+			                    event.getTokenId());
                         submitJob(event.getExperimentId(), event.getTaskId(), event.getGatewayId(), event.getTokenId());
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
@@ -285,38 +252,27 @@ public class GfacServerHandler implements GfacService.Iface {
                     log.error("Error while updating experiment status", e);
                 }
             } else if (message.getType().equals(MessageType.TERMINATETASK)) {
-                boolean cancelSuccess = false;
                 TaskTerminateEvent event = new TaskTerminateEvent();
                 TBase messageEvent = message.getEvent();
                 try {
                     byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
                     ThriftUtils.createThriftFromBytes(bytes, event);
-                    boolean saveDeliveryTagSuccess = GFacUtils.setExperimentCancel(event.getExperimentId(), curatorClient, message.getDeliveryTag());
-                    if (saveDeliveryTagSuccess) {
-                        cancelSuccess = cancelJob(event.getExperimentId(), event.getTaskId(), event.getGatewayId(), event.getTokenId());
-                        System.out.println(" Message Received with message id '" + message.getMessageId()
-                                + "' and with message type '" + message.getType());
-                    } else {
-                        throw new GFacException("Terminate Task fail to save delivery tag : " + String.valueOf(message.getDeliveryTag()) + " \n" +
-                                "This happens when another cancel operation is being processed or experiment is in one of final states, complete|failed|cancelled.");
-                    }
+	                boolean success = GFacUtils.setExperimentCancelRequest(event.getExperimentId(), curatorClient,
+			                message.getDeliveryTag());
+	                if (success) {
+		                log.info("expId:{} - Experiment cancel request save successfully", event.getExperimentId());
+	                }
                 } catch (Exception e) {
-                    log.error(e.getMessage(), e);
+	                log.error("expId:" + event.getExperimentId() + " - Experiment cancel reqeust failed", e);
                 }finally {
-                    if (cancelSuccess) {
-                        // if cancel success , AiravataExperimentStatusUpdator will send an ack to this message.
-                    } else {
-                        try {
-                            if (GFacUtils.ackCancelRequest(event.getExperimentId(), curatorClient)) {
-                                if (!rabbitMQTaskLaunchConsumer.isOpen()) {
-                                    rabbitMQTaskLaunchConsumer.reconnect();
-                                }
-                                rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
-                            }
-                        } catch (Exception e) {
-                            log.error("Error while ack to cancel request, experimentId: " + event.getExperimentId());
-                        }
-                    }
+	                try {
+		                if (!rabbitMQTaskLaunchConsumer.isOpen()) {
+			                rabbitMQTaskLaunchConsumer.reconnect();
+		                }
+		                rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
+	                } catch (AiravataException e) {
+		                log.error("expId: " + event.getExperimentId() + " - Failed to send acknowledgement back to cancel request.", e);
+	                }
                 }
             }
         }
