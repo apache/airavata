@@ -28,6 +28,8 @@ import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.ProcessContext;
+import org.apache.airavata.gfac.core.watcher.CancelRequestWatcher;
+import org.apache.airavata.gfac.core.watcher.RedeliveryRequestWatcher;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
 import org.apache.airavata.model.appcatalog.computeresource.*;
@@ -497,26 +499,13 @@ public class GFacUtils {
         return null;
     }
 
-    public static boolean setExperimentCancel(String experimentId, CuratorFramework curatorClient, long deliveryTag) throws Exception {
-        String experimentEntry = GFacUtils.findExperimentEntry(experimentId, curatorClient);
-        if (experimentEntry == null) {
-            // This should be handle in validation request. Gfac shouldn't get any invalidate experiment.
-            log.error("Cannot find the experiment Entry, so cancel operation cannot be performed. " +
-                    "This happen when experiment completed and already removed from the zookeeper");
-            return false;
-        } else {
-            // check cancel operation is being processed for the same experiment.
-            Stat cancelState = curatorClient.checkExists().forPath(experimentEntry + AiravataZKUtils.CANCEL_DELIVERY_TAG_POSTFIX);
-            if (cancelState != null) {
-                // another cancel operation is being processed. only one cancel operation can exist for a given experiment.
-                return false;
-            }
-
-            curatorClient.create().withMode(CreateMode.PERSISTENT).withACL(OPEN_ACL_UNSAFE)
-                    .forPath(experimentEntry + AiravataZKUtils.CANCEL_DELIVERY_TAG_POSTFIX, longToBytes(deliveryTag)); // save cancel delivery tag to be acknowledge at the end.
-            return true;
-        }
-
+    public static boolean setExperimentCancelRequest(String experimentId, CuratorFramework curatorClient, long
+		    deliveryTag) throws Exception {
+	    String experimentNode = ZKPaths.makePath(GFacConstants.ZOOKEEPER_EXPERIMENT_NODE, experimentId);
+	    String cancelListenerNodePath = ZKPaths.makePath(experimentNode, GFacConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
+	    curatorClient.setData().withVersion(-1).forPath(cancelListenerNodePath, GFacConstants.ZOOKEEPER_CANCEL_REQEUST
+			    .getBytes());
+	    return true;
     }
 
     public static boolean isCancelled(String experimentID, CuratorFramework curatorClient) throws Exception {
@@ -712,7 +701,7 @@ public class GFacUtils {
 //    }
 
     public static String getZKGfacServersParentPath() {
-        return GFacConstants.ZOOKEEPER_SERVERS_NODE + GFacConstants.ZOOKEEPER_GFAC_SERVER_NODE;
+        return ZKPaths.makePath(GFacConstants.ZOOKEEPER_SERVERS_NODE, GFacConstants.ZOOKEEPER_GFAC_SERVER_NODE);
     }
 
     public static JobDescriptor createJobDescriptor(ProcessContext processContext) throws GFacException, AppCatalogException, ApplicationSettingsException {
@@ -1033,4 +1022,32 @@ public class GFacUtils {
             throw new GFacException("Error occurred while creating the temp job script file", e);
         }
     }
+
+	public static String getExperimentNodePath(String experimentId) {
+		return GFacConstants.ZOOKEEPER_EXPERIMENT_NODE + File.separator + experimentId;
+	}
+
+	public static void createExperimentNode(CuratorFramework curatorClient, String gfacServerName, String
+			experimentId, long deliveryTag, String token) throws Exception {
+		// create /experiments/experimentId node and set data - serverName, add redelivery listener
+		String experimentPath = ZKPaths.makePath(GFacConstants.ZOOKEEPER_EXPERIMENT_NODE, experimentId);
+		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentPath);
+		curatorClient.setData().withVersion(-1).forPath(experimentPath, gfacServerName.getBytes());
+		curatorClient.getData().usingWatcher(new RedeliveryRequestWatcher()).forPath(experimentPath);
+
+		// create /experiments/experimentId/deliveryTag node and set data - deliveryTag
+		String deliveryTagPath = ZKPaths.makePath(experimentPath, GFacConstants.ZOOKEEPER_DELIVERYTAG_NODE);
+		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), deliveryTagPath);
+		curatorClient.setData().withVersion(-1).forPath(deliveryTagPath, GFacUtils.longToBytes(deliveryTag));
+
+		// create /experiments/experimentId/token node and set data - token
+		String tokenNodePath = ZKPaths.makePath(experimentId, GFacConstants.ZOOKEEPER_TOKEN_NODE);
+		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), tokenNodePath);
+		curatorClient.setData().withVersion(-1).forPath(tokenNodePath, token.getBytes());
+
+		// create /experiments/experimentId/cancelListener node and set watcher for data changes
+		String cancelListenerNode = ZKPaths.makePath(experimentPath, GFacConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
+		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), cancelListenerNode);
+		curatorClient.getData().usingWatcher(new CancelRequestWatcher()).forPath(cancelListenerNode);
+	}
 }
