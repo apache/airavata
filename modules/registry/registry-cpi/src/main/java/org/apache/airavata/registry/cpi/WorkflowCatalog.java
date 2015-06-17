@@ -21,7 +21,8 @@
 
 package org.apache.airavata.registry.cpi;
 
-import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+
+import org.apache.airavata.model.application.io.OutputDataObjectType;
 
 import java.util.List;
 

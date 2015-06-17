@@ -24,7 +24,7 @@ import static org.junit.Assert.*;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import org.apache.airavata.model.workspace.experiment.ExecutionUnit;
+import org.apache.airavata.model.experiment.ExecutionUnit;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
 import org.apache.airavata.registry.core.experiment.catalog.resources.ExperimentResource;
 import org.apache.airavata.registry.core.experiment.catalog.resources.TaskDetailResource;

@@ -28,7 +28,7 @@ import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.messaging.core.MessagingConstants;
 import org.apache.airavata.messaging.core.impl.RabbitMQStatusConsumer;
 import org.apache.airavata.model.messaging.event.MessageType;
-import org.apache.airavata.model.workspace.experiment.ExperimentState;
+import org.apache.airavata.model.experiment.ExperimentState;
 import org.apache.airavata.workflow.model.exceptions.WorkflowException;
 import org.apache.airavata.xbaya.messaging.event.Event;
 import org.apache.airavata.xbaya.messaging.event.EventProducer;

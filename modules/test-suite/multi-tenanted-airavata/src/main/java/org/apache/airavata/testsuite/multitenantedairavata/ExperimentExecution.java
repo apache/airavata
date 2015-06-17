@@ -37,7 +37,7 @@ import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.workspace.experiment.*;
+import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.testsuite.multitenantedairavata.utils.FrameworkUtils;
 import org.apache.airavata.testsuite.multitenantedairavata.utils.PropertyFileType;
 import org.apache.airavata.testsuite.multitenantedairavata.utils.PropertyReader;

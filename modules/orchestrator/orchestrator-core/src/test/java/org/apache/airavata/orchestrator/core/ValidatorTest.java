@@ -23,7 +23,7 @@
 //import org.apache.airavata.common.utils.AiravataUtils;
 //import org.apache.airavata.model.error.LaunchValidationException;
 //import org.apache.airavata.model.util.ExperimentModelUtil;
-//import org.apache.airavata.model.workspace.experiment.*;
+//import org.apache.airavata.model.experiment.*;
 //import org.apache.airavata.orchestrator.core.utils.OrchestratorConstants;
 //import org.apache.airavata.orchestrator.cpi.Orchestrator;
 //import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;

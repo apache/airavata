@@ -22,22 +22,23 @@
 package org.apache.airavata.gfac.core.authentication;
 
 /**
- * User: AmilaJ (amilaj@apache.org)
- * Date: 10/4/13
- * Time: 11:22 AM
- */
-
-/**
  * Password authentication for vanilla SSH.
  */
-public interface SSHPasswordAuthentication extends AuthenticationInfo {
+public class SSHPasswordAuthentication implements AuthenticationInfo {
 
-    /**
-     * Gets the password for given host name and given user name.
-     * @param userName The connecting user name name.
-     * @param hostName The connecting host.
-     * @return Password for the given user.
-     */
-    String getPassword(String userName, String hostName);
+	private String userName;
+	private String password;
 
+	public SSHPasswordAuthentication(String userName, String password) {
+		this.userName = userName;
+		this.password = password;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public String getPassword() {
+		return password;
+	}
 }

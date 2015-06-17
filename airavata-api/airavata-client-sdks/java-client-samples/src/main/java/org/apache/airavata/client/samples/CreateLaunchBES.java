@@ -9,27 +9,26 @@ import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.client.tools.RegisterSampleApplications;
 import org.apache.airavata.client.tools.RegisterSampleApplicationsUtils;
-import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
-import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.SecurityProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.UnicoreJobSubmission;
+import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataErrorType;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.ExperimentNotFoundException;
 import org.apache.airavata.model.error.InvalidRequestException;
+import org.apache.airavata.model.experiment.ExperimentSummaryModel;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
+import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.workspace.experiment.AdvancedOutputDataHandling;
-import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
-import org.apache.airavata.model.workspace.experiment.ErrorDetails;
-import org.apache.airavata.model.workspace.experiment.Experiment;
-import org.apache.airavata.model.workspace.experiment.ExperimentSummary;
-import org.apache.airavata.model.workspace.experiment.UserConfigurationData;
+import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -146,8 +145,8 @@ public class CreateLaunchBES {
 
             Thread.sleep(10000);
             for (String exId : experimentIds) {
-                Experiment experiment = airavataClient.getExperiment(exId);
-                System.out.println(experiment.getExperimentID() + " " + experiment.getExperimentStatus().getExperimentState().name());
+                ExperimentModel experiment = airavataClient.getExperiment(exId);
+                System.out.println(experiment.getExperimentId() + " " + experiment.getExperimentStatus().getState().name());
             }
 
 
@@ -235,7 +234,7 @@ public class CreateLaunchBES {
             }
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
 
-            Experiment simpleExperiment =
+            ExperimentModel simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment("default", "admin", "echoExperiment", "SimpleEcho2", echoAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
@@ -245,20 +244,14 @@ public class CreateLaunchBES {
                 for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
                     if (resourceName.equals(unicoreHostName)) {
-                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 1, 1, 1, "normal", 30, 0, 1048576, "sds128");
-                        UserConfigurationData userConfigurationData = new UserConfigurationData();
+                        ComputationalResourceSchedulingModel scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 1, 1, 1, "normal", 30, 1048576);
+                        UserConfigurationDataModel userConfigurationData = new UserConfigurationDataModel();
                         userConfigurationData.setAiravataAutoSchedule(false);
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         
                         userConfigurationData.setGenerateCert(false);
                         userConfigurationData.setUserDN("");
-
-                        // set output directory 
-                        AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();
-                        dataHandling.setOutputDataDir("/tmp/airavata/output/" + UUID.randomUUID().toString() + "/");
-                        userConfigurationData.setAdvanceOutputDataHandling(dataHandling);
-                        simpleExperiment.setUserConfigurationData(userConfigurationData);
 
                         return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
                     }
@@ -307,7 +300,7 @@ public class CreateLaunchBES {
             	}
 			}
             
-            Experiment simpleExperiment =
+            ExperimentModel simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment("default", "admin", "mpiExperiment", "HelloMPI", mpiAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
@@ -317,8 +310,8 @@ public class CreateLaunchBES {
                 for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
                     if (resourceName.equals(unicoreHostName)) {
-                        ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 0, 4, 0, null, 10, 0, 0, null);
-                        UserConfigurationData userConfigurationData = new UserConfigurationData();
+                        ComputationalResourceSchedulingModel scheduling = ExperimentModelUtil.createComputationResourceScheduling(id, 0, 4, 0, null, 10, 0);
+                        UserConfigurationDataModel userConfigurationData = new UserConfigurationDataModel();
                         userConfigurationData.setAiravataAutoSchedule(false);
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
@@ -326,10 +319,6 @@ public class CreateLaunchBES {
                         userConfigurationData.setGenerateCert(true);
                         userConfigurationData.setUserDN("CN=m.memon, O=Ultrascan Gateway, C=DE");
 
-                        // set output directory 
-                        AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();
-                        dataHandling.setOutputDataDir("/tmp/airavata/output/" + UUID.randomUUID().toString() + "/");
-                        userConfigurationData.setAdvanceOutputDataHandling(dataHandling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
 
                         return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
@@ -353,7 +342,7 @@ public class CreateLaunchBES {
     }
     
     
-    public static List<Experiment> getExperimentsForUser(Airavata.Client client, String user) {
+    public static List<ExperimentModel> getExperimentsForUser(Airavata.Client client, String user) {
         try {
             return client.getAllUserExperiments(DEFAULT_GATEWAY, user);
         } catch (AiravataSystemException e) {
@@ -414,7 +403,7 @@ public class CreateLaunchBES {
     }
 
 
-    public static List<ExperimentSummary> searchExperimentsByName(Airavata.Client client, String user, String expName) {
+    public static List<ExperimentSummaryModel> searchExperimentsByName(Airavata.Client client, String user, String expName) {
         try {
             return client.searchExperimentsByName(DEFAULT_GATEWAY, user, expName);
         } catch (AiravataSystemException e) {
@@ -429,7 +418,7 @@ public class CreateLaunchBES {
         return null;
     }
 
-    public static List<ExperimentSummary> searchExperimentsByDesc(Airavata.Client client, String user, String desc) {
+    public static List<ExperimentSummaryModel> searchExperimentsByDesc(Airavata.Client client, String user, String desc) {
         try {
             return client.searchExperimentsByDesc(DEFAULT_GATEWAY, user, desc);
         } catch (AiravataSystemException e) {
@@ -444,7 +433,7 @@ public class CreateLaunchBES {
         return null;
     }
 
-    public static List<ExperimentSummary> searchExperimentsByApplication(Airavata.Client client, String user, String app) {
+    public static List<ExperimentSummaryModel> searchExperimentsByApplication(Airavata.Client client, String user, String app) {
         try {
             return client.searchExperimentsByApplication(DEFAULT_GATEWAY, user, app);
         } catch (AiravataSystemException e) {
@@ -461,10 +450,10 @@ public class CreateLaunchBES {
 
     public static void getExperiment(Airavata.Client client, String expId) throws Exception {
         try {
-            Experiment experiment = client.getExperiment(expId);
-            List<ErrorDetails> errors = experiment.getErrors();
+            ExperimentModel experiment = client.getExperiment(expId);
+            List<ErrorModel> errors = experiment.getErrors();
             if (errors != null && !errors.isEmpty()) {
-                for (ErrorDetails error : errors) {
+                for (ErrorModel error : errors) {
                     System.out.println("ERROR MESSAGE : " + error.getActualErrorMessage());
                 }
             }

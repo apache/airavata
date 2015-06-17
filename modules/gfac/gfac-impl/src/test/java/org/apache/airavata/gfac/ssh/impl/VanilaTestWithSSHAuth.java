@@ -25,7 +25,7 @@ import org.apache.airavata.gfac.core.JobDescriptor;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.cluster.ServerInfo;
-import org.apache.airavata.gfac.gsi.ssh.impl.HPCRemoteCluster;
+import org.apache.airavata.gfac.impl.HPCRemoteCluster;
 import org.apache.airavata.gfac.gsi.ssh.impl.authentication.DefaultPasswordAuthenticationInfo;
 import org.apache.airavata.gfac.gsi.ssh.impl.authentication.DefaultPublicKeyFileAuthentication;
 import org.apache.airavata.gfac.gsi.ssh.util.CommonUtils;

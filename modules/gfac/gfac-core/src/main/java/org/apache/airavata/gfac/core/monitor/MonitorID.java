@@ -20,11 +20,11 @@
 */
 package org.apache.airavata.gfac.core.monitor;
 
-import org.apache.airavata.common.logger.AiravataLogger;
-import org.apache.airavata.common.logger.AiravataLoggerFactory;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.model.status.JobState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -35,7 +35,7 @@ This is the object which contains the data to identify a particular
 Job to start the monitoring
 */
 public class MonitorID {
-    private final static AiravataLogger logger = AiravataLoggerFactory.getLogger(MonitorID.class);
+    private final static Logger logger = LoggerFactory.getLogger(MonitorID.class);
 
     private String userName;
 
@@ -87,7 +87,7 @@ public class MonitorID {
     }
 
     public MonitorID(JobExecutionContext jobExecutionContext) {
-        this.jobExecutionContext = jobExecutionContext;
+/*        this.jobExecutionContext = jobExecutionContext;
         this.computeResourceDescription = jobExecutionContext.getApplicationContext().getComputeResourceDescription();
         userName = jobExecutionContext.getExperiment().getUserName();
         taskID = jobExecutionContext.getTaskData().getTaskID();
@@ -99,7 +99,7 @@ public class MonitorID {
         }catch(NullPointerException e){
             logger.error("There is not job created at this point");
             // this is not a big deal we create MonitorId before having a jobId or job Name
-        }
+        }*/
     }
 
     public ComputeResourceDescription getComputeResourceDescription() {
@@ -192,11 +192,11 @@ public class MonitorID {
         // during that case job state comes as unknown.so we handle it here.
         if (this.state != null && status.equals(JobState.UNKNOWN)) {
             this.failedCount++;
-            logger.infoId(this.getJobID(), "{} status came for job {}, Increasing the failed count to: {}.",
+            logger.info(this.getJobID(), "{} status came for job {}, Increasing the failed count to: {}.",
                     status.toString(), this.jobID, this.failedCount);
         }else {
             // normal scenario
-            logger.infoId(this.getJobID(), "Valid status {} came for job {}, resetting fail count to 0", status.toString(), this.jobID);
+            logger.info(this.getJobID(), "Valid status {} came for job {}, resetting fail count to 0", status.toString(), this.jobID);
             setFailedCount(0);
             this.state = status;
         }

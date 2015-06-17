@@ -21,8 +21,8 @@
 
 package org.apache.airavata.workflow.core;
 
-import org.apache.airavata.model.workspace.experiment.TaskDetails;
-import org.apache.airavata.model.workspace.experiment.WorkflowNodeDetails;
+import org.apache.airavata.model.experiment.TaskDetails;
+import org.apache.airavata.model.experiment.WorkflowNodeDetails;
 import org.apache.airavata.workflow.core.dag.nodes.WorkflowNode;
 
 public class ProcessContext {

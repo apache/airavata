@@ -22,15 +22,15 @@
 package org.apache.airavata.api.server.util;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.logger.AiravataLogger;
-import org.apache.airavata.common.logger.AiravataLoggerFactory;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class AiravataServerThreadPoolExecutor {
-    private final static AiravataLogger logger = AiravataLoggerFactory.getLogger(AiravataServerThreadPoolExecutor.class);
+    private final static Logger logger = LoggerFactory.getLogger(AiravataServerThreadPoolExecutor.class);
     public static final String AIRAVATA_SERVER_THREAD_POOL_SIZE = "airavata.server.thread.pool.size";
 
     private static ExecutorService threadPool;

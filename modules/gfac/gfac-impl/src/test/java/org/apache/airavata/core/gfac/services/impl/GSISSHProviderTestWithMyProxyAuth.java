@@ -48,7 +48,7 @@
 //import org.apache.airavata.gfac.ssh.impl.authentication.MyProxyAuthenticationInfo;
 //import org.apache.airavata.gfac.ssh.util.CommonUtils;
 //import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
-//import org.apache.airavata.model.workspace.experiment.TaskDetails;
+//import org.apache.airavata.model.experiment.TaskDetails;
 //import org.apache.airavata.registry.core.experiment.registry.jpa.impl.RegistryFactory;
 //import org.apache.airavata.schemas.gfac.ApplicationDeploymentDescriptionType;
 //import org.apache.airavata.schemas.gfac.GsisshHostType;
