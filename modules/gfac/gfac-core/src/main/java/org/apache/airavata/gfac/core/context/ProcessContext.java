@@ -30,6 +30,7 @@ import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescr
 import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
+import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
@@ -62,6 +63,7 @@ public class ProcessContext {
     private String stderrLocation;
 	private JobSubmissionProtocol jobSubmissionProtocol;
 	private DataMovementProtocol dataMovementProtocol;
+    private JobModel jobModel;
 
 	public ProcessContext(String processId, String gatewayId, String tokenId) {
 		this.processId = processId;
@@ -234,4 +236,12 @@ public class ProcessContext {
 	public void setDataMovementProtocol(DataMovementProtocol dataMovementProtocol) {
 		this.dataMovementProtocol = dataMovementProtocol;
 	}
+
+    public JobModel getJobModel() {
+        return jobModel;
+    }
+
+    public void setJobModel(JobModel jobModel) {
+        this.jobModel = jobModel;
+    }
 }

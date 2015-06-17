@@ -23,7 +23,6 @@ package org.apache.airavata.gfac.impl.task;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.common.utils.LocalEventPublisher;
 import org.apache.airavata.gfac.core.*;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.context.ProcessContext;
@@ -31,12 +30,10 @@ import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.JobSubmissionTask;
 import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.gfac.impl.Factory;
-import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
+import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.TaskState;
-import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,8 +41,8 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.Map;
 
-public class JobSubmissionTaskImpl implements JobSubmissionTask {
-    private static final Logger log = LoggerFactory.getLogger(JobSubmissionTaskImpl.class);
+public class SSHJobSubmissionTask implements JobSubmissionTask {
+    private static final Logger log = LoggerFactory.getLogger(SSHJobSubmissionTask.class);
     @Override
     public void init(Map<String, String> propertyMap) throws TaskException {
 
@@ -55,8 +52,13 @@ public class JobSubmissionTaskImpl implements JobSubmissionTask {
     public TaskState execute(TaskContext taskContext) throws TaskException {
         try {
             ProcessContext processContext = taskContext.getParentProcessContext();
+            JobModel jobModel = processContext.getJobModel();
+            if (jobModel == null){
+                jobModel = new JobModel();
+            }
             RemoteCluster remoteCluster = processContext.getRemoteCluster();
             JobDescriptor jobDescriptor = GFacUtils.createJobDescriptor(processContext);
+            jobModel.setJobName(jobDescriptor.getJobName());
             ResourceJobManager resourceJobManager = GFacUtils.getResourceJobManager(processContext);
             JobManagerConfiguration jConfig = null;
             if (resourceJobManager != null){
@@ -69,13 +71,13 @@ public class JobSubmissionTaskImpl implements JobSubmissionTask {
                     log.error("No Job Manager is configured, so we are picking pbs as the default job manager");
                     jConfig = Factory.getPBSJobManager(installedParentPath);
                 } else {
-                    if (Constants.PBS_JOB_MANAGER.equalsIgnoreCase(resourceJobManagerType.toString())) {
+                    if (ResourceJobManagerType.PBS == resourceJobManagerType) {
                         jConfig = Factory.getPBSJobManager(installedParentPath);
-                    } else if (Constants.SLURM_JOB_MANAGER.equalsIgnoreCase(resourceJobManagerType.toString())) {
+                    } else if (ResourceJobManagerType.SLURM == resourceJobManagerType) {
                         jConfig = Factory.getSLURMJobManager(installedParentPath);
-                    } else if (Constants.SUN_GRID_ENGINE_JOB_MANAGER.equalsIgnoreCase(resourceJobManagerType.toString())) {
+                    } else if (ResourceJobManagerType.UGE == resourceJobManagerType) {
                         jConfig = Factory.getUGEJobManager(installedParentPath);
-                    } else if (Constants.LSF_JOB_MANAGER.equals(resourceJobManagerType.toString())) {
+                    } else if (ResourceJobManagerType.LSF == resourceJobManagerType) {
                         jConfig = Factory.getLSFJobManager(installedParentPath);
                     }
                 }
