@@ -162,13 +162,13 @@ public class RabbitMQStatusConsumer implements Consumer {
                             event = experimentStatusChangeEvent;
                             gatewayId = experimentStatusChangeEvent.getGatewayId();
                         } else if (message.getMessageType().equals(MessageType.WORKFLOWNODE)) {
-                            WorkflowNodeStatusChangeEvent wfnStatusChangeEvent = new WorkflowNodeStatusChangeEvent();
+                           /* WorkflowNodeStatusChangeEvent wfnStatusChangeEvent = new WorkflowNodeStatusChangeEvent();
                             ThriftUtils.createThriftFromBytes(message.getEvent(), wfnStatusChangeEvent);
                             log.debug(" Message Received with message id '" + message.getMessageId()
                                     + "' and with message type '" + message.getMessageType() + "'  with status " +
                                     wfnStatusChangeEvent.getState());
                             event = wfnStatusChangeEvent;
-                            gatewayId = wfnStatusChangeEvent.getWorkflowNodeIdentity().getGatewayId();
+                            gatewayId = wfnStatusChangeEvent.getWorkflowNodeIdentity().getGatewayId();*/
                         } else if (message.getMessageType().equals(MessageType.TASK)) {
                             TaskStatusChangeEvent taskStatusChangeEvent = new TaskStatusChangeEvent();
                             ThriftUtils.createThriftFromBytes(message.getEvent(), taskStatusChangeEvent);

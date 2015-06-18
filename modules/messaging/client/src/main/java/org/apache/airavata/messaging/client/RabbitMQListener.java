@@ -124,7 +124,7 @@ public class RabbitMQListener {
                             logger.error(e.getMessage(), e);
                         }
                     }else if (message.getType().equals(MessageType.WORKFLOWNODE)){
-                        try {
+                        /*try {
                             WorkflowNodeStatusChangeEvent event = new WorkflowNodeStatusChangeEvent();
                             TBase messageEvent = message.getEvent();
                             byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
@@ -134,7 +134,7 @@ public class RabbitMQListener {
                                     " for Gateway " + event.getWorkflowNodeIdentity().getGatewayId());
                         } catch (TException e) {
                             logger.error(e.getMessage(), e);
-                        }
+                        }*/
                     }else if (message.getType().equals(MessageType.TASK)){
                         try {
                             TaskStatusChangeEvent event = new TaskStatusChangeEvent();

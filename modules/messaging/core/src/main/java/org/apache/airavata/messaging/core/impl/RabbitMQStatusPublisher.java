@@ -79,9 +79,9 @@ public class RabbitMQStatusPublisher implements Publisher {
                 routingKey = gatewayId + "." + event.getTaskIdentity().getExperimentId() + "." +
                         event.getTaskIdentity().getWorkflowNodeId() + "." + event.getTaskIdentity().getTaskId();
             } else if (msgCtx.getType() == MessageType.WORKFLOWNODE) {
-                WorkflowNodeStatusChangeEvent event = (WorkflowNodeStatusChangeEvent) msgCtx.getEvent();
+                /*WorkflowNodeStatusChangeEvent event = (WorkflowNodeStatusChangeEvent) msgCtx.getEvent();
                 WorkflowIdentifier workflowNodeIdentity = event.getWorkflowNodeIdentity();
-                routingKey = gatewayId + "." + workflowNodeIdentity.getExperimentId() + "." + workflowNodeIdentity.getWorkflowNodeId();
+                routingKey = gatewayId + "." + workflowNodeIdentity.getExperimentId() + "." + workflowNodeIdentity.getWorkflowNodeId();*/
             } else if (msgCtx.getType() == MessageType.JOB) {
                 JobStatusChangeEvent event = (JobStatusChangeEvent) msgCtx.getEvent();
                 JobIdentifier identity = event.getJobIdentity();

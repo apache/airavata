@@ -38,11 +38,6 @@ add_license_header() {
     # Fetch the generated code directory passed as the argument
     GENERATED_CODE_DIR=$1
 
-    # For all generated thrift code, add the suppress all warnings annotation
-    #  NOTE: In order to save the orginal file as a backup, use sed -i.orig in place of sed -i ''
-    find ${GENERATED_CODE_DIR} -name '*.java' -print0 | xargs -0 sed -i '' -e 's/public class /@SuppressWarnings("all") public class /'
-    find ${GENERATED_CODE_DIR} -name '*.java' -print0 | xargs -0 sed -i '' -e 's/public enum /@SuppressWarnings("all") public enum /'
-
     # For each java file within the genrated directory, add the ASF V2 LICENSE header
     for f in $(find ${GENERATED_CODE_DIR} -name '*.java'); do
       cat - ${f} >${f}-with-license <<EOF
@@ -118,8 +113,6 @@ rm -rf ${JAVA_GEN_DIR}
 # Using thrify Java generator, generate the java classes based on Airavata API. This
 #   The airavata_api.thrift includes rest of data models.
 thrift ${THRIFT_ARGS} --gen java gfac.cpi.service.thrift || fail unable to generate java thrift classes
-thrift ${THRIFT_ARGS} --gen java gfacDataModel.thrift || fail unable to generate java thrift classes
-
 
 # For the generated java classes add the ASF V2 License header
 add_license_header $JAVA_GEN_DIR
