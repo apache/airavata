@@ -76,24 +76,18 @@ public class AiravataTaskStatusUpdator implements AbstractActivityListener {
 
     @Subscribe
     public void setupTaskStatus(JobStatusChangeEvent jobStatus) throws Exception{
-    	TaskState state=TaskState.UNKNOWN;
+    	TaskState state;
     	switch(jobStatus.getState()){
     	case ACTIVE:
     		state=TaskState.EXECUTING; break;
     	case CANCELED:
     		state=TaskState.CANCELED; break;
     	case COMPLETE: case FAILED:
-    		state=TaskState.POST_PROCESSING; break;
-    	case HELD: case SUSPENDED: case QUEUED:
-    		state=TaskState.WAITING; break;
-    	case SETUP:
-    		state=TaskState.PRE_PROCESSING; break;
+    		state=TaskState.EXECUTING; break;
+    	case SUSPENDED: case QUEUED:
+    		state=TaskState.EXECUTING; break;
     	case SUBMITTED:
-    		state=TaskState.STARTED; break;
-    	case UN_SUBMITTED:
-    		state=TaskState.CANCELED; break;
-    	case CANCELING:
-    		state=TaskState.CANCELING; break;
+    		state=TaskState.EXECUTING; break;
 		default:
 			return;
     	}

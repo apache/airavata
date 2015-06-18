@@ -40,8 +40,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Calendar;
 
-public class AiravataWorkflowNodeStatusUpdator implements AbstractActivityListener {
-    private final static Logger logger = LoggerFactory.getLogger(AiravataWorkflowNodeStatusUpdator.class);
+public class AiravataProcessStatusUpdator implements AbstractActivityListener {
+    private final static Logger logger = LoggerFactory.getLogger(AiravataProcessStatusUpdator.class);
 
     private ExperimentCatalog airavataExperimentCatalog;
     private LocalEventPublisher localEventPublisher;
