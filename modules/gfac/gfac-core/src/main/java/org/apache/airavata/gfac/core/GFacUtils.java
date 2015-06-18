@@ -37,11 +37,17 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePrefer
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.job.JobModel;
+import org.apache.airavata.model.messaging.event.JobIdentifier;
+import org.apache.airavata.model.messaging.event.JobStatusChangeRequestEvent;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
+import org.apache.airavata.model.status.JobState;
+import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.commons.io.FileUtils;
@@ -230,27 +236,29 @@ public class GFacUtils {
         return buf.toString();
     }
 
-//	public static void saveJobStatus(JobExecutionContext jobExecutionContext,
-//                                     JobDetails details, JobState state) throws GFacException {
-//		try {
-//            // first we save job details to the registry for sa and then save the job status.
-//            ExperimentCatalog experimentCatalog = jobExecutionContext.getExperimentCatalog();
-//            JobStatus status = new JobStatus();
-//            status.setJobState(state);
-//            details.setJobStatus(status);
-//            experimentCatalog.add(ExpCatChildDataType.JOB_DETAIL, details,
+	public static void saveJobStatus(ProcessContext processContext,
+                                     JobModel jobModel, JobState state) throws GFacException {
+		try {
+            // first we save job jobModel to the registry for sa and then save the job status.
+            ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+            JobStatus status = new JobStatus();
+            status.setJobState(state);
+            jobModel.setJobStatus(status);
+            // FIXME - Should change according to the experiment catalog impl
+//            experimentCatalog.add(ExpCatChildDataType.JOB_DETAIL, jobModel,
 //                    new CompositeIdentifier(jobExecutionContext.getTaskData()
-//                            .getTaskID(), details.getJobID()));
-//            JobIdentifier identifier = new JobIdentifier(details.getJobID(), jobExecutionContext.getTaskData().getTaskID(),
-//                    jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(), jobExecutionContext.getExperimentID(),
-//                    jobExecutionContext.getGatewayID());
-//            JobStatusChangeRequestEvent jobStatusChangeRequestEvent = new JobStatusChangeRequestEvent(state, identifier);
-//            jobExecutionContext.getLocalEventPublisher().publish(jobStatusChangeRequestEvent);
-//        } catch (Exception e) {
-//			throw new GFacException("Error persisting job status"
-//					+ e.getLocalizedMessage(), e);
-//		}
-//	}
+//                            .getTaskID(), jobModel.getJobID()));
+            // FIXME - Routing keys might need to identify according to new data models
+            JobIdentifier identifier = new JobIdentifier(jobModel.getJobId(), null,
+                    processContext.getProcessId(), processContext.getProcessModel().getExperimentId(),
+                    processContext.getGatewayId());
+            JobStatusChangeRequestEvent jobStatusChangeRequestEvent = new JobStatusChangeRequestEvent(state, identifier);
+            processContext.getLocalEventPublisher().publish(jobStatusChangeRequestEvent);
+        } catch (Exception e) {
+			throw new GFacException("Error persisting job status"
+					+ e.getLocalizedMessage(), e);
+		}
+	}
 
 //	public static void updateJobStatus(JobExecutionContext jobExecutionContext,
 //			JobDetails details, JobState state) throws GFacException {
@@ -270,21 +278,22 @@ public class GFacUtils {
 //		}
 //	}
 
-//	public static void saveErrorDetails(
-//			JobExecutionContext jobExecutionContext, String errorMessage)
-//			throws GFacException {
-//		try {
-//			ExperimentCatalog experimentCatalog = jobExecutionContext.getExperimentCatalog();
-//			ErrorModel details = new ErrorModel();
-//			details.setActualErrorMessage(errorMessage);
-//			details.setCreationTime(Calendar.getInstance().getTimeInMillis());
-//			experimentCatalog.add(ExpCatChildDataType.ERROR_DETAIL, details,
+	public static void saveErrorDetails(
+			ProcessContext processContext, String errorMessage)
+			throws GFacException {
+		try {
+			ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+			ErrorModel details = new ErrorModel();
+			details.setActualErrorMessage(errorMessage);
+			details.setCreationTime(Calendar.getInstance().getTimeInMillis());
+			// FIXME : Save error model according to new data model
+//            experimentCatalog.add(ExpCatChildDataType.ERROR_DETAIL, details,
 //					jobExecutionContext.getTaskData().getTaskID());
-//		} catch (Exception e) {
-//			throw new GFacException("Error persisting job status"
-//					+ e.getLocalizedMessage(), e);
-//		}
-//	}
+		} catch (Exception e) {
+			throw new GFacException("Error persisting job status"
+					+ e.getLocalizedMessage(), e);
+		}
+	}
 
     public static Map<String, Object> getInputParamMap(List<InputDataObjectType> experimentData) throws GFacException {
         Map<String, Object> map = new HashMap<String, Object>();

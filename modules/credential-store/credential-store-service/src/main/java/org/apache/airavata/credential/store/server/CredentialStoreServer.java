@@ -69,10 +69,7 @@ public class CredentialStoreServer  implements IServer {
 	            final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
 	            final String serverHost = ServerSettings.getCredentialStoreServerHost();
                 params.setKeyStore(keystorePath, keystorePWD);
-
                 TServerSocket serverTransport = TSSLTransportFactory.getServerSocket(serverPort, 100, InetAddress.getByName(serverHost), params);
-
-
                 CredentialStoreService.Processor processor = new CredentialStoreService.Processor(new CredentialStoreServerHandler());
 
                 server = new TThreadPoolServer(new TThreadPoolServer.Args(serverTransport).

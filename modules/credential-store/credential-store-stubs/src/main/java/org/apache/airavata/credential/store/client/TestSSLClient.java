@@ -57,7 +57,6 @@ public class TestSSLClient {
             params.setTrustStore(keystorePath, keystorePWD);
             final int serverPort = Integer.parseInt(ServerSettings.getCredentialStoreServerPort());
             final String serverHost = ServerSettings.getCredentialStoreServerHost();
-
             transport = TSSLTransportFactory.getClientSocket(serverHost, serverPort, 10000, params);
             TProtocol protocol = new TBinaryProtocol(transport);
 
