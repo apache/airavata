@@ -21,7 +21,7 @@
 
 package org.apache.airavata.registry.core.experiment.catalog.resources;
 
-import org.apache.airavata.model.experiment.ExperimentState;
+import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;

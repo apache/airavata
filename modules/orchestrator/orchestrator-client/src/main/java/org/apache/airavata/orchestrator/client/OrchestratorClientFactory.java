@@ -21,7 +21,7 @@
 
 package org.apache.airavata.orchestrator.client;
 
-import org.apache.airavata.model.error.AiravataClientConnectException;
+import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
@@ -31,14 +31,14 @@ import org.apache.thrift.transport.TTransportException;
 
 public class OrchestratorClientFactory {
 
-    public static OrchestratorService.Client createOrchestratorClient(String serverHost, int serverPort)  throws AiravataClientConnectException{
+    public static OrchestratorService.Client createOrchestratorClient(String serverHost, int serverPort)  throws AiravataClientException {
         try {
             TTransport transport = new TSocket(serverHost, serverPort);
             transport.open();
             TProtocol protocol = new TBinaryProtocol(transport);
             return new OrchestratorService.Client(protocol);
         } catch (TTransportException e) {
-        	throw new AiravataClientConnectException("Unable to connect to the server at "+serverHost+":"+serverPort);
+        	throw new AiravataClientException();
         }
     }
 }

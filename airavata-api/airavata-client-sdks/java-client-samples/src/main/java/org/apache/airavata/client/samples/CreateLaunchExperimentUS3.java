@@ -21,17 +21,19 @@ package org.apache.airavata.client.samples;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.model.appcatalog.appinterface.DataType;
-import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
-import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.application.io.DataType;
+import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.error.AiravataClientException;
 import org.apache.airavata.model.error.AiravataSystemException;
 import org.apache.airavata.model.error.ExperimentNotFoundException;
 import org.apache.airavata.model.error.InvalidRequestException;
+import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
+import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.experiment.*;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,13 +162,13 @@ public class CreateLaunchExperimentUS3 {
             Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
             String projectId = client.createProject(DEFAULT_GATEWAY, project);
 
-            Experiment simpleExperiment =
+            ExperimentModel simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "US3EchoExperimentTrestles", "US3EchoTrestles", "US3EchoTrestles", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "shared", 0, 0, 1, "uot111");
+            ComputationalResourceSchedulingModel scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "shared", 0, 0);
             scheduling.setResourceHostId("gsissh-trestles");
-            UserConfigurationData userConfigurationData = new UserConfigurationData();
+            UserConfigurationDataModel userConfigurationData = new UserConfigurationDataModel();
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
             userConfigurationData.setComputationalResourceScheduling(scheduling);
@@ -227,19 +229,19 @@ public class CreateLaunchExperimentUS3 {
             Project project = ProjectModelUtil.createProject("ultrascan", "ultrascan", "test project");
             String projectId = client.createProject(DEFAULT_GATEWAY, project);
 
-            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment(projectId, "ultrascan", "US3ExperimentTrestles", "US3AppTrestles", "ultrascan_7ce6cd43-622c-44e0-87c5-fb7a6528c799", exInputs);
+            ExperimentModel simpleExperiment = ExperimentModelUtil.createSimpleExperiment(projectId, "ultrascan", "US3ExperimentTrestles", "US3AppTrestles", "ultrascan_7ce6cd43-622c-44e0-87c5-fb7a6528c799", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.xsede.org_72b9181b-7156-4975-a386-ed98b4949496", 32, 1, 0, "shared", 30, 0, 0, "sds128");
-            UserConfigurationData userConfigurationData = new UserConfigurationData();
+            ComputationalResourceSchedulingModel scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.xsede.org_72b9181b-7156-4975-a386-ed98b4949496", 32, 1, 0, "shared", 30, 0);
+            UserConfigurationDataModel userConfigurationData = new UserConfigurationDataModel();
             
             scheduling.setResourceHostId("trestles.sdsc.xsede.org_72b9181b-7156-4975-a386-ed98b4949496");
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
         
-            AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();
+  /*          AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();
             dataHandling.setOutputDataDir("/home/sgg/chathuri/laptop_backup/airavata");
-            userConfigurationData.setAdvanceOutputDataHandling(dataHandling);
+            userConfigurationData.setAdvanceOutputDataHandling(dataHandling);*/
         
             userConfigurationData.setComputationalResourceScheduling(scheduling);
             simpleExperiment.setUserConfigurationData(userConfigurationData);
@@ -299,21 +301,21 @@ public class CreateLaunchExperimentUS3 {
             Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
             String projectId = client.createProject(DEFAULT_GATEWAY, project);
 
-            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment(projectId, "ultrascan", "US3ExperimentStampede", "US3AppStampede", "ultrascan_7ce6cd43-622c-44e0-87c5-fb7a6528c799", exInputs);
+            ExperimentModel simpleExperiment = ExperimentModelUtil.createSimpleExperiment(projectId, "ultrascan", "US3ExperimentStampede", "US3AppStampede", "ultrascan_7ce6cd43-622c-44e0-87c5-fb7a6528c799", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org_e59e046f-e0e1-49c4-8475-2fab2e35d044", 32, 2, 0, "normal", 30, 0, 0, "TG-STA110014S");
+            ComputationalResourceSchedulingModel scheduling = ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org_e59e046f-e0e1-49c4-8475-2fab2e35d044", 32, 2, 0, "normal", 30, 0);
 
             scheduling.setResourceHostId("stampede.tacc.xsede.org_e59e046f-e0e1-49c4-8475-2fab2e35d044");
-            UserConfigurationData userConfigurationData = new UserConfigurationData();
+            UserConfigurationDataModel userConfigurationData = new UserConfigurationDataModel();
            
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
             userConfigurationData.setComputationalResourceScheduling(scheduling);
         
-            AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();
+/*            AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();
             dataHandling.setOutputDataDir("/home/sgg/chathuri/laptop_backup/airavata");
-            userConfigurationData.setAdvanceOutputDataHandling(dataHandling);
+            userConfigurationData.setAdvanceOutputDataHandling(dataHandling);*/
         
             simpleExperiment.setUserConfigurationData(userConfigurationData);
             return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
@@ -371,21 +373,21 @@ public class CreateLaunchExperimentUS3 {
 //            Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
 //            String projectId = client.createProject(project);
 
-            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("ultrascan_41574ef5-b054-4d03-ab20-2cfe768d5096", "ultrascan", "US3ExperimentLonestar", "US3AppLonestar", "ultrascan_e76ab5cf-79f6-44df-a244-10a734183fec", exInputs);
+            ExperimentModel simpleExperiment = ExperimentModelUtil.createSimpleExperiment("ultrascan_41574ef5-b054-4d03-ab20-2cfe768d5096", "ultrascan", "US3ExperimentLonestar", "US3AppLonestar", "ultrascan_e76ab5cf-79f6-44df-a244-10a734183fec", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("lonestar.tacc.teragrid.org_2e0273bc-324b-419b-9786-38a360d44772", 12, 2, 0, "normal", 30, 0, 0, "ULTRASCAN");
+            ComputationalResourceSchedulingModel scheduling = ExperimentModelUtil.createComputationResourceScheduling("lonestar.tacc.teragrid.org_2e0273bc-324b-419b-9786-38a360d44772", 12, 2, 0, "normal", 30, 0);
 
             scheduling.setResourceHostId("lonestar.tacc.teragrid.org_2e0273bc-324b-419b-9786-38a360d44772");
-            UserConfigurationData userConfigurationData = new UserConfigurationData();
+            UserConfigurationDataModel userConfigurationData = new UserConfigurationDataModel();
            
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
             userConfigurationData.setComputationalResourceScheduling(scheduling);
         
-            AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();
+/*            AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();
             dataHandling.setOutputDataDir("/home/airavata/output/");
-            userConfigurationData.setAdvanceOutputDataHandling(dataHandling);
+            userConfigurationData.setAdvanceOutputDataHandling(dataHandling);*/
         
             simpleExperiment.setUserConfigurationData(userConfigurationData);
             return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
@@ -444,21 +446,21 @@ public class CreateLaunchExperimentUS3 {
 //            Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
 //            String projectId = client.createProject(project);
 
-            Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("ultrascan_41574ef5-b054-4d03-ab20-2cfe768d5096", "ultrascan", "US3ExperimentStampede", "US3AppStampede", "ultrascan_e76ab5cf-79f6-44df-a244-10a734183fec", exInputs);
+            ExperimentModel simpleExperiment = ExperimentModelUtil.createSimpleExperiment("ultrascan_41574ef5-b054-4d03-ab20-2cfe768d5096", "ultrascan", "US3ExperimentStampede", "US3AppStampede", "ultrascan_e76ab5cf-79f6-44df-a244-10a734183fec", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("alamo.uthscsa.edu_7b6cf99a-af2e-4e8b-9eff-998a5ef60fe5", 4, 2, 0, "default", 30, 0, 0, null);
+            ComputationalResourceSchedulingModel scheduling = ExperimentModelUtil.createComputationResourceScheduling("alamo.uthscsa.edu_7b6cf99a-af2e-4e8b-9eff-998a5ef60fe5", 4, 2, 0, "default", 30, 0);
 
             scheduling.setResourceHostId("alamo.uthscsa.edu_7b6cf99a-af2e-4e8b-9eff-998a5ef60fe5");
-            UserConfigurationData userConfigurationData = new UserConfigurationData();
+            UserConfigurationDataModel userConfigurationData = new UserConfigurationDataModel();
            
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
             userConfigurationData.setComputationalResourceScheduling(scheduling);
         
-            AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();
+/*            AdvancedOutputDataHandling dataHandling = new AdvancedOutputDataHandling();
             dataHandling.setOutputDataDir("/home/airavata/output/");
-            userConfigurationData.setAdvanceOutputDataHandling(dataHandling);
+            userConfigurationData.setAdvanceOutputDataHandling(dataHandling);*/
         
             simpleExperiment.setUserConfigurationData(userConfigurationData);
             return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
@@ -495,14 +497,14 @@ public class CreateLaunchExperimentUS3 {
             Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
             String projectId = client.createProject(DEFAULT_GATEWAY, project);
 
-            Experiment simpleExperiment =
+            ExperimentModel simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "US3EchoExperimentStatus", "US3EchoStampede", "US3EchoStampede", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            ComputationalResourceScheduling scheduling =
-                    ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org", 1, 1, 1, "development", 0, 0, 1, "TG-MCB070039N");
+            ComputationalResourceSchedulingModel scheduling =
+                    ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org", 1, 1, 1, "development", 0, 0);
             scheduling.setResourceHostId("gsissh-stampede");
-            UserConfigurationData userConfigurationData = new UserConfigurationData();
+            UserConfigurationDataModel userConfigurationData = new UserConfigurationDataModel();
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
             userConfigurationData.setComputationalResourceScheduling(scheduling);
