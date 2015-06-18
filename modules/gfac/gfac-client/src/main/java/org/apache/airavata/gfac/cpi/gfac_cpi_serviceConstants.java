@@ -49,7 +49,8 @@ import javax.annotation.Generated;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("all") public class gfac_cpi_serviceConstants {
+@SuppressWarnings({"cast", "rawtypes", "serial", "unchecked"})
+public class gfac_cpi_serviceConstants {
 
   public static final String GFAC_CPI_VERSION = "0.13.0";
 

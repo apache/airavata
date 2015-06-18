@@ -24,10 +24,14 @@ import junit.framework.Assert;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.experiment.catalog.util.Initialize;
-import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
-import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.experiment.ExperimentSummaryModel;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
+import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
@@ -182,25 +186,25 @@ public class ExperimentUseCaseTest {
             inputDataObjectType.setName("Input_to_Echo");
             inputDataObjectType.setValue("Hello World");
 
-            ComputationalResourceScheduling scheduling = new ComputationalResourceScheduling();
+            ComputationalResourceSchedulingModel scheduling = new ComputationalResourceSchedulingModel();
             scheduling.setResourceHostId(UUID.randomUUID().toString());
-            scheduling.setComputationalProjectAccount("TG-STA110014S");
+//            scheduling.setComputationalProjectAccount("TG-STA110014S");
             scheduling.setTotalCPUCount(1);
             scheduling.setNodeCount(1);
             scheduling.setWallTimeLimit(15);
             scheduling.setQueueName("normal");
 
-            UserConfigurationData userConfigurationData = new UserConfigurationData();
+            UserConfigurationDataModel userConfigurationData = new UserConfigurationDataModel();
             userConfigurationData.setAiravataAutoSchedule(false);
             userConfigurationData.setOverrideManualScheduledParams(false);
             userConfigurationData.setComputationalResourceScheduling(scheduling);
 
-            Experiment experiment = new Experiment();
-            experiment.setProjectID(projectId1);
+            ExperimentModel experiment = new ExperimentModel();
+            experiment.setProjectId(projectId1);
             experiment.setUserName("TestUser" + TAG);
-            experiment.setName("TestExperiment"+TAG);
+            experiment.setExperimentName("TestExperiment" + TAG);
             experiment.setDescription("Test 1 experiment");
-            experiment.setApplicationId(UUID.randomUUID().toString());
+            experiment.setExecutionId(UUID.randomUUID().toString());
             experiment.setUserConfigurationData(userConfigurationData);
             experiment.addToExperimentInputs(inputDataObjectType);
 
@@ -208,18 +212,18 @@ public class ExperimentUseCaseTest {
             Assert.assertNotNull(experimentId1);
 
             //retrieving the stored experiment
-            Experiment retrievedExperiment = (Experiment) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT,
+            ExperimentModel retrievedExperiment = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT,
                     experimentId1);
             Assert.assertNotNull(retrievedExperiment);
-            Assert.assertEquals(retrievedExperiment.getProjectID(), experiment.getProjectID());
+            Assert.assertEquals(retrievedExperiment.getProjectId(), experiment.getProjectId());
             Assert.assertEquals(retrievedExperiment.getDescription(), experiment.getDescription());
-            Assert.assertEquals(retrievedExperiment.getName(), experiment.getName());
-            Assert.assertEquals(retrievedExperiment.getApplicationId(), experiment.getApplicationId());
+            Assert.assertEquals(retrievedExperiment.getExperimentName(), experiment.getExperimentName());
+            Assert.assertEquals(retrievedExperiment.getExecutionId(), experiment.getExecutionId());
             Assert.assertNotNull(retrievedExperiment.getUserConfigurationData());
             Assert.assertNotNull(retrievedExperiment.getExperimentInputs());
 
             //updating an existing experiment
-            experiment.setName("NewExperimentName"+TAG);
+            experiment.setExperimentName("NewExperimentName" + TAG);
             OutputDataObjectType outputDataObjectType = new OutputDataObjectType();
             outputDataObjectType.setName("Output_to_Echo");
             outputDataObjectType.setValue("Hello World");
@@ -227,24 +231,24 @@ public class ExperimentUseCaseTest {
             experimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT, experiment, experimentId1);
 
             //creating more experiments
-            experiment = new Experiment();
-            experiment.setProjectID(projectId1);
+            experiment = new ExperimentModel();
+            experiment.setProjectId(projectId1);
             experiment.setUserName("TestUser" + TAG);
-            experiment.setName("TestExperiment2" + TAG);
+            experiment.setExperimentName("TestExperiment2" + TAG);
             experiment.setDescription("Test 2 experiment");
-            experiment.setApplicationId(UUID.randomUUID().toString());
+            experiment.setExecutionId(UUID.randomUUID().toString());
             experiment.setUserConfigurationData(userConfigurationData);
             experiment.addToExperimentInputs(inputDataObjectType);
 
             String experimentId2 = (String) experimentCatalog.add(ExpCatParentDataType.EXPERIMENT, experiment, gatewayId);
             Assert.assertNotNull(experimentId2);
 
-            experiment = new Experiment();
-            experiment.setProjectID(projectId1);
+            experiment = new ExperimentModel();
+            experiment.setProjectId(projectId1);
             experiment.setUserName("TestUser" + TAG);
-            experiment.setName("TestExperiment3"+TAG);
+            experiment.setExperimentName("TestExperiment3" + TAG);
             experiment.setDescription("Test 3 experiment");
-            experiment.setApplicationId(UUID.randomUUID().toString());
+            experiment.setExecutionId(UUID.randomUUID().toString());
             experiment.setUserConfigurationData(userConfigurationData);
             experiment.addToExperimentInputs(inputDataObjectType);
 
@@ -281,8 +285,8 @@ public class ExperimentUseCaseTest {
             list = experimentCatalog.search(ExperimentCatalogModelType.EXPERIMENT, filters, 2, 1,
                     Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             Assert.assertTrue(list.size()==2);
-            ExperimentSummary exp1 = (ExperimentSummary)list.get(0);
-            ExperimentSummary exp2 = (ExperimentSummary)list.get(1);
+            ExperimentSummaryModel exp1 = (ExperimentSummaryModel)list.get(0);
+            ExperimentSummaryModel exp2 = (ExperimentSummaryModel)list.get(1);
             Assert.assertTrue(exp1.getCreationTime()-exp2.getCreationTime() > 0);
 
         } catch (RegistryException e) {

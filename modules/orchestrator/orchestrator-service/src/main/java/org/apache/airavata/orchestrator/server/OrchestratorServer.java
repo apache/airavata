@@ -35,7 +35,7 @@ import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OrchestratorServer implements IServer{
+public class OrchestratorServer implements IServer {
 
     private final static Logger logger = LoggerFactory.getLogger(OrchestratorServer.class);
 	private static final String SERVER_NAME = "Orchestrator Server";
@@ -52,7 +52,7 @@ public class OrchestratorServer implements IServer{
     public void StartOrchestratorServer(OrchestratorService.Processor<OrchestratorServerHandler> orchestratorServerHandlerProcessor)
             throws Exception {
         try {
-            final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.ORCHESTRATOT_SERVER_PORT,"8940"));
+            final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.ORCHESTRATOT_SERVER_PORT, "8940"));
 
             final String serverHost = ServerSettings.getSetting(Constants.ORCHESTRATOT_SERVER_HOST, null);
             

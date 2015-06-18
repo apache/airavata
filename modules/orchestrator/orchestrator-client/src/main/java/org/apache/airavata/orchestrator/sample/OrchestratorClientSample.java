@@ -26,13 +26,13 @@ package org.apache.airavata.orchestrator.sample;
 //import org.apache.airavata.client.api.exception.AiravataAPIInvocationException;
 //import org.apache.airavata.client.tools.DocumentCreator;
 
-import org.apache.airavata.model.appcatalog.appinterface.DataType;
-import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
-import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
-import org.apache.airavata.model.util.ExperimentModelUtil;
-import org.apache.airavata.model.experiment.ComputationalResourceScheduling;
+import org.apache.airavata.model.application.io.DataType;
+import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.experiment.UserConfigurationData;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
+import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.thrift.TException;
 
@@ -103,14 +103,14 @@ public class OrchestratorClientSample {
                     output.setValue("");
                     exOut.add(output);
 
-                    Experiment simpleExperiment = ExperimentModelUtil.createSimpleExperiment("default", "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
+                    ExperimentModel simpleExperiment = ExperimentModelUtil.createSimpleExperiment("default", "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
                     simpleExperiment.setExperimentOutputs(exOut);
 
-                    ComputationalResourceScheduling scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "normal", 0, 0, 1, "sds128");
+                    ComputationalResourceSchedulingModel scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "normal", 0, 0);
                     scheduling.setResourceHostId("gsissh-trestles");
-                    UserConfigurationData userConfigurationData = new UserConfigurationData();
-                    userConfigurationData.setComputationalResourceScheduling(scheduling);
-                    simpleExperiment.setUserConfigurationData(userConfigurationData);
+                    UserConfigurationDataModel userConfigurationDataModel = new UserConfigurationDataModel();
+                    userConfigurationDataModel.setComputationalResourceScheduling(scheduling);
+                    simpleExperiment.setUserConfigurationData(userConfigurationDataModel);
                     String expId = null;
                     try {
 //                        expId = (String) registry.add(ParentDataType.EXPERIMENT, simpleExperiment);

@@ -39,7 +39,7 @@ import java.util.Map;
 
 public class TestCreateLaunchExperiment {
 
-    //FIXME: Read from a config file
+    /*//FIXME: Read from a config file
     public static final String THRIFT_SERVER_HOST = "localhost";
     public static final int THRIFT_SERVER_PORT = 8930;
     private final static Logger logger = LoggerFactory.getLogger(TestCreateLaunchExperiment.class);
@@ -269,6 +269,6 @@ public class TestCreateLaunchExperiment {
         }catch (TException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
 }
