@@ -28,6 +28,7 @@ import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.ProcessContext;
+import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.watcher.CancelRequestWatcher;
 import org.apache.airavata.gfac.core.watcher.RedeliveryRequestWatcher;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
@@ -236,10 +237,11 @@ public class GFacUtils {
         return buf.toString();
     }
 
-	public static void saveJobStatus(ProcessContext processContext,
+	public static void saveJobStatus(TaskContext taskContext,
                                      JobModel jobModel, JobState state) throws GFacException {
 		try {
             // first we save job jobModel to the registry for sa and then save the job status.
+            ProcessContext processContext = taskContext.getParentProcessContext();
             ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
             JobStatus status = new JobStatus();
             status.setJobState(state);
@@ -249,7 +251,7 @@ public class GFacUtils {
 //                    new CompositeIdentifier(jobExecutionContext.getTaskData()
 //                            .getTaskID(), jobModel.getJobID()));
             // FIXME - Routing keys might need to identify according to new data models
-            JobIdentifier identifier = new JobIdentifier(jobModel.getJobId(), null,
+            JobIdentifier identifier = new JobIdentifier(jobModel.getJobId(), taskContext.getTaskModel().getTaskId(),
                     processContext.getProcessId(), processContext.getProcessModel().getExperimentId(),
                     processContext.getGatewayId());
             JobStatusChangeRequestEvent jobStatusChangeRequestEvent = new JobStatusChangeRequestEvent(state, identifier);

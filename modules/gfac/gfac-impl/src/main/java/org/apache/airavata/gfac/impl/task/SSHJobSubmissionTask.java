@@ -94,14 +94,14 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
                 String jobId = remoteCluster.submitBatchJob(jobFile.getPath(), processContext.getWorkingDir());
                 if (jobId != null && !jobId.isEmpty()) {
                     jobModel.setJobId(jobId);
-                    GFacUtils.saveJobStatus(processContext, jobModel, JobState.SUBMITTED);
+                    GFacUtils.saveJobStatus(taskContext, jobModel, JobState.SUBMITTED);
 //                    publisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
 //                            , GfacExperimentState.JOBSUBMITTED));
                     processContext.setJobModel(jobModel);
                     if (verifyJobSubmissionByJobId(remoteCluster, jobId)) {
 //                        publisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
 //                                , GfacExperimentState.JOBSUBMITTED));
-                        GFacUtils.saveJobStatus(processContext, jobModel, JobState.QUEUED);
+                        GFacUtils.saveJobStatus(taskContext, jobModel, JobState.QUEUED);
                     }
                 } else {
                     processContext.setJobModel(jobModel);
@@ -114,7 +114,7 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
                             jobModel.setJobId(jobId);
 //                            publisher.publish(new GfacExperimentStateChangeRequest(new MonitorID(jobExecutionContext)
 //                                    , GfacExperimentState.JOBSUBMITTED));
-                            GFacUtils.saveJobStatus(processContext, jobModel, JobState.QUEUED);
+                            GFacUtils.saveJobStatus(taskContext, jobModel, JobState.QUEUED);
                             break;
                         }
                         Thread.sleep(verificationTryCount * 1000);
@@ -131,7 +131,7 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
                     return TaskState.FAILED;
                 }
             }
-            return TaskState.EXECUTING;
+            return TaskState.COMPLETED;
         } catch (AppCatalogException e) {
             log.error("Error while instatiating app catalog",e);
             throw new TaskException("Error while instatiating app catalog", e);
@@ -172,6 +172,14 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
 
     @Override
     public TaskState recover(TaskContext taskContext) throws TaskException {
-        return null;
+            ProcessContext processContext = taskContext.getParentProcessContext();
+            JobModel jobModel = processContext.getJobModel();
+            // original job failed before submitting
+            if (jobModel == null || jobModel.getJobId() == null ){
+                return execute(taskContext);
+            }else {
+                // job is already submitted and monitor should handle the recovery
+                return TaskState.COMPLETED;
+            }
     }
 }
