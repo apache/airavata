@@ -23,7 +23,10 @@ package org.apache.airavata.registry.core.experiment.catalog.resources;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
-import org.apache.airavata.registry.core.experiment.catalog.model.*;
+import org.apache.airavata.registry.core.experiment.catalog.model.Experiment;
+import org.apache.airavata.registry.core.experiment.catalog.model.Project;
+import org.apache.airavata.registry.core.experiment.catalog.model.ProjectUser;
+import org.apache.airavata.registry.core.experiment.catalog.model.User;
 import org.apache.airavata.registry.core.experiment.catalog.utils.QueryGenerator;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.ResultOrderType;
@@ -47,7 +50,7 @@ public class ProjectResource extends AbstractExpCatResource {
     private Timestamp creationTime;
 
     /**
-     *
+     *x
      */
     public ProjectResource() {
     }
@@ -60,8 +63,8 @@ public class ProjectResource extends AbstractExpCatResource {
     public ExperimentCatResource create(ResourceType type) throws RegistryException {
         if (type == ResourceType.EXPERIMENT) {
             ExperimentResource experimentResource = new ExperimentResource();
-            experimentResource.setGatewayId(gatewayId);
-            experimentResource.setExecutionUser(worker.getUser());
+            experimentResource.setGatewayExecutionId(gatewayId);
+            experimentResource.setUserName(worker.getUser());
             experimentResource.setProjectId(id);
             return experimentResource;
         } else if (type == ResourceType.PROJECT_USER){
@@ -236,7 +239,7 @@ public class ProjectResource extends AbstractExpCatResource {
      * @param offset
      * @param orderByIdentifier
      * @return
-     * @throws RegistryException
+     * @throws org.apache.airavata.registry.cpi.RegistryException
      */
     public List<ExperimentCatResource> get(ResourceType type, int limit, int offset, Object orderByIdentifier,
                               ResultOrderType resultOrderType) throws RegistryException{
@@ -334,20 +337,20 @@ public class ProjectResource extends AbstractExpCatResource {
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
             Project project = new Project();
-            project.setProject_id(id);
-            project.setProject_name(name);
-            project.setGateway_id(gatewayId);
-            Users user = em.find(Users.class, worker.getUser());
-            project.setUsers(user);
-            project.setUser_name(user.getUser_name());
+            project.setProjectId(id);
+            project.setProjectName(name);
+            project.setGatewayId(gatewayId);
+            User user = em.find(User.class, worker.getUser());
+            project.setUser(user);
+            project.setOwnerName(user.getUserName());
             project.setDescription(description);
             project.setCreationTime(creationTime);
 
             if (existingProject != null) {
-                existingProject.setProject_name(name);
-                existingProject.setGateway_id(gatewayId);
-                existingProject.setUsers(user);
-                existingProject.setUser_name(user.getUser_name());
+                existingProject.setProjectName(name);
+                existingProject.setGatewayId(gatewayId);
+                existingProject.setUser(user);
+                existingProject.setOwnerName(user.getUserName());
                 existingProject.setDescription(description);
                 existingProject.setCreationTime(creationTime);
                 project = em.merge(existingProject);
@@ -450,7 +453,7 @@ public class ProjectResource extends AbstractExpCatResource {
      */
     public ExperimentResource createExperiment(String experimentId) throws RegistryException{
 		ExperimentResource experimentResource = (ExperimentResource)create(ResourceType.EXPERIMENT);
-		experimentResource.setExpID(experimentId);
+		experimentResource.setExperimentId(experimentId);
 		return experimentResource;
 	}
 

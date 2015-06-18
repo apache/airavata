@@ -22,16 +22,14 @@ package org.apache.airavata.registry.core.experiment.catalog.resources;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
-import org.apache.airavata.registry.core.experiment.catalog.JPAConstants;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
+import org.apache.airavata.registry.core.experiment.catalog.JPAConstants;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
 import org.apache.airavata.registry.core.experiment.catalog.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class Utils {
@@ -188,26 +186,26 @@ public class Utils {
                     logger.error("Object should be a ProjectUser.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a ProjectUser.");
                 }
-            case CONFIGURATION:
-                if(o instanceof Configuration){
-                    return createConfiguration((Configuration) o);
-                }else {
-                    logger.error("Object should be a Configuration.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a Configuration.");
-                }
             case USER:
-                if(o instanceof Users) {
-                    return createUser((Users) o);
+                if(o instanceof User) {
+                    return createUser((User) o);
                 }else {
                     logger.error("Object should be a User.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a User.");
                 }
             case GATEWAY_WORKER:
-                if (o instanceof Gateway_Worker){
-                    return createGatewayWorker((Gateway_Worker)o);
+                if (o instanceof GatewayWorker){
+                    return createGatewayWorker((GatewayWorker)o);
                 } else {
                     logger.error("Object should be a Gateway Worker.", new IllegalArgumentException());
                     throw  new IllegalArgumentException("Object should be a Gateway Worker.");
+                }
+            case EXPERIMENT_SUMMARY:
+                if (o instanceof  ExperimentSummary){
+                    return createExperimentSummary((ExperimentSummary)o);
+                }else {
+                    logger.error("Object should be a ExperimentSummary.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a ExperimentSummary.");
                 }
             case EXPERIMENT:
                 if (o instanceof  Experiment){
@@ -216,138 +214,89 @@ public class Utils {
                     logger.error("Object should be a Experiment.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Experiment.");
                 }
-            case EXPERIMENT_SUMMARY:
-                if (o instanceof  Experiment){
-                    return createExperimentSummary((Experiment)o);
-                }else {
-                    logger.error("Object should be a ExperimentSummary.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a ExperimentSummary.");
-                }
-            case NOTIFICATION_EMAIL:
-                if (o instanceof  Notification_Email){
-                    return createNotificationEmail((Notification_Email)o);
-                }else {
-                    logger.error("Object should be a Experiment.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a Experiment.");
-                }
             case EXPERIMENT_INPUT:
-                if (o instanceof  Experiment_Input){
-                    return createExperimentInput((Experiment_Input)o);
+                if (o instanceof  ExperimentInput){
+                    return createExperimentInput((ExperimentInput)o);
                 }else {
                     logger.error("Object should be a Experiment input data.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Experiment input data.");
                 }
             case EXPERIMENT_OUTPUT:
-                if (o instanceof  Experiment_Output){
-                    return createExperimentOutput((Experiment_Output)o);
+                if (o instanceof  ExperimentOutput){
+                    return createExperimentOutput((ExperimentOutput)o);
                 }else {
                     logger.error("Object should be a Experiment output data.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Experiment output data.");
                 }
-            case WORKFLOW_NODE_DETAIL:
-                 if (o instanceof  WorkflowNodeDetail){
-                     return createWorkflowNodeDetail((WorkflowNodeDetail)o);
-                 }else {
-                     logger.error("Object should be a Workflow node data.", new IllegalArgumentException());
-                     throw new IllegalArgumentException("Object should be a Workflow node data.");
-                 }
-            case TASK_DETAIL:
-                if (o instanceof  TaskDetail){
-                    return createTaskDetail((TaskDetail)o);
+            case EXPERIMENT_STATUS:
+                if (o instanceof  ExperimentStatus){
+                    return createExperimentStatusResource((ExperimentStatus) o);
                 }else {
-                    logger.error("Object should be a task detail data.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a task detail data.");
+                    logger.error("Object should be a ExperimentStatus data.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a ExperimentStatus data.");
                 }
-            case ERROR_DETAIL:
-                if (o instanceof  ErrorDetail){
-                    return createErrorDetail((ErrorDetail)o);
+            case EXPERIMENT_ERROR:
+                if (o instanceof  ExperimentError){
+                    return createExperimentError((ExperimentError) o);
                 }else {
-                    logger.error("Object should be a error detail data.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a error detail data.");
+                    logger.error("Object should be a experiment error data.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a experiment error data.");
                 }
-            case APPLICATION_INPUT:
-                if (o instanceof  ApplicationInput){
-                    return createApplicationInput((ApplicationInput)o);
+            case PROCESS_ERROR:
+                if (o instanceof  ProcessError){
+                    return createProcessError((ProcessError) o);
                 }else {
-                    logger.error("Object should be a application input data.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a application input data.");
+                    logger.error("Object should be a process error data.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a process error data.");
                 }
-            case APPLICATION_OUTPUT:
-                if (o instanceof  ApplicationOutput){
-                    return createApplicationOutput((ApplicationOutput)o);
+            case PROCESS_STATUS:
+                if (o instanceof  ProcessStatus){
+                    return createProcessStatusResource((ProcessStatus) o);
                 }else {
-                    logger.error("Object should be a application output data.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a application output data.");
+                    logger.error("Object should be a ProcessStatus data.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a ProcessStatus data.");
                 }
-            case NODE_INPUT:
-                if (o instanceof  NodeInput){
-                    return createNodeInput((NodeInput)o);
+            case PROCESS_INPUT:
+                if (o instanceof  ProcessInput){
+                    return createProcessInput((ProcessInput)o);
                 }else {
-                    logger.error("Object should be a node input data.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a node input data.");
+                    logger.error("Object should be a process input data.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a process input data.");
                 }
-            case NODE_OUTPUT:
-                if (o instanceof  NodeOutput){
-                    return createNodeOutput((NodeOutput)o);
+            case PROCESS_OUTPUT:
+                if (o instanceof  ProcessOutput){
+                    return createProcessOutput((ProcessOutput)o);
                 }else {
-                    logger.error("Object should be a node output data.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a node output data.");
+                    logger.error("Object should be a process output data.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a process output data.");
                 }
-            case JOB_DETAIL:
-                if (o instanceof  JobDetail){
-                    return createJobDetail((JobDetail)o);
-                }else {
-                    logger.error("Object should be a job detail data.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a job detail data.");
-                }
-            case DATA_TRANSFER_DETAIL:
-                if (o instanceof  DataTransferDetail){
-                    return createDataTransferResource((DataTransferDetail)o);
-                }else {
-                    logger.error("Object should be a data transfer detail data.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a data transfer detail data.");
-                }
-            case STATUS:
-                if (o instanceof  Status){
-                    return createStatusResource((Status)o);
-                }else {
-                    logger.error("Object should be a status data.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be a status data.");
-                }
-            case CONFIG_DATA:
-                if (o instanceof  ExperimentConfigData){
-                    return createExConfigDataResource((ExperimentConfigData)o);
-                }else {
-                    logger.error("Object should be a experiment config data.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be experiment config data.");
-                }
-            case COMPUTATIONAL_RESOURCE_SCHEDULING:
-                if (o instanceof  Computational_Resource_Scheduling){
-                    return createComputationalScheduling((Computational_Resource_Scheduling)o);
+            case PROCESS_RESOURCE_SCHEDULE:
+                if (o instanceof  ProcessResourceSchedule){
+                    return createProcessResourceSchedule((ProcessResourceSchedule) o);
                 }else {
                     logger.error("Object should be a scheduling resource data.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be scheduling resource data.");
                 }
-            case ADVANCE_INPUT_DATA_HANDLING:
-                if (o instanceof  AdvancedInputDataHandling){
-                    return createAdvancedInputDataResource((AdvancedInputDataHandling)o);
+            case TASK:
+                if (o instanceof  Task){
+                    return createTask((Task)o);
                 }else {
-                    logger.error("Object should be a advanced input data handling data.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be advanced input data handling data.");
+                    logger.error("Object should be a task data.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a task data.");
                 }
-            case ADVANCE_OUTPUT_DATA_HANDLING:
-                if (o instanceof  AdvancedOutputDataHandling){
-                    return createAdvancedOutputDataResource((AdvancedOutputDataHandling)o);
+            case TASK_STATUS:
+                if (o instanceof  TaskStatus){
+                    return createTaskStatusResource((TaskStatus) o);
                 }else {
-                    logger.error("Object should be a advanced output data handling data.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be advanced output data handling data.");
+                    logger.error("Object should be a TaskStatus data.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a TaskStatus data.");
                 }
-            case QOS_PARAM:
-                if (o instanceof  QosParam){
-                    return createQosParamResource((QosParam)o);
+            case TASK_ERROR:
+                if (o instanceof  TaskError){
+                    return createTaskError((TaskError)o);
                 }else {
-                    logger.error("Object should be a QOSparam data.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Object should be QOSparam data.");
+                    logger.error("Object should be a task error data.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be task error data.");
                 }
             default:
                 logger.error("Illegal data type..", new IllegalArgumentException());
@@ -355,36 +304,27 @@ public class Utils {
         }
     }
 
-    /**
-     *
-     * @param o  Gateway model object
-     * @return  GatewayResource object
-     */
     private static ExperimentCatResource createGateway(Gateway o) {
         GatewayResource gatewayResource = new GatewayResource();
-        gatewayResource.setGatewayName(o.getGateway_name());
-        gatewayResource.setGatewayId(o.getGateway_id());
+        gatewayResource.setGatewayName(o.getGatewayName());
+        gatewayResource.setGatewayId(o.getGatewayId());
         gatewayResource.setDomain(o.getDomain());
         gatewayResource.setEmailAddress(o.getEmailAddress());
         return gatewayResource;
     }
 
-    /**
-     *
-     * @param o Project model object
-     * @return ProjectResource object
-     */
+
     private static ExperimentCatResource createProject(Project o) {
         ProjectResource projectResource = new ProjectResource();
         if (o != null){
-            projectResource.setId(o.getProject_id());
-            projectResource.setName(o.getProject_name());
-            projectResource.setGatewayId(o.getGateway_id());
-            Gateway_Worker gateway_worker = new Gateway_Worker();
-            gateway_worker.setGateway(o.getGateway());
-            gateway_worker.setUser(o.getUsers());
-            gateway_worker.setUser_name(o.getUsers().getUser_name());
-            WorkerResource workerResource = (WorkerResource) createGatewayWorker(gateway_worker);
+            projectResource.setId(o.getProjectId());
+            projectResource.setName(o.getProjectName());
+            projectResource.setGatewayId(o.getGatewayId());
+            GatewayWorker gatewayWorker = new GatewayWorker();
+            gatewayWorker.setGateway(o.getGateway());
+            gatewayWorker.setUser(o.getUser());
+            gatewayWorker.setUserName(o.getUser().getUserName());
+            WorkerResource workerResource = (WorkerResource) createGatewayWorker(gatewayWorker);
             projectResource.setWorker(workerResource);
             projectResource.setDescription(o.getDescription());
             projectResource.setCreationTime(o.getCreationTime());
@@ -396,616 +336,241 @@ public class Utils {
     private static ExperimentCatResource createProjectUser(ProjectUser o) {
         ProjectUserResource projectUserResource = new ProjectUserResource();
         if (o != null){
-            projectUserResource.setUserName(o.getUser().getUser_name());
-            projectUserResource.setProjectId(o.getProjectID());
+            projectUserResource.setUserName(o.getUser().getUserName());
+            projectUserResource.setProjectId(o.getProjectId());
         }
         return projectUserResource;
     }
 
-    /**
-     *
-     * @param o configuration model object
-     * @return configuration resource object
-     */
-    private static ExperimentCatResource createConfiguration (Configuration o){
-        ConfigurationResource configurationResource = new ConfigurationResource();
-        if (o != null){
-            configurationResource.setConfigKey(o.getConfig_key());
-            configurationResource.setConfigVal(o.getConfig_val());
-            configurationResource.setExpireDate(o.getExpire_date());
-            configurationResource.setCategoryID(o.getCategory_id());
-        }
-
-        return configurationResource;
-    }
-
-    /**
-     *
-     * @param o Gateway_Worker model object
-     * @return  Gateway_Worker resource object
-     */
-    private static ExperimentCatResource createGatewayWorker(Gateway_Worker o) {
+    private static ExperimentCatResource createGatewayWorker(GatewayWorker o) {
         if (o != null){
             WorkerResource workerResource = new WorkerResource();
-            workerResource.setGatewayId(o.getGateway_id());
-            workerResource.setUser(o.getUser_name());
+            workerResource.setGatewayId(o.getGatewayId());
+            workerResource.setUser(o.getUserName());
             return workerResource;
         }
         return null;
     }
 
-    /**
-     *
-     * @param o  Users model object
-     * @return  UserResource object
-     */
-    private static ExperimentCatResource createUser(Users o) {
+    private static ExperimentCatResource createUser(User o) {
         UserResource userResource = new UserResource();
         if (o != null){
-            userResource.setUserName(o.getUser_name());
+            userResource.setUserName(o.getUserName());
             userResource.setPassword(o.getPassword());
         }
-
         return userResource;
     }
 
-    /**
-     * @param o Experiment model object
-     * @return  Experiment resource object
-     */
+
+    private static ExperimentCatResource createExperimentSummary(ExperimentSummary o) {
+        ExperimentSummaryResource experimentSummaryResource = new ExperimentSummaryResource();
+        if (o != null){
+            experimentSummaryResource.setExperimentId(o.getExperimentId());
+            experimentSummaryResource.setProjectId(o.getProjectId());
+            experimentSummaryResource.setUserName(o.getUserName());
+            experimentSummaryResource.setUserName(o.getUserName());
+            experimentSummaryResource.setApplicationId(o.getApplicationId());
+            experimentSummaryResource.setExperimentName(o.getExperimentName());
+            experimentSummaryResource.setCreationTime(o.getCreationTime());
+            experimentSummaryResource.setDescription(o.getDescription());
+            experimentSummaryResource.setState(o.getState());
+            experimentSummaryResource.setResourceHostId(o.getResourceHostId());
+            experimentSummaryResource.setTimeOfStateChange(o.getTimeOfStateChange());
+        }
+        return experimentSummaryResource;
+    }
+
     private static ExperimentCatResource createExperiment(Experiment o) {
         ExperimentResource experimentResource = new ExperimentResource();
         if (o != null){
-            experimentResource.setGatewayId(o.getGatewayId());
-            experimentResource.setExecutionUser(o.getExecutionUser());
-            experimentResource.setProjectId(o.getProjectID());
-            experimentResource.setExpID(o.getExpId());
-            experimentResource.setExpName(o.getExpName());
-            experimentResource.setCreationTime(o.getCreationTime());
-            experimentResource.setDescription(o.getExpDesc());
+            experimentResource.setExperimentId(o.getExperimentId());
+            experimentResource.setProjectId(o.getProjectId());
+            experimentResource.setExperimentType(o.getExperimentType());
+            experimentResource.setUserName(o.getUserName());
             experimentResource.setApplicationId(o.getApplicationId());
-            experimentResource.setApplicationVersion(o.getAppVersion());
-            experimentResource.setWorkflowTemplateId(o.getWorkflowTemplateId());
-            experimentResource.setWorkflowTemplateVersion(o.getWorkflowTemplateVersion());
-            experimentResource.setWorkflowExecutionId(o.getWorkflowExecutionId());
-            experimentResource.setEnableEmailNotifications(o.isAllowNotification());
+            experimentResource.setExperimentName(o.getExperimentName());
+            experimentResource.setCreationTime(o.getCreationTime());
+            experimentResource.setDescription(o.getDescription());
+            experimentResource.setExecutionId(o.getExecutionId());
             experimentResource.setGatewayExecutionId(o.getGatewayExecutionId());
-            if (o.getExperimentInputs() != null && !o.getExperimentInputs().isEmpty()){
-                experimentResource.setExperimentInputResources(getExperimentInputs(o.getExperimentInputs()));
-            }
-            if (o.getExperimentOutputs() != null && !o.getExperimentOutputs().isEmpty()){
-                experimentResource.setExperimentOutputputResources(getExperimentOutputs(o.getExperimentOutputs()));
-            }
-            if (o.getResourceScheduling() != null){
-                experimentResource.setComputationSchedulingResource((ComputationSchedulingResource)createComputationalScheduling(o.getResourceScheduling()));
-            }
-            if (o.getUserConfigurationData() != null){
-                experimentResource.setUserConfigDataResource((ConfigDataResource)createExConfigDataResource(o.getUserConfigurationData()));
-            }
-
-            if (o.getWorkflowNodeDetails() != null && !o.getWorkflowNodeDetails().isEmpty()){
-                experimentResource.setWorkflowNodeDetailResourceList(getWorkflowNodeLit(o.getWorkflowNodeDetails()));
-            }
-
-            if (o.getStateChangeList() != null && !o.getStateChangeList().isEmpty()){
-                experimentResource.setStateChangeList(getStateChangeList(o.getStateChangeList()));
-            }
-
-            if (o.getErrorDetails() != null && !o.getErrorDetails().isEmpty()){
-                experimentResource.setErrorDetailList(getErrorList(o.getErrorDetails()));
-            }
-
-            if (o.getExperimentStatus() != null){
-                experimentResource.setExperimentStatus((StatusResource)createStatusResource(o.getExperimentStatus()));
-            }
-
-            if (o.getNotificationEmails() != null && !o.getNotificationEmails().isEmpty()){
-                experimentResource.setEmailResourceList(getEmailList(o.getNotificationEmails()));
-            }
+            experimentResource.setEnableEmailNotification(o.getEnableEmailNotification());
+            experimentResource.setEmailAddresses(o.getEmailAddresses());
         }
         return experimentResource;
     }
 
-    /**
-     *
-     * @param o ExperimentSummary model object
-     * @return  ExperimentSummary Resource object
-     */
-    private static ExperimentCatResource createExperimentSummary(Experiment o) {
-        ExperimentSummaryResource experimentSummaryResource = new ExperimentSummaryResource();
+    private static ExperimentCatResource createExperimentInput (ExperimentInput o){
+        ExperimentInputResource inputResource = new ExperimentInputResource();
         if (o != null){
-            experimentSummaryResource.setExecutionUser(o.getExecutionUser());
-            experimentSummaryResource.setExpID(o.getExpId());
-            experimentSummaryResource.setExpName(o.getExpName());
-            experimentSummaryResource.setProjectID(o.getProjectID());
-            experimentSummaryResource.setCreationTime(o.getCreationTime());
-            experimentSummaryResource.setDescription(o.getExpDesc());
-            experimentSummaryResource.setApplicationId(o.getApplicationId());
-
-            Status experimentStatus = o.getExperimentStatus();
-            if(experimentStatus != null) {
-                StatusResource statusResource = new StatusResource();
-                statusResource.setStatusId(experimentStatus.getStatusId());
-                statusResource.setJobId(experimentStatus.getJobId());
-                statusResource.setState(experimentStatus.getState());
-                statusResource.setStatusUpdateTime(experimentStatus.getStatusUpdateTime());
-                statusResource.setStatusType(experimentStatus.getStatusType());
-                experimentSummaryResource.setStatus(statusResource);
-            }
-        }
-
-        return experimentSummaryResource;
-    }
-
-    private static List<ExperimentInputResource> getExperimentInputs(List<Experiment_Input> inputs){
-        List<ExperimentInputResource> inputResources = new ArrayList<ExperimentInputResource>();
-        for (Experiment_Input input : inputs){
-            inputResources.add((ExperimentInputResource)createExperimentInput(input));
-        }
-        return inputResources;
-    }
-
-    private static List<ExperimentOutputResource> getExperimentOutputs(List<Experiment_Output> outputs){
-        List<ExperimentOutputResource> outputResources = new ArrayList<>();
-        for (Experiment_Output output : outputs){
-            outputResources.add((ExperimentOutputResource) createExperimentOutput(output));
-        }
-        return outputResources;
-    }
-
-    private static List<NodeInputResource> getNodeInputs(List<NodeInput> inputs){
-        List<NodeInputResource> inputResources = new ArrayList<NodeInputResource>();
-        for (NodeInput input : inputs){
-            inputResources.add((NodeInputResource)createNodeInput(input));
-        }
-        return inputResources;
-    }
-
-    private static List<NodeOutputResource> getNodeOutputs(List<NodeOutput> outputs){
-        List<NodeOutputResource> outputResources = new ArrayList<>();
-        for (NodeOutput output : outputs){
-            outputResources.add((NodeOutputResource) createNodeOutput(output));
-        }
-        return outputResources;
-    }
-
-    private static List<ApplicationInputResource> getApplicationInputs(List<ApplicationInput> inputs){
-        List<ApplicationInputResource> inputResources = new ArrayList<ApplicationInputResource>();
-        for (ApplicationInput input : inputs){
-            inputResources.add((ApplicationInputResource)createApplicationInput(input));
-        }
-        return inputResources;
-    }
-
-    private static List<ApplicationOutputResource> getApplicationOutputs(List<ApplicationOutput> outputs){
-        List<ApplicationOutputResource> outputResources = new ArrayList<>();
-        for (ApplicationOutput output : outputs){
-            outputResources.add((ApplicationOutputResource) createApplicationOutput(output));
-        }
-        return outputResources;
-    }
-
-    private static List<WorkflowNodeDetailResource> getWorkflowNodeLit(List<WorkflowNodeDetail> nodes){
-        List<WorkflowNodeDetailResource> nodeList = new ArrayList<>();
-        for (WorkflowNodeDetail node : nodes){
-            nodeList.add((WorkflowNodeDetailResource) createWorkflowNodeDetail(node));
-        }
-        return nodeList;
-    }
-
-    private static List<StatusResource> getStateChangeList(List<Status> statusList){
-        List<StatusResource> changeList = new ArrayList<>();
-        for (Status status : statusList){
-            changeList.add((StatusResource) createStatusResource(status));
-        }
-        return changeList;
-    }
-
-    private static List<ErrorDetailResource> getErrorList(List<ErrorDetail> errorDetails){
-        List<ErrorDetailResource> errors = new ArrayList<>();
-        for (ErrorDetail error : errorDetails){
-            errors.add((ErrorDetailResource) createErrorDetail(error));
-        }
-        return errors;
-    }
-
-    private static List<JobDetailResource> getJobDetails(List<JobDetail> jobDetails){
-        List<JobDetailResource> resources = new ArrayList<>();
-        for (JobDetail jobDetail : jobDetails){
-            resources.add((JobDetailResource) createJobDetail(jobDetail));
-        }
-        return resources;
-    }
-
-    private static List<DataTransferDetailResource> getDTDetails(List<DataTransferDetail> dataTransferDetails){
-        List<DataTransferDetailResource> resources = new ArrayList<>();
-        for (DataTransferDetail detail : dataTransferDetails){
-            resources.add((DataTransferDetailResource) createDataTransferResource(detail));
-        }
-        return resources;
-    }
-
-    private static List<NotificationEmailResource> getEmailList(List<Notification_Email> emails){
-        List<NotificationEmailResource> emailResources = new ArrayList<>();
-        for (Notification_Email email : emails){
-            emailResources.add((NotificationEmailResource) createNotificationEmail(email));
-        }
-        return emailResources;
-    }
-
-    private static ExperimentCatResource createNotificationEmail (Notification_Email o){
-        NotificationEmailResource emailResource = new NotificationEmailResource();
-        if (o != null){
-            emailResource.setExperimentId(o.getExperiment_id());
-            emailResource.setTaskId(o.getTaskId());
-            emailResource.setEmailAddress(o.getEmailAddress());
-        }
-        return emailResource;
-    }
-
-    private static ExperimentCatResource createExperimentInput (Experiment_Input o){
-        ExperimentInputResource eInputResource = new ExperimentInputResource();
-        if (o != null){
-            eInputResource.setExperimentId(o.getExperiment_id());
-            eInputResource.setDataType(o.getDataType());
-            eInputResource.setMetadata(o.getMetadata());
-            eInputResource.setExperimentKey(o.getEx_key());
-            eInputResource.setAppArgument(o.getAppArgument());
-            eInputResource.setInputOrder(o.getInputOrder());
-            eInputResource.setStandardInput(o.isStandardInput());
-            eInputResource.setUserFriendlyDesc(o.getUserFriendlyDesc());
-            eInputResource.setRequired(o.isRequired());
-            eInputResource.setRequiredToCMD(o.isRequiredToCMD());
-            eInputResource.setDataStaged(o.isDataStaged());
-            if (o.getValue() != null){
-                eInputResource.setValue(new String(o.getValue()));
-            }
-        }
-        return eInputResource;
-    }
-
-    private static ExperimentCatResource createExperimentOutput (Experiment_Output o){
-        ExperimentOutputResource eOutputResource = new ExperimentOutputResource();
-        if (o != null){
-            eOutputResource.setExperimentId(o.getExperiment_id());
-            eOutputResource.setExperimentKey(o.getEx_key());
-            if (o.getValue() != null){
-                eOutputResource.setValue(new String(o.getValue()));
-            }
-            eOutputResource.setDataType(o.getDataType());
-            eOutputResource.setRequired(o.isRequired());
-            eOutputResource.setRequiredToCMD(o.isRequiredToCMD());
-            eOutputResource.setDataMovement(o.isDataMovement());
-            eOutputResource.setDataNameLocation(o.getDataNameLocation());
-            eOutputResource.setSearchQuery(o.getSearchQuery());
-            eOutputResource.setAppArgument(o.getApplicationArgument());
-        }
-        return eOutputResource;
-    }
-
-    private static ExperimentCatResource createWorkflowNodeDetail (WorkflowNodeDetail o){
-        WorkflowNodeDetailResource nodeDetailResource = new WorkflowNodeDetailResource();
-        if (o != null){
-            nodeDetailResource.setExperimentId(o.getExpId());
-            nodeDetailResource.setCreationTime(o.getCreationTime());
-            nodeDetailResource.setNodeInstanceId(o.getNodeId());
-            nodeDetailResource.setNodeName(o.getNodeName());
-            nodeDetailResource.setExecutionUnit(o.getExecutionUnit());
-            nodeDetailResource.setExecutionUnitData(o.getExecutionUnitData());
-            if (o.getTaskDetails() != null && !o.getErrorDetails().isEmpty()){
-                nodeDetailResource.setTaskDetailResourceList(getTaskDetails(o.getTaskDetails()));
-            }
-
-            if (o.getNodeInputs() != null && !o.getNodeInputs().isEmpty()){
-                nodeDetailResource.setNodeInputs(getNodeInputs(o.getNodeInputs()));
-            }
-
-            if (o.getNodeOutputs() != null && !o.getNodeOutputs().isEmpty()){
-                nodeDetailResource.setNodeOutputs(getNodeOutputs(o.getNodeOutputs()));
-            }
-
-            if (o.getNodeStatus() != null){
-                nodeDetailResource.setNodeStatus((StatusResource) createStatusResource(o.getNodeStatus()));
-            }
-
-            if (o.getErrorDetails() != null && !o.getErrorDetails().isEmpty()){
-                nodeDetailResource.setErros(getErrorList(o.getErrorDetails()));
-            }
-        }
-        return nodeDetailResource;
-    }
-
-    private static List<TaskDetailResource> getTaskDetails (List<TaskDetail> taskDetails){
-        List<TaskDetailResource> tasks = new ArrayList<>();
-        for (TaskDetail detail : taskDetails){
-            tasks.add((TaskDetailResource) createTaskDetail(detail));
-        }
-        return tasks;
-    }
-
-    private static ExperimentCatResource createTaskDetail(TaskDetail o){
-        TaskDetailResource taskDetailResource = new TaskDetailResource();
-        if ( o != null){
-            taskDetailResource.setNodeId(o.getNodeId());
-            taskDetailResource.setCreationTime(o.getCreationTime());
-            taskDetailResource.setTaskId(o.getTaskId());
-            taskDetailResource.setApplicationId(o.getAppId());
-            taskDetailResource.setApplicationVersion(o.getAppVersion());
-            taskDetailResource.setApplicationDeploymentId(o.getApplicationDeploymentId());
-            taskDetailResource.setEnableEmailNotifications(o.isAllowNotification());
-            if (o.getApplicationInputs() != null && !o.getApplicationInputs().isEmpty()){
-                taskDetailResource.setApplicationInputs(getApplicationInputs(o.getApplicationInputs()));
-            }
-            if (o.getApplicationOutputs() != null && !o.getApplicationOutputs().isEmpty()){
-                taskDetailResource.setApplicationOutputs(getApplicationOutputs(o.getApplicationOutputs()));
-            }
-            if (o.getResourceScheduling() != null){
-                taskDetailResource.setSchedulingResource((ComputationSchedulingResource) createComputationalScheduling(o.getResourceScheduling()));
-
-            }
-            if (o.getInputDataHandling() != null){
-                taskDetailResource.setInputDataHandlingResource((AdvanceInputDataHandlingResource) createAdvancedInputDataResource(o.getInputDataHandling()));
-            }
-            if (o.getOutputDataHandling() != null){
-                taskDetailResource.setOutputDataHandlingResource((AdvancedOutputDataHandlingResource) createAdvancedOutputDataResource(o.getOutputDataHandling()));
-            }
-            if (o.getErrorDetails() != null && !o.getErrorDetails().isEmpty()){
-                taskDetailResource.setErrors(getErrorList(o.getErrorDetails()));
-            }
-            if (o.getTaskStatus() != null){
-                taskDetailResource.setTaskStatus((StatusResource) createStatusResource(o.getTaskStatus()));
-            }
-            if (o.getNotificationEmails() != null && !o.getNotificationEmails().isEmpty()){
-                taskDetailResource.setEmailResourceList(getEmailList(o.getNotificationEmails()));
-            }
-            if (o.getJobDetails() != null && !o.getJobDetails().isEmpty()){
-                taskDetailResource.setJobDetailResources(getJobDetails(o.getJobDetails()));
-            }
-            if (o.getDataTransferDetails() != null && !o.getDataTransferDetails().isEmpty()){
-                taskDetailResource.setTransferDetailResourceList(getDTDetails(o.getDataTransferDetails()));
-            }
-
-        }
-        return taskDetailResource;
-    }
-
-    private static ExperimentCatResource createErrorDetail (ErrorDetail o){
-        ErrorDetailResource errorDetailResource = new ErrorDetailResource();
-        if (o != null){
-            errorDetailResource.setExperimentId(o.getExpId());
-            errorDetailResource.setTaskId(o.getTaskId());
-            errorDetailResource.setNodeId(o.getNodeId());
-            errorDetailResource.setErrorId(o.getErrorID());
-            errorDetailResource.setJobId(o.getJobId());
-            errorDetailResource.setCreationTime(o.getCreationTime());
-            if (o.getActualErrorMsg() != null){
-                errorDetailResource.setActualErrorMsg(new String(o.getActualErrorMsg()));
-            }
-            errorDetailResource.setUserFriendlyErrorMsg(o.getUserFriendlyErrorMsg());
-            errorDetailResource.setTransientPersistent(o.isTransientPersistent());
-            errorDetailResource.setErrorCategory(o.getErrorCategory());
-            errorDetailResource.setCorrectiveAction(o.getCorrectiveAction());
-            errorDetailResource.setActionableGroup(o.getActionableGroup());
-        }
-
-        return errorDetailResource;
-    }
-
-    private static ExperimentCatResource createApplicationInput (ApplicationInput o){
-        ApplicationInputResource inputResource = new ApplicationInputResource();
-        if (o != null){
-            inputResource.setTaskId(o.getTaskId());
-            inputResource.setInputKey(o.getInputKey());
+            inputResource.setExperimentInputId(o.getExperimentInputId());
+            inputResource.setExperimentId(o.getExperimentId());
+            inputResource.setInputName(o.getInputName());
+            inputResource.setInputValue(o.getInputValue());
             inputResource.setDataType(o.getDataType());
-            inputResource.setAppArgument(o.getAppArgument());
-            inputResource.setInputOrder(o.getInputOrder());
-            inputResource.setStandardInput(o.isStandardInput());
-            inputResource.setUserFriendlyDesc(o.getUserFriendlyDesc());
-            inputResource.setRequired(o.isRequired());
-            inputResource.setRequiredToCMD(o.isRequiredToCMD());
-            inputResource.setDataStaged(o.isDataStaged());
-            if (o.getValue() != null){
-                inputResource.setValue(new String(o.getValue()));
-            }
+            inputResource.setApplicationArgument(o.getApplicationArgument());
+            inputResource.setStandardInput(o.getStandardInput());
+            inputResource.setUserFriendlyDescription(o.getUserFriendlyDescription());
             inputResource.setMetadata(o.getMetadata());
+            inputResource.setInputOrder(o.getInputOrder());
+            inputResource.setIsRequired(o.getIsRequired());
+            inputResource.setRequiredToAddedToCmd(o.getRequiredToAddedToCmd());
+            inputResource.setDataStaged(o.getDataStaged());
         }
         return inputResource;
     }
 
-    private static ExperimentCatResource createApplicationOutput (ApplicationOutput o){
-        ApplicationOutputResource outputResource = new ApplicationOutputResource();
+    private static ExperimentCatResource createExperimentOutput (ExperimentOutput o){
+        ExperimentOutputResource outputResource = new ExperimentOutputResource();
         if (o != null){
-            outputResource.setTaskId(o.getTaskId());
+            outputResource.setExperimentOutputId(o.getExperimentOutputId());
+            outputResource.setExperimentId(o.getExperimentId());
             outputResource.setDataType(o.getDataType());
-            outputResource.setOutputKey(o.getOutputKey());
-            if (o.getValue() != null){
-                outputResource.setValue(new String(o.getValue()));
-            }
-            outputResource.setRequired(o.isRequired());
-            outputResource.setRequiredToCMD(o.isAddedToCmd());
-            outputResource.setDataMovement(o.isDataMovement());
-            outputResource.setDataNameLocation(o.getDataNameLocation());
+            outputResource.setApplicationArgument(o.getApplicationArgument());
+            outputResource.setIsRequired(o.getIsRequired());
+            outputResource.setRequiredToAddedToCmd(o.getRequiredToAddedToCmd());
+            outputResource.setDataMovement(o.getDataMovement());
+            outputResource.setLocation(o.getLocation());
             outputResource.setSearchQuery(o.getSearchQuery());
-            outputResource.setAppArgument(o.getApplicationArgument());
         }
         return outputResource;
     }
 
-    private static ExperimentCatResource createNodeInput (NodeInput o){
-        NodeInputResource inputResource = new NodeInputResource();
+    private static ExperimentCatResource createTaskError (TaskError o){
+        TaskErrorResource taskErrorResource = new TaskErrorResource();
         if (o != null){
-            inputResource.setNodeId(o.getNodeId());
-            inputResource.setInputKey(o.getInputKey());
+            taskErrorResource.setTaskId(o.getTaskId());
+            taskErrorResource.setCreationTime(o.getCreationTime());
+            taskErrorResource.setActualErrorMessage(o.getActualErrorMessage());
+            taskErrorResource.setUserFriendlyMessage(o.getUserFriendlyMessage());
+            taskErrorResource.setTransientOrPersistent(o.getTransientOrPersistent());
+            taskErrorResource.setRootCauseErrorIdList(o.getRootCauseErrorIdList());
+        }
+
+        return taskErrorResource;
+    }
+
+    private static ExperimentCatResource createExperimentError (ExperimentError o){
+        ExperimentErrorResource experimentErrorResource = new ExperimentErrorResource();
+        if (o != null){
+            experimentErrorResource.setExperimentId(o.getExperimentId());
+            experimentErrorResource.setCreationTime(o.getCreationTime());
+            experimentErrorResource.setActualErrorMessage(o.getActualErrorMessage());
+            experimentErrorResource.setUserFriendlyMessage(o.getUserFriendlyMessage());
+            experimentErrorResource.setTransientOrPersistent(o.getTransientOrPersistent());
+            experimentErrorResource.setRootCauseErrorIdList(o.getRootCauseErrorIdList());
+        }
+        return experimentErrorResource;
+    }
+
+    private static ExperimentCatResource createProcessError (ProcessError o){
+        ProcessErrorResource processErrorResource = new ProcessErrorResource();
+        if (o != null){
+            processErrorResource.setProcessId(o.getProcessId());
+            processErrorResource.setCreationTime(o.getCreationTime());
+            processErrorResource.setActualErrorMessage(o.getActualErrorMessage());
+            processErrorResource.setUserFriendlyMessage(o.getUserFriendlyMessage());
+            processErrorResource.setTransientOrPersistent(o.getTransientOrPersistent());
+            processErrorResource.setRootCauseErrorIdList(o.getRootCauseErrorIdList());
+        }
+        return processErrorResource;
+    }
+
+    private static ExperimentCatResource createProcessInput (ProcessInput o){
+        ProcessInputResource inputResource = new ProcessInputResource();
+        if (o != null){
+            inputResource.setProcessInputId(o.getProcessInputId());
+            inputResource.setProcessId(o.getProcessId());
+            inputResource.setInputName(o.getInputName());
+            inputResource.setInputValue(o.getInputValue());
             inputResource.setDataType(o.getDataType());
-            inputResource.setValue(o.getValue());
+            inputResource.setApplicationArgument(o.getApplicationArgument());
+            inputResource.setStandardInput(o.getStandardInput());
+            inputResource.setUserFriendlyDescription(o.getUserFriendlyDescription());
             inputResource.setMetadata(o.getMetadata());
-            inputResource.setAppArgument(o.getAppArgument());
             inputResource.setInputOrder(o.getInputOrder());
-            inputResource.setStandardInput(o.isStandardInput());
-            inputResource.setUserFriendlyDesc(o.getUserFriendlyDesc());
-            inputResource.setRequired(o.getIsRequired());
-            inputResource.setRequiredToCMD(o.getRequiredToCMD());
-            inputResource.setDataStaged(o.isDataStaged());
+            inputResource.setIsRequired(o.getIsRequired());
+            inputResource.setRequiredToAddedToCmd(o.getRequiredToAddedToCmd());
+            inputResource.setDataStaged(o.getDataStaged());
         }
         return inputResource;
     }
 
-    private static ExperimentCatResource createNodeOutput (NodeOutput o){
-        NodeOutputResource outputResource = new NodeOutputResource();
+    private static ExperimentCatResource createProcessOutput (ProcessOutput o){
+        ProcessOutputResource outputResource = new ProcessOutputResource();
         if (o != null){
-            outputResource.setNodeId(o.getNodeId());
+            outputResource.setProcessOutputId(o.getProcessOutputId());
+            outputResource.setProcessId(o.getProcessId());
             outputResource.setDataType(o.getDataType());
-            outputResource.setOutputKey(o.getOutputKey());
-            outputResource.setValue(o.getValue());
-            outputResource.setRequired(o.isRequired());
-            outputResource.setRequiredToCMD(o.isRequiredToCMD());
-            outputResource.setDataMovement(o.isDataMovement());
-            outputResource.setDataNameLocation(o.getDataNameLocation());
+            outputResource.setApplicationArgument(o.getApplicationArgument());
+            outputResource.setIsRequired(o.getIsRequired());
+            outputResource.setRequiredToAddedToCmd(o.getRequiredToAddedToCmd());
+            outputResource.setDataMovement(o.getDataMovement());
+            outputResource.setLocation(o.getLocation());
             outputResource.setSearchQuery(o.getSearchQuery());
-            outputResource.setAppArgument(o.getApplicationArgument());
         }
-
         return outputResource;
     }
 
-    private static ExperimentCatResource createJobDetail (JobDetail o){
-        JobDetailResource jobDetailResource = new JobDetailResource();
+    private static ExperimentCatResource createTask (Task o){
+        TaskResource taskResource = new TaskResource();
         if (o != null){
-            jobDetailResource.setTaskId(o.getTaskId());
-            if (o.getJobDescription() != null){
-                jobDetailResource.setJobDescription(new String(o.getJobDescription()));
-            }
-            jobDetailResource.setJobId(o.getJobId());
-            jobDetailResource.setCreationTime(o.getCreationTime());
-            jobDetailResource.setComputeResourceConsumed(o.getComputeResourceConsumed());
-            jobDetailResource.setJobName(o.getJobName());
-            jobDetailResource.setWorkingDir(o.getWorkingDir());
-            jobDetailResource.setJobStatus((StatusResource)createStatusResource(o.getJobStatus()));
-            jobDetailResource.setErrors(getErrorList(o.getErrorDetails()));
+            taskResource.setTaskId(o.getTaskId());
+            taskResource.setTaskType(o.getTaskType());
+            taskResource.setParentProcessId(o.getParentProcessId());
+            taskResource.setCreationTime(o.getCreationTime());
+            taskResource.setLastUpdateTime(o.getLastUpdateTime());
+            taskResource.setTaskDetail(o.getTaskDetail());
+            taskResource.setTaskInternalStore(o.getTaskInternalStore());
         }
-
-        return jobDetailResource;
+        return taskResource;
     }
 
-    private static ExperimentCatResource createDataTransferResource (DataTransferDetail o){
-        DataTransferDetailResource transferDetailResource = new DataTransferDetailResource();
+    private static ExperimentCatResource createTaskStatusResource (TaskStatus o){
+        TaskStatusResource taskStatusResource = new TaskStatusResource();
         if (o != null){
-            transferDetailResource.setTaskId(o.getTaskId());
-            transferDetailResource.setTransferId(o.getTransferId());
-            transferDetailResource.setCreationTime(o.getCreationTime());
-            if (o.getTransferDesc() != null){
-                transferDetailResource.setTransferDescription(new String(o.getTransferDesc()));
-            }
-            if (o.getDataTransferStatus() != null){
-                transferDetailResource.setDatatransferStatus((StatusResource)createStatusResource(o.getDataTransferStatus()));
-            }
+            taskStatusResource.setTaskId(o.getTaskId());
+            taskStatusResource.setState(o.getState());
+            taskStatusResource.setTimeOfStateChange(o.getTimeOfStateChange());
+            taskStatusResource.setReason(o.getReason());
         }
-        return transferDetailResource;
+
+        return taskStatusResource;
     }
 
-    private static ExperimentCatResource createStatusResource (Status o){
-        StatusResource statusResource = new StatusResource();
+    private static ExperimentCatResource createProcessStatusResource (ProcessStatus o){
+        ProcessStatusResource processStatusResource = new ProcessStatusResource();
         if (o != null){
-            statusResource.setExperimentId(o.getExpId());
-            statusResource.setTaskId(o.getTaskId());
-            statusResource.setNodeId(o.getNodeId());
-            statusResource.setTransferId(o.getTransferId());
-            statusResource.setStatusId(o.getStatusId());
-            statusResource.setJobId(o.getJobId());
-            statusResource.setState(o.getState());
-            statusResource.setStatusUpdateTime(o.getStatusUpdateTime());
-            statusResource.setStatusType(o.getStatusType());
+            processStatusResource.setProcessId(o.getProcessId());
+            processStatusResource.setState(o.getState());
+            processStatusResource.setTimeOfStateChange(o.getTimeOfStateChange());
+            processStatusResource.setReason(o.getReason());
         }
-
-        return statusResource;
+        return processStatusResource;
     }
 
-    private static ExperimentCatResource createExConfigDataResource (ExperimentConfigData o){
-        ConfigDataResource configDataResource = new ConfigDataResource();
+    private static ExperimentCatResource createExperimentStatusResource (ExperimentStatus o){
+        ExperimentStatusResource experimentStatusResource = new ExperimentStatusResource();
         if (o != null){
-            configDataResource.setExperimentId(o.getExpId());
-            configDataResource.setAiravataAutoSchedule(o.isAiravataAutoSchedule());
-            configDataResource.setOverrideManualParams(o.isOverrideManualParams());
-            configDataResource.setShareExp(o.isShareExp());
-            configDataResource.setUserDn(o.getUserDn());
-            configDataResource.setGenerateCert(o.isGenerateCert());
-            if (o.getOutputDataHandling() != null){
-                configDataResource.setAdvancedOutputDataHandlingResource((AdvancedOutputDataHandlingResource) createAdvancedOutputDataResource(o.getOutputDataHandling()));
-            }
-            if (o.getInputDataHandling() != null){
-                configDataResource.setAdvanceInputDataHandlingResource((AdvanceInputDataHandlingResource) createAdvancedInputDataResource(o.getInputDataHandling()));
-            }
-            if (o.getResourceScheduling() != null){
-                configDataResource.setComputationSchedulingResource((ComputationSchedulingResource) createComputationalScheduling(o.getResourceScheduling()));
-            }
-            if (o.getQosParam() != null){
-                configDataResource.setQosParamResource((QosParamResource) createQosParamResource(o.getQosParam()));
-            }
-
+            experimentStatusResource.setExperimentId(o.getExperimentId());
+            experimentStatusResource.setState(o.getState());
+            experimentStatusResource.setTimeOfStateChange(o.getTimeOfStateChange());
+            experimentStatusResource.setReason(o.getReason());
         }
-        return configDataResource;
+        return experimentStatusResource;
     }
 
-    private static ExperimentCatResource createComputationalScheduling (Computational_Resource_Scheduling o){
-        ComputationSchedulingResource schedulingResource = new ComputationSchedulingResource();
-        if (o != null){
-            schedulingResource.setExperimentId(o.getExpId());
-            schedulingResource.setTaskId(o.getTaskId());
-            schedulingResource.setSchedulingId(o.getSchedulingId());
-            schedulingResource.setResourceHostId(o.getResourceHostId());
-            schedulingResource.setCpuCount(o.getCpuCount());
-            schedulingResource.setNodeCount(o.getNodeCount());
-            schedulingResource.setNumberOfThreads(o.getNumberOfThreads());
-            schedulingResource.setQueueName(o.getQueueName());
-            schedulingResource.setWalltimeLimit(o.getWallTimeLimit());
-            schedulingResource.setJobStartTime(o.getJobStartTime());
-            schedulingResource.setPhysicalMemory(o.getTotalPhysicalmemory());
-            schedulingResource.setProjectName(o.getProjectName());
-            schedulingResource.setChessisName(o.getChessisName());
+    public static ExperimentCatResource createProcessResourceSchedule(ProcessResourceSchedule o){
+        ProcessResourceScheduleResource resourceScheduleResource = new ProcessResourceScheduleResource();
+        if(o != null){
+            resourceScheduleResource.setProcessId(o.getProcessId());
+            resourceScheduleResource.setResourceHostId(o.getResourceHostId());
+            resourceScheduleResource.setTotalCpuCount(o.getTotalCpuCount());
+            resourceScheduleResource.setNodeCount(o.getNodeCount());
+            resourceScheduleResource.setNumberOfThreads(o.getNumberOfThreads());
+            resourceScheduleResource.setQueueName(o.getQueueName());
+            resourceScheduleResource.setWallTimeLimit(o.getWallTimeLimit());
+            resourceScheduleResource.setTotalPhysicalMemory(o.getTotalPhysicalMemory());
         }
-
-        return schedulingResource;
-    }
-
-    private static ExperimentCatResource createAdvancedInputDataResource (AdvancedInputDataHandling o){
-        AdvanceInputDataHandlingResource dataHandlingResource = new AdvanceInputDataHandlingResource();
-        if (o != null){
-            dataHandlingResource.setExperimentId(o.getExpId());
-            dataHandlingResource.setTaskId(o.getTaskId());
-            dataHandlingResource.setDataHandlingId(o.getDataHandlingId());
-            dataHandlingResource.setWorkingDirParent(o.getParentWorkingDir());
-            dataHandlingResource.setWorkingDir(o.getWorkingDir());
-            dataHandlingResource.setStageInputFiles(o.isStageInputsToWorkingDir());
-            dataHandlingResource.setCleanAfterJob(o.isCleanAfterJob());
-        }
-
-        return dataHandlingResource;
-    }
-
-    private static ExperimentCatResource createAdvancedOutputDataResource (AdvancedOutputDataHandling o){
-        AdvancedOutputDataHandlingResource dataHandlingResource = new AdvancedOutputDataHandlingResource();
-        if (o != null){
-            dataHandlingResource.setExperimentId(o.getExpId());
-            dataHandlingResource.setTaskId(o.getTaskId());
-            dataHandlingResource.setOutputDataHandlingId(o.getOutputDataHandlingId());
-            dataHandlingResource.setOutputDataDir(o.getOutputDataDir());
-            dataHandlingResource.setDataRegUrl(o.getDataRegUrl());
-            dataHandlingResource.setPersistOutputData(o.isPersistOutputData());
-        }
-        return dataHandlingResource;
-    }
-
-    private static ExperimentCatResource createQosParamResource (QosParam o){
-        QosParamResource qosParamResource = new QosParamResource();
-        if (o != null){
-            qosParamResource.setExperimentId(o.getExpId());
-            qosParamResource.setTaskId(o.getTaskId());
-            qosParamResource.setQosId(o.getQosId());
-            qosParamResource.setExecuteBefore(o.getExecuteBefore());
-            qosParamResource.setStartExecutionAt(o.getStartExecutionAt());
-            qosParamResource.setNoOfRetries(o.getNoOfRetries());
-        }
-
-        return qosParamResource;
+        return resourceScheduleResource;
     }
 }

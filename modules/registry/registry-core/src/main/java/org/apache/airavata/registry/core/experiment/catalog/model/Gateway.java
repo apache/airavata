@@ -20,36 +20,45 @@
 */
 package org.apache.airavata.registry.core.experiment.catalog.model;
 
-import org.apache.openjpa.persistence.DataCache;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.io.Serializable;
+import javax.persistence.*;
+import java.util.Collection;
 
-@DataCache
 @Entity
-@Table(name ="GATEWAY")
-public class Gateway implements Serializable {
+@Table(name = "GATEWAY")
+public class Gateway {
+    private final static Logger logger = LoggerFactory.getLogger(Gateway.class);
+    private String gatewayId;
+    private String gatewayName;
+    private String domain;
+    private String emailAddress;
+    private Collection<GatewayWorker> gatewayWorkers;
+    private Collection<Project> projects;
+
     @Id
     @Column(name = "GATEWAY_ID")
-    private String gateway_id;
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
+
+    @Basic
     @Column(name = "GATEWAY_NAME")
-    private String gateway_name;
+    public String getGatewayName() {
+        return gatewayName;
+    }
+
+    public void setGatewayName(String gatewayName) {
+        this.gatewayName = gatewayName;
+    }
+
+    @Basic
     @Column(name = "DOMAIN")
-    private String domain;
-    @Column(name = "EMAIL_ADDRESS")
-    private String emailAddress;
-
-    public String getGateway_name() {
-        return gateway_name;
-    }
-
-    public void setGateway_name(String gateway_name) {
-        this.gateway_name = gateway_name;
-    }
-
     public String getDomain() {
         return domain;
     }
@@ -58,19 +67,57 @@ public class Gateway implements Serializable {
         this.domain = domain;
     }
 
-    public String getGateway_id() {
-        return gateway_id;
-    }
-
-    public void setGateway_id(String gateway_id) {
-        this.gateway_id = gateway_id;
-    }
-
+    @Basic
+    @Column(name = "EMAIL_ADDRESS")
     public String getEmailAddress() {
         return emailAddress;
     }
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Gateway gateway = (Gateway) o;
+
+        if (domain != null ? !domain.equals(gateway.domain) : gateway.domain != null) return false;
+        if (emailAddress != null ? !emailAddress.equals(gateway.emailAddress) : gateway.emailAddress != null)
+            return false;
+        if (gatewayId != null ? !gatewayId.equals(gateway.gatewayId) : gateway.gatewayId != null) return false;
+        if (gatewayName != null ? !gatewayName.equals(gateway.gatewayName) : gateway.gatewayName != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = gatewayId != null ? gatewayId.hashCode() : 0;
+        result = 31 * result + (gatewayName != null ? gatewayName.hashCode() : 0);
+        result = 31 * result + (domain != null ? domain.hashCode() : 0);
+        result = 31 * result + (emailAddress != null ? emailAddress.hashCode() : 0);
+        return result;
+    }
+
+    @OneToMany(mappedBy = "gateways")
+    public Collection<GatewayWorker> getGatewayWorkers() {
+        return gatewayWorkers;
+    }
+
+    public void setGatewayWorkers(Collection<GatewayWorker> gatewayWorkersByGatewayId) {
+        this.gatewayWorkers = gatewayWorkersByGatewayId;
+    }
+
+    @OneToMany(mappedBy = "gateway")
+    public Collection<Project> getProjects() {
+        return projects;
+    }
+
+    public void setProjects(Collection<Project> projectByGatewayId) {
+        this.projects = projectByGatewayId;
     }
 }

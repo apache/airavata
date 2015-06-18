@@ -1,0 +1,273 @@
+/*
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
+package org.apache.airavata.registry.core.experiment.catalog.resources;
+
+import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
+import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
+import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
+import org.apache.airavata.registry.core.experiment.catalog.model.Task;
+import org.apache.airavata.registry.core.experiment.catalog.model.TaskError;
+import org.apache.airavata.registry.core.experiment.catalog.model.TaskStatus;
+import org.apache.airavata.registry.core.experiment.catalog.utils.QueryGenerator;
+import org.apache.airavata.registry.cpi.RegistryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import java.sql.Timestamp;
+import java.util.List;
+
+public class TaskResource extends AbstractExpCatResource {
+    private static final Logger logger = LoggerFactory.getLogger(TaskResource.class);
+    private String taskId;
+    private String taskType;
+    private String parentProcessId;
+    private Timestamp creationTime;
+    private Timestamp lastUpdateTime;
+    private String taskDetail;
+    private Byte taskInternalStore;
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
+
+    public String getTaskType() {
+        return taskType;
+    }
+
+    public void setTaskType(String taskType) {
+        this.taskType = taskType;
+    }
+
+    public String getParentProcessId() {
+        return parentProcessId;
+    }
+
+    public void setParentProcessId(String parentProcessId) {
+        this.parentProcessId = parentProcessId;
+    }
+
+    public Timestamp getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(Timestamp creationTime) {
+        this.creationTime = creationTime;
+    }
+
+    public Timestamp getLastUpdateTime() {
+        return lastUpdateTime;
+    }
+
+    public void setLastUpdateTime(Timestamp lastUpdateTime) {
+        this.lastUpdateTime = lastUpdateTime;
+    }
+
+    public String getTaskDetail() {
+        return taskDetail;
+    }
+
+    public void setTaskDetail(String taskDetail) {
+        this.taskDetail = taskDetail;
+    }
+
+    public Byte getTaskInternalStore() {
+        return taskInternalStore;
+    }
+
+    public void setTaskInternalStore(Byte taskInternalStore) {
+        this.taskInternalStore = taskInternalStore;
+    }
+
+    public ExperimentCatResource create(ResourceType type) throws RegistryException {
+        switch (type){
+            case TASK_STATUS:
+                TaskStatusResource taskStatusResource = new TaskStatusResource();
+                taskStatusResource.setTaskId(taskId);
+                return taskStatusResource;
+            case TASK_ERROR:
+                TaskErrorResource taskErrorResource = new TaskErrorResource();
+                taskErrorResource.setTaskId(taskId);
+                return taskErrorResource;
+            default:
+                logger.error("Unsupported resource type for job details data resource.", new UnsupportedOperationException());
+                throw new UnsupportedOperationException();
+        }
+    }
+
+    
+    public void remove(ResourceType type, Object name) throws RegistryException{
+        EntityManager em = null;
+        try {
+            em = ExpCatResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            Query q;
+            QueryGenerator generator;
+            switch (type) {
+                case TASK_STATUS:
+                    generator = new QueryGenerator(TASK_STATUS);
+                    generator.setParameter(TaskStatusConstants.TASK_ID, name);
+                    q = generator.deleteQuery(em);
+                    q.executeUpdate();
+                    break;
+                case TASK_ERROR:
+                    generator = new QueryGenerator(TASK_ERROR);
+                    generator.setParameter(TaskErrorConstants.TASK_ID, name);
+                    q = generator.deleteQuery(em);
+                    q.executeUpdate();
+                    break;
+                default:
+                    logger.error("Unsupported resource type for job details resource.", new IllegalArgumentException());
+                    break;
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+    }
+
+    
+    public ExperimentCatResource get(ResourceType type, Object name) throws RegistryException {
+        EntityManager em = null;
+        try {
+            em = ExpCatResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            QueryGenerator generator;
+            Query q;
+            switch (type) {
+                case TASK_STATUS:
+                    generator = new QueryGenerator(TASK_STATUS);
+                    generator.setParameter(TaskStatusConstants.TASK_ID, name);
+                    q = generator.selectQuery(em);
+                    TaskStatus status = (TaskStatus) q.getSingleResult();
+                    TaskStatusResource statusResource = (TaskStatusResource) Utils.getResource(ResourceType.TASK_STATUS, status);
+                    em.getTransaction().commit();
+                    em.close();
+                    return statusResource;
+                case TASK_ERROR:
+                    generator = new QueryGenerator(TASK_ERROR);
+                    generator.setParameter(TaskErrorConstants.TASK_ID, name);
+                    q = generator.selectQuery(em);
+                    TaskError error = (TaskError) q.getSingleResult();
+                    TaskErrorResource errorResource = (TaskErrorResource) Utils.getResource(
+                            ResourceType.TASK_ERROR, error
+                    );
+                    em.getTransaction().commit();
+                    em.close();
+                    return errorResource;
+                default:
+                    em.getTransaction().commit();
+                    em.close();
+                    logger.error("Unsupported resource type for Task resource.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Unsupported resource type for Task resource.");
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+    }
+
+    
+    public List<ExperimentCatResource> get(ResourceType type) throws RegistryException{
+        logger.error("Unsupported resource type for task resource.", new UnsupportedOperationException());
+        throw new UnsupportedOperationException();
+    }
+
+    
+    public void save()  throws RegistryException{
+        EntityManager em = null;
+        try {
+            em = ExpCatResourceUtils.getEntityManager();
+            Task existingTask = em.find(Task.class, taskId);
+            em.close();
+
+            em = ExpCatResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            if (existingTask != null) {
+                existingTask.setTaskType(taskType);
+                existingTask.setParentProcessId(parentProcessId);
+                existingTask.setCreationTime(creationTime);
+                existingTask.setLastUpdateTime(lastUpdateTime);
+                existingTask.setTaskDetail(taskDetail);
+                existingTask.setTaskInternalStore(taskInternalStore);
+                em.merge(existingTask);
+            } else {
+                Task task = new Task();
+                task.setTaskId(taskId);
+                task.setTaskType(taskType);
+                task.setParentProcessId(parentProcessId);
+                task.setCreationTime(creationTime);
+                task.setLastUpdateTime(lastUpdateTime);
+                task.setTaskDetail(taskDetail);
+                task.setTaskInternalStore(taskInternalStore);
+                em.persist(task);
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+    }
+
+    public TaskStatusResource getTaskStatus() throws RegistryException{
+        ExperimentCatResource resource = get(ResourceType.TASK_STATUS, taskId);
+        TaskStatusResource status = (TaskStatusResource) resource;
+        if (status.getState() == null || status.getState().equals("") ){
+            status.setState("UNKNOWN");
+        }
+        return status;
+    }
+
+    public TaskErrorResource getTaskError () throws RegistryException{
+        ExperimentCatResource resource = get(ResourceType.TASK_ERROR, taskId);;
+        return (TaskErrorResource) resource;
+    }
+}

@@ -24,7 +24,7 @@ package org.apache.airavata.registry.core.experiment.catalog.resources;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
-import org.apache.airavata.registry.core.experiment.catalog.model.ExperimentOutput;
+import org.apache.airavata.registry.core.experiment.catalog.model.ProcessOutput;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,10 +32,10 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.EntityManager;
 import java.util.List;
 
-public class ExperimentOutputResource extends AbstractExpCatResource {
-    private static final Logger logger = LoggerFactory.getLogger(ExperimentOutputResource.class);
-    private int experimentOutputId;
-    private String experimentId;
+public class ProcessOutputResource extends AbstractExpCatResource {
+    private static final Logger logger = LoggerFactory.getLogger(ProcessOutputResource.class);
+    private int processOutputId;
+    private String processId;
     private String dataType;
     private String applicationArgument;
     private Boolean isRequired;
@@ -44,20 +44,20 @@ public class ExperimentOutputResource extends AbstractExpCatResource {
     private String location;
     private String searchQuery;
 
-    public int getExperimentOutputId() {
-        return experimentOutputId;
+    public int getProcessOutputId() {
+        return processOutputId;
     }
 
-    public void setExperimentOutputId(int experimentOutputId) {
-        this.experimentOutputId = experimentOutputId;
+    public void setProcessOutputId(int processOutputId) {
+        this.processOutputId = processOutputId;
     }
 
-    public String getExperimentId() {
-        return experimentId;
+    public String getProcessId() {
+        return processId;
     }
 
-    public void setExperimentId(String experimentId) {
-        this.experimentId = experimentId;
+    public void setProcessId(String processId) {
+        this.processId = processId;
     }
 
     public String getDataType() {
@@ -145,27 +145,27 @@ public class ExperimentOutputResource extends AbstractExpCatResource {
         try {
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
-            if(experimentId == null){
-                throw new RegistryException("Does not have the experiment id");
+            if(processId == null){
+                throw new RegistryException("Does not have the process id");
             }
-            ExperimentOutput experimentOutput;
-            experimentOutput = em.find(ExperimentOutput.class, experimentOutputId);
-            if(experimentOutput == null){
-                experimentOutput = new ExperimentOutput();
+            ProcessOutput processOutput;
+            processOutput = em.find(ProcessOutput.class, processOutputId);
+            if(processOutput == null){
+                processOutput = new ProcessOutput();
             }
-            experimentOutput.setExperimentOutputId(experimentOutputId);
-            experimentOutput.setExperimentId(experimentId);
-            experimentOutput.setDataType(dataType);
-            experimentOutput.setApplicationArgument(applicationArgument);
-            experimentOutput.setIsRequired(isRequired);
-            experimentOutput.setRequiredToAddedToCmd(requiredToAddedToCmd);
-            experimentOutput.setDataMovement(dataMovement);
-            experimentOutput.setLocation(location);
-            experimentOutput.setSearchQuery(searchQuery);
-            em.persist(experimentOutput);
+            processOutput.setProcessOutputId(processOutputId);
+            processOutput.setProcessId(processId);
+            processOutput.setDataType(dataType);
+            processOutput.setApplicationArgument(applicationArgument);
+            processOutput.setIsRequired(isRequired);
+            processOutput.setRequiredToAddedToCmd(requiredToAddedToCmd);
+            processOutput.setDataMovement(dataMovement);
+            processOutput.setLocation(location);
+            processOutput.setSearchQuery(searchQuery);
+            em.persist(processOutput);
             em.getTransaction().commit();
             em.close();
-            this.experimentOutputId = experimentOutput.getExperimentOutputId();
+            this.processOutputId = processOutput.getProcessOutputId();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

@@ -23,30 +23,27 @@ package org.apache.airavata.registry.core.experiment.catalog.model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Id;
+import java.io.Serializable;
 
-@Entity
-@Table(name = "PROJECT_USER")
-@IdClass(ProjectUsersPK.class)
-public class ProjectUser {
-    private final static Logger logger = LoggerFactory.getLogger(ProjectUser.class);
-    private String projectId;
+public class GatewayWorkerPK implements Serializable {
+    private final static Logger logger = LoggerFactory.getLogger(GatewayWorkerPK.class);
+    private String gatewayId;
     private String userName;
-    private User user;
-    private Project project;
 
+    @Column(name = "GATEWAY_ID")
     @Id
-    @Column(name = "PROJECT_ID")
-    public String getProjectId() {
-        return projectId;
+    public String getGatewayId() {
+        return gatewayId;
     }
 
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
     }
 
-    @Id
     @Column(name = "USER_NAME")
+    @Id
     public String getUserName() {
         return userName;
     }
@@ -60,9 +57,9 @@ public class ProjectUser {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ProjectUser that = (ProjectUser) o;
+        GatewayWorkerPK that = (GatewayWorkerPK) o;
 
-        if (projectId != null ? !projectId.equals(that.projectId) : that.projectId != null) return false;
+        if (gatewayId != null ? !gatewayId.equals(that.gatewayId) : that.gatewayId != null) return false;
         if (userName != null ? !userName.equals(that.userName) : that.userName != null) return false;
 
         return true;
@@ -70,28 +67,8 @@ public class ProjectUser {
 
     @Override
     public int hashCode() {
-        int result = projectId != null ? projectId.hashCode() : 0;
+        int result = gatewayId != null ? gatewayId.hashCode() : 0;
         result = 31 * result + (userName != null ? userName.hashCode() : 0);
         return result;
-    }
-
-    @ManyToOne
-    @JoinColumn(name = "USER_NAME", referencedColumnName = "USER_NAME", nullable = false)
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User userByUserName) {
-        this.user = userByUserName;
-    }
-
-    @ManyToOne
-    @JoinColumn(name = "PROJECT_ID", referencedColumnName = "PROJECT_ID", nullable = false)
-    public Project getProject() {
-        return project;
-    }
-
-    public void setProject(Project projectByProjectId) {
-        this.project = projectByProjectId;
     }
 }

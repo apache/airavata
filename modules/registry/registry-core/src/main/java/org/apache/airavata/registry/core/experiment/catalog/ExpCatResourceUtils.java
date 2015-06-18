@@ -158,7 +158,7 @@ public class ExpCatResourceUtils {
         try {
             if (isUserExist(userName)) {
                 em = getEntityManager();
-                Users user =  em.find(Users.class, userName);
+                User user =  em.find(User.class, userName);
                 UserResource userResource = (UserResource)Utils.getResource(ResourceType.USER, user);
                 em.close();
                 return userResource;
@@ -182,7 +182,10 @@ public class ExpCatResourceUtils {
         EntityManager em = null;
         try {
             em = getEntityManager();
-            Gateway_Worker gatewayWorker = em.find(Gateway_Worker.class, new Gateway_Worker_PK(gatewayId, userName));
+            GatewayWorkerPK gatewayWorkerPK = new GatewayWorkerPK();
+            gatewayWorkerPK.setGatewayId(gatewayId);
+            gatewayWorkerPK.setUserName(userName);
+            GatewayWorker gatewayWorker = em.find(GatewayWorker.class, gatewayWorkerPK);
             WorkerResource workerResource = (WorkerResource) Utils.getResource(ResourceType.GATEWAY_WORKER, gatewayWorker);
             em.close();
             return workerResource;
@@ -310,8 +313,8 @@ public class ExpCatResourceUtils {
                 userResource.save();
             }
             Gateway gateway = em.find(Gateway.class, gatewayResource.getGatewayId());
-            Users user = em.find(Users.class, userResource.getUserName());
-            Gateway_Worker gatewayWorker = new Gateway_Worker();
+            User user = em.find(User.class, userResource.getUserName());
+            GatewayWorker gatewayWorker = new GatewayWorker();
             gatewayWorker.setGateway(gateway);
             gatewayWorker.setUser(user);
             em.persist(gatewayWorker);
@@ -362,161 +365,5 @@ public class ExpCatResourceUtils {
             }
         }
 
-    }
-
-    /**
-     * @param configKey
-     * @return
-     */
-    public static List<ConfigurationResource> getConfigurations(String configKey){
-        List<ConfigurationResource> list = new ArrayList<ConfigurationResource>();
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            QueryGenerator generator = new QueryGenerator(AbstractExpCatResource.CONFIGURATION);
-            generator.setParameter(AbstractExpCatResource.ConfigurationConstants.CONFIG_KEY, configKey);
-            Query q = generator.selectQuery(em);
-            List<?> resultList = q.getResultList();
-            if (resultList.size() != 0) {
-                for (Object result : resultList) {
-                    ConfigurationResource configurationResource = createConfigurationResourceObject(result);
-                    list.add(configurationResource);
-                }
-            }
-            em.getTransaction().commit();
-            em.close();
-        }catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }finally {
-            if (em != null && em.isOpen()){
-                if (em.getTransaction().isActive()){
-                    em.getTransaction().rollback();
-                }
-                em.close();
-            }
-        }
-        return list;
-    }
-
-    /**
-     * @param configKey
-     * @return
-     */
-    public static ConfigurationResource getConfiguration(String configKey){
-        List<ConfigurationResource> configurations = getConfigurations(configKey);
-        return (configurations != null && configurations.size() > 0) ? configurations.get(0) : null;
-    }
-
-    /**
-     * @param configKey
-     * @return
-     */
-    public static boolean isConfigurationExist(String configKey){
-        List<ConfigurationResource> configurations = getConfigurations(configKey);
-        return (configurations != null && configurations.size() > 0);
-    }
-
-    /**
-     * @param configKey
-     * @return
-     */
-    public static ConfigurationResource createConfiguration(String configKey) {
-        ConfigurationResource config = new ConfigurationResource();
-        config.setConfigKey(configKey);
-        return config;
-    }
-
-    /**
-     * @param result
-     * @return
-     */
-    private static ConfigurationResource createConfigurationResourceObject(
-            Object result) {
-        Configuration configuration = (Configuration) result;
-        ConfigurationResource configurationResource = new ConfigurationResource(configuration.getConfig_key(), configuration.getConfig_val());
-        configurationResource.setExpireDate(configuration.getExpire_date());
-        return configurationResource;
-    }
-
-    /**
-     * @param configkey
-     * @param configValue
-     */
-    public static void removeConfiguration(String configkey, String configValue) throws RegistryException{
-        QueryGenerator queryGenerator = new QueryGenerator(AbstractExpCatResource.CONFIGURATION);
-        queryGenerator.setParameter(AbstractExpCatResource.ConfigurationConstants.CONFIG_KEY, configkey);
-        queryGenerator.setParameter(AbstractExpCatResource.ConfigurationConstants.CONFIG_VAL, configValue);
-        EntityManager em = null;
-        try {
-            if(isConfigurationExists(configkey, configValue)){
-                em = getEntityManager();
-                em.getTransaction().begin();
-                Query q = queryGenerator.deleteQuery(em);
-                q.executeUpdate();
-                em.getTransaction().commit();
-                em.close();
-            }
-        }catch (Exception e){
-            logger.error(e.getMessage(), e);
-            throw new RegistryException(e);
-        }finally {
-            if (em != null && em.isOpen()){
-                if (em.getTransaction().isActive()){
-                    em.getTransaction().rollback();
-                }
-                em.close();
-            }
-        }
-    }
-
-    /**
-     * @param configkey
-     */
-    public static void removeConfiguration(String configkey) throws RegistryException{
-        QueryGenerator queryGenerator = new QueryGenerator(AbstractExpCatResource.CONFIGURATION);
-        queryGenerator.setParameter(AbstractExpCatResource.ConfigurationConstants.CONFIG_KEY, configkey);
-        EntityManager em = null;
-        try {
-            if(isConfigurationExist(configkey)){
-                em = getEntityManager();
-                em.getTransaction().begin();
-                Query q = queryGenerator.deleteQuery(em);
-                q.executeUpdate();
-                em.getTransaction().commit();
-                em.close();
-            }
-        }catch (Exception e){
-            logger.error(e.getMessage(), e);
-            throw new RegistryException(e);
-        }finally {
-            if (em != null && em.isOpen()){
-                if (em.getTransaction().isActive()){
-                    em.getTransaction().rollback();
-                }
-                em.close();
-            }
-        }
-    }
-
-    public static boolean isConfigurationExists(String configKey, String configVal) throws RegistryException{
-        EntityManager em = null;
-        try{
-            //Currently categoryID is hardcoded value
-            em = ExpCatResourceUtils.getEntityManager();
-            Configuration existing = em.find(Configuration.class, new Configuration_PK(configKey, configVal, AbstractExpCatResource.ConfigurationConstants.CATEGORY_ID_DEFAULT_VALUE));
-            em.close();
-            return existing!= null;
-        } catch (Exception e){
-            logger.error(e.getMessage(), e);
-            throw new RegistryException(e);
-        }finally {
-            if (em != null && em.isOpen()){
-                if (em.getTransaction().isActive()){
-                    em.getTransaction().rollback();
-                }
-                em.close();
-            }
-        }
     }
 }

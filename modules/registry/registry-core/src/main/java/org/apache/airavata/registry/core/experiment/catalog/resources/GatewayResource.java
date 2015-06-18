@@ -20,12 +20,6 @@
 */
 package org.apache.airavata.registry.core.experiment.catalog.resources;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
@@ -34,6 +28,11 @@ import org.apache.airavata.registry.core.experiment.catalog.utils.QueryGenerator
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GatewayResource extends AbstractExpCatResource {
     private final static Logger logger = LoggerFactory.getLogger(GatewayResource.class);
@@ -122,7 +121,7 @@ public class GatewayResource extends AbstractExpCatResource {
                 return projectResource;
             case EXPERIMENT:
                 ExperimentResource experimentResource =new ExperimentResource();
-                experimentResource.setGatewayId(gatewayId);
+                experimentResource.setGatewayExecutionId(gatewayId);
                 return experimentResource;
             case GATEWAY_WORKER:
                 WorkerResource workerResource = new WorkerResource();
@@ -197,7 +196,7 @@ public class GatewayResource extends AbstractExpCatResource {
                     generator.setParameter(GatewayWorkerConstants.USERNAME, name);
                     generator.setParameter(GatewayWorkerConstants.GATEWAY_ID, gatewayId);
                     q = generator.selectQuery(em);
-                    Gateway_Worker worker = (Gateway_Worker) q.getSingleResult();
+                    GatewayWorker worker = (GatewayWorker) q.getSingleResult();
                     WorkerResource workerResource =
                             (WorkerResource) Utils.getResource(ResourceType.GATEWAY_WORKER, worker);
                     em.getTransaction().commit();
@@ -207,7 +206,7 @@ public class GatewayResource extends AbstractExpCatResource {
                     generator = new QueryGenerator(USERS);
                     generator.setParameter(UserConstants.USERNAME, name);
                     q = generator.selectQuery(em);
-                    Users user = (Users) q.getSingleResult();
+                    User user = (User) q.getSingleResult();
                     UserResource userResource =
                             (UserResource) Utils.getResource(ResourceType.USER, user);
                     em.getTransaction().commit();
@@ -279,7 +278,7 @@ public class GatewayResource extends AbstractExpCatResource {
                     results = q.getResultList();
                     if (results.size() != 0) {
                         for (Object result : results) {
-                            Gateway_Worker gatewayWorker = (Gateway_Worker) result;
+                            GatewayWorker gatewayWorker = (GatewayWorker) result;
                             WorkerResource workerResource =
                                     (WorkerResource) Utils.getResource(ResourceType.GATEWAY_WORKER, gatewayWorker);
                             resourceList.add(workerResource);
@@ -304,7 +303,7 @@ public class GatewayResource extends AbstractExpCatResource {
                     generator = new QueryGenerator(USERS);
                     q = generator.selectQuery(em);
                     for (Object o : q.getResultList()) {
-                        Users user = (Users) o;
+                        User user = (User) o;
                         UserResource userResource =
                                 (UserResource) Utils.getResource(ResourceType.USER, user);
                         resourceList.add(userResource);
@@ -345,15 +344,15 @@ public class GatewayResource extends AbstractExpCatResource {
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
             Gateway gateway = new Gateway();
-            gateway.setGateway_name(gatewayName);
-            gateway.setGateway_id(gatewayId);
+            gateway.setGatewayName(gatewayName);
+            gateway.setGatewayId(gatewayId);
             gateway.setDomain(domain);
             gateway.setEmailAddress(emailAddress);
             if (existingGateway != null) {
                 existingGateway.setDomain(domain);
-                existingGateway.setGateway_name(gatewayName);
+                existingGateway.setGatewayName(gatewayName);
                 existingGateway.setEmailAddress(emailAddress);
-                gateway = em.merge(existingGateway);
+                em.merge(existingGateway);
             } else {
                 em.persist(gateway);
             }
@@ -385,12 +384,15 @@ public class GatewayResource extends AbstractExpCatResource {
             switch (type) {
                 case GATEWAY_WORKER:
                     em = ExpCatResourceUtils.getEntityManager();
-                    Gateway_Worker existingWorker = em.find(Gateway_Worker.class, new Gateway_Worker_PK(gatewayId, name.toString()));
+                    GatewayWorkerPK gatewayWorkerPK = new GatewayWorkerPK();
+                    gatewayWorkerPK.setGatewayId(gatewayId);
+                    gatewayWorkerPK.setUserName(name.toString());
+                    GatewayWorker existingWorker = em.find(GatewayWorker.class, gatewayWorkerPK);
                     em.close();
                     return existingWorker != null;
                 case USER:
                     em = ExpCatResourceUtils.getEntityManager();
-                    Users existingUser = em.find(Users.class, name);
+                    User existingUser = em.find(User.class, name);
                     em.close();
                     return existingUser != null;
                 case EXPERIMENT:
@@ -413,12 +415,6 @@ public class GatewayResource extends AbstractExpCatResource {
                 em.close();
             }
         }
-    }
-
-    public ExperimentResource createExperiment (String experimentID) throws RegistryException{
-        ExperimentResource metadataResource = (ExperimentResource)create(ResourceType.EXPERIMENT);
-        metadataResource.setExpID(experimentID);
-        return metadataResource;
     }
 
     public ExperimentResource getExperiment (String expId) throws RegistryException{

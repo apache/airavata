@@ -37,6 +37,7 @@ import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
 import org.apache.airavata.registry.core.experiment.catalog.resources.*;
+import org.apache.airavata.registry.core.experiment.catalog.resources.ProjectUserResource;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -454,28 +455,28 @@ public class ThriftDataModelConversion {
 //        return workflowNodeDetailsList;
 //    }
 
-    public static ProcessModel getProcesModel (TaskDetailResource taskDetailResource) throws RegistryException {
-        if (taskDetailResource != null){
+    public static ProcessModel getProcesModel (ProcessResource processResource) throws RegistryException {
+        if (processResource != null){
             ProcessModel processModel = new ProcessModel();
-            String taskId = taskDetailResource.getTaskId();
+            String taskId = processResource.getTaskId();
             processModel.setProcessId(taskId);
-            processModel.setApplicationInterfaceId(taskDetailResource.getApplicationId());
-            List<ApplicationInputResource> applicationInputs = taskDetailResource.getApplicationInputs();
+            processModel.setApplicationInterfaceId(processResource.getApplicationId());
+            List<ApplicationInputResource> applicationInputs = processResource.getApplicationInputs();
             processModel.setProcessInputs(getApplicationInputs(applicationInputs));
-            List<ApplicationOutputResource> applicationOutputs = taskDetailResource.getApplicationOutputs();
+            List<ApplicationOutputResource> applicationOutputs = processResource.getApplicationOutputs();
             processModel.setProcessOutputs(getApplicationOutputs(applicationOutputs));
-            processModel.setEnableEmailNotification(taskDetailResource.isEnableEmailNotifications());
+            processModel.setEnableEmailNotification(processResource.isEnableEmailNotifications());
             if (processModel.isEnableEmailNotification()){
-                List<NotificationEmailResource> notificationEmails = taskDetailResource.getNotificationEmails();
+                List<NotificationEmailResource> notificationEmails = processResource.getNotificationEmails();
                 processModel.setEmailAddresses(getEmailAddresses(notificationEmails));
             }
-            processModel.setApplicationDeploymentId(taskDetailResource.getApplicationDeploymentId());
-            if (taskDetailResource.isExists(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING, taskId)){
-                ComputationSchedulingResource computationScheduling = taskDetailResource.getComputationScheduling(taskId);
+            processModel.setApplicationDeploymentId(processResource.getApplicationDeploymentId());
+            if (processResource.isExists(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING, taskId)){
+                ComputationSchedulingResource computationScheduling = processResource.getComputationScheduling(taskId);
                 processModel.setResourceSchedule(getComputationalResourceScheduling(computationScheduling));
             }
 
-            processModel.setProcessStatus(getProcessStatus(taskDetailResource.getTaskStatus()));
+            processModel.setProcessStatus(getProcessStatus(processResource.getTaskStatus()));
 //            List<JobDetailResource> jobDetailList = taskDetailResource.getJobDetailList();
 //            processModel.setJobDetailsList(getJobDetailsList(jobDetailList));
 //            processModel.setProcessError(getErrorDetails(taskDetailResource.getErrorDetailList().get(0)));
@@ -485,10 +486,10 @@ public class ThriftDataModelConversion {
         return null;
     }
 
-    public static List<TaskModel> getTaskDetailsList (List<TaskDetailResource> resources) throws RegistryException {
+    public static List<TaskModel> getTaskDetailsList (List<ProcessResource> resources) throws RegistryException {
         List<TaskModel> taskDetailsList = new ArrayList<TaskModel>();
         if (resources != null && !resources.isEmpty()){
-            for (TaskDetailResource resource : resources){
+            for (ProcessResource resource : resources){
                 taskDetailsList.add(getTaskModel(resource));
             }
         }
@@ -496,15 +497,15 @@ public class ThriftDataModelConversion {
     }
 
     //FIXME: should fill according to registry object
-    public static TaskModel getTaskModel (TaskDetailResource taskDetailResource){
+    public static TaskModel getTaskModel (ProcessResource processResource){
         TaskModel model = new TaskModel();
         return model;
     }
 
-    public static List<JobModel> getJobDetailsList(List<JobDetailResource> jobs) throws RegistryException {
+    public static List<JobModel> getJobDetailsList(List<TaskResource> jobs) throws RegistryException {
         List<JobModel> jobDetailsList = new ArrayList<JobModel>();
         if (jobs != null && !jobs.isEmpty()){
-            for (JobDetailResource resource : jobs){
+            for (TaskResource resource : jobs){
                 jobDetailsList.add(getJobDetail(resource));
             }
         }
@@ -512,19 +513,19 @@ public class ThriftDataModelConversion {
     }
 
 
-    public static JobModel getJobDetail(JobDetailResource jobDetailResource) throws RegistryException {
-        if (jobDetailResource != null){
+    public static JobModel getJobDetail(TaskResource taskResource) throws RegistryException {
+        if (taskResource != null){
             JobModel jobDetails = new JobModel();
-            jobDetails.setJobId(jobDetailResource.getJobId());
-            jobDetails.setJobDescription(jobDetailResource.getJobDescription());
-            jobDetails.setCreationTime(jobDetailResource.getCreationTime().getTime());
-            StatusResource jobStatus = jobDetailResource.getJobStatus();
+            jobDetails.setJobId(taskResource.getJobId());
+            jobDetails.setJobDescription(taskResource.getJobDescription());
+            jobDetails.setCreationTime(taskResource.getCreationTime().getTime());
+            StatusResource jobStatus = taskResource.getJobStatus();
             jobDetails.setJobStatus(getJobStatus(jobStatus));
-            jobDetails.setJobName(jobDetailResource.getJobName());
-            jobDetails.setWorkingDir(jobDetailResource.getWorkingDir());
-            StatusResource applicationStatus = jobDetailResource.getApplicationStatus();
+            jobDetails.setJobName(taskResource.getJobName());
+            jobDetails.setWorkingDir(taskResource.getWorkingDir());
+            StatusResource applicationStatus = taskResource.getApplicationStatus();
             jobDetails.setJobStatus(getJobStatus(applicationStatus));
-            jobDetails.setComputeResourceConsumed(jobDetailResource.getComputeResourceConsumed());
+            jobDetails.setComputeResourceConsumed(taskResource.getComputeResourceConsumed());
             return jobDetails;
         }
         return null;
