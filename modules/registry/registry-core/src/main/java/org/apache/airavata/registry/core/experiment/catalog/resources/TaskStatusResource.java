@@ -24,60 +24,74 @@ package org.apache.airavata.registry.core.experiment.catalog.resources;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
-import org.apache.airavata.registry.core.experiment.catalog.model.ProjectUser;
-import org.apache.airavata.registry.core.experiment.catalog.model.ProjectUsersPK;
-import org.apache.airavata.registry.core.experiment.catalog.model.Project;
-import org.apache.airavata.registry.core.experiment.catalog.model.User;
+import org.apache.airavata.registry.core.experiment.catalog.model.TaskStatus;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
+import java.sql.Timestamp;
 import java.util.List;
 
-public class ProjectUserResource extends AbstractExpCatResource {
-    private String projectId;
-    private String userName;
+public class TaskStatusResource extends AbstractExpCatResource {
+    private static final Logger logger = LoggerFactory.getLogger(TaskStatusResource.class);
+    private String taskId;
+    private String state;
+    private Timestamp timeOfStateChange;
+    private String reason;
 
-    private static final Logger logger = LoggerFactory.getLogger(ProjectUserResource.class);
-
-    public String getProjectId() {
-        return projectId;
+    public String getTaskId() {
+        return taskId;
     }
 
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getState() {
+        return state;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setState(String state) {
+        this.state = state;
     }
 
-    
+    public Timestamp getTimeOfStateChange() {
+        return timeOfStateChange;
+    }
+
+    public void setTimeOfStateChange(Timestamp timeOfStateChange) {
+        this.timeOfStateChange = timeOfStateChange;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
     public ExperimentCatResource create(ResourceType type) throws RegistryException {
-        logger.error("Unsupported resource type for project resource data resource.", new UnsupportedOperationException());
+        logger.error("Unsupported resource type for task status data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
     
-    public void remove(ResourceType type, Object name) throws RegistryException{
-        logger.error("Unsupported resource type for project resource data resource.", new UnsupportedOperationException());
+    public void remove(ResourceType type, Object name) throws RegistryException {
+        logger.error("Unsupported resource type for task status data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
     
     public ExperimentCatResource get(ResourceType type, Object name) throws RegistryException{
-        logger.error("Unsupported resource type for project resource data resource.", new UnsupportedOperationException());
+        logger.error("Unsupported resource type for task status data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
     
     public List<ExperimentCatResource> get(ResourceType type) throws RegistryException{
-        logger.error("Unsupported resource type for project resource data resource.", new UnsupportedOperationException());
+        logger.error("Unsupported resource type for task status data resource.", new UnsupportedOperationException());
         throw new UnsupportedOperationException();
     }
 
@@ -86,32 +100,19 @@ public class ProjectUserResource extends AbstractExpCatResource {
         EntityManager em = null;
         try {
             em = ExpCatResourceUtils.getEntityManager();
-            ProjectUsersPK projectUsersPK = new ProjectUsersPK();
-            projectUsersPK.setProjectId(projectId);
-            projectUsersPK.setUserName(userName);
-            ProjectUser existingPrUser = em.find(ProjectUser.class, projectUsersPK);
-            em.close();
-
-            em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
-            ProjectUser prUser = new ProjectUser();
-            prUser.setProjectId(projectId);
-            prUser.setUserName(userName);
-            User user = em.find(User.class, userName);
-            prUser.setUser(user);
-            Project project = em.find(Project.class, projectId);
-            prUser.setProject(project);
-
-            if (existingPrUser != null) {
-                existingPrUser.setProjectId(projectId);
-                existingPrUser.setUserName(userName);
-                existingPrUser.setUser(user);
-                existingPrUser.setProject(project);
-                em.merge(existingPrUser);
-            } else {
-                em.persist(prUser);
+            TaskStatus taskStatus;
+            if(taskId == null || state == null){
+                throw new RegistryException("Does not have the task id or state");
             }
-
+            taskStatus = em.find(TaskStatus.class, taskId);
+            if(taskStatus == null){
+                taskStatus = new TaskStatus();
+            }
+            taskStatus.setTaskId(taskId);
+            taskStatus.setState(state);
+            taskStatus.setReason(reason);
+            em.persist(taskStatus);
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {

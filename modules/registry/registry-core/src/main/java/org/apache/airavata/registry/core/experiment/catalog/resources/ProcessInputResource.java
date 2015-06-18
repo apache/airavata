@@ -24,7 +24,7 @@ package org.apache.airavata.registry.core.experiment.catalog.resources;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
-import org.apache.airavata.registry.core.experiment.catalog.model.ExperimentInput;
+import org.apache.airavata.registry.core.experiment.catalog.model.ProcessInput;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,10 +32,10 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.EntityManager;
 import java.util.List;
 
-public class ExperimentInputResource extends AbstractExpCatResource {
-    private static final Logger logger = LoggerFactory.getLogger(ExperimentInputResource.class);
-    private int experimentInputId;
-    private String experimentId;
+public class ProcessInputResource extends AbstractExpCatResource {
+    private static final Logger logger = LoggerFactory.getLogger(ProcessInputResource.class);
+    private int processInputId;
+    private String processId;
     private String inputName;
     private String inputValue;
     private String dataType;
@@ -48,20 +48,20 @@ public class ExperimentInputResource extends AbstractExpCatResource {
     private Boolean requiredToAddedToCmd;
     private Boolean dataStaged;
 
-    public int getExperimentInputId() {
-        return experimentInputId;
+    public int getProcessInputId() {
+        return processInputId;
     }
 
-    public void setExperimentInputId(int experimentInputId) {
-        this.experimentInputId = experimentInputId;
+    public void setProcessInputId(int processInputId) {
+        this.processInputId = processInputId;
     }
 
-    public String getExperimentId() {
-        return experimentId;
+    public String getProcessId() {
+        return processId;
     }
 
-    public void setExperimentId(String experimentId) {
-        this.experimentId = experimentId;
+    public void setProcessId(String processId) {
+        this.processId = processId;
     }
 
     public String getInputName() {
@@ -181,31 +181,31 @@ public class ExperimentInputResource extends AbstractExpCatResource {
         try {
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
-            if(experimentId == null){
-                throw new RegistryException("Does not have the experiment id");
+            if(processId == null){
+                throw new RegistryException("Does not have the process id");
             }
-            ExperimentInput experimentInput;
-            experimentInput = em.find(ExperimentInput.class, experimentInputId);
-            if(experimentInput == null){
-                experimentInput = new ExperimentInput();
+            ProcessInput processInput;
+            processInput = em.find(ProcessInput.class, processInputId);
+            if(processInput == null){
+                processInput = new ProcessInput();
             }
-            experimentInput.setExperimentInputId(experimentInputId);
-            experimentInput.setExperimentId(experimentId);
-            experimentInput.setInputName(inputName);
-            experimentInput.setInputValue(inputValue);
-            experimentInput.setDataType(dataType);
-            experimentInput.setApplicationArgument(applicationArgument);
-            experimentInput.setStandardInput(standardInput);
-            experimentInput.setUserFriendlyDescription(userFriendlyDescription);
-            experimentInput.setMetadata(metadata);
-            experimentInput.setInputOrder(inputOrder);
-            experimentInput.setIsRequired(isRequired);
-            experimentInput.setRequiredToAddedToCmd(requiredToAddedToCmd);
-            experimentInput.setDataStaged(dataStaged);
-            em.persist(experimentInput);
+            processInput.setProcessInputId(processInputId);
+            processInput.setProcessId(processId);
+            processInput.setInputName(inputName);
+            processInput.setInputValue(inputValue);
+            processInput.setDataType(dataType);
+            processInput.setApplicationArgument(applicationArgument);
+            processInput.setStandardInput(standardInput);
+            processInput.setUserFriendlyDescription(userFriendlyDescription);
+            processInput.setMetadata(metadata);
+            processInput.setInputOrder(inputOrder);
+            processInput.setIsRequired(isRequired);
+            processInput.setRequiredToAddedToCmd(requiredToAddedToCmd);
+            processInput.setDataStaged(dataStaged);
+            em.persist(processInput);
             em.getTransaction().commit();
             em.close();
-            this.experimentInputId = experimentInput.getExperimentInputId();
+            this.processInputId = processInput.getProcessInputId();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

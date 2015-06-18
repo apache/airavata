@@ -66,31 +66,27 @@
     </persistence-unit>
     <persistence-unit name="experiment_data">
         <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.Experiment</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.ExperimentError</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.ExperimentInput</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.ExperimentOutput</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.ExperimentStatus</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.ExperimentSummary</class>
         <class>org.apache.airavata.registry.core.experiment.catalog.model.Gateway</class>
-        <class>org.apache.airavata.registry.core.experiment.catalog.model.Configuration</class>
-        <class>org.apache.airavata.registry.core.experiment.catalog.model.Users</class>
-        <class>org.apache.airavata.registry.core.experiment.catalog.model.Gateway_Worker</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.GatewayWorker</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.Process</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.ProcessError</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.ProcessInput</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.ProcessOutput</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.ProcessResourceSchedule</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.ProcessStatus</class>
         <class>org.apache.airavata.registry.core.experiment.catalog.model.Project</class>
         <class>org.apache.airavata.registry.core.experiment.catalog.model.ProjectUser</class>
-        <class>org.apache.airavata.registry.core.experiment.catalog.model.Experiment</class>
-        <class>org.apache.airavata.registry.core.experiment.catalog.model.Notification_Email</class>
-        <class>org.apache.airavata.registry.core.experiment.catalog.model.Experiment_Input</class>
-        <class>org.apache.airavata.registry.core.experiment.catalog.model.Experiment_Output</class>
-        <class>org.apache.airavata.registry.core.experiment.catalog.model.WorkflowNodeDetail</class>
-        <class>org.apache.airavata.registry.core.experiment.catalog.model.TaskDetail</class>
-        <class>org.apache.airavata.registry.core.experiment.catalog.model.ErrorDetail</class>
-        <class>org.apache.airavata.registry.core.experiment.catalog.model.ApplicationInput</class>
-        <class>org.apache.airavata.registry.core.experiment.catalog.model.ApplicationOutput</class>
-        <class>org.apache.airavata.registry.core.experiment.catalog.model.NodeInput</class>
-        <class>org.apache.airavata.registry.core.experiment.catalog.model.NodeOutput</class>
-        <class>org.apache.airavata.registry.core.experiment.catalog.model.JobDetail</class>
-        <class>org.apache.airavata.registry.core.experiment.catalog.model.DataTransferDetail</class>
-        <class>org.apache.airavata.registry.core.experiment.catalog.model.Status</class>
-        <class>org.apache.airavata.registry.core.experiment.catalog.model.ExperimentConfigData</class>
-        <class>org.apache.airavata.registry.core.experiment.catalog.model.Computational_Resource_Scheduling</class>
-        <class>org.apache.airavata.registry.core.experiment.catalog.model.AdvancedInputDataHandling</class>
-        <class>org.apache.airavata.registry.core.experiment.catalog.model.AdvancedOutputDataHandling</class>
-        <class>org.apache.airavata.registry.core.experiment.catalog.model.QosParam</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.Task</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.TaskError</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.TaskStatus</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.User</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.UserConfigurationData</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
 </persistence>

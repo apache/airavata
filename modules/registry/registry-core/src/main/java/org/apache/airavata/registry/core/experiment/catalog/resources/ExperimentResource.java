@@ -1,163 +1,63 @@
 /*
-*
-* Licensed to the Apache Software Foundation (ASF) under one
-* or more contributor license agreements.  See the NOTICE file
-* distributed with this work for additional information
-* regarding copyright ownership.  The ASF licenses this file
-* to you under the Apache License, Version 2.0 (the
-* "License"); you may not use this file except in compliance
-* with the License.  You may obtain a copy of the License at
-*
-*   http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*
-*/
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ *
+ */
+
 package org.apache.airavata.registry.core.experiment.catalog.resources;
-
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
 import org.apache.airavata.registry.core.experiment.catalog.model.*;
+import org.apache.airavata.registry.core.experiment.catalog.model.Process;
 import org.apache.airavata.registry.core.experiment.catalog.utils.QueryGenerator;
 import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.airavata.registry.cpi.utils.StatusType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+
 public class ExperimentResource extends AbstractExpCatResource {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentResource.class);
-//    private WorkerResource worker;
-    private String executionUser;
-    private String expID;
-    private Timestamp creationTime;
-    private String gatewayId;
+    private String experimentId;
     private String projectId;
-    private String expName;
-    private String description;
+    private String experimentType;
+    private String userName;
     private String applicationId;
-    private String applicationVersion;
-    private String workflowTemplateId;
-    private String workflowTemplateVersion;
-    private String workflowExecutionId;
-    private boolean enableEmailNotifications;
+    private String experimentName;
+    private Timestamp creationTime;
+    private String description;
+    private String executionId;
     private String gatewayExecutionId;
-    private List<ExperimentInputResource> experimentInputResources;
-    private List<ExperimentOutputResource> experimentOutputputResources;
-    private ComputationSchedulingResource computationSchedulingResource;
-    private ConfigDataResource userConfigDataResource;
-    private List<WorkflowNodeDetailResource> workflowNodeDetailResourceList;
-    private List<StatusResource> stateChangeList;
-    private List<ErrorDetailResource> errorDetailList;
-    private StatusResource experimentStatus;
-    private List<NotificationEmailResource> emailResourceList;
+    private Boolean enableEmailNotification;
+    private String emailAddresses;
 
-    /**
-     *
-     * @return  experiment ID
-     */
-    public String getExpID() {
-        return expID;
+    public String getExperimentId() {
+        return experimentId;
     }
 
-    public Timestamp getCreationTime() {
-        return creationTime;
-    }
-
-    public void setCreationTime(Timestamp creationTime) {
-        this.creationTime = creationTime;
-    }
-
-    public String getExpName() {
-        return expName;
-    }
-
-    public void setExpName(String expName) {
-        this.expName = expName;
-    }
-
-    public String getApplicationId() {
-        return applicationId;
-    }
-
-    public void setApplicationId(String applicationId) {
-        this.applicationId = applicationId;
-    }
-
-    public String getApplicationVersion() {
-        return applicationVersion;
-    }
-
-    public void setApplicationVersion(String applicationVersion) {
-        this.applicationVersion = applicationVersion;
-    }
-
-    public String getWorkflowTemplateId() {
-        return workflowTemplateId;
-    }
-
-    public void setWorkflowTemplateId(String workflowTemplateId) {
-        this.workflowTemplateId = workflowTemplateId;
-    }
-
-    public String getWorkflowTemplateVersion() {
-        return workflowTemplateVersion;
-    }
-
-    public void setWorkflowTemplateVersion(String workflowTemplateVersion) {
-        this.workflowTemplateVersion = workflowTemplateVersion;
-    }
-
-    public String getWorkflowExecutionId() {
-        return workflowExecutionId;
-    }
-
-    public void setWorkflowExecutionId(String workflowExecutionId) {
-        this.workflowExecutionId = workflowExecutionId;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public boolean isEnableEmailNotifications() {
-        return enableEmailNotifications;
-    }
-
-    public void setEnableEmailNotifications(boolean enableEmailNotifications) {
-        this.enableEmailNotifications = enableEmailNotifications;
-    }
-
-    public String getGatewayExecutionId() {
-        return gatewayExecutionId;
-    }
-
-    public void setGatewayExecutionId(String gatewayExecutionId) {
-        this.gatewayExecutionId = gatewayExecutionId;
-    }
-
-    public String getGatewayId() {
-        return gatewayId;
-    }
-
-    public void setGatewayId(String gatewayId) {
-        this.gatewayId = gatewayId;
+    public void setExperimentId(String experimentId) {
+        this.experimentId = experimentId;
     }
 
     public String getProjectId() {
@@ -168,140 +68,120 @@ public class ExperimentResource extends AbstractExpCatResource {
         this.projectId = projectId;
     }
 
-    public List<ExperimentInputResource> getExperimentInputResources() {
-        return experimentInputResources;
+    public String getExperimentType() {
+        return experimentType;
     }
 
-    public void setExperimentInputResources(List<ExperimentInputResource> experimentInputResources) {
-        this.experimentInputResources = experimentInputResources;
+    public void setExperimentType(String experimentType) {
+        this.experimentType = experimentType;
     }
 
-    public List<ExperimentOutputResource> getExperimentOutputputResources() {
-        return experimentOutputputResources;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setExperimentOutputputResources(List<ExperimentOutputResource> experimentOutputputResources) {
-        this.experimentOutputputResources = experimentOutputputResources;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public ComputationSchedulingResource getComputationSchedulingResource() {
-        return computationSchedulingResource;
+    public String getApplicationId() {
+        return applicationId;
     }
 
-    public void setComputationSchedulingResource(ComputationSchedulingResource computationSchedulingResource) {
-        this.computationSchedulingResource = computationSchedulingResource;
+    public void setApplicationId(String applicationId) {
+        this.applicationId = applicationId;
     }
 
-    public ConfigDataResource getUserConfigDataResource() {
-        return userConfigDataResource;
+    public String getExperimentName() {
+        return experimentName;
     }
 
-    public void setUserConfigDataResource(ConfigDataResource userConfigDataResource) {
-        this.userConfigDataResource = userConfigDataResource;
+    public void setExperimentName(String experimentName) {
+        this.experimentName = experimentName;
     }
 
-    public List<WorkflowNodeDetailResource> getWorkflowNodeDetailResourceList() {
-        return workflowNodeDetailResourceList;
+    public Timestamp getCreationTime() {
+        return creationTime;
     }
 
-    public void setWorkflowNodeDetailResourceList(List<WorkflowNodeDetailResource> workflowNodeDetailResourceList) {
-        this.workflowNodeDetailResourceList = workflowNodeDetailResourceList;
+    public void setCreationTime(Timestamp creationTime) {
+        this.creationTime = creationTime;
     }
 
-    public List<StatusResource> getStateChangeList() {
-        return stateChangeList;
+    public String getDescription() {
+        return description;
     }
 
-    public void setStateChangeList(List<StatusResource> stateChangeList) {
-        this.stateChangeList = stateChangeList;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public List<ErrorDetailResource> getErrorDetailList() {
-        return errorDetailList;
+    public String getExecutionId() {
+        return executionId;
     }
 
-    public void setErrorDetailList(List<ErrorDetailResource> errorDetailList) {
-        this.errorDetailList = errorDetailList;
+    public void setExecutionId(String executionId) {
+        this.executionId = executionId;
     }
 
-    public void setExperimentStatus(StatusResource experimentStatus) {
-        this.experimentStatus = experimentStatus;
+    public String getGatewayExecutionId() {
+        return gatewayExecutionId;
     }
 
-    public List<NotificationEmailResource> getEmailResourceList() {
-        return emailResourceList;
+    public void setGatewayExecutionId(String gatewayExecutionId) {
+        this.gatewayExecutionId = gatewayExecutionId;
     }
 
-    public void setEmailResourceList(List<NotificationEmailResource> emailResourceList) {
-        this.emailResourceList = emailResourceList;
+    public Boolean getEnableEmailNotification() {
+        return enableEmailNotification;
     }
 
-
-    /**
-     * Since experiments are at the leaf level, this method is not
-     * valid for an experiment
-     * @param type  child resource types
-     * @return UnsupportedOperationException
-     */
-    public ExperimentCatResource create(ResourceType type) throws RegistryException {
-    	switch (type){
-	        case EXPERIMENT_INPUT:
-	        	ExperimentInputResource inputResource = new ExperimentInputResource();
-	            inputResource.setExperimentId(expID);
-	            return inputResource;
-            case EXPERIMENT_OUTPUT:
-                ExperimentOutputResource experimentOutputResource = new ExperimentOutputResource();
-                experimentOutputResource.setExperimentId(expID);
-                return experimentOutputResource;
-            case NOTIFICATION_EMAIL:
-                NotificationEmailResource emailResource = new NotificationEmailResource();
-                emailResource.setExperimentId(expID);
-                return emailResource;
-            case WORKFLOW_NODE_DETAIL:
-                WorkflowNodeDetailResource nodeDetailResource = new WorkflowNodeDetailResource();
-                nodeDetailResource.setExperimentId(expID);
-                return nodeDetailResource;
-            case ERROR_DETAIL:
-                ErrorDetailResource errorDetailResource = new ErrorDetailResource();
-                errorDetailResource.setExperimentId(expID);
-                return errorDetailResource;
-            case STATUS:
-                StatusResource statusResource = new StatusResource();
-                statusResource.setExperimentId(expID);
-                return statusResource;
-            case CONFIG_DATA:
-                ConfigDataResource configDataResource = new ConfigDataResource();
-                configDataResource.setExperimentId(expID);
-                return configDataResource;
-            case COMPUTATIONAL_RESOURCE_SCHEDULING:
-                ComputationSchedulingResource schedulingResource = new ComputationSchedulingResource();
-                schedulingResource.setExperimentId(expID);
-                return schedulingResource;
-            case ADVANCE_INPUT_DATA_HANDLING:
-                AdvanceInputDataHandlingResource dataHandlingResource = new AdvanceInputDataHandlingResource();
-                dataHandlingResource.setExperimentId(expID);
-                return dataHandlingResource;
-            case ADVANCE_OUTPUT_DATA_HANDLING:
-                AdvancedOutputDataHandlingResource outputDataHandlingResource = new AdvancedOutputDataHandlingResource();
-                outputDataHandlingResource.setExperimentId(expID);
-                return outputDataHandlingResource;
-            case QOS_PARAM:
-                QosParamResource qosParamResource = new QosParamResource();
-                qosParamResource.setExperimentId(expID);
-                return qosParamResource;
-	        default:
-                logger.error("Unsupported resource type for experiment resource.", new IllegalArgumentException());
-	            throw new IllegalArgumentException("Unsupported resource type for experiment resource.");
-	    }
+    public void setEnableEmailNotification(Boolean enableEmailNotification) {
+        this.enableEmailNotification = enableEmailNotification;
     }
 
-    /**
-     *
-     * @param type  child resource types
-     * @param name name of the child resource
-     * @return UnsupportedOperationException
-     */
-    public void remove(ResourceType type, Object name) throws RegistryException {
+    public String getEmailAddresses() {
+        return emailAddresses;
+    }
+
+    public void setEmailAddresses(String emailAddresses) {
+        this.emailAddresses = emailAddresses;
+    }
+
+    public ExperimentCatResource create(ResourceType type) throws RegistryException{
+       switch (type){
+           case EXPERIMENT_ERROR:
+               ExperimentErrorResource errorResource = new ExperimentErrorResource();
+               errorResource.setExperimentId(experimentId);
+               return errorResource;
+           case EXPERIMENT_STATUS:
+               ExperimentStatusResource statusResource = new ExperimentStatusResource();
+               statusResource.setExperimentId(experimentId);
+               return statusResource;
+           case EXPERIMENT_INPUT:
+               ExperimentInputResource experimentInputResource = new ExperimentInputResource();
+               experimentInputResource.setExperimentId(experimentId);
+               return experimentInputResource;
+           case EXPERIMENT_OUTPUT:
+               ExperimentOutputResource outputResource = new ExperimentOutputResource();
+               outputResource.setExperimentId(experimentId);
+               return outputResource;
+           case USER_CONFIGURATION_DATA:
+               UserConfigurationDataResource configurationDataResource = new UserConfigurationDataResource();
+               configurationDataResource.setExperimentId(experimentId);
+               return configurationDataResource;
+           case PROCESS:
+               ProcessResource processResource = new ProcessResource();
+               processResource.setExperimentId(experimentId);
+               return processResource;
+           default:
+               logger.error("Unsupported resource type for experiment resource.", new IllegalArgumentException());
+               throw new IllegalArgumentException("Unsupported resource type for experiment resource.");
+       }
+    }
+
+    
+    public void remove(ResourceType type, Object name) throws RegistryException{
         EntityManager em = null;
         try {
             em = ExpCatResourceUtils.getEntityManager();
@@ -309,75 +189,45 @@ public class ExperimentResource extends AbstractExpCatResource {
             Query q;
             QueryGenerator generator;
             switch (type) {
+                case EXPERIMENT_ERROR:
+                    generator = new QueryGenerator(EXPERIMENT_ERROR);
+                    generator.setParameter(ExperimentErrorConstants.EXPERIMENT_ID, name);
+                    q = generator.deleteQuery(em);
+                    q.executeUpdate();
+                    break;
+                case EXPERIMENT_STATUS:
+                    generator = new QueryGenerator(EXPERIMENT_STATUS);
+                    generator.setParameter(ExperimentStatusConstants.EXPERIMENT_ID, name);
+                    q = generator.deleteQuery(em);
+                    q.executeUpdate();
+                    break;
                 case EXPERIMENT_INPUT:
                     generator = new QueryGenerator(EXPERIMENT_INPUT);
-                    generator.setParameter(ExperimentInputConstants.EXPERIMENT_ID, name);
+                    generator.setParameter(ExperimentInputConstants.EXPERIMENT_INPUT_ID, name);
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
                 case EXPERIMENT_OUTPUT:
                     generator = new QueryGenerator(EXPERIMENT_OUTPUT);
-                    generator.setParameter(ExperimentOutputConstants.EXPERIMENT_ID, name);
+                    generator.setParameter(ExperimentOutputConstants.EXPERIMENT_OUTPUT_ID, name);
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
-                case NOTIFICATION_EMAIL:
-                    generator = new QueryGenerator(NOTIFICATION_EMAIL);
-                    generator.setParameter(NotificationEmailConstants.EXPERIMENT_ID, name);
+                case USER_CONFIGURATION_DATA:
+                    generator = new QueryGenerator(USER_CONFIGURATION_DATA);
+                    generator.setParameter(UserConfigurationDataConstants.EXPERIMENT_ID, experimentId);
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
-                case WORKFLOW_NODE_DETAIL:
-                    generator = new QueryGenerator(WORKFLOW_NODE_DETAIL);
-                    generator.setParameter(WorkflowNodeDetailsConstants.NODE_INSTANCE_ID, name);
-                    q = generator.deleteQuery(em);
-                    q.executeUpdate();
-                    break;
-                case ERROR_DETAIL:
-                    generator = new QueryGenerator(ERROR_DETAIL);
-                    generator.setParameter(ErrorDetailConstants.EXPERIMENT_ID, name);
-                    q = generator.deleteQuery(em);
-                    q.executeUpdate();
-                    break;
-                case STATUS:
-                    generator = new QueryGenerator(STATUS);
-                    generator.setParameter(StatusConstants.EXPERIMENT_ID, name);
-                    generator.setParameter(StatusConstants.STATUS_TYPE, StatusType.EXPERIMENT.toString());
-                    q = generator.deleteQuery(em);
-                    q.executeUpdate();
-                    break;
-                case CONFIG_DATA:
-                    generator = new QueryGenerator(CONFIG_DATA);
-                    generator.setParameter(ExperimentConfigurationDataConstants.EXPERIMENT_ID, name);
-                    q = generator.deleteQuery(em);
-                    q.executeUpdate();
-                    break;
-                case COMPUTATIONAL_RESOURCE_SCHEDULING:
-                    generator = new QueryGenerator(COMPUTATIONAL_RESOURCE_SCHEDULING);
-                    generator.setParameter(ComputationalResourceSchedulingConstants.EXPERIMENT_ID, name);
-                    q = generator.deleteQuery(em);
-                    q.executeUpdate();
-                    break;
-                case ADVANCE_INPUT_DATA_HANDLING:
-                    generator = new QueryGenerator(ADVANCE_INPUT_DATA_HANDLING);
-                    generator.setParameter(AdvancedInputDataHandlingConstants.EXPERIMENT_ID, name);
-                    q = generator.deleteQuery(em);
-                    q.executeUpdate();
-                    break;
-                case ADVANCE_OUTPUT_DATA_HANDLING:
-                    generator = new QueryGenerator(ADVANCE_OUTPUT_DATA_HANDLING);
-                    generator.setParameter(AdvancedOutputDataHandlingConstants.EXPERIMENT_ID, name);
-                    q = generator.deleteQuery(em);
-                    q.executeUpdate();
-                    break;
-                case QOS_PARAM:
-                    generator = new QueryGenerator(QOS_PARAMS);
-                    generator.setParameter(QosParamsConstants.EXPERIMENT_ID, name);
+                case PROCESS:
+                    generator = new QueryGenerator(PROCESS);
+                    generator.setParameter(ProcessConstants.EXPERIMENT_ID, experimentId);
+                    generator.setParameter(ProcessConstants.PROCESS_ID, name);
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
                 default:
-                    logger.error("Unsupported resource type for experiment resource.", new IllegalArgumentException());
+                    logger.error("Unsupported resource type for process detail resource.", new IllegalArgumentException());
                     break;
             }
             em.getTransaction().commit();
@@ -395,13 +245,8 @@ public class ExperimentResource extends AbstractExpCatResource {
         }
     }
 
-    /**
-     *
-     * @param type  child resource types
-     * @param name name of the child resource
-     * @return UnsupportedOperationException
-     */
-    public ExperimentCatResource get(ResourceType type, Object name) throws RegistryException {
+    
+    public ExperimentCatResource get(ResourceType type, Object name) throws RegistryException{
         EntityManager em = null;
         try {
             em = ExpCatResourceUtils.getEntityManager();
@@ -409,115 +254,69 @@ public class ExperimentResource extends AbstractExpCatResource {
             QueryGenerator generator;
             Query q;
             switch (type) {
-                case EXPERIMENT_INPUT:
-                    generator = new QueryGenerator(EXPERIMENT_INPUT);
-                    generator.setParameter(ExperimentInputConstants.EXPERIMENT_ID, name);
+                case EXPERIMENT_STATUS:
+                    generator = new QueryGenerator(EXPERIMENT_STATUS);
+                    generator.setParameter(ExperimentConstants.EXPERIMENT_ID, name);
                     q = generator.selectQuery(em);
-                    Experiment_Input experimentInput = (Experiment_Input) q.getSingleResult();
-                    ExperimentInputResource inputResource = (ExperimentInputResource) Utils.getResource(ResourceType.EXPERIMENT_INPUT, experimentInput);
+                    ExperimentStatus status = (ExperimentStatus) q.getSingleResult();
+                    ExperimentStatusResource statusResource = (ExperimentStatusResource) Utils.getResource(ResourceType.EXPERIMENT_STATUS, status);
                     em.getTransaction().commit();
                     em.close();
-                    return inputResource;
+                    return statusResource;
+                case EXPERIMENT_ERROR:
+                    generator = new QueryGenerator(EXPERIMENT_ERROR);
+                    generator.setParameter(ExperimentErrorConstants.EXPERIMENT_ID, name);
+                    q = generator.selectQuery(em);
+                    ExperimentError experimentError = (ExperimentError) q.getSingleResult();
+                    ExperimentErrorResource processErrorResource = (ExperimentErrorResource) Utils.getResource(ResourceType.EXPERIMENT_ERROR, experimentError);
+                    em.getTransaction().commit();
+                    em.close();
+                    return processErrorResource;
+                case EXPERIMENT_INPUT:
+                    generator = new QueryGenerator(EXPERIMENT_INPUT);
+                    generator.setParameter(ExperimentInputConstants.EXPERIMENT_INPUT_ID, name);
+                    generator.setParameter(ExperimentInputConstants.EXPERIMENT_ID, experimentId);
+                    q = generator.selectQuery(em);
+                    ExperimentInput experimentInput = (ExperimentInput) q.getSingleResult();
+                    ExperimentInputResource experimentInputResource = (ExperimentInputResource) Utils.getResource(ResourceType.EXPERIMENT_INPUT, experimentInput);
+                    em.getTransaction().commit();
+                    em.close();
+                    return experimentInputResource;
                 case EXPERIMENT_OUTPUT:
                     generator = new QueryGenerator(EXPERIMENT_OUTPUT);
-                    generator.setParameter(ExperimentOutputConstants.EXPERIMENT_ID, name);
+                    generator.setParameter(ExperimentOutputConstants.EXPERIMENT_OUTPUT_ID, name);
+                    generator.setParameter(ExperimentInputConstants.EXPERIMENT_ID, experimentId);
                     q = generator.selectQuery(em);
-                    Experiment_Output experimentOutput = (Experiment_Output) q.getSingleResult();
+                    ExperimentOutput experimentOutput = (ExperimentOutput) q.getSingleResult();
                     ExperimentOutputResource outputResource = (ExperimentOutputResource) Utils.getResource(ResourceType.EXPERIMENT_OUTPUT, experimentOutput);
                     em.getTransaction().commit();
                     em.close();
                     return outputResource;
-                case NOTIFICATION_EMAIL:
-                    generator = new QueryGenerator(NOTIFICATION_EMAIL);
-                    generator.setParameter(NotificationEmailConstants.EXPERIMENT_ID, name);
+                case USER_CONFIGURATION_DATA:
+                    generator = new QueryGenerator(USER_CONFIGURATION_DATA);
+                    generator.setParameter(UserConfigurationDataConstants.EXPERIMENT_ID, name);
                     q = generator.selectQuery(em);
-                    Notification_Email notificationEmail = (Notification_Email) q.getSingleResult();
-                    NotificationEmailResource notificationEmailResource = (NotificationEmailResource) Utils.getResource(ResourceType.NOTIFICATION_EMAIL, notificationEmail);
+                    UserConfigurationData configurationData = (UserConfigurationData) q.getSingleResult();
+                    UserConfigurationDataResource configurationDataResource = (UserConfigurationDataResource)
+                            Utils.getResource(ResourceType.USER_CONFIGURATION_DATA, configurationData);
                     em.getTransaction().commit();
                     em.close();
-                    return notificationEmailResource;
-                case WORKFLOW_NODE_DETAIL:
-                    generator = new QueryGenerator(WORKFLOW_NODE_DETAIL);
-                    generator.setParameter(WorkflowNodeDetailsConstants.NODE_INSTANCE_ID, name);
+                    return configurationDataResource;
+                case PROCESS:
+                    generator = new QueryGenerator(PROCESS);
+                    generator.setParameter(ProcessConstants.PROCESS_ID, name);
+                    generator.setParameter(ProcessConstants.EXPERIMENT_ID, experimentId);
                     q = generator.selectQuery(em);
-                    WorkflowNodeDetail workflowNodeDetail = (WorkflowNodeDetail) q.getSingleResult();
-                    WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource) Utils.getResource(ResourceType.WORKFLOW_NODE_DETAIL, workflowNodeDetail);
+                    Process process = (Process) q.getSingleResult();
+                    ProcessResource processResource = (ProcessResource) Utils.getResource(ResourceType.PROCESS, process);
                     em.getTransaction().commit();
                     em.close();
-                    return nodeDetailResource;
-                case ERROR_DETAIL:
-                    generator = new QueryGenerator(ERROR_DETAIL);
-                    generator.setParameter(ErrorDetailConstants.EXPERIMENT_ID, name);
-                    q = generator.selectQuery(em);
-                    ErrorDetail errorDetail = (ErrorDetail) q.getSingleResult();
-                    ErrorDetailResource errorDetailResource = (ErrorDetailResource) Utils.getResource(ResourceType.ERROR_DETAIL, errorDetail);
-                    em.getTransaction().commit();
-                    em.close();
-                    return errorDetailResource;
-                case STATUS:
-                    generator = new QueryGenerator(STATUS);
-                    generator.setParameter(StatusConstants.EXPERIMENT_ID, name);
-                    generator.setParameter(StatusConstants.STATUS_TYPE, StatusType.EXPERIMENT.toString());
-                    q = generator.selectQuery(em);
-                    Status status = (Status) q.getSingleResult();
-                    StatusResource statusResource = (StatusResource) Utils.getResource(ResourceType.STATUS, status);
-                    em.getTransaction().commit();
-                    em.close();
-                    return statusResource;
-                case CONFIG_DATA:
-                    generator = new QueryGenerator(CONFIG_DATA);
-                    generator.setParameter(ExperimentConfigurationDataConstants.EXPERIMENT_ID, name);
-                    q = generator.selectQuery(em);
-                    ExperimentConfigData configData = (ExperimentConfigData) q.getSingleResult();
-                    ConfigDataResource configDataResource = (ConfigDataResource) Utils.getResource(ResourceType.CONFIG_DATA, configData);
-                    em.getTransaction().commit();
-                    em.close();
-                    return configDataResource;
-                case COMPUTATIONAL_RESOURCE_SCHEDULING:
-                    generator = new QueryGenerator(COMPUTATIONAL_RESOURCE_SCHEDULING);
-                    generator.setParameter(ComputationalResourceSchedulingConstants.EXPERIMENT_ID, name);
-                    generator.setParameter(ComputationalResourceSchedulingConstants.TASK_ID, null);
-                    q = generator.selectQuery(em);
-                    Computational_Resource_Scheduling scheduling = (Computational_Resource_Scheduling) q.getSingleResult();
-                    ComputationSchedulingResource schedulingResource = (ComputationSchedulingResource) Utils.getResource(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING, scheduling);
-                    em.getTransaction().commit();
-                    em.close();
-                    return schedulingResource;
-                case ADVANCE_INPUT_DATA_HANDLING:
-                    generator = new QueryGenerator(ADVANCE_INPUT_DATA_HANDLING);
-                    generator.setParameter(AdvancedInputDataHandlingConstants.EXPERIMENT_ID, name);
-                    generator.setParameter(AdvancedInputDataHandlingConstants.TASK_ID, null);
-                    q = generator.selectQuery(em);
-                    AdvancedInputDataHandling inputDataHandling = (AdvancedInputDataHandling) q.getSingleResult();
-                    AdvanceInputDataHandlingResource dataHandlingResource = (AdvanceInputDataHandlingResource) Utils.getResource(ResourceType.ADVANCE_INPUT_DATA_HANDLING, inputDataHandling);
-                    em.getTransaction().commit();
-                    em.close();
-                    return dataHandlingResource;
-                case ADVANCE_OUTPUT_DATA_HANDLING:
-                    generator = new QueryGenerator(ADVANCE_OUTPUT_DATA_HANDLING);
-                    generator.setParameter(AdvancedOutputDataHandlingConstants.EXPERIMENT_ID, name);
-                    generator.setParameter(AdvancedOutputDataHandlingConstants.TASK_ID, null);
-                    q = generator.selectQuery(em);
-                    AdvancedOutputDataHandling outputDataHandling = (AdvancedOutputDataHandling) q.getSingleResult();
-                    AdvancedOutputDataHandlingResource outputDataHandlingResource = (AdvancedOutputDataHandlingResource) Utils.getResource(ResourceType.ADVANCE_OUTPUT_DATA_HANDLING, outputDataHandling);
-                    em.getTransaction().commit();
-                    em.close();
-                    return outputDataHandlingResource;
-                case QOS_PARAM:
-                    generator = new QueryGenerator(QOS_PARAMS);
-                    generator.setParameter(QosParamsConstants.EXPERIMENT_ID, name);
-                    generator.setParameter(QosParamsConstants.TASK_ID, null);
-                    q = generator.selectQuery(em);
-                    QosParam qosParam = (QosParam) q.getSingleResult();
-                    QosParamResource qosParamResource = (QosParamResource) Utils.getResource(ResourceType.QOS_PARAM, qosParam);
-                    em.getTransaction().commit();
-                    em.close();
-                    return qosParamResource;
+                    return processResource;
                 default:
                     em.getTransaction().commit();
                     em.close();
                     logger.error("Unsupported resource type for experiment resource.", new IllegalArgumentException());
-                    throw new IllegalArgumentException("Unsupported resource type for experiment data resource.");
+                    throw new IllegalArgumentException("Unsupported resource type for experiment resource.");
             }
         } catch (Exception e) {
             throw new RegistryException(e);
@@ -529,15 +328,9 @@ public class ExperimentResource extends AbstractExpCatResource {
                 em.close();
             }
         }
-
     }
 
-    /**
-     *
-     * @param type  child resource types
-     * @return UnsupportedOperationException
-     */
-    public List<ExperimentCatResource> get(ResourceType type)  throws RegistryException{
+    public List<ExperimentCatResource> get(ResourceType type) throws RegistryException{
         List<ExperimentCatResource> resourceList = new ArrayList<ExperimentCatResource>();
         EntityManager em = null;
         try {
@@ -549,85 +342,57 @@ public class ExperimentResource extends AbstractExpCatResource {
             switch (type) {
                 case EXPERIMENT_INPUT:
                     generator = new QueryGenerator(EXPERIMENT_INPUT);
-                    generator.setParameter(ExperimentInputConstants.EXPERIMENT_ID, expID);
+                    generator.setParameter(ExperimentInputConstants.EXPERIMENT_ID, experimentId);
                     q = generator.selectQuery(em);
                     results = q.getResultList();
                     if (results.size() != 0) {
                         for (Object result : results) {
-                            Experiment_Input exInput = (Experiment_Input) result;
-                            ExperimentInputResource inputResource =
-                                    (ExperimentInputResource) Utils.getResource(ResourceType.EXPERIMENT_INPUT, exInput);
-                            resourceList.add(inputResource);
+                            ExperimentInput experimentInput = (ExperimentInput) result;
+                            ExperimentInputResource experimentInputResource =
+                                    (ExperimentInputResource) Utils.getResource(ResourceType.EXPERIMENT_INPUT, experimentInput);
+                            resourceList.add(experimentInputResource);
                         }
                     }
                     break;
                 case EXPERIMENT_OUTPUT:
                     generator = new QueryGenerator(EXPERIMENT_OUTPUT);
-                    generator.setParameter(ExperimentOutputConstants.EXPERIMENT_ID, expID);
+                    generator.setParameter(ExperimentOutputConstants.EXPERIMENT_ID, experimentId);
                     q = generator.selectQuery(em);
                     results = q.getResultList();
                     if (results.size() != 0) {
                         for (Object result : results) {
-                            Experiment_Output output = (Experiment_Output) result;
-                            ExperimentOutputResource outputResource =
-                                    (ExperimentOutputResource) Utils.getResource(ResourceType.EXPERIMENT_OUTPUT, output);
-                            resourceList.add(outputResource);
+                            ExperimentOutput experimentOutput = (ExperimentOutput) result;
+                            ExperimentOutputResource experimentOutputResource
+                                    = (ExperimentOutputResource) Utils.getResource(ResourceType.EXPERIMENT_OUTPUT, experimentOutput);
+                            resourceList.add(experimentOutputResource);
                         }
                     }
                     break;
-                case NOTIFICATION_EMAIL:
-                    generator = new QueryGenerator(NOTIFICATION_EMAIL);
-                    generator.setParameter(NotificationEmailConstants.EXPERIMENT_ID, expID);
+                case PROCESS:
+                    generator = new QueryGenerator(PROCESS);
+                    generator.setParameter(ProcessConstants.EXPERIMENT_ID, experimentId);
                     q = generator.selectQuery(em);
                     results = q.getResultList();
                     if (results.size() != 0) {
                         for (Object result : results) {
-                            Notification_Email notificationEmail = (Notification_Email) result;
-                            NotificationEmailResource emailResource =
-                                    (NotificationEmailResource) Utils.getResource(ResourceType.NOTIFICATION_EMAIL, notificationEmail);
-                            resourceList.add(emailResource);
+                            Process process = (Process) result;
+                            ProcessResource processResource =
+                                    (ProcessResource) Utils.getResource(ResourceType.PROCESS, process);
+                            resourceList.add(processResource);
                         }
                     }
                     break;
-                case WORKFLOW_NODE_DETAIL:
-                    generator = new QueryGenerator(WORKFLOW_NODE_DETAIL);
-                    generator.setParameter(WorkflowNodeDetailsConstants.EXPERIMENT_ID, expID);
+                case PROCESS_ERROR:
+                    generator = new QueryGenerator(EXPERIMENT_ERROR);
+                    generator.setParameter(ExperimentErrorConstants.EXPERIMENT_ID, experimentId);
                     q = generator.selectQuery(em);
                     results = q.getResultList();
                     if (results.size() != 0) {
                         for (Object result : results) {
-                            WorkflowNodeDetail nodeDetail = (WorkflowNodeDetail) result;
-                            WorkflowNodeDetailResource nodeDetailResource =
-                                    (WorkflowNodeDetailResource) Utils.getResource(ResourceType.WORKFLOW_NODE_DETAIL, nodeDetail);
-                            resourceList.add(nodeDetailResource);
-                        }
-                    }
-                    break;
-                case ERROR_DETAIL:
-                    generator = new QueryGenerator(ERROR_DETAIL);
-                    generator.setParameter(ErrorDetailConstants.EXPERIMENT_ID, expID);
-                    q = generator.selectQuery(em);
-                    results = q.getResultList();
-                    if (results.size() != 0) {
-                        for (Object result : results) {
-                            ErrorDetail errorDetail = (ErrorDetail) result;
-                            ErrorDetailResource errorDetailResource =
-                                    (ErrorDetailResource) Utils.getResource(ResourceType.ERROR_DETAIL, errorDetail);
-                            resourceList.add(errorDetailResource);
-                        }
-                    }
-                    break;
-                case STATUS:
-                    generator = new QueryGenerator(STATUS);
-                    generator.setParameter(StatusConstants.EXPERIMENT_ID, expID);
-                    q = generator.selectQuery(em);
-                    results = q.getResultList();
-                    if (results.size() != 0) {
-                        for (Object result : results) {
-                            Status status = (Status) result;
-                            StatusResource statusResource =
-                                    (StatusResource) Utils.getResource(ResourceType.STATUS, status);
-                            resourceList.add(statusResource);
+                            ProcessError processError = (ProcessError) result;
+                            ProcessErrorResource processErrorResource =
+                                    (ProcessErrorResource) Utils.getResource(ResourceType.PROCESS_ERROR, processError);
+                            resourceList.add(processErrorResource);
                         }
                     }
                     break;
@@ -653,54 +418,31 @@ public class ExperimentResource extends AbstractExpCatResource {
         return resourceList;
     }
 
-    /**
-     * save experiment
-     */
     public void save() throws RegistryException{
         EntityManager em = null;
         try {
             em = ExpCatResourceUtils.getEntityManager();
-            Experiment existingExp = em.find(Experiment.class, expID);
+            Experiment experiment = em.find(Experiment.class, experimentId);
             em.close();
-
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
-            Experiment experiment = new Experiment();
-            experiment.setProjectID(projectId);
-            experiment.setExpId(expID);
-            experiment.setExecutionUser(executionUser);
-            experiment.setExecutionUser(executionUser);
-            experiment.setGatewayId(gatewayId);
-            experiment.setCreationTime(creationTime);
-            experiment.setExpName(expName);
-            experiment.setExpDesc(description);
-            experiment.setApplicationId(applicationId);
-            experiment.setAppVersion(applicationVersion);
-            experiment.setWorkflowExecutionId(workflowExecutionId);
-            experiment.setWorkflowTemplateVersion(workflowTemplateVersion);
-            experiment.setWorkflowExecutionId(workflowExecutionId);
-            experiment.setAllowNotification(enableEmailNotifications);
-            experiment.setGatewayExecutionId(gatewayExecutionId);
-            if (existingExp != null) {
-                existingExp.setGatewayId(gatewayId);
-                existingExp.setExecutionUser(executionUser);
-                existingExp.setProjectID(projectId);
-                existingExp.setCreationTime(creationTime);
-                existingExp.setExpName(expName);
-                existingExp.setExpDesc(description);
-                existingExp.setApplicationId(applicationId);
-                existingExp.setAppVersion(applicationVersion);
-                existingExp.setWorkflowExecutionId(workflowExecutionId);
-                existingExp.setWorkflowTemplateVersion(workflowTemplateVersion);
-                existingExp.setWorkflowExecutionId(workflowExecutionId);
-                existingExp.setAllowNotification(enableEmailNotifications);
-                existingExp.setGatewayExecutionId(gatewayExecutionId);
-                experiment = em.merge(existingExp);
-            } else {
-                em.persist(experiment);
+            if (experiment == null) {
+            	experiment = new Experiment();
             }
+            experiment.setExperimentId(experimentId);
+            experiment.setProjectId(projectId);
+            experiment.setExperimentType(experimentType);
+            experiment.setUserName(userName);
+            experiment.setApplicationId(applicationId);
+            experiment.setExperimentName(experimentName);
+            experiment.setCreationTime(creationTime);
+            experiment.setDescription(description);
+            experiment.setExecutionId(executionId);
+            experiment.setGatewayExecutionId(gatewayExecutionId);
+            experiment.setEnableEmailNotification(enableEmailNotification);
+            experiment.setEmailAddresses(emailAddresses);
+            em.persist(experiment);
             em.getTransaction().commit();
-            em.close();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
@@ -714,118 +456,53 @@ public class ExperimentResource extends AbstractExpCatResource {
         }
     }
 
-    /**
-     *
-     * @param expID experiment ID
-     */
-    public void setExpID(String expID) {
-		this.expID = expID;
-	}
-
-    public String getExecutionUser() {
-        return executionUser;
-    }
-
-    public void setExecutionUser(String executionUser) {
-        this.executionUser = executionUser;
-    }
-
-    public List<NotificationEmailResource> getNotificationEmails () throws RegistryException{
-        List<NotificationEmailResource> emailResources = new ArrayList<NotificationEmailResource>();
-        List<ExperimentCatResource> resources = get(ResourceType.NOTIFICATION_EMAIL);
-        for (ExperimentCatResource resource : resources) {
-            emailResources.add((NotificationEmailResource) resource);
-        }
-        return emailResources;
-    }
-
-    public List<ExperimentInputResource> getExperimentInputs () throws RegistryException{
-        List<ExperimentInputResource> expInputs = new ArrayList<ExperimentInputResource>();
+    public List<ExperimentInputResource> getExperimentInputs() throws RegistryException{
+        List<ExperimentInputResource> experimentInputResources = new ArrayList();
         List<ExperimentCatResource> resources = get(ResourceType.EXPERIMENT_INPUT);
         for (ExperimentCatResource resource : resources) {
-            expInputs.add((ExperimentInputResource) resource);
+            ExperimentInputResource inputResource = (ExperimentInputResource) resource;
+            experimentInputResources.add(inputResource);
         }
-        return expInputs;
+        return experimentInputResources;
     }
 
-    public List<ExperimentOutputResource> getExperimentOutputs () throws RegistryException{
-        List<ExperimentOutputResource> expOutputs = new ArrayList<ExperimentOutputResource>();
+    public List<ExperimentOutputResource> getExperimentOutputs() throws RegistryException{
+        List<ExperimentOutputResource> outputResources = new ArrayList();
         List<ExperimentCatResource> resources = get(ResourceType.EXPERIMENT_OUTPUT);
         for (ExperimentCatResource resource : resources) {
-            expOutputs.add((ExperimentOutputResource) resource);
+            ExperimentOutputResource outputResource = (ExperimentOutputResource) resource;
+            outputResources.add(outputResource);
         }
-        return expOutputs;
+        return outputResources;
     }
 
-    public StatusResource getExperimentStatus() throws RegistryException{
-        List<ExperimentCatResource> resources = get(ResourceType.STATUS);
+    public ExperimentStatusResource getExperimentStatus() throws RegistryException{
+        ExperimentCatResource resource = get(ResourceType.EXPERIMENT_STATUS, executionId);
+        return (ExperimentStatusResource)resource;
+    }
+
+    public List<ExperimentErrorResource> getExperimentErrors() throws RegistryException{
+        List<ExperimentErrorResource> experimentErrorResources = new ArrayList();
+        List<ExperimentCatResource> resources = get(ResourceType.EXPERIMENT_ERROR);
         for (ExperimentCatResource resource : resources) {
-            StatusResource expStatus = (StatusResource) resource;
-            if(expStatus.getStatusType().equals(StatusType.EXPERIMENT.toString())){
-                if (expStatus.getState() == null || expStatus.getState().equals("") ){
-                    expStatus.setState("UNKNOWN");
-                }
-                return expStatus;
-            }
+            ExperimentErrorResource errorResource = (ExperimentErrorResource) resource;
+            experimentErrorResources.add(errorResource);
         }
-        return null;
+        return experimentErrorResources;
     }
 
-    public List<StatusResource> getWorkflowNodeStatuses() throws RegistryException{
-        List<StatusResource> statuses = new ArrayList<StatusResource>();
-        List<ExperimentCatResource> resources = get(ResourceType.STATUS);
+    public UserConfigurationDataResource getUserConfigurationDataResource() throws RegistryException{
+        ExperimentCatResource resource = get(ResourceType.USER_CONFIGURATION_DATA, experimentId);
+        return (UserConfigurationDataResource)resource;
+    }
+
+    public List<ProcessResource> getProcessList() throws RegistryException{
+        List<ProcessResource> processResources = new ArrayList();
+        List<ExperimentCatResource> resources = get(ResourceType.PROCESS);
         for (ExperimentCatResource resource : resources) {
-            StatusResource workflowNodeStatus = (StatusResource) resource;
-            if(workflowNodeStatus.getStatusType().equals(StatusType.WORKFLOW_NODE.toString())){
-                if (workflowNodeStatus.getState() == null || workflowNodeStatus.getState().equals("")){
-                    workflowNodeStatus.setState("UNKNOWN");
-                }
-                statuses.add(workflowNodeStatus);
-            }
+            ProcessResource processResource = (ProcessResource) resource;
+            processResources.add(processResource);
         }
-        return statuses;
-    }
-
-    public List<WorkflowNodeDetailResource> getWorkflowNodeDetails () throws RegistryException{
-        List<WorkflowNodeDetailResource> workflowNodeDetailResourceList = new ArrayList<WorkflowNodeDetailResource>();
-        List<ExperimentCatResource> resources = get(ResourceType.WORKFLOW_NODE_DETAIL);
-        for (ExperimentCatResource resource : resources) {
-            WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource) resource;
-            workflowNodeDetailResourceList.add(nodeDetailResource);
-        }
-        return workflowNodeDetailResourceList;
-    }
-
-    public List<ErrorDetailResource> getErrorDetails () throws RegistryException{
-        List<ErrorDetailResource> errorDetailResources = new ArrayList<ErrorDetailResource>();
-        List<ExperimentCatResource> resources = get(ResourceType.ERROR_DETAIL);
-        for (ExperimentCatResource resource : resources) {
-            ErrorDetailResource errorDetailResource = (ErrorDetailResource) resource;
-            errorDetailResources.add(errorDetailResource);
-        }
-        return errorDetailResources;
-    }
-
-    public ComputationSchedulingResource getComputationScheduling (String expId) throws RegistryException{
-        return  (ComputationSchedulingResource)get(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING, expId);
-    }
-
-    public AdvanceInputDataHandlingResource getInputDataHandling (String expId) throws RegistryException{
-        return  (AdvanceInputDataHandlingResource)get(ResourceType.ADVANCE_INPUT_DATA_HANDLING, expId);
-    }
-
-    public AdvancedOutputDataHandlingResource getOutputDataHandling (String expId) throws RegistryException{
-        return  (AdvancedOutputDataHandlingResource)get(ResourceType.ADVANCE_OUTPUT_DATA_HANDLING, expId);
-    }
-
-    public QosParamResource getQOSparams (String expId) throws RegistryException{
-        return  (QosParamResource)get(ResourceType.QOS_PARAM, expId);
-    }
-
-    public ConfigDataResource getUserConfigData(String expID) throws RegistryException{
-        return (ConfigDataResource)get(ResourceType.CONFIG_DATA, expID);
-    }
-    public WorkflowNodeDetailResource getWorkflowNode (String nodeId) throws RegistryException{
-        return (WorkflowNodeDetailResource)get(ResourceType.WORKFLOW_NODE_DETAIL, nodeId);
+        return processResources;
     }
 }

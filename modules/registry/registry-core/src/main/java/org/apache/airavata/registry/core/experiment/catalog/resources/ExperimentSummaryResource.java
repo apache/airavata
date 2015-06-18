@@ -33,15 +33,16 @@ import java.util.List;
 public class ExperimentSummaryResource extends AbstractExpCatResource {
     private final static Logger logger = LoggerFactory.getLogger(ExperimentSummaryResource.class);
 
-    private String executionUser;
-    private String expID;
-    private String projectID;
-    private Timestamp creationTime;
-    private String expName;
-    private String description;
+    private String experimentId;
+    private String projectId;
+    private String userName;
     private String applicationId;
-
-    private StatusResource status;
+    private String experimentName;
+    private Timestamp creationTime;
+    private String description;
+    private String state;
+    private String resourceHostId;
+    private Timestamp timeOfStateChange;
 
     @Override
     public ExperimentCatResource create(ResourceType type) throws RegistryException {
@@ -68,52 +69,28 @@ public class ExperimentSummaryResource extends AbstractExpCatResource {
         throw new MethodNotFoundException();
     }
 
-    public String getExecutionUser() {
-        return executionUser;
+    public String getExperimentId() {
+        return experimentId;
     }
 
-    public void setExecutionUser(String executionUser) {
-        this.executionUser = executionUser;
+    public void setExperimentId(String experimentId) {
+        this.experimentId = experimentId;
     }
 
-    public String getExpID() {
-        return expID;
+    public String getProjectId() {
+        return projectId;
     }
 
-    public void setExpID(String expID) {
-        this.expID = expID;
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
     }
 
-    public String getProjectID() {
-        return projectID;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setProjectID(String projectID) {
-        this.projectID = projectID;
-    }
-
-    public Timestamp getCreationTime() {
-        return creationTime;
-    }
-
-    public void setCreationTime(Timestamp creationTime) {
-        this.creationTime = creationTime;
-    }
-
-    public String getExpName() {
-        return expName;
-    }
-
-    public void setExpName(String expName) {
-        this.expName = expName;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getApplicationId() {
@@ -124,11 +101,51 @@ public class ExperimentSummaryResource extends AbstractExpCatResource {
         this.applicationId = applicationId;
     }
 
-    public StatusResource getStatus() {
-        return status;
+    public String getExperimentName() {
+        return experimentName;
     }
 
-    public void setStatus(StatusResource status) {
-        this.status = status;
+    public void setExperimentName(String experimentName) {
+        this.experimentName = experimentName;
+    }
+
+    public Timestamp getCreationTime() {
+        return creationTime;
+    }
+
+    public void setCreationTime(Timestamp creationTime) {
+        this.creationTime = creationTime;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getResourceHostId() {
+        return resourceHostId;
+    }
+
+    public void setResourceHostId(String resourceHostId) {
+        this.resourceHostId = resourceHostId;
+    }
+
+    public Timestamp getTimeOfStateChange() {
+        return timeOfStateChange;
+    }
+
+    public void setTimeOfStateChange(Timestamp timeOfStateChange) {
+        this.timeOfStateChange = timeOfStateChange;
     }
 }

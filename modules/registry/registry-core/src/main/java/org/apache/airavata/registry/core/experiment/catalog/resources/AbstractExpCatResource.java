@@ -30,31 +30,25 @@ import java.util.List;
 public abstract class AbstractExpCatResource implements ExperimentCatResource {
 	// table names
 	public static final String GATEWAY = "Gateway";
-	public static final String CONFIGURATION = "Configuration";
 	public static final String USERS = "Users";
 	public static final String GATEWAY_WORKER = "Gateway_Worker";
 	public static final String PROJECT = "Project";
-	public static final String PROJECT_USER = "ProjectUser";
+	public static final String PROJECT_USER = "Project_User";
 	public static final String EXPERIMENT = "Experiment";
-	public static final String NOTIFICATION_EMAIL = "Notification_Email";
-	public static final String EXPERIMENT_CONFIG_DATA = "ExperimentConfigData";
 	public static final String EXPERIMENT_INPUT = "Experiment_Input";
 	public static final String EXPERIMENT_OUTPUT = "Experiment_Output";
-	public static final String WORKFLOW_NODE_DETAIL = "WorkflowNodeDetail";
-	public static final String TASK_DETAIL = "TaskDetail";
-	public static final String ERROR_DETAIL = "ErrorDetail";
-	public static final String APPLICATION_INPUT = "ApplicationInput";
-	public static final String APPLICATION_OUTPUT = "ApplicationOutput";
-	public static final String NODE_INPUT = "NodeInput";
-	public static final String NODE_OUTPUT = "NodeOutput";
-	public static final String JOB_DETAIL = "JobDetail";
-	public static final String DATA_TRANSFER_DETAIL = "DataTransferDetail";
-	public static final String STATUS = "Status";
-	public static final String CONFIG_DATA = "ExperimentConfigData";
-	public static final String COMPUTATIONAL_RESOURCE_SCHEDULING = "Computational_Resource_Scheduling";
-	public static final String ADVANCE_INPUT_DATA_HANDLING = "AdvancedInputDataHandling";
-	public static final String ADVANCE_OUTPUT_DATA_HANDLING = "AdvancedOutputDataHandling";
-	public static final String QOS_PARAMS = "QosParam";
+    public static final String EXPERIMENT_ERROR = "ExperimentError";
+    public static final String EXPERIMENT_STATUS = "ExperimentStatus";
+    public static final String USER_CONFIGURATION_DATA = "UserConfigurationData";
+    public static final String PROCESS = "Process";
+    public static final String PROCESS_ERROR = "ProcessError";
+    public static final String PROCESS_RESOURCE_SCHEDULE = "ProcessResourceSchedule";
+    public static final String PROCESS_INPUT = "ProcessInput";
+    public static final String PROCESS_OUTPUT = "ProcessOutput";
+    public static final String PROCESS_STATUS = "ProcessStatus";
+    public static final String TASK = "Task";
+    public static final String TASK_ERROR = "TaskError";
+    public static final String TASK_STATUS = "TaskStatus";
 
 
 	// Gateway Table
@@ -63,16 +57,6 @@ public abstract class AbstractExpCatResource implements ExperimentCatResource {
 		public static final String GATEWAY_NAME = "gateway_name";
 		public static final String DOMAIN = "domain";
 		public static final String EMAIL_ADDRESS = "emailAddress";
-	}
-
-	// Configuration Table
-	public final class ConfigurationConstants {
-		// public static final String CONFIG_ID = "config_ID";
-		public static final String CONFIG_KEY = "config_key";
-		public static final String CONFIG_VAL = "config_val";
-		public static final String EXPIRE_DATE = "expire_date";
-		public static final String CATEGORY_ID = "category_id";
-		public static final String CATEGORY_ID_DEFAULT_VALUE = "SYSTEM";
 	}
 
 	// Users table
@@ -105,150 +89,151 @@ public abstract class AbstractExpCatResource implements ExperimentCatResource {
 
 	// Experiment table
 	public final class ExperimentConstants {
-		public static final String PROJECT_ID = "projectID";
-		public static final String EXECUTION_USER = "executionUser";
+		public static final String PROJECT_ID = "projectId";
 		public static final String GATEWAY_ID = "gatewayId";
-		public static final String EXPERIMENT_ID = "expId";
-		public static final String EXPERIMENT_NAME = "expName";
-		public static final String DESCRIPTION = "expDesc";
-		public static final String CREATION_TIME = "creationTime";
-		public static final String APPLICATION_ID = "applicationId";
-		public static final String APPLICATION_VERSION = "appVersion";
-		public static final String WORKFLOW_TEMPLATE_ID = "workflowTemplateId";
-		public static final String WORKFLOW_TEMPLATE_VERSION = "workflowTemplateVersion";
-		public static final String WORKFLOW_EXECUTION_ID = "workflowExecutionId";
-	}
-
-    // Experiment Configuration Data table
-    public final class ExperimentConfigurationDataConstants {
-        public static final String EXPERIMENT_ID = "expId";
-        public static final String AIRAVATA_AUTO_SCHEDULE = "airavataAutoSchedule";
-        public static final String OVERRIDE_MANUAL_SCHEDULE = "overrideManualParams";
-        public static final String SHARE_EXPERIMENT = "shareExp";
-    }
-
-    public final class NotificationEmailConstants {
-        public static final String EXPERIMENT_ID = "experiment_id";
-        public static final String TASK_ID = "taskId";
-        public static final String EMAIL_ADDRESS = "emailAddress";
-    }
-
-    //Experiment Input table
-    public final class ExperimentInputConstants {
-        public static final String EXPERIMENT_ID = "experiment_id";
-        public static final String EXPERIMENT_INPUT_KEY = "ex_key";
-        public static final String EXPERIMENT_INPUT_VAL = "value";
-        public static final String INPUT_TYPE = "inputType";
-        public static final String METADATA = "metadata";
-    }
-
-    //Experiment Output table
-    public final class ExperimentOutputConstants {
-        public static final String EXPERIMENT_ID = "experiment_id";
-        public static final String EXPERIMENT_OUTPUT_KEY = "ex_key";
-        public static final String EXPERIMENT_OUTPUT_VAL = "value";
-        public static final String OUTPUT_TYPE = "outputKeyType";
-        public static final String METADATA = "metadata";
-    }
-
-	// Workflow_Data table
-	public final class WorkflowNodeDetailsConstants {
-		public static final String EXPERIMENT_ID = "expId";
-		public static final String NODE_INSTANCE_ID = "nodeId";
-		public static final String CREATION_TIME = "creationTime";
-		public static final String NODE_NAME = "nodeName";
-	}
-
-	// TaskDetail table
-	public final class TaskDetailConstants {
-		public static final String TASK_ID = "taskId";
-		public static final String NODE_INSTANCE_ID = "nodeId";
-		public static final String CREATION_TIME = "creationTime";
-		public static final String APPLICATION_ID = "appId";
-		public static final String APPLICATION_VERSION = "appVersion";
-	}
-
-	// ErrorDetails table
-	public final class ErrorDetailConstants {
-		public static final String ERROR_ID = "errorID";
-		public static final String EXPERIMENT_ID = "expId";
-		public static final String TASK_ID = "taskId";
-		public static final String JOB_ID = "jobId";
-		public static final String NODE_INSTANCE_ID = "nodeId";
-		public static final String CREATION_TIME = "creationTime";
-		public static final String ACTUAL_ERROR_MESSAGE = "actualErrorMsg";
-		public static final String USER_FRIEDNLY_ERROR_MSG = "userFriendlyErrorMsg";
-		public static final String TRANSIENT_OR_PERSISTENT = "transientPersistent";
-		public static final String ERROR_CATEGORY = "errorCategory";
-		public static final String CORRECTIVE_ACTION = "correctiveAction";
-		public static final String ACTIONABLE_GROUP = "actionableGroup";
-	}
-
-    // ApplicationInput table
-	public final class ApplicationInputConstants {
-		public static final String TASK_ID = "taskId";
-		public static final String INPUT_KEY = "inputKey";
-		public static final String INPUT_KEY_TYPE = "inputKeyType";
-		public static final String METADATA = "metadata";
-		public static final String VALUE = "value";
-	}
-
-    // ApplicationOutput table
-    public final class ApplicationOutputConstants {
-        public static final String TASK_ID = "taskId";
-        public static final String OUTPUT_KEY = "outputKey";
-        public static final String OUTPUT_KEY_TYPE = "outputKeyType";
-        public static final String METADATA = "metadata";
-        public static final String VALUE = "value";
-    }
-
-    // NodeInput table
-    public final class NodeInputConstants {
-        public static final String NODE_INSTANCE_ID = "nodeId";
-        public static final String INPUT_KEY = "inputKey";
-        public static final String INPUT_KEY_TYPE = "inputKeyType";
-        public static final String METADATA = "metadata";
-        public static final String VALUE = "value";
-    }
-
-    // NodeOutput table
-    public final class NodeOutputConstants {
-        public static final String NODE_INSTANCE_ID = "nodeId";
-        public static final String OUTPUT_KEY = "outputKey";
-        public static final String OUTPUT_KEY_TYPE = "outputKeyType";
-        public static final String METADATA = "metadata";
-        public static final String VALUE = "value";
-    }
-
-    // Job Details table constants
-    public final class JobDetailConstants{
-        public static final String JOB_ID = "jobId";
-        public static final String TASK_ID = "taskId";
-        public static final String JOB_DESCRIPTION = "jobDescription";
-        public static final String CREATION_TIME = "jobDescription";
-    }
-
-    // Data transfer Details table constants
-    public final class DataTransferDetailConstants{
-        public static final String TRANSFER_ID = "transferId";
-        public static final String TASK_ID = "taskId";
-        public static final String TRANSFER_DESC = "transferDesc";
+		public static final String EXPERIMENT_ID = "experimentId";
+        public static final String USER_NAME = "userName";
         public static final String CREATION_TIME = "creationTime";
     }
 
-    // Status table constants
-    public final class StatusConstants {
-        public static final String STATUS_ID = "statusId";
-        public static final String EXPERIMENT_ID = "expId";
-        public static final String NODE_INSTANCE_ID = "nodeId";
-        public static final String TRANSFER_ID = "transferId";
+
+	// Task table
+    public final class TaskConstants {
         public static final String TASK_ID = "taskId";
-        public static final String JOB_ID = "jobId";
-        public static final String STATE = "state";
-        public static final String STATUS_UPDATE_TIME = "statusUpdateTime";
-        public static final String STATUS_TYPE = "statusType";
+        public static final String PROCESS_ID = "processId";
     }
 
+    // Task Error table
+    public final class TaskErrorConstants {
+        public static final String TASK_ID = "taskId";
+        public static final String CREATION_TIME = "creationTime";
+        public static final String ACTUAL_ERROR_MESSAGE = "actualErrorMsg";
+        public static final String USER_FRIEDNLY_ERROR_MSG = "userFriendlyErrorMsg";
+        public static final String TRANSIENT_OR_PERSISTENT = "transientPersistent";
+        public static final String ROOT_CAUSE_ERROR_ID_LIST = "rootCauseErrorIdList";
+    }
+
+    //Process Error table
+    public final class ProcessErrorConstants {
+        public static final String PROCESS_ID = "processId";
+        public static final String CREATION_TIME = "creationTime";
+        public static final String ACTUAL_ERROR_MESSAGE = "actualErrorMsg";
+        public static final String USER_FRIEDNLY_ERROR_MSG = "userFriendlyErrorMsg";
+        public static final String TRANSIENT_OR_PERSISTENT = "transientPersistent";
+        public static final String ROOT_CAUSE_ERROR_ID_LIST = "rootCauseErrorIdList";
+    }
+
+    //Experiment Error table
+    public final class ExperimentErrorConstants {
+        public static final String EXPERIMENT_ID = "experimentId";
+        public static final String CREATION_TIME = "creationTime";
+        public static final String ACTUAL_ERROR_MESSAGE = "actualErrorMsg";
+        public static final String USER_FRIEDNLY_ERROR_MSG = "userFriendlyErrorMsg";
+        public static final String TRANSIENT_OR_PERSISTENT = "transientPersistent";
+        public static final String ROOT_CAUSE_ERROR_ID_LIST = "rootCauseErrorIdList";
+    }
+
+    //Process Input Table
+    public final class ProcessInputConstants {
+        public static final String PROCESS_INPUT_ID = "processInputId";
+        public static final String PROCESS_ID = "processId";
+        public static final String INPUT_KEY = "inputKey";
+        public static final String INPUT_VALUE = "inputValue";
+        public static final String DATA_TYPE = "dataType";
+        public static final String APPLICATION_ARGUMENT = "applicationArgument";
+        public static final String STANDARD_INPUT = "standardInput";
+        public static final String USER_FRIENDLY_DESCRIPTION = "userFriendlyDescription";
+        public static final String METADATA = "metadata";
+        public static final String INPUT_ORDER = "inputOrder";
+        public static final String IS_REQUIRED = "isRequired";
+        public static final String REQUIRED_TO_ADDED_TO_CMD = "requiredToAddedToCmd";
+        public static final String DATA_STAGED = "dataStaged";
+    }
+
+    //Process Output Table
+    public final class ProcessOutputConstants {
+        public static final String PROCESS_OUTPUT_ID = "processOutputId";
+        public static final String PROCESS_ID = "processId";
+        public static final String DATA_TYPE = "dataType";
+        public static final String APPLICATION_ARGUMENT = "applicationArgument";
+        public static final String IS_REQUIRED = "isRequired";
+        public static final String REQUIRED_TO_ADDED_TO_CMD = "requiredToAddedToCmd";
+        public static final String DATA_MOVEMENT = "dataMovement";
+        public static final String LOCATION = "location";
+        public static final String SEARCH_QUERY = "searchQuery";
+    }
+
+    //Experiment Input Table
+    public final class ExperimentInputConstants {
+        public static final String EXPERIMENT_INPUT_ID = "experimentInputId";
+        public static final String EXPERIMENT_ID = "experimentId";
+        public static final String INPUT_KEY = "inputKey";
+        public static final String INPUT_VALUE = "inputValue";
+        public static final String DATA_TYPE = "dataType";
+        public static final String APPLICATION_ARGUMENT = "applicationArgument";
+        public static final String STANDARD_INPUT = "standardInput";
+        public static final String USER_FRIENDLY_DESCRIPTION = "userFriendlyDescription";
+        public static final String METADATA = "metadata";
+        public static final String INPUT_ORDER = "inputOrder";
+        public static final String IS_REQUIRED = "isRequired";
+        public static final String REQUIRED_TO_ADDED_TO_CMD = "requiredToAddedToCmd";
+        public static final String DATA_STAGED = "dataStaged";
+    }
+
+    //Experiment Output Table
+    public final class ExperimentOutputConstants {
+        public static final String EXPERIMENT_OUTPUT_ID = "experimentOutputId";
+        public static final String EXPERIMENT_ID = "experimentId";
+        public static final String DATA_TYPE = "dataType";
+        public static final String APPLICATION_ARGUMENT = "applicationArgument";
+        public static final String IS_REQUIRED = "isRequired";
+        public static final String REQUIRED_TO_ADDED_TO_CMD = "requiredToAddedToCmd";
+        public static final String DATA_MOVEMENT = "dataMovement";
+        public static final String LOCATION = "location";
+        public static final String SEARCH_QUERY = "searchQuery";
+    }
+
+    //User Configuration Data Table
+    public final class UserConfigurationDataConstants {
+        public static final String EXPERIMENT_ID = "experimentId";
+    }
+
+    //Process Table
+    public final class ProcessConstants {
+        public static final String EXPERIMENT_ID = "experimentId";
+        public static final String PROCESS_ID = "processId";
+    }
+
+    //Process Resource Schedule table
+    public final class ProcessResourceScheduleConstants {
+        public static final String PROCESS_ID = "processId";
+    }
+
+    // Task Status table
+    public final class TaskStatusConstants {
+        public static final String TASK_ID = "taskId";
+        public static final String STATE = "state";
+        public static final String TIME_OF_STATE_CHANGE = "timeOfStateChange";
+        public static final String REASON = "reason";
+    }
+
+    // Process Status table
+    public final class ProcessStatusConstants {
+        public static final String PROCESS_ID = "processId";
+        public static final String STATE = "state";
+        public static final String TIME_OF_STATE_CHANGE = "timeOfStateChange";
+        public static final String REASON = "reason";
+    }
+
+    // Experiment Status table
+    public final class ExperimentStatusConstants {
+        public static final String EXPERIMENT_ID = "experimentId";
+        public static final String STATE = "state";
+        public static final String TIME_OF_STATE_CHANGE = "timeOfStateChange";
+        public static final String REASON = "reason";
+    }
+
+    //Computational Resource Scheduling
     public static final class ComputationalResourceSchedulingConstants{
         public static final String RESOURCE_SCHEDULING_ID = "schedulingId";
         public static final String EXPERIMENT_ID = "expId";
@@ -263,35 +248,6 @@ public abstract class AbstractExpCatResource implements ExperimentCatResource {
         public static final String TOTAL_PHYSICAL_MEMORY = "totalPhysicalmemory";
         public static final String COMPUTATIONAL_PROJECT_ACCOUNT = "projectName";
     }
-
-    public static final class AdvancedInputDataHandlingConstants {
-        public static final String INPUT_DATA_HANDLING_ID = "dataHandlingId";
-        public static final String EXPERIMENT_ID = "expId";
-        public static final String TASK_ID = "taskId";
-        public static final String WORKING_DIR_PARENT = "parentWorkingDir";
-        public static final String UNIQUE_WORKING_DIR = "workingDir";
-        public static final String STAGE_INPUT_FILES_TO_WORKING_DIR = "stageInputsToWorkingDir";
-        public static final String CLEAN_AFTER_JOB = "cleanAfterJob";
-    }
-
-    public static final class AdvancedOutputDataHandlingConstants {
-        public static final String OUTPUT_DATA_HANDLING_ID = "outputDataHandlingId";
-        public static final String EXPERIMENT_ID = "expId";
-        public static final String TASK_ID = "taskId";
-        public static final String OUTPUT_DATA_DIR = "outputDataDir";
-        public static final String DATA_REG_URL = "dataRegUrl";
-        public static final String PERSIST_OUTPUT_DATA = "persistOutputData";
-    }
-
-    public static final class QosParamsConstants {
-        public static final String QOS_ID = "qosId";
-        public static final String EXPERIMENT_ID = "expId";
-        public static final String TASK_ID = "taskId";
-        public static final String START_EXECUTION_AT = "startExecutionAt";
-        public static final String EXECUTE_BEFORE = "executeBefore";
-        public static final String NO_OF_RETRIES = "noOfRetries";
-    }
-
 
 	protected AbstractExpCatResource() {
 	}
