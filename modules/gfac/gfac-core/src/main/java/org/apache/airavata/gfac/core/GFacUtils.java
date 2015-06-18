@@ -28,6 +28,9 @@ import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.ProcessContext;
+import org.apache.airavata.gfac.core.context.TaskContext;
+import org.apache.airavata.gfac.core.watcher.CancelRequestWatcher;
+import org.apache.airavata.gfac.core.watcher.RedeliveryRequestWatcher;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
 import org.apache.airavata.model.appcatalog.computeresource.*;
@@ -35,11 +38,17 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePrefer
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
+import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.job.JobModel;
+import org.apache.airavata.model.messaging.event.JobIdentifier;
+import org.apache.airavata.model.messaging.event.JobStatusChangeRequestEvent;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
+import org.apache.airavata.model.status.JobState;
+import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.commons.io.FileUtils;
@@ -228,27 +237,30 @@ public class GFacUtils {
         return buf.toString();
     }
 
-//	public static void saveJobStatus(JobExecutionContext jobExecutionContext,
-//                                     JobDetails details, JobState state) throws GFacException {
-//		try {
-//            // first we save job details to the registry for sa and then save the job status.
-//            ExperimentCatalog experimentCatalog = jobExecutionContext.getExperimentCatalog();
-//            JobStatus status = new JobStatus();
-//            status.setJobState(state);
-//            details.setJobStatus(status);
-//            experimentCatalog.add(ExpCatChildDataType.JOB_DETAIL, details,
+	public static void saveJobStatus(TaskContext taskContext,
+                                     JobModel jobModel, JobState state) throws GFacException {
+		try {
+            // first we save job jobModel to the registry for sa and then save the job status.
+            ProcessContext processContext = taskContext.getParentProcessContext();
+            ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+            JobStatus status = new JobStatus();
+            status.setJobState(state);
+            jobModel.setJobStatus(status);
+            // FIXME - Should change according to the experiment catalog impl
+//            experimentCatalog.add(ExpCatChildDataType.JOB_DETAIL, jobModel,
 //                    new CompositeIdentifier(jobExecutionContext.getTaskData()
-//                            .getTaskID(), details.getJobID()));
-//            JobIdentifier identifier = new JobIdentifier(details.getJobID(), jobExecutionContext.getTaskData().getTaskID(),
-//                    jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId(), jobExecutionContext.getExperimentID(),
-//                    jobExecutionContext.getGatewayID());
-//            JobStatusChangeRequestEvent jobStatusChangeRequestEvent = new JobStatusChangeRequestEvent(state, identifier);
-//            jobExecutionContext.getLocalEventPublisher().publish(jobStatusChangeRequestEvent);
-//        } catch (Exception e) {
-//			throw new GFacException("Error persisting job status"
-//					+ e.getLocalizedMessage(), e);
-//		}
-//	}
+//                            .getTaskID(), jobModel.getJobID()));
+            // FIXME - Routing keys might need to identify according to new data models
+            JobIdentifier identifier = new JobIdentifier(jobModel.getJobId(), taskContext.getTaskModel().getTaskId(),
+                    processContext.getProcessId(), processContext.getProcessModel().getExperimentId(),
+                    processContext.getGatewayId());
+            JobStatusChangeRequestEvent jobStatusChangeRequestEvent = new JobStatusChangeRequestEvent(state, identifier);
+            processContext.getLocalEventPublisher().publish(jobStatusChangeRequestEvent);
+        } catch (Exception e) {
+			throw new GFacException("Error persisting job status"
+					+ e.getLocalizedMessage(), e);
+		}
+	}
 
 //	public static void updateJobStatus(JobExecutionContext jobExecutionContext,
 //			JobDetails details, JobState state) throws GFacException {
@@ -268,21 +280,22 @@ public class GFacUtils {
 //		}
 //	}
 
-//	public static void saveErrorDetails(
-//			JobExecutionContext jobExecutionContext, String errorMessage)
-//			throws GFacException {
-//		try {
-//			ExperimentCatalog experimentCatalog = jobExecutionContext.getExperimentCatalog();
-//			ErrorModel details = new ErrorModel();
-//			details.setActualErrorMessage(errorMessage);
-//			details.setCreationTime(Calendar.getInstance().getTimeInMillis());
-//			experimentCatalog.add(ExpCatChildDataType.ERROR_DETAIL, details,
+	public static void saveErrorDetails(
+			ProcessContext processContext, String errorMessage)
+			throws GFacException {
+		try {
+			ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+			ErrorModel details = new ErrorModel();
+			details.setActualErrorMessage(errorMessage);
+			details.setCreationTime(Calendar.getInstance().getTimeInMillis());
+			// FIXME : Save error model according to new data model
+//            experimentCatalog.add(ExpCatChildDataType.ERROR_DETAIL, details,
 //					jobExecutionContext.getTaskData().getTaskID());
-//		} catch (Exception e) {
-//			throw new GFacException("Error persisting job status"
-//					+ e.getLocalizedMessage(), e);
-//		}
-//	}
+		} catch (Exception e) {
+			throw new GFacException("Error persisting job status"
+					+ e.getLocalizedMessage(), e);
+		}
+	}
 
     public static Map<String, Object> getInputParamMap(List<InputDataObjectType> experimentData) throws GFacException {
         Map<String, Object> map = new HashMap<String, Object>();
@@ -497,26 +510,13 @@ public class GFacUtils {
         return null;
     }
 
-    public static boolean setExperimentCancel(String experimentId, CuratorFramework curatorClient, long deliveryTag) throws Exception {
-        String experimentEntry = GFacUtils.findExperimentEntry(experimentId, curatorClient);
-        if (experimentEntry == null) {
-            // This should be handle in validation request. Gfac shouldn't get any invalidate experiment.
-            log.error("Cannot find the experiment Entry, so cancel operation cannot be performed. " +
-                    "This happen when experiment completed and already removed from the zookeeper");
-            return false;
-        } else {
-            // check cancel operation is being processed for the same experiment.
-            Stat cancelState = curatorClient.checkExists().forPath(experimentEntry + AiravataZKUtils.CANCEL_DELIVERY_TAG_POSTFIX);
-            if (cancelState != null) {
-                // another cancel operation is being processed. only one cancel operation can exist for a given experiment.
-                return false;
-            }
-
-            curatorClient.create().withMode(CreateMode.PERSISTENT).withACL(OPEN_ACL_UNSAFE)
-                    .forPath(experimentEntry + AiravataZKUtils.CANCEL_DELIVERY_TAG_POSTFIX, longToBytes(deliveryTag)); // save cancel delivery tag to be acknowledge at the end.
-            return true;
-        }
-
+    public static boolean setExperimentCancelRequest(String experimentId, CuratorFramework curatorClient, long
+		    deliveryTag) throws Exception {
+	    String experimentNode = ZKPaths.makePath(GFacConstants.ZOOKEEPER_EXPERIMENT_NODE, experimentId);
+	    String cancelListenerNodePath = ZKPaths.makePath(experimentNode, GFacConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
+	    curatorClient.setData().withVersion(-1).forPath(cancelListenerNodePath, GFacConstants.ZOOKEEPER_CANCEL_REQEUST
+			    .getBytes());
+	    return true;
     }
 
     public static boolean isCancelled(String experimentID, CuratorFramework curatorClient) throws Exception {
@@ -712,7 +712,7 @@ public class GFacUtils {
 //    }
 
     public static String getZKGfacServersParentPath() {
-        return GFacConstants.ZOOKEEPER_SERVERS_NODE + GFacConstants.ZOOKEEPER_GFAC_SERVER_NODE;
+        return ZKPaths.makePath(GFacConstants.ZOOKEEPER_SERVERS_NODE, GFacConstants.ZOOKEEPER_GFAC_SERVER_NODE);
     }
 
     public static JobDescriptor createJobDescriptor(ProcessContext processContext) throws GFacException, AppCatalogException, ApplicationSettingsException {
@@ -1033,4 +1033,32 @@ public class GFacUtils {
             throw new GFacException("Error occurred while creating the temp job script file", e);
         }
     }
+
+	public static String getExperimentNodePath(String experimentId) {
+		return GFacConstants.ZOOKEEPER_EXPERIMENT_NODE + File.separator + experimentId;
+	}
+
+	public static void createExperimentNode(CuratorFramework curatorClient, String gfacServerName, String
+			experimentId, long deliveryTag, String token) throws Exception {
+		// create /experiments/experimentId node and set data - serverName, add redelivery listener
+		String experimentPath = ZKPaths.makePath(GFacConstants.ZOOKEEPER_EXPERIMENT_NODE, experimentId);
+		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentPath);
+		curatorClient.setData().withVersion(-1).forPath(experimentPath, gfacServerName.getBytes());
+		curatorClient.getData().usingWatcher(new RedeliveryRequestWatcher()).forPath(experimentPath);
+
+		// create /experiments/experimentId/deliveryTag node and set data - deliveryTag
+		String deliveryTagPath = ZKPaths.makePath(experimentPath, GFacConstants.ZOOKEEPER_DELIVERYTAG_NODE);
+		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), deliveryTagPath);
+		curatorClient.setData().withVersion(-1).forPath(deliveryTagPath, GFacUtils.longToBytes(deliveryTag));
+
+		// create /experiments/experimentId/token node and set data - token
+		String tokenNodePath = ZKPaths.makePath(experimentId, GFacConstants.ZOOKEEPER_TOKEN_NODE);
+		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), tokenNodePath);
+		curatorClient.setData().withVersion(-1).forPath(tokenNodePath, token.getBytes());
+
+		// create /experiments/experimentId/cancelListener node and set watcher for data changes
+		String cancelListenerNode = ZKPaths.makePath(experimentPath, GFacConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
+		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), cancelListenerNode);
+		curatorClient.getData().usingWatcher(new CancelRequestWatcher()).forPath(cancelListenerNode);
+	}
 }

@@ -26,10 +26,12 @@ import org.apache.airavata.common.utils.LocalEventPublisher;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.messaging.event.JobStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.JobStatusChangeRequestEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.status.JobState;
+import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.registry.cpi.CompositeIdentifier;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
@@ -86,21 +88,20 @@ public class AiravataJobStatusUpdator implements AbstractActivityListener {
     public  void updateJobStatus(String expId, String taskId, String jobID, JobState state) throws Exception {
         logger.info("expId - {}: Updating job status for " + jobID + ":" + state.toString(), expId);
         CompositeIdentifier ids = new CompositeIdentifier(taskId, jobID);
-        JobDetails details = (JobDetails) airavataExperimentCatalog.get(ExperimentCatalogModelType.JOB_DETAIL, ids);
-        if (details == null) {
-            details = new JobDetails();
+        JobModel jobModel = (JobModel) airavataExperimentCatalog.get(ExperimentCatalogModelType.JOB_DETAIL, ids);
+        if (jobModel == null) {
+            jobModel = new JobModel();
         }
-        org.apache.airavata.model.workspace.experiment.JobStatus status = new org.apache.airavata.model.workspace.experiment.JobStatus();
-        if (JobState.CANCELED.equals(details.getJobStatus().getJobState()) ||
-                JobState.CANCELING.equals(details.getJobStatus().getJobState())) {
-            status.setJobState(details.getJobStatus().getJobState());
+        JobStatus status = new JobStatus();
+        if (JobState.CANCELED.equals(jobModel.getJobStatus().getJobState())) {
+            status.setJobState(jobModel.getJobStatus().getJobState());
         } else {
             status.setJobState(state);
         }
         status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
-        details.setJobStatus(status);
-        details.setJobID(jobID);
-        logger.debug("expId - {}: Updated job status for " + jobID + ":" + details.getJobStatus().toString(), expId);
+        jobModel.setJobStatus(status);
+        jobModel.setJobId(jobID);
+        logger.debug("expId - {}: Updated job status for " + jobID + ":" + jobModel.getJobStatus().toString(), expId);
         airavataExperimentCatalog.update(ExperimentCatalogModelType.JOB_STATUS, status, ids);
     }
 

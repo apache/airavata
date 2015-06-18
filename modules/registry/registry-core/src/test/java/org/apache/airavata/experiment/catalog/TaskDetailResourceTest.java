@@ -24,7 +24,7 @@ import static org.junit.Assert.*;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import org.apache.airavata.model.experiment.ExecutionUnit;
+import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
 import org.apache.airavata.registry.core.experiment.catalog.resources.ExperimentResource;
 import org.apache.airavata.registry.core.experiment.catalog.resources.TaskDetailResource;
@@ -61,7 +61,7 @@ public class TaskDetailResourceTest extends AbstractResourceTest{
         nodeDetailResource.setNodeInstanceId(nodeID);
         nodeDetailResource.setNodeName(nodeID);
         nodeDetailResource.setCreationTime(creationTime);
-        nodeDetailResource.setExecutionUnit(ExecutionUnit.APPLICATION.toString());
+        nodeDetailResource.setExecutionUnit(ExperimentType.SINGLE_APPLICATION.toString());
         nodeDetailResource.save();
         
         taskDetailResource = (TaskDetailResource)nodeDetailResource.create(ResourceType.TASK_DETAIL);
