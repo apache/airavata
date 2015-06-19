@@ -28,8 +28,10 @@ public class HandleOutputs {
 		try {
             String outputDataDir = ServerSettings.getSetting(Constants.OUTPUT_DATA_DIR);
             if (outputDataDir == null){
-                outputDataDir = File.separator + "tmp" + File.separator + jobExecutionContext.getExperimentID();
+                outputDataDir = File.separator + "tmp";
             }
+
+            outputDataDir += File.separator + jobExecutionContext.getExperimentID();
 			(new File(outputDataDir)).mkdirs();
 
 			List<OutputDataObjectType> outputs = jobExecutionContext.getTaskData().getApplicationOutputs();
