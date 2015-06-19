@@ -141,7 +141,9 @@ public class SecureClient {
     public static Airavata.Client createAiravataClient(String serverHost, int serverPort) throws
             AiravataClientConnectException {
         try {
-            Airavata.Client client = AiravataClientFactory.createAiravataClient(serverHost, serverPort);
+            //Airavata.Client client = AiravataClientFactory.createAiravataClient(serverHost, serverPort);
+            Airavata.Client client = AiravataClientFactory.createAiravataSecureClient(serverHost, serverPort,
+            Properties.TRUST_STORE_PATH, Properties.TRUST_STORE_PASSWORD, 10000);
             return client;
 
         } catch (AiravataClientConnectException e) {

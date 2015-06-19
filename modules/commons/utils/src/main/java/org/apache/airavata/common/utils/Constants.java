@@ -58,9 +58,14 @@ public final class Constants {
     public static final String STAT = "stat";
     public static final String JOB = "job";
     public static final String ZOOKEEPER_TIMEOUT = "zookeeper.timeout";
-    //API security relates property names
+    //API security related property names
     public static final String IS_API_SECURED = "api.secured";
     public static final String REMOTE_OAUTH_SERVER_URL = "remote.oauth.authorization.server";
     public static final String ADMIN_USERNAME = "admin.user.name";
     public static final String ADMIN_PASSWORD = "admin.password";
+    public static final String IS_TLS_ENABLED = "TLS.enabled";
+    public static final String TLS_SERVER_PORT = "TLS.api.server.port";
+    public static final String KEYSTORE_PATH = "keystore.path";
+    public static final String KEYSTORE_PASSWORD = "keystore.password";
+    public static final String TLS_CLIENT_TIMEOUT = "TLS.client.timeout";
 }

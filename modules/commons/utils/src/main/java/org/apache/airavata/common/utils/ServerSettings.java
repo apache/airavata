@@ -24,6 +24,7 @@ package org.apache.airavata.common.utils;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 
 public class ServerSettings extends ApplicationSettings {
@@ -266,5 +267,25 @@ public class ServerSettings extends ApplicationSettings {
 
     public static String getAdminPassword() throws ApplicationSettingsException {
         return getSetting(Constants.ADMIN_PASSWORD);
+    }
+
+    public static boolean isTLSEnabled() throws ApplicationSettingsException {
+        return Boolean.valueOf(getSetting(Constants.IS_TLS_ENABLED));
+    }
+
+    public static int getTLSServerPort() throws ApplicationSettingsException {
+        return Integer.valueOf(getSetting(Constants.TLS_SERVER_PORT));
+    }
+
+    public static String getKeyStorePath() throws ApplicationSettingsException {
+        return getSetting(Constants.KEYSTORE_PATH);
+    }
+
+    public static String getKeyStorePassword() throws ApplicationSettingsException {
+        return getSetting(Constants.KEYSTORE_PASSWORD);
+    }
+
+    public static int getTLSClientTimeout() throws ApplicationSettingsException {
+        return Integer.valueOf(getSetting(Constants.TLS_CLIENT_TIMEOUT));
     }
 }

@@ -24,8 +24,10 @@ package org.apache.airavata.api.server;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 import java.util.Random;
 
+import com.sun.corba.se.spi.activation.Server;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.server.handler.AiravataServerHandler;
 import org.apache.airavata.api.server.util.AppCatalogInitUtil;
@@ -43,10 +45,12 @@ import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.apache.thrift.transport.TServerTransport;
 import org.apache.thrift.transport.TTransportException;
+import org.apache.thrift.transport.TSSLTransportFactory;
 import org.apache.zookeeper.*;
 import org.apache.zookeeper.data.Stat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.net.InetAddress;
 
 public class AiravataAPIServer implements IServer{
 
@@ -56,7 +60,7 @@ public class AiravataAPIServer implements IServer{
 
     private ServerStatus status;
 
-	private TServer server;
+	private TServer server, TLSServer;
 
 	public AiravataAPIServer() {
 		setStatus(ServerStatus.STOPPED);
@@ -106,10 +110,40 @@ public class AiravataAPIServer implements IServer{
 				}
 			}.start();
 //            storeServerConfig();
+
+            /**********start thrift server over TLS******************/
+            if (ServerSettings.isTLSEnabled()) {
+
+                TSSLTransportFactory.TSSLTransportParameters TLSParams =
+                        new TSSLTransportFactory.TSSLTransportParameters();
+                TLSParams.setKeyStore(ServerSettings.getKeyStorePath(), ServerSettings.getKeyStorePassword());
+
+                TServerSocket TLSServerTransport = TSSLTransportFactory.getServerSocket(
+                        ServerSettings.getTLSServerPort(), ServerSettings.getTLSClientTimeout(),
+                        InetAddress.getByName(serverHost), TLSParams);
+
+                TThreadPoolServer.Args settings = new TThreadPoolServer.Args(TLSServerTransport);
+                settings.minWorkerThreads = Integer.parseInt(ServerSettings.getSetting(
+                        Constants.API_SERVER_MIN_THREADS, "50"));
+                TLSServer = new TThreadPoolServer(settings.processor(airavataAPIServer));
+                new Thread() {
+                    public void run() {
+                        TLSServer.serve();
+                    }
+                }.start();
+                logger.info("Airavata API server starter over TLS on Port: " + ServerSettings.getTLSServerPort());
+            }
+
         } catch (TTransportException e) {
             logger.error(e.getMessage());
             setStatus(ServerStatus.FAILED);
             RegistryInitUtil.stopDerbyInServerMode();
+            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+        } catch (ApplicationSettingsException e) {
+            logger.error(e.getMessage());
+            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+        } catch (UnknownHostException e) {
+            logger.error(e.getMessage());
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
     }
@@ -135,6 +169,10 @@ public class AiravataAPIServer implements IServer{
 		if (server.isServing()){
 			setStatus(ServerStatus.STOPING);
 			server.stop();
+		}
+        //stop the Airavata API server hosted over TLS.
+		if (TLSServer.isServing()){
+			TLSServer.stop();
 		}
 		
 	}

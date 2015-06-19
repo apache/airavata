@@ -104,6 +104,15 @@
 				<include>startNetworkServer</include>
 			</includes>
 		</fileSet>
+		<!---Copy keystore and trust store -->
+        <fileSet>
+            <directory>src/main/resources/bin</directory>
+            <outputDirectory>bin</outputDirectory>
+            <includes>
+                <include>airavata.jks</include>
+                <include>client_truststore.jks</include>
+            </includes>
+        </fileSet>
 		<fileSet>
 			<directory>src/main/resources/samples</directory>
 			<outputDirectory>samples</outputDirectory>
