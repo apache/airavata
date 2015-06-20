@@ -26,7 +26,7 @@ import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
 import org.apache.airavata.registry.core.experiment.catalog.model.Experiment;
 import org.apache.airavata.registry.core.experiment.catalog.model.Project;
 import org.apache.airavata.registry.core.experiment.catalog.model.ProjectUser;
-import org.apache.airavata.registry.core.experiment.catalog.model.User;
+import org.apache.airavata.registry.core.experiment.catalog.model.Users;
 import org.apache.airavata.registry.core.experiment.catalog.utils.QueryGenerator;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.ResultOrderType;
@@ -340,9 +340,9 @@ public class ProjectResource extends AbstractExpCatResource {
             project.setProjectId(id);
             project.setProjectName(name);
             project.setGatewayId(gatewayId);
-            User user = em.find(User.class, worker.getUser());
+            Users user = em.find(Users.class, worker.getUser());
             project.setUser(user);
-            project.setOwnerName(user.getUserName());
+            project.setUserName(user.getUserName());
             project.setDescription(description);
             project.setCreationTime(creationTime);
 
@@ -350,10 +350,10 @@ public class ProjectResource extends AbstractExpCatResource {
                 existingProject.setProjectName(name);
                 existingProject.setGatewayId(gatewayId);
                 existingProject.setUser(user);
-                existingProject.setOwnerName(user.getUserName());
+                existingProject.setUserName(user.getUserName());
                 existingProject.setDescription(description);
                 existingProject.setCreationTime(creationTime);
-                project = em.merge(existingProject);
+                em.merge(existingProject);
             } else {
                 em.persist(project);
             }

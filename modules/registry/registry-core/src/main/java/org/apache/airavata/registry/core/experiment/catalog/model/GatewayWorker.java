@@ -32,7 +32,7 @@ public class GatewayWorker {
     private final static Logger logger = LoggerFactory.getLogger(GatewayWorker.class);
     private String gatewayId;
     private String userName;
-    private User user;
+    private Users user;
     private Gateway gateway;
 
     @Id
@@ -55,33 +55,33 @@ public class GatewayWorker {
         this.userName = userName;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        GatewayWorker that = (GatewayWorker) o;
-
-        if (gatewayId != null ? !gatewayId.equals(that.gatewayId) : that.gatewayId != null) return false;
-        if (userName != null ? !userName.equals(that.userName) : that.userName != null) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = gatewayId != null ? gatewayId.hashCode() : 0;
-        result = 31 * result + (userName != null ? userName.hashCode() : 0);
-        return result;
-    }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//
+//        GatewayWorker that = (GatewayWorker) o;
+//
+//        if (gatewayId != null ? !gatewayId.equals(that.gatewayId) : that.gatewayId != null) return false;
+//        if (userName != null ? !userName.equals(that.userName) : that.userName != null) return false;
+//
+//        return true;
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        int result = gatewayId != null ? gatewayId.hashCode() : 0;
+//        result = 31 * result + (userName != null ? userName.hashCode() : 0);
+//        return result;
+//    }
 
     @ManyToOne
     @JoinColumn(name = "USER_NAME", referencedColumnName = "USER_NAME", nullable = false)
-    public User getUser() {
+    public Users getUser() {
         return user;
     }
 
-    public void setUser(User userByUserName) {
+    public void setUser(Users userByUserName) {
         this.user = userByUserName;
     }
 

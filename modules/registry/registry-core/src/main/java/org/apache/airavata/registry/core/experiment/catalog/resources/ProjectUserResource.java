@@ -27,7 +27,7 @@ import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
 import org.apache.airavata.registry.core.experiment.catalog.model.ProjectUser;
 import org.apache.airavata.registry.core.experiment.catalog.model.ProjectUserPK;
 import org.apache.airavata.registry.core.experiment.catalog.model.Project;
-import org.apache.airavata.registry.core.experiment.catalog.model.User;
+import org.apache.airavata.registry.core.experiment.catalog.model.Users;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,7 +97,7 @@ public class ProjectUserResource extends AbstractExpCatResource {
             ProjectUser prUser = new ProjectUser();
             prUser.setProjectId(projectId);
             prUser.setUserName(userName);
-            User user = em.find(User.class, userName);
+            Users user = em.find(Users.class, userName);
             prUser.setUser(user);
             Project project = em.find(Project.class, projectId);
             prUser.setProject(project);

@@ -61,7 +61,7 @@ public class GatewayResourceTest extends AbstractResourceTest {
 
         experimentResource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
 
-        experimentResource.setExecutionId("testExpID");
+        experimentResource.setExperimentId("testExpID");
         experimentResource.setUserName(getWorkerResource().getUser());
         experimentResource.setProjectId(getProjectResource().getId());
         experimentResource.setCreationTime(currentDate);
@@ -105,7 +105,6 @@ public class GatewayResourceTest extends AbstractResourceTest {
     public void testGetList() throws Exception {
         assertNotNull(gatewayResource.get(ResourceType.GATEWAY_WORKER));
         assertNotNull(gatewayResource.get(ResourceType.PROJECT));
-        assertNotNull(gatewayResource.get(ResourceType.EXPERIMENT));
     }
     
     @Test

@@ -88,31 +88,31 @@ public class ExperimentStatus {
         this.reason = reason;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ExperimentStatus that = (ExperimentStatus) o;
-        if (statusId != null ? !statusId.equals(that.statusId) : that.statusId != null) return false;
-        if (experimentId != null ? !experimentId.equals(that.experimentId) : that.experimentId != null) return false;
-        if (reason != null ? !reason.equals(that.reason) : that.reason != null) return false;
-        if (state != null ? !state.equals(that.state) : that.state != null) return false;
-        if (timeOfStateChange != null ? !timeOfStateChange.equals(that.timeOfStateChange) : that.timeOfStateChange != null)
-            return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = statusId != null ? statusId.hashCode() : 0;
-        result = 31 * result + (experimentId != null ? experimentId.hashCode() : 0);
-        result = 31 * result + (state != null ? state.hashCode() : 0);
-        result = 31 * result + (timeOfStateChange != null ? timeOfStateChange.hashCode() : 0);
-        result = 31 * result + (reason != null ? reason.hashCode() : 0);
-        return result;
-    }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//
+//        ExperimentStatus that = (ExperimentStatus) o;
+//        if (statusId != null ? !statusId.equals(that.statusId) : that.statusId != null) return false;
+//        if (experimentId != null ? !experimentId.equals(that.experimentId) : that.experimentId != null) return false;
+//        if (reason != null ? !reason.equals(that.reason) : that.reason != null) return false;
+//        if (state != null ? !state.equals(that.state) : that.state != null) return false;
+//        if (timeOfStateChange != null ? !timeOfStateChange.equals(that.timeOfStateChange) : that.timeOfStateChange != null)
+//            return false;
+//
+//        return true;
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        int result = statusId != null ? statusId.hashCode() : 0;
+//        result = 31 * result + (experimentId != null ? experimentId.hashCode() : 0);
+//        result = 31 * result + (state != null ? state.hashCode() : 0);
+//        result = 31 * result + (timeOfStateChange != null ? timeOfStateChange.hashCode() : 0);
+//        result = 31 * result + (reason != null ? reason.hashCode() : 0);
+//        return result;
+//    }
 
     @ManyToOne
     @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID", nullable = false)

@@ -25,15 +25,14 @@ import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
-import org.apache.airavata.model.job.JobModel;
-import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.model.experiment.ExperimentModel;
+import org.apache.airavata.model.experiment.ExperimentSummaryModel;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
+import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ExperimentStatus;
-import org.apache.airavata.model.status.JobStatus;
-import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
-import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.resources.GatewayResource;
 import org.apache.airavata.registry.core.experiment.catalog.resources.UserResource;
@@ -142,44 +141,26 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
     public Object add(ExpCatChildDataType dataType, Object newObjectToAdd, Object dependentIdentifier) throws RegistryException {
         try {
             switch (dataType) {
-                case EXPERIMENT_CONFIGURATION_DATA:
+                case USER_CONFIGURATION_DATA:
                     return experimentRegistry.addUserConfigData((UserConfigurationDataModel) newObjectToAdd, (String) dependentIdentifier);
                 case EXPERIMENT_OUTPUT:
                     return experimentRegistry.addExpOutputs((List<OutputDataObjectType>) newObjectToAdd, (String) dependentIdentifier);
                 case EXPERIMENT_STATUS:
                     return experimentRegistry.updateExperimentStatus((ExperimentStatus) newObjectToAdd, (String) dependentIdentifier);
-//                case WORKFLOW_NODE_DETAIL:
-//                    return experimentRegistry.addWorkflowNodeDetails((WorkflowNodeDetails) newObjectToAdd, (String) dependentIdentifier);
-//                case WORKFLOW_NODE_STATUS:
-//                    return experimentRegistry.addWorkflowNodeStatus((WorkflowNodeStatus) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
-//                case NODE_OUTPUT:
-//                    return experimentRegistry.addNodeOutputs((List<OutputDataObjectType>) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
-//                case TASK_DETAIL:
-//                    return experimentRegistry.addTaskDetails((TaskModel) newObjectToAdd, (String) dependentIdentifier);
-                case APPLICATION_OUTPUT:
-                    return experimentRegistry.addApplicationOutputs((List<OutputDataObjectType>) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
+                case EXPERIMENT_ERROR:
+                    return experimentRegistry.updateExperimentError((ErrorModel) newObjectToAdd, (String) dependentIdentifier);
+                case PROCESS_RESOURCE_SCHEDULE:
+                    return experimentRegistry.addUserConfigData((UserConfigurationDataModel) newObjectToAdd, (String) dependentIdentifier);
+                case PROCESS_OUTPUT:
+                    return experimentRegistry.addExpOutputs((List<OutputDataObjectType>) newObjectToAdd, (String) dependentIdentifier);
+                case PROCESS_STATUS:
+                    return experimentRegistry.updateExperimentStatus((ExperimentStatus) newObjectToAdd, (String) dependentIdentifier);
+                case PROCESS_ERROR:
+                    return experimentRegistry.updateExperimentError((ErrorModel) newObjectToAdd, (String) dependentIdentifier);
                 case TASK_STATUS:
-                    return experimentRegistry.addTaskStatus((TaskStatus) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
-//                case JOB_DETAIL:
-//                    return experimentRegistry.addJobDetails((JobDetails) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
-                case JOB_STATUS:
-                    return experimentRegistry.addJobStatus((JobStatus) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
-//                case APPLICATION_STATUS:
-//                    return experimentRegistry.addApplicationStatus((ApplicationStatus) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
-//                case DATA_TRANSFER_DETAIL:
-//                    return experimentRegistry.addDataTransferDetails((DataTransferDetails) newObjectToAdd, (String) dependentIdentifier);
-//                case TRANSFER_STATUS:
-//                    return experimentRegistry.addTransferStatus((TransferStatus) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
-                case COMPUTATIONAL_RESOURCE_SCHEDULING:
-                    return experimentRegistry.addComputationalResourceScheduling((ComputationalResourceSchedulingModel) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
-//                case ADVANCE_OUTPUT_DATA_HANDLING:
-//                    return experimentRegistry.addOutputDataHandling((AdvancedOutputDataHandling) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
-//                case ADVANCE_INPUT_DATA_HANDLING:
-//                    return experimentRegistry.addInputDataHandling((AdvancedInputDataHandling) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
-//                case QOS_PARAM:
-//                    return experimentRegistry.addQosParams((QualityOfServiceParams) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
-                case ERROR_DETAIL:
-                    return experimentRegistry.addErrorDetails((ErrorModel) newObjectToAdd, dependentIdentifier);
+                    return experimentRegistry.updateExperimentStatus((ExperimentStatus) newObjectToAdd, (String) dependentIdentifier);
+                case TASK_ERROR:
+                    return experimentRegistry.updateExperimentError((ErrorModel) newObjectToAdd, (String) dependentIdentifier);
                 default:
                     logger.error("Unsupported dependent data type...", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
@@ -215,7 +196,7 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                 case EXPERIMENT:
                     experimentRegistry.updateExperiment((ExperimentModel) newObjectToUpdate, (String) identifier);
                     break;
-                case EXPERIMENT_CONFIGURATION_DATA:
+                case USER_CONFIGURATION_DATA:
                     experimentRegistry.updateUserConfigData((UserConfigurationDataModel) newObjectToUpdate, (String) identifier);
                     break;
                 case EXPERIMENT_OUTPUT:
@@ -224,51 +205,24 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                 case EXPERIMENT_STATUS:
                     experimentRegistry.updateExperimentStatus((ExperimentStatus) newObjectToUpdate, (String) identifier);
                     break;
-//                case WORKFLOW_NODE_DETAIL:
-//                    experimentRegistry.updateWorkflowNodeDetails((WorkflowNodeDetails) newObjectToUpdate, (String) identifier);
-//                    break;
-//                case WORKFLOW_NODE_STATUS:
-//                    experimentRegistry.updateWorkflowNodeStatus((WorkflowNodeStatus) newObjectToUpdate, (String) identifier);
-//                    break;
-//                case NODE_OUTPUT:
-//                    experimentRegistry.updateNodeOutputs((List<OutputDataObjectType>) newObjectToUpdate, (String) identifier);
-//                    break;
-//                case TASK_DETAIL:
-//                    experimentRegistry.updateTaskDetails((TaskDetails) newObjectToUpdate, (String) identifier);
-//                    break;
-                case APPLICATION_OUTPUT:
-                    experimentRegistry.updateAppOutputs((List<OutputDataObjectType>) newObjectToUpdate, (String) identifier);
+                case EXPERIMENT_ERROR:
+                    experimentRegistry.updateExperimentStatus((ExperimentStatus) newObjectToUpdate, (String) identifier);
+                    break;
+                case PROCESS_RESOURCE_SCHEDULE:
+                    experimentRegistry.updateExpOutputs((List<OutputDataObjectType>) newObjectToUpdate, (String) identifier);
+                    break;
+                case PROCESS_STATUS:
+                    experimentRegistry.updateExperimentStatus((ExperimentStatus) newObjectToUpdate, (String) identifier);
+                    break;
+                case PROCESS_ERROR:
+                    experimentRegistry.updateExperimentStatus((ExperimentStatus) newObjectToUpdate, (String) identifier);
                     break;
                 case TASK_STATUS:
-                    experimentRegistry.updateTaskStatus((TaskStatus) newObjectToUpdate, (String) identifier);
+                    experimentRegistry.updateExperimentStatus((ExperimentStatus) newObjectToUpdate, (String) identifier);
                     break;
-                case JOB_DETAIL:
-                    experimentRegistry.updateJobDetails((JobModel) newObjectToUpdate, (CompositeIdentifier) identifier);
+                case TASK_ERROR:
+                    experimentRegistry.updateExperimentStatus((ExperimentStatus) newObjectToUpdate, (String) identifier);
                     break;
-                case JOB_STATUS:
-                    experimentRegistry.updateJobStatus((JobStatus) newObjectToUpdate, (CompositeIdentifier) identifier);
-                    break;
-//                case APPLICATION_STATUS:
-//                    experimentRegistry.updateApplicationStatus((ApplicationStatus) newObjectToUpdate, (String) identifier);
-//                    break;
-//                case DATA_TRANSFER_DETAIL:
-//                    experimentRegistry.updateDataTransferDetails((DataTransferDetails) newObjectToUpdate, (String) identifier);
-//                    break;
-//                case TRANSFER_STATUS:
-//                    experimentRegistry.updateTransferStatus((TransferStatus) newObjectToUpdate, (String) identifier);
-//                    break;
-                case COMPUTATIONAL_RESOURCE_SCHEDULING:
-                    experimentRegistry.updateScheduling((ComputationalResourceSchedulingModel) newObjectToUpdate, (String) identifier, dataType.toString());
-                    break;
-//                case ADVANCE_INPUT_DATA_HANDLING:
-//                    experimentRegistry.updateInputDataHandling((AdvancedInputDataHandling) newObjectToUpdate, (String) identifier, dataType.toString());
-//                    break;
-//                case ADVANCE_OUTPUT_DATA_HANDLING:
-//                    experimentRegistry.updateOutputDataHandling((AdvancedOutputDataHandling) newObjectToUpdate, (String) identifier, dataType.toString());
-//                    break;
-//                case QOS_PARAM:
-//                    experimentRegistry.updateQOSParams((QualityOfServiceParams) newObjectToUpdate, (String) identifier, dataType.toString());
-//                    break;
                 default:
                     logger.error("Unsupported data type...", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
@@ -300,8 +254,8 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                 case EXPERIMENT:
                     experimentRegistry.updateExperimentField((String) identifier, fieldName, value);
                     break;
-                case EXPERIMENT_CONFIGURATION_DATA:
-                    experimentRegistry.updateExpConfigDataField((String) identifier, fieldName, value);
+                case USER_CONFIGURATION_DATA:
+                    experimentRegistry.updateUserConfigDataField((String) identifier, fieldName, value);
                     break;
                 default:
                     logger.error("Unsupported data type...", new UnsupportedOperationException());
@@ -334,42 +288,34 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     return gatewayRegistry.getGateway((String)identifier);
                 case EXPERIMENT:
                     return experimentRegistry.getExperiment((String) identifier, null);
-                case EXPERIMENT_CONFIGURATION_DATA:
-                    return experimentRegistry.getConfigData((String) identifier, null);
+                case USER_CONFIGURATION_DATA:
+                    return experimentRegistry.getUserConfigData((String) identifier, null);
+                case EXPERIMENT_INPUT:
+                    return experimentRegistry.getExperimentInputs((String) identifier);
                 case EXPERIMENT_OUTPUT:
                     return experimentRegistry.getExperimentOutputs((String) identifier);
                 case EXPERIMENT_STATUS:
                     return experimentRegistry.getExperimentStatus((String) identifier);
-//                case WORKFLOW_NODE_DETAIL:
-//                    return experimentRegistry.getWorkflowNodeDetails((String) identifier);
-//                case WORKFLOW_NODE_STATUS:
-//                    return experimentRegistry.getWorkflowNodeStatus((String) identifier);
-//                case NODE_OUTPUT:
-//                    return experimentRegistry.getNodeOutputs((String) identifier);
-                case TASK_DETAIL:
-                    return experimentRegistry.getTaskDetails((String) identifier);
-                case APPLICATION_OUTPUT:
-                    return experimentRegistry.getApplicationOutputs((String) identifier);
+                case EXPERIMENT_ERROR:
+                    return experimentRegistry.getExperimentError((String) identifier);
+                case PROCESS:
+                    return experimentRegistry.getProcess((String) identifier, null);
+                case PROCESS_RESOURCE_SCHEDULE:
+                    return experimentRegistry.getProcessResourceSchedule((String) identifier, null);
+                case PROCESS_INPUT:
+                    return experimentRegistry.getProcessInputs((String) identifier);
+                case PROCESS_OUTPUT:
+                    return experimentRegistry.getProcessOutputs((String) identifier);
+                case PROCESS_STATUS:
+                    return experimentRegistry.getProcessStatus((String) identifier);
+                case PROCESS_ERROR:
+                    return experimentRegistry.getProcessError((String) identifier);
+                case TASK:
+                    return experimentRegistry.getTask((String) identifier);
                 case TASK_STATUS:
                     return experimentRegistry.getTaskStatus((String) identifier);
-                case JOB_DETAIL:
-                    return experimentRegistry.getJobDetails((CompositeIdentifier) identifier);
-                case JOB_STATUS:
-                    return experimentRegistry.getJobStatus((CompositeIdentifier) identifier);
-//                case APPLICATION_STATUS:
-//                    return experimentRegistry.getApplicationStatus((CompositeIdentifier) identifier);
-//                case DATA_TRANSFER_DETAIL:
-//                    return experimentRegistry.getDataTransferDetails((String) identifier);
-//                case TRANSFER_STATUS:
-//                    return experimentRegistry.getDataTransferStatus((String) identifier);
-                case COMPUTATIONAL_RESOURCE_SCHEDULING:
-                    return experimentRegistry.getComputationalScheduling(dataType, (String) identifier);
-//                case ADVANCE_INPUT_DATA_HANDLING:
-//                    return experimentRegistry.getInputDataHandling(dataType, (String) identifier);
-//                case ADVANCE_OUTPUT_DATA_HANDLING:
-//                    return experimentRegistry.getOutputDataHandling(dataType, (String) identifier);
-//                case QOS_PARAM:
-//                    return experimentRegistry.getQosParams(dataType, (String) identifier);
+                case TASK_ERROR:
+                    return experimentRegistry.getTaskError((String) identifier);
                 default:
                     logger.error("Unsupported data type...", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
@@ -413,40 +359,16 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                         result.add(experiment);
                     }
                     return result;
-//                case WORKFLOW_NODE_DETAIL:
-//                    List<WorkflowNodeDetails> wfNodeDetails = experimentRegistry.getWFNodeDetails(fieldName, value);
-//                    for (WorkflowNodeDetails wf : wfNodeDetails) {
-//                        result.add(wf);
-//                    }
-//                    return result;
-//                case WORKFLOW_NODE_STATUS:
-//                    List<WorkflowNodeStatus> wfNodeStatusList = experimentRegistry.getWFNodeStatusList(fieldName, value);
-//                    for (WorkflowNodeStatus wfs : wfNodeStatusList) {
-//                        result.add(wfs);
-//                    }
-//                    return result;
-                case TASK_DETAIL:
-                    List<TaskModel> taskDetails = experimentRegistry.getTaskDetails(fieldName, value);
-                    for (TaskModel task : taskDetails) {
+                case PROCESS:
+                    List<ProcessModel> processList = experimentRegistry.getProcessList(fieldName, value);
+                    for (ProcessModel process : processList) {
+                        result.add(process);
+                    }
+                    return result;
+                case TASK:
+                    List<TaskModel> taskList = experimentRegistry.getTaskList(fieldName, value);
+                    for (TaskModel task : taskList) {
                         result.add(task);
-                    }
-                    return result;
-                case JOB_DETAIL:
-                    List<JobModel> jobDetails = experimentRegistry.getJobDetails(fieldName, value);
-                    for (JobModel job : jobDetails) {
-                        result.add(job);
-                    }
-                    return result;
-//                case DATA_TRANSFER_DETAIL:
-//                    List<DataTransferDetails> dataTransferDetails = experimentRegistry.getDataTransferDetails(fieldName, value);
-//                    for (DataTransferDetails transferDetails : dataTransferDetails) {
-//                        result.add(transferDetails);
-//                    }
-//                    return result;
-                case ERROR_DETAIL:
-                    List<ErrorModel> errorDetails = experimentRegistry.getErrorDetails(fieldName, value);
-                    for (ErrorModel error : errorDetails) {
-                        result.add(error);
                     }
                     return result;
                 default:
@@ -582,8 +504,8 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
             switch (dataType) {
                 case EXPERIMENT:
                     return experimentRegistry.getExperiment((String) identifier, field);
-                case EXPERIMENT_CONFIGURATION_DATA:
-                    return experimentRegistry.getConfigData((String) identifier, field);
+                case USER_CONFIGURATION_DATA:
+                    return experimentRegistry.getUserConfigData((String) identifier, field);
                 default:
                     logger.error("Unsupported data type...", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
@@ -615,16 +537,10 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     return projectRegistry.getProjectIDs(fieldName, value);
                 case EXPERIMENT:
                     return experimentRegistry.getExperimentIDs(fieldName, value);
-                case EXPERIMENT_CONFIGURATION_DATA:
-                    return experimentRegistry.getExperimentIDs(fieldName, value);
-//                case WORKFLOW_NODE_DETAIL:
-//                    return experimentRegistry.getWorkflowNodeIds(fieldName, value);
-                case TASK_DETAIL:
+                case PROCESS:
                     return experimentRegistry.getTaskDetailIds(fieldName, value);
-                case JOB_DETAIL:
+                case TASK:
                     return experimentRegistry.getJobDetailIds(fieldName, value);
-//                case DATA_TRANSFER_DETAIL:
-//                    return experimentRegistry.getTransferDetailIds(fieldName, value);
                 default:
                     logger.error("Unsupported data type...", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
@@ -657,32 +573,17 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                 case EXPERIMENT:
                     experimentRegistry.removeExperiment((String) identifier);
                     break;
-                case EXPERIMENT_CONFIGURATION_DATA:
-                    experimentRegistry.removeExperimentConfigData((String) identifier);
+                case USER_CONFIGURATION_DATA:
+                    experimentRegistry.removeUserConfigData((String) identifier);
                     break;
-                case WORKFLOW_NODE_DETAIL:
+                case PROCESS:
                     experimentRegistry.removeWorkflowNode((String) identifier);
                     break;
-                case TASK_DETAIL:
-                    experimentRegistry.removeTaskDetails((String) identifier);
-                    break;
-                case JOB_DETAIL:
-                    experimentRegistry.removeJobDetails((CompositeIdentifier) identifier);
-                    break;
-                case DATA_TRANSFER_DETAIL:
-                    experimentRegistry.removeDataTransferDetails((String) identifier);
-                    break;
-                case COMPUTATIONAL_RESOURCE_SCHEDULING:
+                case PROCESS_RESOURCE_SCHEDULE:
                     experimentRegistry.removeComputationalScheduling(dataType, (String) identifier);
                     break;
-                case ADVANCE_OUTPUT_DATA_HANDLING:
-                    experimentRegistry.removeOutputDataHandling(dataType, (String) identifier);
-                    break;
-                case ADVANCE_INPUT_DATA_HANDLING:
-                    experimentRegistry.removeInputDataHandling(dataType, (String) identifier);
-                    break;
-                case QOS_PARAM:
-                    experimentRegistry.removeQOSParams(dataType, (String) identifier);
+                case TASK:
+                    experimentRegistry.removeTaskDetails((String) identifier);
                     break;
                 default:
                     logger.error("Unsupported data type...", new UnsupportedOperationException());
@@ -709,29 +610,19 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
         try {
             switch (dataType) {
                 case PROJECT:
-                    return projectRegistry.isProjectExist((String)identifier);
+                    return projectRegistry.isProjectExist((String) identifier);
                 case GATEWAY:
-                    return gatewayRegistry.isGatewayExist((String)identifier);
+                    return gatewayRegistry.isGatewayExist((String) identifier);
                 case EXPERIMENT:
                     return experimentRegistry.isExperimentExist((String) identifier);
-                case EXPERIMENT_CONFIGURATION_DATA:
+                case USER_CONFIGURATION_DATA:
                     return experimentRegistry.isExperimentConfigDataExist((String) identifier);
-                case WORKFLOW_NODE_DETAIL:
+                case PROCESS:
                     return experimentRegistry.isWFNodeExist((String) identifier);
-                case TASK_DETAIL:
-                    return experimentRegistry.isTaskDetailExist((String) identifier);
-                case JOB_DETAIL:
-                    return experimentRegistry.isJobDetailExist((CompositeIdentifier) identifier);
-                case DATA_TRANSFER_DETAIL:
-                    return experimentRegistry.isTransferDetailExist((String) identifier);
-                case COMPUTATIONAL_RESOURCE_SCHEDULING:
+                case PROCESS_RESOURCE_SCHEDULE:
                     return experimentRegistry.isComputationalSchedulingExist(dataType, (String) identifier);
-                case ADVANCE_INPUT_DATA_HANDLING:
-                    return experimentRegistry.isInputDataHandlingExist(dataType, (String) identifier);
-                case ADVANCE_OUTPUT_DATA_HANDLING:
-                    return experimentRegistry.isOutputDataHandlingExist(dataType, (String) identifier);
-                case QOS_PARAM:
-                    return experimentRegistry.isQOSParamsExist(dataType, (String) identifier);
+                case TASK:
+                    return experimentRegistry.isTaskDetailExist((String) identifier);
                 default:
                     logger.error("Unsupported data type...", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();

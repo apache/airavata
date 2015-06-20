@@ -59,16 +59,16 @@ public class ProjectUserPK implements Serializable {
 
         ProjectUserPK that = (ProjectUserPK) o;
 
-        if (projectId != null ? !projectId.equals(that.projectId) : that.projectId != null) return false;
-        if (userName != null ? !userName.equals(that.userName) : that.userName != null) return false;
+        if (getProjectId() != null ? !getProjectId().equals(that.getProjectId()) : that.getProjectId() != null) return false;
+        if (getUserName() != null ? !getUserName().equals(that.getUserName()) : that.getUserName() != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = projectId != null ? projectId.hashCode() : 0;
-        result = 31 * result + (userName != null ? userName.hashCode() : 0);
+        int result = getProjectId() != null ? getProjectId().hashCode() : 0;
+        result = 31 * result + (getUserName() != null ? getUserName().hashCode() : 0);
         return result;
     }
 }

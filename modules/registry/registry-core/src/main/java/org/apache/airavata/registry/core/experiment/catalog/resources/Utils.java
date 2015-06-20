@@ -26,6 +26,7 @@ import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResourc
 import org.apache.airavata.registry.core.experiment.catalog.JPAConstants;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
 import org.apache.airavata.registry.core.experiment.catalog.model.*;
+import org.apache.airavata.registry.core.experiment.catalog.model.Process;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -181,14 +182,14 @@ public class Utils {
                 }
             case PROJECT_USER:
                 if (o instanceof ProjectUser){
-                    return createProjectUser((ProjectUser)o);
+                    return createProjectUser((ProjectUser) o);
                 }else {
                     logger.error("Object should be a ProjectUser.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a ProjectUser.");
                 }
             case USER:
-                if(o instanceof User) {
-                    return createUser((User) o);
+                if(o instanceof Users) {
+                    return createUser((Users) o);
                 }else {
                     logger.error("Object should be a User.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a User.");
@@ -202,28 +203,28 @@ public class Utils {
                 }
             case EXPERIMENT_SUMMARY:
                 if (o instanceof  ExperimentSummary){
-                    return createExperimentSummary((ExperimentSummary)o);
+                    return createExperimentSummary((ExperimentSummary) o);
                 }else {
                     logger.error("Object should be a ExperimentSummary.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a ExperimentSummary.");
                 }
             case EXPERIMENT:
                 if (o instanceof  Experiment){
-                    return createExperiment((Experiment)o);
+                    return createExperiment((Experiment) o);
                 }else {
                     logger.error("Object should be a Experiment.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Experiment.");
                 }
             case EXPERIMENT_INPUT:
                 if (o instanceof  ExperimentInput){
-                    return createExperimentInput((ExperimentInput)o);
+                    return createExperimentInput((ExperimentInput) o);
                 }else {
                     logger.error("Object should be a Experiment input data.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Experiment input data.");
                 }
             case EXPERIMENT_OUTPUT:
                 if (o instanceof  ExperimentOutput){
-                    return createExperimentOutput((ExperimentOutput)o);
+                    return createExperimentOutput((ExperimentOutput) o);
                 }else {
                     logger.error("Object should be a Experiment output data.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Experiment output data.");
@@ -241,6 +242,20 @@ public class Utils {
                 }else {
                     logger.error("Object should be a experiment error data.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a experiment error data.");
+                }
+            case USER_CONFIGURATION_DATA:
+                if (o instanceof  UserConfigurationData){
+                    return createUserConfigData((UserConfigurationData) o);
+                }else {
+                    logger.error("Object should be a user config data.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a user config data.");
+                }
+            case PROCESS:
+                if (o instanceof Process){
+                    return createProcess((Process) o);
+                }else {
+                    logger.error("Object should be a process error data.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a process error data.");
                 }
             case PROCESS_ERROR:
                 if (o instanceof  ProcessError){
@@ -352,7 +367,7 @@ public class Utils {
         return null;
     }
 
-    private static ExperimentCatResource createUser(User o) {
+    private static ExperimentCatResource createUser(Users o) {
         UserResource userResource = new UserResource();
         if (o != null){
             userResource.setUserName(o.getUserName());
@@ -402,7 +417,6 @@ public class Utils {
     private static ExperimentCatResource createExperimentInput (ExperimentInput o){
         ExperimentInputResource inputResource = new ExperimentInputResource();
         if (o != null){
-            inputResource.setExperimentInputId(o.getExperimentInputId());
             inputResource.setExperimentId(o.getExperimentId());
             inputResource.setInputName(o.getInputName());
             inputResource.setInputValue(o.getInputValue());
@@ -422,8 +436,9 @@ public class Utils {
     private static ExperimentCatResource createExperimentOutput (ExperimentOutput o){
         ExperimentOutputResource outputResource = new ExperimentOutputResource();
         if (o != null){
-            outputResource.setExperimentOutputId(o.getExperimentOutputId());
             outputResource.setExperimentId(o.getExperimentId());
+            outputResource.setOutputName(o.getOutputName());
+            outputResource.setOutputValue(o.getOutputValue());
             outputResource.setDataType(o.getDataType());
             outputResource.setApplicationArgument(o.getApplicationArgument());
             outputResource.setIsRequired(o.getIsRequired());
@@ -462,6 +477,41 @@ public class Utils {
         return experimentErrorResource;
     }
 
+    private static ExperimentCatResource createUserConfigData (UserConfigurationData o){
+        UserConfigurationDataResource configurationDataResource = new UserConfigurationDataResource();
+        if (o != null){
+            configurationDataResource.setExperimentId(o.getExperimentId());
+            configurationDataResource.setAiravataAutoSchedule(o.getAiravataAutoSchedule());
+            configurationDataResource.setOverrideManualScheduledParams(o.getOverrideManualScheduledParams());
+            configurationDataResource.setShareExperimentPublically(o.getShareExperimentPublically());
+            configurationDataResource.setThrottleResources(o.getThrottleResources());
+            configurationDataResource.setUserDn(o.getUserDn());
+            configurationDataResource.setGenerateCert(o.getGenerateCert());
+            configurationDataResource.setResourceHostId(o.getResourceHostId());
+            configurationDataResource.setTotalCpuCount(o.getTotalCpuCount());
+            configurationDataResource.setNodeCount(o.getNodeCount());
+            configurationDataResource.setNumberOfThreads(o.getNumberOfThreads());
+            configurationDataResource.setQueueName(o.getQueueName());
+            configurationDataResource.setWallTimeLimit(o.getWallTimeLimit());
+            configurationDataResource.setTotalPhysicalMemory(o.getTotalPhysicalMemory());
+        }
+        return configurationDataResource;
+    }
+
+    private static ExperimentCatResource createProcess (Process o){
+        ProcessResource processResource = new ProcessResource();
+        if (o != null){
+            processResource.setProcessId(o.getProcessId());
+            processResource.setExperimentId(o.getExperimentId());
+            processResource.setCreationTime(o.getCreationTime());
+            processResource.setLastUpdateTime(o.getLastUpdateTime());
+            processResource.setProcessDetail(o.getProcessDetail());
+            processResource.setApplicationInterfaceId(o.getApplicationInterfaceId());
+            processResource.setTaskDag(o.getTaskDag());
+        }
+        return processResource;
+    }
+
     private static ExperimentCatResource createProcessError (ProcessError o){
         ProcessErrorResource processErrorResource = new ProcessErrorResource();
         if (o != null){
@@ -478,7 +528,6 @@ public class Utils {
     private static ExperimentCatResource createProcessInput (ProcessInput o){
         ProcessInputResource inputResource = new ProcessInputResource();
         if (o != null){
-            inputResource.setProcessInputId(o.getProcessInputId());
             inputResource.setProcessId(o.getProcessId());
             inputResource.setInputName(o.getInputName());
             inputResource.setInputValue(o.getInputValue());
@@ -498,8 +547,9 @@ public class Utils {
     private static ExperimentCatResource createProcessOutput (ProcessOutput o){
         ProcessOutputResource outputResource = new ProcessOutputResource();
         if (o != null){
-            outputResource.setProcessOutputId(o.getProcessOutputId());
             outputResource.setProcessId(o.getProcessId());
+            outputResource.setOutputName(o.getOutputName());
+            outputResource.setOutputValue(o.getOutputValue());
             outputResource.setDataType(o.getDataType());
             outputResource.setApplicationArgument(o.getApplicationArgument());
             outputResource.setIsRequired(o.getIsRequired());

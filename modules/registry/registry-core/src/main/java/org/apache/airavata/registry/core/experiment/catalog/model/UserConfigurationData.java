@@ -185,58 +185,58 @@ public class UserConfigurationData {
         this.totalPhysicalMemory = totalPhysicalMemory;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        UserConfigurationData that = (UserConfigurationData) o;
-
-        if (airavataAutoSchedule != null ? !airavataAutoSchedule.equals(that.airavataAutoSchedule) : that.airavataAutoSchedule != null)
-            return false;
-        if (experimentId != null ? !experimentId.equals(that.experimentId) : that.experimentId != null) return false;
-        if (generateCert != null ? !generateCert.equals(that.generateCert) : that.generateCert != null) return false;
-        if (nodeCount != null ? !nodeCount.equals(that.nodeCount) : that.nodeCount != null) return false;
-        if (numberOfThreads != null ? !numberOfThreads.equals(that.numberOfThreads) : that.numberOfThreads != null)
-            return false;
-        if (overrideManualScheduledParams != null ? !overrideManualScheduledParams.equals(that.overrideManualScheduledParams) : that.overrideManualScheduledParams != null)
-            return false;
-        if (queueName != null ? !queueName.equals(that.queueName) : that.queueName != null) return false;
-        if (resourceHostId != null ? !resourceHostId.equals(that.resourceHostId) : that.resourceHostId != null)
-            return false;
-        if (shareExperimentPublically != null ? !shareExperimentPublically.equals(that.shareExperimentPublically) : that.shareExperimentPublically != null)
-            return false;
-        if (throttleResources != null ? !throttleResources.equals(that.throttleResources) : that.throttleResources != null)
-            return false;
-        if (totalCpuCount != null ? !totalCpuCount.equals(that.totalCpuCount) : that.totalCpuCount != null)
-            return false;
-        if (totalPhysicalMemory != null ? !totalPhysicalMemory.equals(that.totalPhysicalMemory) : that.totalPhysicalMemory != null)
-            return false;
-        if (userDn != null ? !userDn.equals(that.userDn) : that.userDn != null) return false;
-        if (wallTimeLimit != null ? !wallTimeLimit.equals(that.wallTimeLimit) : that.wallTimeLimit != null)
-            return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = experimentId != null ? experimentId.hashCode() : 0;
-        result = 31 * result + (airavataAutoSchedule != null ? airavataAutoSchedule.hashCode() : 0);
-        result = 31 * result + (overrideManualScheduledParams != null ? overrideManualScheduledParams.hashCode() : 0);
-        result = 31 * result + (shareExperimentPublically != null ? shareExperimentPublically.hashCode() : 0);
-        result = 31 * result + (throttleResources != null ? throttleResources.hashCode() : 0);
-        result = 31 * result + (userDn != null ? userDn.hashCode() : 0);
-        result = 31 * result + (generateCert != null ? generateCert.hashCode() : 0);
-        result = 31 * result + (resourceHostId != null ? resourceHostId.hashCode() : 0);
-        result = 31 * result + (totalCpuCount != null ? totalCpuCount.hashCode() : 0);
-        result = 31 * result + (nodeCount != null ? nodeCount.hashCode() : 0);
-        result = 31 * result + (numberOfThreads != null ? numberOfThreads.hashCode() : 0);
-        result = 31 * result + (queueName != null ? queueName.hashCode() : 0);
-        result = 31 * result + (wallTimeLimit != null ? wallTimeLimit.hashCode() : 0);
-        result = 31 * result + (totalPhysicalMemory != null ? totalPhysicalMemory.hashCode() : 0);
-        return result;
-    }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//
+//        UserConfigurationData that = (UserConfigurationData) o;
+//
+//        if (airavataAutoSchedule != null ? !airavataAutoSchedule.equals(that.airavataAutoSchedule) : that.airavataAutoSchedule != null)
+//            return false;
+//        if (experimentId != null ? !experimentId.equals(that.experimentId) : that.experimentId != null) return false;
+//        if (generateCert != null ? !generateCert.equals(that.generateCert) : that.generateCert != null) return false;
+//        if (nodeCount != null ? !nodeCount.equals(that.nodeCount) : that.nodeCount != null) return false;
+//        if (numberOfThreads != null ? !numberOfThreads.equals(that.numberOfThreads) : that.numberOfThreads != null)
+//            return false;
+//        if (overrideManualScheduledParams != null ? !overrideManualScheduledParams.equals(that.overrideManualScheduledParams) : that.overrideManualScheduledParams != null)
+//            return false;
+//        if (queueName != null ? !queueName.equals(that.queueName) : that.queueName != null) return false;
+//        if (resourceHostId != null ? !resourceHostId.equals(that.resourceHostId) : that.resourceHostId != null)
+//            return false;
+//        if (shareExperimentPublically != null ? !shareExperimentPublically.equals(that.shareExperimentPublically) : that.shareExperimentPublically != null)
+//            return false;
+//        if (throttleResources != null ? !throttleResources.equals(that.throttleResources) : that.throttleResources != null)
+//            return false;
+//        if (totalCpuCount != null ? !totalCpuCount.equals(that.totalCpuCount) : that.totalCpuCount != null)
+//            return false;
+//        if (totalPhysicalMemory != null ? !totalPhysicalMemory.equals(that.totalPhysicalMemory) : that.totalPhysicalMemory != null)
+//            return false;
+//        if (userDn != null ? !userDn.equals(that.userDn) : that.userDn != null) return false;
+//        if (wallTimeLimit != null ? !wallTimeLimit.equals(that.wallTimeLimit) : that.wallTimeLimit != null)
+//            return false;
+//
+//        return true;
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        int result = experimentId != null ? experimentId.hashCode() : 0;
+//        result = 31 * result + (airavataAutoSchedule != null ? airavataAutoSchedule.hashCode() : 0);
+//        result = 31 * result + (overrideManualScheduledParams != null ? overrideManualScheduledParams.hashCode() : 0);
+//        result = 31 * result + (shareExperimentPublically != null ? shareExperimentPublically.hashCode() : 0);
+//        result = 31 * result + (throttleResources != null ? throttleResources.hashCode() : 0);
+//        result = 31 * result + (userDn != null ? userDn.hashCode() : 0);
+//        result = 31 * result + (generateCert != null ? generateCert.hashCode() : 0);
+//        result = 31 * result + (resourceHostId != null ? resourceHostId.hashCode() : 0);
+//        result = 31 * result + (totalCpuCount != null ? totalCpuCount.hashCode() : 0);
+//        result = 31 * result + (nodeCount != null ? nodeCount.hashCode() : 0);
+//        result = 31 * result + (numberOfThreads != null ? numberOfThreads.hashCode() : 0);
+//        result = 31 * result + (queueName != null ? queueName.hashCode() : 0);
+//        result = 31 * result + (wallTimeLimit != null ? wallTimeLimit.hashCode() : 0);
+//        result = 31 * result + (totalPhysicalMemory != null ? totalPhysicalMemory.hashCode() : 0);
+//        return result;
+//    }
 
     @OneToOne
     @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID", nullable = false)

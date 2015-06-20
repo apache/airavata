@@ -77,33 +77,33 @@ public class Gateway {
         this.emailAddress = emailAddress;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//
+//        Gateway gateway = (Gateway) o;
+//
+//        if (domain != null ? !domain.equals(gateway.domain) : gateway.domain != null) return false;
+//        if (emailAddress != null ? !emailAddress.equals(gateway.emailAddress) : gateway.emailAddress != null)
+//            return false;
+//        if (gatewayId != null ? !gatewayId.equals(gateway.gatewayId) : gateway.gatewayId != null) return false;
+//        if (gatewayName != null ? !gatewayName.equals(gateway.gatewayName) : gateway.gatewayName != null)
+//            return false;
+//
+//        return true;
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        int result = gatewayId != null ? gatewayId.hashCode() : 0;
+//        result = 31 * result + (gatewayName != null ? gatewayName.hashCode() : 0);
+//        result = 31 * result + (domain != null ? domain.hashCode() : 0);
+//        result = 31 * result + (emailAddress != null ? emailAddress.hashCode() : 0);
+//        return result;
+//    }
 
-        Gateway gateway = (Gateway) o;
-
-        if (domain != null ? !domain.equals(gateway.domain) : gateway.domain != null) return false;
-        if (emailAddress != null ? !emailAddress.equals(gateway.emailAddress) : gateway.emailAddress != null)
-            return false;
-        if (gatewayId != null ? !gatewayId.equals(gateway.gatewayId) : gateway.gatewayId != null) return false;
-        if (gatewayName != null ? !gatewayName.equals(gateway.gatewayName) : gateway.gatewayName != null)
-            return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = gatewayId != null ? gatewayId.hashCode() : 0;
-        result = 31 * result + (gatewayName != null ? gatewayName.hashCode() : 0);
-        result = 31 * result + (domain != null ? domain.hashCode() : 0);
-        result = 31 * result + (emailAddress != null ? emailAddress.hashCode() : 0);
-        return result;
-    }
-
-    @OneToMany(mappedBy = "gateways")
+    @OneToMany(mappedBy = "gateway")
     public Collection<GatewayWorker> getGatewayWorkers() {
         return gatewayWorkers;
     }

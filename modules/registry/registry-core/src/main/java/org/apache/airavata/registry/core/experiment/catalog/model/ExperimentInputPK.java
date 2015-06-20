@@ -59,16 +59,16 @@ public class ExperimentInputPK implements Serializable {
 
         ExperimentInputPK that = (ExperimentInputPK) o;
 
-        if (experimentId != null ? !experimentId.equals(that.experimentId) : that.experimentId != null) return false;
-        if (inputName != null ? !inputName.equals(that.inputName) : that.inputName != null) return false;
+        if (getExperimentId() != null ? !getExperimentId().equals(that.getExperimentId()) : that.getExperimentId() != null) return false;
+        if (getInputName() != null ? !getInputName().equals(that.getInputName()) : that.getInputName() != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = experimentId != null ? experimentId.hashCode() : 0;
-        result = 31 * result + (inputName != null ? inputName.hashCode() : 0);
+        int result = getExperimentId() != null ? getExperimentId().hashCode() : 0;
+        result = 31 * result + (getInputName() != null ? getInputName().hashCode() : 0);
         return result;
     }
 }

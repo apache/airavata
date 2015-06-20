@@ -59,16 +59,16 @@ public class ProcessErrorPK implements Serializable {
 
         ProcessErrorPK that = (ProcessErrorPK) o;
 
-        if (errorId != null ? !errorId.equals(that.errorId) : that.errorId != null) return false;
-        if (processId != null ? !processId.equals(that.processId) : that.processId != null) return false;
+        if (getErrorId() != null ? !getErrorId().equals(that.getErrorId()) : that.getErrorId() != null) return false;
+        if (getProcessId() != null ? !getProcessId().equals(that.getProcessId()) : that.getProcessId() != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = errorId != null ? errorId.hashCode() : 0;
-        result = 31 * result + (processId != null ? processId.hashCode() : 0);
+        int result = getErrorId() != null ? getErrorId().hashCode() : 0;
+        result = 31 * result + (getProcessId() != null ? getProcessId().hashCode() : 0);
         return result;
     }
 }

@@ -59,16 +59,16 @@ public class TaskErrorPK implements Serializable {
 
         TaskErrorPK that = (TaskErrorPK) o;
 
-        if (errorId != null ? !errorId.equals(that.errorId) : that.errorId != null) return false;
-        if (taskId != null ? !taskId.equals(that.taskId) : that.taskId != null) return false;
+        if (getErrorId() != null ? !getErrorId().equals(that.getErrorId()) : that.getErrorId() != null) return false;
+        if (getTaskId() != null ? !getTaskId().equals(that.getTaskId()) : that.getTaskId() != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = errorId != null ? errorId.hashCode() : 0;
-        result = 31 * result + (taskId != null ? taskId.hashCode() : 0);
+        int result = getErrorId() != null ? getErrorId().hashCode() : 0;
+        result = 31 * result + (getTaskId() != null ? getTaskId().hashCode() : 0);
         return result;
     }
 }

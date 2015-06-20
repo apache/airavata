@@ -253,7 +253,7 @@ public class WorkerResource extends AbstractExpCatResource {
             switch (type) {
                 case PROJECT:
                     generator = new QueryGenerator(PROJECT);
-                    User users = em.find(User.class, getUser());
+                    Users users = em.find(Users.class, getUser());
                     Gateway gatewayModel = em.find(Gateway.class, gatewayId);
                     generator.setParameter("users", users);
                     if (gatewayModel != null) {
@@ -340,7 +340,7 @@ public class WorkerResource extends AbstractExpCatResource {
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
             GatewayWorker gatewayWorker = new GatewayWorker();
-            User existingUser = em.find(User.class, this.user);
+            Users existingUser = em.find(Users.class, this.user);
             gatewayWorker.setUser(existingUser);
             gatewayWorker.setUserName(existingUser.getUserName());
             gatewayWorker.setGatewayId(gatewayId);

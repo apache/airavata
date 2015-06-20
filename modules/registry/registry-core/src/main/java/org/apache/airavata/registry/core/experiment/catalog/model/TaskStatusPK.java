@@ -59,16 +59,16 @@ public class TaskStatusPK implements Serializable {
 
         TaskStatusPK that = (TaskStatusPK) o;
 
-        if (statusId != null ? !statusId.equals(that.statusId) : that.statusId != null) return false;
-        if (taskId != null ? !taskId.equals(that.taskId) : that.taskId != null) return false;
+        if (getStatusId() != null ? !getStatusId().equals(that.getStatusId()) : that.getStatusId() != null) return false;
+        if (getTaskId() != null ? !getTaskId().equals(that.getTaskId()) : that.getTaskId() != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = statusId != null ? statusId.hashCode() : 0;
-        result = 31 * result + (taskId != null ? taskId.hashCode() : 0);
+        int result = getStatusId() != null ? getStatusId().hashCode() : 0;
+        result = 31 * result + (getTaskId() != null ? getTaskId().hashCode() : 0);
         return result;
     }
 }

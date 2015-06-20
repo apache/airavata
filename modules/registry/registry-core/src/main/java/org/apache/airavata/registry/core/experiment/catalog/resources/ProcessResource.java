@@ -399,10 +399,8 @@ public class ProcessResource extends AbstractExpCatResource {
         EntityManager em = null;
         try {
             em = ExpCatResourceUtils.getEntityManager();
-            Process process = em.find(Process.class, processId);
-            em.close();
-            em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
+            Process process = em.find(Process.class, processId);
             if (process == null) {
             	process = new Process();
             }

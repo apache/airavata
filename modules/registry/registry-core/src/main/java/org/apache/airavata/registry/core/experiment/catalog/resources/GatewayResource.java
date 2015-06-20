@@ -206,7 +206,7 @@ public class GatewayResource extends AbstractExpCatResource {
                     generator = new QueryGenerator(USERS);
                     generator.setParameter(UserConstants.USERNAME, name);
                     q = generator.selectQuery(em);
-                    User user = (User) q.getSingleResult();
+                    Users user = (Users) q.getSingleResult();
                     UserResource userResource =
                             (UserResource) Utils.getResource(ResourceType.USER, user);
                     em.getTransaction().commit();
@@ -285,25 +285,11 @@ public class GatewayResource extends AbstractExpCatResource {
                         }
                     }
                     break;
-                case EXPERIMENT:
-                    generator = new QueryGenerator(EXPERIMENT);
-                    generator.setParameter(ExperimentConstants.GATEWAY_ID, gatewayId);
-                    q = generator.selectQuery(em);
-                    results = q.getResultList();
-                    if (results.size() != 0) {
-                        for (Object result : results) {
-                            Experiment experiment = (Experiment) result;
-                            ExperimentResource experimentResource =
-                                    (ExperimentResource) Utils.getResource(ResourceType.EXPERIMENT, experiment);
-                            resourceList.add(experimentResource);
-                        }
-                    }
-                    break;
                 case USER:
                     generator = new QueryGenerator(USERS);
                     q = generator.selectQuery(em);
                     for (Object o : q.getResultList()) {
-                        User user = (User) o;
+                        Users user = (Users) o;
                         UserResource userResource =
                                 (UserResource) Utils.getResource(ResourceType.USER, user);
                         resourceList.add(userResource);
@@ -392,7 +378,7 @@ public class GatewayResource extends AbstractExpCatResource {
                     return existingWorker != null;
                 case USER:
                     em = ExpCatResourceUtils.getEntityManager();
-                    User existingUser = em.find(User.class, name);
+                    Users existingUser = em.find(Users.class, name);
                     em.close();
                     return existingUser != null;
                 case EXPERIMENT:

@@ -52,6 +52,7 @@ public class ExperimentErrorPK implements Serializable {
         this.experimentId = experimentId;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -59,16 +60,16 @@ public class ExperimentErrorPK implements Serializable {
 
         ExperimentErrorPK that = (ExperimentErrorPK) o;
 
-        if (errorId != null ? !errorId.equals(that.errorId) : that.errorId != null) return false;
-        if (experimentId != null ? !experimentId.equals(that.experimentId) : that.experimentId != null) return false;
+        if (getErrorId() != null ? !getErrorId().equals(that.getErrorId()) : that.getErrorId() != null) return false;
+        if (getExperimentId() != null ? !getExperimentId().equals(that.getExperimentId()) : that.getExperimentId() != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = errorId != null ? errorId.hashCode() : 0;
-        result = 31 * result + (experimentId != null ? experimentId.hashCode() : 0);
+        int result = getErrorId() != null ? getErrorId().hashCode() : 0;
+        result = 31 * result + (getExperimentId() != null ? getExperimentId().hashCode() : 0);
         return result;
     }
 }

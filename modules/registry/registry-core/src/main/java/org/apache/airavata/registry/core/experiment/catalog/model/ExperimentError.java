@@ -110,39 +110,39 @@ public class ExperimentError {
         this.rootCauseErrorIdList = rootCauseErrorIdList;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ExperimentError that = (ExperimentError) o;
-
-        if (errorId != that.errorId) return false;
-        if (actualErrorMessage != null ? !actualErrorMessage.equals(that.actualErrorMessage) : that.actualErrorMessage != null)
-            return false;
-        if (creationTime != null ? !creationTime.equals(that.creationTime) : that.creationTime != null) return false;
-        if (experimentId != null ? !experimentId.equals(that.experimentId) : that.experimentId != null) return false;
-        if (rootCauseErrorIdList != null ? !rootCauseErrorIdList.equals(that.rootCauseErrorIdList) : that.rootCauseErrorIdList != null)
-            return false;
-        if (transientOrPersistent != null ? !transientOrPersistent.equals(that.transientOrPersistent) : that.transientOrPersistent != null)
-            return false;
-        if (userFriendlyMessage != null ? !userFriendlyMessage.equals(that.userFriendlyMessage) : that.userFriendlyMessage != null)
-            return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = errorId != null ? errorId.hashCode() : 0;
-        result = 31 * result + (experimentId != null ? experimentId.hashCode() : 0);
-        result = 31 * result + (creationTime != null ? creationTime.hashCode() : 0);
-        result = 31 * result + (actualErrorMessage != null ? actualErrorMessage.hashCode() : 0);
-        result = 31 * result + (userFriendlyMessage != null ? userFriendlyMessage.hashCode() : 0);
-        result = 31 * result + (transientOrPersistent != null ? transientOrPersistent.hashCode() : 0);
-        result = 31 * result + (rootCauseErrorIdList != null ? rootCauseErrorIdList.hashCode() : 0);
-        return result;
-    }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//
+//        ExperimentError that = (ExperimentError) o;
+//
+//        if (errorId != that.errorId) return false;
+//        if (actualErrorMessage != null ? !actualErrorMessage.equals(that.actualErrorMessage) : that.actualErrorMessage != null)
+//            return false;
+//        if (creationTime != null ? !creationTime.equals(that.creationTime) : that.creationTime != null) return false;
+//        if (experimentId != null ? !experimentId.equals(that.experimentId) : that.experimentId != null) return false;
+//        if (rootCauseErrorIdList != null ? !rootCauseErrorIdList.equals(that.rootCauseErrorIdList) : that.rootCauseErrorIdList != null)
+//            return false;
+//        if (transientOrPersistent != null ? !transientOrPersistent.equals(that.transientOrPersistent) : that.transientOrPersistent != null)
+//            return false;
+//        if (userFriendlyMessage != null ? !userFriendlyMessage.equals(that.userFriendlyMessage) : that.userFriendlyMessage != null)
+//            return false;
+//
+//        return true;
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        int result = errorId != null ? errorId.hashCode() : 0;
+//        result = 31 * result + (experimentId != null ? experimentId.hashCode() : 0);
+//        result = 31 * result + (creationTime != null ? creationTime.hashCode() : 0);
+//        result = 31 * result + (actualErrorMessage != null ? actualErrorMessage.hashCode() : 0);
+//        result = 31 * result + (userFriendlyMessage != null ? userFriendlyMessage.hashCode() : 0);
+//        result = 31 * result + (transientOrPersistent != null ? transientOrPersistent.hashCode() : 0);
+//        result = 31 * result + (rootCauseErrorIdList != null ? rootCauseErrorIdList.hashCode() : 0);
+//        return result;
+//    }
 
     @ManyToOne
     @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID", nullable = false)

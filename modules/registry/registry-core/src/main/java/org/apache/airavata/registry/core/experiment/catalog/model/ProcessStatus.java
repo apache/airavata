@@ -89,31 +89,31 @@ public class ProcessStatus {
         this.reason = reason;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ProcessStatus that = (ProcessStatus) o;
-        if (statusId != null ? !statusId.equals(that.statusId) : that.statusId != null) return false;
-        if (processId != null ? !processId.equals(that.processId) : that.processId != null) return false;
-        if (reason != null ? !reason.equals(that.reason) : that.reason != null) return false;
-        if (state != null ? !state.equals(that.state) : that.state != null) return false;
-        if (timeOfStateChange != null ? !timeOfStateChange.equals(that.timeOfStateChange) : that.timeOfStateChange != null)
-            return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = statusId != null ? statusId.hashCode() : 0;
-        result = 31 * result + (processId != null ? processId.hashCode() : 0);
-        result = 31 * result + (state != null ? state.hashCode() : 0);
-        result = 31 * result + (timeOfStateChange != null ? timeOfStateChange.hashCode() : 0);
-        result = 31 * result + (reason != null ? reason.hashCode() : 0);
-        return result;
-    }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//
+//        ProcessStatus that = (ProcessStatus) o;
+//        if (statusId != null ? !statusId.equals(that.statusId) : that.statusId != null) return false;
+//        if (processId != null ? !processId.equals(that.processId) : that.processId != null) return false;
+//        if (reason != null ? !reason.equals(that.reason) : that.reason != null) return false;
+//        if (state != null ? !state.equals(that.state) : that.state != null) return false;
+//        if (timeOfStateChange != null ? !timeOfStateChange.equals(that.timeOfStateChange) : that.timeOfStateChange != null)
+//            return false;
+//
+//        return true;
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        int result = statusId != null ? statusId.hashCode() : 0;
+//        result = 31 * result + (processId != null ? processId.hashCode() : 0);
+//        result = 31 * result + (state != null ? state.hashCode() : 0);
+//        result = 31 * result + (timeOfStateChange != null ? timeOfStateChange.hashCode() : 0);
+//        result = 31 * result + (reason != null ? reason.hashCode() : 0);
+//        return result;
+//    }
 
     @ManyToOne
     @JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID", nullable = false)
