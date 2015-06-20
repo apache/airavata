@@ -28,9 +28,10 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "EXPERIMENT_ERROR")
+@IdClass(ExperimentErrorPK.class)
 public class ExperimentError {
     private final static Logger logger = LoggerFactory.getLogger(ExperimentError.class);
-    private int errorId;
+    private String errorId;
     private String experimentId;
     private Timestamp creationTime;
     private String actualErrorMessage;
@@ -39,21 +40,17 @@ public class ExperimentError {
     private String rootCauseErrorIdList;
     private Experiment experiment;
 
-    public void setErrorId(Integer errorId) {
+    @Id
+    @Column(name = "ERROR_ID")
+    public String getErrorId() {
+        return errorId;
+    }
+
+    public void setErrorId(String errorId) {
         this.errorId = errorId;
     }
 
     @Id
-    @Column(name = "ERROR_ID")
-    public int getErrorId() {
-        return errorId;
-    }
-
-    public void setErrorId(int errorId) {
-        this.errorId = errorId;
-    }
-
-    @Basic
     @Column(name = "EXPERIMENT_ID")
     public String getExperimentId() {
         return experimentId;
@@ -137,7 +134,7 @@ public class ExperimentError {
 
     @Override
     public int hashCode() {
-        int result = errorId;
+        int result = errorId != null ? errorId.hashCode() : 0;
         result = 31 * result + (experimentId != null ? experimentId.hashCode() : 0);
         result = 31 * result + (creationTime != null ? creationTime.hashCode() : 0);
         result = 31 * result + (actualErrorMessage != null ? actualErrorMessage.hashCode() : 0);

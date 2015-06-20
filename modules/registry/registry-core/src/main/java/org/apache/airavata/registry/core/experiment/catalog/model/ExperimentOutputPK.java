@@ -23,33 +23,35 @@ package org.apache.airavata.registry.core.experiment.catalog.model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import java.io.Serializable;
 
-public class ProjectUsersPK implements Serializable {
-    private final static Logger logger = LoggerFactory.getLogger(ProjectUsersPK.class);
-    private String projectId;
-    private String userName;
+public class ExperimentOutputPK implements Serializable {
+    private final static Logger logger = LoggerFactory.getLogger(ExperimentOutputPK.class);
+    private String experimentId;
+    private String outputName;
 
-    @Column(name = "PROJECT_ID")
+    @Column(name = "EXPERIMENT_ID")
+    @Basic
     @Id
-    public String getProjectId() {
-        return projectId;
+    public String getExperimentId() {
+        return experimentId;
     }
 
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
+    public void setExperimentId(String experimentId) {
+        this.experimentId = experimentId;
     }
 
-    @Column(name = "USER_NAME")
+    @Column(name = "OUTPUT_NAME")
     @Id
-    public String getUserName() {
-        return userName;
+    public String getOutputName() {
+        return outputName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setOutputName(String outputName) {
+        this.outputName = outputName;
     }
 
     @Override
@@ -57,18 +59,18 @@ public class ProjectUsersPK implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ProjectUsersPK that = (ProjectUsersPK) o;
+        ExperimentOutputPK that = (ExperimentOutputPK) o;
 
-        if (projectId != null ? !projectId.equals(that.projectId) : that.projectId != null) return false;
-        if (userName != null ? !userName.equals(that.userName) : that.userName != null) return false;
+        if (experimentId != null ? !experimentId.equals(that.experimentId) : that.experimentId != null) return false;
+        if (outputName != null ? !outputName.equals(that.outputName) : that.outputName != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = projectId != null ? projectId.hashCode() : 0;
-        result = 31 * result + (userName != null ? userName.hashCode() : 0);
+        int result = experimentId != null ? experimentId.hashCode() : 0;
+        result = 31 * result + (outputName != null ? outputName.hashCode() : 0);
         return result;
     }
 }

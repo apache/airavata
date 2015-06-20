@@ -35,12 +35,21 @@ import java.util.List;
 
 public class ProcessErrorResource extends AbstractExpCatResource {
     private static final Logger logger = LoggerFactory.getLogger(ProcessErrorResource.class);
+    private String errorId;
     private String processId;
     private Timestamp creationTime;
     private String actualErrorMessage;
     private String userFriendlyMessage;
     private Boolean transientOrPersistent;
     private String rootCauseErrorIdList;
+
+    public String getErrorId() {
+        return errorId;
+    }
+
+    public void setErrorId(String errorId) {
+        this.errorId = errorId;
+    }
 
     public String getProcessId() {
         return processId;

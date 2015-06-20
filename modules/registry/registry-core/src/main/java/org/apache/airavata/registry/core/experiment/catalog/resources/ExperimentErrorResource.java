@@ -35,12 +35,21 @@ import java.util.List;
 
 public class ExperimentErrorResource extends AbstractExpCatResource {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentErrorResource.class);
+    private String errorId;
     private String experimentId;
     private Timestamp creationTime;
     private String actualErrorMessage;
     private String userFriendlyMessage;
     private Boolean transientOrPersistent;
     private String rootCauseErrorIdList;
+
+    public String getErrorId() {
+        return errorId;
+    }
+
+    public void setErrorId(String errorId) {
+        this.errorId = errorId;
+    }
 
     public String getExperimentId() {
         return experimentId;
@@ -127,6 +136,7 @@ public class ExperimentErrorResource extends AbstractExpCatResource {
             if(experimentError == null){
                 experimentError = new ExperimentError();
             }
+            experimentError.setErrorId(errorId);
             experimentError.setExperimentId(experimentId);
             experimentError.setActualErrorMessage(actualErrorMessage);
             experimentError.setUserFriendlyMessage(userFriendlyMessage);

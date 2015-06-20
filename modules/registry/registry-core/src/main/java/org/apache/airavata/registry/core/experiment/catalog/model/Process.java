@@ -39,11 +39,11 @@ public class Process {
     private String applicationInterfaceId;
     private String taskDag;
     private Experiment experiment;
-    private ProcessError processError;
+    private Collection<ProcessError> processErrors;
     private Collection<ProcessInput> processInputs;
     private Collection<ProcessOutput> processOutputs;
     private ProcessResourceSchedule processResourceSchedule;
-    private ProcessStatus processStatus;
+    private Collection<ProcessStatus> processStatuses;
     private Collection<Task> tasks;
 
     @Id
@@ -161,13 +161,13 @@ public class Process {
         this.experiment = experimentByExperimentId;
     }
 
-    @OneToOne(mappedBy = "process")
-    public ProcessError getProcessError() {
-        return processError;
+    @OneToMany(mappedBy = "process")
+    public Collection<ProcessError> getProcessErrors() {
+        return processErrors;
     }
 
-    public void setProcessError(ProcessError processErrorsByProcessId) {
-        this.processError = processErrorsByProcessId;
+    public void setProcessErrors(Collection<ProcessError> processErrorsByProcessId) {
+        this.processErrors = processErrorsByProcessId;
     }
 
     @OneToMany(mappedBy = "process")
@@ -197,13 +197,13 @@ public class Process {
         this.processResourceSchedule = processResourceSchedulesByProcessId;
     }
 
-    @OneToOne(mappedBy = "process")
-    public ProcessStatus getProcessStatus() {
-        return processStatus;
+    @OneToMany(mappedBy = "process")
+    public Collection<ProcessStatus> getProcessStatuses() {
+        return processStatuses;
     }
 
-    public void setProcessStatus(ProcessStatus processStatusesByProcessId) {
-        this.processStatus = processStatusesByProcessId;
+    public void setProcessStatuses(Collection<ProcessStatus> processStatusesByProcessId) {
+        this.processStatuses = processStatusesByProcessId;
     }
 
     @OneToMany(mappedBy = "process")

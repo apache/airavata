@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.*;
 import java.lang.*;
 import java.sql.Timestamp;
+import java.util.Collection;
 
 @Entity
 @Table(name = "TASK")
@@ -39,8 +40,8 @@ public class Task {
     private String taskDetail;
     private Byte taskInternalStore;
     private Process process;
-    private TaskError taskError;
-    private TaskStatus taskStatus;
+    private Collection<TaskError> taskErrors;
+    private Collection<TaskStatus> taskStatuses;
 
     @Id
     @Column(name = "TASK_ID")
@@ -155,21 +156,21 @@ public class Task {
         this.process = processByParentProcessId;
     }
 
-    @OneToOne(mappedBy = "task")
-    public TaskError getTaskError() {
-        return taskError;
+    @OneToMany(mappedBy = "task")
+    public Collection<TaskError> getTaskErrors() {
+        return taskErrors;
     }
 
-    public void setTaskError(TaskError taskErrorsByTaskId) {
-        this.taskError = taskErrorsByTaskId;
+    public void setTaskErrors(Collection<TaskError> taskErrorsByTaskId) {
+        this.taskErrors = taskErrorsByTaskId;
     }
 
-    @OneToOne(mappedBy = "task")
-    public TaskStatus getTaskStatus() {
-        return taskStatus;
+    @OneToMany(mappedBy = "task")
+    public Collection<TaskStatus> getTaskStatuses() {
+        return taskStatuses;
     }
 
-    public void setTaskStatus(TaskStatus taskStatusesByTaskId) {
-        this.taskStatus = taskStatusesByTaskId;
+    public void setTaskStatuses(Collection<TaskStatus> taskStatusesByTaskId) {
+        this.taskStatuses = taskStatusesByTaskId;
     }
 }

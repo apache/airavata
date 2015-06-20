@@ -25,7 +25,7 @@ import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
 import org.apache.airavata.registry.core.experiment.catalog.model.ProjectUser;
-import org.apache.airavata.registry.core.experiment.catalog.model.ProjectUsersPK;
+import org.apache.airavata.registry.core.experiment.catalog.model.ProjectUserPK;
 import org.apache.airavata.registry.core.experiment.catalog.model.Project;
 import org.apache.airavata.registry.core.experiment.catalog.model.User;
 import org.apache.airavata.registry.cpi.RegistryException;
@@ -86,10 +86,10 @@ public class ProjectUserResource extends AbstractExpCatResource {
         EntityManager em = null;
         try {
             em = ExpCatResourceUtils.getEntityManager();
-            ProjectUsersPK projectUsersPK = new ProjectUsersPK();
-            projectUsersPK.setProjectId(projectId);
-            projectUsersPK.setUserName(userName);
-            ProjectUser existingPrUser = em.find(ProjectUser.class, projectUsersPK);
+            ProjectUserPK projectUserPK = new ProjectUserPK();
+            projectUserPK.setProjectId(projectId);
+            projectUserPK.setUserName(userName);
+            ProjectUser existingPrUser = em.find(ProjectUser.class, projectUserPK);
             em.close();
 
             em = ExpCatResourceUtils.getEntityManager();

@@ -28,10 +28,12 @@ import java.lang.*;
 
 @Entity
 @Table(name = "PROCESS_OUTPUT")
+@IdClass(ProcessOutputPK.class)
 public class ProcessOutput {
     private final static Logger logger = LoggerFactory.getLogger(ProcessOutput.class);
-    private int processOutputId;
     private String processId;
+    private String outputName;
+    private String outputValue;
     private String dataType;
     private String applicationArgument;
     private Boolean isRequired;
@@ -41,22 +43,7 @@ public class ProcessOutput {
     private String searchQuery;
     private Process process;
 
-    public void setProcessOutputId(Integer processOutputId) {
-        this.processOutputId = processOutputId;
-    }
-
     @Id
-    @GeneratedValue
-    @Column(name = "PROCESS_OUTPUT_ID")
-    public int getProcessOutputId() {
-        return processOutputId;
-    }
-
-    public void setProcessOutputId(int processOutputId) {
-        this.processOutputId = processOutputId;
-    }
-
-    @Basic
     @Column(name = "PROCESS_ID")
     public String getProcessId() {
         return processId;
@@ -64,6 +51,26 @@ public class ProcessOutput {
 
     public void setProcessId(String processId) {
         this.processId = processId;
+    }
+
+    @Id
+    @Column(name = "OUTPUT_NAME")
+    public String getOutputName() {
+        return outputName;
+    }
+
+    public void setOutputName(String outputName) {
+        this.outputName = outputName;
+    }
+
+    @Basic
+    @Column(name = "OUTPUT_VALUE")
+    public String getOutputValue() {
+        return outputValue;
+    }
+
+    public void setOutputValue(String outputValue) {
+        this.outputValue = outputValue;
     }
 
     @Basic
@@ -142,8 +149,10 @@ public class ProcessOutput {
         if (o == null || getClass() != o.getClass()) return false;
 
         ProcessOutput that = (ProcessOutput) o;
-
-        if (processOutputId != that.processOutputId) return false;
+        if (outputName != null ? !outputName.equals(that.outputName) : that.outputName != null)
+            return false;
+        if (outputValue != null ? !outputValue.equals(that.outputValue) : that.outputValue != null)
+            return false;
         if (applicationArgument != null ? !applicationArgument.equals(that.applicationArgument) : that.applicationArgument != null)
             return false;
         if (dataMovement != null ? !dataMovement.equals(that.dataMovement) : that.dataMovement != null) return false;
@@ -160,8 +169,9 @@ public class ProcessOutput {
 
     @Override
     public int hashCode() {
-        int result = processOutputId;
-        result = 31 * result + (processId != null ? processId.hashCode() : 0);
+        int result = processId != null ? processId.hashCode() : 0;
+        result = 31 * result + (outputName != null ? outputName.hashCode() : 0);
+        result = 31 * result + (outputValue != null ? outputValue.hashCode() : 0);
         result = 31 * result + (dataType != null ? dataType.hashCode() : 0);
         result = 31 * result + (applicationArgument != null ? applicationArgument.hashCode() : 0);
         result = 31 * result + (isRequired != null ? isRequired.hashCode() : 0);

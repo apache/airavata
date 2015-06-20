@@ -48,7 +48,7 @@ public class Experiment {
     private Collection<ExperimentError> experimentErrors;
     private Collection<ExperimentInput> experimentInputs;
     private Collection<ExperimentOutput> experimentOutputs;
-    private ExperimentStatus experimentStatus;
+    private Collection<ExperimentStatus> experimentStatuses;
     private Collection<Process> processes;
     private UserConfigurationData userConfigurationData;
 
@@ -265,13 +265,13 @@ public class Experiment {
         this.experimentOutputs = experimentOutputsByExperimentId;
     }
 
-    @OneToOne(mappedBy = "experiment")
-    public ExperimentStatus getExperimentStatus() {
-        return experimentStatus;
+    @OneToMany(mappedBy = "experiment")
+    public Collection<ExperimentStatus> getExperimentStatuses() {
+        return experimentStatuses;
     }
 
-    public void setExperimentStatus(ExperimentStatus experimentStatusesByExperimentId) {
-        this.experimentStatus = experimentStatusesByExperimentId;
+    public void setExperimentStatuses(Collection<ExperimentStatus> experimentStatusesByExperimentId) {
+        this.experimentStatuses = experimentStatusesByExperimentId;
     }
 
     @OneToMany(mappedBy = "experiment")

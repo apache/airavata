@@ -25,6 +25,7 @@ import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
 import org.apache.airavata.registry.core.experiment.catalog.model.ProcessOutput;
+import org.apache.airavata.registry.core.experiment.catalog.model.ProcessOutputPK;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +35,9 @@ import java.util.List;
 
 public class ProcessOutputResource extends AbstractExpCatResource {
     private static final Logger logger = LoggerFactory.getLogger(ProcessOutputResource.class);
-    private int processOutputId;
     private String processId;
+    private String outputName;
+    private String outputValue;
     private String dataType;
     private String applicationArgument;
     private Boolean isRequired;
@@ -44,20 +46,28 @@ public class ProcessOutputResource extends AbstractExpCatResource {
     private String location;
     private String searchQuery;
 
-    public int getProcessOutputId() {
-        return processOutputId;
-    }
-
-    public void setProcessOutputId(int processOutputId) {
-        this.processOutputId = processOutputId;
-    }
-
     public String getProcessId() {
         return processId;
     }
 
     public void setProcessId(String processId) {
         this.processId = processId;
+    }
+
+    public String getOutputName() {
+        return outputName;
+    }
+
+    public void setOutputName(String outputName) {
+        this.outputName = outputName;
+    }
+
+    public String getOutputValue() {
+        return outputValue;
+    }
+
+    public void setOutputValue(String outputValue) {
+        this.outputValue = outputValue;
     }
 
     public String getDataType() {
@@ -149,12 +159,16 @@ public class ProcessOutputResource extends AbstractExpCatResource {
                 throw new RegistryException("Does not have the process id");
             }
             ProcessOutput processOutput;
-            processOutput = em.find(ProcessOutput.class, processOutputId);
+            ProcessOutputPK processOutputPK = new ProcessOutputPK();
+            processOutputPK.setProcessId(processId);
+            processOutputPK.setOutputName(outputName);
+            processOutput = em.find(ProcessOutput.class, processOutputPK);
             if(processOutput == null){
                 processOutput = new ProcessOutput();
             }
-            processOutput.setProcessOutputId(processOutputId);
             processOutput.setProcessId(processId);
+            processOutput.setOutputName(outputName);
+            processOutput.setOutputValue(outputValue);
             processOutput.setDataType(dataType);
             processOutput.setApplicationArgument(applicationArgument);
             processOutput.setIsRequired(isRequired);
@@ -165,7 +179,6 @@ public class ProcessOutputResource extends AbstractExpCatResource {
             em.persist(processOutput);
             em.getTransaction().commit();
             em.close();
-            this.processOutputId = processOutput.getProcessOutputId();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);
