@@ -21,15 +21,15 @@
 
 package org.apache.airavata.experiment.catalog;
 
-import static org.junit.Assert.*;
-
-import java.sql.Timestamp;
-import java.util.Date;
-
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
 import org.apache.airavata.registry.core.experiment.catalog.resources.ExperimentResource;
 import org.junit.After;
 import org.junit.Test;
+
+import java.sql.Timestamp;
+import java.util.Date;
+
+import static org.junit.Assert.*;
 
 public class ExperimentResourceTest extends AbstractResourceTest {
     private ExperimentResource experimentResource;
@@ -39,15 +39,15 @@ public class ExperimentResourceTest extends AbstractResourceTest {
     public void setUp() throws Exception {
     	super.setUp();
         experimentResource = (ExperimentResource) getGatewayResource().create(ResourceType.EXPERIMENT);
-        experimentResource.setExpID(experimentID);
-        experimentResource.setExecutionUser(getWorkerResource().getUser());
+        experimentResource.setExperimentId(experimentID);
+        experimentResource.setUserName(getWorkerResource().getUser());
         experimentResource.setProjectId(getProjectResource().getId());
         Timestamp currentDate = new Timestamp(new Date().getTime());
         experimentResource.setCreationTime(currentDate);
         experimentResource.setApplicationId("testApplication");
-        experimentResource.setApplicationVersion("1.0");
+        experimentResource.setExecutionId("1.0");
         experimentResource.setDescription("Test Application");
-        experimentResource.setExpName("TestExperiment");
+        experimentResource.setExperimentName("TestExperiment");
     	experimentResource.save();
     }
     

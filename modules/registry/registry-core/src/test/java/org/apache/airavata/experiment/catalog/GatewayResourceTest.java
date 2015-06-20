@@ -21,8 +21,6 @@
 
 package org.apache.airavata.experiment.catalog;
 
-import static org.junit.Assert.*;
-
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
@@ -32,6 +30,8 @@ import org.junit.Test;
 
 import java.sql.Timestamp;
 import java.util.Date;
+
+import static org.junit.Assert.*;
 
 
 public class GatewayResourceTest extends AbstractResourceTest {
@@ -61,14 +61,14 @@ public class GatewayResourceTest extends AbstractResourceTest {
 
         experimentResource = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
 
-        experimentResource.setExpID("testExpID");
-        experimentResource.setExecutionUser(getWorkerResource().getUser());
+        experimentResource.setExecutionId("testExpID");
+        experimentResource.setUserName(getWorkerResource().getUser());
         experimentResource.setProjectId(getProjectResource().getId());
         experimentResource.setCreationTime(currentDate);
         experimentResource.setApplicationId("testApplication");
-        experimentResource.setApplicationVersion("1.0");
+        experimentResource.setExecutionId("1.0");
         experimentResource.setDescription("Test Application");
-        experimentResource.setExpName("TestExperiment");
+        experimentResource.setExperimentName("TestExperiment");
         experimentResource.save();
     }
     @Test
