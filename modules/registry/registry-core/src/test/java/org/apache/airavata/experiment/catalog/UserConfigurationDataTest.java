@@ -22,8 +22,8 @@
 package org.apache.airavata.experiment.catalog;
 
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
-import org.apache.airavata.registry.core.experiment.catalog.resources.ComputationSchedulingResource;
 import org.apache.airavata.registry.core.experiment.catalog.resources.ExperimentResource;
+import org.apache.airavata.registry.core.experiment.catalog.resources.UserConfigurationDataResource;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,12 +32,11 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class ComputationalSchedulingTest extends AbstractResourceTest {
+public class UserConfigurationDataTest extends AbstractResourceTest {
     private ExperimentResource experimentResource;
-    private ComputationSchedulingResource schedulingResource;
+    private UserConfigurationDataResource userConfigurationData;
     private String experimentID = "testExpID";
 
     @Override
@@ -45,38 +44,37 @@ public class ComputationalSchedulingTest extends AbstractResourceTest {
     public void setUp() throws Exception {
         super.setUp();
         experimentResource = (ExperimentResource) getGatewayResource().create(ResourceType.EXPERIMENT);
-        experimentResource.setExpID(experimentID);
-        experimentResource.setExecutionUser(getWorkerResource().getUser());
+        experimentResource.setExperimentId(experimentID);
+        experimentResource.setUserName(getWorkerResource().getUser());
         experimentResource.setProjectId(getProjectResource().getId());
         Timestamp currentDate = new Timestamp(new Date().getTime());
         experimentResource.setCreationTime(currentDate);
         experimentResource.setApplicationId("testApplication");
-        experimentResource.setApplicationVersion("1.0");
+        experimentResource.setExecutionId("1.0");
         experimentResource.setDescription("Test Application");
-        experimentResource.setExpName("TestExperiment");
+        experimentResource.setExperimentName("TestExperiment");
         experimentResource.save();
 
-        schedulingResource = (ComputationSchedulingResource)experimentResource.create(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING);
-        schedulingResource.setResourceHostId("testResource");
-        schedulingResource.setCpuCount(10);
-        schedulingResource.setNodeCount(5);
-        schedulingResource.setPhysicalMemory(1000);
-        schedulingResource.setProjectName("project1");
-        schedulingResource.setQueueName("testQueue");
-        schedulingResource.save();
-        System.out.println("scheduling id : " + schedulingResource.getSchedulingId());
+        userConfigurationData = (UserConfigurationDataResource)experimentResource.create(ResourceType.USER_CONFIGURATION_DATA);
+        userConfigurationData.setResourceHostId("testResource");
+        userConfigurationData.setTotalCpuCount(10);
+        userConfigurationData.setNodeCount(5);
+        userConfigurationData.setTotalPhysicalMemory(1000);
+        userConfigurationData.setQueueName("testQueue");
+        userConfigurationData.save();
+        System.out.println("scheduling id (experiment id) : " + userConfigurationData.getExperimentId());
     }
 
 
     @Test
     public void testSave() throws Exception {
-        assertTrue("Computational schedule successfully", experimentResource.isExists(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING, experimentID));
+        assertTrue("Computational schedule successfully", experimentResource.isExists(ResourceType.USER_CONFIGURATION_DATA, experimentID));
     }
 
     @Test
     public void testRemove() throws Exception {
-        experimentResource.remove(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING, experimentID);
-        assertFalse("Computational schedule removed successfully", experimentResource.isExists(ResourceType.COMPUTATIONAL_RESOURCE_SCHEDULING, experimentID));
+        experimentResource.remove(ResourceType.USER_CONFIGURATION_DATA, experimentID);
+        assertFalse("Computational schedule removed successfully", experimentResource.isExists(ResourceType.USER_CONFIGURATION_DATA, experimentID));
     }
 
     @After

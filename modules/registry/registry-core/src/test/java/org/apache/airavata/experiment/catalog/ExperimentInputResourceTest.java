@@ -41,20 +41,20 @@ public class ExperimentInputResourceTest extends AbstractResourceTest  {
     public void setUp() throws Exception {
         super.setUp();
         experimentResource = (ExperimentResource) getGatewayResource().create(ResourceType.EXPERIMENT);
-        experimentResource.setExpID(experimentID);
-        experimentResource.setExecutionUser(getWorkerResource().getUser());
+        experimentResource.setExperimentId(experimentID);
+        experimentResource.setUserName(getWorkerResource().getUser());
         experimentResource.setProjectId(getProjectResource().getId());
         experimentResource.setCreationTime(getCurrentTimestamp());
         experimentResource.setApplicationId("testApplication");
-        experimentResource.setApplicationVersion("1.0");
+        experimentResource.setExecutionId("1.0");
         experimentResource.setDescription("Test Application");
-        experimentResource.setExpName("TestExperiment");
+        experimentResource.setExperimentName("TestExperiment");
         experimentResource.save();
 
         experimentInputResource = (ExperimentInputResource)experimentResource.create(ResourceType.EXPERIMENT_INPUT);
         experimentInputResource.setExperimentId(experimentID);
-        experimentInputResource.setExperimentKey("testKey");
-        experimentInputResource.setValue("testValue");
+        experimentInputResource.setInputName("testKey");
+        experimentInputResource.setInputValue("testValue");
         experimentInputResource.setDataType("string");
         experimentInputResource.save();
     }
