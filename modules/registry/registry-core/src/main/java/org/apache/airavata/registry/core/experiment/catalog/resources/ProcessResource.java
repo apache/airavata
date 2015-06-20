@@ -158,13 +158,15 @@ public class ProcessResource extends AbstractExpCatResource {
                     break;
                 case PROCESS_INPUT:
                     generator = new QueryGenerator(PROCESS_INPUT);
-                    generator.setParameter(ProcessInputConstants.PROCESS_INPUT_ID, name);
+                    generator.setParameter(ProcessInputConstants.INPUT_NAME, name);
+                    generator.setParameter(ProcessInputConstants.PROCESS_ID, processId);
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
                 case PROCESS_OUTPUT:
                     generator = new QueryGenerator(PROCESS_OUTPUT);
-                    generator.setParameter(ProcessOutputConstants.PROCESS_OUTPUT_ID, name);
+                    generator.setParameter(ProcessOutputConstants.OUTPUT_NAME, name);
+                    generator.setParameter(ProcessOutputConstants.PROCESS_ID, processId);
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
@@ -229,7 +231,7 @@ public class ProcessResource extends AbstractExpCatResource {
                     return processErrorResource;
                 case PROCESS_INPUT:
                     generator = new QueryGenerator(PROCESS_INPUT);
-                    generator.setParameter(ProcessInputConstants.PROCESS_INPUT_ID, name);
+                    generator.setParameter(ProcessInputConstants.INPUT_NAME, name);
                     generator.setParameter(ProcessInputConstants.PROCESS_ID, processId);
                     q = generator.selectQuery(em);
                     ProcessInput processInput = (ProcessInput) q.getSingleResult();
@@ -239,7 +241,7 @@ public class ProcessResource extends AbstractExpCatResource {
                     return processInputResource;
                 case PROCESS_OUTPUT:
                     generator = new QueryGenerator(PROCESS_OUTPUT);
-                    generator.setParameter(ProcessOutputConstants.PROCESS_OUTPUT_ID, name);
+                    generator.setParameter(ProcessOutputConstants.OUTPUT_NAME, name);
                     generator.setParameter(ProcessInputConstants.PROCESS_ID, processId);
                     q = generator.selectQuery(em);
                     ProcessOutput processOutput = (ProcessOutput) q.getSingleResult();

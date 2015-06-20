@@ -105,6 +105,7 @@ public abstract class AbstractExpCatResource implements ExperimentCatResource {
 
     // Task Error table
     public final class TaskErrorConstants {
+        public static final String ERROR_ID = "errorId";
         public static final String TASK_ID = "taskId";
         public static final String CREATION_TIME = "creationTime";
         public static final String ACTUAL_ERROR_MESSAGE = "actualErrorMsg";
@@ -115,6 +116,7 @@ public abstract class AbstractExpCatResource implements ExperimentCatResource {
 
     //Process Error table
     public final class ProcessErrorConstants {
+        public static final String ERROR_ID = "errorId";
         public static final String PROCESS_ID = "processId";
         public static final String CREATION_TIME = "creationTime";
         public static final String ACTUAL_ERROR_MESSAGE = "actualErrorMsg";
@@ -135,9 +137,8 @@ public abstract class AbstractExpCatResource implements ExperimentCatResource {
 
     //Process Input Table
     public final class ProcessInputConstants {
-        public static final String PROCESS_INPUT_ID = "processInputId";
         public static final String PROCESS_ID = "processId";
-        public static final String INPUT_KEY = "inputKey";
+        public static final String INPUT_NAME = "inputName";
         public static final String INPUT_VALUE = "inputValue";
         public static final String DATA_TYPE = "dataType";
         public static final String APPLICATION_ARGUMENT = "applicationArgument";
@@ -152,8 +153,9 @@ public abstract class AbstractExpCatResource implements ExperimentCatResource {
 
     //Process Output Table
     public final class ProcessOutputConstants {
-        public static final String PROCESS_OUTPUT_ID = "processOutputId";
         public static final String PROCESS_ID = "processId";
+        public static final String OUTPUT_NAME = "outputName";
+        public static final String OUTPUT_VALUE = "outputValue";
         public static final String DATA_TYPE = "dataType";
         public static final String APPLICATION_ARGUMENT = "applicationArgument";
         public static final String IS_REQUIRED = "isRequired";
@@ -165,9 +167,8 @@ public abstract class AbstractExpCatResource implements ExperimentCatResource {
 
     //Experiment Input Table
     public final class ExperimentInputConstants {
-        public static final String EXPERIMENT_INPUT_ID = "experimentInputId";
         public static final String EXPERIMENT_ID = "experimentId";
-        public static final String INPUT_KEY = "inputKey";
+        public static final String INPUT_NAME = "inputName";
         public static final String INPUT_VALUE = "inputValue";
         public static final String DATA_TYPE = "dataType";
         public static final String APPLICATION_ARGUMENT = "applicationArgument";
@@ -182,8 +183,9 @@ public abstract class AbstractExpCatResource implements ExperimentCatResource {
 
     //Experiment Output Table
     public final class ExperimentOutputConstants {
-        public static final String EXPERIMENT_OUTPUT_ID = "experimentOutputId";
         public static final String EXPERIMENT_ID = "experimentId";
+        public static final String OUTPUT_NAME = "outputName";
+        public static final String OUTPUT_VALUE = "outputValue";
         public static final String DATA_TYPE = "dataType";
         public static final String APPLICATION_ARGUMENT = "applicationArgument";
         public static final String IS_REQUIRED = "isRequired";

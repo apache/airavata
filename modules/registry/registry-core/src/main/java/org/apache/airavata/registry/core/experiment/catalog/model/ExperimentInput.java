@@ -27,9 +27,9 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "EXPERIMENT_INPUT")
+@IdClass(ExperimentInputPK.class)
 public class ExperimentInput {
     private final static Logger logger = LoggerFactory.getLogger(ExperimentInput.class);
-    private int experimentInputId;
     private String experimentId;
     private String inputName;
     private String inputValue;
@@ -44,21 +44,7 @@ public class ExperimentInput {
     private Boolean dataStaged;
     private Experiment experiment;
 
-    public void setExperimentInputId(Integer experimentInputId) {
-        this.experimentInputId = experimentInputId;
-    }
-
     @Id
-    @Column(name = "EXPERIMENT_INPUT_ID")
-    public int getExperimentInputId() {
-        return experimentInputId;
-    }
-
-    public void setExperimentInputId(int experimentInputId) {
-        this.experimentInputId = experimentInputId;
-    }
-
-    @Basic
     @Column(name = "EXPERIMENT_ID")
     public String getExperimentId() {
         return experimentId;
@@ -68,7 +54,7 @@ public class ExperimentInput {
         this.experimentId = experimentId;
     }
 
-    @Basic
+    @Id
     @Column(name = "INPUT_NAME")
     public String getInputName() {
         return inputName;
@@ -185,7 +171,6 @@ public class ExperimentInput {
 
         ExperimentInput that = (ExperimentInput) o;
 
-        if (experimentInputId != that.experimentInputId) return false;
         if (applicationArgument != null ? !applicationArgument.equals(that.applicationArgument) : that.applicationArgument != null)
             return false;
         if (dataStaged != null ? !dataStaged.equals(that.dataStaged) : that.dataStaged != null) return false;
@@ -208,8 +193,7 @@ public class ExperimentInput {
 
     @Override
     public int hashCode() {
-        int result = experimentInputId;
-        result = 31 * result + (experimentId != null ? experimentId.hashCode() : 0);
+        int result = experimentId != null ? experimentId.hashCode() : 0;
         result = 31 * result + (inputName != null ? inputName.hashCode() : 0);
         result = 31 * result + (inputValue != null ? inputValue.hashCode() : 0);
         result = 31 * result + (dataType != null ? dataType.hashCode() : 0);

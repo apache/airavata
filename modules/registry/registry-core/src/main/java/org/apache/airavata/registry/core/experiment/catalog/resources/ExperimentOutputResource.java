@@ -25,6 +25,7 @@ import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
 import org.apache.airavata.registry.core.experiment.catalog.model.ExperimentOutput;
+import org.apache.airavata.registry.core.experiment.catalog.model.ExperimentOutputPK;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +35,9 @@ import java.util.List;
 
 public class ExperimentOutputResource extends AbstractExpCatResource {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentOutputResource.class);
-    private int experimentOutputId;
     private String experimentId;
+    private String outputName;
+    private String outputValue;
     private String dataType;
     private String applicationArgument;
     private Boolean isRequired;
@@ -44,20 +46,28 @@ public class ExperimentOutputResource extends AbstractExpCatResource {
     private String location;
     private String searchQuery;
 
-    public int getExperimentOutputId() {
-        return experimentOutputId;
-    }
-
-    public void setExperimentOutputId(int experimentOutputId) {
-        this.experimentOutputId = experimentOutputId;
-    }
-
     public String getExperimentId() {
         return experimentId;
     }
 
     public void setExperimentId(String experimentId) {
         this.experimentId = experimentId;
+    }
+
+    public String getOutputName() {
+        return outputName;
+    }
+
+    public void setOutputName(String outputName) {
+        this.outputName = outputName;
+    }
+
+    public String getOutputValue() {
+        return outputValue;
+    }
+
+    public void setOutputValue(String outputValue) {
+        this.outputValue = outputValue;
     }
 
     public String getDataType() {
@@ -149,12 +159,16 @@ public class ExperimentOutputResource extends AbstractExpCatResource {
                 throw new RegistryException("Does not have the experiment id");
             }
             ExperimentOutput experimentOutput;
-            experimentOutput = em.find(ExperimentOutput.class, experimentOutputId);
+            ExperimentOutputPK experimentOutputPK = new ExperimentOutputPK();
+            experimentOutputPK.setExperimentId(experimentId);
+            experimentOutputPK.setOutputName(outputName);
+            experimentOutput = em.find(ExperimentOutput.class, experimentOutputPK);
             if(experimentOutput == null){
                 experimentOutput = new ExperimentOutput();
             }
-            experimentOutput.setExperimentOutputId(experimentOutputId);
             experimentOutput.setExperimentId(experimentId);
+            experimentOutput.setOutputName(outputName);
+            experimentOutput.setOutputValue(outputValue);
             experimentOutput.setDataType(dataType);
             experimentOutput.setApplicationArgument(applicationArgument);
             experimentOutput.setIsRequired(isRequired);
@@ -165,7 +179,6 @@ public class ExperimentOutputResource extends AbstractExpCatResource {
             em.persist(experimentOutput);
             em.getTransaction().commit();
             em.close();
-            this.experimentOutputId = experimentOutput.getExperimentOutputId();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

@@ -187,7 +187,7 @@ public class ExperimentRegistry {
 //            QosParamResource qosr = new QosParamResource();
 //            if (resource instanceof ExperimentResource) {
 //                ExperimentResource experiment = (ExperimentResource) resource;
-//                qosr.setExperimentId(experiment.getExpID());
+//                qosr.setProcessId(experiment.getExpID());
 //            }
 //            if (resource instanceof TaskDetailResource) {
 //                TaskDetailResource taskDetailResource = (TaskDetailResource) resource;
@@ -195,7 +195,7 @@ public class ExperimentRegistry {
 //                String nodeId = taskDetailResource.getNodeId();
 //                ExperimentResource experimentResource = new ExperimentResource();
 //                WorkflowNodeDetailResource workflowNode = experimentResource.getWorkflowNode(nodeId);
-//                qosr.setExperimentId(workflowNode.getExperimentId());
+//                qosr.setProcessId(workflowNode.getProcessId());
 //            }
 //            qosr.setStartExecutionAt(qosParams.getStartExecutionAt());
 //            qosr.setExecuteBefore(qosParams.getExecuteBefore());
@@ -213,14 +213,14 @@ public class ExperimentRegistry {
 //        try {
 //            if (resource instanceof ExperimentResource) {
 //                ExperimentResource experiment = (ExperimentResource) resource;
-//                adodh.setExperimentId(experiment.getExpID());
+//                adodh.setProcessId(experiment.getExpID());
 //            }
 //            if (resource instanceof TaskDetailResource) {
 //                TaskDetailResource taskDetailResource = (TaskDetailResource) resource;
 //                String nodeId = taskDetailResource.getNodeId();
 //                ExperimentResource experimentResource = new ExperimentResource();
 //                WorkflowNodeDetailResource workflowNode = experimentResource.getWorkflowNode(nodeId);
-//                adodh.setExperimentId(workflowNode.getExperimentId());
+//                adodh.setProcessId(workflowNode.getProcessId());
 //                adodh.setTaskId(taskDetailResource.getTaskId());
 //            }
 //            adodh.setOutputDataDir(outputDataHandling.getOutputDataDir());
@@ -239,14 +239,14 @@ public class ExperimentRegistry {
 //        try {
 //            if (resource instanceof ExperimentResource) {
 //                ExperimentResource experiment = (ExperimentResource) resource;
-//                adidh.setExperimentId(experiment.getExpID());
+//                adidh.setProcessId(experiment.getExpID());
 //            }
 //            if (resource instanceof TaskDetailResource) {
 //                TaskDetailResource taskDetailResource = (TaskDetailResource) resource;
 //                String nodeId = taskDetailResource.getNodeId();
 //                ExperimentResource experimentResource = new ExperimentResource();
 //                WorkflowNodeDetailResource workflowNode = experimentResource.getWorkflowNode(nodeId);
-//                adidh.setExperimentId(workflowNode.getExperimentId());
+//                adidh.setProcessId(workflowNode.getProcessId());
 //                adidh.setTaskId(taskDetailResource.getTaskId());
 //            }
 //            adidh.setWorkingDir(inputDataHandling.getUniqueWorkingDirectory());
@@ -514,7 +514,7 @@ public class ExperimentRegistry {
 //            ExperimentResource experiment = gatewayResource.getExperiment((String) ids.getTopLevelIdentifier());
 //            WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode((String) ids.getSecondLevelIdentifier());
 //            StatusResource statusResource = (StatusResource) experiment.create(ResourceType.STATUS);
-//            statusResource.setExperimentId(experiment.getExpID());
+//            statusResource.setProcessId(experiment.getExpID());
 //            statusResource.setNodeId(workflowNode.getNodeInstanceId());
 //            statusResource.setStatusType(StatusType.WORKFLOW_NODE.toString());
 //            statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
@@ -539,7 +539,7 @@ public class ExperimentRegistry {
 //            if (statusResource == null) {
 //                statusResource = (StatusResource) workflowNode.create(ResourceType.STATUS);
 //            }
-//            statusResource.setExperimentId(workflowNode.getExperimentId());
+//            statusResource.setProcessId(workflowNode.getProcessId());
 //            statusResource.setNodeId(nodeId);
 //            statusResource.setStatusType(StatusType.WORKFLOW_NODE.toString());
 //            statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
@@ -670,7 +670,7 @@ public class ExperimentRegistry {
 //            JobDetailResource jobDetail = taskDetail.getJobDetail((String) ids.getSecondLevelIdentifier());
 //            StatusResource statusResource = (StatusResource) jobDetail.create(ResourceType.STATUS);
 //            workflowNode = experiment.getWorkflowNode(taskDetail.getNodeId());
-//            statusResource.setExperimentId(workflowNode.getExperimentId());
+//            statusResource.setProcessId(workflowNode.getProcessId());
 //            statusResource.setNodeId(workflowNode.getNodeInstanceId());
 //            statusResource.setTaskId(taskDetail.getTaskId());
 //            statusResource.setStatusType(StatusType.APPLICATION.toString());
@@ -696,7 +696,7 @@ public class ExperimentRegistry {
 //            JobDetailResource jobDetail = taskDetail.getJobDetail(jobId);
 //            StatusResource statusResource = jobDetail.getApplicationStatus();
 //            workflowNode = experiment.getWorkflowNode(taskDetail.getNodeId());
-//            statusResource.setExperimentId(workflowNode.getExperimentId());
+//            statusResource.setProcessId(workflowNode.getProcessId());
 //            statusResource.setNodeId(workflowNode.getNodeInstanceId());
 //            statusResource.setTaskId(taskDetail.getTaskId());
 //            statusResource.setStatusType(StatusType.APPLICATION.toString());
@@ -718,7 +718,7 @@ public class ExperimentRegistry {
 //            DataTransferDetailResource dataTransferDetail = taskDetail.getDataTransferDetail((String) ids.getSecondLevelIdentifier());
 //            StatusResource statusResource = (StatusResource) dataTransferDetail.create(ResourceType.STATUS);
 //            workflowNode = experiment.getWorkflowNode(taskDetail.getNodeId());
-//            statusResource.setExperimentId(workflowNode.getExperimentId());
+//            statusResource.setProcessId(workflowNode.getProcessId());
 //            statusResource.setNodeId(workflowNode.getNodeInstanceId());
 //            statusResource.setTaskId(taskDetail.getTaskId());
 //            statusResource.setTransferId(dataTransferDetail.getTransferId());
@@ -749,7 +749,7 @@ public class ExperimentRegistry {
 //            taskDetail = workflowNode.getTaskDetail(taskId);
 //            workflowNode = experiment.getWorkflowNode(taskDetail.getNodeId());
 //            if (workflowNode != null) {
-//                statusResource.setExperimentId(workflowNode.getExperimentId());
+//                statusResource.setProcessId(workflowNode.getProcessId());
 //                statusResource.setNodeId(workflowNode.getNodeInstanceId());
 //            }
 //            statusResource.setTaskId(taskId);
@@ -768,7 +768,7 @@ public class ExperimentRegistry {
 //        try {
 //            ExperimentResource experiment = gatewayResource.getExperiment(expId);
 //            WorkflowNodeDetailResource resource = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
-//            resource.setExperimentId(expId);
+//            resource.setProcessId(expId);
 //            resource.setNodeName(nodeDetails.getNodeName());
 //            resource.setExecutionUnit(nodeDetails.getExecutionUnit().toString());
 //            resource.setExecutionUnitData(nodeDetails.getExecutionUnitData());
@@ -832,7 +832,7 @@ public class ExperimentRegistry {
 //            workflowNode.setCreationTime(AiravataUtils.getTime(nodeDetails.getCreationTime()));
 //            workflowNode.setNodeInstanceId(nodeId);
 //            workflowNode.save();
-//            String expID = workflowNode.getExperimentId();
+//            String expID = workflowNode.getProcessId();
 //            List<InputDataObjectType> nodeInputs = nodeDetails.getNodeInputs();
 //            if (nodeInputs != null) {
 //                updateWorkflowInputs(nodeDetails.getNodeInputs(), workflowNode);
@@ -941,7 +941,7 @@ public class ExperimentRegistry {
 //            if (emailAddresses != null && !emailAddresses.isEmpty()){
 //                for (String email : emailAddresses){
 //                    NotificationEmailResource emailResource = new NotificationEmailResource();
-//                    emailResource.setExperimentId(workflowNode.getExperimentId());
+//                    emailResource.setProcessId(workflowNode.getProcessId());
 //                    emailResource.setTaskId(taskDetail.getTaskId());
 //                    emailResource.setEmailAddress(email);
 //                    emailResource.save();
@@ -1033,7 +1033,7 @@ public class ExperimentRegistry {
 //            if (emailAddresses != null && !emailAddresses.isEmpty()){
 //                for (String email : emailAddresses){
 //                    NotificationEmailResource emailResource = new NotificationEmailResource();
-//                    emailResource.setExperimentId(workflowNode.getExperimentId());
+//                    emailResource.setProcessId(workflowNode.getProcessId());
 //                    emailResource.setTaskId(taskId);
 //                    emailResource.setEmailAddress(email);
 //                    emailResource.save();
@@ -1390,7 +1390,7 @@ public class ExperimentRegistry {
 //                TaskDetailResource taskDetail = nodeDetailResource.getTaskDetail((String) ids.getSecondLevelIdentifier());
 //                dataHandlingResource.setTaskId(taskDetail.getTaskId());
 //            }
-//            dataHandlingResource.setExperimentId(experiment.getExpID());
+//            dataHandlingResource.setProcessId(experiment.getExpID());
 //            dataHandlingResource.setWorkingDir(dataHandling.getUniqueWorkingDirectory());
 //            dataHandlingResource.setWorkingDirParent(dataHandling.getParentWorkingDirectory());
 //            dataHandlingResource.setStageInputFiles(dataHandling.isStageInputFilesToWorkingDir());
@@ -1417,7 +1417,7 @@ public class ExperimentRegistry {
 //                TaskDetailResource taskDetail = nodeDetailResource.getTaskDetail((String) ids.getSecondLevelIdentifier());
 //                dataHandlingResource.setTaskId(taskDetail.getTaskId());
 //            }
-//            dataHandlingResource.setExperimentId(experiment.getExpID());
+//            dataHandlingResource.setProcessId(experiment.getExpID());
 //            dataHandlingResource.setOutputDataDir(dataHandling.getOutputDataDir());
 //            dataHandlingResource.setDataRegUrl(dataHandling.getDataRegistryURL());
 //            dataHandlingResource.setPersistOutputData(dataHandling.isPersistOutputData());
@@ -1438,7 +1438,7 @@ public class ExperimentRegistry {
 //                TaskDetailResource taskDetail = nodeDetailResource.getTaskDetail((String) ids.getSecondLevelIdentifier());
 //                qosParamResource.setTaskId(taskDetail.getTaskId());
 //            }
-//            qosParamResource.setExperimentId(experiment.getExpID());
+//            qosParamResource.setProcessId(experiment.getExpID());
 //            qosParamResource.setStartExecutionAt(qosParams.getStartExecutionAt());
 //            qosParamResource.setExecuteBefore(qosParams.getExecuteBefore());
 //            qosParamResource.setNoOfRetries(qosParams.getNumberofRetries());
@@ -1721,7 +1721,7 @@ public class ExperimentRegistry {
 //            if (resource instanceof ExperimentResource) {
 //                ExperimentResource expResource = (ExperimentResource) resource;
 //                QosParamResource qosr = expResource.getQOSparams(expResource.getExpID());
-//                qosr.setExperimentId(expResource.getExpID());
+//                qosr.setProcessId(expResource.getExpID());
 //                qosr.setStartExecutionAt(qosParams.getStartExecutionAt());
 //                qosr.setExecuteBefore(qosParams.getExecuteBefore());
 //                qosr.setNoOfRetries(qosParams.getNumberofRetries());
@@ -1740,14 +1740,14 @@ public class ExperimentRegistry {
 //            if (resource instanceof ExperimentResource) {
 //                ExperimentResource expResource = (ExperimentResource) resource;
 //                adodh = expResource.getOutputDataHandling(expResource.getExpID());
-//                adodh.setExperimentId(expResource.getExpID());
+//                adodh.setProcessId(expResource.getExpID());
 //            } else {
 //                TaskDetailResource taskDetailResource = (TaskDetailResource) resource;
 //                ExperimentResource experimentResource = new ExperimentResource();
 //                adodh = taskDetailResource.getOutputDataHandling(taskDetailResource.getTaskId());
 //                adodh.setTaskId(taskDetailResource.getTaskId());
 //                WorkflowNodeDetailResource nodeDetailResource = experimentResource.getWorkflowNode(taskDetailResource.getNodeId());
-//                adodh.setExperimentId(nodeDetailResource.getExperimentId());
+//                adodh.setProcessId(nodeDetailResource.getProcessId());
 //            }
 //            adodh.setOutputDataDir(outputDataHandling.getOutputDataDir());
 //            adodh.setDataRegUrl(outputDataHandling.getDataRegistryURL());
@@ -1766,14 +1766,14 @@ public class ExperimentRegistry {
 //            if (resource instanceof ExperimentResource) {
 //                ExperimentResource expResource = (ExperimentResource) resource;
 //                adidh = expResource.getInputDataHandling(expResource.getExpID());
-//                adidh.setExperimentId(expResource.getExpID());
+//                adidh.setProcessId(expResource.getExpID());
 //            } else {
 //                TaskDetailResource taskDetailResource = (TaskDetailResource) resource;
 //                ExperimentResource experimentResource = new ExperimentResource();
 //                adidh = taskDetailResource.getInputDataHandling(taskDetailResource.getTaskId());
 //                adidh.setTaskId(taskDetailResource.getTaskId());
 //                WorkflowNodeDetailResource nodeDetailResource = experimentResource.getWorkflowNode(taskDetailResource.getNodeId());
-//                adidh.setExperimentId(nodeDetailResource.getExperimentId());
+//                adidh.setProcessId(nodeDetailResource.getProcessId());
 //            }
 //            adidh.setWorkingDir(inputDataHandling.getUniqueWorkingDirectory());
 //            adidh.setWorkingDirParent(inputDataHandling.getParentWorkingDirectory());
@@ -1857,7 +1857,7 @@ public class ExperimentRegistry {
 //                } else if (value instanceof WorkflowNodeDetails) {
 //                    WorkflowNodeDetailResource nodeDetailResource = getWorkflowNodeDetailResource(((WorkflowNodeDetails) value).getNodeInstanceId());
 //                    if (nodeDetailResource != null) {
-//                        String experimentId = nodeDetailResource.getExperimentId();
+//                        String experimentId = nodeDetailResource.getProcessId();
 //                        ExperimentResource experiment = gatewayResource.getExperiment(experimentId);
 //                        return Arrays.asList(ThriftDataModelConversion
 //                                .getExperiment(experiment));

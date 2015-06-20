@@ -203,13 +203,15 @@ public class ExperimentResource extends AbstractExpCatResource {
                     break;
                 case EXPERIMENT_INPUT:
                     generator = new QueryGenerator(EXPERIMENT_INPUT);
-                    generator.setParameter(ExperimentInputConstants.EXPERIMENT_INPUT_ID, name);
+                    generator.setParameter(ExperimentInputConstants.INPUT_NAME, name);
+                    generator.setParameter(ExperimentInputConstants.EXPERIMENT_ID, experimentId);
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
                 case EXPERIMENT_OUTPUT:
                     generator = new QueryGenerator(EXPERIMENT_OUTPUT);
-                    generator.setParameter(ExperimentOutputConstants.EXPERIMENT_OUTPUT_ID, name);
+                    generator.setParameter(ExperimentOutputConstants.OUTPUT_NAME, name);
+                    generator.setParameter(ExperimentOutputConstants.EXPERIMENT_ID, experimentId);
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
@@ -274,7 +276,7 @@ public class ExperimentResource extends AbstractExpCatResource {
                     return processErrorResource;
                 case EXPERIMENT_INPUT:
                     generator = new QueryGenerator(EXPERIMENT_INPUT);
-                    generator.setParameter(ExperimentInputConstants.EXPERIMENT_INPUT_ID, name);
+                    generator.setParameter(ExperimentInputConstants.INPUT_NAME, name);
                     generator.setParameter(ExperimentInputConstants.EXPERIMENT_ID, experimentId);
                     q = generator.selectQuery(em);
                     ExperimentInput experimentInput = (ExperimentInput) q.getSingleResult();
@@ -284,7 +286,7 @@ public class ExperimentResource extends AbstractExpCatResource {
                     return experimentInputResource;
                 case EXPERIMENT_OUTPUT:
                     generator = new QueryGenerator(EXPERIMENT_OUTPUT);
-                    generator.setParameter(ExperimentOutputConstants.EXPERIMENT_OUTPUT_ID, name);
+                    generator.setParameter(ExperimentOutputConstants.OUTPUT_NAME, name);
                     generator.setParameter(ExperimentInputConstants.EXPERIMENT_ID, experimentId);
                     q = generator.selectQuery(em);
                     ExperimentOutput experimentOutput = (ExperimentOutput) q.getSingleResult();

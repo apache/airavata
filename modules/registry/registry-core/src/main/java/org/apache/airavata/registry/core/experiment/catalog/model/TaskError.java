@@ -28,8 +28,10 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "TASK_ERROR")
+@IdClass(TaskErrorPK.class)
 public class TaskError {
     private final static Logger logger = LoggerFactory.getLogger(TaskError.class);
+    private String errorId;
     private String taskId;
     private Timestamp creationTime;
     private String actualErrorMessage;
@@ -37,6 +39,16 @@ public class TaskError {
     private Boolean transientOrPersistent;
     private String rootCauseErrorIdList;
     private Task task;
+
+    @Id
+    @Column(name = "ERROR_ID")
+    public String getErrorId() {
+        return errorId;
+    }
+
+    public void setErrorId(String errorId) {
+        this.errorId = errorId;
+    }
 
     @Id
     @Column(name = "TASK_ID")
@@ -104,7 +116,7 @@ public class TaskError {
         if (o == null || getClass() != o.getClass()) return false;
 
         TaskError that = (TaskError) o;
-
+        if (errorId != that.errorId) return false;
         if (actualErrorMessage != null ? !actualErrorMessage.equals(that.actualErrorMessage) : that.actualErrorMessage != null)
             return false;
         if (creationTime != null ? !creationTime.equals(that.creationTime) : that.creationTime != null) return false;
@@ -121,7 +133,8 @@ public class TaskError {
 
     @Override
     public int hashCode() {
-        int result = taskId != null ? taskId.hashCode() : 0;
+        int result = errorId != null ? errorId.hashCode() : 0;
+        result = 31 * result + (taskId != null ? taskId.hashCode() : 0);
         result = 31 * result + (creationTime != null ? creationTime.hashCode() : 0);
         result = 31 * result + (actualErrorMessage != null ? actualErrorMessage.hashCode() : 0);
         result = 31 * result + (userFriendlyMessage != null ? userFriendlyMessage.hashCode() : 0);
@@ -130,7 +143,7 @@ public class TaskError {
         return result;
     }
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "TASK_ID", referencedColumnName = "TASK_ID", nullable = false)
     public Task getTask() {
         return task;

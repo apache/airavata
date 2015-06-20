@@ -179,7 +179,7 @@ public class TaskResource extends AbstractExpCatResource {
                     return statusResource;
                 case TASK_ERROR:
                     generator = new QueryGenerator(TASK_ERROR);
-                    generator.setParameter(TaskErrorConstants.TASK_ID, name);
+                    generator.setParameter(TaskErrorConstants.ERROR_ID, name);
                     q = generator.selectQuery(em);
                     TaskError error = (TaskError) q.getSingleResult();
                     TaskErrorResource errorResource = (TaskErrorResource) Utils.getResource(

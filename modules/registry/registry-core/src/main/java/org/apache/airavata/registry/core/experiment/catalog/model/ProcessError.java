@@ -29,8 +29,10 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "PROCESS_ERROR")
+@IdClass(ProcessErrorPK.class)
 public class ProcessError {
     private final static Logger logger = LoggerFactory.getLogger(ProcessError.class);
+    private String errorId;
     private String processId;
     private Timestamp creationTime;
     private String actualErrorMessage;
@@ -40,6 +42,16 @@ public class ProcessError {
     private Process process;
 
     @Id
+    @Column(name = "ERROR_ID")
+    public String getErrorId() {
+        return errorId;
+    }
+
+    public void setErrorId(String errorId) {
+        this.errorId = errorId;
+    }
+
+    @Basic
     @Column(name = "PROCESS_ID")
     public String getProcessId() {
         return processId;
@@ -106,6 +118,7 @@ public class ProcessError {
 
         ProcessError that = (ProcessError) o;
 
+        if (errorId != that.errorId) return false;
         if (actualErrorMessage != null ? !actualErrorMessage.equals(that.actualErrorMessage) : that.actualErrorMessage != null)
             return false;
         if (creationTime != null ? !creationTime.equals(that.creationTime) : that.creationTime != null) return false;
@@ -122,7 +135,8 @@ public class ProcessError {
 
     @Override
     public int hashCode() {
-        int result = processId != null ? processId.hashCode() : 0;
+        int result = errorId != null ? errorId.hashCode() : 0;
+        result = 31 * result + (processId != null ? processId.hashCode() : 0);
         result = 31 * result + (creationTime != null ? creationTime.hashCode() : 0);
         result = 31 * result + (actualErrorMessage != null ? actualErrorMessage.hashCode() : 0);
         result = 31 * result + (userFriendlyMessage != null ? userFriendlyMessage.hashCode() : 0);
@@ -131,7 +145,7 @@ public class ProcessError {
         return result;
     }
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID", nullable = false)
     public Process getProcess() {
         return process;

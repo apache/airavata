@@ -35,7 +35,7 @@ public class UserConfigurationData {
     private Boolean shareExperimentPublically;
     private Boolean throttleResources;
     private String userDn;
-    private Byte generateCert;
+    private Boolean generateCert;
     private String resourceHostId;
     private Integer totalCpuCount;
     private Integer nodeCount;
@@ -107,11 +107,11 @@ public class UserConfigurationData {
 
     @Basic
     @Column(name = "GENERATE_CERT")
-    public Byte getGenerateCert() {
+    public Boolean getGenerateCert() {
         return generateCert;
     }
 
-    public void setGenerateCert(Byte generateCert) {
+    public void setGenerateCert(Boolean generateCert) {
         this.generateCert = generateCert;
     }
 

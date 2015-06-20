@@ -189,7 +189,6 @@ public class ProcessInputResource extends AbstractExpCatResource {
             if(processInput == null){
                 processInput = new ProcessInput();
             }
-            processInput.setProcessInputId(processInputId);
             processInput.setProcessId(processId);
             processInput.setInputName(inputName);
             processInput.setInputValue(inputValue);
@@ -205,7 +204,6 @@ public class ProcessInputResource extends AbstractExpCatResource {
             em.persist(processInput);
             em.getTransaction().commit();
             em.close();
-            this.processInputId = processInput.getProcessInputId();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RegistryException(e);

@@ -28,9 +28,9 @@ import java.lang.*;
 
 @Entity
 @Table(name = "PROCESS_INPUT")
+@IdClass(ProcessInputPK.class)
 public class ProcessInput {
     private final static Logger logger = LoggerFactory.getLogger(ProcessInput.class);
-    private int processInputId;
     private String processId;
     private String inputName;
     private String inputValue;
@@ -45,22 +45,7 @@ public class ProcessInput {
     private Boolean dataStaged;
     private Process process;
 
-    public void setProcessInputId(Integer processInputId) {
-        this.processInputId = processInputId;
-    }
-
     @Id
-    @GeneratedValue
-    @Column(name = "PROCESS_INPUT_ID")
-    public int getProcessInputId() {
-        return processInputId;
-    }
-
-    public void setProcessInputId(int processInputId) {
-        this.processInputId = processInputId;
-    }
-
-    @Basic
     @Column(name = "PROCESS_ID")
     public String getProcessId() {
         return processId;
@@ -70,7 +55,7 @@ public class ProcessInput {
         this.processId = processId;
     }
 
-    @Basic
+    @Id
     @Column(name = "INPUT_NAME")
     public String getInputName() {
         return inputName;
@@ -187,7 +172,6 @@ public class ProcessInput {
 
         ProcessInput that = (ProcessInput) o;
 
-        if (processInputId != that.processInputId) return false;
         if (applicationArgument != null ? !applicationArgument.equals(that.applicationArgument) : that.applicationArgument != null)
             return false;
         if (dataStaged != null ? !dataStaged.equals(that.dataStaged) : that.dataStaged != null) return false;
@@ -210,8 +194,7 @@ public class ProcessInput {
 
     @Override
     public int hashCode() {
-        int result = processInputId;
-        result = 31 * result + (processId != null ? processId.hashCode() : 0);
+        int result = processId != null ? processId.hashCode() : 0;
         result = 31 * result + (inputName != null ? inputName.hashCode() : 0);
         result = 31 * result + (inputValue != null ? inputValue.hashCode() : 0);
         result = 31 * result + (dataType != null ? dataType.hashCode() : 0);

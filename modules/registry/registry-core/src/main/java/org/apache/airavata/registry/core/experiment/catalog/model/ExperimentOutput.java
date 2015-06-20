@@ -27,10 +27,12 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "EXPERIMENT_OUTPUT")
+@IdClass(ExperimentOutputPK.class)
 public class ExperimentOutput {
     private final static Logger logger = LoggerFactory.getLogger(ExperimentOutput.class);
-    private int experimentOutputId;
     private String experimentId;
+    private String outputName;
+    private String outputValue;
     private String dataType;
     private String applicationArgument;
     private Boolean isRequired;
@@ -40,21 +42,7 @@ public class ExperimentOutput {
     private String searchQuery;
     private Experiment experiment;
 
-    public void setExperimentOutputId(Integer experimentOutputId) {
-        this.experimentOutputId = experimentOutputId;
-    }
-
     @Id
-    @Column(name = "EXPERIMENT_OUTPUT_ID")
-    public int getExperimentOutputId() {
-        return experimentOutputId;
-    }
-
-    public void setExperimentOutputId(int experimentOutputId) {
-        this.experimentOutputId = experimentOutputId;
-    }
-
-    @Basic
     @Column(name = "EXPERIMENT_ID")
     public String getExperimentId() {
         return experimentId;
@@ -62,6 +50,26 @@ public class ExperimentOutput {
 
     public void setExperimentId(String experimentId) {
         this.experimentId = experimentId;
+    }
+
+    @Id
+    @Column(name = "OUTPUT_NAME")
+    public String getOutputName() {
+        return outputName;
+    }
+
+    public void setOutputName(String outputName) {
+        this.outputName = outputName;
+    }
+
+    @Basic
+    @Column(name = "OUTPUT_VALUE")
+    public String getOutputValue() {
+        return outputValue;
+    }
+
+    public void setOutputValue(String outputValue) {
+        this.outputValue = outputValue;
     }
 
     @Basic
@@ -140,8 +148,10 @@ public class ExperimentOutput {
         if (o == null || getClass() != o.getClass()) return false;
 
         ExperimentOutput that = (ExperimentOutput) o;
-
-        if (experimentOutputId != that.experimentOutputId) return false;
+        if (outputName != null ? !outputName.equals(that.outputName) : that.outputName != null)
+            return false;
+        if (outputValue != null ? !outputValue.equals(that.outputValue) : that.outputValue != null)
+            return false;
         if (applicationArgument != null ? !applicationArgument.equals(that.applicationArgument) : that.applicationArgument != null)
             return false;
         if (dataMovement != null ? !dataMovement.equals(that.dataMovement) : that.dataMovement != null) return false;
@@ -158,8 +168,9 @@ public class ExperimentOutput {
 
     @Override
     public int hashCode() {
-        int result = experimentOutputId;
-        result = 31 * result + (experimentId != null ? experimentId.hashCode() : 0);
+        int result = experimentId != null ? experimentId.hashCode() : 0;
+        result = 31 * result + (outputName != null ? outputName.hashCode() : 0);
+        result = 31 * result + (outputValue != null ? outputValue.hashCode() : 0);
         result = 31 * result + (dataType != null ? dataType.hashCode() : 0);
         result = 31 * result + (applicationArgument != null ? applicationArgument.hashCode() : 0);
         result = 31 * result + (isRequired != null ? isRequired.hashCode() : 0);

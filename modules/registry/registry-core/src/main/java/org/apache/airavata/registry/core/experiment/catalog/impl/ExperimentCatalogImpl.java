@@ -35,7 +35,6 @@ import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
-import org.apache.airavata.registry.core.experiment.catalog.model.AdvancedOutputDataHandling;
 import org.apache.airavata.registry.core.experiment.catalog.resources.GatewayResource;
 import org.apache.airavata.registry.core.experiment.catalog.resources.UserResource;
 import org.apache.airavata.registry.cpi.*;
