@@ -142,44 +142,44 @@ public class ExperimentOutput {
         this.searchQuery = searchQuery;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ExperimentOutput that = (ExperimentOutput) o;
-        if (outputName != null ? !outputName.equals(that.outputName) : that.outputName != null)
-            return false;
-        if (outputValue != null ? !outputValue.equals(that.outputValue) : that.outputValue != null)
-            return false;
-        if (applicationArgument != null ? !applicationArgument.equals(that.applicationArgument) : that.applicationArgument != null)
-            return false;
-        if (dataMovement != null ? !dataMovement.equals(that.dataMovement) : that.dataMovement != null) return false;
-        if (dataType != null ? !dataType.equals(that.dataType) : that.dataType != null) return false;
-        if (experimentId != null ? !experimentId.equals(that.experimentId) : that.experimentId != null) return false;
-        if (isRequired != null ? !isRequired.equals(that.isRequired) : that.isRequired != null) return false;
-        if (location != null ? !location.equals(that.location) : that.location != null) return false;
-        if (requiredToAddedToCmd != null ? !requiredToAddedToCmd.equals(that.requiredToAddedToCmd) : that.requiredToAddedToCmd != null)
-            return false;
-        if (searchQuery != null ? !searchQuery.equals(that.searchQuery) : that.searchQuery != null) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = experimentId != null ? experimentId.hashCode() : 0;
-        result = 31 * result + (outputName != null ? outputName.hashCode() : 0);
-        result = 31 * result + (outputValue != null ? outputValue.hashCode() : 0);
-        result = 31 * result + (dataType != null ? dataType.hashCode() : 0);
-        result = 31 * result + (applicationArgument != null ? applicationArgument.hashCode() : 0);
-        result = 31 * result + (isRequired != null ? isRequired.hashCode() : 0);
-        result = 31 * result + (requiredToAddedToCmd != null ? requiredToAddedToCmd.hashCode() : 0);
-        result = 31 * result + (dataMovement != null ? dataMovement.hashCode() : 0);
-        result = 31 * result + (location != null ? location.hashCode() : 0);
-        result = 31 * result + (searchQuery != null ? searchQuery.hashCode() : 0);
-        return result;
-    }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//
+//        ExperimentOutput that = (ExperimentOutput) o;
+//        if (outputName != null ? !outputName.equals(that.outputName) : that.outputName != null)
+//            return false;
+//        if (outputValue != null ? !outputValue.equals(that.outputValue) : that.outputValue != null)
+//            return false;
+//        if (applicationArgument != null ? !applicationArgument.equals(that.applicationArgument) : that.applicationArgument != null)
+//            return false;
+//        if (dataMovement != null ? !dataMovement.equals(that.dataMovement) : that.dataMovement != null) return false;
+//        if (dataType != null ? !dataType.equals(that.dataType) : that.dataType != null) return false;
+//        if (experimentId != null ? !experimentId.equals(that.experimentId) : that.experimentId != null) return false;
+//        if (isRequired != null ? !isRequired.equals(that.isRequired) : that.isRequired != null) return false;
+//        if (location != null ? !location.equals(that.location) : that.location != null) return false;
+//        if (requiredToAddedToCmd != null ? !requiredToAddedToCmd.equals(that.requiredToAddedToCmd) : that.requiredToAddedToCmd != null)
+//            return false;
+//        if (searchQuery != null ? !searchQuery.equals(that.searchQuery) : that.searchQuery != null) return false;
+//
+//        return true;
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        int result = experimentId != null ? experimentId.hashCode() : 0;
+//        result = 31 * result + (outputName != null ? outputName.hashCode() : 0);
+//        result = 31 * result + (outputValue != null ? outputValue.hashCode() : 0);
+//        result = 31 * result + (dataType != null ? dataType.hashCode() : 0);
+//        result = 31 * result + (applicationArgument != null ? applicationArgument.hashCode() : 0);
+//        result = 31 * result + (isRequired != null ? isRequired.hashCode() : 0);
+//        result = 31 * result + (requiredToAddedToCmd != null ? requiredToAddedToCmd.hashCode() : 0);
+//        result = 31 * result + (dataMovement != null ? dataMovement.hashCode() : 0);
+//        result = 31 * result + (location != null ? location.hashCode() : 0);
+//        result = 31 * result + (searchQuery != null ? searchQuery.hashCode() : 0);
+//        return result;
+//    }
 
     @ManyToOne
     @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")

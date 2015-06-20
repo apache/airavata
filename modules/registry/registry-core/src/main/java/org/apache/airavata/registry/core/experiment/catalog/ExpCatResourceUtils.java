@@ -158,7 +158,7 @@ public class ExpCatResourceUtils {
         try {
             if (isUserExist(userName)) {
                 em = getEntityManager();
-                User user =  em.find(User.class, userName);
+                Users user =  em.find(Users.class, userName);
                 UserResource userResource = (UserResource)Utils.getResource(ResourceType.USER, user);
                 em.close();
                 return userResource;
@@ -313,7 +313,7 @@ public class ExpCatResourceUtils {
                 userResource.save();
             }
             Gateway gateway = em.find(Gateway.class, gatewayResource.getGatewayId());
-            User user = em.find(User.class, userResource.getUserName());
+            Users user = em.find(Users.class, userResource.getUserName());
             GatewayWorker gatewayWorker = new GatewayWorker();
             gatewayWorker.setGateway(gateway);
             gatewayWorker.setUser(user);

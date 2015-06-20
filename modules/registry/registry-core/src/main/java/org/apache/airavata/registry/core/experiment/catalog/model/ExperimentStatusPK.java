@@ -59,16 +59,16 @@ public class ExperimentStatusPK implements Serializable {
 
         ExperimentStatusPK that = (ExperimentStatusPK) o;
 
-        if (statusId != null ? !statusId.equals(that.statusId) : that.statusId != null) return false;
-        if (experimentId != null ? !experimentId.equals(that.experimentId) : that.experimentId != null) return false;
+        if (getStatusId() != null ? !getStatusId().equals(that.getStatusId()) : that.getStatusId() != null) return false;
+        if (getExperimentId() != null ? !getExperimentId().equals(that.getExperimentId()) : that.getExperimentId() != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = statusId != null ? statusId.hashCode() : 0;
-        result = 31 * result + (experimentId != null ? experimentId.hashCode() : 0);
+        int result = getStatusId() != null ? getStatusId().hashCode() : 0;
+        result = 31 * result + (getExperimentId() != null ? getExperimentId().hashCode() : 0);
         return result;
     }
 }

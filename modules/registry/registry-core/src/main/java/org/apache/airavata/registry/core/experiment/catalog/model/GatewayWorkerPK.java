@@ -60,16 +60,16 @@ public class GatewayWorkerPK implements Serializable {
 
         GatewayWorkerPK that = (GatewayWorkerPK) o;
 
-        if (gatewayId != null ? !gatewayId.equals(that.gatewayId) : that.gatewayId != null) return false;
-        if (userName != null ? !userName.equals(that.userName) : that.userName != null) return false;
+        if (getGatewayId() != null ? !getGatewayId().equals(that.getGatewayId()) : that.getGatewayId() != null) return false;
+        if (getUserName() != null ? !getUserName().equals(that.getUserName()) : that.getUserName() != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = gatewayId != null ? gatewayId.hashCode() : 0;
-        result = 31 * result + (userName != null ? userName.hashCode() : 0);
+        int result = getGatewayId() != null ? getGatewayId().hashCode() : 0;
+        result = 31 * result + (getUserName() != null ? getUserName().hashCode() : 0);
         return result;
     }
 }

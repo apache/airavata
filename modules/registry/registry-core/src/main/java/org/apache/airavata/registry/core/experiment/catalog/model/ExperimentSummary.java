@@ -141,43 +141,43 @@ public class ExperimentSummary {
         this.timeOfStateChange = timeOfStateChange;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ExperimentSummary that = (ExperimentSummary) o;
-
-        if (applicationId != null ? !applicationId.equals(that.applicationId) : that.applicationId != null)
-            return false;
-        if (creationTime != null ? !creationTime.equals(that.creationTime) : that.creationTime != null) return false;
-        if (description != null ? !description.equals(that.description) : that.description != null) return false;
-        if (experimentId != null ? !experimentId.equals(that.experimentId) : that.experimentId != null) return false;
-        if (experimentName != null ? !experimentName.equals(that.experimentName) : that.experimentName != null)
-            return false;
-        if (projectId != null ? !projectId.equals(that.projectId) : that.projectId != null) return false;
-        if (resourceHostId != null ? !resourceHostId.equals(that.resourceHostId) : that.resourceHostId != null)
-            return false;
-        if (state != null ? !state.equals(that.state) : that.state != null) return false;
-        if (timeOfStateChange != null ? !timeOfStateChange.equals(that.timeOfStateChange) : that.timeOfStateChange != null)
-            return false;
-        if (userName != null ? !userName.equals(that.userName) : that.userName != null) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = experimentId != null ? experimentId.hashCode() : 0;
-        result = 31 * result + (projectId != null ? projectId.hashCode() : 0);
-        result = 31 * result + (userName != null ? userName.hashCode() : 0);
-        result = 31 * result + (applicationId != null ? applicationId.hashCode() : 0);
-        result = 31 * result + (experimentName != null ? experimentName.hashCode() : 0);
-        result = 31 * result + (creationTime != null ? creationTime.hashCode() : 0);
-        result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + (state != null ? state.hashCode() : 0);
-        result = 31 * result + (resourceHostId != null ? resourceHostId.hashCode() : 0);
-        result = 31 * result + (timeOfStateChange != null ? timeOfStateChange.hashCode() : 0);
-        return result;
-    }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//
+//        ExperimentSummary that = (ExperimentSummary) o;
+//
+//        if (applicationId != null ? !applicationId.equals(that.applicationId) : that.applicationId != null)
+//            return false;
+//        if (creationTime != null ? !creationTime.equals(that.creationTime) : that.creationTime != null) return false;
+//        if (description != null ? !description.equals(that.description) : that.description != null) return false;
+//        if (experimentId != null ? !experimentId.equals(that.experimentId) : that.experimentId != null) return false;
+//        if (experimentName != null ? !experimentName.equals(that.experimentName) : that.experimentName != null)
+//            return false;
+//        if (projectId != null ? !projectId.equals(that.projectId) : that.projectId != null) return false;
+//        if (resourceHostId != null ? !resourceHostId.equals(that.resourceHostId) : that.resourceHostId != null)
+//            return false;
+//        if (state != null ? !state.equals(that.state) : that.state != null) return false;
+//        if (timeOfStateChange != null ? !timeOfStateChange.equals(that.timeOfStateChange) : that.timeOfStateChange != null)
+//            return false;
+//        if (userName != null ? !userName.equals(that.userName) : that.userName != null) return false;
+//
+//        return true;
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        int result = experimentId != null ? experimentId.hashCode() : 0;
+//        result = 31 * result + (projectId != null ? projectId.hashCode() : 0);
+//        result = 31 * result + (userName != null ? userName.hashCode() : 0);
+//        result = 31 * result + (applicationId != null ? applicationId.hashCode() : 0);
+//        result = 31 * result + (experimentName != null ? experimentName.hashCode() : 0);
+//        result = 31 * result + (creationTime != null ? creationTime.hashCode() : 0);
+//        result = 31 * result + (description != null ? description.hashCode() : 0);
+//        result = 31 * result + (state != null ? state.hashCode() : 0);
+//        result = 31 * result + (resourceHostId != null ? resourceHostId.hashCode() : 0);
+//        result = 31 * result + (timeOfStateChange != null ? timeOfStateChange.hashCode() : 0);
+//        return result;
+//    }
 }

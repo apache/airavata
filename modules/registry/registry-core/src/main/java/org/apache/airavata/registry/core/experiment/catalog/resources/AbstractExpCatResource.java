@@ -31,12 +31,12 @@ public abstract class AbstractExpCatResource implements ExperimentCatResource {
 	// table names
 	public static final String GATEWAY = "Gateway";
 	public static final String USERS = "Users";
-	public static final String GATEWAY_WORKER = "Gateway_Worker";
+	public static final String GATEWAY_WORKER = "GatewayWorker";
 	public static final String PROJECT = "Project";
-	public static final String PROJECT_USER = "Project_User";
+	public static final String PROJECT_USER = "ProjectUser";
 	public static final String EXPERIMENT = "Experiment";
-	public static final String EXPERIMENT_INPUT = "Experiment_Input";
-	public static final String EXPERIMENT_OUTPUT = "Experiment_Output";
+	public static final String EXPERIMENT_INPUT = "ExperimentInput";
+	public static final String EXPERIMENT_OUTPUT = "ExperimentOutput";
     public static final String EXPERIMENT_ERROR = "ExperimentError";
     public static final String EXPERIMENT_STATUS = "ExperimentStatus";
     public static final String USER_CONFIGURATION_DATA = "UserConfigurationData";
@@ -53,30 +53,30 @@ public abstract class AbstractExpCatResource implements ExperimentCatResource {
 
 	// Gateway Table
 	public final class GatewayConstants {
-		public static final String GATEWAY_ID = "gateway_id";
-		public static final String GATEWAY_NAME = "gateway_name";
+		public static final String GATEWAY_ID = "gatewayId";
+		public static final String GATEWAY_NAME = "gatewayName";
 		public static final String DOMAIN = "domain";
 		public static final String EMAIL_ADDRESS = "emailAddress";
 	}
 
 	// Users table
 	public final class UserConstants {
-		public static final String USERNAME = "user_name";
+		public static final String USERNAME = "userName";
 		public static final String PASSWORD = "password";
 	}
 
 	// Gateway_Worker table
 	public final class GatewayWorkerConstants {
-		public static final String USERNAME = "user_name";
-		public static final String GATEWAY_ID = "gateway_id";
+		public static final String USERNAME = "userName";
+		public static final String GATEWAY_ID = "gatewayId";
 	}
 
 	// Project table
 	public final class ProjectConstants {
-		public static final String GATEWAY_ID = "gateway_id";
-		public static final String USERNAME = "user_name";
-		public static final String PROJECT_NAME = "project_name";
-		public static final String PROJECT_ID = "project_id";
+		public static final String GATEWAY_ID = "gatewayId";
+		public static final String USERNAME = "userName";
+		public static final String PROJECT_NAME = "projectName";
+		public static final String PROJECT_ID = "projectId";
 		public static final String DESCRIPTION = "description";
         public static final String CREATION_TIME = "creationTime";
 	}

@@ -165,49 +165,49 @@ public class ProcessInput {
         this.dataStaged = dataStaged;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ProcessInput that = (ProcessInput) o;
-
-        if (applicationArgument != null ? !applicationArgument.equals(that.applicationArgument) : that.applicationArgument != null)
-            return false;
-        if (dataStaged != null ? !dataStaged.equals(that.dataStaged) : that.dataStaged != null) return false;
-        if (dataType != null ? !dataType.equals(that.dataType) : that.dataType != null) return false;
-        if (inputName != null ? !inputName.equals(that.inputName) : that.inputName != null) return false;
-        if (inputOrder != null ? !inputOrder.equals(that.inputOrder) : that.inputOrder != null) return false;
-        if (inputValue != null ? !inputValue.equals(that.inputValue) : that.inputValue != null) return false;
-        if (isRequired != null ? !isRequired.equals(that.isRequired) : that.isRequired != null) return false;
-        if (metadata != null ? !metadata.equals(that.metadata) : that.metadata != null) return false;
-        if (processId != null ? !processId.equals(that.processId) : that.processId != null) return false;
-        if (requiredToAddedToCmd != null ? !requiredToAddedToCmd.equals(that.requiredToAddedToCmd) : that.requiredToAddedToCmd != null)
-            return false;
-        if (standardInput != null ? !standardInput.equals(that.standardInput) : that.standardInput != null)
-            return false;
-        if (userFriendlyDescription != null ? !userFriendlyDescription.equals(that.userFriendlyDescription) : that.userFriendlyDescription != null)
-            return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = processId != null ? processId.hashCode() : 0;
-        result = 31 * result + (inputName != null ? inputName.hashCode() : 0);
-        result = 31 * result + (inputValue != null ? inputValue.hashCode() : 0);
-        result = 31 * result + (dataType != null ? dataType.hashCode() : 0);
-        result = 31 * result + (applicationArgument != null ? applicationArgument.hashCode() : 0);
-        result = 31 * result + (standardInput != null ? standardInput.hashCode() : 0);
-        result = 31 * result + (userFriendlyDescription != null ? userFriendlyDescription.hashCode() : 0);
-        result = 31 * result + (metadata != null ? metadata.hashCode() : 0);
-        result = 31 * result + (inputOrder != null ? inputOrder.hashCode() : 0);
-        result = 31 * result + (isRequired != null ? isRequired.hashCode() : 0);
-        result = 31 * result + (requiredToAddedToCmd != null ? requiredToAddedToCmd.hashCode() : 0);
-        result = 31 * result + (dataStaged != null ? dataStaged.hashCode() : 0);
-        return result;
-    }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//
+//        ProcessInput that = (ProcessInput) o;
+//
+//        if (applicationArgument != null ? !applicationArgument.equals(that.applicationArgument) : that.applicationArgument != null)
+//            return false;
+//        if (dataStaged != null ? !dataStaged.equals(that.dataStaged) : that.dataStaged != null) return false;
+//        if (dataType != null ? !dataType.equals(that.dataType) : that.dataType != null) return false;
+//        if (inputName != null ? !inputName.equals(that.inputName) : that.inputName != null) return false;
+//        if (inputOrder != null ? !inputOrder.equals(that.inputOrder) : that.inputOrder != null) return false;
+//        if (inputValue != null ? !inputValue.equals(that.inputValue) : that.inputValue != null) return false;
+//        if (isRequired != null ? !isRequired.equals(that.isRequired) : that.isRequired != null) return false;
+//        if (metadata != null ? !metadata.equals(that.metadata) : that.metadata != null) return false;
+//        if (processId != null ? !processId.equals(that.processId) : that.processId != null) return false;
+//        if (requiredToAddedToCmd != null ? !requiredToAddedToCmd.equals(that.requiredToAddedToCmd) : that.requiredToAddedToCmd != null)
+//            return false;
+//        if (standardInput != null ? !standardInput.equals(that.standardInput) : that.standardInput != null)
+//            return false;
+//        if (userFriendlyDescription != null ? !userFriendlyDescription.equals(that.userFriendlyDescription) : that.userFriendlyDescription != null)
+//            return false;
+//
+//        return true;
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        int result = processId != null ? processId.hashCode() : 0;
+//        result = 31 * result + (inputName != null ? inputName.hashCode() : 0);
+//        result = 31 * result + (inputValue != null ? inputValue.hashCode() : 0);
+//        result = 31 * result + (dataType != null ? dataType.hashCode() : 0);
+//        result = 31 * result + (applicationArgument != null ? applicationArgument.hashCode() : 0);
+//        result = 31 * result + (standardInput != null ? standardInput.hashCode() : 0);
+//        result = 31 * result + (userFriendlyDescription != null ? userFriendlyDescription.hashCode() : 0);
+//        result = 31 * result + (metadata != null ? metadata.hashCode() : 0);
+//        result = 31 * result + (inputOrder != null ? inputOrder.hashCode() : 0);
+//        result = 31 * result + (isRequired != null ? isRequired.hashCode() : 0);
+//        result = 31 * result + (requiredToAddedToCmd != null ? requiredToAddedToCmd.hashCode() : 0);
+//        result = 31 * result + (dataStaged != null ? dataStaged.hashCode() : 0);
+//        return result;
+//    }
 
     @ManyToOne
     @JoinColumn(name = "PROCESS_ID", referencedColumnName = "PROCESS_ID")

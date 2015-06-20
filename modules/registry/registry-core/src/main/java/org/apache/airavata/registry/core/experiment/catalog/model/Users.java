@@ -27,9 +27,9 @@ import javax.persistence.*;
 import java.util.Collection;
 
 @Entity
-@Table(name = "USER")
-public class User {
-    private final static Logger logger = LoggerFactory.getLogger(User.class);
+@Table(name = "USERS")
+public class Users {
+    private final static Logger logger = LoggerFactory.getLogger(Users.class);
     private String userName;
     private String password;
     private Collection<Experiment> experiments;
@@ -57,27 +57,27 @@ public class User {
         this.password = password;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//
+//        User user = (User) o;
+//
+//        if (password != null ? !password.equals(user.password) : user.password != null) return false;
+//        if (userName != null ? !userName.equals(user.userName) : user.userName != null) return false;
+//
+//        return true;
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        int result = userName != null ? userName.hashCode() : 0;
+//        result = 31 * result + (password != null ? password.hashCode() : 0);
+//        return result;
+//    }
 
-        User user = (User) o;
-
-        if (password != null ? !password.equals(user.password) : user.password != null) return false;
-        if (userName != null ? !userName.equals(user.userName) : user.userName != null) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = userName != null ? userName.hashCode() : 0;
-        result = 31 * result + (password != null ? password.hashCode() : 0);
-        return result;
-    }
-
-    @OneToMany(mappedBy = "usersByUserName")
+    @OneToMany(mappedBy = "user")
     public Collection<Experiment> getExperiments() {
         return experiments;
     }
@@ -86,7 +86,7 @@ public class User {
         this.experiments = experimentByUserName;
     }
 
-    @OneToMany(mappedBy = "users")
+    @OneToMany(mappedBy = "user")
     public Collection<GatewayWorker> getGatewayWorkers() {
         return gatewayWorkers;
     }

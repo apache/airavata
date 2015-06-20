@@ -26,7 +26,7 @@ import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
-import org.apache.airavata.registry.core.experiment.catalog.model.User;
+import org.apache.airavata.registry.core.experiment.catalog.model.Users;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,12 +110,12 @@ public class UserResource extends AbstractExpCatResource {
         EntityManager em = null;
         try {
             em = ExpCatResourceUtils.getEntityManager();
-            User existingUser = em.find(User.class, userName);
+            Users existingUser = em.find(Users.class, userName);
             em.close();
 
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
-            User user = new User();
+            Users user = new Users();
             user.setUserName(userName);
             if (password != null && !password.equals("")) {
                 try {

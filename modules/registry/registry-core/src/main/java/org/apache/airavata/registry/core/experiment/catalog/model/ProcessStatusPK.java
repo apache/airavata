@@ -60,16 +60,16 @@ public class ProcessStatusPK implements Serializable {
 
         ProcessStatusPK that = (ProcessStatusPK) o;
 
-        if (statusId != null ? !statusId.equals(that.statusId) : that.statusId != null) return false;
-        if (processId != null ? !processId.equals(that.processId) : that.processId != null) return false;
+        if (getStatusId() != null ? !getStatusId().equals(that.getStatusId()) : that.getStatusId() != null) return false;
+        if (getProcessId() != null ? !getProcessId().equals(that.getProcessId()) : that.getProcessId() != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = statusId != null ? statusId.hashCode() : 0;
-        result = 31 * result + (processId != null ? processId.hashCode() : 0);
+        int result = getStatusId() != null ? getStatusId().hashCode() : 0;
+        result = 31 * result + (getProcessId() != null ? getProcessId().hashCode() : 0);
         return result;
     }
 }

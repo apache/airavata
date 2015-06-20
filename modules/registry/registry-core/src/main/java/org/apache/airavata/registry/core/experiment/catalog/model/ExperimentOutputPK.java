@@ -23,7 +23,6 @@ package org.apache.airavata.registry.core.experiment.catalog.model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import java.io.Serializable;
@@ -60,16 +59,16 @@ public class ExperimentOutputPK implements Serializable {
 
         ExperimentOutputPK that = (ExperimentOutputPK) o;
 
-        if (experimentId != null ? !experimentId.equals(that.experimentId) : that.experimentId != null) return false;
-        if (outputName != null ? !outputName.equals(that.outputName) : that.outputName != null) return false;
+        if (getExperimentId() != null ? !getExperimentId().equals(that.getExperimentId()) : that.getExperimentId() != null) return false;
+        if (getOutputName() != null ? !getOutputName().equals(that.getOutputName()) : that.getOutputName() != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = experimentId != null ? experimentId.hashCode() : 0;
-        result = 31 * result + (outputName != null ? outputName.hashCode() : 0);
+        int result = getExperimentId() != null ? getExperimentId().hashCode() : 0;
+        result = 31 * result + (getOutputName() != null ? getOutputName().hashCode() : 0);
         return result;
     }
 }

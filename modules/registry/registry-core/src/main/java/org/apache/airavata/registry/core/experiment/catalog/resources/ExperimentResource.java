@@ -442,11 +442,8 @@ public class ExperimentResource extends AbstractExpCatResource {
         EntityManager em = null;
         try {
             em = ExpCatResourceUtils.getEntityManager();
-
-            Experiment experiment = em.find(Experiment.class, experimentId);
-            em.close();
-            em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
+            Experiment experiment = em.find(Experiment.class, experimentId);
             if (experiment == null) {
             	experiment = new Experiment();
             }

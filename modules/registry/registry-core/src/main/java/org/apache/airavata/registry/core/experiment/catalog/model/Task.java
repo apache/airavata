@@ -113,38 +113,38 @@ public class Task {
         this.taskInternalStore = taskInternalStore;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Task task = (Task) o;
-
-        if (creationTime != null ? !creationTime.equals(task.creationTime) : task.creationTime != null) return false;
-        if (lastUpdateTime != null ? !lastUpdateTime.equals(task.lastUpdateTime) : task.lastUpdateTime != null)
-            return false;
-        if (parentProcessId != null ? !parentProcessId.equals(task.parentProcessId) : task.parentProcessId != null)
-            return false;
-        if (taskDetail != null ? !taskDetail.equals(task.taskDetail) : task.taskDetail != null) return false;
-        if (taskId != null ? !taskId.equals(task.taskId) : task.taskId != null) return false;
-        if (taskInternalStore != null ? !taskInternalStore.equals(task.taskInternalStore) : task.taskInternalStore != null)
-            return false;
-        if (taskType != null ? !taskType.equals(task.taskType) : task.taskType != null) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = taskId != null ? taskId.hashCode() : 0;
-        result = 31 * result + (taskType != null ? taskType.hashCode() : 0);
-        result = 31 * result + (parentProcessId != null ? parentProcessId.hashCode() : 0);
-        result = 31 * result + (creationTime != null ? creationTime.hashCode() : 0);
-        result = 31 * result + (lastUpdateTime != null ? lastUpdateTime.hashCode() : 0);
-        result = 31 * result + (taskDetail != null ? taskDetail.hashCode() : 0);
-        result = 31 * result + (taskInternalStore != null ? taskInternalStore.hashCode() : 0);
-        return result;
-    }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//
+//        Task task = (Task) o;
+//
+//        if (creationTime != null ? !creationTime.equals(task.creationTime) : task.creationTime != null) return false;
+//        if (lastUpdateTime != null ? !lastUpdateTime.equals(task.lastUpdateTime) : task.lastUpdateTime != null)
+//            return false;
+//        if (parentProcessId != null ? !parentProcessId.equals(task.parentProcessId) : task.parentProcessId != null)
+//            return false;
+//        if (taskDetail != null ? !taskDetail.equals(task.taskDetail) : task.taskDetail != null) return false;
+//        if (taskId != null ? !taskId.equals(task.taskId) : task.taskId != null) return false;
+//        if (taskInternalStore != null ? !taskInternalStore.equals(task.taskInternalStore) : task.taskInternalStore != null)
+//            return false;
+//        if (taskType != null ? !taskType.equals(task.taskType) : task.taskType != null) return false;
+//
+//        return true;
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        int result = taskId != null ? taskId.hashCode() : 0;
+//        result = 31 * result + (taskType != null ? taskType.hashCode() : 0);
+//        result = 31 * result + (parentProcessId != null ? parentProcessId.hashCode() : 0);
+//        result = 31 * result + (creationTime != null ? creationTime.hashCode() : 0);
+//        result = 31 * result + (lastUpdateTime != null ? lastUpdateTime.hashCode() : 0);
+//        result = 31 * result + (taskDetail != null ? taskDetail.hashCode() : 0);
+//        result = 31 * result + (taskInternalStore != null ? taskInternalStore.hashCode() : 0);
+//        return result;
+//    }
 
     @ManyToOne
     @JoinColumn(name = "PARENT_PROCESS_ID", referencedColumnName = "PROCESS_ID")

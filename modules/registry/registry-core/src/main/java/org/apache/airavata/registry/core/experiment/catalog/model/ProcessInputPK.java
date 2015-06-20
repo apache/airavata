@@ -59,16 +59,16 @@ public class ProcessInputPK implements Serializable {
 
         ProcessInputPK that = (ProcessInputPK) o;
 
-        if (inputName != null ? !inputName.equals(that.inputName) : that.inputName != null) return false;
-        if (processId != null ? !processId.equals(that.processId) : that.processId != null) return false;
+        if (getInputName() != null ? !getInputName().equals(that.getInputName()) : that.getInputName() != null) return false;
+        if (getProcessId() != null ? !getProcessId().equals(that.getProcessId()) : that.getProcessId() != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = processId != null ? processId.hashCode() : 0;
-        result = 31 * result + (inputName != null ? inputName.hashCode() : 0);
+        int result = getProcessId() != null ? getProcessId().hashCode() : 0;
+        result = 31 * result + (getInputName() != null ? getInputName().hashCode() : 0);
         return result;
     }
 }

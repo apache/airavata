@@ -61,7 +61,7 @@ public class ExperimentOutputResourceTest extends AbstractResourceTest  {
 
     @Test
     public void testSave() throws Exception {
-        assertTrue("Experiment output saved successfully", experimentResource.isExists(ResourceType.EXPERIMENT_OUTPUT, experimentID));
+        assertTrue("Experiment output saved successfully", experimentResource.isExists(ResourceType.EXPERIMENT_OUTPUT, "testKey"));
     }
 
     @After

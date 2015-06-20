@@ -116,40 +116,40 @@ public class Process {
         this.taskDag = taskDag;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Process process = (Process) o;
-
-        if (applicationInterfaceId != null ? !applicationInterfaceId.equals(process.applicationInterfaceId) : process.applicationInterfaceId != null)
-            return false;
-        if (creationTime != null ? !creationTime.equals(process.creationTime) : process.creationTime != null)
-            return false;
-        if (experimentId != null ? !experimentId.equals(process.experimentId) : process.experimentId != null)
-            return false;
-        if (lastUpdateTime != null ? !lastUpdateTime.equals(process.lastUpdateTime) : process.lastUpdateTime != null)
-            return false;
-        if (processDetail != null ? !processDetail.equals(process.processDetail) : process.processDetail != null)
-            return false;
-        if (processId != null ? !processId.equals(process.processId) : process.processId != null) return false;
-        if (taskDag != null ? !taskDag.equals(process.taskDag) : process.taskDag != null) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = processId != null ? processId.hashCode() : 0;
-        result = 31 * result + (experimentId != null ? experimentId.hashCode() : 0);
-        result = 31 * result + (creationTime != null ? creationTime.hashCode() : 0);
-        result = 31 * result + (lastUpdateTime != null ? lastUpdateTime.hashCode() : 0);
-        result = 31 * result + (processDetail != null ? processDetail.hashCode() : 0);
-        result = 31 * result + (applicationInterfaceId != null ? applicationInterfaceId.hashCode() : 0);
-        result = 31 * result + (taskDag != null ? taskDag.hashCode() : 0);
-        return result;
-    }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//
+//        Process process = (Process) o;
+//
+//        if (applicationInterfaceId != null ? !applicationInterfaceId.equals(process.applicationInterfaceId) : process.applicationInterfaceId != null)
+//            return false;
+//        if (creationTime != null ? !creationTime.equals(process.creationTime) : process.creationTime != null)
+//            return false;
+//        if (experimentId != null ? !experimentId.equals(process.experimentId) : process.experimentId != null)
+//            return false;
+//        if (lastUpdateTime != null ? !lastUpdateTime.equals(process.lastUpdateTime) : process.lastUpdateTime != null)
+//            return false;
+//        if (processDetail != null ? !processDetail.equals(process.processDetail) : process.processDetail != null)
+//            return false;
+//        if (processId != null ? !processId.equals(process.processId) : process.processId != null) return false;
+//        if (taskDag != null ? !taskDag.equals(process.taskDag) : process.taskDag != null) return false;
+//
+//        return true;
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        int result = processId != null ? processId.hashCode() : 0;
+//        result = 31 * result + (experimentId != null ? experimentId.hashCode() : 0);
+//        result = 31 * result + (creationTime != null ? creationTime.hashCode() : 0);
+//        result = 31 * result + (lastUpdateTime != null ? lastUpdateTime.hashCode() : 0);
+//        result = 31 * result + (processDetail != null ? processDetail.hashCode() : 0);
+//        result = 31 * result + (applicationInterfaceId != null ? applicationInterfaceId.hashCode() : 0);
+//        result = 31 * result + (taskDag != null ? taskDag.hashCode() : 0);
+//        return result;
+//    }
 
     @ManyToOne
     @JoinColumn(name = "EXPERIMENT_ID", referencedColumnName = "EXPERIMENT_ID")

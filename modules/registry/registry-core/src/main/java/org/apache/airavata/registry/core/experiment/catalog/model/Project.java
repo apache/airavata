@@ -32,13 +32,13 @@ import java.util.Collection;
 public class Project {
     private final static Logger logger = LoggerFactory.getLogger(Project.class);
     private String gatewayId;
-    private String ownerName;
+    private String userName;
     private String projectName;
     private String projectId;
     private String description;
     private Timestamp creationTime;
     private Collection<Experiment> experiments;
-    private User user;
+    private Users user;
     private Gateway gateway;
     private Collection<ProjectUser> projectUsers;
 
@@ -53,13 +53,13 @@ public class Project {
     }
 
     @Basic
-    @Column(name = "OWNER_NAME")
-    public String getOwnerName() {
-        return ownerName;
+    @Column(name = "USER_NAME")
+    public String getUserName() {
+        return userName;
     }
 
-    public void setOwnerName(String ownerName) {
-        this.ownerName = ownerName;
+    public void setUserName(String ownerName) {
+        this.userName = ownerName;
     }
 
     @Basic
@@ -102,38 +102,38 @@ public class Project {
         this.creationTime = creationTime;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//
+//        Project project = (Project) o;
+//
+//        if (creationTime != null ? !creationTime.equals(project.creationTime) : project.creationTime != null)
+//            return false;
+//        if (description != null ? !description.equals(project.description) : project.description != null)
+//            return false;
+//        if (gatewayId != null ? !gatewayId.equals(project.gatewayId) : project.gatewayId != null) return false;
+//        if (userName != null ? !userName.equals(project.userName) : project.userName != null) return false;
+//        if (projectId != null ? !projectId.equals(project.projectId) : project.projectId != null) return false;
+//        if (projectName != null ? !projectName.equals(project.projectName) : project.projectName != null)
+//            return false;
+//
+//        return true;
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        int result = gatewayId != null ? gatewayId.hashCode() : 0;
+//        result = 31 * result + (userName != null ? userName.hashCode() : 0);
+//        result = 31 * result + (projectName != null ? projectName.hashCode() : 0);
+//        result = 31 * result + (projectId != null ? projectId.hashCode() : 0);
+//        result = 31 * result + (description != null ? description.hashCode() : 0);
+//        result = 31 * result + (creationTime != null ? creationTime.hashCode() : 0);
+//        return result;
+//    }
 
-        Project project = (Project) o;
-
-        if (creationTime != null ? !creationTime.equals(project.creationTime) : project.creationTime != null)
-            return false;
-        if (description != null ? !description.equals(project.description) : project.description != null)
-            return false;
-        if (gatewayId != null ? !gatewayId.equals(project.gatewayId) : project.gatewayId != null) return false;
-        if (ownerName != null ? !ownerName.equals(project.ownerName) : project.ownerName != null) return false;
-        if (projectId != null ? !projectId.equals(project.projectId) : project.projectId != null) return false;
-        if (projectName != null ? !projectName.equals(project.projectName) : project.projectName != null)
-            return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = gatewayId != null ? gatewayId.hashCode() : 0;
-        result = 31 * result + (ownerName != null ? ownerName.hashCode() : 0);
-        result = 31 * result + (projectName != null ? projectName.hashCode() : 0);
-        result = 31 * result + (projectId != null ? projectId.hashCode() : 0);
-        result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + (creationTime != null ? creationTime.hashCode() : 0);
-        return result;
-    }
-
-    @OneToMany(mappedBy = "projectsByProjectId")
+    @OneToMany(mappedBy = "project")
     public Collection<Experiment> getExperiments() {
         return experiments;
     }
@@ -143,12 +143,12 @@ public class Project {
     }
 
     @ManyToOne
-    @JoinColumn(name = "OWNER_NAME", referencedColumnName = "USER_NAME")
-    public User getUser() {
+    @JoinColumn(name = "USER_NAME", referencedColumnName = "USER_NAME")
+    public Users getUser() {
         return user;
     }
 
-    public void setUser(User userByOwnerName) {
+    public void setUser(Users userByOwnerName) {
         this.user = userByOwnerName;
     }
 
