@@ -25,6 +25,7 @@ import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
 import org.apache.airavata.registry.core.experiment.catalog.model.ExperimentStatus;
+import org.apache.airavata.registry.core.experiment.catalog.model.ExperimentStatusPK;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,10 +36,19 @@ import java.util.List;
 
 public class ExperimentStatusResource extends AbstractExpCatResource {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentStatusResource.class);
+    private String statusId;
     private String experimentId;
     private String state;
     private Timestamp timeOfStateChange;
     private String reason;
+
+    public String getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusId(String statusId) {
+        this.statusId = statusId;
+    }
 
     public String getExperimentId() {
         return experimentId;
@@ -102,10 +112,13 @@ public class ExperimentStatusResource extends AbstractExpCatResource {
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
             ExperimentStatus experimentStatus;
-            if(experimentId == null || state == null){
-                throw new RegistryException("Does not have the experiment id or state");
+            if(experimentId == null || statusId == null){
+                throw new RegistryException("Does not have the experiment id or status id");
             }
-            experimentStatus = em.find(ExperimentStatus.class, experimentId);
+            ExperimentStatusPK experimentStatusPK = new ExperimentStatusPK();
+            experimentStatusPK.setStatusId(statusId);
+            experimentStatusPK.setExperimentId(experimentId);
+            experimentStatus = em.find(ExperimentStatus.class, experimentStatusPK);
             if(experimentStatus == null){
                 experimentStatus = new ExperimentStatus();
             }

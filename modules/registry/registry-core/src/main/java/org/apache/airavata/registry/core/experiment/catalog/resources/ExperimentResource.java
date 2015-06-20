@@ -191,13 +191,15 @@ public class ExperimentResource extends AbstractExpCatResource {
             switch (type) {
                 case EXPERIMENT_ERROR:
                     generator = new QueryGenerator(EXPERIMENT_ERROR);
-                    generator.setParameter(ExperimentErrorConstants.EXPERIMENT_ID, name);
+                    generator.setParameter(ExperimentErrorConstants.EXPERIMENT_ID, experimentId);
+                    generator.setParameter(ExperimentErrorConstants.ERROR_ID, name);
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
                 case EXPERIMENT_STATUS:
                     generator = new QueryGenerator(EXPERIMENT_STATUS);
-                    generator.setParameter(ExperimentStatusConstants.EXPERIMENT_ID, name);
+                    generator.setParameter(ExperimentStatusConstants.EXPERIMENT_ID, experimentId);
+                    generator.setParameter(ExperimentStatusConstants.STATUS_ID, name);
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
@@ -258,7 +260,8 @@ public class ExperimentResource extends AbstractExpCatResource {
             switch (type) {
                 case EXPERIMENT_STATUS:
                     generator = new QueryGenerator(EXPERIMENT_STATUS);
-                    generator.setParameter(ExperimentConstants.EXPERIMENT_ID, name);
+                    generator.setParameter(ExperimentStatusConstants.STATUS_ID, name);
+                    generator.setParameter(ExperimentStatusConstants.EXPERIMENT_ID, experimentId);
                     q = generator.selectQuery(em);
                     ExperimentStatus status = (ExperimentStatus) q.getSingleResult();
                     ExperimentStatusResource statusResource = (ExperimentStatusResource) Utils.getResource(ResourceType.EXPERIMENT_STATUS, status);
@@ -267,7 +270,8 @@ public class ExperimentResource extends AbstractExpCatResource {
                     return statusResource;
                 case EXPERIMENT_ERROR:
                     generator = new QueryGenerator(EXPERIMENT_ERROR);
-                    generator.setParameter(ExperimentErrorConstants.EXPERIMENT_ID, name);
+                    generator.setParameter(ExperimentErrorConstants.ERROR_ID, name);
+                    generator.setParameter(ExperimentErrorConstants.EXPERIMENT_ID, experimentId);
                     q = generator.selectQuery(em);
                     ExperimentError experimentError = (ExperimentError) q.getSingleResult();
                     ExperimentErrorResource processErrorResource = (ExperimentErrorResource) Utils.getResource(ResourceType.EXPERIMENT_ERROR, experimentError);
@@ -384,17 +388,31 @@ public class ExperimentResource extends AbstractExpCatResource {
                         }
                     }
                     break;
-                case PROCESS_ERROR:
+                case EXPERIMENT_ERROR:
                     generator = new QueryGenerator(EXPERIMENT_ERROR);
                     generator.setParameter(ExperimentErrorConstants.EXPERIMENT_ID, experimentId);
                     q = generator.selectQuery(em);
                     results = q.getResultList();
                     if (results.size() != 0) {
                         for (Object result : results) {
-                            ProcessError processError = (ProcessError) result;
-                            ProcessErrorResource processErrorResource =
-                                    (ProcessErrorResource) Utils.getResource(ResourceType.PROCESS_ERROR, processError);
-                            resourceList.add(processErrorResource);
+                            ExperimentError experimentError = (ExperimentError) result;
+                            ExperimentErrorResource experimentErrorResource =
+                                    (ExperimentErrorResource) Utils.getResource(ResourceType.EXPERIMENT_ERROR, experimentError);
+                            resourceList.add(experimentErrorResource);
+                        }
+                    }
+                    break;
+                case EXPERIMENT_STATUS:
+                    generator = new QueryGenerator(EXPERIMENT_STATUS);
+                    generator.setParameter(ExperimentStatusConstants.EXPERIMENT_ID, experimentId);
+                    q = generator.selectQuery(em);
+                    results = q.getResultList();
+                    if (results.size() != 0) {
+                        for (Object result : results) {
+                            ExperimentStatus experimentStatus = (ExperimentStatus) result;
+                            ExperimentStatusResource experimentStatusResource =
+                                    (ExperimentStatusResource) Utils.getResource(ResourceType.EXPERIMENT_STATUS, experimentStatus);
+                            resourceList.add(experimentStatusResource);
                         }
                     }
                     break;
@@ -424,6 +442,7 @@ public class ExperimentResource extends AbstractExpCatResource {
         EntityManager em = null;
         try {
             em = ExpCatResourceUtils.getEntityManager();
+
             Experiment experiment = em.find(Experiment.class, experimentId);
             em.close();
             em = ExpCatResourceUtils.getEntityManager();
@@ -478,9 +497,29 @@ public class ExperimentResource extends AbstractExpCatResource {
         return outputResources;
     }
 
+    public List<ExperimentStatusResource> getExperimentStatuses() throws RegistryException{
+        List<ExperimentStatusResource> experimentStatusResources = new ArrayList();
+        List<ExperimentCatResource> resources = get(ResourceType.EXPERIMENT_STATUS);
+        for (ExperimentCatResource resource : resources) {
+            ExperimentStatusResource statusResource = (ExperimentStatusResource) resource;
+            experimentStatusResources.add(statusResource);
+        }
+        return experimentStatusResources;
+    }
+
     public ExperimentStatusResource getExperimentStatus() throws RegistryException{
-        ExperimentCatResource resource = get(ResourceType.EXPERIMENT_STATUS, executionId);
-        return (ExperimentStatusResource)resource;
+        List<ExperimentStatusResource> experimentStatusResources = getExperimentStatuses();
+        if(experimentStatusResources.size() == 0){
+            return null;
+        }else{
+            ExperimentStatusResource max = experimentStatusResources.get(0);
+            for(int i=1; i<experimentStatusResources.size();i++){
+                if(experimentStatusResources.get(i).getTimeOfStateChange().after(max.getTimeOfStateChange())){
+                    max = experimentStatusResources.get(i);
+                }
+            }
+            return max;
+        }
     }
 
     public List<ExperimentErrorResource> getExperimentErrors() throws RegistryException{
@@ -491,6 +530,21 @@ public class ExperimentResource extends AbstractExpCatResource {
             experimentErrorResources.add(errorResource);
         }
         return experimentErrorResources;
+    }
+
+    public ExperimentErrorResource getExperimentError() throws RegistryException{
+        List<ExperimentErrorResource> experimentErrorResources = getExperimentErrors();
+        if(experimentErrorResources.size() == 0){
+            return null;
+        }else{
+            ExperimentErrorResource max = experimentErrorResources.get(0);
+            for(int i=1; i<experimentErrorResources.size();i++){
+                if(experimentErrorResources.get(i).getCreationTime().after(max.getCreationTime())){
+                    max = experimentErrorResources.get(i);
+                }
+            }
+            return max;
+        }
     }
 
     public UserConfigurationDataResource getUserConfigurationDataResource() throws RegistryException{

@@ -23,10 +23,7 @@ package org.apache.airavata.registry.core.experiment.catalog.model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity
@@ -44,7 +41,7 @@ public class ExperimentSummary {
     private String resourceHostId;
     private Timestamp timeOfStateChange;
 
-    @Basic
+    @Id
     @Column(name = "EXPERIMENT_ID")
     public String getExperimentId() {
         return experimentId;

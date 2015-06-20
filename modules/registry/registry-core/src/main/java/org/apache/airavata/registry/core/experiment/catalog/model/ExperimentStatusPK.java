@@ -32,8 +32,8 @@ public class ExperimentStatusPK implements Serializable {
     private String statusId;
     private String experimentId;
 
-    @Column(name = "STATUS_ID")
     @Id
+    @Column(name = "STATUS_ID")
     public String getStatusId() {
         return statusId;
     }
@@ -42,8 +42,8 @@ public class ExperimentStatusPK implements Serializable {
         this.statusId = statusId;
     }
 
-    @Column(name = "EXPERIMENT_ID")
     @Id
+    @Column(name = "EXPERIMENT_ID")
     public String getExperimentId() {
         return experimentId;
     }

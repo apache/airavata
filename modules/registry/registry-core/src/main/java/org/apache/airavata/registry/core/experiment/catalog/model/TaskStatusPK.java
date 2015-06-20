@@ -32,8 +32,8 @@ public class TaskStatusPK implements Serializable {
     private String statusId;
     private String taskId;
 
-    @Column(name = "STATUS_ID")
     @Id
+    @Column(name = "STATUS_ID")
     public String getStatusId() {
         return statusId;
     }
@@ -42,8 +42,8 @@ public class TaskStatusPK implements Serializable {
         this.statusId = statusId;
     }
 
-    @Column(name = "TASK_ID")
     @Id
+    @Column(name = "TASK_ID")
     public String getTaskId() {
         return taskId;
     }

@@ -32,8 +32,9 @@ public class ProcessStatusPK implements Serializable {
     private String statusId;
     private String processId;
 
-    @Column(name = "STATUS_ID")
+
     @Id
+    @Column(name = "STATUS_ID")
     public String getStatusId() {
         return statusId;
     }
@@ -42,8 +43,8 @@ public class ProcessStatusPK implements Serializable {
         this.statusId = statusId;
     }
 
-    @Column(name = "PROCESS_ID")
     @Id
+    @Column(name = "PROCESS_ID")
     public String getProcessId() {
         return processId;
     }

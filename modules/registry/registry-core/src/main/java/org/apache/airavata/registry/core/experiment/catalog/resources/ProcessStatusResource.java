@@ -25,6 +25,7 @@ import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
 import org.apache.airavata.registry.core.experiment.catalog.model.ProcessStatus;
+import org.apache.airavata.registry.core.experiment.catalog.model.ProcessStatusPK;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,10 +36,19 @@ import java.util.List;
 
 public class ProcessStatusResource extends AbstractExpCatResource {
     private static final Logger logger = LoggerFactory.getLogger(ProcessStatusResource.class);
+    private String statusId;
     private String processId;
     private String state;
     private Timestamp timeOfStateChange;
     private String reason;
+
+    public String getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusId(String statusId) {
+        this.statusId = statusId;
+    }
 
     public String getProcessId() {
         return processId;
@@ -102,10 +112,13 @@ public class ProcessStatusResource extends AbstractExpCatResource {
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
             ProcessStatus processStatus;
-            if(processId == null || state == null){
-                throw new RegistryException("Does not have the process id or state");
+            if(processId == null || statusId == null){
+                throw new RegistryException("Does not have the process id or status id");
             }
-            processStatus = em.find(ProcessStatus.class, processId);
+            ProcessStatusPK processStatusPK = new ProcessStatusPK();
+            processStatusPK.setStatusId(statusId);
+            processStatusPK.setProcessId(processId);
+            processStatus = em.find(ProcessStatus.class, processStatusPK);
             if(processStatus == null){
                 processStatus = new ProcessStatus();
             }

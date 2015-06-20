@@ -32,8 +32,8 @@ public class ProjectUserPK implements Serializable {
     private String projectId;
     private String userName;
 
-    @Column(name = "PROJECT_ID")
     @Id
+    @Column(name = "PROJECT_ID")
     public String getProjectId() {
         return projectId;
     }
@@ -42,8 +42,8 @@ public class ProjectUserPK implements Serializable {
         this.projectId = projectId;
     }
 
-    @Column(name = "USER_NAME")
     @Id
+    @Column(name = "USER_NAME")
     public String getUserName() {
         return userName;
     }

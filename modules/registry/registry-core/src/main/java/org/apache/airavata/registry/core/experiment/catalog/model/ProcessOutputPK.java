@@ -33,9 +33,8 @@ public class ProcessOutputPK implements Serializable {
     private String processId;
     private String outputName;
 
-    @Column(name = "PROCESS_ID")
-    @Basic
     @Id
+    @Column(name = "PROCESS_ID")
     public String getProcessId() {
         return processId;
     }
@@ -44,8 +43,8 @@ public class ProcessOutputPK implements Serializable {
         this.processId = processId;
     }
 
-    @Column(name = "OUTPUT_NAME")
     @Id
+    @Column(name = "OUTPUT_NAME")
     public String getOutputName() {
         return outputName;
     }
