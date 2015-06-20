@@ -127,6 +127,7 @@ public abstract class AbstractExpCatResource implements ExperimentCatResource {
 
     //Experiment Error table
     public final class ExperimentErrorConstants {
+        public static final String ERROR_ID = "errorId";
         public static final String EXPERIMENT_ID = "experimentId";
         public static final String CREATION_TIME = "creationTime";
         public static final String ACTUAL_ERROR_MESSAGE = "actualErrorMsg";
@@ -213,6 +214,7 @@ public abstract class AbstractExpCatResource implements ExperimentCatResource {
 
     // Task Status table
     public final class TaskStatusConstants {
+        public static final String STATUS_ID = "statusId";
         public static final String TASK_ID = "taskId";
         public static final String STATE = "state";
         public static final String TIME_OF_STATE_CHANGE = "timeOfStateChange";
@@ -221,6 +223,7 @@ public abstract class AbstractExpCatResource implements ExperimentCatResource {
 
     // Process Status table
     public final class ProcessStatusConstants {
+        public static final String STATUS_ID = "statusId";
         public static final String PROCESS_ID = "processId";
         public static final String STATE = "state";
         public static final String TIME_OF_STATE_CHANGE = "timeOfStateChange";
@@ -229,6 +232,7 @@ public abstract class AbstractExpCatResource implements ExperimentCatResource {
 
     // Experiment Status table
     public final class ExperimentStatusConstants {
+        public static final String STATUS_ID = "statusId";
         public static final String EXPERIMENT_ID = "experimentId";
         public static final String STATE = "state";
         public static final String TIME_OF_STATE_CHANGE = "timeOfStateChange";

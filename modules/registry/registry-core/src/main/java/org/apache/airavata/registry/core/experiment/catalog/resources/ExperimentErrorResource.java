@@ -25,6 +25,7 @@ import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
 import org.apache.airavata.registry.core.experiment.catalog.model.ExperimentError;
+import org.apache.airavata.registry.core.experiment.catalog.model.ExperimentErrorPK;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,10 +130,13 @@ public class ExperimentErrorResource extends AbstractExpCatResource {
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
             ExperimentError experimentError;
-            if(experimentId == null || actualErrorMessage == null){
-                throw new RegistryException("Does not have the experiment id or error message");
+            if(experimentId == null || errorId == null){
+                throw new RegistryException("Does not have the experiment id or error id");
             }
-            experimentError = em.find(ExperimentError.class, experimentId);
+            ExperimentErrorPK experimentErrorPK = new ExperimentErrorPK();
+            experimentErrorPK.setExperimentId(experimentId);
+            experimentErrorPK.setErrorId(errorId);
+            experimentError = em.find(ExperimentError.class, experimentErrorPK);
             if(experimentError == null){
                 experimentError = new ExperimentError();
             }

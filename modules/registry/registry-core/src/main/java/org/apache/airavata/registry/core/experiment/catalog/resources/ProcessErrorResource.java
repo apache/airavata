@@ -25,6 +25,7 @@ import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
 import org.apache.airavata.registry.core.experiment.catalog.model.ProcessError;
+import org.apache.airavata.registry.core.experiment.catalog.model.ProcessErrorPK;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,10 +130,13 @@ public class ProcessErrorResource extends AbstractExpCatResource {
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
             ProcessError processError;
-            if(processId == null || actualErrorMessage == null){
-                throw new RegistryException("Does not have the process id or error message");
+            if(processId == null || errorId == null){
+                throw new RegistryException("Does not have the process id or error id");
             }
-            processError = em.find(ProcessError.class, processId);
+            ProcessErrorPK processErrorPK = new ProcessErrorPK();
+            processErrorPK.setProcessId(processId);
+            processErrorPK.setErrorId(errorId);
+            processError = em.find(ProcessError.class, processErrorPK);
             if(processError == null){
                 processError = new ProcessError();
             }

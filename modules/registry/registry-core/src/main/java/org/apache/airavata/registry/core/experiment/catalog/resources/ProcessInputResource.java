@@ -25,6 +25,7 @@ import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
 import org.apache.airavata.registry.core.experiment.catalog.model.ProcessInput;
+import org.apache.airavata.registry.core.experiment.catalog.model.ProcessInputPK;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +35,6 @@ import java.util.List;
 
 public class ProcessInputResource extends AbstractExpCatResource {
     private static final Logger logger = LoggerFactory.getLogger(ProcessInputResource.class);
-    private int processInputId;
     private String processId;
     private String inputName;
     private String inputValue;
@@ -47,14 +47,6 @@ public class ProcessInputResource extends AbstractExpCatResource {
     private Boolean isRequired;
     private Boolean requiredToAddedToCmd;
     private Boolean dataStaged;
-
-    public int getProcessInputId() {
-        return processInputId;
-    }
-
-    public void setProcessInputId(int processInputId) {
-        this.processInputId = processInputId;
-    }
 
     public String getProcessId() {
         return processId;
@@ -185,7 +177,10 @@ public class ProcessInputResource extends AbstractExpCatResource {
                 throw new RegistryException("Does not have the process id");
             }
             ProcessInput processInput;
-            processInput = em.find(ProcessInput.class, processInputId);
+            ProcessInputPK processInputPk = new ProcessInputPK();
+            processInputPk.setProcessId(processId);
+            processInputPk.setInputName(inputName);
+            processInput = em.find(ProcessInput.class, processInputPk);
             if(processInput == null){
                 processInput = new ProcessInput();
             }

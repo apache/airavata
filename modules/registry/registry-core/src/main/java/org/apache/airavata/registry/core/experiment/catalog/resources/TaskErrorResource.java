@@ -25,6 +25,7 @@ import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
 import org.apache.airavata.registry.core.experiment.catalog.model.TaskError;
+import org.apache.airavata.registry.core.experiment.catalog.model.TaskErrorPK;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,13 +130,17 @@ public class TaskErrorResource extends AbstractExpCatResource {
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
             TaskError taskError;
-            if(taskId == null || actualErrorMessage == null){
-                throw new RegistryException("Does not have the task id or error message");
+            if(taskId == null || errorId == null){
+                throw new RegistryException("Does not have the task id or error id");
             }
-            taskError = em.find(TaskError.class, taskId);
+            TaskErrorPK taskErrorPK = new TaskErrorPK();
+            taskErrorPK.setTaskId(taskId);
+            taskErrorPK.setErrorId(errorId);
+            taskError = em.find(TaskError.class, taskErrorPK);
             if(taskError == null){
                 taskError = new TaskError();
             }
+
             taskError.setTaskId(taskId);
             taskError.setActualErrorMessage(actualErrorMessage);
             taskError.setUserFriendlyMessage(userFriendlyMessage);

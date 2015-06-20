@@ -32,8 +32,8 @@ public class GatewayWorkerPK implements Serializable {
     private String gatewayId;
     private String userName;
 
-    @Column(name = "GATEWAY_ID")
     @Id
+    @Column(name = "GATEWAY_ID")
     public String getGatewayId() {
         return gatewayId;
     }
@@ -42,8 +42,9 @@ public class GatewayWorkerPK implements Serializable {
         this.gatewayId = gatewayId;
     }
 
-    @Column(name = "USER_NAME")
+
     @Id
+    @Column(name = "USER_NAME")
     public String getUserName() {
         return userName;
     }

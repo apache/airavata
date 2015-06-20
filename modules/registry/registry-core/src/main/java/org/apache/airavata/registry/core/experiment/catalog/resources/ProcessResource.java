@@ -146,13 +146,15 @@ public class ProcessResource extends AbstractExpCatResource {
             switch (type) {
                 case PROCESS_ERROR:
                     generator = new QueryGenerator(PROCESS_ERROR);
-                    generator.setParameter(ProcessErrorConstants.PROCESS_ID, name);
+                    generator.setParameter(ProcessErrorConstants.ERROR_ID, name);
+                    generator.setParameter(ProcessErrorConstants.PROCESS_ID, processId);
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
                 case PROCESS_STATUS:
                     generator = new QueryGenerator(PROCESS_STATUS);
-                    generator.setParameter(ProcessStatusConstants.PROCESS_ID, name);
+                    generator.setParameter(ProcessStatusConstants.STATUS_ID, name);
+                    generator.setParameter(ProcessStatusConstants.PROCESS_ID, processId);
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
@@ -213,7 +215,8 @@ public class ProcessResource extends AbstractExpCatResource {
             switch (type) {
                 case PROCESS_STATUS:
                     generator = new QueryGenerator(PROCESS_STATUS);
-                    generator.setParameter(ProcessStatusConstants.PROCESS_ID, name);
+                    generator.setParameter(ProcessStatusConstants.STATUS_ID, name);
+                    generator.setParameter(ProcessStatusConstants.PROCESS_ID, processId);
                     q = generator.selectQuery(em);
                     ProcessStatus status = (ProcessStatus) q.getSingleResult();
                     ProcessStatusResource statusResource = (ProcessStatusResource) Utils.getResource(ResourceType.PROCESS_STATUS, status);
@@ -222,7 +225,8 @@ public class ProcessResource extends AbstractExpCatResource {
                     return statusResource;
                 case PROCESS_ERROR:
                     generator = new QueryGenerator(PROCESS_ERROR);
-                    generator.setParameter(ProcessErrorConstants.PROCESS_ID, name);
+                    generator.setParameter(ProcessErrorConstants.ERROR_ID, name);
+                    generator.setParameter(ProcessErrorConstants.PROCESS_ID, processId);
                     q = generator.selectQuery(em);
                     ProcessError processError = (ProcessError) q.getSingleResult();
                     ProcessErrorResource processErrorResource = (ProcessErrorResource) Utils.getResource(ResourceType.PROCESS_ERROR, processError);
@@ -340,6 +344,34 @@ public class ProcessResource extends AbstractExpCatResource {
                         }
                     }
                     break;
+                case PROCESS_ERROR:
+                    generator = new QueryGenerator(PROCESS_ERROR);
+                    generator.setParameter(ProcessErrorConstants.PROCESS_ID, processId);
+                    q = generator.selectQuery(em);
+                    results = q.getResultList();
+                    if (results.size() != 0) {
+                        for (Object result : results) {
+                            ProcessError processError = (ProcessError) result;
+                            ProcessErrorResource processErrorResource =
+                                    (ProcessErrorResource) Utils.getResource(ResourceType.PROCESS_ERROR, processError);
+                            resourceList.add(processErrorResource);
+                        }
+                    }
+                    break;
+                case PROCESS_STATUS:
+                    generator = new QueryGenerator(PROCESS_STATUS);
+                    generator.setParameter(ProcessStatusConstants.PROCESS_ID, processId);
+                    q = generator.selectQuery(em);
+                    results = q.getResultList();
+                    if (results.size() != 0) {
+                        for (Object result : results) {
+                            ProcessStatus processStatus = (ProcessStatus) result;
+                            ProcessStatusResource processStatusResource =
+                                    (ProcessStatusResource) Utils.getResource(ResourceType.PROCESS_STATUS, processStatus);
+                            resourceList.add(processStatusResource);
+                        }
+                    }
+                    break;
                 default:
                     em.getTransaction().commit();
                     em.close();
@@ -416,14 +448,54 @@ public class ProcessResource extends AbstractExpCatResource {
         return outputResources;
     }
 
+    public List<ProcessStatusResource> getProcessStatuses() throws RegistryException{
+        List<ProcessStatusResource> processStatusResources = new ArrayList();
+        List<ExperimentCatResource> resources = get(ResourceType.PROCESS_STATUS);
+        for (ExperimentCatResource resource : resources) {
+            ProcessStatusResource statusResource = (ProcessStatusResource) resource;
+            processStatusResources.add(statusResource);
+        }
+        return processStatusResources;
+    }
+
     public ProcessStatusResource getProcessStatus() throws RegistryException{
-        ExperimentCatResource resource = get(ResourceType.PROCESS_STATUS, processId);
-        return (ProcessStatusResource)resource;
+        List<ProcessStatusResource> processStatusResources = getProcessStatuses();
+        if(processStatusResources.size() == 0){
+            return null;
+        }else{
+            ProcessStatusResource max = processStatusResources.get(0);
+            for(int i=1; i<processStatusResources.size();i++){
+                if(processStatusResources.get(i).getTimeOfStateChange().after(max.getTimeOfStateChange())){
+                    max = processStatusResources.get(i);
+                }
+            }
+            return max;
+        }
+    }
+
+    public List<ProcessErrorResource> getProcessErrors() throws RegistryException{
+        List<ProcessErrorResource> processErrorResources = new ArrayList();
+        List<ExperimentCatResource> resources = get(ResourceType.PROCESS_ERROR);
+        for (ExperimentCatResource resource : resources) {
+            ProcessErrorResource errorResource = (ProcessErrorResource) resource;
+            processErrorResources.add(errorResource);
+        }
+        return processErrorResources;
     }
 
     public ProcessErrorResource getProcessError() throws RegistryException{
-        ExperimentCatResource resource = get(ResourceType.PROCESS_ERROR, processId);
-        return (ProcessErrorResource)resource;
+        List<ProcessErrorResource> processErrorResources = getProcessErrors();
+        if(processErrorResources.size() == 0){
+            return null;
+        }else{
+            ProcessErrorResource max = processErrorResources.get(0);
+            for(int i=1; i<processErrorResources.size();i++){
+                if(processErrorResources.get(i).getCreationTime().after(max.getCreationTime())){
+                    max = processErrorResources.get(i);
+                }
+            }
+            return max;
+        }
     }
 
     public ProcessResourceScheduleResource getProcessResourceSchedule() throws RegistryException{

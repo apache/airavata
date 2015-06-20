@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TaskResource extends AbstractExpCatResource {
@@ -130,13 +131,15 @@ public class TaskResource extends AbstractExpCatResource {
             switch (type) {
                 case TASK_STATUS:
                     generator = new QueryGenerator(TASK_STATUS);
-                    generator.setParameter(TaskStatusConstants.TASK_ID, name);
+                    generator.setParameter(TaskStatusConstants.STATUS_ID, name);
+                    generator.setParameter(TaskStatusConstants.TASK_ID, taskId);
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
                 case TASK_ERROR:
                     generator = new QueryGenerator(TASK_ERROR);
-                    generator.setParameter(TaskErrorConstants.TASK_ID, name);
+                    generator.setParameter(TaskErrorConstants.ERROR_ID, name);
+                    generator.setParameter(TaskErrorConstants.TASK_ID, taskId);
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
@@ -170,7 +173,8 @@ public class TaskResource extends AbstractExpCatResource {
             switch (type) {
                 case TASK_STATUS:
                     generator = new QueryGenerator(TASK_STATUS);
-                    generator.setParameter(TaskStatusConstants.TASK_ID, name);
+                    generator.setParameter(TaskStatusConstants.STATUS_ID, name);
+                    generator.setParameter(TaskStatusConstants.TASK_ID, taskId);
                     q = generator.selectQuery(em);
                     TaskStatus status = (TaskStatus) q.getSingleResult();
                     TaskStatusResource statusResource = (TaskStatusResource) Utils.getResource(ResourceType.TASK_STATUS, status);
@@ -180,6 +184,7 @@ public class TaskResource extends AbstractExpCatResource {
                 case TASK_ERROR:
                     generator = new QueryGenerator(TASK_ERROR);
                     generator.setParameter(TaskErrorConstants.ERROR_ID, name);
+                    generator.setParameter(TaskErrorConstants.TASK_ID, taskId);
                     q = generator.selectQuery(em);
                     TaskError error = (TaskError) q.getSingleResult();
                     TaskErrorResource errorResource = (TaskErrorResource) Utils.getResource(
@@ -209,8 +214,63 @@ public class TaskResource extends AbstractExpCatResource {
 
     
     public List<ExperimentCatResource> get(ResourceType type) throws RegistryException{
-        logger.error("Unsupported resource type for task resource.", new UnsupportedOperationException());
-        throw new UnsupportedOperationException();
+        List<ExperimentCatResource> resourceList = new ArrayList<ExperimentCatResource>();
+        EntityManager em = null;
+        try {
+            em = ExpCatResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            Query q;
+            QueryGenerator generator;
+            List results;
+            switch (type) {
+                case TASK_ERROR:
+                    generator = new QueryGenerator(TASK_ERROR);
+                    generator.setParameter(TaskErrorConstants.TASK_ID, taskId);
+                    q = generator.selectQuery(em);
+                    results = q.getResultList();
+                    if (results.size() != 0) {
+                        for (Object result : results) {
+                            TaskError taskError = (TaskError) result;
+                            TaskErrorResource taskErrorResource =
+                                    (TaskErrorResource) Utils.getResource(ResourceType.TASK_ERROR, taskError);
+                            resourceList.add(taskErrorResource);
+                        }
+                    }
+                    break;
+                case TASK_STATUS:
+                    generator = new QueryGenerator(TASK_STATUS);
+                    generator.setParameter(TaskStatusConstants.TASK_ID, taskId);
+                    q = generator.selectQuery(em);
+                    results = q.getResultList();
+                    if (results.size() != 0) {
+                        for (Object result : results) {
+                            TaskStatus taskStatus = (TaskStatus) result;
+                            TaskStatusResource taskStatusResource =
+                                    (TaskStatusResource) Utils.getResource(ResourceType.TASK_STATUS, taskStatus);
+                            resourceList.add(taskStatusResource);
+                        }
+                    }
+                    break;
+                default:
+                    em.getTransaction().commit();
+                    em.close();
+                    logger.error("Unsupported resource type for task resource.", new UnsupportedOperationException());
+                    throw new UnsupportedOperationException();
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()){
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+        return resourceList;
     }
 
     
@@ -218,30 +278,22 @@ public class TaskResource extends AbstractExpCatResource {
         EntityManager em = null;
         try {
             em = ExpCatResourceUtils.getEntityManager();
-            Task existingTask = em.find(Task.class, taskId);
+            Task task = em.find(Task.class, taskId);
             em.close();
 
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
-            if (existingTask != null) {
-                existingTask.setTaskType(taskType);
-                existingTask.setParentProcessId(parentProcessId);
-                existingTask.setCreationTime(creationTime);
-                existingTask.setLastUpdateTime(lastUpdateTime);
-                existingTask.setTaskDetail(taskDetail);
-                existingTask.setTaskInternalStore(taskInternalStore);
-                em.merge(existingTask);
-            } else {
-                Task task = new Task();
-                task.setTaskId(taskId);
-                task.setTaskType(taskType);
-                task.setParentProcessId(parentProcessId);
-                task.setCreationTime(creationTime);
-                task.setLastUpdateTime(lastUpdateTime);
-                task.setTaskDetail(taskDetail);
-                task.setTaskInternalStore(taskInternalStore);
-                em.persist(task);
+            if(task == null){
+                task = new Task();
             }
+            task.setTaskId(taskId);
+            task.setTaskType(taskType);
+            task.setParentProcessId(parentProcessId);
+            task.setCreationTime(creationTime);
+            task.setLastUpdateTime(lastUpdateTime);
+            task.setTaskDetail(taskDetail);
+            task.setTaskInternalStore(taskInternalStore);
+            em.persist(task);
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {
@@ -257,17 +309,53 @@ public class TaskResource extends AbstractExpCatResource {
         }
     }
 
-    public TaskStatusResource getTaskStatus() throws RegistryException{
-        ExperimentCatResource resource = get(ResourceType.TASK_STATUS, taskId);
-        TaskStatusResource status = (TaskStatusResource) resource;
-        if (status.getState() == null || status.getState().equals("") ){
-            status.setState("UNKNOWN");
+    public List<TaskStatusResource> getTaskStatuses() throws RegistryException{
+        List<TaskStatusResource> taskStatusResources = new ArrayList();
+        List<ExperimentCatResource> resources = get(ResourceType.TASK_STATUS);
+        for (ExperimentCatResource resource : resources) {
+            TaskStatusResource statusResource = (TaskStatusResource) resource;
+            taskStatusResources.add(statusResource);
         }
-        return status;
+        return taskStatusResources;
     }
 
-    public TaskErrorResource getTaskError () throws RegistryException{
-        ExperimentCatResource resource = get(ResourceType.TASK_ERROR, taskId);;
-        return (TaskErrorResource) resource;
+    public TaskStatusResource getTaskStatus() throws RegistryException{
+        List<TaskStatusResource> taskStatusResources = getTaskStatuses();
+        if(taskStatusResources.size() == 0){
+            return null;
+        }else{
+            TaskStatusResource max = taskStatusResources.get(0);
+            for(int i=1; i<taskStatusResources.size();i++){
+                if(taskStatusResources.get(i).getTimeOfStateChange().after(max.getTimeOfStateChange())){
+                    max = taskStatusResources.get(i);
+                }
+            }
+            return max;
+        }
+    }
+
+    public List<TaskErrorResource> getTaskErrors() throws RegistryException{
+        List<TaskErrorResource> taskErrorResources = new ArrayList();
+        List<ExperimentCatResource> resources = get(ResourceType.TASK_ERROR);
+        for (ExperimentCatResource resource : resources) {
+            TaskErrorResource errorResource = (TaskErrorResource) resource;
+            taskErrorResources.add(errorResource);
+        }
+        return taskErrorResources;
+    }
+
+    public TaskErrorResource getTaskError() throws RegistryException{
+        List<TaskErrorResource> taskErrorResources = getTaskErrors();
+        if(taskErrorResources.size() == 0){
+            return null;
+        }else{
+            TaskErrorResource max = taskErrorResources.get(0);
+            for(int i=1; i<taskErrorResources.size();i++){
+                if(taskErrorResources.get(i).getCreationTime().after(max.getCreationTime())){
+                    max = taskErrorResources.get(i);
+                }
+            }
+            return max;
+        }
     }
 }

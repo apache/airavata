@@ -23,7 +23,6 @@ package org.apache.airavata.registry.core.experiment.catalog.model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import java.io.Serializable;
@@ -33,9 +32,8 @@ public class ExperimentInputPK implements Serializable {
     private String experimentId;
     private String inputName;
 
-    @Column(name = "EXPERIMENT_ID")
-    @Basic
     @Id
+    @Column(name = "EXPERIMENT_ID")
     public String getExperimentId() {
         return experimentId;
     }
@@ -44,9 +42,8 @@ public class ExperimentInputPK implements Serializable {
         this.experimentId = experimentId;
     }
 
-    @Column(name = "INPUT_NAME")
-    @Basic
     @Id
+    @Column(name = "INPUT_NAME")
     public String getInputName() {
         return inputName;
     }

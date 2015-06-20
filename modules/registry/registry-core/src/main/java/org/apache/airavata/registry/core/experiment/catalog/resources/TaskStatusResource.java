@@ -25,6 +25,7 @@ import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
 import org.apache.airavata.registry.core.experiment.catalog.model.TaskStatus;
+import org.apache.airavata.registry.core.experiment.catalog.model.TaskStatusPK;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,10 +36,19 @@ import java.util.List;
 
 public class TaskStatusResource extends AbstractExpCatResource {
     private static final Logger logger = LoggerFactory.getLogger(TaskStatusResource.class);
+    private String statusId;
     private String taskId;
     private String state;
     private Timestamp timeOfStateChange;
     private String reason;
+
+    public String getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusId(String statusId) {
+        this.statusId = statusId;
+    }
 
     public String getTaskId() {
         return taskId;
@@ -102,10 +112,13 @@ public class TaskStatusResource extends AbstractExpCatResource {
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
             TaskStatus taskStatus;
-            if(taskId == null || state == null){
-                throw new RegistryException("Does not have the task id or state");
+            if(taskId == null || statusId == null){
+                throw new RegistryException("Does not have the task id or status id");
             }
-            taskStatus = em.find(TaskStatus.class, taskId);
+            TaskStatusPK taskStatusPK = new TaskStatusPK();
+            taskStatusPK.setTaskId(taskId);
+            taskStatusPK.setStatusId(statusId);
+            taskStatus = em.find(TaskStatus.class, taskStatusPK);
             if(taskStatus == null){
                 taskStatus = new TaskStatus();
             }

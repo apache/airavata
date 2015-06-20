@@ -23,7 +23,6 @@ package org.apache.airavata.registry.core.experiment.catalog.model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Id;
 import java.io.Serializable;
@@ -33,9 +32,8 @@ public class ProcessInputPK implements Serializable {
     private String processId;
     private String inputName;
 
-    @Column(name = "PROCESS_ID")
-    @Basic
     @Id
+    @Column(name = "PROCESS_ID")
     public String getProcessId() {
         return processId;
     }
@@ -44,9 +42,8 @@ public class ProcessInputPK implements Serializable {
         this.processId = processId;
     }
 
-    @Column(name = "INPUT_NAME")
-    @Basic
     @Id
+    @Column(name = "INPUT_NAME")
     public String getInputName() {
         return inputName;
     }

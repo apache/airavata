@@ -32,8 +32,8 @@ public class ProcessErrorPK implements Serializable {
     private String errorId;
     private String processId;
 
-    @Column(name = "ERROR_ID")
     @Id
+    @Column(name = "ERROR_ID")
     public String getErrorId() {
         return errorId;
     }
@@ -42,8 +42,8 @@ public class ProcessErrorPK implements Serializable {
         this.errorId = errorId;
     }
 
-    @Column(name = "PROCESS_ID")
     @Id
+    @Column(name = "PROCESS_ID")
     public String getProcessId() {
         return processId;
     }

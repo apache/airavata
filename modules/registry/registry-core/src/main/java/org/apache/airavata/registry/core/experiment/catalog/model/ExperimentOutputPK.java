@@ -33,9 +33,8 @@ public class ExperimentOutputPK implements Serializable {
     private String experimentId;
     private String outputName;
 
-    @Column(name = "EXPERIMENT_ID")
-    @Basic
     @Id
+    @Column(name = "EXPERIMENT_ID")
     public String getExperimentId() {
         return experimentId;
     }
@@ -44,8 +43,8 @@ public class ExperimentOutputPK implements Serializable {
         this.experimentId = experimentId;
     }
 
-    @Column(name = "OUTPUT_NAME")
     @Id
+    @Column(name = "OUTPUT_NAME")
     public String getOutputName() {
         return outputName;
     }
