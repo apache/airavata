@@ -211,6 +211,9 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                 case USER_CONFIGURATION_DATA:
                     experimentRegistry.updateUserConfigData((UserConfigurationDataModel) newObjectToUpdate, (String) identifier);
                     break;
+                case EXPERIMENT_INPUT:
+                    experimentRegistry.updateExpInputs((List<InputDataObjectType>) newObjectToUpdate, (String) identifier);
+                    break;
                 case EXPERIMENT_OUTPUT:
                     experimentRegistry.updateExpOutputs((List<OutputDataObjectType>) newObjectToUpdate, (String) identifier);
                     break;
@@ -218,22 +221,28 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     experimentRegistry.updateExperimentStatus((ExperimentStatus) newObjectToUpdate, (String) identifier);
                     break;
                 case EXPERIMENT_ERROR:
-                    experimentRegistry.updateExperimentStatus((ExperimentStatus) newObjectToUpdate, (String) identifier);
+                    experimentRegistry.updateExperimentError((ErrorModel) newObjectToUpdate, (String) identifier);
+                    break;
+                case PROCESS:
+                    experimentRegistry.updateProcess((ProcessModel) newObjectToUpdate, (String) identifier);
                     break;
                 case PROCESS_RESOURCE_SCHEDULE:
-                    experimentRegistry.updateExpOutputs((List<OutputDataObjectType>) newObjectToUpdate, (String) identifier);
+                    experimentRegistry.updateProcessResourceSchedule((ComputationalResourceSchedulingModel) newObjectToUpdate, (String) identifier);
                     break;
                 case PROCESS_STATUS:
-                    experimentRegistry.updateExperimentStatus((ExperimentStatus) newObjectToUpdate, (String) identifier);
+                    experimentRegistry.updateProcessStatus((ProcessStatus) newObjectToUpdate, (String) identifier);
                     break;
                 case PROCESS_ERROR:
-                    experimentRegistry.updateExperimentStatus((ExperimentStatus) newObjectToUpdate, (String) identifier);
+                    experimentRegistry.updateProcessError((ErrorModel) newObjectToUpdate, (String) identifier);
+                    break;
+                case TASK:
+                    experimentRegistry.updateTask((TaskModel) newObjectToUpdate, (String) identifier);
                     break;
                 case TASK_STATUS:
-                    experimentRegistry.updateExperimentStatus((ExperimentStatus) newObjectToUpdate, (String) identifier);
+                    experimentRegistry.updateTaskStatus((TaskStatus) newObjectToUpdate, (String) identifier);
                     break;
                 case TASK_ERROR:
-                    experimentRegistry.updateExperimentStatus((ExperimentStatus) newObjectToUpdate, (String) identifier);
+                    experimentRegistry.updateTaskError((ErrorModel) newObjectToUpdate, (String) identifier);
                     break;
                 default:
                     logger.error("Unsupported data type...", new UnsupportedOperationException());
@@ -243,7 +252,6 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
             logger.error("Error while updating the resource " + dataType.toString(), new RegistryException(e));
             throw new RegistryException("Error while updating the resource.." + dataType.toString(), e);
         }
-
     }
 
     /**

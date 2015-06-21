@@ -467,88 +467,357 @@ public class ExperimentRegistry {
 
 
     //CPI Update Methods
+    public void updateExperiment(ExperimentModel experiment, String expId) throws RegistryException {
+        try {
+            if (!workerResource.isProjectExists(experiment.getProjectId())) {
+                logger.error("Project does not exist in the system..");
+                throw new Exception("Project does not exist in the system, Please create the project first...");
+            }
+            ExperimentResource existingExperiment = gatewayResource.getExperiment(expId);
+            existingExperiment.setExperimentName(experiment.getExperimentName());
+            existingExperiment.setUserName(experiment.getUserName());
+            existingExperiment.setGatewayExecutionId(gatewayResource.getGatewayId());
+            existingExperiment.setGatewayExecutionId(experiment.getGatewayExecutionId());
+            existingExperiment.setProjectId(experiment.getProjectId());
+            existingExperiment.setCreationTime(AiravataUtils.getTime(experiment.getCreationTime()));
+            existingExperiment.setDescription(experiment.getDescription());
+            existingExperiment.setApplicationId(experiment.getExecutionId());
+            existingExperiment.setEnableEmailNotification(experiment.isEnableEmailNotification());
 
-    public void updateExpInputs(List<InputDataObjectType> exInputs, ExperimentResource experimentResource) throws RegistryException {
-//        try {
-//            List<ExperimentInputResource> experimentInputs = experimentResource.getExperimentInputs();
-//            for (InputDataObjectType input : exInputs) {
-//                for (ExperimentInputResource exinput : experimentInputs) {
-//                    if (exinput.getExperimentKey().equals(input.getName())) {
-//                        exinput.setValue(input.getValue());
-//                        if (input.getType() != null) {
-//                            exinput.setDataType(input.getType().toString());
-//                        }
-//                        exinput.setMetadata(input.getMetaData());
-//                        exinput.setAppArgument(input.getApplicationArgument());
-//                        exinput.setInputOrder(input.getInputOrder());
-//                        exinput.setRequired(input.isIsRequired());
-//                        exinput.setRequiredToCMD(input.isRequiredToAddedToCommandLine());
-//                        exinput.save();
-//                    }
-//                }
-//            }
-//        } catch (Exception e) {
-//            logger.error("Unable to update experiment inputs", e);
-//            throw new RegistryException(e);
-//        }
+            existingExperiment.save();
 
+            UserConfigurationDataModel userConfigurationData = experiment.getUserConfigurationData();
+            if (userConfigurationData != null) {
+                updateUserConfigData(userConfigurationData, expId);
+            }
+
+            List<InputDataObjectType> experimentInputs = experiment.getExperimentInputs();
+            if (experimentInputs != null && !experimentInputs.isEmpty()) {
+                updateExpInputs(experimentInputs, expId);
+            }
+
+            List<OutputDataObjectType> experimentOutputs = experiment.getExperimentOutputs();
+            if (experimentOutputs != null && !experimentOutputs.isEmpty()) {
+                updateExpOutputs(experimentOutputs, expId);
+            }
+            ExperimentStatus experimentStatus = experiment.getExperimentStatus();
+            if (experimentStatus != null) {
+                updateExperimentStatus(experimentStatus, expId);
+            }
+            List<ErrorModel> errors = experiment.getErrors();
+            if (errors != null && !errors.isEmpty()) {
+                for (ErrorModel errror : errors) {
+                    updateExperimentError(errror, expId);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error while updating experiment...", e);
+            throw new RegistryException(e);
+        }
+    }
+
+    public void updateExpInputs(List<InputDataObjectType> exInputs, String expID) throws RegistryException {
+        try {
+            ExperimentResource experimentResource = new ExperimentResource();
+            experimentResource.setExperimentId(expID);
+            List<ExperimentInputResource> experimentInputs = experimentResource.getExperimentInputs();
+            for (InputDataObjectType input : exInputs) {
+                for (ExperimentInputResource exinput : experimentInputs) {
+                    if (exinput.getInputName().equals(input.getName())) {
+                        exinput.setInputValue(input.getValue());
+                        exinput.setExperimentId(expID);
+                        if (input.getType() != null) {
+                            exinput.setDataType(input.getType().toString());
+                        }
+                        exinput.setMetadata(input.getMetaData());
+                        exinput.setApplicationArgument(input.getApplicationArgument());
+                        exinput.setInputOrder(input.getInputOrder());
+                        exinput.setIsRequired(input.isIsRequired());
+                        exinput.setRequiredToAddedToCmd(input.isRequiredToAddedToCommandLine());
+                        exinput.save();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Unable to update experiment inputs", e);
+            throw new RegistryException(e);
+        }
     }
 
     public void updateExpOutputs(List<OutputDataObjectType> exOutput, String expId) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = gatewayResource.getExperiment(expId);
-//            List<ExperimentOutputResource> existingExpOutputs = experiment.getExperimentOutputs();
-//            for (OutputDataObjectType output : exOutput) {
-//                for (ExperimentOutputResource resource : existingExpOutputs) {
-//                    if (resource.getExperimentKey().equals(output.getName())) {
-//                        resource.setExperimentId(expId);
-//                        resource.setExperimentKey(output.getName());
-//                        resource.setValue(output.getValue());
-//                        if (output.getType() != null) {
-//                            resource.setDataType(output.getType().toString());
-//                        }
-//                        resource.setRequired(output.isIsRequired());
-//                        resource.setRequiredToCMD(output.isRequiredToAddedToCommandLine());
-//                        resource.setDataMovement(output.isDataMovement());
-//                        resource.setDataNameLocation(output.getLocation());
-//                        resource.setAppArgument(output.getApplicationArgument());
-//                        resource.setSearchQuery(output.getSearchQuery());
-////                        resource.setMetadata(output.getMetaData());
-//                        resource.save();
-//                    }
-//                }
-//            }
-//        } catch (Exception e) {
-//            logger.error("Error while updating experiment outputs", e);
-//            throw new RegistryException(e);
-//        }
+        try {
+            ExperimentResource experiment = gatewayResource.getExperiment(expId);
+            List<ExperimentOutputResource> existingExpOutputs = experiment.getExperimentOutputs();
+            for (OutputDataObjectType output : exOutput) {
+                for (ExperimentOutputResource resource : existingExpOutputs) {
+                    if (resource.getOutputName().equals(output.getName())) {
+                        resource.setExperimentId(expId);
+                        resource.setOutputName(output.getName());
+                        resource.setOutputValue(output.getValue());
+                        if (output.getType() != null) {
+                            resource.setDataType(output.getType().toString());
+                        }
+                        resource.setIsRequired(output.isIsRequired());
+                        resource.setRequiredToAddedToCmd(output.isRequiredToAddedToCommandLine());
+                        resource.setDataMovement(output.isDataMovement());
+                        resource.setLocation(output.getLocation());
+                        resource.setApplicationArgument(output.getApplicationArgument());
+                        resource.setSearchQuery(output.getSearchQuery());
+                        resource.save();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error while updating experiment outputs", e);
+            throw new RegistryException(e);
+        }
     }
 
     public String updateExperimentStatus(ExperimentStatus experimentStatus, String expId) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = gatewayResource.getExperiment(expId);
-//            StatusResource status = experiment.getExperimentStatus();
-//            if (status == null) {
-//                status = (StatusResource) experiment.create(ResourceType.STATUS);
-//            }
-//            status.setExperimentId(expId);
-//            status.setStatusUpdateTime(AiravataUtils.getTime(experimentStatus.getTimeOfStateChange()));
-////            if (status.getState() == null) {
-////                status.setState(ExperimentState.UNKNOWN.name());
-////            }
-//            if (isValidStatusTransition(ExperimentState.valueOf(status.getState()), experimentStatus.getState())) {
-//                status.setState(experimentStatus.getState().toString());
-//                status.setStatusType(StatusType.EXPERIMENT.toString());
-//                status.save();
-//                logger.debug(expId, "Updated experiment {} status to {}.", expId, experimentStatus.toString());
-//            }
-//        } catch (Exception e) {
-//            logger.error(expId, "Error while updating experiment status...", e);
-//            throw new RegistryException(e);
-//        }
-//        return expId;
-        return null;
+        return addExperimentStatus(experimentStatus, expId);
     }
+
+    public String updateExperimentError(ErrorModel experimentError, String expId) throws RegistryException {
+        return addExperimentError(experimentError, expId);
+    }
+
+    public String updateUserConfigData(UserConfigurationDataModel configurationData, String experimentId) throws RegistryException {
+        try {
+            ExperimentResource experimentResource = new ExperimentResource();
+            experimentResource.setExperimentId(experimentId);
+            UserConfigurationDataResource configDataResource = experimentResource.getUserConfigurationDataResource();
+            configDataResource.setExperimentId(experimentId);
+            configDataResource.setAiravataAutoSchedule(configurationData.isAiravataAutoSchedule());
+            configDataResource.setOverrideManualScheduledParams(configurationData.isOverrideManualScheduledParams());
+            configDataResource.setShareExperimentPublically(configurationData.isShareExperimentPublicly());
+            configDataResource.setThrottleResources(configurationData.isThrottleResources());
+            configDataResource.setUserDn(configurationData.getUserDN());
+            configDataResource.setGenerateCert(configurationData.isGenerateCert());
+            configDataResource.setResourceHostId(configurationData.getComputationalResourceScheduling().getResourceHostId());
+            configDataResource.setTotalCpuCount(configurationData.getComputationalResourceScheduling().getTotalCPUCount());
+            configDataResource.setNodeCount(configurationData.getComputationalResourceScheduling().getNodeCount());
+            configDataResource.setNumberOfThreads(configurationData.getComputationalResourceScheduling().getNumberOfThreads());
+            configDataResource.setQueueName(configurationData.getComputationalResourceScheduling().getQueueName());
+            configDataResource.setWallTimeLimit(configurationData.getComputationalResourceScheduling().getWallTimeLimit());
+            configDataResource.setTotalPhysicalMemory(configurationData.getComputationalResourceScheduling().getTotalPhysicalMemory());
+            configDataResource.save();
+        } catch (Exception e) {
+            logger.error("Unable to save user config data", e);
+            throw new RegistryException(e);
+        }
+        return experimentId;
+    }
+
+    public void updateProcess(ProcessModel process, String experimentId) throws RegistryException {
+        try {
+            ExperimentResource experimentResource = new ExperimentResource();
+            experimentResource.setExperimentId(experimentId);
+            ProcessResource processResource = experimentResource.getProcess(process.getProcessId());
+            processResource.setProcessId(process.getProcessId());
+            processResource.setExperimentId(experimentId);
+            processResource.setCreationTime(AiravataUtils.getTime(process.getCreationTime()));
+            processResource.setLastUpdateTime(AiravataUtils.getTime(process.getLastUpdateTime()));
+            processResource.setProcessDetail(process.getProcessDetail());
+            processResource.setApplicationInterfaceId(process.getApplicationInterfaceId());
+            processResource.setTaskDag(process.getTaskDag());
+            processResource.save();
+
+            if(process.getResourceSchedule() != null) {
+                updateProcessResourceSchedule(process.getResourceSchedule(), process.getProcessId());
+            }
+            if(process.getProcessInputs() !=  null && process.getProcessInputs().size() > 0) {
+                updateProcessInputs(process.getProcessInputs(), process.getProcessId());
+            }
+            if(process.getProcessOutputs() != null && process.getProcessOutputs().size() > 0) {
+                updateProcessOutputs(process.getProcessOutputs(), process.getProcessId());
+            }
+            if(process.getProcessStatus() != null) {
+                updateProcessStatus(process.getProcessStatus(), process.getProcessId());
+            }
+            if(process.getProcessError() != null) {
+                updateProcessError(process.getProcessError(), process.getProcessId());
+            }
+            if(process.getTasks() != null && process.getTasks().size() > 0){
+                for(TaskModel task : process.getTasks()){
+                    updateTask(task, process.getProcessId());
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error while updating experiment...", e);
+            throw new RegistryException(e);
+        }
+    }
+
+    public String updateProcessResourceSchedule(ComputationalResourceSchedulingModel resourceSchedule, String processID) throws RegistryException {
+        try {
+            ProcessResource processResource = new ProcessResource();
+            processResource.setProcessId(processID);
+            ProcessResourceScheduleResource processResourceSchedule = processResource.getProcessResourceSchedule();
+            processResourceSchedule.setProcessId(processID);
+            processResourceSchedule.setResourceHostId(resourceSchedule.getResourceHostId());
+            processResourceSchedule.setTotalCpuCount(resourceSchedule.getTotalCPUCount());
+            processResourceSchedule.setNodeCount(resourceSchedule.getNodeCount());
+            processResourceSchedule.setNumberOfThreads(resourceSchedule.getNumberOfThreads());
+            processResourceSchedule.setQueueName(resourceSchedule.getQueueName());
+            processResourceSchedule.setWallTimeLimit(resourceSchedule.getWallTimeLimit());
+            processResourceSchedule.setTotalPhysicalMemory(resourceSchedule.getTotalPhysicalMemory());
+            processResourceSchedule.save();
+        } catch (Exception e) {
+            logger.error("Unable to save process resource schedule data", e);
+            throw new RegistryException(e);
+        }
+        return processID;
+    }
+
+    public void updateProcessInputs(List<InputDataObjectType> processInputs, String processID) throws RegistryException {
+        try {
+            ProcessResource processResource = new ProcessResource();
+            processResource.setProcessId(processID);
+            List<ProcessInputResource> existingProcessInputs = processResource.getProcessInputs();
+            for (InputDataObjectType input : processInputs) {
+                for (ProcessInputResource exinput : existingProcessInputs) {
+                    if (exinput.getInputName().equals(input.getName())) {
+                        exinput.setProcessId(processID);
+                        exinput.setInputValue(input.getValue());
+                        if (input.getType() != null) {
+                            exinput.setDataType(input.getType().toString());
+                        }
+                        exinput.setMetadata(input.getMetaData());
+                        exinput.setApplicationArgument(input.getApplicationArgument());
+                        exinput.setInputOrder(input.getInputOrder());
+                        exinput.setIsRequired(input.isIsRequired());
+                        exinput.setRequiredToAddedToCmd(input.isRequiredToAddedToCommandLine());
+                        exinput.save();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Unable to update experiment inputs", e);
+            throw new RegistryException(e);
+        }
+    }
+
+    public void updateProcessOutputs(List<OutputDataObjectType> processOutput, String processID) throws RegistryException {
+        try {
+            ProcessResource processResource = new ProcessResource();
+            processResource.setProcessId(processID);
+            List<ProcessOutputResource> existingProcessOutputs = processResource.getProcessOutputs();
+            for (OutputDataObjectType output : processOutput) {
+                for (ProcessOutputResource resource : existingProcessOutputs) {
+                    if (resource.getOutputName().equals(output.getName())) {
+                        resource.setProcessId(processID);
+                        resource.setOutputName(output.getName());
+                        resource.setOutputValue(output.getValue());
+                        if (output.getType() != null) {
+                            resource.setDataType(output.getType().toString());
+                        }
+                        resource.setIsRequired(output.isIsRequired());
+                        resource.setRequiredToAddedToCmd(output.isRequiredToAddedToCommandLine());
+                        resource.setDataMovement(output.isDataMovement());
+                        resource.setLocation(output.getLocation());
+                        resource.setApplicationArgument(output.getApplicationArgument());
+                        resource.setSearchQuery(output.getSearchQuery());
+                        resource.save();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error while updating process outputs", e);
+            throw new RegistryException(e);
+        }
+    }
+
+    public String updateProcessStatus(ProcessStatus processStatus, String processID) throws RegistryException {
+        return addProcessStatus(processStatus, processID);
+    }
+
+    public String updateProcessError(ErrorModel processError, String processID) throws RegistryException {
+        return addProcessError(processError, processID);
+    }
+
+    public String updateTask(TaskModel task, String processID) throws RegistryException {
+        try {
+            ProcessResource processResource = new ProcessResource();
+            processResource.setProcessId(processID);
+            TaskResource taskResource = processResource.getTask(task.getTaskId());
+            taskResource.setParentProcessId(getProcessID(processID));
+            taskResource.setTaskType(task.getTaskType().toString());
+            taskResource.setCreationTime(AiravataUtils.getTime(task.getCreationTime()));
+            taskResource.setLastUpdateTime(AiravataUtils.getTime(task.getLastUpdateTime()));
+            taskResource.setTaskDetail(task.getTaskDetail());
+            taskResource.setTaskInternalStore(task.getTaskInternalStore());
+            taskResource.save();
+
+            if(task.getTaskError() != null) {
+                updateTaskError(task.getTaskError(), task.getTaskId());
+            }
+            if(task.getTaskError() != null) {
+                updateTaskError(task.getTaskError(), task.getTaskId());
+            }
+        } catch (Exception e) {
+            logger.error(processID, "Error while adding task...", e);
+            throw new RegistryException(e);
+        }
+        return processID;
+    }
+
+    public String updateTaskStatus(TaskStatus taskStatus, String taskID) throws RegistryException {
+        return addTaskStatus(taskStatus, taskID);
+    }
+
+    public String updateTaskError(ErrorModel taskError, String taskID) throws RegistryException {
+        return addTaskError(taskError, taskID);
+    }
+
+    //TODO
+    public void updateExperimentField(String expID, String fieldName, Object value) throws RegistryException {
+        try {
+            ExperimentResource experiment = gatewayResource.getExperiment(expID);
+            if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME)) {
+                experiment.setExperimentName((String) value);
+                experiment.save();
+            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
+                experiment.setUserName((String) value);
+                experiment.save();
+            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_DESC)) {
+                experiment.setDescription((String) value);
+                experiment.save();
+            } else {
+                logger.error("Unsupported field type for Experiment");
+            }
+
+        } catch (Exception e) {
+            logger.error("Error while updating fields in experiment...", e);
+            throw new RegistryException(e);
+        }
+    }
+
+    public void updateUserConfigDataField(String expID, String fieldName, Object value) throws RegistryException {
+        try {
+            ExperimentResource experiment = gatewayResource.getExperiment(expID);
+            UserConfigurationDataResource exConfigData = (UserConfigurationDataResource)
+                    experiment.get(ResourceType.USER_CONFIGURATION_DATA, expID);
+            if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.AIRAVATA_AUTO_SCHEDULE)) {
+                exConfigData.setAiravataAutoSchedule((Boolean) value);
+                exConfigData.save();
+            } else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.OVERRIDE_MANUAL_PARAMS)) {
+                exConfigData.setOverrideManualScheduledParams((Boolean) value);
+                exConfigData.save();
+            } else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.SHARE_EXP)) {
+                exConfigData.setShareExperimentPublically((Boolean) value);
+                exConfigData.save();
+            } else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.COMPUTATIONAL_RESOURCE_SCHEDULING)) {
+                updateSchedulingData((ComputationalResourceSchedulingModel) value, experiment);
+            } else {
+                logger.error("Unsupported field type for Experiment config data");
+            }
+
+        } catch (Exception e) {
+            logger.error("Error while updating fields in experiment config...", e);
+            throw new RegistryException(e);
+        }
+    }
+
 
 //    public String addWorkflowNodeStatus(WorkflowNodeStatus status, CompositeIdentifier ids) throws RegistryException {
 //        try {
@@ -617,32 +886,6 @@ public class ExperimentRegistry {
 //            throw new RegistryException(e);
 //        }
         return null;
-    }
-
-    public void updateTaskStatus(TaskStatus status, String taskId) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
-//            WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
-//            TaskDetailResource taskDetail = workflowNode.getTaskDetail(taskId);
-//            StatusResource statusResource;
-//            if (taskDetail.isTaskStatusExist(taskId)) {
-//                workflowNode = experiment.getWorkflowNode(taskDetail.getNodeId());
-//                statusResource = workflowNode.getTaskStatus(taskId);
-//            } else {
-//                statusResource = (StatusResource) taskDetail.create(ResourceType.STATUS);
-//            }
-//            statusResource.setExperimentId(workflowNode.getExperimentId());
-//            statusResource.setNodeId(workflowNode.getNodeInstanceId());
-//            statusResource.setTaskId(taskId);
-//            statusResource.setStatusType(StatusType.TASK.toString());
-//            statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
-//            statusResource.setState(status.getState().toString());
-//            statusResource.save();
-//            logger.info(taskId, "Updated task {} status to {}.", taskId, status.toString());
-//        } catch (Exception e) {
-//            logger.error(taskId, "Error while updating task status to " + status.toString() + "...", e);
-//            throw new RegistryException(e);
-//        }
     }
 
     /**
@@ -1479,167 +1722,6 @@ public class ExperimentRegistry {
     public String getErrorID(String parentId) {
         String error = parentId.replaceAll("\\s", "");
         return error + "_" + UUID.randomUUID();
-    }
-
-    public void updateExperimentField(String expID, String fieldName, Object value) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = gatewayResource.getExperiment(expID);
-//            if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME)) {
-//                experiment.setExpName((String) value);
-//                experiment.save();
-//            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
-//                experiment.setExecutionUser((String) value);
-//                experiment.save();
-//            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_DESC)) {
-//                experiment.setDescription((String) value);
-//                experiment.save();
-//            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.APPLICATION_ID)) {
-//                experiment.setApplicationId((String) value);
-//                experiment.save();
-//            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.APPLICATION_VERSION)) {
-//                experiment.setApplicationVersion((String) value);
-//                experiment.save();
-//            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.WORKFLOW_TEMPLATE_ID)) {
-//                experiment.setWorkflowTemplateId((String) value);
-//                experiment.save();
-//            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.WORKFLOW_TEMPLATE_VERSION)) {
-//                experiment.setWorkflowTemplateVersion((String) value);
-//                experiment.save();
-//            } else {
-//                logger.error("Unsupported field type for Experiment");
-//            }
-//
-//        } catch (Exception e) {
-//            logger.error("Error while updating fields in experiment...", e);
-//            throw new RegistryException(e);
-//        }
-    }
-
-    public void updateUserConfigDataField(String expID, String fieldName, Object value) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = gatewayResource.getExperiment(expID);
-//            ConfigDataResource exConfigData = (ConfigDataResource) experiment.get(ResourceType.CONFIG_DATA, expID);
-//            if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.AIRAVATA_AUTO_SCHEDULE)) {
-//                exConfigData.setAiravataAutoSchedule((Boolean) value);
-//                exConfigData.save();
-//            } else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.OVERRIDE_MANUAL_PARAMS)) {
-//                exConfigData.setOverrideManualParams((Boolean) value);
-//                exConfigData.save();
-//            } else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.SHARE_EXP)) {
-//                exConfigData.setShareExp((Boolean) value);
-//                exConfigData.save();
-//            } else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.COMPUTATIONAL_RESOURCE_SCHEDULING)) {
-//                updateSchedulingData((ComputationalResourceSchedulingModel) value, experiment);
-//            } else {
-//                logger.error("Unsupported field type for Experiment config data");
-//            }
-//
-//        } catch (Exception e) {
-//            logger.error("Error while updating fields in experiment config...", e);
-//            throw new RegistryException(e);
-//        }
-    }
-
-    public void updateExperiment(ExperimentModel experiment, String expId) throws RegistryException {
-//        try {
-//            ExperimentResource existingExperiment = gatewayResource.getExperiment(expId);
-//            existingExperiment.setExpName(experiment.getExperimentName());
-//            existingExperiment.setExecutionUser(experiment.getUserName());
-//            existingExperiment.setGatewayId(gatewayResource.getGatewayId());
-//            existingExperiment.setGatewayExecutionId(experiment.getGatewayExecutionId());
-//            if (!workerResource.isProjectExists(experiment.getProjectId())) {
-//                logger.error("Project does not exist in the system..");
-//                throw new Exception("Project does not exist in the system, Please create the project first...");
-//            }
-//            existingExperiment.setProjectId(experiment.getProjectId());
-//            existingExperiment.setCreationTime(AiravataUtils.getTime(experiment.getCreationTime()));
-//            existingExperiment.setDescription(experiment.getDescription());
-//            existingExperiment.setApplicationId(experiment.getExecutionId());
-//            existingExperiment.setEnableEmailNotifications(experiment.isEnableEmailNotification());
-//            existingExperiment.save();
-//
-//            List<String> emailAddresses = experiment.getEmailAddresses();
-//            // remove existing email addresses
-//            existingExperiment.remove(ResourceType.NOTIFICATION_EMAIL, expId);
-//            if (emailAddresses != null && !emailAddresses.isEmpty()){
-//                for (String email : emailAddresses){
-//                    NotificationEmailResource emailResource = new NotificationEmailResource();
-//                    emailResource.setExperimentId(expId);
-//                    emailResource.setEmailAddress(email);
-//                    emailResource.save();
-//                }
-//            }
-//
-//            List<InputDataObjectType> experimentInputs = experiment.getExperimentInputs();
-//            if (experimentInputs != null && !experimentInputs.isEmpty()) {
-//                updateExpInputs(experimentInputs, existingExperiment);
-//            }
-//
-//            UserConfigurationDataModel userConfigurationData = experiment.getUserConfigurationData();
-//            if (userConfigurationData != null) {
-//                updateUserConfigData(userConfigurationData, expId);
-//            }
-//
-//            List<OutputDataObjectType> experimentOutputs = experiment.getExperimentOutputs();
-//            if (experimentOutputs != null && !experimentOutputs.isEmpty()) {
-//                updateExpOutputs(experimentOutputs, expId);
-//            }
-//            ExperimentStatus experimentStatus = experiment.getExperimentStatus();
-//            if (experimentStatus != null) {
-//                updateExperimentStatus(experimentStatus, expId);
-//            }
-////            List<WorkflowNodeDetails> workflowNodeDetailsList = experiment.getWorkflowNodeDetailsList();
-////            if (workflowNodeDetailsList != null && !workflowNodeDetailsList.isEmpty()) {
-////                for (WorkflowNodeDetails wf : workflowNodeDetailsList) {
-////                    updateWorkflowNodeDetails(wf, wf.getNodeInstanceId());
-////                }
-////            }
-//            List<ErrorModel> errors = experiment.getErrors();
-//            if (errors != null && !errors.isEmpty()) {
-//                for (ErrorModel errror : errors) {
-//                    addErrorDetails(errror, expId);
-//                }
-//            }
-//        } catch (Exception e) {
-//            logger.error("Error while updating experiment...", e);
-//            throw new RegistryException(e);
-//        }
-
-    }
-
-    public void updateUserConfigData(UserConfigurationDataModel configData, String expId) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = gatewayResource.getExperiment(expId);
-//            ConfigDataResource resource = (ConfigDataResource) experiment.get(ResourceType.CONFIG_DATA, expId);
-//            resource.setExperimentId(expId);
-//            resource.setAiravataAutoSchedule(configData.isAiravataAutoSchedule());
-//            resource.setOverrideManualParams(configData.isOverrideManualScheduledParams());
-//            resource.setShareExp(configData.isShareExperimentPublicly());
-//            resource.setUserDn(configData.getUserDN());
-//            resource.setGenerateCert(configData.isGenerateCert());
-//            resource.save();
-//            ComputationalResourceSchedulingModel resourceScheduling = configData.getComputationalResourceScheduling();
-//            if (resourceScheduling != null) {
-//                updateSchedulingData(resourceScheduling, experiment);
-//            }
-////            AdvancedInputDataHandling inputDataHandling = configData.getAdvanceInputDataHandling();
-////            if (inputDataHandling != null) {
-////                updateInputDataHandling(inputDataHandling, experiment);
-////            }
-////            AdvancedOutputDataHandling outputDataHandling = configData.getAdvanceOutputDataHandling();
-////            if (outputDataHandling != null) {
-////                updateOutputDataHandling(outputDataHandling, experiment);
-////            }
-////
-////            QualityOfServiceParams qosParams = configData.getQosParams();
-////            if (qosParams != null) {
-////                updateQosParams(qosParams, experiment);
-////            }
-//        } catch (Exception e) {
-//            logger.error("Error while updating user config data...", e);
-//            throw new RegistryException(e);
-//        }
-
     }
 
 //    public void updateQosParams(QualityOfServiceParams qosParams, ExperimentCatResource resource) throws RegistryException {
@@ -2974,7 +3056,4 @@ public class ExperimentRegistry {
         return null;
     }
 
-    public Object updateExperimentError(ErrorModel newObjectToAdd, String dependentIdentifier) {
-        return null;
-    }
 }
