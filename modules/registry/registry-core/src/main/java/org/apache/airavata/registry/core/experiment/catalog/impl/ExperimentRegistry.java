@@ -49,10 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class ExperimentRegistry {
     private GatewayResource gatewayResource;
@@ -608,13 +605,12 @@ public class ExperimentRegistry {
         return experimentId;
     }
 
-    public void updateProcess(ProcessModel process, String experimentId) throws RegistryException {
+    public void updateProcess(ProcessModel process, String processId) throws RegistryException {
         try {
             ExperimentResource experimentResource = new ExperimentResource();
-            experimentResource.setExperimentId(experimentId);
-            ProcessResource processResource = experimentResource.getProcess(process.getProcessId());
+            ProcessResource processResource = experimentResource.getProcess(processId);
             processResource.setProcessId(process.getProcessId());
-            processResource.setExperimentId(experimentId);
+            processResource.setExperimentId(process.getExperimentId());
             processResource.setCreationTime(AiravataUtils.getTime(process.getCreationTime()));
             processResource.setLastUpdateTime(AiravataUtils.getTime(process.getLastUpdateTime()));
             processResource.setProcessDetail(process.getProcessDetail());
@@ -735,12 +731,11 @@ public class ExperimentRegistry {
         return addProcessError(processError, processID);
     }
 
-    public String updateTask(TaskModel task, String processID) throws RegistryException {
+    public String updateTask(TaskModel task, String taskID) throws RegistryException {
         try {
             ProcessResource processResource = new ProcessResource();
-            processResource.setProcessId(processID);
-            TaskResource taskResource = processResource.getTask(task.getTaskId());
-            taskResource.setParentProcessId(getProcessID(processID));
+            TaskResource taskResource = processResource.getTask(taskID);
+            taskResource.setParentProcessId(task.getParentProcessId());
             taskResource.setTaskType(task.getTaskType().toString());
             taskResource.setCreationTime(AiravataUtils.getTime(task.getCreationTime()));
             taskResource.setLastUpdateTime(AiravataUtils.getTime(task.getLastUpdateTime()));
@@ -755,10 +750,10 @@ public class ExperimentRegistry {
                 updateTaskError(task.getTaskError(), task.getTaskId());
             }
         } catch (Exception e) {
-            logger.error(processID, "Error while adding task...", e);
+            logger.error(taskID, "Error while adding task...", e);
             throw new RegistryException(e);
         }
-        return processID;
+        return taskID;
     }
 
     public String updateTaskStatus(TaskStatus taskStatus, String taskID) throws RegistryException {
@@ -779,13 +774,12 @@ public class ExperimentRegistry {
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
                 experiment.setUserName((String) value);
                 experiment.save();
-            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_DESC)) {
+            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.DESCRIPTION)) {
                 experiment.setDescription((String) value);
                 experiment.save();
             } else {
                 logger.error("Unsupported field type for Experiment");
             }
-
         } catch (Exception e) {
             logger.error("Error while updating fields in experiment...", e);
             throw new RegistryException(e);
@@ -797,16 +791,16 @@ public class ExperimentRegistry {
             ExperimentResource experiment = gatewayResource.getExperiment(expID);
             UserConfigurationDataResource exConfigData = (UserConfigurationDataResource)
                     experiment.get(ResourceType.USER_CONFIGURATION_DATA, expID);
-            if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.AIRAVATA_AUTO_SCHEDULE)) {
+            if (fieldName.equals(Constants.FieldConstants.UserConfigurationDataConstants.AIRAVATA_AUTO_SCHEDULE)) {
                 exConfigData.setAiravataAutoSchedule((Boolean) value);
                 exConfigData.save();
-            } else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.OVERRIDE_MANUAL_PARAMS)) {
+            } else if (fieldName.equals(Constants.FieldConstants.UserConfigurationDataConstants.OVERRIDE_MANUAL_PARAMS)) {
                 exConfigData.setOverrideManualScheduledParams((Boolean) value);
                 exConfigData.save();
-            } else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.SHARE_EXP)) {
+            } else if (fieldName.equals(Constants.FieldConstants.UserConfigurationDataConstants.SHARE_EXP)) {
                 exConfigData.setShareExperimentPublically((Boolean) value);
                 exConfigData.save();
-            } else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.COMPUTATIONAL_RESOURCE_SCHEDULING)) {
+            } else if (fieldName.equals(Constants.FieldConstants.UserConfigurationDataConstants.COMPUTATIONAL_RESOURCE_SCHEDULING)) {
                 updateSchedulingData((ComputationalResourceSchedulingModel) value, experiment);
             } else {
                 logger.error("Unsupported field type for Experiment config data");
@@ -818,587 +812,318 @@ public class ExperimentRegistry {
         }
     }
 
-
-//    public String addWorkflowNodeStatus(WorkflowNodeStatus status, CompositeIdentifier ids) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = gatewayResource.getExperiment((String) ids.getTopLevelIdentifier());
-//            WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode((String) ids.getSecondLevelIdentifier());
-//            StatusResource statusResource = (StatusResource) experiment.create(ResourceType.STATUS);
-//            statusResource.setProcessId(experiment.getExpID());
-//            statusResource.setNodeId(workflowNode.getNodeInstanceId());
-//            statusResource.setStatusType(StatusType.WORKFLOW_NODE.toString());
-//            statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
-//            if (status.getWorkflowNodeState() == null) {
-//                statusResource.setState(WorkflowNodeState.UNKNOWN.toString());
-//            } else {
-//                statusResource.setState(status.getWorkflowNodeState().toString());
-//            }
-//            statusResource.save();
-//            return String.valueOf(statusResource.getStatusId());
-//        } catch (Exception e) {
-//            logger.error("Error while adding workflow node status...", e);
-//            throw new RegistryException(e);
-//        }
-//    }
-//
-//    public String updateWorkflowNodeStatus(WorkflowNodeStatus status, String nodeId) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
-//            WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode(nodeId);
-//            StatusResource statusResource = workflowNode.getWorkflowNodeStatus();
-//            if (statusResource == null) {
-//                statusResource = (StatusResource) workflowNode.create(ResourceType.STATUS);
-//            }
-//            statusResource.setProcessId(workflowNode.getProcessId());
-//            statusResource.setNodeId(nodeId);
-//            statusResource.setStatusType(StatusType.WORKFLOW_NODE.toString());
-//            statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
-//            statusResource.setState(status.getWorkflowNodeState().toString());
-//            statusResource.save();
-//            logger.debugId(nodeId, "Updated workflow node {} status to {}.", nodeId, status.toString());
-//            return String.valueOf(statusResource.getStatusId());
-//        } catch (Exception e) {
-//            logger.errorId(nodeId, "Error while updating workflow node status to " + status.toString() + "...", e);
-//            throw new RegistryException(e);
-//        }
-//    }
-
-    public String addTaskStatus(TaskStatus status, CompositeIdentifier ids) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
-//            WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode((String) ids.getTopLevelIdentifier());
-//            TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) ids.getSecondLevelIdentifier());
-//            StatusResource statusResource = (StatusResource) workflowNode.create(ResourceType.STATUS);
-//            statusResource.setExperimentId(workflowNode.getExperimentId());
-//            statusResource.setNodeId(workflowNode.getNodeInstanceId());
-//            statusResource.setTaskId(taskDetail.getTaskId());
-//            statusResource.setStatusType(StatusType.TASK.toString());
-//            statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
-//            if (status.getState() == null) {
-////              statusResource.setState(TaskState.UNKNOWN.toString());
-//            } else {
-//                statusResource.setState(status.getState().toString());
-//            }
-//            statusResource.save();
-//            return String.valueOf(statusResource.getStatusId());
-//        } catch (Exception e) {
-//            logger.error("Error while adding task status...", e);
-//            throw new RegistryException(e);
-//        }
+    //CPI get methods
+    public Object getExperiment(String expId, String fieldName) throws RegistryException {
+        try {
+            ExperimentResource resource = gatewayResource.getExperiment(expId);
+            if (fieldName == null) {
+                return ThriftDataModelConversion.getExperiment(resource);
+            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
+                return resource.getUserName();
+            }else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY_EXECUTION_ID)) {
+                return resource.getGatewayExecutionId();
+            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME)) {
+                return resource.getExperimentName();
+            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.DESCRIPTION)) {
+                return resource.getDescription();
+            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXECUTION_ID)) {
+                return resource.getExecutionId();
+            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.PROJECT_ID)) {
+                return resource.getProjectId();
+            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_INPUTS)) {
+                return ThriftDataModelConversion.getExpInputs(resource.getExperimentInputs());
+            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_OUTPUTS)) {
+                return ThriftDataModelConversion.getExpOutputs(resource.getExperimentOutputs());
+            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_STATUS)) {
+                return ThriftDataModelConversion.getExperimentStatus(resource.getExperimentStatus());
+            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ERRORS)) {
+                return ThriftDataModelConversion.getExperimentErrorList(resource.getExperimentErrors());
+            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_CONFIGURATION_DATA)) {
+                return ThriftDataModelConversion.getUserConfigData(resource.getUserConfigurationDataResource());
+            } else {
+                logger.error("Unsupported field name for experiment basic data..");
+            }
+        } catch (Exception e) {
+            logger.error("Error while getting experiment info...", e);
+            throw new RegistryException(e);
+        }
         return null;
     }
 
-    /**
-     * @param status job status
-     * @param ids    composite id will contain taskid and jobid
-     * @return status id
-     */
-    public String addJobStatus(JobStatus status, CompositeIdentifier ids) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
-//            WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
-//            TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) ids.getTopLevelIdentifier());
-//            workflowNode = experiment.getWorkflowNode(taskDetail.getNodeId());
-//            JobDetailResource jobDetail = taskDetail.getJobDetail((String) ids.getSecondLevelIdentifier());
-//            StatusResource statusResource = (StatusResource) jobDetail.create(ResourceType.STATUS);
-//            statusResource.setExperimentId(workflowNode.getExperimentId());
-//            statusResource.setNodeId(workflowNode.getNodeInstanceId());
-//            statusResource.setTaskId(taskDetail.getTaskId());
-//            statusResource.setStatusType(StatusType.JOB.toString());
-//            statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
-//            if (status.getJobState() == null) {
-//                statusResource.setState(JobState.UNKNOWN.toString());
-//            } else {
-//                statusResource.setState(status.getJobState().toString());
-//            }
-//            statusResource.save();
-//            return String.valueOf(statusResource.getStatusId());
-//        } catch (Exception e) {
-//            logger.error("Error while adding job status...", e);
-//            throw new RegistryException(e);
-//        }
+    public Object getExperimentInputs(String expID) throws RegistryException {
+        return getExperiment(expID, Constants.FieldConstants.ExperimentConstants.EXPERIMENT_INPUTS);
+    }
+
+    public Object getExperimentOutputs(String expID) throws RegistryException {
+        return getExperiment(expID, Constants.FieldConstants.ExperimentConstants.EXPERIMENT_OUTPUTS);
+    }
+
+    public Object getExperimentErrors(String expID) throws RegistryException {
+        return getExperiment(expID, Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ERRORS);
+    }
+
+    public Object getExperimentStatus(String expID) throws RegistryException {
+        return getExperiment(expID, Constants.FieldConstants.ExperimentConstants.EXPERIMENT_STATUS);
+    }
+
+    public Object getUserConfigData(String expId, String fieldName) throws RegistryException {
+        try {
+            ExperimentResource resource = gatewayResource.getExperiment(expId);
+            UserConfigurationDataResource userConfigData = resource.getUserConfigurationDataResource();
+            if (fieldName == null) {
+                return ThriftDataModelConversion.getUserConfigData(userConfigData);
+            } else if (fieldName.equals(Constants.FieldConstants.UserConfigurationDataConstants.AIRAVATA_AUTO_SCHEDULE)) {
+                return userConfigData.getAiravataAutoSchedule();
+            } else if (fieldName.equals(Constants.FieldConstants.UserConfigurationDataConstants.OVERRIDE_MANUAL_PARAMS)) {
+                return userConfigData.getOverrideManualScheduledParams();
+            } else if (fieldName.equals(Constants.FieldConstants.UserConfigurationDataConstants.SHARE_EXP)) {
+                return userConfigData.getShareExperimentPublically();
+            } else if (fieldName.equals(Constants.FieldConstants.UserConfigurationDataConstants.COMPUTATIONAL_RESOURCE_SCHEDULING)){
+                return ThriftDataModelConversion.getComputationalResourceScheduling(userConfigData);
+            } else {
+                logger.error("Unsupported field name for experiment configuration data..");
+            }
+        } catch (Exception e) {
+            logger.error("Error while getting config data..", e);
+            throw new RegistryException(e);
+        }
         return null;
     }
 
-    public String updateJobStatus(JobStatus status, CompositeIdentifier ids) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
-//            WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
-//            TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) ids.getTopLevelIdentifier());
-//            JobDetailResource jobDetail = taskDetail.getJobDetail((String) ids.getSecondLevelIdentifier());
-//            StatusResource statusResource = jobDetail.getJobStatus();
-//            workflowNode = experiment.getWorkflowNode(taskDetail.getNodeId());
-//            statusResource.setExperimentId(workflowNode.getExperimentId());
-//            statusResource.setNodeId(workflowNode.getNodeInstanceId());
-//            statusResource.setTaskId(taskDetail.getTaskId());
-//            statusResource.setStatusType(StatusType.JOB.toString());
-//            statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
-//            statusResource.setState(status.getJobState().toString());
-//            statusResource.save();
-//            logger.info(ids.toString(), "Updated job status to {}", status.toString());
-//            return String.valueOf(statusResource.getStatusId());
-//        } catch (Exception e) {
-//            logger.error(ids.toString(), "Error while updating job status to " + status.toString() + " ...", e);
-//            throw new RegistryException(e);
-//        }
+    //Todo
+    public Object getProcess(String processId, String fieldName) throws RegistryException {
+        try {
+            ExperimentResource experimentResource = new ExperimentResource();
+            ProcessResource resource = experimentResource.getProcess(processId);
+            if (fieldName == null) {
+                return ThriftDataModelConversion.getProcesModel(resource);
+            } else {
+                logger.error("Unsupported field name for experiment basic data..");
+            }
+        }catch (Exception e) {
+            logger.error("Error while getting process data..", e);
+            throw new RegistryException(e);
+        }
         return null;
     }
 
-//    /**
-//     * @param status application status
-//     * @param ids    composite id will contain taskid and jobid
-//     * @return status id
-//     */
-//    public String addApplicationStatus(ApplicationStatus status, CompositeIdentifier ids) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
-//            WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
-//            TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) ids.getTopLevelIdentifier());
-//            JobDetailResource jobDetail = taskDetail.getJobDetail((String) ids.getSecondLevelIdentifier());
-//            StatusResource statusResource = (StatusResource) jobDetail.create(ResourceType.STATUS);
-//            workflowNode = experiment.getWorkflowNode(taskDetail.getNodeId());
-//            statusResource.setProcessId(workflowNode.getProcessId());
-//            statusResource.setNodeId(workflowNode.getNodeInstanceId());
-//            statusResource.setTaskId(taskDetail.getTaskId());
-//            statusResource.setStatusType(StatusType.APPLICATION.toString());
-//            statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
-//            if (status.getApplicationState() == null) {
-//                statusResource.setState("UNKNOWN");
-//            } else {
-//                statusResource.setState(status.getApplicationState());
-//            }
-//            statusResource.save();
-//            return String.valueOf(statusResource.getStatusId());
-//        } catch (Exception e) {
-//            logger.error("Unable to read airavata-server properties", e);
-//            throw new RegistryException(e);
-//        }
-//    }
-//
-//    public void updateApplicationStatus(ApplicationStatus status, String jobId) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
-//            WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
-//            TaskDetailResource taskDetail = (TaskDetailResource) workflowNode.create(ResourceType.TASK_DETAIL);
-//            JobDetailResource jobDetail = taskDetail.getJobDetail(jobId);
-//            StatusResource statusResource = jobDetail.getApplicationStatus();
-//            workflowNode = experiment.getWorkflowNode(taskDetail.getNodeId());
-//            statusResource.setProcessId(workflowNode.getProcessId());
-//            statusResource.setNodeId(workflowNode.getNodeInstanceId());
-//            statusResource.setTaskId(taskDetail.getTaskId());
-//            statusResource.setStatusType(StatusType.APPLICATION.toString());
-//            statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
-//            statusResource.setState(status.getApplicationState());
-//            statusResource.save();
-//        } catch (Exception e) {
-//            logger.error("Error while updating application status...", e);
-//            throw new RegistryException(e);
-//        }
-//    }
-
-
-//    public String addTransferStatus(TransferStatus status, CompositeIdentifier ids) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
-//            WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
-//            TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) ids.getTopLevelIdentifier());
-//            DataTransferDetailResource dataTransferDetail = taskDetail.getDataTransferDetail((String) ids.getSecondLevelIdentifier());
-//            StatusResource statusResource = (StatusResource) dataTransferDetail.create(ResourceType.STATUS);
-//            workflowNode = experiment.getWorkflowNode(taskDetail.getNodeId());
-//            statusResource.setProcessId(workflowNode.getProcessId());
-//            statusResource.setNodeId(workflowNode.getNodeInstanceId());
-//            statusResource.setTaskId(taskDetail.getTaskId());
-//            statusResource.setTransferId(dataTransferDetail.getTransferId());
-//            statusResource.setStatusType(StatusType.DATA_TRANSFER.toString());
-//            statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
-//            if (status.getTransferState() == null) {
-//                statusResource.setState(TransferState.UNKNOWN.toString());
-//            } else {
-//                statusResource.setState(status.getTransferState().toString());
-//            }
-//            statusResource.save();
-//            return String.valueOf(statusResource.getStatusId());
-//        } catch (Exception e) {
-//            logger.error("Error while adding transfer status...", e);
-//            throw new RegistryException(e);
-//        }
-//    }
-//
-//    public void updateTransferStatus(TransferStatus status, String transferId) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
-//            WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
-//            TaskDetailResource taskDetail = (TaskDetailResource) workflowNode.create(ResourceType.TASK_DETAIL);
-//            DataTransferDetailResource dataTransferDetail = taskDetail.getDataTransferDetail(transferId);
-//            StatusResource statusResource = dataTransferDetail.getDataTransferStatus();
-//
-//            String taskId = dataTransferDetail.getTaskId();
-//            taskDetail = workflowNode.getTaskDetail(taskId);
-//            workflowNode = experiment.getWorkflowNode(taskDetail.getNodeId());
-//            if (workflowNode != null) {
-//                statusResource.setProcessId(workflowNode.getProcessId());
-//                statusResource.setNodeId(workflowNode.getNodeInstanceId());
-//            }
-//            statusResource.setTaskId(taskId);
-//            statusResource.setTransferId(transferId);
-//            statusResource.setStatusType(StatusType.DATA_TRANSFER.toString());
-//            statusResource.setStatusUpdateTime(AiravataUtils.getTime(status.getTimeOfStateChange()));
-//            statusResource.setState(status.getTransferState().toString());
-//            statusResource.save();
-//        } catch (Exception e) {
-//            logger.error("Error while updating transfer status...", e);
-//            throw new RegistryException(e);
-//        }
-//    }
-//
-//    public String addWorkflowNodeDetails(WorkflowNodeDetails nodeDetails, String expId) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = gatewayResource.getExperiment(expId);
-//            WorkflowNodeDetailResource resource = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
-//            resource.setProcessId(expId);
-//            resource.setNodeName(nodeDetails.getNodeName());
-//            resource.setExecutionUnit(nodeDetails.getExecutionUnit().toString());
-//            resource.setExecutionUnitData(nodeDetails.getExecutionUnitData());
-//            resource.setCreationTime(AiravataUtils.getTime(nodeDetails.getCreationTime()));
-//            resource.setNodeInstanceId(getNodeInstanceID(nodeDetails.getNodeName()));
-//            resource.save();
-//            String nodeId = resource.getNodeInstanceId();
-//            List<InputDataObjectType> nodeInputs = nodeDetails.getNodeInputs();
-//            if (nodeInputs != null) {
-//                addWorkflowInputs(nodeDetails.getNodeInputs(), resource);
-//            }
-//            List<OutputDataObjectType> nodeOutputs = nodeDetails.getNodeOutputs();
-//            if (nodeOutputs != null && !nodeOutputs.isEmpty()) {
-//                CompositeIdentifier ids = new CompositeIdentifier(expId, nodeId);
-//                addNodeOutputs(nodeOutputs, ids);
-//            }
-//            WorkflowNodeStatus workflowNodeStatus = nodeDetails.getWorkflowNodeStatus();
-//            CompositeIdentifier ids = new CompositeIdentifier(expId, nodeId);
-//            if (workflowNodeStatus == null) {
-//                workflowNodeStatus = new WorkflowNodeStatus();
-//            }
-////                if (workflowNodeStatus.getWorkflowNodeState() != null){
-////                    WorkflowNodeStatus status = getWorkflowNodeStatus(nodeId);
-////                    if (status != null){
-////                        updateWorkflowNodeStatus(workflowNodeStatus, nodeId);
-////                    }else {
-////                        addWorkflowNodeStatus(workflowNodeStatus,ids);
-////                    }
-////                }else {
-////                    workflowNodeStatus.setWorkflowNodeState(WorkflowNodeState.UNKNOWN);
-////                    addWorkflowNodeStatus(workflowNodeStatus, ids);
-////                }
-//            workflowNodeStatus.setWorkflowNodeState(WorkflowNodeState.UNKNOWN);
-//            addWorkflowNodeStatus(workflowNodeStatus, ids);
-//            List<TaskDetails> taskDetails = nodeDetails.getTaskDetailsList();
-//            if (taskDetails != null && !taskDetails.isEmpty()) {
-//                for (TaskDetails task : taskDetails) {
-//                    addTaskDetails(task, nodeId);
-//                }
-//            }
-//            List<ErrorDetails> errors = nodeDetails.getErrors();
-//            if (errors != null && !errors.isEmpty()) {
-//                for (ErrorDetails error : errors) {
-//                    addErrorDetails(error, nodeId);
-//                }
-//            }
-//            return nodeId;
-//        } catch (Exception e) {
-//            logger.error("Error while adding workflow node details...", e);
-//            throw new RegistryException(e);
-//        }
-//    }
-//
-//    public void updateWorkflowNodeDetails(WorkflowNodeDetails nodeDetails, String nodeId) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
-//            WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode(nodeId);
-//            workflowNode.setNodeName(nodeDetails.getNodeName());
-//            workflowNode.setExecutionUnit(nodeDetails.getExecutionUnit().toString());
-//            workflowNode.setExecutionUnitData(nodeDetails.getExecutionUnitData());
-//            workflowNode.setCreationTime(AiravataUtils.getTime(nodeDetails.getCreationTime()));
-//            workflowNode.setNodeInstanceId(nodeId);
-//            workflowNode.save();
-//            String expID = workflowNode.getProcessId();
-//            List<InputDataObjectType> nodeInputs = nodeDetails.getNodeInputs();
-//            if (nodeInputs != null) {
-//                updateWorkflowInputs(nodeDetails.getNodeInputs(), workflowNode);
-//            }
-//            List<OutputDataObjectType> nodeOutputs = nodeDetails.getNodeOutputs();
-//            if (nodeOutputs != null && !nodeOutputs.isEmpty()) {
-//                updateNodeOutputs(nodeOutputs, nodeId);
-//            }
-//            WorkflowNodeStatus workflowNodeStatus = nodeDetails.getWorkflowNodeStatus();
-//            if (workflowNodeStatus != null) {
-//                if (isWFNodeExist(nodeId)) {
-//                    updateWorkflowNodeStatus(workflowNodeStatus, nodeId);
-//                } else {
-//                    CompositeIdentifier ids = new CompositeIdentifier(expID, nodeId);
-//                    addWorkflowNodeStatus(workflowNodeStatus, ids);
-//                }
-//            }
-//            List<TaskDetails> taskDetails = nodeDetails.getTaskDetailsList();
-//            if (taskDetails != null && !taskDetails.isEmpty()) {
-//                for (TaskDetails task : taskDetails) {
-//                    String taskID = task.getTaskID();
-//                    if (isTaskDetailExist(taskID)) {
-//                        updateTaskDetails(task, taskID);
-//                    } else {
-//                        addTaskDetails(task, nodeId);
-//                    }
-//                }
-//            }
-//            List<ErrorDetails> errors = nodeDetails.getErrors();
-//            if (errors != null && !errors.isEmpty()) {
-//                for (ErrorDetails error : errors) {
-//                    addErrorDetails(error, nodeId);
-//                }
-//            }
-//        } catch (Exception e) {
-//            logger.error("Error while updating workflow node details...", e);
-//            throw new RegistryException(e);
-//        }
-//    }
-
-
-//    public String addTaskDetails(TaskModel taskDetails, String nodeId) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
-//            WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode(nodeId);
-//            TaskDetailResource taskDetail = (TaskDetailResource) workflowNode.create(ResourceType.TASK_DETAIL);
-//            taskDetail.setNodeId(nodeId);
-//            taskDetail.setTaskId(getTaskID(workflowNode.getNodeName()));
-//            taskDetail.setApplicationId(taskDetails.getApplicationId());
-//            taskDetail.setApplicationVersion(taskDetails.getApplicationVersion());
-//            taskDetail.setCreationTime(AiravataUtils.getTime(taskDetails.getCreationTime()));
-//            taskDetail.setEnableEmailNotifications(taskDetails.isEnableEmailNotification());
-//            taskDetail.save();
-//
-//            List<String> emailAddresses = taskDetails.getEmailAddresses();
-//            if (emailAddresses != null && !emailAddresses.isEmpty()){
-//                for (String email : emailAddresses){
-//                    NotificationEmailResource emailResource = new NotificationEmailResource();
-//                    emailResource.setProcessId(workflowNode.getProcessId());
-//                    emailResource.setTaskId(taskDetail.getTaskId());
-//                    emailResource.setEmailAddress(email);
-//                    emailResource.save();
-//                }
-//            }
-//
-//            List<InputDataObjectType> applicationInputs = taskDetails.getApplicationInputs();
-//            if (applicationInputs != null) {
-//                addAppInputs(applicationInputs, taskDetail);
-//            }
-//            List<OutputDataObjectType> applicationOutput = taskDetails.getApplicationOutputs();
-//            if (applicationOutput != null) {
-//                addAppOutputs(applicationOutput, taskDetail);
-//            }
-//            ComputationalResourceSchedulingModel taskScheduling = taskDetails.getTaskScheduling();
-//            if (taskScheduling != null) {
-//                addComputationScheduling(taskScheduling, taskDetail);
-//            }
-////            AdvancedInputDataHandling inputDataHandling = taskDetails.getAdvancedInputDataHandling();
-////            if (inputDataHandling != null) {
-////                addInputDataHandling(inputDataHandling, taskDetail);
-////            }
-////            AdvancedOutputDataHandling outputDataHandling = taskDetails.getAdvancedOutputDataHandling();
-////            if (outputDataHandling != null) {
-////                addOutputDataHandling(outputDataHandling, taskDetail);
-////            }
-//
-//            List<JobModel> jobDetailsList = taskDetails.getJobDetailsList();
-//            if (jobDetailsList != null && !jobDetailsList.isEmpty()) {
-//                for (JobDetails job : jobDetailsList) {
-//                    CompositeIdentifier ids = new CompositeIdentifier(taskDetail.getTaskId(), job.getJobID());
-//                    addJobDetails(job, ids);
-//                }
-//            }
-//
-//            List<DataTransferDetails> dataTransferDetailsList = taskDetails.getDataTransferDetailsList();
-//            if (dataTransferDetailsList != null && !dataTransferDetailsList.isEmpty()) {
-//                for (DataTransferDetails transferDetails : dataTransferDetailsList) {
-//                    addDataTransferDetails(transferDetails, taskDetail.getTaskId());
-//                }
-//            }
-//
-//            List<ErrorDetails> errors = taskDetails.getErrors();
-//            if (errors != null && !errors.isEmpty()) {
-//                for (ErrorDetails error : errors) {
-//                    addErrorDetails(error, taskDetail.getTaskId());
-//                }
-//            }
-//
-//            TaskStatus taskStatus = taskDetails.getTaskStatus();
-//            CompositeIdentifier ids = new CompositeIdentifier(nodeId, taskDetail.getTaskId());
-//            if (taskStatus != null) {
-//                if (taskStatus.getExecutionState() != null) {
-//                    addTaskStatus(taskStatus, ids);
-//                } else {
-//                    taskStatus.setExecutionState(TaskState.UNKNOWN);
-//                    addTaskStatus(taskStatus, ids);
-//                }
-//            } else {
-//                TaskStatus status = new TaskStatus();
-//                status.setExecutionState(TaskState.UNKNOWN);
-//                addTaskStatus(status, ids);
-//            }
-//            return taskDetail.getTaskId();
-//        } catch (Exception e) {
-//            logger.error("Error while adding task details...", e);
-//            throw new RegistryException(e);
-//        }
-//    }
-
-//    public String updateTaskDetails(TaskModel taskDetails, String taskId) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
-//            WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
-//            TaskDetailResource taskDetail = workflowNode.getTaskDetail(taskId);
-////            taskDetail.setWorkflowNodeDetailResource(workflowNode);
-//            taskDetail.setApplicationId(taskDetails.getApplicationId());
-//            taskDetail.setApplicationVersion(taskDetails.getApplicationVersion());
-//            taskDetail.setCreationTime(AiravataUtils.getTime(taskDetails.getCreationTime()));
-//            taskDetail.setApplicationDeploymentId(taskDetails.getApplicationDeploymentId());
-//            taskDetail.setEnableEmailNotifications(taskDetails.isEnableEmailNotification());
-//            taskDetail.save();
-//
-//            workflowNode = experiment.getWorkflowNode(taskDetail.getNodeId());
-//
-//            List<String> emailAddresses = taskDetails.getEmailAddresses();
-//            // remove existing emails
-//            taskDetail.remove(ResourceType.NOTIFICATION_EMAIL, taskId);
-//            if (emailAddresses != null && !emailAddresses.isEmpty()){
-//                for (String email : emailAddresses){
-//                    NotificationEmailResource emailResource = new NotificationEmailResource();
-//                    emailResource.setProcessId(workflowNode.getProcessId());
-//                    emailResource.setTaskId(taskId);
-//                    emailResource.setEmailAddress(email);
-//                    emailResource.save();
-//                }
-//            }
-//            List<InputDataObjectType> applicationInputs = taskDetails.getApplicationInputs();
-//            if (applicationInputs != null) {
-//                updateAppInputs(applicationInputs, taskDetail);
-//            }
-//            ComputationalResourceScheduling taskScheduling = taskDetails.getTaskScheduling();
-//            if (taskScheduling != null) {
-//                updateSchedulingData(taskScheduling, taskDetail);
-//            }
-//            AdvancedInputDataHandling inputDataHandling = taskDetails.getAdvancedInputDataHandling();
-//            if (inputDataHandling != null) {
-//                updateInputDataHandling(inputDataHandling, taskDetail);
-//            }
-//            AdvancedOutputDataHandling outputDataHandling = taskDetails.getAdvancedOutputDataHandling();
-//            if (outputDataHandling != null) {
-//                updateOutputDataHandling(outputDataHandling, taskDetail);
-//            }
-//            List<JobDetails> jobDetailsList = taskDetails.getJobDetailsList();
-//            if (jobDetailsList != null && !jobDetailsList.isEmpty()) {
-//                for (JobDetails job : jobDetailsList) {
-//                    CompositeIdentifier ids = new CompositeIdentifier(taskId, job.getJobID());
-//                    updateJobDetails(job, ids);
-//                }
-//            }
-//
-//            List<DataTransferDetails> dataTransferDetailsList = taskDetails.getDataTransferDetailsList();
-//            if (dataTransferDetailsList != null && !dataTransferDetailsList.isEmpty()) {
-//                for (DataTransferDetails transferDetails : dataTransferDetailsList) {
-//                    updateDataTransferDetails(transferDetails, transferDetails.getTransferID());
-//                }
-//            }
-//
-//            List<ErrorDetails> errors = taskDetails.getErrors();
-//            if (errors != null && !errors.isEmpty()) {
-//                for (ErrorDetails error : errors) {
-//                    addErrorDetails(error, taskDetail.getTaskId());
-//                }
-//            }
-//
-//            TaskStatus taskStatus = taskDetails.getTaskStatus();
-//            if (taskStatus != null) {
-//                updateTaskStatus(taskStatus, taskId);
-//            }
-//            return taskDetail.getTaskId();
-//        } catch (Exception e) {
-//            logger.error("Error while updating task details...", e);
-//            throw new RegistryException(e);
-//        }
-//    }
-
-    public void updateAppOutputs(List<OutputDataObjectType> appOutputs, String taskId) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
-//            WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
-//            TaskDetailResource taskDetail = workflowNode.getTaskDetail(taskId);
-//            List<ApplicationOutputResource> outputs = taskDetail.getApplicationOutputs();
-//            for (OutputDataObjectType output : appOutputs) {
-//                for (ApplicationOutputResource resource : outputs) {
-//                    resource.setTaskId(taskId);
-//                    resource.setOutputKey(output.getName());
-//                    resource.setValue(output.getValue());
-//                    if (output.getType() != null) {
-//                        resource.setDataType(output.getType().toString());
-//                    }
-//                    resource.setRequired(output.isIsRequired());
-//                    resource.setRequiredToCMD(output.isRequiredToAddedToCommandLine());
-//                    resource.setDataMovement(output.isDataMovement());
-//                    resource.setDataNameLocation(output.getLocation());
-//                    resource.setAppArgument(output.getApplicationArgument());
-//                    resource.setSearchQuery(output.getSearchQuery());
-////                    resource.setMetadata(output.getMetaData());
-//                    resource.save();
-//                }
-//            }
-//        } catch (Exception e) {
-//            logger.error("Error while updating application outputs...", e);
-//            throw new RegistryException(e);
-//        }
+    public Object getProcessError(String identifier) {
+        return null;
     }
 
-    public String addJobDetails(JobModel jobDetails, CompositeIdentifier ids) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
-//            WorkflowNodeDetailResource workflowNode = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
-//            TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) ids.getTopLevelIdentifier());
-//            JobDetailResource jobDetail = taskDetail.createJobDetail((String) ids.getSecondLevelIdentifier());
-//            jobDetail.setTaskId(taskDetail.getTaskId());
-//            jobDetail.setJobDescription(jobDetails.getJobDescription());
-//            jobDetail.setCreationTime(AiravataUtils.getTime(jobDetails.getCreationTime()));
-//            jobDetail.setComputeResourceConsumed(jobDetails.getComputeResourceConsumed());
-//            jobDetail.setWorkingDir(jobDetails.getWorkingDir());
-//            jobDetail.setJobName(jobDetails.getJobName());
-//            jobDetail.save();
-//            JobStatus jobStatus = jobDetails.getJobStatus();
-//            if (jobStatus != null) {
-//                JobStatus status = getJobStatus(ids);
-//                if (status != null) {
-//                    updateJobStatus(jobStatus, ids);
-//                } else {
-//                    addJobStatus(jobStatus, ids);
-//                }
-//            }
-//            JobStatus applicationStatus = jobDetails.getJobStatus();
-//            if (applicationStatus != null) {
-//                JobStatus appStatus = getJobStatus(ids);
-//                if (appStatus != null) {
-//                    updateJobStatus(applicationStatus, ids);
-//                } else {
-//                    addJobStatus(applicationStatus, ids);
-//                }
-//            }
-////            List<ErrorModel> errors = jobDetails.getErrors();
-////            if (errors != null && !errors.isEmpty()) {
-////                for (ErrorDetails error : errors) {
-////                    addErrorDetails(error, ids.getSecondLevelIdentifier());
-////                }
-////            }
-//            return jobDetail.getJobId();
-//        } catch (Exception e) {
-//            logger.error("Error while adding job details...", e);
-//            throw new RegistryException(e);
-//        }
-        return  null;
+    public Object getProcessStatus(String identifier) {
+        return null;
     }
+
+    public Object getProcessInputs(String identifier) {
+        return null;
+    }
+
+    public Object getProcessOutputs(String identifier) {
+        return null;
+    }
+
+    public Object getProcessResourceSchedule(String identifier, Object o) {
+        return null;
+    }
+
+    public Object getTask(String taskId, String fieldName) throws RegistryException {
+        try {
+            ProcessResource processResource = new ProcessResource();
+            TaskResource resource = processResource.getTask(taskId);
+            if (fieldName == null) {
+                return ThriftDataModelConversion.getTaskModel(resource);
+            } else {
+                logger.error("Unsupported field name for experiment basic data..");
+            }
+        }catch (Exception e) {
+            logger.error("Error while getting process data..", e);
+            throw new RegistryException(e);
+        }
+        return null;
+    }
+
+    public Object getTaskError(String identifier) {
+        return null;
+    }
+
+
+    public List<ExperimentModel> getExperimentList(String fieldName, Object value) throws RegistryException {
+        List<ExperimentModel> experiments = new ArrayList<ExperimentModel>();
+        try {
+            if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
+                WorkerResource resource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
+                resource.setUser((String) value);
+                List<ExperimentResource> resources = resource.getExperiments();
+                for (ExperimentResource experimentResource : resources) {
+                    ExperimentModel experiment = ThriftDataModelConversion.getExperiment(experimentResource);
+                    experiments.add(experiment);
+                }
+                return experiments;
+            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.PROJECT_ID)) {
+                ProjectResource project = workerResource.getProject((String) value);
+                List<ExperimentResource> resources = project.getExperiments();
+                for (ExperimentResource resource : resources) {
+                    ExperimentModel experiment = ThriftDataModelConversion.getExperiment(resource);
+                    experiments.add(experiment);
+                }
+                return experiments;
+            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY_EXECUTION_ID)) {
+                List<ExperimentResource> resources = gatewayResource.getExperiments();
+                for (ExperimentResource resource : resources) {
+                    ExperimentModel experiment = ThriftDataModelConversion.getExperiment(resource);
+                    experiments.add(experiment);
+                }
+                return experiments;
+            } else {
+                logger.error("Unsupported field name to retrieve experiment list...");
+            }
+        } catch (Exception e) {
+            logger.error("Error while getting experiment list...", e);
+            throw new RegistryException(e);
+        }
+        return experiments;
+    }
+
+    //Todo
+    public List<ProcessModel> getProcessList(String fieldName, Object value) {
+        return null;
+    }
+
+    public List<TaskModel> getTaskList(String fieldName, Object value) {
+        return null;
+    }
+
+    public List<ExperimentModel> getExperimentList(String fieldName, Object value, int limit, int offset,
+                                                   Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
+        List<ExperimentModel> experiments = new ArrayList<ExperimentModel>();
+        try {
+            if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
+                WorkerResource resource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
+                resource.setUser((String) value);
+                List<ExperimentResource> resources = resource.getExperiments(limit, offset,
+                        orderByIdentifier, resultOrderType);
+                for (ExperimentResource experimentResource : resources) {
+                    ExperimentModel experiment = ThriftDataModelConversion.getExperiment(experimentResource);
+                    experiments.add(experiment);
+                }
+                return experiments;
+            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.PROJECT_ID)) {
+                ProjectResource project = workerResource.getProject((String) value);
+                List<ExperimentResource> resources = project.getExperiments(limit, offset,
+                        Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
+                for (ExperimentResource resource : resources) {
+                    ExperimentModel experiment = ThriftDataModelConversion.getExperiment(resource);
+                    experiments.add(experiment);
+                }
+                return experiments;
+            }
+            logger.error("Unsupported field name to retrieve experiment list...");
+        } catch (Exception e) {
+            logger.error("Error while getting experiment list...", e);
+            throw new RegistryException(e);
+        }
+        return experiments;
+    }
+
+
+    //CPI Search Methods
+
+    public List<ExperimentSummaryModel> searchExperiments(Map<String, String> filters, int limit,
+                                                          int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
+        Map<String, String> fil = new HashMap<String, String>();
+        if (filters != null && filters.size() != 0) {
+            List<ExperimentSummaryModel> experimentSummaries = new ArrayList<>();
+            long fromTime = 0;
+            long toTime = 0;
+            try {
+                for (String field : filters.keySet()) {
+                    if (field.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME)) {
+                        fil.put(AbstractExpCatResource.ExperimentConstants.EXPERIMENT_NAME, filters.get(field));
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
+                        fil.put(AbstractExpCatResource.ExperimentConstants.USER_NAME, filters.get(field));
+                    }else if (field.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY_EXECUTION_ID)) {
+                        fil.put(AbstractExpCatResource.ExperimentConstants.GATEWAY_ID, filters.get(field));
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.DESCRIPTION)) {
+                        fil.put(AbstractExpCatResource.ExperimentConstants.DESCRIPTION, filters.get(field));
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.EXECUTION_ID)) {
+                        fil.put(AbstractExpCatResource.ExperimentConstants.EXECUTION_ID, filters.get(field));
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_STATUS)) {
+                        fil.put(AbstractExpCatResource.ExperimentStatusConstants.STATE, filters.get(field));
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.FROM_DATE)) {
+                        fromTime = Long.parseLong(filters.get(field));
+                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.TO_DATE)) {
+                        toTime = Long.parseLong(filters.get(field));
+                    }
+                }
+                List<ExperimentSummaryResource> experimentSummaryResources;
+                if (fromTime != 0 && toTime != 0) {
+                    experimentSummaryResources = workerResource.searchExperiments(new Timestamp(fromTime), new Timestamp(toTime), fil
+                            ,limit , offset, orderByIdentifier, resultOrderType);
+                } else {
+                    experimentSummaryResources = workerResource
+                            .searchExperiments(null, null, fil, limit, offset, orderByIdentifier, resultOrderType);
+                }
+                if (experimentSummaryResources != null && !experimentSummaryResources.isEmpty()) {
+                    for (ExperimentSummaryResource ex : experimentSummaryResources) {
+                        experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
+                    }
+                }
+                return experimentSummaries;
+
+            } catch (Exception e) {
+                logger.error("Error while retrieving experiment summary from registry", e);
+                throw new RegistryException(e);
+            }
+        }
+        return null;
+    }
+
+    public ExperimentStatistics getExperimentStatistics(Map<String,String> filters) throws RegistryException {
+        try {
+            ExperimentStatistics experimentStatistics = new ExperimentStatistics();
+            ExperimentStatisticsResource experimentStatisticsResource = workerResource.getExperimentStatistics(
+                    filters.get(Constants.FieldConstants.ExperimentConstants.GATEWAY_EXECUTION_ID),
+                    new Timestamp(Long.parseLong(filters.get(Constants.FieldConstants.ExperimentConstants.FROM_DATE))),
+                    new Timestamp(Long.parseLong(filters.get(Constants.FieldConstants.ExperimentConstants.TO_DATE)))
+            );
+
+            experimentStatistics.setAllExperimentCount(experimentStatisticsResource.getAllExperimentCount());
+            experimentStatistics.setCompletedExperimentCount(experimentStatisticsResource.getCompletedExperimentCount());
+            experimentStatistics.setFailedExperimentCount(experimentStatisticsResource.getFailedExperimentCount());
+            experimentStatistics.setCancelledExperimentCount(experimentStatisticsResource.getCancelledExperimentCount());
+
+            ArrayList<ExperimentSummaryModel> experimentSummaries = new ArrayList();
+            for (ExperimentSummaryResource ex : experimentStatisticsResource.getAllExperiments()) {
+                experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
+            }
+            experimentStatistics.setAllExperiments(experimentSummaries);
+
+            experimentSummaries = new ArrayList();
+            for (ExperimentSummaryResource ex : experimentStatisticsResource.getCompletedExperiments()) {
+                experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
+            }
+            experimentStatistics.setCompletedExperiments(experimentSummaries);
+
+            experimentSummaries = new ArrayList();
+            for (ExperimentSummaryResource ex : experimentStatisticsResource.getFailedExperiments()) {
+                experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
+            }
+            experimentStatistics.setFailedExperiments(experimentSummaries);
+
+            experimentSummaries = new ArrayList();
+            for (ExperimentSummaryResource ex : experimentStatisticsResource.getCancelledExperiments()) {
+                experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
+            }
+            experimentStatistics.setCancelledExperiments(experimentSummaries);
+
+            return experimentStatistics;
+        } catch (RegistryException e) {
+            logger.error("Error while retrieving experiment statistics from registry", e);
+            throw new RegistryException(e);
+        }
+    }
+
 
     // ids - taskId + jobid
     public void updateJobDetails(JobModel jobDetails, CompositeIdentifier ids) throws RegistryException {
@@ -1824,66 +1549,6 @@ public class ExperimentRegistry {
 //        }
     }
 
-    /**
-     * Method to get matching experiment list
-     * @param fieldName
-     * @param value
-     * @return
-     * @throws RegistryException
-     */
-    public List<ExperimentModel> getExperimentList(String fieldName, Object value) throws RegistryException {
-//        List<ExperimentModel> experiments = new ArrayList<ExperimentModel>();
-//        try {
-//            if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
-//                WorkerResource resource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
-//                resource.setUser((String) value);
-//                List<ExperimentResource> resources = resource.getExperiments();
-//                for (ExperimentResource experimentResource : resources) {
-//                    ExperimentModel experiment = ThriftDataModelConversion.getExperiment(experimentResource);
-//                    experiments.add(experiment);
-//                }
-//                return experiments;
-//            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.PROJECT_ID)) {
-//                ProjectResource project = workerResource.getProject((String) value);
-//                List<ExperimentResource> resources = project.getExperiments();
-//                for (ExperimentResource resource : resources) {
-//                    ExperimentModel experiment = ThriftDataModelConversion.getExperiment(resource);
-//                    experiments.add(experiment);
-//                }
-//                return experiments;
-//            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY)) {
-//                List<ExperimentResource> resources = gatewayResource.getExperiments();
-//                for (ExperimentResource resource : resources) {
-//                    ExperimentModel experiment = ThriftDataModelConversion.getExperiment(resource);
-//                    experiments.add(experiment);
-//                }
-//                return experiments;
-//            }
-////            if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.WORKFLOW_NODE_LIST)) {
-////                if (value instanceof List<?>) {
-////                    return getExperimentList(fieldName, ((List<?>) value).get(0));
-////                } else if (value instanceof WorkflowNodeDetails) {
-////                    WorkflowNodeDetailResource nodeDetailResource = getWorkflowNodeDetailResource(((WorkflowNodeDetails) value).getNodeInstanceId());
-////                    if (nodeDetailResource != null) {
-////                        String experimentId = nodeDetailResource.getProcessId();
-////                        ExperimentResource experiment = gatewayResource.getExperiment(experimentId);
-////                        return Arrays.asList(ThriftDataModelConversion
-////                                .getExperiment(experiment));
-////                    }
-////                } else {
-////                    logger.error("Unsupported field value to retrieve workflow node detail list...");
-////                }
-////
-////            } else {
-////                logger.error("Unsupported field name to retrieve experiment list...");
-////            }
-//        } catch (Exception e) {
-//            logger.error("Error while getting experiment list...", e);
-//            throw new RegistryException(e);
-//        }
-//        return experiments;
-        return null;
-    }
 
     /**
      * Method to get matching experiment list with pagination and ordering
@@ -1896,38 +1561,6 @@ public class ExperimentRegistry {
      * @return
      * @throws RegistryException
      */
-    public List<ExperimentModel> getExperimentList(String fieldName, Object value, int limit, int offset,
-                                              Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
-        List<ExperimentModel> experiments = new ArrayList<ExperimentModel>();
-        try {
-            if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
-                WorkerResource resource = (WorkerResource) gatewayResource.create(ResourceType.GATEWAY_WORKER);
-                resource.setUser((String) value);
-                List<ExperimentResource> resources = resource.getExperiments(limit, offset,
-                        orderByIdentifier, resultOrderType);
-                for (ExperimentResource experimentResource : resources) {
-                    ExperimentModel experiment = ThriftDataModelConversion.getExperiment(experimentResource);
-                    experiments.add(experiment);
-                }
-                return experiments;
-            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.PROJECT_ID)) {
-                ProjectResource project = workerResource.getProject((String) value);
-                List<ExperimentResource> resources = project.getExperiments(limit, offset,
-                        Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
-                for (ExperimentResource resource : resources) {
-                    ExperimentModel experiment = ThriftDataModelConversion.getExperiment(resource);
-                    experiments.add(experiment);
-                }
-                return experiments;
-            }
-            logger.error("Unsupported field name to retrieve experiment list...");
-        } catch (Exception e) {
-            logger.error("Error while getting experiment list...", e);
-            throw new RegistryException(e);
-        }
-        return experiments;
-    }
-
 
     public List<TaskModel> getTaskDetails(String fieldName, Object value) throws RegistryException {
 //        try {
@@ -2012,111 +1645,6 @@ public class ExperimentRegistry {
 //            }
 //        } catch (Exception e) {
 //            logger.error("Unable to get error details...", e);
-//            throw new RegistryException(e);
-//        }
-        return null;
-    }
-
-    public Object getExperiment(String expId, String fieldName) throws RegistryException {
-//        try {
-//            ExperimentResource resource = gatewayResource.getExperiment(expId);
-//            if (fieldName == null) {
-//                return ThriftDataModelConversion.getExperiment(resource);
-//            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
-//                return resource.getExecutionUser();
-//            }else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY)) {
-//                return resource.getGatewayId();
-//            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME)) {
-//                return resource.getExpName();
-//            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_DESC)) {
-//                return resource.getDescription();
-//            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.APPLICATION_ID)) {
-//                return resource.getApplicationId();
-//            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.PROJECT_ID)) {
-//                return resource.getProjectId();
-//            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.APPLICATION_VERSION)) {
-//                return resource.getApplicationVersion();
-//            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.WORKFLOW_TEMPLATE_ID)) {
-//                return resource.getWorkflowTemplateId();
-//            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.WORKFLOW_TEMPLATE_VERSION)) {
-//                return resource.getWorkflowTemplateId();
-//            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_INPUTS)) {
-//                return ThriftDataModelConversion.getExpInputs(resource.getExperimentInputs());
-//            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_OUTPUTS)) {
-//                return ThriftDataModelConversion.getExpOutputs(resource.getExperimentOutputs());
-//            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_STATUS)) {
-//                return ThriftDataModelConversion.getExperimentStatus(resource.getExperimentStatus());
-//            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_CONFIGURATION_DATA)) {
-//                return ThriftDataModelConversion.getUserConfigData(resource.getUserConfigData(expId));
-//            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.WORKFLOW_EXECUTION_ID)) {
-//                return resource.getWorkflowExecutionId();
-//            }
-////            else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.STATE_CHANGE_LIST)) {
-////                return ThriftDataModelConversion.getWorkflowNodeStatusList(resource.getWorkflowNodeStatuses());
-////            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.WORKFLOW_NODE_LIST)) {
-////                return ThriftDataModelConversion.getWfNodeList(resource.getWorkflowNodeDetails());
-////            }
-//            else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.ERROR_DETAIL_LIST)) {
-//                return ThriftDataModelConversion.getErrorDetailList(resource.getErrorDetails());
-//            } else {
-//                logger.error("Unsupported field name for experiment basic data..");
-//            }
-//        } catch (Exception e) {
-//            logger.error("Error while getting experiment info...", e);
-//            throw new RegistryException(e);
-//        }
-        return null;
-    }
-
-    public Object getUserConfigData(String expId, String fieldName) throws RegistryException {
-//        try {
-//            ExperimentResource resource = gatewayResource.getExperiment(expId);
-//            ConfigDataResource userConfigData = resource.getUserConfigData(expId);
-//            if (fieldName == null) {
-//                return ThriftDataModelConversion.getUserConfigData(userConfigData);
-//            } else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.AIRAVATA_AUTO_SCHEDULE)) {
-//                return userConfigData.isAiravataAutoSchedule();
-//            } else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.OVERRIDE_MANUAL_PARAMS)) {
-//                return userConfigData.isOverrideManualParams();
-//            } else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.SHARE_EXP)) {
-//                return userConfigData.isShareExp();
-//            } else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.COMPUTATIONAL_RESOURCE_SCHEDULING)) {
-//                return ThriftDataModelConversion.getComputationalResourceScheduling(resource.getComputationScheduling(expId));
-////            }
-////            else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.ADVANCED_INPUT_HANDLING)) {
-////                return ThriftDataModelConversion.getAdvanceInputDataHandling(resource.getInputDataHandling(expId));
-////            } else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.ADVANCED_OUTPUT_HANDLING)) {
-////                return ThriftDataModelConversion.getAdvanceOutputDataHandling(resource.getOutputDataHandling(expId));
-////            } else if (fieldName.equals(Constants.FieldConstants.ConfigurationDataConstants.QOS_PARAMS)) {
-////                return ThriftDataModelConversion.getQOSParams(resource.getQOSparams(expId));
-//            } else {
-//                logger.error("Unsupported field name for experiment configuration data..");
-//            }
-//        } catch (Exception e) {
-//            logger.error("Error while getting config data..", e);
-//            throw new RegistryException(e);
-//        }
-        return null;
-    }
-
-    public List<OutputDataObjectType> getExperimentOutputs(String expId) throws RegistryException {
-//        try {
-//            ExperimentResource resource = gatewayResource.getExperiment(expId);
-//            List<ExperimentOutputResource> experimentOutputs = resource.getExperimentOutputs();
-//            return ThriftDataModelConversion.getExpOutputs(experimentOutputs);
-//        } catch (Exception e) {
-//            logger.error("Error while getting experiment outputs...", e);
-//        }
-        return null;
-    }
-
-    public ExperimentStatus getExperimentStatus(String expId) throws RegistryException {
-//        try {
-//            ExperimentResource resource = gatewayResource.getExperiment(expId);
-//            StatusResource experimentStatus = resource.getExperimentStatus();
-//            return ThriftDataModelConversion.getExperimentStatus(experimentStatus);
-//        } catch (Exception e) {
-//            logger.error("Error while getting experiment status...", e);
 //            throw new RegistryException(e);
 //        }
         return null;
@@ -2838,109 +2366,9 @@ public class ExperimentRegistry {
      * @return
      * @throws RegistryException
      */
-    public List<ExperimentSummaryModel> searchExperiments(Map<String, String> filters, int limit,
-              int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
-//        Map<String, String> fil = new HashMap<String, String>();
-//        if (filters != null && filters.size() != 0) {
-//            List<ExperimentSummaryModel> experimentSummaries = new ArrayList<>();
-//            long fromTime = 0;
-//            long toTime = 0;
-//            try {
-//                for (String field : filters.keySet()) {
-//                    if (field.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME)) {
-//                        fil.put(AbstractExpCatResource.ExperimentConstants.EXPERIMENT_NAME, filters.get(field));
-//                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
-//                        fil.put(AbstractExpCatResource.ExperimentConstants.EXECUTION_USER, filters.get(field));
-//                    }else if (field.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY)) {
-//                        fil.put(AbstractExpCatResource.ExperimentConstants.GATEWAY_ID, filters.get(field));
-//                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_DESC)) {
-//                        fil.put(AbstractExpCatResource.ExperimentConstants.DESCRIPTION, filters.get(field));
-//                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.APPLICATION_ID)) {
-//                        fil.put(AbstractExpCatResource.ExperimentConstants.APPLICATION_ID, filters.get(field));
-//                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_STATUS)) {
-//                        fil.put(AbstractExpCatResource.StatusConstants.STATE, filters.get(field));
-//                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.FROM_DATE)) {
-//                        fromTime = Long.parseLong(filters.get(field));
-//                    } else if (field.equals(Constants.FieldConstants.ExperimentConstants.TO_DATE)) {
-//                        toTime = Long.parseLong(filters.get(field));
-//                    }
-//                }
-//                List<ExperimentSummaryResource> experimentSummaryResources;
-//                if (fromTime != 0 && toTime != 0) {
-//                    experimentSummaryResources = workerResource.searchExperiments(new Timestamp(fromTime), new Timestamp(toTime), fil
-//                            ,limit , offset, orderByIdentifier, resultOrderType);
-//                } else {
-//                    experimentSummaryResources = workerResource
-//                            .searchExperiments(null, null, fil, limit, offset, orderByIdentifier, resultOrderType);
-//                }
-//                if (experimentSummaryResources != null && !experimentSummaryResources.isEmpty()) {
-//                    for (ExperimentSummaryResource ex : experimentSummaryResources) {
-//                        experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
-//                    }
-//                }
-//                return experimentSummaries;
-//
-//            } catch (Exception e) {
-//                logger.error("Error while retrieving experiment summary from registry", e);
-//                throw new RegistryException(e);
-//            }
-//        }
-        return null;
-    }
-
-    /**
-     * Method to get experiment execution statistics for a specific time period
-     * @param filters
-     * @return
-     * @throws RegistryException
-     */
-    public ExperimentStatistics getExperimentStatistics(Map<String,String> filters) throws RegistryException {
-        try {
-            ExperimentStatistics experimentStatistics = new ExperimentStatistics();
-            ExperimentStatisticsResource experimentStatisticsResource = workerResource.getExperimentStatistics(
-                    filters.get(Constants.FieldConstants.ExperimentConstants.GATEWAY),
-                    new Timestamp(Long.parseLong(filters.get(Constants.FieldConstants.ExperimentConstants.FROM_DATE))),
-                    new Timestamp(Long.parseLong(filters.get(Constants.FieldConstants.ExperimentConstants.TO_DATE)))
-            );
-
-            experimentStatistics.setAllExperimentCount(experimentStatisticsResource.getAllExperimentCount());
-            experimentStatistics.setCompletedExperimentCount(experimentStatisticsResource.getCompletedExperimentCount());
-            experimentStatistics.setFailedExperimentCount(experimentStatisticsResource.getFailedExperimentCount());
-            experimentStatistics.setCancelledExperimentCount(experimentStatisticsResource.getCancelledExperimentCount());
-
-            ArrayList<ExperimentSummaryModel> experimentSummaries = new ArrayList();
-            for (ExperimentSummaryResource ex : experimentStatisticsResource.getAllExperiments()) {
-                experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
-            }
-            experimentStatistics.setAllExperiments(experimentSummaries);
-
-            experimentSummaries = new ArrayList();
-            for (ExperimentSummaryResource ex : experimentStatisticsResource.getCompletedExperiments()) {
-                experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
-            }
-            experimentStatistics.setCompletedExperiments(experimentSummaries);
-
-            experimentSummaries = new ArrayList();
-            for (ExperimentSummaryResource ex : experimentStatisticsResource.getFailedExperiments()) {
-                experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
-            }
-            experimentStatistics.setFailedExperiments(experimentSummaries);
-
-            experimentSummaries = new ArrayList();
-            for (ExperimentSummaryResource ex : experimentStatisticsResource.getCancelledExperiments()) {
-                experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
-            }
-            experimentStatistics.setCancelledExperiments(experimentSummaries);
-
-            return experimentStatistics;
-        } catch (RegistryException e) {
-            logger.error("Error while retrieving experiment statistics from registry", e);
-            throw new RegistryException(e);
-        }
-    }
 
     public boolean isValidStatusTransition(Object object1, Object object2) {
-        if(object1 instanceof ExperimentState && object2 instanceof ExperimentState){
+        if (object1 instanceof ExperimentState && object2 instanceof ExperimentState) {
             ExperimentState oldState = (ExperimentState) object1;
             ExperimentState nextState = (ExperimentState) object2;
             if (nextState == null) {
@@ -2978,7 +2406,7 @@ public class ExperimentRegistry {
                 default:
                     return false;
             }
-        }else if(object1 instanceof ProcessState && object2 instanceof ProcessState){
+        } else if (object1 instanceof ProcessState && object2 instanceof ProcessState) {
             ProcessState oldState = (ProcessState) object1;
             ProcessState nextState = (ProcessState) object2;
             if (nextState == null) {
@@ -2991,7 +2419,7 @@ public class ExperimentRegistry {
                 default:
                     return false;
             }
-        }else if(object1 instanceof TaskState && object2 instanceof TaskState){
+        } else if (object1 instanceof TaskState && object2 instanceof TaskState) {
             TaskState oldState = (TaskState) object1;
             TaskState nextState = (TaskState) object2;
             if (nextState == null) {
@@ -3007,53 +2435,4 @@ public class ExperimentRegistry {
         }
         return false;
     }
-
-    public Object getExperimentInputs(String identifier) {
-        return null;
-    }
-
-    public Object getExperimentError(String identifier) {
-        return null;
-    }
-
-    public Object getProcessError(String identifier) {
-        return null;
-    }
-
-    public Object getProcessStatus(String identifier) {
-        return null;
-    }
-
-    public Object getProcessInputs(String identifier) {
-        return null;
-    }
-
-    public Object getProcessOutputs(String identifier) {
-        return null;
-    }
-
-    public Object getProcessResourceSchedule(String identifier, Object o) {
-        return null;
-    }
-
-    public Object getProcess(String identifier, Object o) {
-        return null;
-    }
-
-    public Object getTask(String identifier) {
-        return null;
-    }
-
-    public Object getTaskError(String identifier) {
-        return null;
-    }
-
-    public List<ProcessModel> getProcessList(String fieldName, Object value) {
-        return null;
-    }
-
-    public List<TaskModel> getTaskList(String fieldName, Object value) {
-        return null;
-    }
-
 }

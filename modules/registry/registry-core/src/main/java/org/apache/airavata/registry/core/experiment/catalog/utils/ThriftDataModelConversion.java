@@ -447,4 +447,19 @@ public class ThriftDataModelConversion {
         }
         return null;
     }
+
+    public static ComputationalResourceSchedulingModel getComputationalResourceScheduling(UserConfigurationDataResource resource) {
+        if (resource != null){
+            ComputationalResourceSchedulingModel resourceSchedulingModel = new ComputationalResourceSchedulingModel();
+            resourceSchedulingModel.setResourceHostId(resource.getResourceHostId());
+            resourceSchedulingModel.setTotalCPUCount(resource.getTotalCpuCount());
+            resourceSchedulingModel.setNodeCount(resource.getNodeCount());
+            resourceSchedulingModel.setNumberOfThreads(resource.getNumberOfThreads());
+            resourceSchedulingModel.setQueueName(resource.getQueueName());
+            resourceSchedulingModel.setWallTimeLimit(resource.getWallTimeLimit());
+            resourceSchedulingModel.setTotalPhysicalMemory(resource.getTotalPhysicalMemory());
+            return resourceSchedulingModel;
+        }
+        return null;
+    }
 }

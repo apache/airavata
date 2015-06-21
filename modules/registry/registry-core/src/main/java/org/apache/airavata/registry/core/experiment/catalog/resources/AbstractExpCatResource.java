@@ -92,6 +92,9 @@ public abstract class AbstractExpCatResource implements ExperimentCatResource {
 		public static final String PROJECT_ID = "projectId";
 		public static final String GATEWAY_ID = "gatewayId";
 		public static final String EXPERIMENT_ID = "experimentId";
+        public static final String EXECUTION_ID = "executionId";
+        public static final String EXPERIMENT_NAME = "experimentName";
+        public static final String DESCRIPTION = "description";
         public static final String USER_NAME = "userName";
         public static final String CREATION_TIME = "creationTime";
     }
