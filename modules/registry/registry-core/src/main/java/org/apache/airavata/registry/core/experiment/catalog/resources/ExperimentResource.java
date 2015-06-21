@@ -43,7 +43,6 @@ public class ExperimentResource extends AbstractExpCatResource {
     private String projectId;
     private String experimentType;
     private String userName;
-    private String applicationId;
     private String experimentName;
     private Timestamp creationTime;
     private String description;
@@ -82,14 +81,6 @@ public class ExperimentResource extends AbstractExpCatResource {
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }
-
-    public String getApplicationId() {
-        return applicationId;
-    }
-
-    public void setApplicationId(String applicationId) {
-        this.applicationId = applicationId;
     }
 
     public String getExperimentName() {
@@ -451,7 +442,6 @@ public class ExperimentResource extends AbstractExpCatResource {
             experiment.setProjectId(projectId);
             experiment.setExperimentType(experimentType);
             experiment.setUserName(userName);
-            experiment.setApplicationId(applicationId);
             experiment.setExperimentName(experimentName);
             experiment.setCreationTime(creationTime);
             experiment.setDescription(description);

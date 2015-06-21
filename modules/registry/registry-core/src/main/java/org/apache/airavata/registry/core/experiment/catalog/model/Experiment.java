@@ -35,7 +35,6 @@ public class Experiment {
     private String projectId;
     private String experimentType;
     private String userName;
-    private String applicationId;
     private String experimentName;
     private Timestamp creationTime;
     private String description;
@@ -90,16 +89,6 @@ public class Experiment {
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }
-
-    @Basic
-    @Column(name = "APPLICATION_ID")
-    public String getApplicationId() {
-        return applicationId;
-    }
-
-    public void setApplicationId(String applicationId) {
-        this.applicationId = applicationId;
     }
 
     @Basic
@@ -179,8 +168,6 @@ public class Experiment {
 //
 //        Experiment that = (Experiment) o;
 //
-//        if (applicationId != null ? !applicationId.equals(that.applicationId) : that.applicationId != null)
-//            return false;
 //        if (creationTime != null ? !creationTime.equals(that.creationTime) : that.creationTime != null) return false;
 //        if (description != null ? !description.equals(that.description) : that.description != null) return false;
 //        if (emailAddresses != null ? !emailAddresses.equals(that.emailAddresses) : that.emailAddresses != null)
@@ -207,7 +194,6 @@ public class Experiment {
 //        result = 31 * result + (projectId != null ? projectId.hashCode() : 0);
 //        result = 31 * result + (experimentType != null ? experimentType.hashCode() : 0);
 //        result = 31 * result + (userName != null ? userName.hashCode() : 0);
-//        result = 31 * result + (applicationId != null ? applicationId.hashCode() : 0);
 //        result = 31 * result + (experimentName != null ? experimentName.hashCode() : 0);
 //        result = 31 * result + (creationTime != null ? creationTime.hashCode() : 0);
 //        result = 31 * result + (description != null ? description.hashCode() : 0);
