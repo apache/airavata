@@ -21,6 +21,7 @@
 
 package org.apache.airavata.registry.core.experiment.catalog.impl;
 
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
@@ -31,10 +32,7 @@ import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.status.ExperimentState;
-import org.apache.airavata.model.status.ExperimentStatus;
-import org.apache.airavata.model.status.JobStatus;
-import org.apache.airavata.model.status.TaskStatus;
+import org.apache.airavata.model.status.*;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
@@ -46,6 +44,7 @@ import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.ResultOrderType;
 import org.apache.airavata.registry.cpi.utils.Constants;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,259 +69,404 @@ public class ExperimentRegistry {
 
     }
 
-    public String addExperiment(ExperimentModel experiment, String gatewayId) throws RegistryException {
-//        String experimentID;
-//        try {
-//            if (!ExpCatResourceUtils.isUserExist(experiment.getUserName())) {
-//                ExpCatResourceUtils.addUser(experiment.getUserName(), null);
-//            }
-//
-//            experimentID = getExperimentID(experiment.getExperimentName());
-//            experiment.setExperimentId(experimentID);
-//            ExperimentResource experimentResource = new ExperimentResource();
-//            experimentResource.setExpID(experimentID);
-//            experimentResource.setExpName(experiment.getExperimentName());
-//            experimentResource.setExecutionUser(experiment.getUserName());
-//            experimentResource.setGatewayId(gatewayId);
-//            experimentResource.setGatewayExecutionId(experiment.getGatewayExecutionId());
-//            experimentResource.setEnableEmailNotifications(experiment.isEnableEmailNotification());
-//            if (!workerResource.isProjectExists(experiment.getProjectId())) {
-//                logger.error("Project does not exist in the system..");
-//                throw new Exception("Project does not exist in the system, Please create the project first...");
-//            }
-//            experimentResource.setProjectId(experiment.getProjectId());
-//            experimentResource.setCreationTime(AiravataUtils.getTime(experiment.getCreationTime()));
-//            experimentResource.setDescription(experiment.getDescription());
-//            experimentResource.setApplicationId(experiment.getExecutionId());
-//            experimentResource.save();
-//
-//            List<String> emailAddresses = experiment.getEmailAddresses();
-//            if (emailAddresses != null && !emailAddresses.isEmpty()){
-//                for (String email : emailAddresses){
-//                    NotificationEmailResource emailResource = new NotificationEmailResource();
-//                    emailResource.setExperimentId(experimentID);
-//                    emailResource.setEmailAddress(email);
-//                    emailResource.save();
-//                }
-//            }
-//
-//            List<InputDataObjectType> experimentInputs = experiment.getExperimentInputs();
-//            if (experimentInputs != null) {
-//                addExpInputs(experimentInputs, experimentResource);
-//            }
-//
-//            UserConfigurationDataModel userConfigurationData = experiment.getUserConfigurationData();
-//            if (userConfigurationData != null) {
-//                addUserConfigData(userConfigurationData, experimentID);
-//            }
-//
-//            List<OutputDataObjectType> experimentOutputs = experiment.getExperimentOutputs();
-//            if (experimentOutputs != null && !experimentOutputs.isEmpty()) {
-//                //TODO: short change.
-////                for (DataObjectType output : experimentOutputs){
-////                    output.setValue("");
-////                }
-//                addExpOutputs(experimentOutputs, experimentID);
-//            }
-//
-////            ExperimentStatus experimentStatus = experiment.getExperimentStatus();
-////            if (experimentStatus != null){
-////                updateExperimentStatus(experimentStatus, experimentID);
-////            }else {
-//            ExperimentStatus experimentStatus = new ExperimentStatus();
-//            experimentStatus.setState(ExperimentState.CREATED);
-//            updateExperimentStatus(experimentStatus, experimentID);
-////            }
-//
-////            List<WorkflowNodeDetails> workflowNodeDetailsList = experiment.getWorkflowNodeDetailsList();
-////            if (workflowNodeDetailsList != null && !workflowNodeDetailsList.isEmpty()) {
-////                for (WorkflowNodeDetails wf : workflowNodeDetailsList) {
-////                    addWorkflowNodeDetails(wf, experimentID);
-////                }
-////            }
-//            List<ErrorModel> errors = experiment.getErrors();
-//            if (errors != null && !errors.isEmpty()) {
-//                for (ErrorModel errror : errors) {
-//                    addErrorDetails(errror, experimentID);
-//                }
-//            }
-//        } catch (Exception e) {
-//            logger.error("Error while saving experiment to registry", e);
-//            throw new RegistryException(e);
-//        }
-//        return experimentID;
-        return null;
+    //CPI Add Methods
+
+    public String addExperiment(ExperimentModel experiment) throws RegistryException {
+        String experimentId;
+        try {
+            if (!ExpCatResourceUtils.isUserExist(experiment.getUserName())) {
+                ExpCatResourceUtils.addUser(experiment.getUserName(), null);
+            }
+            if (!workerResource.isProjectExists(experiment.getProjectId())) {
+                logger.error("Project does not exist in the system..");
+                throw new Exception("Project does not exist in the system, Please create the project first...");
+            }
+            experimentId = getExperimentID(experiment.getExperimentName());
+            experiment.setExperimentId(experimentId);
+            ExperimentResource experimentResource = new ExperimentResource();
+            experimentResource.setExperimentId(experimentId);
+            experimentResource.setProjectId(experiment.getProjectId());
+            experimentResource.setExperimentType(experiment.getExperimentType().toString());
+            experimentResource.setUserName(experiment.getUserName());
+            experimentResource.setExperimentName(experiment.getExperimentName());
+            experimentResource.setCreationTime(AiravataUtils.getTime(experiment.getCreationTime()));
+            experimentResource.setDescription(experiment.getDescription());
+            experimentResource.setExecutionId(experiment.getExecutionId());
+            experimentResource.setGatewayExecutionId(experiment.getGatewayExecutionId());
+            if(experiment.isEnableEmailNotification()){
+                experimentResource.setEnableEmailNotification(true);
+                if(experiment.getEmailAddresses() != null){
+                    experimentResource.setEmailAddresses(StringUtils.join(experiment.getEmailAddresses(), ","));
+                }
+            }else{
+                experimentResource.setEnableEmailNotification(false);
+            }
+            experimentResource.save();
+            if(experiment.getUserConfigurationData() != null) {
+                addUserConfigData(experiment.getUserConfigurationData(), experimentId);
+            }
+            if(experiment.getExperimentInputs() != null && experiment.getExperimentInputs().size() > 0) {
+                addExpInputs(experiment.getExperimentInputs(), experimentId);
+            }
+            if(experiment.getExperimentOutputs() != null && experiment.getExperimentOutputs().size() > 0) {
+                addExpOutputs(experiment.getExperimentOutputs(), experimentId);
+            }
+
+            ExperimentStatus experimentStatus = new ExperimentStatus();
+            experimentStatus.setState(ExperimentState.CREATED);
+            addExperimentStatus(experimentStatus, experimentId);
+
+            List<ErrorModel> errors = experiment.getErrors();
+            if (errors != null && !errors.isEmpty()) {
+                for (ErrorModel errror : errors) {
+                    addExperimentError(errror, experimentId);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error while saving experiment to registry", e);
+            throw new RegistryException(e);
+        }
+        return experimentId;
     }
 
-    public String addUserConfigData(UserConfigurationDataModel configurationData, String experimentID) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = gatewayResource.getExperiment(experimentID);
-//            ConfigDataResource configData = (ConfigDataResource) experiment.create(ResourceType.CONFIG_DATA);
-//            configData.setExperimentId(experimentID);
-//            configData.setAiravataAutoSchedule(configurationData.isAiravataAutoSchedule());
-//            configData.setOverrideManualParams(configurationData.isOverrideManualScheduledParams());
-//            configData.setShareExp(configurationData.isShareExperimentPublicly());
-//            configData.setUserDn(configurationData.getUserDN());
-//            configData.setGenerateCert(configurationData.isGenerateCert());
-//            configData.save();
-//            ComputationalResourceSchedulingModel resourceScheduling = configurationData.getComputationalResourceScheduling();
-//            if (resourceScheduling != null) {
-//                addComputationScheduling(resourceScheduling, experiment);
-//            }
-////            AdvancedInputDataHandling inputDataHandling = configurationData.getAdvanceInputDataHandling();
-////            if (inputDataHandling != null) {
-////                addInputDataHandling(inputDataHandling, experiment);
-////            }
-////
-////            AdvancedOutputDataHandling outputDataHandling = configurationData.getAdvanceOutputDataHandling();
-////            if (outputDataHandling != null) {
-////                addOutputDataHandling(outputDataHandling, experiment);
-////            }
-////
-////            QualityOfServiceParams qosParams = configurationData.getQosParams();
-////            if (qosParams != null) {
-////                addQosParams(qosParams, experiment);
-////            }
-//        } catch (Exception e) {
-//            logger.error("Unable to save user config data", e);
-//            throw new RegistryException(e);
-//        }
-//        return experimentID;
-        return null;
+    public String addUserConfigData(UserConfigurationDataModel configurationData, String experimentId) throws RegistryException {
+        try {
+            UserConfigurationDataResource configDataResource = new UserConfigurationDataResource();
+            configDataResource.setExperimentId(experimentId);
+            configDataResource.setAiravataAutoSchedule(configurationData.isAiravataAutoSchedule());
+            configDataResource.setOverrideManualScheduledParams(configurationData.isOverrideManualScheduledParams());
+            configDataResource.setShareExperimentPublically(configurationData.isShareExperimentPublicly());
+            configDataResource.setThrottleResources(configurationData.isThrottleResources());
+            configDataResource.setUserDn(configurationData.getUserDN());
+            configDataResource.setGenerateCert(configurationData.isGenerateCert());
+            configDataResource.setResourceHostId(configurationData.getComputationalResourceScheduling().getResourceHostId());
+            configDataResource.setTotalCpuCount(configurationData.getComputationalResourceScheduling().getTotalCPUCount());
+            configDataResource.setNodeCount(configurationData.getComputationalResourceScheduling().getNodeCount());
+            configDataResource.setNumberOfThreads(configurationData.getComputationalResourceScheduling().getNumberOfThreads());
+            configDataResource.setQueueName(configurationData.getComputationalResourceScheduling().getQueueName());
+            configDataResource.setWallTimeLimit(configurationData.getComputationalResourceScheduling().getWallTimeLimit());
+            configDataResource.setTotalPhysicalMemory(configurationData.getComputationalResourceScheduling().getTotalPhysicalMemory());
+            configDataResource.save();
+        } catch (Exception e) {
+            logger.error("Unable to save user config data", e);
+            throw new RegistryException(e);
+        }
+        return experimentId;
     }
 
-//    public void addQosParams(QualityOfServiceParams qosParams, ExperimentCatResource resource) throws RegistryException {
-//        try {
-//            QosParamResource qosr = new QosParamResource();
-//            if (resource instanceof ExperimentResource) {
-//                ExperimentResource experiment = (ExperimentResource) resource;
-//                qosr.setProcessId(experiment.getExpID());
-//            }
-//            if (resource instanceof TaskDetailResource) {
-//                TaskDetailResource taskDetailResource = (TaskDetailResource) resource;
-//                qosr.setTaskId(taskDetailResource.getTaskId());
-//                String nodeId = taskDetailResource.getNodeId();
-//                ExperimentResource experimentResource = new ExperimentResource();
-//                WorkflowNodeDetailResource workflowNode = experimentResource.getWorkflowNode(nodeId);
-//                qosr.setProcessId(workflowNode.getProcessId());
-//            }
-//            qosr.setStartExecutionAt(qosParams.getStartExecutionAt());
-//            qosr.setExecuteBefore(qosParams.getExecuteBefore());
-//            qosr.setNoOfRetries(qosParams.getNumberofRetries());
-//            qosr.save();
-//        } catch (Exception e) {
-//            logger.error("Unable to save QOS params", e);
-//            throw new RegistryException(e);
-//        }
-//
-//    }
-
-//    public void addOutputDataHandling(AdvancedOutputDataHandling outputDataHandling, ExperimentCatResource resource) throws RegistryException {
-//        AdvancedOutputDataHandlingResource adodh = new AdvancedOutputDataHandlingResource();
-//        try {
-//            if (resource instanceof ExperimentResource) {
-//                ExperimentResource experiment = (ExperimentResource) resource;
-//                adodh.setProcessId(experiment.getExpID());
-//            }
-//            if (resource instanceof TaskDetailResource) {
-//                TaskDetailResource taskDetailResource = (TaskDetailResource) resource;
-//                String nodeId = taskDetailResource.getNodeId();
-//                ExperimentResource experimentResource = new ExperimentResource();
-//                WorkflowNodeDetailResource workflowNode = experimentResource.getWorkflowNode(nodeId);
-//                adodh.setProcessId(workflowNode.getProcessId());
-//                adodh.setTaskId(taskDetailResource.getTaskId());
-//            }
-//            adodh.setOutputDataDir(outputDataHandling.getOutputDataDir());
-//            adodh.setDataRegUrl(outputDataHandling.getDataRegistryURL());
-//            adodh.setPersistOutputData(outputDataHandling.isPersistOutputData());
-//            adodh.save();
-//        } catch (Exception e) {
-//            logger.error("Unable to save output data handling data", e);
-//            throw new RegistryException(e);
-//        }
-//
-//    }
-
-//    public void addInputDataHandling(AdvancedInputDataHandling inputDataHandling, ExperimentCatResource resource) throws RegistryException {
-//        AdvanceInputDataHandlingResource adidh = new AdvanceInputDataHandlingResource();
-//        try {
-//            if (resource instanceof ExperimentResource) {
-//                ExperimentResource experiment = (ExperimentResource) resource;
-//                adidh.setProcessId(experiment.getExpID());
-//            }
-//            if (resource instanceof TaskDetailResource) {
-//                TaskDetailResource taskDetailResource = (TaskDetailResource) resource;
-//                String nodeId = taskDetailResource.getNodeId();
-//                ExperimentResource experimentResource = new ExperimentResource();
-//                WorkflowNodeDetailResource workflowNode = experimentResource.getWorkflowNode(nodeId);
-//                adidh.setProcessId(workflowNode.getProcessId());
-//                adidh.setTaskId(taskDetailResource.getTaskId());
-//            }
-//            adidh.setWorkingDir(inputDataHandling.getUniqueWorkingDirectory());
-//            adidh.setWorkingDirParent(inputDataHandling.getParentWorkingDirectory());
-//            adidh.setStageInputFiles(inputDataHandling.isSetStageInputFilesToWorkingDir());
-//            adidh.setCleanAfterJob(inputDataHandling.isCleanUpWorkingDirAfterJob());
-//            adidh.save();
-//        } catch (Exception e) {
-//            logger.error("Unable to save input data handling data", e);
-//            throw new RegistryException(e);
-//        }
-//
-//    }
-
-    public void addComputationScheduling(ComputationalResourceSchedulingModel resourceScheduling, ExperimentCatResource resource) throws RegistryException {
-//        ComputationSchedulingResource cmsr = new ComputationSchedulingResource();
-//        try {
-//            if (resource instanceof ExperimentResource) {
-//                ExperimentResource experiment = (ExperimentResource) resource;
-//                cmsr.setExperimentId(experiment.getExpID());
-//            }
-//            if (resource instanceof TaskDetailResource) {
-//                TaskDetailResource taskDetailResource = (TaskDetailResource) resource;
-//                String nodeId = taskDetailResource.getNodeId();
-//                ExperimentResource experimentResource = new ExperimentResource();
-//                WorkflowNodeDetailResource workflowNode = experimentResource.getWorkflowNode(nodeId);
-//                cmsr.setExperimentId(workflowNode.getExperimentId());
-//                cmsr.setTaskId(taskDetailResource.getTaskId());
-//            }
-//            cmsr.setResourceHostId(resourceScheduling.getResourceHostId());
-//            cmsr.setCpuCount(resourceScheduling.getTotalCPUCount());
-//            cmsr.setNodeCount(resourceScheduling.getNodeCount());
-//            cmsr.setNumberOfThreads(resourceScheduling.getNumberOfThreads());
-//            cmsr.setQueueName(resourceScheduling.getQueueName());
-//            cmsr.setWalltimeLimit(resourceScheduling.getWallTimeLimit());
-//            cmsr.setPhysicalMemory(resourceScheduling.getTotalPhysicalMemory());
-//            cmsr.setChessisName(resourceScheduling.getChessisNumber());
-//            cmsr.save();
-//        } catch (Exception e) {
-//            logger.error("Unable to save computational scheduling data", e);
-//            throw new RegistryException(e);
-//        }
-
+    public String addExpInputs(List<InputDataObjectType> exInputs, String experimentId) throws RegistryException {
+        try {
+            for (InputDataObjectType input : exInputs) {
+                ExperimentInputResource resource = new ExperimentInputResource();
+                resource.setExperimentId(experimentId);
+                resource.setInputName(input.getName());
+                resource.setInputValue(input.getValue());
+                if (input.getType() != null) {
+                    resource.setDataType(input.getType().toString());
+                }
+                resource.setMetadata(input.getMetaData());
+                resource.setApplicationArgument(input.getApplicationArgument());
+                resource.setInputOrder(input.getInputOrder());
+                resource.setIsRequired(input.isIsRequired());
+                resource.setIsRequired(input.isRequiredToAddedToCommandLine());
+                resource.save();
+            }
+        } catch (Exception e) {
+            logger.error("Unable to save experiment inputs", e);
+            throw new RegistryException(e);
+        }
+        return experimentId;
     }
 
-    public void addExpInputs(List<InputDataObjectType> exInputs, ExperimentResource experimentResource) throws RegistryException {
-//        try {
-//            for (InputDataObjectType input : exInputs) {
-//                ExperimentInputResource resource = (ExperimentInputResource) experimentResource.create(ResourceType.EXPERIMENT_INPUT);
-//                resource.setExperimentId(experimentResource.getExpID());
-//                resource.setExperimentKey(input.getName());
-//                resource.setValue(input.getValue());
-//                if (input.getType() != null) {
-//                    resource.setDataType(input.getType().toString());
-//                }
-//                resource.setMetadata(input.getMetaData());
-//                resource.setAppArgument(input.getApplicationArgument());
-//                resource.setInputOrder(input.getInputOrder());
-//                resource.setRequired(input.isIsRequired());
-//                resource.setRequiredToCMD(input.isRequiredToAddedToCommandLine());
-//                resource.save();
-//            }
-//        } catch (Exception e) {
-//            logger.error("Unable to save experiment inputs", e);
-//            throw new RegistryException(e);
-//        }
+    public String addExpOutputs(List<OutputDataObjectType> exOutput, String expId) throws RegistryException {
+        try {
+            for (OutputDataObjectType output : exOutput) {
+                ExperimentOutputResource resource = new ExperimentOutputResource();
+                resource.setExperimentId(expId);
+                resource.setOutputName(output.getName());
+                resource.setOutputValue(output.getValue());
+                if (output.getType() != null) {
+                    resource.setDataType(output.getType().toString());
+                }
+                resource.setApplicationArgument(output.getApplicationArgument());
+                resource.setIsRequired(output.isIsRequired());
+                resource.setRequiredToAddedToCmd(output.isRequiredToAddedToCommandLine());
+                resource.setDataMovement(output.isDataMovement());
+                resource.setLocation(output.getLocation());
+                resource.setSearchQuery(output.getSearchQuery());
+                resource.save();
+            }
+        } catch (Exception e) {
+            logger.error("Error while adding experiment outputs...", e);
+            throw new RegistryException(e);
+        }
+        return expId;
     }
+
+    public String addExperimentStatus(ExperimentStatus experimentStatus, String expId) throws RegistryException {
+        try {
+            ExperimentResource experiment = new ExperimentResource();
+            experiment.setExperimentId(expId);
+            ExperimentStatusResource status = experiment.getExperimentStatus();
+            if (status == null) {
+                status = (ExperimentStatusResource) experiment.create(ResourceType.EXPERIMENT_STATUS);
+            }
+            if (isValidStatusTransition(ExperimentState.valueOf(status.getState()), experimentStatus.getState())) {
+                status.setStatusId(getStatusID(expId));
+                status.setExperimentId(expId);
+                status.setTimeOfStateChange(AiravataUtils.getTime(experimentStatus.getTimeOfStateChange()));
+                status.setState(experimentStatus.getState().toString());
+                status.setReason(experimentStatus.getReason());
+                status.save();
+                logger.debug(expId, "Added experiment {} status to {}.", expId, experimentStatus.toString());
+            }
+        } catch (Exception e) {
+            logger.error(expId, "Error while adding experiment status...", e);
+            throw new RegistryException(e);
+        }
+        return expId;
+    }
+
+    public String addExperimentError(ErrorModel experimentError, String expId) throws RegistryException {
+        try {
+            ExperimentErrorResource error = new ExperimentErrorResource();
+            error.setErrorId(getErrorID(expId));
+            error.setExperimentId(expId);
+            error.setCreationTime(AiravataUtils.getTime(experimentError.getCreationTime()));
+            error.setActualErrorMessage(experimentError.getActualErrorMessage());
+            error.setUserFriendlyMessage(experimentError.getUserFriendlyMessage());
+            error.setTransientOrPersistent(experimentError.isTransientOrPersistent());
+            if(experimentError.getRootCauseErrorIdList() != null) {
+                error.setRootCauseErrorIdList(StringUtils.join(experimentError.getRootCauseErrorIdList(), ","));
+            }
+            error.save();
+        } catch (Exception e) {
+            logger.error(expId, "Error while updating experiment status...", e);
+            throw new RegistryException(e);
+        }
+        return expId;
+    }
+
+    public String addProcess(ProcessModel process, String expId) throws RegistryException {
+        try {
+            ProcessResource processResource = new ProcessResource();
+            processResource.setProcessId(getProcessID(expId));
+            processResource.setExperimentId(expId);
+            processResource.setCreationTime(AiravataUtils.getTime(process.getCreationTime()));
+            processResource.setLastUpdateTime(AiravataUtils.getTime(process.getLastUpdateTime()));
+            processResource.setProcessDetail(process.getProcessDetail());
+            processResource.setApplicationInterfaceId(process.getApplicationInterfaceId());
+            processResource.setTaskDag(process.getTaskDag());
+            processResource.save();
+
+            if(process.getResourceSchedule() != null) {
+                addProcessResourceSchedule(process.getResourceSchedule(), process.getProcessId());
+            }
+            if(process.getProcessInputs() !=  null && process.getProcessInputs().size() > 0) {
+                addProcessInputs(process.getProcessInputs(), process.getProcessId());
+            }
+            if(process.getProcessOutputs() != null && process.getProcessOutputs().size() > 0) {
+                addProcessOutputs(process.getProcessOutputs(), process.getProcessId());
+            }
+
+            ProcessStatus processStatus = new ProcessStatus();
+            processStatus.setState(ProcessState.CREATED);
+            addProcessStatus(processStatus, process.getProcessId());
+
+            if(process.getProcessError() != null) {
+                addProcessError(process.getProcessError(), process.getProcessId());
+            }
+        } catch (Exception e) {
+            logger.error(expId, "Error while adding process...", e);
+            throw new RegistryException(e);
+        }
+        return expId;
+    }
+
+
+    public String addProcessResourceSchedule(ComputationalResourceSchedulingModel resourceSchedule, String processID) throws RegistryException {
+        try {
+            ProcessResourceScheduleResource processResourceSchedule = new ProcessResourceScheduleResource();
+            processResourceSchedule.setProcessId(processID);
+            processResourceSchedule.setResourceHostId(resourceSchedule.getResourceHostId());
+            processResourceSchedule.setTotalCpuCount(resourceSchedule.getTotalCPUCount());
+            processResourceSchedule.setNodeCount(resourceSchedule.getNodeCount());
+            processResourceSchedule.setNumberOfThreads(resourceSchedule.getNumberOfThreads());
+            processResourceSchedule.setQueueName(resourceSchedule.getQueueName());
+            processResourceSchedule.setWallTimeLimit(resourceSchedule.getWallTimeLimit());
+            processResourceSchedule.setTotalPhysicalMemory(resourceSchedule.getTotalPhysicalMemory());
+            processResourceSchedule.save();
+        } catch (Exception e) {
+            logger.error("Unable to save user config data", e);
+            throw new RegistryException(e);
+        }
+        return processID;
+    }
+
+    public String addProcessInputs(List<InputDataObjectType> processInputs, String processID) throws RegistryException {
+        try {
+            for (InputDataObjectType input : processInputs) {
+                ProcessInputResource resource = new ProcessInputResource();
+                resource.setProcessId(processID);
+                resource.setInputName(input.getName());
+                resource.setInputValue(input.getValue());
+                if (input.getType() != null) {
+                    resource.setDataType(input.getType().toString());
+                }
+                resource.setMetadata(input.getMetaData());
+                resource.setApplicationArgument(input.getApplicationArgument());
+                resource.setInputOrder(input.getInputOrder());
+                resource.setIsRequired(input.isIsRequired());
+                resource.setIsRequired(input.isRequiredToAddedToCommandLine());
+                resource.save();
+            }
+            return processID;
+        } catch (Exception e) {
+            logger.error("Unable to save process inputs", e);
+            throw new RegistryException(e);
+        }
+    }
+
+    public String addProcessOutputs(List<OutputDataObjectType> processOutput, String processID) throws RegistryException {
+        try {
+            for (OutputDataObjectType output : processOutput) {
+                ProcessOutputResource resource = new ProcessOutputResource();
+                resource.setProcessId(processID);
+                resource.setOutputName(output.getName());
+                resource.setOutputValue(output.getValue());
+                if (output.getType() != null) {
+                    resource.setDataType(output.getType().toString());
+                }
+                resource.setApplicationArgument(output.getApplicationArgument());
+                resource.setIsRequired(output.isIsRequired());
+                resource.setRequiredToAddedToCmd(output.isRequiredToAddedToCommandLine());
+                resource.setDataMovement(output.isDataMovement());
+                resource.setLocation(output.getLocation());
+                resource.setSearchQuery(output.getSearchQuery());
+                resource.save();
+            }
+            return processID;
+        } catch (Exception e) {
+            logger.error("Error while adding process outputs...", e);
+            throw new RegistryException(e);
+        }
+    }
+
+    public String addProcessStatus(ProcessStatus processStatus, String processID) throws RegistryException {
+        try {
+            ProcessResource processResource = new ProcessResource();
+            processResource.setProcessId(processID);
+            ProcessStatusResource status = processResource.getProcessStatus();
+            if (status == null) {
+                status = (ProcessStatusResource) processResource.create(ResourceType.EXPERIMENT_STATUS);
+            }
+            if (isValidStatusTransition(ProcessState.valueOf(status.getState()), processStatus.getState())) {
+                status.setStatusId(getStatusID(processID));
+                status.setProcessId(processID);
+                status.setTimeOfStateChange(AiravataUtils.getTime(processStatus.getTimeOfStateChange()));
+                status.setState(processStatus.getState().toString());
+                status.setReason(processStatus.getReason());
+                status.save();
+                logger.debug(processID, "Added process {} status to {}.", processID, processStatus.toString());
+            }
+        } catch (Exception e) {
+            logger.error(processID, "Error while adding process status...", e);
+            throw new RegistryException(e);
+        }
+        return processID;
+    }
+
+    public String addProcessError(ErrorModel processError, String processID) throws RegistryException {
+        try {
+            ProcessErrorResource error = new ProcessErrorResource();
+            error.setProcessId(processID);
+            error.setErrorId(getErrorID(processID));
+            error.setCreationTime(AiravataUtils.getTime(processError.getCreationTime()));
+            error.setActualErrorMessage(processError.getActualErrorMessage());
+            error.setUserFriendlyMessage(processError.getUserFriendlyMessage());
+            error.setTransientOrPersistent(processError.isTransientOrPersistent());
+            if(processError.getRootCauseErrorIdList() != null) {
+                error.setRootCauseErrorIdList(StringUtils.join(processError.getRootCauseErrorIdList(), ","));
+            }
+            error.save();
+        } catch (Exception e) {
+            logger.error(processID, "Error while adding process status...", e);
+            throw new RegistryException(e);
+        }
+        return processID;
+    }
+
+    public String addTask(TaskModel task, String processID) throws RegistryException {
+        try {
+            TaskResource taskResource = new TaskResource();
+            taskResource.setParentProcessId(getProcessID(processID));
+            taskResource.setTaskType(task.getTaskType().toString());
+            taskResource.setCreationTime(AiravataUtils.getTime(task.getCreationTime()));
+            taskResource.setLastUpdateTime(AiravataUtils.getTime(task.getLastUpdateTime()));
+            taskResource.setTaskDetail(task.getTaskDetail());
+            taskResource.setTaskInternalStore(task.getTaskInternalStore());
+            taskResource.save();
+
+            TaskStatus taskStatus = new TaskStatus();
+            taskStatus.setState(TaskState.CREATED);
+            addTaskStatus(taskStatus, task.getTaskId());
+
+            if(task.getTaskError() != null) {
+                addTaskError(task.getTaskError(), task.getTaskId());
+            }
+        } catch (Exception e) {
+            logger.error(processID, "Error while adding task...", e);
+            throw new RegistryException(e);
+        }
+        return processID;
+    }
+
+    public String addTaskStatus(TaskStatus taskStatus, String taskID) throws RegistryException {
+        try {
+            TaskResource taskResource = new TaskResource();
+            taskResource.setTaskId(taskID);
+            TaskStatusResource status = taskResource.getTaskStatus();
+            if (status == null) {
+                status = new TaskStatusResource();
+            }
+            if (isValidStatusTransition(ProcessState.valueOf(status.getState()), taskStatus.getState())) {
+                status.setStatusId(getStatusID(taskID));
+                status.setTaskId(taskID);
+                status.setTimeOfStateChange(AiravataUtils.getTime(taskStatus.getTimeOfStateChange()));
+                status.setState(taskStatus.getState().toString());
+                status.setReason(taskStatus.getReason());
+                status.save();
+                logger.debug(taskID, "Added task {} status to {}.", taskID, taskStatus.toString());
+            }
+        } catch (Exception e) {
+            logger.error(taskID, "Error while adding task status...", e);
+            throw new RegistryException(e);
+        }
+        return taskID;
+    }
+
+    public String addTaskError(ErrorModel taskError, String taskId) throws RegistryException {
+        try {
+            TaskErrorResource error = new TaskErrorResource();
+            error.setTaskId(taskId);
+            error.setErrorId(getErrorID(taskId));
+            error.setCreationTime(AiravataUtils.getTime(taskError.getCreationTime()));
+            error.setActualErrorMessage(taskError.getActualErrorMessage());
+            error.setUserFriendlyMessage(taskError.getUserFriendlyMessage());
+            error.setTransientOrPersistent(taskError.isTransientOrPersistent());
+            if(taskError.getRootCauseErrorIdList() != null) {
+                error.setRootCauseErrorIdList(StringUtils.join(taskError.getRootCauseErrorIdList(), ","));
+            }
+            error.save();
+        } catch (Exception e) {
+            logger.error(taskId, "Error while adding task status...", e);
+            throw new RegistryException(e);
+        }
+        return taskId;
+    }
+
+
+    //CPI Update Methods
 
     public void updateExpInputs(List<InputDataObjectType> exInputs, ExperimentResource experimentResource) throws RegistryException {
 //        try {
@@ -348,34 +492,6 @@ public class ExperimentRegistry {
 //            throw new RegistryException(e);
 //        }
 
-    }
-
-    public String addExpOutputs(List<OutputDataObjectType> exOutput, String expId) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = gatewayResource.getExperiment(expId);
-//            for (OutputDataObjectType output : exOutput) {
-//                ExperimentOutputResource resource = (ExperimentOutputResource) experiment.create(ResourceType.EXPERIMENT_OUTPUT);
-//                resource.setExperimentId(expId);
-//                resource.setExperimentKey(output.getName());
-//                resource.setValue(output.getValue());
-//                if (output.getType() != null) {
-//                    resource.setDataType(output.getType().toString());
-//                }
-//                resource.setRequired(output.isIsRequired());
-//                resource.setRequiredToCMD(output.isRequiredToAddedToCommandLine());
-//                resource.setDataMovement(output.isDataMovement());
-//                resource.setDataNameLocation(output.getLocation());
-//                resource.setAppArgument(output.getApplicationArgument());
-//                resource.setSearchQuery(output.getSearchQuery());
-////                resource.setMetadata(output.get());
-//                resource.save();
-//            }
-//        } catch (Exception e) {
-//            logger.error("Error while adding experiment outputs...", e);
-//            throw new RegistryException(e);
-//        }
-//        return expId;
-        return null;
     }
 
     public void updateExpOutputs(List<OutputDataObjectType> exOutput, String expId) throws RegistryException {
@@ -406,94 +522,6 @@ public class ExperimentRegistry {
 //            logger.error("Error while updating experiment outputs", e);
 //            throw new RegistryException(e);
 //        }
-    }
-
-    public String addNodeOutputs(List<OutputDataObjectType> wfOutputs, CompositeIdentifier ids) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = gatewayResource.getExperiment((String) ids.getTopLevelIdentifier());
-//            WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode((String) ids.getSecondLevelIdentifier());
-//            for (OutputDataObjectType output : wfOutputs) {
-//                NodeOutputResource resource = (NodeOutputResource) workflowNode.create(ResourceType.NODE_OUTPUT);
-//                resource.setNodeId(workflowNode.getNodeInstanceId());
-//                resource.setOutputKey(output.getName());
-//                resource.setValue(output.getValue());
-//                if (output.getType() != null) {
-//                    resource.setDataType(output.getType().toString());
-//                }
-//                resource.setRequired(output.isIsRequired());
-//                resource.setRequiredToCMD(output.isRequiredToAddedToCommandLine());
-//                resource.setDataMovement(output.isDataMovement());
-//                resource.setDataNameLocation(output.getLocation());
-//                resource.setAppArgument(output.getApplicationArgument());
-//                resource.setSearchQuery(output.getSearchQuery());
-////                resource.setMetadata(output.getMetaData());
-//                resource.save();
-//            }
-//        } catch (Exception e) {
-//            logger.error("Error while adding node outputs...", e);
-//            throw new RegistryException(e);
-//        }
-//        return (String) ids.getSecondLevelIdentifier();
-        return null;
-    }
-
-    public void updateNodeOutputs(List<OutputDataObjectType> wfOutputs, String nodeId) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
-//            WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode(nodeId);
-//            List<NodeOutputResource> nodeOutputs = workflowNode.getNodeOutputs();
-//            for (OutputDataObjectType output : wfOutputs) {
-//                for (NodeOutputResource resource : nodeOutputs) {
-//                    resource.setNodeId(workflowNode.getNodeInstanceId());
-//                    resource.setOutputKey(output.getName());
-//                    resource.setValue(output.getValue());
-//                    if (output.getType() != null) {
-//                        resource.setDataType(output.getType().toString());
-//                    }
-//                    resource.setRequired(output.isIsRequired());
-//                    resource.setRequiredToCMD(output.isRequiredToAddedToCommandLine());
-//                    resource.setDataMovement(output.isDataMovement());
-//                    resource.setDataNameLocation(output.getLocation());
-//                    resource.setAppArgument(output.getApplicationArgument());
-//                    resource.setSearchQuery(output.getSearchQuery());
-////                    resource.setMetadata(output.getMetaData());
-//                    resource.save();
-//                }
-//            }
-//        } catch (Exception e) {
-//            logger.error("Error while updating node outputs...", e);
-//            throw new RegistryException(e);
-//        }
-    }
-
-    public String addApplicationOutputs(List<OutputDataObjectType> appOutputs, CompositeIdentifier ids) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
-//            WorkflowNodeDetailResource workflowNode = experiment.getWorkflowNode((String) ids.getTopLevelIdentifier());
-//            TaskDetailResource taskDetail = workflowNode.getTaskDetail((String) ids.getSecondLevelIdentifier());
-//            for (OutputDataObjectType output : appOutputs) {
-//                ApplicationOutputResource resource = (ApplicationOutputResource) taskDetail.create(ResourceType.APPLICATION_OUTPUT);
-//                resource.setTaskId(taskDetail.getTaskId());
-//                resource.setOutputKey(output.getName());
-//                resource.setValue(output.getValue());
-//                if (output.getType() != null) {
-//                    resource.setDataType(output.getType().toString());
-//                }
-//                resource.setRequired(output.isIsRequired());
-//                resource.setRequiredToCMD(output.isRequiredToAddedToCommandLine());
-//                resource.setDataMovement(output.isDataMovement());
-//                resource.setDataNameLocation(output.getLocation());
-//                resource.setAppArgument(output.getApplicationArgument());
-//                resource.setSearchQuery(output.getSearchQuery());
-////                resource.setMetadata(output.getMetaData());
-//                resource.save();
-//            }
-//        } catch (Exception e) {
-//            logger.error("Error while adding application outputs...", e);
-//            throw new RegistryException(e);
-//        }
-//        return (String) ids.getSecondLevelIdentifier();
-        return null;
     }
 
     public String updateExperimentStatus(ExperimentStatus experimentStatus, String expId) throws RegistryException {
@@ -1427,24 +1455,30 @@ public class ExperimentRegistry {
         return null;
     }
 
-    public String getNodeInstanceID(String nodeName) {
-        String node = nodeName.replaceAll("\\s", "");
-        return node + "_" + UUID.randomUUID();
-    }
 
     public String getExperimentID(String experimentName) {
         String exp = experimentName.replaceAll("\\s", "");
         return exp + "_" + UUID.randomUUID();
     }
 
-    public String getTaskID(String nodeName) {
-        String node = nodeName.replaceAll("\\s", "");
-        return node + "_" + UUID.randomUUID();
+    public String getProcessID(String experimentId) {
+        String process = experimentId.replaceAll("\\s", "");
+        return process + "_" + UUID.randomUUID();
     }
 
-    public String getDataTransferID(String taskId) {
-        String task = taskId.replaceAll("\\s", "");
-        return task + "_" + UUID.randomUUID();
+    public String getTaskID(String processId) {
+        String taskId = processId.replaceAll("\\s", "");
+        return taskId + "_" + UUID.randomUUID();
+    }
+
+    public String getStatusID(String parentId) {
+        String status = parentId.replaceAll("\\s", "");
+        return status + "_" + UUID.randomUUID();
+    }
+
+    public String getErrorID(String parentId) {
+        String error = parentId.replaceAll("\\s", "");
+        return error + "_" + UUID.randomUUID();
     }
 
     public void updateExperimentField(String expID, String fieldName, Object value) throws RegistryException {
@@ -2823,45 +2857,73 @@ public class ExperimentRegistry {
         }
     }
 
-    public boolean isValidStatusTransition(ExperimentState oldState, ExperimentState nextState) {
-        if (nextState == null) {
-            return false;
-        }
-        switch (oldState) {
-            case CREATED:
-                return true;
-            case VALIDATED:
-                return nextState != ExperimentState.CREATED;
-            case SCHEDULED:
-                return nextState != ExperimentState.CREATED
-                        || nextState != ExperimentState.VALIDATED;
-            case LAUNCHED:
-                return nextState != ExperimentState.CREATED
-                        || nextState != ExperimentState.VALIDATED
-                        || nextState != ExperimentState.SCHEDULED;
-            case EXECUTING:
-                return nextState != ExperimentState.CREATED
-                        || nextState != ExperimentState.VALIDATED
-                        || nextState != ExperimentState.SCHEDULED
-                        || nextState != ExperimentState.LAUNCHED;
-
-            case CANCELING:
-                return nextState == ExperimentState.CANCELING
-                        || nextState == ExperimentState.CANCELED
-                        || nextState == ExperimentState.COMPLETED
-                        || nextState == ExperimentState.FAILED;
-            case CANCELED:
-                return nextState == ExperimentState.CANCELED;
-            case COMPLETED:
-                return nextState == ExperimentState.COMPLETED;
-            case FAILED:
-                return nextState == ExperimentState.FAILED;
-            //case SUSPENDED:  // We don't change state to SUSPEND
-//            case UNKNOWN:
-//                return true;
-            default:
+    public boolean isValidStatusTransition(Object object1, Object object2) {
+        if(object1 instanceof ExperimentState && object2 instanceof ExperimentState){
+            ExperimentState oldState = (ExperimentState) object1;
+            ExperimentState nextState = (ExperimentState) object2;
+            if (nextState == null) {
                 return false;
+            }
+            switch (oldState) {
+                case CREATED:
+                    return true;
+                case VALIDATED:
+                    return nextState != ExperimentState.CREATED;
+                case SCHEDULED:
+                    return nextState != ExperimentState.CREATED
+                            || nextState != ExperimentState.VALIDATED;
+                case LAUNCHED:
+                    return nextState != ExperimentState.CREATED
+                            || nextState != ExperimentState.VALIDATED
+                            || nextState != ExperimentState.SCHEDULED;
+                case EXECUTING:
+                    return nextState != ExperimentState.CREATED
+                            || nextState != ExperimentState.VALIDATED
+                            || nextState != ExperimentState.SCHEDULED
+                            || nextState != ExperimentState.LAUNCHED;
+
+                case CANCELING:
+                    return nextState == ExperimentState.CANCELING
+                            || nextState == ExperimentState.CANCELED
+                            || nextState == ExperimentState.COMPLETED
+                            || nextState == ExperimentState.FAILED;
+                case CANCELED:
+                    return nextState == ExperimentState.CANCELED;
+                case COMPLETED:
+                    return nextState == ExperimentState.COMPLETED;
+                case FAILED:
+                    return nextState == ExperimentState.FAILED;
+                default:
+                    return false;
+            }
+        }else if(object1 instanceof ProcessState && object2 instanceof ProcessState){
+            ProcessState oldState = (ProcessState) object1;
+            ProcessState nextState = (ProcessState) object2;
+            if (nextState == null) {
+                return false;
+            }
+            //TODO
+            switch (oldState) {
+                case CREATED:
+                    return true;
+                default:
+                    return false;
+            }
+        }else if(object1 instanceof TaskState && object2 instanceof TaskState){
+            TaskState oldState = (TaskState) object1;
+            TaskState nextState = (TaskState) object2;
+            if (nextState == null) {
+                return false;
+            }
+            //TODO
+            switch (oldState) {
+                case CREATED:
+                    return true;
+                default:
+                    return false;
+            }
         }
+        return false;
     }
 
     public Object getExperimentInputs(String identifier) {
