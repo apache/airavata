@@ -558,4 +558,9 @@ public class ExperimentResource extends AbstractExpCatResource {
         }
         return processResources;
     }
+
+    public ProcessResource getProcess(String processID) throws RegistryException {
+        ExperimentCatResource resource = get(ResourceType.PROCESS, processID);
+        return (ProcessResource)resource;
+    }
 }

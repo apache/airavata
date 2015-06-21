@@ -23,13 +23,17 @@ package org.apache.airavata.registry.core.experiment.catalog.impl;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentSummaryModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.ExperimentStatus;
+import org.apache.airavata.model.status.ProcessStatus;
+import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
@@ -112,7 +116,7 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                 case PROJECT:
                     return projectRegistry.addProject((Project)newObjectToAdd, gatewayId);
                 case EXPERIMENT:
-                    return experimentRegistry.addExperiment((ExperimentModel) newObjectToAdd, gatewayId);
+                    return experimentRegistry.addExperiment((ExperimentModel) newObjectToAdd);
                 case GATEWAY:
                     return gatewayRegistry.addGateway((Gateway)newObjectToAdd);
                 default:
@@ -143,24 +147,32 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
             switch (dataType) {
                 case USER_CONFIGURATION_DATA:
                     return experimentRegistry.addUserConfigData((UserConfigurationDataModel) newObjectToAdd, (String) dependentIdentifier);
+                case EXPERIMENT_INPUT:
+                    return experimentRegistry.addExpInputs((List<InputDataObjectType>) newObjectToAdd, (String) dependentIdentifier);
                 case EXPERIMENT_OUTPUT:
                     return experimentRegistry.addExpOutputs((List<OutputDataObjectType>) newObjectToAdd, (String) dependentIdentifier);
                 case EXPERIMENT_STATUS:
-                    return experimentRegistry.updateExperimentStatus((ExperimentStatus) newObjectToAdd, (String) dependentIdentifier);
+                    return experimentRegistry.addExperimentStatus((ExperimentStatus) newObjectToAdd, (String) dependentIdentifier);
                 case EXPERIMENT_ERROR:
-                    return experimentRegistry.updateExperimentError((ErrorModel) newObjectToAdd, (String) dependentIdentifier);
+                    return experimentRegistry.addExperimentError((ErrorModel) newObjectToAdd, (String) dependentIdentifier);
+                case PROCESS:
+                    return experimentRegistry.addProcess((ProcessModel) newObjectToAdd, (String) dependentIdentifier);
                 case PROCESS_RESOURCE_SCHEDULE:
-                    return experimentRegistry.addUserConfigData((UserConfigurationDataModel) newObjectToAdd, (String) dependentIdentifier);
+                    return experimentRegistry.addProcessResourceSchedule((ComputationalResourceSchedulingModel) newObjectToAdd, (String) dependentIdentifier);
+                case PROCESS_INPUT:
+                    return experimentRegistry.addProcessInputs((List<InputDataObjectType>) newObjectToAdd, (String) dependentIdentifier);
                 case PROCESS_OUTPUT:
-                    return experimentRegistry.addExpOutputs((List<OutputDataObjectType>) newObjectToAdd, (String) dependentIdentifier);
+                    return experimentRegistry.addProcessOutputs((List<OutputDataObjectType>) newObjectToAdd, (String) dependentIdentifier);
                 case PROCESS_STATUS:
-                    return experimentRegistry.updateExperimentStatus((ExperimentStatus) newObjectToAdd, (String) dependentIdentifier);
+                    return experimentRegistry.addProcessStatus((ProcessStatus) newObjectToAdd, (String) dependentIdentifier);
                 case PROCESS_ERROR:
-                    return experimentRegistry.updateExperimentError((ErrorModel) newObjectToAdd, (String) dependentIdentifier);
+                    return experimentRegistry.addProcessError((ErrorModel) newObjectToAdd, (String) dependentIdentifier);
+                case TASK:
+                    return experimentRegistry.addTask((TaskModel) newObjectToAdd, (String) dependentIdentifier);
                 case TASK_STATUS:
-                    return experimentRegistry.updateExperimentStatus((ExperimentStatus) newObjectToAdd, (String) dependentIdentifier);
+                    return experimentRegistry.addTaskStatus((TaskStatus) newObjectToAdd, (String) dependentIdentifier);
                 case TASK_ERROR:
-                    return experimentRegistry.updateExperimentError((ErrorModel) newObjectToAdd, (String) dependentIdentifier);
+                    return experimentRegistry.addTaskError((ErrorModel) newObjectToAdd, (String) dependentIdentifier);
                 default:
                     logger.error("Unsupported dependent data type...", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
