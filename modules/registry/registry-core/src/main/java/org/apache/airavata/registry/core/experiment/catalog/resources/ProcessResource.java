@@ -510,4 +510,9 @@ public class ProcessResource extends AbstractExpCatResource {
         }
         return taskResources;
     }
+
+    public TaskResource getTask(String taskId) throws RegistryException {
+        ExperimentCatResource resource = get(ResourceType.TASK, taskId);
+        return (TaskResource)resource;
+    }
 }
