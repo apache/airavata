@@ -317,7 +317,7 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                 case EXPERIMENT_STATUS:
                     return experimentRegistry.getExperimentStatus((String) identifier);
                 case EXPERIMENT_ERROR:
-                    return experimentRegistry.getExperimentError((String) identifier);
+                    return experimentRegistry.getExperimentErrors((String) identifier);
                 case PROCESS:
                     return experimentRegistry.getProcess((String) identifier, null);
                 case PROCESS_RESOURCE_SCHEDULE:
@@ -331,7 +331,7 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                 case PROCESS_ERROR:
                     return experimentRegistry.getProcessError((String) identifier);
                 case TASK:
-                    return experimentRegistry.getTask((String) identifier);
+                    return experimentRegistry.getTask((String) identifier, null);
                 case TASK_STATUS:
                     return experimentRegistry.getTaskStatus((String) identifier);
                 case TASK_ERROR:
