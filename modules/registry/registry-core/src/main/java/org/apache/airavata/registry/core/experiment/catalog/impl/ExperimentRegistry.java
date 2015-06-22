@@ -1176,6 +1176,60 @@ public class ExperimentRegistry {
         return taskIds;
     }
 
+
+    //Remove CPI methods
+    public void removeExperiment(String experimentId) throws RegistryException {
+        try {
+            gatewayResource.remove(ResourceType.EXPERIMENT, experimentId);
+        } catch (Exception e) {
+            logger.error("Error while removing experiment..", e);
+            throw new RegistryException(e);
+        }
+    }
+
+    public void removeUserConfigData(String experimentId) throws RegistryException {
+        try {
+            ExperimentResource experiment = new ExperimentResource();
+            experiment.setExperimentId(experimentId);
+            experiment.remove(ResourceType.USER_CONFIGURATION_DATA, experimentId);
+        } catch (Exception e) {
+            logger.error("Error while removing experiment config..", e);
+            throw new RegistryException(e);
+        }
+    }
+
+
+    public void removeProcess(String processId) throws RegistryException {
+        try {
+            ExperimentResource experiment = new ExperimentResource();
+            experiment.remove(ResourceType.PROCESS, processId);
+        } catch (Exception e) {
+            logger.error("Error while removing workflow node..", e);
+            throw new RegistryException(e);
+        }
+    }
+
+    public void removeProcessResourceSchedule(String processId) throws RegistryException {
+        try {
+            ExperimentResource experiment = new ExperimentResource();
+            experiment.remove(ResourceType.PROCESS_RESOURCE_SCHEDULE, processId);
+        } catch (Exception e) {
+            logger.error("Error while removing workflow node..", e);
+            throw new RegistryException(e);
+        }
+    }
+
+    public void removeTask(String taskId) throws RegistryException {
+        try {
+            ProcessResource process = new ProcessResource();
+            process.remove(ResourceType.TASK, taskId);
+        } catch (Exception e) {
+            logger.error("Error while removing task details..", e);
+            throw new RegistryException(e);
+        }
+    }
+
+
     // ids - taskId + jobid
     public void updateJobDetails(JobModel jobDetails, CompositeIdentifier ids) throws RegistryException {
 //        try {
@@ -1984,46 +2038,6 @@ public class ExperimentRegistry {
 //        return transferIds;
 //    }
 
-
-    public void removeExperiment(String experimentId) throws RegistryException {
-        try {
-            gatewayResource.remove(ResourceType.EXPERIMENT, experimentId);
-        } catch (Exception e) {
-            logger.error("Error while removing experiment..", e);
-            throw new RegistryException(e);
-        }
-    }
-
-    public void removeUserConfigData(String experimentId) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = gatewayResource.getExperiment(experimentId);
-//            experiment.remove(ResourceType.CONFIG_DATA, experimentId);
-//        } catch (Exception e) {
-//            logger.error("Error while removing experiment config..", e);
-//            throw new RegistryException(e);
-//        }
-    }
-
-    public void removeWorkflowNode(String nodeId) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
-//            experiment.remove(ResourceType.WORKFLOW_NODE_DETAIL, nodeId);
-//        } catch (Exception e) {
-//            logger.error("Error while removing workflow node..", e);
-//            throw new RegistryException(e);
-//        }
-    }
-
-    public void removeTaskDetails(String taskId) throws RegistryException {
-//        try {
-//            ExperimentResource experiment = (ExperimentResource) gatewayResource.create(ResourceType.EXPERIMENT);
-//            WorkflowNodeDetailResource nodeDetailResource = (WorkflowNodeDetailResource) experiment.create(ResourceType.WORKFLOW_NODE_DETAIL);
-//            nodeDetailResource.remove(ResourceType.TASK_DETAIL, taskId);
-//        } catch (Exception e) {
-//            logger.error("Error while removing task details..", e);
-//            throw new RegistryException(e);
-//        }
-    }
 
     public void removeJobDetails(CompositeIdentifier ids) throws RegistryException {
 //        try {
