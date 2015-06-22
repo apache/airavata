@@ -35,7 +35,7 @@
                 <module>gfac-client</module>
                 <module>gfac-core</module>
                 <module>gfac-impl</module>
-                <module>gfac-bes</module>
+                <!--<module>gfac-bes</module>-->
                 <module>gfac-application-specific-handlers</module>
             </modules>
         </profile>

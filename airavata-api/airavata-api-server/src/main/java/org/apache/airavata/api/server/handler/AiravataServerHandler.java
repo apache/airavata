@@ -652,7 +652,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             Map<String, String> filters = new HashMap<String, String>();
             filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
-            filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);
+            filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID, gatewayId);
             filters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME, expName);
             List<Object> results = experimentCatalog.search(ExperimentCatalogModelType.EXPERIMENT, filters, limit,
                     offset, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
@@ -730,8 +730,8 @@ public class AiravataServerHandler implements Airavata.Iface {
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             Map<String, String> filters = new HashMap<String, String>();
             filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
-            filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);
-            filters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_DESC, description);
+            filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID, gatewayId);
+            filters.put(Constants.FieldConstants.ExperimentConstants.DESCRIPTION, description);
             List<Object> results = experimentCatalog.search(ExperimentCatalogModelType.EXPERIMENT, filters, limit,
                     offset, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             for (Object object : results) {
@@ -805,8 +805,8 @@ public class AiravataServerHandler implements Airavata.Iface {
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             Map<String, String> filters = new HashMap<String, String>();
             filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
-            filters.put(Constants.FieldConstants.ExperimentConstants.APPLICATION_ID, applicationId);
-            filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);
+            filters.put(Constants.FieldConstants.ExperimentConstants.EXECUTION_ID, applicationId);
+            filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID, gatewayId);
             List<Object> results = experimentCatalog.search(ExperimentCatalogModelType.EXPERIMENT, filters, limit,
                     offset, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             for (Object object : results) {
@@ -881,7 +881,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             Map<String, String> filters = new HashMap<String, String>();
             filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
             filters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_STATUS, experimentState.toString());
-            filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);
+            filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID, gatewayId);
             List<Object> results = experimentCatalog.search(ExperimentCatalogModelType.EXPERIMENT, filters, limit,
                     offset, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             for (Object object : results) {
@@ -961,7 +961,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             filters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
             filters.put(Constants.FieldConstants.ExperimentConstants.FROM_DATE, String.valueOf(fromTime));
             filters.put(Constants.FieldConstants.ExperimentConstants.TO_DATE, String.valueOf(toTime));
-            filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);
+            filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID, gatewayId);
             List<Object> results = experimentCatalog.search(ExperimentCatalogModelType.EXPERIMENT, filters, limit,
                     offset, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
             for (Object object : results) {
@@ -1018,15 +1018,15 @@ public class AiravataServerHandler implements Airavata.Iface {
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             Map<String, String> regFilters = new HashMap();
             regFilters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
-            regFilters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);
+            regFilters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID, gatewayId);
             for(Map.Entry<ExperimentSearchFields, String> entry : filters.entrySet())
             {
                 if(entry.getKey().equals(ExperimentSearchFields.EXPERIMENT_NAME)){
                     regFilters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME, entry.getValue());
                 }else if(entry.getKey().equals(ExperimentSearchFields.EXPERIMENT_DESC)){
-                    regFilters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_DESC, entry.getValue());
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.DESCRIPTION, entry.getValue());
                 }else if(entry.getKey().equals(ExperimentSearchFields.APPLICATION_ID)){
-                    regFilters.put(Constants.FieldConstants.ExperimentConstants.APPLICATION_ID, entry.getValue());
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.EXECUTION_ID, entry.getValue());
                 }else if(entry.getKey().equals(ExperimentSearchFields.STATUS)){
                     regFilters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_STATUS, entry.getValue());
                 }else if(entry.getKey().equals(ExperimentSearchFields.FROM_DATE)){
@@ -1071,7 +1071,7 @@ public class AiravataServerHandler implements Airavata.Iface {
         }
         try {
             Map<String, String> filters = new HashMap();
-            filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);
+            filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID, gatewayId);
             filters.put(Constants.FieldConstants.ExperimentConstants.FROM_DATE, fromTime+"");
             filters.put(Constants.FieldConstants.ExperimentConstants.TO_DATE, toTime+"");
 
@@ -1394,7 +1394,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 ExperimentState experimentState = experimentStatus.getState();
                 switch (experimentState){
                     case CREATED: case VALIDATED: case CANCELED: case FAILED:
-                        experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_CONFIGURATION_DATA, userConfiguration, airavataExperimentId);
+                        experimentCatalog.add(ExpCatChildDataType.USER_CONFIGURATION_DATA, userConfiguration, airavataExperimentId);
                         logger.info(airavataExperimentId, "Successfully updated experiment configuration for experiment {}.", airavataExperimentId);
                         break;
                     default:
@@ -1434,7 +1434,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 ExperimentState experimentState = experimentStatus.getState();
                 switch (experimentState){
                     case CREATED: case VALIDATED: case CANCELED: case FAILED:
-                        experimentCatalog.add(ExpCatChildDataType.COMPUTATIONAL_RESOURCE_SCHEDULING, resourceScheduling, airavataExperimentId);
+                        experimentCatalog.add(ExpCatChildDataType.PROCESS_RESOURCE_SCHEDULE, resourceScheduling, airavataExperimentId);
                         logger.info(airavataExperimentId, "Successfully updated resource scheduling for the experiment {}.", airavataExperimentId);
                         break;
                     default:
@@ -1772,7 +1772,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 throw new ExperimentNotFoundException("Requested experiment id " + existingExperimentID + " does not exist in the system..");
             }
             ExperimentModel existingExperiment = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, existingExperimentID);
-            String gatewayId = (String) experimentCatalog.getValue(ExperimentCatalogModelType.EXPERIMENT, existingExperimentID, Constants.FieldConstants.ExperimentConstants.GATEWAY);
+            String gatewayId = (String) experimentCatalog.getValue(ExperimentCatalogModelType.EXPERIMENT, existingExperimentID, Constants.FieldConstants.ExperimentConstants.GATEWAY_ID);
             existingExperiment.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
             if (existingExperiment.getExecutionId() != null){
                 List<OutputDataObjectType> applicationOutputs = getApplicationOutputs(existingExperiment.getExecutionId());
