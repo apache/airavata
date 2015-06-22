@@ -35,8 +35,9 @@ public class ExperimentSummaryResource extends AbstractExpCatResource {
 
     private String experimentId;
     private String projectId;
+    private String gatewayId;
     private String userName;
-    private String applicationId;
+    private String executionId;
     private String experimentName;
     private Timestamp creationTime;
     private String description;
@@ -85,6 +86,14 @@ public class ExperimentSummaryResource extends AbstractExpCatResource {
         this.projectId = projectId;
     }
 
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
+
     public String getUserName() {
         return userName;
     }
@@ -93,12 +102,12 @@ public class ExperimentSummaryResource extends AbstractExpCatResource {
         this.userName = userName;
     }
 
-    public String getApplicationId() {
-        return applicationId;
+    public String getExecutionId() {
+        return executionId;
     }
 
-    public void setApplicationId(String applicationId) {
-        this.applicationId = applicationId;
+    public void setExecutionId(String executionId) {
+        this.executionId = executionId;
     }
 
     public String getExperimentName() {

@@ -384,7 +384,7 @@ public class Utils {
             experimentSummaryResource.setProjectId(o.getProjectId());
             experimentSummaryResource.setUserName(o.getUserName());
             experimentSummaryResource.setUserName(o.getUserName());
-            experimentSummaryResource.setApplicationId(o.getApplicationId());
+            experimentSummaryResource.setExecutionId(o.getExecutionId());
             experimentSummaryResource.setExperimentName(o.getExperimentName());
             experimentSummaryResource.setCreationTime(o.getCreationTime());
             experimentSummaryResource.setDescription(o.getDescription());

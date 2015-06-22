@@ -33,6 +33,7 @@ public class Experiment {
     private final static Logger logger = LoggerFactory.getLogger(Experiment.class);
     private String experimentId;
     private String projectId;
+    private String gatewayId;
     private String experimentType;
     private String userName;
     private String experimentName;
@@ -59,6 +60,16 @@ public class Experiment {
 
     public void setExperimentId(String experimentId) {
         this.experimentId = experimentId;
+    }
+
+    @Basic
+    @Column(name = "GATEWAY_ID")
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
     }
 
     @Basic
@@ -183,6 +194,7 @@ public class Experiment {
 //        if (gatewayExecutionId != null ? !gatewayExecutionId.equals(that.gatewayExecutionId) : that.gatewayExecutionId != null)
 //            return false;
 //        if (projectId != null ? !projectId.equals(that.projectId) : that.projectId != null) return false;
+//        if (gatewayId != null ? !gatewayId.equals(that.gatewayId) : that.gatewayId != null) return false;
 //        if (userName != null ? !userName.equals(that.userName) : that.userName != null) return false;
 //
 //        return true;
@@ -192,6 +204,7 @@ public class Experiment {
 //    public int hashCode() {
 //        int result = experimentId != null ? experimentId.hashCode() : 0;
 //        result = 31 * result + (projectId != null ? projectId.hashCode() : 0);
+//        result = 31 * result + (gatewayId != null ? gatewayId.hashCode() : 0);
 //        result = 31 * result + (experimentType != null ? experimentType.hashCode() : 0);
 //        result = 31 * result + (userName != null ? userName.hashCode() : 0);
 //        result = 31 * result + (experimentName != null ? experimentName.hashCode() : 0);

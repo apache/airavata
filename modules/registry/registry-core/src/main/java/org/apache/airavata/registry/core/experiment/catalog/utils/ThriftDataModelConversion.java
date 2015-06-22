@@ -93,12 +93,14 @@ public class ThriftDataModelConversion {
             ExperimentSummaryModel experimentSummary = new ExperimentSummaryModel();
             experimentSummary.setProjectId(experimentSummaryResource.getProjectId());
             experimentSummary.setExperimentId(experimentSummaryResource.getExperimentId());
+            experimentSummary.setGatewayId(experimentSummaryResource.getGatewayId());
             experimentSummary.setCreationTime(experimentSummaryResource.getCreationTime().getTime());
             experimentSummary.setUserName(experimentSummaryResource.getUserName());
             experimentSummary.setName(experimentSummaryResource.getExperimentName());
             experimentSummary.setDescription(experimentSummaryResource.getDescription());
-            experimentSummary.setApplicationId(experimentSummaryResource.getApplicationId());
-            //Todo state and state update time
+            experimentSummary.setExecutionId(experimentSummaryResource.getExecutionId());
+            experimentSummary.setExperimentStatus(experimentSummaryResource.getState());
+            experimentSummary.setStatusUpdateTime(experimentSummaryResource.getTimeOfStateChange().getTime());
             return experimentSummary;
         }
         return null;
@@ -110,6 +112,7 @@ public class ThriftDataModelConversion {
             ExperimentModel experiment = new ExperimentModel();
             experiment.setProjectId(experimentResource.getProjectId());
             experiment.setExperimentId(experimentResource.getExperimentId());
+            experiment.setGatewayId(experimentResource.getGatewayId());
             experiment.setCreationTime(experimentResource.getCreationTime().getTime());
             experiment.setUserName(experimentResource.getUserName());
             experiment.setExperimentName(experimentResource.getExperimentName());

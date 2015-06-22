@@ -32,8 +32,9 @@ public class ExperimentSummary {
     private final static Logger logger = LoggerFactory.getLogger(ExperimentSummary.class);
     private String experimentId;
     private String projectId;
+    private String gatewayId;
     private String userName;
-    private String applicationId;
+    private String executionId;
     private String experimentName;
     private Timestamp creationTime;
     private String description;
@@ -62,6 +63,17 @@ public class ExperimentSummary {
     }
 
     @Basic
+    @Column(name = "GATEWAY_ID")
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
+    }
+
+
+    @Basic
     @Column(name = "USER_NAME")
     public String getUserName() {
         return userName;
@@ -72,13 +84,13 @@ public class ExperimentSummary {
     }
 
     @Basic
-    @Column(name = "APPLICATION_ID")
-    public String getApplicationId() {
-        return applicationId;
+    @Column(name = "EXECUTION_ID")
+    public String getExecutionId() {
+        return executionId;
     }
 
-    public void setApplicationId(String applicationId) {
-        this.applicationId = applicationId;
+    public void setExecutionId(String executionId) {
+        this.executionId = executionId;
     }
 
     @Basic
@@ -148,7 +160,9 @@ public class ExperimentSummary {
 //
 //        ExperimentSummary that = (ExperimentSummary) o;
 //
-//        if (applicationId != null ? !applicationId.equals(that.applicationId) : that.applicationId != null)
+//        if (executionId != null ? !executionId.equals(that.executionId) : that.executionId != null)
+//            return false;
+//        if (gatewayId != null ? !gatewayId.equals(that.gatewayId) : that.gatewayId != null)
 //            return false;
 //        if (creationTime != null ? !creationTime.equals(that.creationTime) : that.creationTime != null) return false;
 //        if (description != null ? !description.equals(that.description) : that.description != null) return false;
@@ -171,7 +185,8 @@ public class ExperimentSummary {
 //        int result = experimentId != null ? experimentId.hashCode() : 0;
 //        result = 31 * result + (projectId != null ? projectId.hashCode() : 0);
 //        result = 31 * result + (userName != null ? userName.hashCode() : 0);
-//        result = 31 * result + (applicationId != null ? applicationId.hashCode() : 0);
+//        result = 31 * result + (gatewayId != null ? gatewayId.hashCode() : 0);
+//        result = 31 * result + (executionId != null ? executionId.hashCode() : 0);
 //        result = 31 * result + (experimentName != null ? experimentName.hashCode() : 0);
 //        result = 31 * result + (creationTime != null ? creationTime.hashCode() : 0);
 //        result = 31 * result + (description != null ? description.hashCode() : 0);
