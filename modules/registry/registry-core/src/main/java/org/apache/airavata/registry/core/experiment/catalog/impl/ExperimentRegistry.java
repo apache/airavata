@@ -832,6 +832,8 @@ public class ExperimentRegistry {
                 return ThriftDataModelConversion.getExperiment(resource);
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
                 return resource.getUserName();
+            }else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID)) {
+                return resource.getGatewayId();
             }else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY_EXECUTION_ID)) {
                 return resource.getGatewayExecutionId();
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME)) {
@@ -983,7 +985,7 @@ public class ExperimentRegistry {
                     experiments.add(experiment);
                 }
                 return experiments;
-            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY_EXECUTION_ID)) {
+            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID)) {
                 List<ExperimentResource> resources = gatewayResource.getExperiments();
                 for (ExperimentResource resource : resources) {
                     ExperimentModel experiment = ThriftDataModelConversion.getExperiment(resource);
@@ -1057,7 +1059,7 @@ public class ExperimentRegistry {
                         fil.put(AbstractExpCatResource.ExperimentConstants.EXPERIMENT_NAME, filters.get(field));
                     } else if (field.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
                         fil.put(AbstractExpCatResource.ExperimentConstants.USER_NAME, filters.get(field));
-                    }else if (field.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY_EXECUTION_ID)) {
+                    }else if (field.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID)) {
                         fil.put(AbstractExpCatResource.ExperimentConstants.GATEWAY_ID, filters.get(field));
                     } else if (field.equals(Constants.FieldConstants.ExperimentConstants.DESCRIPTION)) {
                         fil.put(AbstractExpCatResource.ExperimentConstants.DESCRIPTION, filters.get(field));
@@ -1098,7 +1100,7 @@ public class ExperimentRegistry {
         try {
             ExperimentStatistics experimentStatistics = new ExperimentStatistics();
             ExperimentStatisticsResource experimentStatisticsResource = workerResource.getExperimentStatistics(
-                    filters.get(Constants.FieldConstants.ExperimentConstants.GATEWAY_EXECUTION_ID),
+                    filters.get(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID),
                     new Timestamp(Long.parseLong(filters.get(Constants.FieldConstants.ExperimentConstants.FROM_DATE))),
                     new Timestamp(Long.parseLong(filters.get(Constants.FieldConstants.ExperimentConstants.TO_DATE)))
             );
@@ -1143,7 +1145,7 @@ public class ExperimentRegistry {
     public List<String> getExperimentIDs(String fieldName, Object value) throws RegistryException {
         List<String> expIDs = new ArrayList<String>();
         try {
-            if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY_EXECUTION_ID)) {
+            if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID)) {
                 if (gatewayResource == null) {
                     logger.error("You should use an existing gateway in order to retrieve experiments..");
                     return null;
