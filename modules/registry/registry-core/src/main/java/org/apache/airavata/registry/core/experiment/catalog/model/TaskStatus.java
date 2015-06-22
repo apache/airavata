@@ -79,6 +79,7 @@ public class TaskStatus {
     }
 
     @Basic
+    @Lob
     @Column(name = "REASON")
     public String getReason() {
         return reason;

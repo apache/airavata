@@ -80,6 +80,7 @@ public class ProcessStatus {
     }
 
     @Basic
+    @Lob
     @Column(name = "REASON")
     public String getReason() {
         return reason;
