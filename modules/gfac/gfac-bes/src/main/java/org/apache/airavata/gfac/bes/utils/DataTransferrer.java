@@ -26,6 +26,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -119,6 +123,10 @@ public class DataTransferrer {
 //				}
 //		}
 		
+		if(log.isDebugEnabled()) {
+			log.debug("Download location is:"+downloadLocation);
+		}
+		
 		List<OutputDataObjectType> applicationOutputs = jobContext.getTaskData().getApplicationOutputs();
 		 if (applicationOutputs != null && !applicationOutputs.isEmpty()){
             for (OutputDataObjectType output : applicationOutputs){
@@ -134,16 +142,12 @@ public class DataTransferrer {
 						String outputPath = downloadLocation + File.separator + value;
 						jobContext.addOutputFile(outputPath);
 					} catch (Exception e) {
+						log.error("Cannot download remote files..");
 						throw new GFacProviderException(e.getLocalizedMessage(),e);
 					}
 	           	}
             }
 		 }
-		
-
-		
-		
-		
 		
 		downloadStdOuts();
 	}
@@ -199,6 +203,7 @@ public class DataTransferrer {
 			jobContext.setStandardError(stderrLocation);
 			log.info("Stderr downloaded to -> "+stderrLocation);
 		} catch (Exception e) {
+			
 			throw new GFacProviderException(e.getLocalizedMessage(),e);
 		}
 		
@@ -255,14 +260,49 @@ public class DataTransferrer {
 	
 	private String getDownloadLocation() {
 		TaskDetails taskData = jobContext.getTaskData();
-		//In case of third party transfer this will not work.
-//		if (taskData != null && taskData.getAdvancedOutputDataHandling() != null) {
-//			String outputDataDirectory = taskData.getAdvancedOutputDataHandling().getOutputDataDir();
-//			return outputDataDirectory;
-//		}
-		String outputDataDir = File.separator + "tmp";
-        outputDataDir = outputDataDir + File.separator + jobContext.getExperimentID();
-        (new File(outputDataDir)).mkdirs();
+		String outputDataDir = "";
+
+		if (taskData != null
+				&& taskData.getAdvancedOutputDataHandling() != null ) {
+
+			outputDataDir = taskData.getAdvancedOutputDataHandling().getOutputDataDir();
+			
+			
+			if (outputDataDir == null || "".equals(outputDataDir)) {
+				outputDataDir = getTempPath(jobContext.getExperimentID());
+			}
+
+			else {
+				
+				try {
+					URI u = new URI(outputDataDir);
+				} catch (URISyntaxException e) {
+					return getTempPath(jobContext.getExperimentID());
+				}
+				// in case of remote locations use the tmp location
+				if (outputDataDir.startsWith("scp:") || 
+						outputDataDir.startsWith("ftp:") ||
+						outputDataDir.startsWith("gsiftp:")) {
+						outputDataDir = getTempPath(jobContext.getExperimentID());
+				} else if ( outputDataDir.startsWith("file:")  && 
+						     outputDataDir.contains("@")){
+							outputDataDir = getTempPath(jobContext.getExperimentID());
+					
+				} else {
+					outputDataDir = taskData.getAdvancedOutputDataHandling()
+							.getOutputDataDir();
+				}
+			}
+		}
+
 		return outputDataDir;
 	}
+
+	private String getTempPath(String experimentID) {
+		String tmpOutputDir = File.separator + "tmp" + File.separator
+				+ jobContext.getExperimentID();
+		(new File(tmpOutputDir)).mkdirs();
+		return tmpOutputDir;
+	}	
+	
 }

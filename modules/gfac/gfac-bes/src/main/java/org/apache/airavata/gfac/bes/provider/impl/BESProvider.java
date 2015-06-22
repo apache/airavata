@@ -131,7 +131,6 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
                 userDN = "CN=zdv575, O=Ultrascan Gateway, C=DE";
             }
             CreateActivityDocument cad = CreateActivityDocument.Factory.newInstance();
-            JobDefinitionDocument jobDefDoc = JobDefinitionDocument.Factory.newInstance();
             
             // create storage
             StorageCreator storageCreator = new StorageCreator(secProperties, factoryUrl, 5, null);
@@ -140,7 +139,7 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
             JobDefinitionType jobDefinition = JSDLGenerator.buildJSDLInstance(jobExecutionContext, sc.getUrl()).getJobDefinition();
             cad.addNewCreateActivity().addNewActivityDocument().setJobDefinition(jobDefinition);
             
-            log.debug("Submitted JSDL: " + jobDefDoc.getJobDefinition().getJobDescription());
+            log.info("Submitted JSDL: " + jobDefinition.getJobDescription());
             
             
 
@@ -229,19 +228,7 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
         } catch (Exception e) {
             log.error("Cannot create storage..");
             throw new GFacProviderException("Cannot create storage..", e);
-        } finally {
-            // destroy sms instance
-            try {
-                if (sc != null) {
-                    sc.destroy();
-                }
-            } catch (Exception e) {
-                log.warn(
-                        "Cannot destroy temporary SMS instance:" + sc.getUrl(),
-                        e);
-            }
-        }
-
+        } 
     }
 	
 
