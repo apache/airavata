@@ -79,6 +79,7 @@ public class ExperimentRegistry {
             ExperimentResource experimentResource = new ExperimentResource();
             experimentResource.setExperimentId(experimentId);
             experimentResource.setProjectId(experiment.getProjectId());
+            experimentResource.setGatewayId(experiment.getGatewayId());
             experimentResource.setExperimentType(experiment.getExperimentType().toString());
             experimentResource.setUserName(experiment.getUserName());
             experimentResource.setExperimentName(experiment.getExperimentName());
@@ -469,7 +470,7 @@ public class ExperimentRegistry {
             ExperimentResource existingExperiment = gatewayResource.getExperiment(expId);
             existingExperiment.setExperimentName(experiment.getExperimentName());
             existingExperiment.setUserName(experiment.getUserName());
-            existingExperiment.setGatewayExecutionId(gatewayResource.getGatewayId());
+            existingExperiment.setGatewayId(experiment.getGatewayId());
             existingExperiment.setGatewayExecutionId(experiment.getGatewayExecutionId());
             existingExperiment.setProjectId(experiment.getProjectId());
             existingExperiment.setCreationTime(AiravataUtils.getTime(experiment.getCreationTime()));

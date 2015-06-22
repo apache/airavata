@@ -41,6 +41,7 @@ public class ExperimentResource extends AbstractExpCatResource {
     private static final Logger logger = LoggerFactory.getLogger(ExperimentResource.class);
     private String experimentId;
     private String projectId;
+    private String gatewayId;
     private String experimentType;
     private String userName;
     private String experimentName;
@@ -65,6 +66,14 @@ public class ExperimentResource extends AbstractExpCatResource {
 
     public void setProjectId(String projectId) {
         this.projectId = projectId;
+    }
+
+    public String getGatewayId() {
+        return gatewayId;
+    }
+
+    public void setGatewayId(String gatewayId) {
+        this.gatewayId = gatewayId;
     }
 
     public String getExperimentType() {
@@ -435,6 +444,7 @@ public class ExperimentResource extends AbstractExpCatResource {
             }
             experiment.setExperimentId(experimentId);
             experiment.setProjectId(projectId);
+            experiment.setGatewayId(gatewayId);
             experiment.setExperimentType(experimentType);
             experiment.setUserName(userName);
             experiment.setExperimentName(experimentName);
