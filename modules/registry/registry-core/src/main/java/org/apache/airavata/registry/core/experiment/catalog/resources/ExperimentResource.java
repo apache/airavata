@@ -182,7 +182,6 @@ public class ExperimentResource extends AbstractExpCatResource {
             switch (type) {
                 case EXPERIMENT_ERROR:
                     generator = new QueryGenerator(EXPERIMENT_ERROR);
-                    generator.setParameter(ExperimentErrorConstants.EXPERIMENT_ID, experimentId);
                     generator.setParameter(ExperimentErrorConstants.ERROR_ID, name);
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
@@ -216,7 +215,6 @@ public class ExperimentResource extends AbstractExpCatResource {
                     break;
                 case PROCESS:
                     generator = new QueryGenerator(PROCESS);
-                    generator.setParameter(ProcessConstants.EXPERIMENT_ID, experimentId);
                     generator.setParameter(ProcessConstants.PROCESS_ID, name);
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
@@ -252,7 +250,6 @@ public class ExperimentResource extends AbstractExpCatResource {
                 case EXPERIMENT_STATUS:
                     generator = new QueryGenerator(EXPERIMENT_STATUS);
                     generator.setParameter(ExperimentStatusConstants.STATUS_ID, name);
-                    generator.setParameter(ExperimentStatusConstants.EXPERIMENT_ID, experimentId);
                     q = generator.selectQuery(em);
                     ExperimentStatus status = (ExperimentStatus) q.getSingleResult();
                     ExperimentStatusResource statusResource = (ExperimentStatusResource) Utils.getResource(ResourceType.EXPERIMENT_STATUS, status);
@@ -262,7 +259,6 @@ public class ExperimentResource extends AbstractExpCatResource {
                 case EXPERIMENT_ERROR:
                     generator = new QueryGenerator(EXPERIMENT_ERROR);
                     generator.setParameter(ExperimentErrorConstants.ERROR_ID, name);
-                    generator.setParameter(ExperimentErrorConstants.EXPERIMENT_ID, experimentId);
                     q = generator.selectQuery(em);
                     ExperimentError experimentError = (ExperimentError) q.getSingleResult();
                     ExperimentErrorResource processErrorResource = (ExperimentErrorResource) Utils.getResource(ResourceType.EXPERIMENT_ERROR, experimentError);
@@ -302,7 +298,6 @@ public class ExperimentResource extends AbstractExpCatResource {
                 case PROCESS:
                     generator = new QueryGenerator(PROCESS);
                     generator.setParameter(ProcessConstants.PROCESS_ID, name);
-                    generator.setParameter(ProcessConstants.EXPERIMENT_ID, experimentId);
                     q = generator.selectQuery(em);
                     Process process = (Process) q.getSingleResult();
                     ProcessResource processResource = (ProcessResource) Utils.getResource(ResourceType.PROCESS, process);

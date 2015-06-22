@@ -132,14 +132,12 @@ public class TaskResource extends AbstractExpCatResource {
                 case TASK_STATUS:
                     generator = new QueryGenerator(TASK_STATUS);
                     generator.setParameter(TaskStatusConstants.STATUS_ID, name);
-                    generator.setParameter(TaskStatusConstants.TASK_ID, taskId);
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
                 case TASK_ERROR:
                     generator = new QueryGenerator(TASK_ERROR);
                     generator.setParameter(TaskErrorConstants.ERROR_ID, name);
-                    generator.setParameter(TaskErrorConstants.TASK_ID, taskId);
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
@@ -174,7 +172,6 @@ public class TaskResource extends AbstractExpCatResource {
                 case TASK_STATUS:
                     generator = new QueryGenerator(TASK_STATUS);
                     generator.setParameter(TaskStatusConstants.STATUS_ID, name);
-                    generator.setParameter(TaskStatusConstants.TASK_ID, taskId);
                     q = generator.selectQuery(em);
                     TaskStatus status = (TaskStatus) q.getSingleResult();
                     TaskStatusResource statusResource = (TaskStatusResource) Utils.getResource(ResourceType.TASK_STATUS, status);
@@ -184,7 +181,6 @@ public class TaskResource extends AbstractExpCatResource {
                 case TASK_ERROR:
                     generator = new QueryGenerator(TASK_ERROR);
                     generator.setParameter(TaskErrorConstants.ERROR_ID, name);
-                    generator.setParameter(TaskErrorConstants.TASK_ID, taskId);
                     q = generator.selectQuery(em);
                     TaskError error = (TaskError) q.getSingleResult();
                     TaskErrorResource errorResource = (TaskErrorResource) Utils.getResource(

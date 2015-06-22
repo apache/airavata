@@ -147,14 +147,12 @@ public class ProcessResource extends AbstractExpCatResource {
                 case PROCESS_ERROR:
                     generator = new QueryGenerator(PROCESS_ERROR);
                     generator.setParameter(ProcessErrorConstants.ERROR_ID, name);
-                    generator.setParameter(ProcessErrorConstants.PROCESS_ID, processId);
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
                 case PROCESS_STATUS:
                     generator = new QueryGenerator(PROCESS_STATUS);
                     generator.setParameter(ProcessStatusConstants.STATUS_ID, name);
-                    generator.setParameter(ProcessStatusConstants.PROCESS_ID, processId);
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
@@ -180,7 +178,6 @@ public class ProcessResource extends AbstractExpCatResource {
                     break;
                 case TASK:
                     generator = new QueryGenerator(TASK);
-                    generator.setParameter(TaskConstants.PROCESS_ID, processId);
                     generator.setParameter(TaskConstants.TASK_ID, name);
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
@@ -216,7 +213,6 @@ public class ProcessResource extends AbstractExpCatResource {
                 case PROCESS_STATUS:
                     generator = new QueryGenerator(PROCESS_STATUS);
                     generator.setParameter(ProcessStatusConstants.STATUS_ID, name);
-                    generator.setParameter(ProcessStatusConstants.PROCESS_ID, processId);
                     q = generator.selectQuery(em);
                     ProcessStatus status = (ProcessStatus) q.getSingleResult();
                     ProcessStatusResource statusResource = (ProcessStatusResource) Utils.getResource(ResourceType.PROCESS_STATUS, status);
@@ -226,7 +222,6 @@ public class ProcessResource extends AbstractExpCatResource {
                 case PROCESS_ERROR:
                     generator = new QueryGenerator(PROCESS_ERROR);
                     generator.setParameter(ProcessErrorConstants.ERROR_ID, name);
-                    generator.setParameter(ProcessErrorConstants.PROCESS_ID, processId);
                     q = generator.selectQuery(em);
                     ProcessError processError = (ProcessError) q.getSingleResult();
                     ProcessErrorResource processErrorResource = (ProcessErrorResource) Utils.getResource(ResourceType.PROCESS_ERROR, processError);
@@ -266,7 +261,6 @@ public class ProcessResource extends AbstractExpCatResource {
                 case TASK:
                     generator = new QueryGenerator(TASK);
                     generator.setParameter(TaskConstants.TASK_ID, name);
-                    generator.setParameter(TaskConstants.PROCESS_ID, processId);
                     q = generator.selectQuery(em);
                     Task task = (Task) q.getSingleResult();
                     TaskResource taskResource = (TaskResource) Utils.getResource(ResourceType.TASK, task);
