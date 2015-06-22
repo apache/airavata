@@ -558,9 +558,9 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                 case EXPERIMENT:
                     return experimentRegistry.getExperimentIDs(fieldName, value);
                 case PROCESS:
-                    return experimentRegistry.getTaskDetailIds(fieldName, value);
+                    return experimentRegistry.getProcessIds(fieldName, value);
                 case TASK:
-                    return experimentRegistry.getJobDetailIds(fieldName, value);
+                    return experimentRegistry.getTaskIds(fieldName, value);
                 default:
                     logger.error("Unsupported data type...", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();

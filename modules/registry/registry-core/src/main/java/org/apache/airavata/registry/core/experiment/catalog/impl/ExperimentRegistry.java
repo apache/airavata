@@ -1124,6 +1124,57 @@ public class ExperimentRegistry {
         }
     }
 
+    //CPI getIds method
+    public List<String> getExperimentIDs(String fieldName, Object value) throws RegistryException {
+        List<String> expIDs = new ArrayList<String>();
+        try {
+            if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY_EXECUTION_ID)) {
+                if (gatewayResource == null) {
+                    logger.error("You should use an existing gateway in order to retrieve experiments..");
+                    return null;
+                } else {
+                    List<ExperimentResource> resources = gatewayResource.getExperiments();
+                    for (ExperimentResource resource : resources) {
+                        String expID = resource.getExperimentId();
+                        expIDs.add(expID);
+                    }
+                }
+            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
+                List<ExperimentResource> resources = workerResource.getExperiments();
+                for (ExperimentResource resource : resources) {
+                    expIDs.add(resource.getExperimentId());
+                }
+            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.PROJECT_ID)) {
+                List<ExperimentResource> resources = workerResource.getExperiments();
+                for (ExperimentResource resource : resources) {
+                    expIDs.add(resource.getExperimentId());
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error while retrieving experiment ids..", e);
+            throw new RegistryException(e);
+        }
+        return expIDs;
+    }
+
+
+    public List<String> getProcessIds(String fieldName, Object value) throws RegistryException {
+        List<String> processIds = new ArrayList<String>();
+        List<ProcessModel> processes = getProcessList(fieldName, value);
+        for (ProcessModel td : processes) {
+            processIds.add(td.getProcessId());
+        }
+        return processIds;
+    }
+
+    public List<String> getTaskIds(String fieldName, Object value) throws RegistryException {
+        List<String> taskIds = new ArrayList<String>();
+        List<TaskModel> tasks = getTaskList(fieldName, value);
+        for (TaskModel task : tasks) {
+            taskIds.add(task.getTaskId());
+        }
+        return taskIds;
+    }
 
     // ids - taskId + jobid
     public void updateJobDetails(JobModel jobDetails, CompositeIdentifier ids) throws RegistryException {
@@ -1914,39 +1965,6 @@ public class ExperimentRegistry {
 //        }
 //    }
 
-    public List<String> getExperimentIDs(String fieldName, Object value) throws RegistryException {
-//        List<String> expIDs = new ArrayList<String>();
-//        try {
-//            if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY)) {
-//                if (gatewayResource == null) {
-//                    logger.error("You should use an existing gateway in order to retrieve experiments..");
-//                    return null;
-//                } else {
-//                    List<ExperimentResource> resources = gatewayResource.getExperiments();
-//                    for (ExperimentResource resource : resources) {
-//                        String expID = resource.getExpID();
-//                        expIDs.add(expID);
-//                    }
-//                }
-//            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
-//                List<ExperimentResource> resources = workerResource.getExperiments();
-//                for (ExperimentResource resource : resources) {
-//                    expIDs.add(resource.getExpID());
-//                }
-//            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.PROJECT_ID)) {
-//                List<ExperimentResource> resources = workerResource.getExperiments();
-//                for (ExperimentResource resource : resources) {
-//                    expIDs.add(resource.getExpID());
-//                }
-//            }
-//        } catch (Exception e) {
-//            logger.error("Error while retrieving experiment ids..", e);
-//            throw new RegistryException(e);
-//        }
-//        return expIDs;
-        return null;
-    }
-
 //    public List<String> getWorkflowNodeIds(String fieldName, Object value) throws RegistryException {
 //        List<String> wfIds = new ArrayList<String>();
 //        List<WorkflowNodeDetails> wfNodeDetails = getWFNodeDetails(fieldName, value);
@@ -1956,23 +1974,6 @@ public class ExperimentRegistry {
 //        return wfIds;
 //    }
 
-    public List<String> getTaskDetailIds(String fieldName, Object value) throws RegistryException {
-        List<String> taskDetailIds = new ArrayList<String>();
-        List<TaskModel> taskDetails = getTaskDetails(fieldName, value);
-        for (TaskModel td : taskDetails) {
-            taskDetailIds.add(td.getTaskId());
-        }
-        return taskDetailIds;
-    }
-
-    public List<String> getJobDetailIds(String fieldName, Object value) throws RegistryException {
-        List<String> jobIds = new ArrayList<String>();
-        List<JobModel> jobDetails = getJobDetails(fieldName, value);
-        for (JobModel jd : jobDetails) {
-            jobIds.add(jd.getJobId());
-        }
-        return jobIds;
-    }
 //
 //    public List<String> getTransferDetailIds(String fieldName, Object value) throws RegistryException {
 //        List<String> transferIds = new ArrayList<String>();
