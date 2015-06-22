@@ -958,6 +958,9 @@ public class ExperimentRegistry {
         return null;
     }
 
+    public Object getTaskStatus(String identifier) {
+        return null;
+    }
 
     public List<ExperimentModel> getExperimentList(String fieldName, Object value) throws RegistryException {
         List<ExperimentModel> experiments = new ArrayList<ExperimentModel>();

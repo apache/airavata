@@ -114,7 +114,6 @@ public class ThriftDataModelConversion {
             experiment.setUserName(experimentResource.getUserName());
             experiment.setExperimentName(experimentResource.getExperimentName());
             experiment.setDescription(experimentResource.getDescription());
-            experiment.setExecutionId(experimentResource.getApplicationId());
             experiment.setEnableEmailNotification(experimentResource.getEnableEmailNotification());
             experiment.setGatewayExecutionId(experimentResource.getGatewayExecutionId());
             if (experiment.isEnableEmailNotification()){
