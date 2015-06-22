@@ -65,7 +65,6 @@ public class GatewayResourceTest extends AbstractResourceTest {
         experimentResource.setUserName(getWorkerResource().getUser());
         experimentResource.setProjectId(getProjectResource().getId());
         experimentResource.setCreationTime(currentDate);
-        experimentResource.setApplicationId("testApplication");
         experimentResource.setExecutionId("1.0");
         experimentResource.setDescription("Test Application");
         experimentResource.setExperimentName("TestExperiment");

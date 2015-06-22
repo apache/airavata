@@ -274,11 +274,8 @@ public class TaskResource extends AbstractExpCatResource {
         EntityManager em = null;
         try {
             em = ExpCatResourceUtils.getEntityManager();
-            Task task = em.find(Task.class, taskId);
-            em.close();
-
-            em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
+            Task task = em.find(Task.class, taskId);
             if(task == null){
                 task = new Task();
             }
