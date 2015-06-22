@@ -597,13 +597,13 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     experimentRegistry.removeUserConfigData((String) identifier);
                     break;
                 case PROCESS:
-                    experimentRegistry.removeWorkflowNode((String) identifier);
+                    experimentRegistry.removeProcess((String) identifier);
                     break;
                 case PROCESS_RESOURCE_SCHEDULE:
-                    experimentRegistry.removeComputationalScheduling(dataType, (String) identifier);
+                    experimentRegistry.removeProcessResourceSchedule((String) identifier);
                     break;
                 case TASK:
-                    experimentRegistry.removeTaskDetails((String) identifier);
+                    experimentRegistry.removeTask((String) identifier);
                     break;
                 default:
                     logger.error("Unsupported data type...", new UnsupportedOperationException());
