@@ -49,7 +49,6 @@ public class UserConfigurationDataTest extends AbstractResourceTest {
         experimentResource.setProjectId(getProjectResource().getId());
         Timestamp currentDate = new Timestamp(new Date().getTime());
         experimentResource.setCreationTime(currentDate);
-        experimentResource.setApplicationId("testApplication");
         experimentResource.setExecutionId("1.0");
         experimentResource.setDescription("Test Application");
         experimentResource.setExperimentName("TestExperiment");
