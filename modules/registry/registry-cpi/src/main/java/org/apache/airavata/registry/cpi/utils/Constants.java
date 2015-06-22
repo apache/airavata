@@ -35,6 +35,7 @@ public class Constants {
         public final class ExperimentConstants {
             public static final String EXPERIMENT_ID = "experimentId";
             public static final String PROJECT_ID = "projectId";
+            public static final String GATEWAY_ID = "gatewayId";
             public static final String EXPERIMENT_TYPE = "experimentType";
             public static final String USER_NAME = "userName";
             public static final String EXPERIMENT_NAME = "experimentName";
