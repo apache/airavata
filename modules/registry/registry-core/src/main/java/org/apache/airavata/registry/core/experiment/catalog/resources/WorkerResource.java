@@ -32,7 +32,6 @@ import org.apache.airavata.registry.cpi.ResultOrderType;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -40,7 +39,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public class WorkerResource extends AbstractExpCatResource {
     private final static Logger logger = LoggerFactory.getLogger(WorkerResource.class);
@@ -399,11 +397,6 @@ public class WorkerResource extends AbstractExpCatResource {
         return project;
     }
 
-    public String getProjectID(String projectName) {
-        String pro = projectName.replaceAll("\\s", "");
-        return pro + "_" + UUID.randomUUID();
-    }
-
     /**
      * @param id project id
      * @return project resource
@@ -597,88 +590,81 @@ public class WorkerResource extends AbstractExpCatResource {
      */
     public List<ExperimentSummaryResource> searchExperiments(Timestamp fromTime, Timestamp toTime, Map<String, String> filters, int limit,
                                                              int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
-//        List<ExperimentSummaryResource> result = new ArrayList();
-//        EntityManager em = null;
-//        try {
-//            String query = "SELECT e, s FROM Experiment e " +
-//                    ",Status s WHERE e.expId=s.expId AND " +
-//                    "s.statusType='" + StatusType.EXPERIMENT + "' AND ";
-//            if (filters.get(StatusConstants.STATE) != null) {
-//                String experimentState = ExperimentState.valueOf(filters.get(StatusConstants.STATE)).toString();
-//                query += "s.state='" + experimentState + "' AND ";
-//            }
-//
-//            if (toTime != null && fromTime != null && toTime.after(fromTime)) {
-//                query += "e.creationTime > '" + fromTime + "' " + "AND e.creationTime <'" + toTime + "' AND ";
-//            }
-//
-//            filters.remove(StatusConstants.STATE);
-//            if (filters != null && filters.size() != 0) {
-//                for (String field : filters.keySet()) {
-//                    String filterVal = filters.get(field);
-//                    if (field.equals(ExperimentConstants.EXECUTION_USER)) {
-//                        query += "e." + field + "= '" + filterVal + "' AND ";
-//                    } else if (field.equals(ExperimentConstants.GATEWAY_ID)) {
-//                        query += "e." + field + "= '" + filterVal + "' AND ";
-//                    } else if (field.equals(ExperimentConstants.PROJECT_ID)) {
-//                        query += "e." + field + "= '" + filterVal + "' AND ";
-//                    } else {
-//                        if (filterVal.contains("*")) {
-//                            filterVal = filterVal.replaceAll("\\*", "");
-//                        }
-//                        query += "e." + field + " LIKE '%" + filterVal + "%' AND ";
-//                    }
-//                }
-//            }
-//            query = query.substring(0, query.length() - 5);
-//
-//            //ordering
-//            if (orderByIdentifier != null && resultOrderType != null
-//                    && orderByIdentifier.equals(Constants.FieldConstants.ExperimentConstants.CREATION_TIME)) {
-//                String order = (resultOrderType == ResultOrderType.ASC) ? "ASC" : "DESC";
-//                query += " ORDER BY e." + ExperimentConstants.CREATION_TIME + " " + order;
-//            }
-//
-//            em = ExpCatResourceUtils.getEntityManager();
-//            em.getTransaction().begin();
-//            Query q;
-//
-//            //pagination
-//            if (offset >= 0 && limit >= 0) {
-//                q = em.createQuery(query).setFirstResult(offset).setMaxResults(limit);
-//            } else {
-//                q = em.createQuery(query);
-//            }
-//            OpenJPAQuery kq = OpenJPAPersistence.cast(q);
-//            JDBCFetchPlan fetch = (JDBCFetchPlan) kq.getFetchPlan();
-//            fetch.setEagerFetchMode(FetchMode.JOIN);
-//
-//            List resultList = q.getResultList();
-//            for (Object o : resultList) {
-//                Experiment experiment = (Experiment) ((Object[]) o)[0];
-//                Status experimentStatus = (Status) ((Object[]) o)[1];
-//                experiment.setExperimentStatus(experimentStatus);
-//                ExperimentSummaryResource experimentSummaryResource =
-//                        (ExperimentSummaryResource) Utils.getResource(ResourceType.EXPERIMENT_SUMMARY, experiment);
-//                result.add(experimentSummaryResource);
-//            }
-//            em.getTransaction().commit();
-//            em.close();
-//        } catch (Exception e) {
-//            logger.error(e.getMessage(), e);
-//            throw new RegistryException(e);
-//        } finally {
-//            if (em != null && em.isOpen()) {
-//                if (em.getTransaction().isActive()) {
-//                    em.getTransaction().rollback();
-//                }
-//                em.close();
-//            }
-//        }
-//        return result;
-        throw new NotImplementedException();
-    }
+        List<ExperimentSummaryResource> result = new ArrayList();
+        EntityManager em = null;
+        try {
+            String query = "SELECT e FROM ExperimentSummary e " +
+                    "WHERE e.expId=s.expId AND ";
+            if (filters.get(ExperimentStatusConstants.STATE) != null) {
+                String experimentState = ExperimentState.valueOf(filters.get(ExperimentStatusConstants.STATE)).toString();
+                query += "e.state='" + experimentState + "' AND ";
+            }
 
+            if (toTime != null && fromTime != null && toTime.after(fromTime)) {
+                query += "e.creationTime > '" + fromTime + "' " + "AND e.creationTime <'" + toTime + "' AND ";
+            }
+
+            filters.remove(ExperimentStatusConstants.STATE);
+            if (filters != null && filters.size() != 0) {
+                for (String field : filters.keySet()) {
+                    String filterVal = filters.get(field);
+                    if (field.equals(ExperimentConstants.USER_NAME)) {
+                        query += "e." + field + "= '" + filterVal + "' AND ";
+                    } else if (field.equals(ExperimentConstants.GATEWAY_ID)) {
+                        query += "e." + field + "= '" + filterVal + "' AND ";
+                    } else if (field.equals(ExperimentConstants.PROJECT_ID)) {
+                        query += "e." + field + "= '" + filterVal + "' AND ";
+                    } else {
+                        if (filterVal.contains("*")) {
+                            filterVal = filterVal.replaceAll("\\*", "");
+                        }
+                        query += "e." + field + " LIKE '%" + filterVal + "%' AND ";
+                    }
+                }
+            }
+            query = query.substring(0, query.length() - 5);
+
+            //ordering
+            if (orderByIdentifier != null && resultOrderType != null
+                    && orderByIdentifier.equals(Constants.FieldConstants.ExperimentConstants.CREATION_TIME)) {
+                String order = (resultOrderType == ResultOrderType.ASC) ? "ASC" : "DESC";
+                query += " ORDER BY e." + ExperimentConstants.CREATION_TIME + " " + order;
+            }
+
+            em = ExpCatResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            Query q;
+
+            //pagination
+            if (offset >= 0 && limit >= 0) {
+                q = em.createQuery(query).setFirstResult(offset).setMaxResults(limit);
+            } else {
+                q = em.createQuery(query);
+            }
+
+            List resultList = q.getResultList();
+            for (Object o : resultList) {
+                ExperimentSummary experimentSummary = (ExperimentSummary) o;
+                ExperimentSummaryResource experimentSummaryResource =
+                        (ExperimentSummaryResource) Utils.getResource(ResourceType.EXPERIMENT_SUMMARY,
+                                experimentSummary);
+                result.add(experimentSummaryResource);
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+        return result;
+    }
 
     /**
      * Method to get experiment statistics for a gateway
@@ -712,48 +698,42 @@ public class WorkerResource extends AbstractExpCatResource {
 
     private List<ExperimentSummaryResource> getExperimentStatisticsForState(
             ExperimentState expState, String gatewayId, Timestamp fromTime, Timestamp toTime) throws RegistryException {
-//        EntityManager em = null;
-//        List<ExperimentSummaryResource> result = new ArrayList();
-//        try {
-//            String query = "SELECT e, s FROM Experiment e " +
-//                    ",Status s WHERE e.expId=s.expId AND " +
-//                    "s.statusType='" + StatusType.EXPERIMENT + "' AND ";
-//            if (expState != null) {
-//                query += "s.state='" + expState.toString() + "' AND ";
-//            }
-//            query += "e.creationTime > '" + fromTime + "' " + "AND e.creationTime <'" + toTime + "' AND ";
-//            query += "e." + ExperimentConstants.GATEWAY_ID + "= '" + gatewayId + "'";
-//
-//            em = ExpCatResourceUtils.getEntityManager();
-//            em.getTransaction().begin();
-//            Query q = em.createQuery(query);
-//            OpenJPAQuery kq = OpenJPAPersistence.cast(q);
-//            JDBCFetchPlan fetch = (JDBCFetchPlan) kq.getFetchPlan();
-//            fetch.setEagerFetchMode(FetchMode.JOIN);
-//
-//            List resultList = q.getResultList();
-//            for (Object o : resultList) {
-//                Experiment experiment = (Experiment) ((Object[]) o)[0];
-//                Status experimentStatus = (Status) ((Object[]) o)[1];
-//                experiment.setExperimentStatus(experimentStatus);
-//                ExperimentSummaryResource experimentSummaryResource =
-//                        (ExperimentSummaryResource) Utils.getResource(ResourceType.EXPERIMENT_SUMMARY, experiment);
-//                result.add(experimentSummaryResource);
-//            }
-//            em.getTransaction().commit();
-//            em.close();
-//        } catch (Exception e) {
-//            logger.error(e.getMessage(), e);
-//            throw new RegistryException(e);
-//        } finally {
-//            if (em != null && em.isOpen()) {
-//                if (em.getTransaction().isActive()) {
-//                    em.getTransaction().rollback();
-//                }
-//                em.close();
-//            }
-//        }
-//        return result;
-        throw new NotImplementedException();
+        EntityManager em = null;
+        List<ExperimentSummaryResource> result = new ArrayList();
+        try {
+            String query = "SELECT e FROM ExperimentSummary e " +
+                    "WHERE e.expId=s.expId AND ";
+            if (expState != null) {
+                query += "e.state='" + expState.toString() + "' AND ";
+            }
+            query += "e.creationTime > '" + fromTime + "' " + "AND e.creationTime <'" + toTime + "' AND ";
+            query += "e." + ExperimentConstants.GATEWAY_ID + "= '" + gatewayId + "'";
+
+            em = ExpCatResourceUtils.getEntityManager();
+            em.getTransaction().begin();
+            Query q = em.createQuery(query);
+
+            List resultList = q.getResultList();
+            for (Object o : resultList) {
+                ExperimentSummary experimentSummary = (ExperimentSummary) o;
+                ExperimentSummaryResource experimentSummaryResource =
+                        (ExperimentSummaryResource) Utils.getResource(ResourceType.EXPERIMENT_SUMMARY,
+                                experimentSummary);
+                result.add(experimentSummaryResource);
+            }
+            em.getTransaction().commit();
+            em.close();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            throw new RegistryException(e);
+        } finally {
+            if (em != null && em.isOpen()) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                em.close();
+            }
+        }
+        return result;
     }
 }
