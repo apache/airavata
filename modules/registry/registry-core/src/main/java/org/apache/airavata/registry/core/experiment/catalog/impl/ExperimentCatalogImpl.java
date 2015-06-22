@@ -636,13 +636,13 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                 case EXPERIMENT:
                     return experimentRegistry.isExperimentExist((String) identifier);
                 case USER_CONFIGURATION_DATA:
-                    return experimentRegistry.isExperimentConfigDataExist((String) identifier);
+                    return experimentRegistry.isUserConfigDataExist((String) identifier);
                 case PROCESS:
-                    return experimentRegistry.isWFNodeExist((String) identifier);
+                    return experimentRegistry.isProcessExist((String) identifier);
                 case PROCESS_RESOURCE_SCHEDULE:
-                    return experimentRegistry.isComputationalSchedulingExist(dataType, (String) identifier);
+                    return experimentRegistry.isProcessResourceScheduleExist((String) identifier);
                 case TASK:
-                    return experimentRegistry.isTaskDetailExist((String) identifier);
+                    return experimentRegistry.isTaskExist((String) identifier);
                 default:
                     logger.error("Unsupported data type...", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
