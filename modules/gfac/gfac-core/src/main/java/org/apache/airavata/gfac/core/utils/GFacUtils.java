@@ -53,6 +53,7 @@ import org.apache.airavata.model.workspace.experiment.ErrorCategory;
 import org.apache.airavata.model.workspace.experiment.ErrorDetails;
 import org.apache.airavata.model.workspace.experiment.Experiment;
 import org.apache.airavata.model.workspace.experiment.ExperimentState;
+import org.apache.airavata.model.workspace.experiment.ExperimentStatus;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
 import org.apache.airavata.model.workspace.experiment.JobStatus;
@@ -662,22 +663,24 @@ public class GFacUtils {
 		return buffer.getLong();
 	}
 
-    public static ExperimentState updateExperimentStatus(String experimentId, ExperimentState state) throws RegistryException {
+    public static ExperimentState updateExperimentStatus(String experimentId, ExperimentState newState) throws RegistryException {
         Registry airavataRegistry = RegistryFactory.getDefaultRegistry();
         Experiment details = (Experiment) airavataRegistry.get(RegistryModelType.EXPERIMENT, experimentId);
         if (details == null) {
             details = new Experiment();
             details.setExperimentID(experimentId);
         }
-        org.apache.airavata.model.workspace.experiment.ExperimentStatus status = new org.apache.airavata.model.workspace.experiment.ExperimentStatus();
-        status.setExperimentState(state);
+        ExperimentState currentState = details.getExperimentStatus().getExperimentState();
+        ExperimentStatus status = new ExperimentStatus();
+
         status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
-        if (!ExperimentState.CANCELED.equals(details.getExperimentStatus().getExperimentState()) &&
-                !ExperimentState.CANCELING.equals(details.getExperimentStatus().getExperimentState())) {
-            status.setExperimentState(state);
+
+        if (!currentState.equals(ExperimentState.CANCELED) && !currentState.equals(ExperimentState.CANCELING)) {
+            status.setExperimentState(newState);
         } else {
-            status.setExperimentState(details.getExperimentStatus().getExperimentState());
+            status.setExperimentState(currentState);
         }
+
         details.setExperimentStatus(status);
         log.info("Updating the experiment status of experiment: " + experimentId + " to " + status.getExperimentState().toString());
         airavataRegistry.update(RegistryModelType.EXPERIMENT_STATUS, status, experimentId);
