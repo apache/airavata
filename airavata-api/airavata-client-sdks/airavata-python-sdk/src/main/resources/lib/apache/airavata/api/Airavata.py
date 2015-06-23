@@ -506,6 +506,49 @@ class Iface:
     """
     pass
 
+  def searchExperiments(self, gatewayId, userName, filters, limit, offset):
+    """
+    Search Experiments by using multiple filter criteria with pagination. Results will be sorted
+    based on creation time DESC
+
+    @param gatewayId
+          Identifier of the requested gateway
+    @param userName
+          Username of the requested user
+    @param filters
+          map of multiple filter criteria.
+    @param limit
+          Amount of results to be fetched
+    @param offset
+          The starting point of the results to be fetched
+
+    Parameters:
+     - gatewayId
+     - userName
+     - filters
+     - limit
+     - offset
+    """
+    pass
+
+  def getExperimentStatistics(self, gatewayId, fromTime, toTime):
+    """
+    Get Experiment Statisitics for the given gateway for a specific time period
+    @param gatewayId
+          Identifier of the requested gateway
+    @param fromTime
+          Starting date time
+    @param toTime
+          Ending data time
+
+
+    Parameters:
+     - gatewayId
+     - fromTime
+     - toTime
+    """
+    pass
+
   def getAllExperimentsInProject(self, projectId):
     """
     Get all Experiments within a Project
@@ -591,7 +634,7 @@ class Iface:
          the ExperimentMetadata is a required field.
 
     @return
-      The server-side generated airavata experiment globally unique identifier.
+      The server-side generated.airavata.registry.core.experiment.globally unique identifier.
 
     @throws org.apache.airavata.model.error.InvalidRequestException
        For any incorrect forming of the request itself.
@@ -638,7 +681,7 @@ class Iface:
 
     @throws org.apache.airavata.model.error.AiravataClientException
        The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
-         
+
          UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
             step, then Airavata Registry will not have a provenance area setup. The client has to follow
             gateway registration steps and retry this request.
@@ -683,7 +726,7 @@ class Iface:
 
     @throws org.apache.airavata.model.error.AiravataClientException
        The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
-         
+
          UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
             step, then Airavata Registry will not have a provenance area setup. The client has to follow
             gateway registration steps and retry this request.
@@ -764,7 +807,7 @@ class Iface:
 
     @throws org.apache.airavata.model.error.AiravataClientException
        The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
-         
+
          UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
             step, then Airavata Registry will not have a provenance area setup. The client has to follow
             gateway registration steps and retry this request.
@@ -842,7 +885,7 @@ class Iface:
          should be shared public by default.
 
     @return
-      The server-side generated airavata experiment globally unique identifier for the newly cloned experiment.
+      The server-side generated.airavata.registry.core.experiment.globally unique identifier for the newly cloned experiment.
 
     @throws org.apache.airavata.model.error.InvalidRequestException
        For any incorrect forming of the request itself.
@@ -852,7 +895,7 @@ class Iface:
 
     @throws org.apache.airavata.model.error.AiravataClientException
        The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
-         
+
          UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
             step, then Airavata Registry will not have a provenance area setup. The client has to follow
             gateway registration steps and retry this request.
@@ -892,7 +935,7 @@ class Iface:
 
     @throws org.apache.airavata.model.error.AiravataClientException
        The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
-         
+
          UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
             step, then Airavata Registry will not have a provenance area setup. The client has to follow
             gateway registration steps and retry this request.
@@ -2151,6 +2194,8 @@ class Client(Iface):
       raise result.ace
     if result.ase is not None:
       raise result.ase
+    if result.ae is not None:
+      raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getAPIVersion failed: unknown result");
 
   def addGateway(self, gateway):
@@ -3529,6 +3574,113 @@ class Client(Iface):
       raise result.ase
     raise TApplicationException(TApplicationException.MISSING_RESULT, "searchExperimentsByCreationTimeWithPagination failed: unknown result");
 
+  def searchExperiments(self, gatewayId, userName, filters, limit, offset):
+    """
+    Search Experiments by using multiple filter criteria with pagination. Results will be sorted
+    based on creation time DESC
+
+    @param gatewayId
+          Identifier of the requested gateway
+    @param userName
+          Username of the requested user
+    @param filters
+          map of multiple filter criteria.
+    @param limit
+          Amount of results to be fetched
+    @param offset
+          The starting point of the results to be fetched
+
+    Parameters:
+     - gatewayId
+     - userName
+     - filters
+     - limit
+     - offset
+    """
+    self.send_searchExperiments(gatewayId, userName, filters, limit, offset)
+    return self.recv_searchExperiments()
+
+  def send_searchExperiments(self, gatewayId, userName, filters, limit, offset):
+    self._oprot.writeMessageBegin('searchExperiments', TMessageType.CALL, self._seqid)
+    args = searchExperiments_args()
+    args.gatewayId = gatewayId
+    args.userName = userName
+    args.filters = filters
+    args.limit = limit
+    args.offset = offset
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_searchExperiments(self):
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
+      raise x
+    result = searchExperiments_result()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.ire is not None:
+      raise result.ire
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "searchExperiments failed: unknown result");
+
+  def getExperimentStatistics(self, gatewayId, fromTime, toTime):
+    """
+    Get Experiment Statisitics for the given gateway for a specific time period
+    @param gatewayId
+          Identifier of the requested gateway
+    @param fromTime
+          Starting date time
+    @param toTime
+          Ending data time
+
+
+    Parameters:
+     - gatewayId
+     - fromTime
+     - toTime
+    """
+    self.send_getExperimentStatistics(gatewayId, fromTime, toTime)
+    return self.recv_getExperimentStatistics()
+
+  def send_getExperimentStatistics(self, gatewayId, fromTime, toTime):
+    self._oprot.writeMessageBegin('getExperimentStatistics', TMessageType.CALL, self._seqid)
+    args = getExperimentStatistics_args()
+    args.gatewayId = gatewayId
+    args.fromTime = fromTime
+    args.toTime = toTime
+    args.write(self._oprot)
+    self._oprot.writeMessageEnd()
+    self._oprot.trans.flush()
+
+  def recv_getExperimentStatistics(self):
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    if mtype == TMessageType.EXCEPTION:
+      x = TApplicationException()
+      x.read(self._iprot)
+      self._iprot.readMessageEnd()
+      raise x
+    result = getExperimentStatistics_result()
+    result.read(self._iprot)
+    self._iprot.readMessageEnd()
+    if result.success is not None:
+      return result.success
+    if result.ire is not None:
+      raise result.ire
+    if result.ace is not None:
+      raise result.ace
+    if result.ase is not None:
+      raise result.ase
+    raise TApplicationException(TApplicationException.MISSING_RESULT, "getExperimentStatistics failed: unknown result");
+
   def getAllExperimentsInProject(self, projectId):
     """
     Get all Experiments within a Project
@@ -3740,7 +3892,7 @@ class Client(Iface):
          the ExperimentMetadata is a required field.
 
     @return
-      The server-side generated airavata experiment globally unique identifier.
+      The server-side generated.airavata.registry.core.experiment.globally unique identifier.
 
     @throws org.apache.airavata.model.error.InvalidRequestException
        For any incorrect forming of the request itself.
@@ -3817,7 +3969,7 @@ class Client(Iface):
 
     @throws org.apache.airavata.model.error.AiravataClientException
        The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
-         
+
          UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
             step, then Airavata Registry will not have a provenance area setup. The client has to follow
             gateway registration steps and retry this request.
@@ -3893,7 +4045,7 @@ class Client(Iface):
 
     @throws org.apache.airavata.model.error.AiravataClientException
        The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
-         
+
          UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
             step, then Airavata Registry will not have a provenance area setup. The client has to follow
             gateway registration steps and retry this request.
@@ -4079,7 +4231,7 @@ class Client(Iface):
 
     @throws org.apache.airavata.model.error.AiravataClientException
        The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
-         
+
          UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
             step, then Airavata Registry will not have a provenance area setup. The client has to follow
             gateway registration steps and retry this request.
@@ -4375,7 +4527,7 @@ class Client(Iface):
          should be shared public by default.
 
     @return
-      The server-side generated airavata experiment globally unique identifier for the newly cloned experiment.
+      The server-side generated.airavata.registry.core.experiment.globally unique identifier for the newly cloned experiment.
 
     @throws org.apache.airavata.model.error.InvalidRequestException
        For any incorrect forming of the request itself.
@@ -4385,7 +4537,7 @@ class Client(Iface):
 
     @throws org.apache.airavata.model.error.AiravataClientException
        The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
-         
+
          UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
             step, then Airavata Registry will not have a provenance area setup. The client has to follow
             gateway registration steps and retry this request.
@@ -4457,7 +4609,7 @@ class Client(Iface):
 
     @throws org.apache.airavata.model.error.AiravataClientException
        The following list of exceptions are thrown which Airavata Client can take corrective actions to resolve:
-         
+
          UNKNOWN_GATEWAY_ID - If a Gateway is not registered with Airavata as a one time administrative
             step, then Airavata Registry will not have a provenance area setup. The client has to follow
             gateway registration steps and retry this request.
@@ -8014,6 +8166,8 @@ class Processor(Iface, TProcessor):
     self._processMap["searchExperimentsByStatusWithPagination"] = Processor.process_searchExperimentsByStatusWithPagination
     self._processMap["searchExperimentsByCreationTime"] = Processor.process_searchExperimentsByCreationTime
     self._processMap["searchExperimentsByCreationTimeWithPagination"] = Processor.process_searchExperimentsByCreationTimeWithPagination
+    self._processMap["searchExperiments"] = Processor.process_searchExperiments
+    self._processMap["getExperimentStatistics"] = Processor.process_getExperimentStatistics
     self._processMap["getAllExperimentsInProject"] = Processor.process_getAllExperimentsInProject
     self._processMap["getAllExperimentsInProjectWithPagination"] = Processor.process_getAllExperimentsInProjectWithPagination
     self._processMap["getAllUserExperiments"] = Processor.process_getAllUserExperiments
@@ -8139,6 +8293,8 @@ class Processor(Iface, TProcessor):
       result.ace = ace
     except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
       result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException, ae:
+      result.ae = ae
     oprot.writeMessageBegin("getAPIVersion", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
@@ -8668,6 +8824,42 @@ class Processor(Iface, TProcessor):
     except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
       result.ase = ase
     oprot.writeMessageBegin("searchExperimentsByCreationTimeWithPagination", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_searchExperiments(self, seqid, iprot, oprot):
+    args = searchExperiments_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = searchExperiments_result()
+    try:
+      result.success = self._handler.searchExperiments(args.gatewayId, args.userName, args.filters, args.limit, args.offset)
+    except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
+      result.ire = ire
+    except apache.airavata.api.error.ttypes.AiravataClientException, ace:
+      result.ace = ace
+    except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
+      result.ase = ase
+    oprot.writeMessageBegin("searchExperiments", TMessageType.REPLY, seqid)
+    result.write(oprot)
+    oprot.writeMessageEnd()
+    oprot.trans.flush()
+
+  def process_getExperimentStatistics(self, seqid, iprot, oprot):
+    args = getExperimentStatistics_args()
+    args.read(iprot)
+    iprot.readMessageEnd()
+    result = getExperimentStatistics_result()
+    try:
+      result.success = self._handler.getExperimentStatistics(args.gatewayId, args.fromTime, args.toTime)
+    except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
+      result.ire = ire
+    except apache.airavata.api.error.ttypes.AiravataClientException, ace:
+      result.ace = ace
+    except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
+      result.ase = ase
+    oprot.writeMessageBegin("getExperimentStatistics", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -10468,6 +10660,7 @@ class getAPIVersion_result:
    - ire
    - ace
    - ase
+   - ae
   """
 
   thrift_spec = (
@@ -10475,13 +10668,15 @@ class getAPIVersion_result:
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
   )
 
-  def __init__(self, success=None, ire=None, ace=None, ase=None,):
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
     self.success = success
     self.ire = ire
     self.ace = ace
     self.ase = ase
+    self.ae = ae
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -10515,6 +10710,12 @@ class getAPIVersion_result:
           self.ase.read(iprot)
         else:
           iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -10540,6 +10741,10 @@ class getAPIVersion_result:
     if self.ase is not None:
       oprot.writeFieldBegin('ase', TType.STRUCT, 3)
       self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -16093,6 +16298,428 @@ class searchExperimentsByCreationTimeWithPagination_result:
   def __ne__(self, other):
     return not (self == other)
 
+class searchExperiments_args:
+  """
+  Attributes:
+   - gatewayId
+   - userName
+   - filters
+   - limit
+   - offset
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'gatewayId', None, None, ), # 1
+    (2, TType.STRING, 'userName', None, None, ), # 2
+    (3, TType.MAP, 'filters', (TType.I32,None,TType.STRING,None), None, ), # 3
+    (4, TType.I32, 'limit', None, None, ), # 4
+    (5, TType.I32, 'offset', None, None, ), # 5
+  )
+
+  def __init__(self, gatewayId=None, userName=None, filters=None, limit=None, offset=None,):
+    self.gatewayId = gatewayId
+    self.userName = userName
+    self.filters = filters
+    self.limit = limit
+    self.offset = offset
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.gatewayId = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.userName = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.MAP:
+          self.filters = {}
+          (_ktype129, _vtype130, _size128 ) = iprot.readMapBegin()
+          for _i132 in xrange(_size128):
+            _key133 = iprot.readI32();
+            _val134 = iprot.readString();
+            self.filters[_key133] = _val134
+          iprot.readMapEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.I32:
+          self.limit = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
+        if ftype == TType.I32:
+          self.offset = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('searchExperiments_args')
+    if self.gatewayId is not None:
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 1)
+      oprot.writeString(self.gatewayId)
+      oprot.writeFieldEnd()
+    if self.userName is not None:
+      oprot.writeFieldBegin('userName', TType.STRING, 2)
+      oprot.writeString(self.userName)
+      oprot.writeFieldEnd()
+    if self.filters is not None:
+      oprot.writeFieldBegin('filters', TType.MAP, 3)
+      oprot.writeMapBegin(TType.I32, TType.STRING, len(self.filters))
+      for kiter135,viter136 in self.filters.items():
+        oprot.writeI32(kiter135)
+        oprot.writeString(viter136)
+      oprot.writeMapEnd()
+      oprot.writeFieldEnd()
+    if self.limit is not None:
+      oprot.writeFieldBegin('limit', TType.I32, 4)
+      oprot.writeI32(self.limit)
+      oprot.writeFieldEnd()
+    if self.offset is not None:
+      oprot.writeFieldBegin('offset', TType.I32, 5)
+      oprot.writeI32(self.offset)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.gatewayId is None:
+      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
+    if self.userName is None:
+      raise TProtocol.TProtocolException(message='Required field userName is unset!')
+    if self.limit is None:
+      raise TProtocol.TProtocolException(message='Required field limit is unset!')
+    if self.offset is None:
+      raise TProtocol.TProtocolException(message='Required field offset is unset!')
+    return
+
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class searchExperiments_result:
+  """
+  Attributes:
+   - success
+   - ire
+   - ace
+   - ase
+  """
+
+  thrift_spec = (
+    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary, apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary.thrift_spec)), None, ), # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+  )
+
+  def __init__(self, success=None, ire=None, ace=None, ase=None,):
+    self.success = success
+    self.ire = ire
+    self.ace = ace
+    self.ase = ase
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.LIST:
+          self.success = []
+          (_etype140, _size137) = iprot.readListBegin()
+          for _i141 in xrange(_size137):
+            _elem142 = apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary()
+            _elem142.read(iprot)
+            self.success.append(_elem142)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('searchExperiments_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.LIST, 0)
+      oprot.writeListBegin(TType.STRUCT, len(self.success))
+      for iter143 in self.success:
+        iter143.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getExperimentStatistics_args:
+  """
+  Attributes:
+   - gatewayId
+   - fromTime
+   - toTime
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.STRING, 'gatewayId', None, None, ), # 1
+    (2, TType.I64, 'fromTime', None, None, ), # 2
+    (3, TType.I64, 'toTime', None, None, ), # 3
+  )
+
+  def __init__(self, gatewayId=None, fromTime=None, toTime=None,):
+    self.gatewayId = gatewayId
+    self.fromTime = fromTime
+    self.toTime = toTime
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.STRING:
+          self.gatewayId = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.I64:
+          self.fromTime = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.I64:
+          self.toTime = iprot.readI64();
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getExperimentStatistics_args')
+    if self.gatewayId is not None:
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 1)
+      oprot.writeString(self.gatewayId)
+      oprot.writeFieldEnd()
+    if self.fromTime is not None:
+      oprot.writeFieldBegin('fromTime', TType.I64, 2)
+      oprot.writeI64(self.fromTime)
+      oprot.writeFieldEnd()
+    if self.toTime is not None:
+      oprot.writeFieldBegin('toTime', TType.I64, 3)
+      oprot.writeI64(self.toTime)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.gatewayId is None:
+      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
+    if self.fromTime is None:
+      raise TProtocol.TProtocolException(message='Required field fromTime is unset!')
+    if self.toTime is None:
+      raise TProtocol.TProtocolException(message='Required field toTime is unset!')
+    return
+
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class getExperimentStatistics_result:
+  """
+  Attributes:
+   - success
+   - ire
+   - ace
+   - ase
+  """
+
+  thrift_spec = (
+    (0, TType.STRUCT, 'success', (apache.airavata.model.workspace.experiment.ttypes.ExperimentStatistics, apache.airavata.model.workspace.experiment.ttypes.ExperimentStatistics.thrift_spec), None, ), # 0
+    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
+    (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+  )
+
+  def __init__(self, success=None, ire=None, ace=None, ase=None,):
+    self.success = success
+    self.ire = ire
+    self.ace = ace
+    self.ase = ase
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 0:
+        if ftype == TType.STRUCT:
+          self.success = apache.airavata.model.workspace.experiment.ttypes.ExperimentStatistics()
+          self.success.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 1:
+        if ftype == TType.STRUCT:
+          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
+          self.ire.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
+          self.ace.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRUCT:
+          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
+          self.ase.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('getExperimentStatistics_result')
+    if self.success is not None:
+      oprot.writeFieldBegin('success', TType.STRUCT, 0)
+      self.success.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ire is not None:
+      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
+      self.ire.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ace is not None:
+      oprot.writeFieldBegin('ace', TType.STRUCT, 2)
+      self.ace.write(oprot)
+      oprot.writeFieldEnd()
+    if self.ase is not None:
+      oprot.writeFieldBegin('ase', TType.STRUCT, 3)
+      self.ase.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    return
+
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
 class getAllExperimentsInProject_args:
   """
   Attributes:
@@ -16192,11 +16819,11 @@ class getAllExperimentsInProject_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype131, _size128) = iprot.readListBegin()
-          for _i132 in xrange(_size128):
-            _elem133 = apache.airavata.model.workspace.experiment.ttypes.Experiment()
-            _elem133.read(iprot)
-            self.success.append(_elem133)
+          (_etype147, _size144) = iprot.readListBegin()
+          for _i148 in xrange(_size144):
+            _elem149 = apache.airavata.model.workspace.experiment.ttypes.Experiment()
+            _elem149.read(iprot)
+            self.success.append(_elem149)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -16237,8 +16864,8 @@ class getAllExperimentsInProject_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter134 in self.success:
-        iter134.write(oprot)
+      for iter150 in self.success:
+        iter150.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -16402,11 +17029,11 @@ class getAllExperimentsInProjectWithPagination_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype138, _size135) = iprot.readListBegin()
-          for _i139 in xrange(_size135):
-            _elem140 = apache.airavata.model.workspace.experiment.ttypes.Experiment()
-            _elem140.read(iprot)
-            self.success.append(_elem140)
+          (_etype154, _size151) = iprot.readListBegin()
+          for _i155 in xrange(_size151):
+            _elem156 = apache.airavata.model.workspace.experiment.ttypes.Experiment()
+            _elem156.read(iprot)
+            self.success.append(_elem156)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -16447,8 +17074,8 @@ class getAllExperimentsInProjectWithPagination_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter141 in self.success:
-        iter141.write(oprot)
+      for iter157 in self.success:
+        iter157.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -16595,11 +17222,11 @@ class getAllUserExperiments_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype145, _size142) = iprot.readListBegin()
-          for _i146 in xrange(_size142):
-            _elem147 = apache.airavata.model.workspace.experiment.ttypes.Experiment()
-            _elem147.read(iprot)
-            self.success.append(_elem147)
+          (_etype161, _size158) = iprot.readListBegin()
+          for _i162 in xrange(_size158):
+            _elem163 = apache.airavata.model.workspace.experiment.ttypes.Experiment()
+            _elem163.read(iprot)
+            self.success.append(_elem163)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -16634,8 +17261,8 @@ class getAllUserExperiments_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter148 in self.success:
-        iter148.write(oprot)
+      for iter164 in self.success:
+        iter164.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -16806,11 +17433,11 @@ class getAllUserExperimentsWithPagination_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype152, _size149) = iprot.readListBegin()
-          for _i153 in xrange(_size149):
-            _elem154 = apache.airavata.model.workspace.experiment.ttypes.Experiment()
-            _elem154.read(iprot)
-            self.success.append(_elem154)
+          (_etype168, _size165) = iprot.readListBegin()
+          for _i169 in xrange(_size165):
+            _elem170 = apache.airavata.model.workspace.experiment.ttypes.Experiment()
+            _elem170.read(iprot)
+            self.success.append(_elem170)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -16845,8 +17472,8 @@ class getAllUserExperimentsWithPagination_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter155 in self.success:
-        iter155.write(oprot)
+      for iter171 in self.success:
+        iter171.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -18278,11 +18905,11 @@ class getExperimentOutputs_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype159, _size156) = iprot.readListBegin()
-          for _i160 in xrange(_size156):
-            _elem161 = apache.airavata.model.appcatalog.appinterface.ttypes.OutputDataObjectType()
-            _elem161.read(iprot)
-            self.success.append(_elem161)
+          (_etype175, _size172) = iprot.readListBegin()
+          for _i176 in xrange(_size172):
+            _elem177 = apache.airavata.model.appcatalog.appinterface.ttypes.OutputDataObjectType()
+            _elem177.read(iprot)
+            self.success.append(_elem177)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -18323,8 +18950,8 @@ class getExperimentOutputs_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter162 in self.success:
-        iter162.write(oprot)
+      for iter178 in self.success:
+        iter178.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -18460,11 +19087,11 @@ class getIntermediateOutputs_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype166, _size163) = iprot.readListBegin()
-          for _i167 in xrange(_size163):
-            _elem168 = apache.airavata.model.appcatalog.appinterface.ttypes.OutputDataObjectType()
-            _elem168.read(iprot)
-            self.success.append(_elem168)
+          (_etype182, _size179) = iprot.readListBegin()
+          for _i183 in xrange(_size179):
+            _elem184 = apache.airavata.model.appcatalog.appinterface.ttypes.OutputDataObjectType()
+            _elem184.read(iprot)
+            self.success.append(_elem184)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -18505,8 +19132,8 @@ class getIntermediateOutputs_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter169 in self.success:
-        iter169.write(oprot)
+      for iter185 in self.success:
+        iter185.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -18642,12 +19269,12 @@ class getJobStatuses_result:
       if fid == 0:
         if ftype == TType.MAP:
           self.success = {}
-          (_ktype171, _vtype172, _size170 ) = iprot.readMapBegin()
-          for _i174 in xrange(_size170):
-            _key175 = iprot.readString();
-            _val176 = apache.airavata.model.workspace.experiment.ttypes.JobStatus()
-            _val176.read(iprot)
-            self.success[_key175] = _val176
+          (_ktype187, _vtype188, _size186 ) = iprot.readMapBegin()
+          for _i190 in xrange(_size186):
+            _key191 = iprot.readString();
+            _val192 = apache.airavata.model.workspace.experiment.ttypes.JobStatus()
+            _val192.read(iprot)
+            self.success[_key191] = _val192
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -18688,9 +19315,9 @@ class getJobStatuses_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.MAP, 0)
       oprot.writeMapBegin(TType.STRING, TType.STRUCT, len(self.success))
-      for kiter177,viter178 in self.success.items():
-        oprot.writeString(kiter177)
-        viter178.write(oprot)
+      for kiter193,viter194 in self.success.items():
+        oprot.writeString(kiter193)
+        viter194.write(oprot)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -18826,11 +19453,11 @@ class getJobDetails_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype182, _size179) = iprot.readListBegin()
-          for _i183 in xrange(_size179):
-            _elem184 = apache.airavata.model.workspace.experiment.ttypes.JobDetails()
-            _elem184.read(iprot)
-            self.success.append(_elem184)
+          (_etype198, _size195) = iprot.readListBegin()
+          for _i199 in xrange(_size195):
+            _elem200 = apache.airavata.model.workspace.experiment.ttypes.JobDetails()
+            _elem200.read(iprot)
+            self.success.append(_elem200)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -18871,8 +19498,8 @@ class getJobDetails_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter185 in self.success:
-        iter185.write(oprot)
+      for iter201 in self.success:
+        iter201.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -19008,11 +19635,11 @@ class getDataTransferDetails_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype189, _size186) = iprot.readListBegin()
-          for _i190 in xrange(_size186):
-            _elem191 = apache.airavata.model.workspace.experiment.ttypes.DataTransferDetails()
-            _elem191.read(iprot)
-            self.success.append(_elem191)
+          (_etype205, _size202) = iprot.readListBegin()
+          for _i206 in xrange(_size202):
+            _elem207 = apache.airavata.model.workspace.experiment.ttypes.DataTransferDetails()
+            _elem207.read(iprot)
+            self.success.append(_elem207)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -19053,8 +19680,8 @@ class getDataTransferDetails_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter192 in self.success:
-        iter192.write(oprot)
+      for iter208 in self.success:
+        iter208.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -20053,11 +20680,11 @@ class getAllAppModules_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype196, _size193) = iprot.readListBegin()
-          for _i197 in xrange(_size193):
-            _elem198 = apache.airavata.model.appcatalog.appdeployment.ttypes.ApplicationModule()
-            _elem198.read(iprot)
-            self.success.append(_elem198)
+          (_etype212, _size209) = iprot.readListBegin()
+          for _i213 in xrange(_size209):
+            _elem214 = apache.airavata.model.appcatalog.appdeployment.ttypes.ApplicationModule()
+            _elem214.read(iprot)
+            self.success.append(_elem214)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -20092,8 +20719,8 @@ class getAllAppModules_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter199 in self.success:
-        iter199.write(oprot)
+      for iter215 in self.success:
+        iter215.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -21053,11 +21680,11 @@ class getAllApplicationDeployments_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype203, _size200) = iprot.readListBegin()
-          for _i204 in xrange(_size200):
-            _elem205 = apache.airavata.model.appcatalog.appdeployment.ttypes.ApplicationDeploymentDescription()
-            _elem205.read(iprot)
-            self.success.append(_elem205)
+          (_etype219, _size216) = iprot.readListBegin()
+          for _i220 in xrange(_size216):
+            _elem221 = apache.airavata.model.appcatalog.appdeployment.ttypes.ApplicationDeploymentDescription()
+            _elem221.read(iprot)
+            self.success.append(_elem221)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -21092,8 +21719,8 @@ class getAllApplicationDeployments_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter206 in self.success:
-        iter206.write(oprot)
+      for iter222 in self.success:
+        iter222.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -21222,10 +21849,10 @@ class getAppModuleDeployedResources_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype210, _size207) = iprot.readListBegin()
-          for _i211 in xrange(_size207):
-            _elem212 = iprot.readString();
-            self.success.append(_elem212)
+          (_etype226, _size223) = iprot.readListBegin()
+          for _i227 in xrange(_size223):
+            _elem228 = iprot.readString();
+            self.success.append(_elem228)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -21260,8 +21887,8 @@ class getAppModuleDeployedResources_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRING, len(self.success))
-      for iter213 in self.success:
-        oprot.writeString(iter213)
+      for iter229 in self.success:
+        oprot.writeString(iter229)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -22061,11 +22688,11 @@ class getAllApplicationInterfaceNames_result:
       if fid == 0:
         if ftype == TType.MAP:
           self.success = {}
-          (_ktype215, _vtype216, _size214 ) = iprot.readMapBegin()
-          for _i218 in xrange(_size214):
-            _key219 = iprot.readString();
-            _val220 = iprot.readString();
-            self.success[_key219] = _val220
+          (_ktype231, _vtype232, _size230 ) = iprot.readMapBegin()
+          for _i234 in xrange(_size230):
+            _key235 = iprot.readString();
+            _val236 = iprot.readString();
+            self.success[_key235] = _val236
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -22100,9 +22727,9 @@ class getAllApplicationInterfaceNames_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.MAP, 0)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.success))
-      for kiter221,viter222 in self.success.items():
-        oprot.writeString(kiter221)
-        oprot.writeString(viter222)
+      for kiter237,viter238 in self.success.items():
+        oprot.writeString(kiter237)
+        oprot.writeString(viter238)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -22231,11 +22858,11 @@ class getAllApplicationInterfaces_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype226, _size223) = iprot.readListBegin()
-          for _i227 in xrange(_size223):
-            _elem228 = apache.airavata.model.appcatalog.appinterface.ttypes.ApplicationInterfaceDescription()
-            _elem228.read(iprot)
-            self.success.append(_elem228)
+          (_etype242, _size239) = iprot.readListBegin()
+          for _i243 in xrange(_size239):
+            _elem244 = apache.airavata.model.appcatalog.appinterface.ttypes.ApplicationInterfaceDescription()
+            _elem244.read(iprot)
+            self.success.append(_elem244)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -22270,8 +22897,8 @@ class getAllApplicationInterfaces_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter229 in self.success:
-        iter229.write(oprot)
+      for iter245 in self.success:
+        iter245.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -22400,11 +23027,11 @@ class getApplicationInputs_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype233, _size230) = iprot.readListBegin()
-          for _i234 in xrange(_size230):
-            _elem235 = apache.airavata.model.appcatalog.appinterface.ttypes.InputDataObjectType()
-            _elem235.read(iprot)
-            self.success.append(_elem235)
+          (_etype249, _size246) = iprot.readListBegin()
+          for _i250 in xrange(_size246):
+            _elem251 = apache.airavata.model.appcatalog.appinterface.ttypes.InputDataObjectType()
+            _elem251.read(iprot)
+            self.success.append(_elem251)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -22439,8 +23066,8 @@ class getApplicationInputs_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter236 in self.success:
-        iter236.write(oprot)
+      for iter252 in self.success:
+        iter252.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -22569,11 +23196,11 @@ class getApplicationOutputs_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype240, _size237) = iprot.readListBegin()
-          for _i241 in xrange(_size237):
-            _elem242 = apache.airavata.model.appcatalog.appinterface.ttypes.OutputDataObjectType()
-            _elem242.read(iprot)
-            self.success.append(_elem242)
+          (_etype256, _size253) = iprot.readListBegin()
+          for _i257 in xrange(_size253):
+            _elem258 = apache.airavata.model.appcatalog.appinterface.ttypes.OutputDataObjectType()
+            _elem258.read(iprot)
+            self.success.append(_elem258)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -22608,8 +23235,8 @@ class getApplicationOutputs_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter243 in self.success:
-        iter243.write(oprot)
+      for iter259 in self.success:
+        iter259.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -22738,11 +23365,11 @@ class getAvailableAppInterfaceComputeResources_result:
       if fid == 0:
         if ftype == TType.MAP:
           self.success = {}
-          (_ktype245, _vtype246, _size244 ) = iprot.readMapBegin()
-          for _i248 in xrange(_size244):
-            _key249 = iprot.readString();
-            _val250 = iprot.readString();
-            self.success[_key249] = _val250
+          (_ktype261, _vtype262, _size260 ) = iprot.readMapBegin()
+          for _i264 in xrange(_size260):
+            _key265 = iprot.readString();
+            _val266 = iprot.readString();
+            self.success[_key265] = _val266
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -22777,9 +23404,9 @@ class getAvailableAppInterfaceComputeResources_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.MAP, 0)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.success))
-      for kiter251,viter252 in self.success.items():
-        oprot.writeString(kiter251)
-        oprot.writeString(viter252)
+      for kiter267,viter268 in self.success.items():
+        oprot.writeString(kiter267)
+        oprot.writeString(viter268)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -23210,11 +23837,11 @@ class getAllComputeResourceNames_result:
       if fid == 0:
         if ftype == TType.MAP:
           self.success = {}
-          (_ktype254, _vtype255, _size253 ) = iprot.readMapBegin()
-          for _i257 in xrange(_size253):
-            _key258 = iprot.readString();
-            _val259 = iprot.readString();
-            self.success[_key258] = _val259
+          (_ktype270, _vtype271, _size269 ) = iprot.readMapBegin()
+          for _i273 in xrange(_size269):
+            _key274 = iprot.readString();
+            _val275 = iprot.readString();
+            self.success[_key274] = _val275
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -23249,9 +23876,9 @@ class getAllComputeResourceNames_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.MAP, 0)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.success))
-      for kiter260,viter261 in self.success.items():
-        oprot.writeString(kiter260)
-        oprot.writeString(viter261)
+      for kiter276,viter277 in self.success.items():
+        oprot.writeString(kiter276)
+        oprot.writeString(viter277)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -28193,11 +28820,11 @@ class changeJobSubmissionPriorities_args:
       if fid == 1:
         if ftype == TType.MAP:
           self.jobSubmissionPriorityMap = {}
-          (_ktype263, _vtype264, _size262 ) = iprot.readMapBegin()
-          for _i266 in xrange(_size262):
-            _key267 = iprot.readString();
-            _val268 = iprot.readI32();
-            self.jobSubmissionPriorityMap[_key267] = _val268
+          (_ktype279, _vtype280, _size278 ) = iprot.readMapBegin()
+          for _i282 in xrange(_size278):
+            _key283 = iprot.readString();
+            _val284 = iprot.readI32();
+            self.jobSubmissionPriorityMap[_key283] = _val284
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -28214,9 +28841,9 @@ class changeJobSubmissionPriorities_args:
     if self.jobSubmissionPriorityMap is not None:
       oprot.writeFieldBegin('jobSubmissionPriorityMap', TType.MAP, 1)
       oprot.writeMapBegin(TType.STRING, TType.I32, len(self.jobSubmissionPriorityMap))
-      for kiter269,viter270 in self.jobSubmissionPriorityMap.items():
-        oprot.writeString(kiter269)
-        oprot.writeI32(viter270)
+      for kiter285,viter286 in self.jobSubmissionPriorityMap.items():
+        oprot.writeString(kiter285)
+        oprot.writeI32(viter286)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -28363,11 +28990,11 @@ class changeDataMovementPriorities_args:
       if fid == 1:
         if ftype == TType.MAP:
           self.dataMovementPriorityMap = {}
-          (_ktype272, _vtype273, _size271 ) = iprot.readMapBegin()
-          for _i275 in xrange(_size271):
-            _key276 = iprot.readString();
-            _val277 = iprot.readI32();
-            self.dataMovementPriorityMap[_key276] = _val277
+          (_ktype288, _vtype289, _size287 ) = iprot.readMapBegin()
+          for _i291 in xrange(_size287):
+            _key292 = iprot.readString();
+            _val293 = iprot.readI32();
+            self.dataMovementPriorityMap[_key292] = _val293
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -28384,9 +29011,9 @@ class changeDataMovementPriorities_args:
     if self.dataMovementPriorityMap is not None:
       oprot.writeFieldBegin('dataMovementPriorityMap', TType.MAP, 1)
       oprot.writeMapBegin(TType.STRING, TType.I32, len(self.dataMovementPriorityMap))
-      for kiter278,viter279 in self.dataMovementPriorityMap.items():
-        oprot.writeString(kiter278)
-        oprot.writeI32(viter279)
+      for kiter294,viter295 in self.dataMovementPriorityMap.items():
+        oprot.writeString(kiter294)
+        oprot.writeI32(viter295)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -30803,11 +31430,11 @@ class getAllGatewayComputeResourcePreferences_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype283, _size280) = iprot.readListBegin()
-          for _i284 in xrange(_size280):
-            _elem285 = apache.airavata.model.appcatalog.gatewayprofile.ttypes.ComputeResourcePreference()
-            _elem285.read(iprot)
-            self.success.append(_elem285)
+          (_etype299, _size296) = iprot.readListBegin()
+          for _i300 in xrange(_size296):
+            _elem301 = apache.airavata.model.appcatalog.gatewayprofile.ttypes.ComputeResourcePreference()
+            _elem301.read(iprot)
+            self.success.append(_elem301)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -30842,8 +31469,8 @@ class getAllGatewayComputeResourcePreferences_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter286 in self.success:
-        iter286.write(oprot)
+      for iter302 in self.success:
+        iter302.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -30952,11 +31579,11 @@ class getAllGatewayComputeResources_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype290, _size287) = iprot.readListBegin()
-          for _i291 in xrange(_size287):
-            _elem292 = apache.airavata.model.appcatalog.gatewayprofile.ttypes.GatewayResourceProfile()
-            _elem292.read(iprot)
-            self.success.append(_elem292)
+          (_etype306, _size303) = iprot.readListBegin()
+          for _i307 in xrange(_size303):
+            _elem308 = apache.airavata.model.appcatalog.gatewayprofile.ttypes.GatewayResourceProfile()
+            _elem308.read(iprot)
+            self.success.append(_elem308)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -30991,8 +31618,8 @@ class getAllGatewayComputeResources_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter293 in self.success:
-        iter293.write(oprot)
+      for iter309 in self.success:
+        iter309.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -31484,10 +32111,10 @@ class getAllWorkflows_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype297, _size294) = iprot.readListBegin()
-          for _i298 in xrange(_size294):
-            _elem299 = iprot.readString();
-            self.success.append(_elem299)
+          (_etype313, _size310) = iprot.readListBegin()
+          for _i314 in xrange(_size310):
+            _elem315 = iprot.readString();
+            self.success.append(_elem315)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -31522,8 +32149,8 @@ class getAllWorkflows_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRING, len(self.success))
-      for iter300 in self.success:
-        oprot.writeString(iter300)
+      for iter316 in self.success:
+        oprot.writeString(iter316)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:

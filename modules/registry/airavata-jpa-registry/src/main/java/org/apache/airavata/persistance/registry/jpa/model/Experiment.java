@@ -26,6 +26,7 @@ import org.apache.openjpa.persistence.DataCache;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Collection;
 
 @Entity
 @Table(name = "EXPERIMENT")
@@ -72,6 +73,9 @@ public class Experiment implements Serializable {
     @ManyToOne(cascade=CascadeType.MERGE)
     @JoinColumn(name = "EXECUTION_USER", referencedColumnName = "USER_NAME")
     private Users user;
+
+    @OneToMany(fetch=FetchType.LAZY, mappedBy = "experiment")
+    private Collection<Status> statuses;
 
     public String getExpId() {
         return expId;
@@ -207,5 +211,13 @@ public class Experiment implements Serializable {
 
     public void setGatewayExecutionId(String gatewayExecutionId) {
         this.gatewayExecutionId = gatewayExecutionId;
+    }
+
+    public Collection<Status> getStatuses() {
+        return statuses;
+    }
+
+    public void setStatuses(Collection<Status> statuses) {
+        this.statuses = statuses;
     }
 }

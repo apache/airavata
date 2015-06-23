@@ -44,6 +44,23 @@ final class ExperimentState {
   );
 }
 
+final class ExperimentSearchFields {
+  const EXPERIMENT_NAME = 0;
+  const EXPERIMENT_DESC = 1;
+  const APPLICATION_ID = 2;
+  const FROM_DATE = 3;
+  const TO_DATE = 4;
+  const STATUS = 5;
+  static public $__names = array(
+    0 => 'EXPERIMENT_NAME',
+    1 => 'EXPERIMENT_DESC',
+    2 => 'APPLICATION_ID',
+    3 => 'FROM_DATE',
+    4 => 'TO_DATE',
+    5 => 'STATUS',
+  );
+}
+
 final class WorkflowNodeState {
   const INVOKED = 0;
   const EXECUTING = 1;
@@ -4111,7 +4128,6 @@ class ExperimentSummary {
   public $description = null;
   public $applicationId = null;
   public $experimentStatus = null;
-  public $errors = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -4149,15 +4165,6 @@ class ExperimentSummary {
           'type' => TType::STRUCT,
           'class' => '\Airavata\Model\Workspace\Experiment\ExperimentStatus',
           ),
-        9 => array(
-          'var' => 'errors',
-          'type' => TType::LST,
-          'etype' => TType::STRUCT,
-          'elem' => array(
-            'type' => TType::STRUCT,
-            'class' => '\Airavata\Model\Workspace\Experiment\ErrorDetails',
-            ),
-          ),
         );
     }
     if (is_array($vals)) {
@@ -4184,9 +4191,6 @@ class ExperimentSummary {
       }
       if (isset($vals['experimentStatus'])) {
         $this->experimentStatus = $vals['experimentStatus'];
-      }
-      if (isset($vals['errors'])) {
-        $this->errors = $vals['errors'];
       }
     }
   }
@@ -4267,24 +4271,6 @@ class ExperimentSummary {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 9:
-          if ($ftype == TType::LST) {
-            $this->errors = array();
-            $_size133 = 0;
-            $_etype136 = 0;
-            $xfer += $input->readListBegin($_etype136, $_size133);
-            for ($_i137 = 0; $_i137 < $_size133; ++$_i137)
-            {
-              $elem138 = null;
-              $elem138 = new \Airavata\Model\Workspace\Experiment\ErrorDetails();
-              $xfer += $elem138->read($input);
-              $this->errors []= $elem138;
-            }
-            $xfer += $input->readListEnd();
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -4341,17 +4327,324 @@ class ExperimentSummary {
       $xfer += $this->experimentStatus->write($output);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->errors !== null) {
-      if (!is_array($this->errors)) {
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class ExperimentStatistics {
+  static $_TSPEC;
+
+  public $allExperimentCount = null;
+  public $completedExperimentCount = null;
+  public $cancelledExperimentCount = null;
+  public $failedExperimentCount = null;
+  public $allExperiments = null;
+  public $completedExperiments = null;
+  public $failedExperiments = null;
+  public $cancelledExperiments = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'allExperimentCount',
+          'type' => TType::I32,
+          ),
+        2 => array(
+          'var' => 'completedExperimentCount',
+          'type' => TType::I32,
+          ),
+        3 => array(
+          'var' => 'cancelledExperimentCount',
+          'type' => TType::I32,
+          ),
+        4 => array(
+          'var' => 'failedExperimentCount',
+          'type' => TType::I32,
+          ),
+        5 => array(
+          'var' => 'allExperiments',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\Workspace\Experiment\ExperimentSummary',
+            ),
+          ),
+        6 => array(
+          'var' => 'completedExperiments',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\Workspace\Experiment\ExperimentSummary',
+            ),
+          ),
+        7 => array(
+          'var' => 'failedExperiments',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\Workspace\Experiment\ExperimentSummary',
+            ),
+          ),
+        8 => array(
+          'var' => 'cancelledExperiments',
+          'type' => TType::LST,
+          'etype' => TType::STRUCT,
+          'elem' => array(
+            'type' => TType::STRUCT,
+            'class' => '\Airavata\Model\Workspace\Experiment\ExperimentSummary',
+            ),
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['allExperimentCount'])) {
+        $this->allExperimentCount = $vals['allExperimentCount'];
+      }
+      if (isset($vals['completedExperimentCount'])) {
+        $this->completedExperimentCount = $vals['completedExperimentCount'];
+      }
+      if (isset($vals['cancelledExperimentCount'])) {
+        $this->cancelledExperimentCount = $vals['cancelledExperimentCount'];
+      }
+      if (isset($vals['failedExperimentCount'])) {
+        $this->failedExperimentCount = $vals['failedExperimentCount'];
+      }
+      if (isset($vals['allExperiments'])) {
+        $this->allExperiments = $vals['allExperiments'];
+      }
+      if (isset($vals['completedExperiments'])) {
+        $this->completedExperiments = $vals['completedExperiments'];
+      }
+      if (isset($vals['failedExperiments'])) {
+        $this->failedExperiments = $vals['failedExperiments'];
+      }
+      if (isset($vals['cancelledExperiments'])) {
+        $this->cancelledExperiments = $vals['cancelledExperiments'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'ExperimentStatistics';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->allExperimentCount);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->completedExperimentCount);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 3:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->cancelledExperimentCount);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 4:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->failedExperimentCount);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 5:
+          if ($ftype == TType::LST) {
+            $this->allExperiments = array();
+            $_size133 = 0;
+            $_etype136 = 0;
+            $xfer += $input->readListBegin($_etype136, $_size133);
+            for ($_i137 = 0; $_i137 < $_size133; ++$_i137)
+            {
+              $elem138 = null;
+              $elem138 = new \Airavata\Model\Workspace\Experiment\ExperimentSummary();
+              $xfer += $elem138->read($input);
+              $this->allExperiments []= $elem138;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 6:
+          if ($ftype == TType::LST) {
+            $this->completedExperiments = array();
+            $_size139 = 0;
+            $_etype142 = 0;
+            $xfer += $input->readListBegin($_etype142, $_size139);
+            for ($_i143 = 0; $_i143 < $_size139; ++$_i143)
+            {
+              $elem144 = null;
+              $elem144 = new \Airavata\Model\Workspace\Experiment\ExperimentSummary();
+              $xfer += $elem144->read($input);
+              $this->completedExperiments []= $elem144;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 7:
+          if ($ftype == TType::LST) {
+            $this->failedExperiments = array();
+            $_size145 = 0;
+            $_etype148 = 0;
+            $xfer += $input->readListBegin($_etype148, $_size145);
+            for ($_i149 = 0; $_i149 < $_size145; ++$_i149)
+            {
+              $elem150 = null;
+              $elem150 = new \Airavata\Model\Workspace\Experiment\ExperimentSummary();
+              $xfer += $elem150->read($input);
+              $this->failedExperiments []= $elem150;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 8:
+          if ($ftype == TType::LST) {
+            $this->cancelledExperiments = array();
+            $_size151 = 0;
+            $_etype154 = 0;
+            $xfer += $input->readListBegin($_etype154, $_size151);
+            for ($_i155 = 0; $_i155 < $_size151; ++$_i155)
+            {
+              $elem156 = null;
+              $elem156 = new \Airavata\Model\Workspace\Experiment\ExperimentSummary();
+              $xfer += $elem156->read($input);
+              $this->cancelledExperiments []= $elem156;
+            }
+            $xfer += $input->readListEnd();
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('ExperimentStatistics');
+    if ($this->allExperimentCount !== null) {
+      $xfer += $output->writeFieldBegin('allExperimentCount', TType::I32, 1);
+      $xfer += $output->writeI32($this->allExperimentCount);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->completedExperimentCount !== null) {
+      $xfer += $output->writeFieldBegin('completedExperimentCount', TType::I32, 2);
+      $xfer += $output->writeI32($this->completedExperimentCount);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->cancelledExperimentCount !== null) {
+      $xfer += $output->writeFieldBegin('cancelledExperimentCount', TType::I32, 3);
+      $xfer += $output->writeI32($this->cancelledExperimentCount);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->failedExperimentCount !== null) {
+      $xfer += $output->writeFieldBegin('failedExperimentCount', TType::I32, 4);
+      $xfer += $output->writeI32($this->failedExperimentCount);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->allExperiments !== null) {
+      if (!is_array($this->allExperiments)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('errors', TType::LST, 9);
+      $xfer += $output->writeFieldBegin('allExperiments', TType::LST, 5);
       {
-        $output->writeListBegin(TType::STRUCT, count($this->errors));
+        $output->writeListBegin(TType::STRUCT, count($this->allExperiments));
         {
-          foreach ($this->errors as $iter139)
+          foreach ($this->allExperiments as $iter157)
           {
-            $xfer += $iter139->write($output);
+            $xfer += $iter157->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->completedExperiments !== null) {
+      if (!is_array($this->completedExperiments)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('completedExperiments', TType::LST, 6);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->completedExperiments));
+        {
+          foreach ($this->completedExperiments as $iter158)
+          {
+            $xfer += $iter158->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->failedExperiments !== null) {
+      if (!is_array($this->failedExperiments)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('failedExperiments', TType::LST, 7);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->failedExperiments));
+        {
+          foreach ($this->failedExperiments as $iter159)
+          {
+            $xfer += $iter159->write($output);
+          }
+        }
+        $output->writeListEnd();
+      }
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->cancelledExperiments !== null) {
+      if (!is_array($this->cancelledExperiments)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('cancelledExperiments', TType::LST, 8);
+      {
+        $output->writeListBegin(TType::STRUCT, count($this->cancelledExperiments));
+        {
+          foreach ($this->cancelledExperiments as $iter160)
+          {
+            $xfer += $iter160->write($output);
           }
         }
         $output->writeListEnd();

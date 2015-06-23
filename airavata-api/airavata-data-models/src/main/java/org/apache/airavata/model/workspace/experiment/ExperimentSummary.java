@@ -60,7 +60,6 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("description", org.apache.thrift.protocol.TType.STRING, (short)6);
   private static final org.apache.thrift.protocol.TField APPLICATION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("applicationId", org.apache.thrift.protocol.TType.STRING, (short)7);
   private static final org.apache.thrift.protocol.TField EXPERIMENT_STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentStatus", org.apache.thrift.protocol.TType.STRUCT, (short)8);
-  private static final org.apache.thrift.protocol.TField ERRORS_FIELD_DESC = new org.apache.thrift.protocol.TField("errors", org.apache.thrift.protocol.TType.LIST, (short)9);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -76,7 +75,6 @@ import org.slf4j.LoggerFactory;
   private String description; // optional
   private String applicationId; // optional
   private ExperimentStatus experimentStatus; // optional
-  private List<ErrorDetails> errors; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -87,8 +85,7 @@ import org.slf4j.LoggerFactory;
     NAME((short)5, "name"),
     DESCRIPTION((short)6, "description"),
     APPLICATION_ID((short)7, "applicationId"),
-    EXPERIMENT_STATUS((short)8, "experimentStatus"),
-    ERRORS((short)9, "errors");
+    EXPERIMENT_STATUS((short)8, "experimentStatus");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -119,8 +116,6 @@ import org.slf4j.LoggerFactory;
           return APPLICATION_ID;
         case 8: // EXPERIMENT_STATUS
           return EXPERIMENT_STATUS;
-        case 9: // ERRORS
-          return ERRORS;
         default:
           return null;
       }
@@ -163,7 +158,7 @@ import org.slf4j.LoggerFactory;
   // isset id assignments
   private static final int __CREATIONTIME_ISSET_ID = 0;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.DESCRIPTION,_Fields.APPLICATION_ID,_Fields.EXPERIMENT_STATUS,_Fields.ERRORS};
+  private _Fields optionals[] = {_Fields.CREATION_TIME,_Fields.DESCRIPTION,_Fields.APPLICATION_ID,_Fields.EXPERIMENT_STATUS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -183,9 +178,6 @@ import org.slf4j.LoggerFactory;
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.EXPERIMENT_STATUS, new org.apache.thrift.meta_data.FieldMetaData("experimentStatus", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ExperimentStatus.class)));
-    tmpMap.put(_Fields.ERRORS, new org.apache.thrift.meta_data.FieldMetaData("errors", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
-        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
-            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ErrorDetails.class))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ExperimentSummary.class, metaDataMap);
   }
@@ -233,13 +225,6 @@ import org.slf4j.LoggerFactory;
     if (other.isSetExperimentStatus()) {
       this.experimentStatus = new ExperimentStatus(other.experimentStatus);
     }
-    if (other.isSetErrors()) {
-      List<ErrorDetails> __this__errors = new ArrayList<ErrorDetails>(other.errors.size());
-      for (ErrorDetails other_element : other.errors) {
-        __this__errors.add(new ErrorDetails(other_element));
-      }
-      this.errors = __this__errors;
-    }
   }
 
   public ExperimentSummary deepCopy() {
@@ -257,7 +242,6 @@ import org.slf4j.LoggerFactory;
     this.description = null;
     this.applicationId = null;
     this.experimentStatus = null;
-    this.errors = null;
   }
 
   public String getExperimentID() {
@@ -443,44 +427,6 @@ import org.slf4j.LoggerFactory;
     }
   }
 
-  public int getErrorsSize() {
-    return (this.errors == null) ? 0 : this.errors.size();
-  }
-
-  public java.util.Iterator<ErrorDetails> getErrorsIterator() {
-    return (this.errors == null) ? null : this.errors.iterator();
-  }
-
-  public void addToErrors(ErrorDetails elem) {
-    if (this.errors == null) {
-      this.errors = new ArrayList<ErrorDetails>();
-    }
-    this.errors.add(elem);
-  }
-
-  public List<ErrorDetails> getErrors() {
-    return this.errors;
-  }
-
-  public void setErrors(List<ErrorDetails> errors) {
-    this.errors = errors;
-  }
-
-  public void unsetErrors() {
-    this.errors = null;
-  }
-
-  /** Returns true if field errors is set (has been assigned a value) and false otherwise */
-  public boolean isSetErrors() {
-    return this.errors != null;
-  }
-
-  public void setErrorsIsSet(boolean value) {
-    if (!value) {
-      this.errors = null;
-    }
-  }
-
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case EXPERIMENT_ID:
@@ -547,14 +493,6 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
-    case ERRORS:
-      if (value == null) {
-        unsetErrors();
-      } else {
-        setErrors((List<ErrorDetails>)value);
-      }
-      break;
-
     }
   }
 
@@ -584,9 +522,6 @@ import org.slf4j.LoggerFactory;
     case EXPERIMENT_STATUS:
       return getExperimentStatus();
 
-    case ERRORS:
-      return getErrors();
-
     }
     throw new IllegalStateException();
   }
@@ -614,8 +549,6 @@ import org.slf4j.LoggerFactory;
       return isSetApplicationId();
     case EXPERIMENT_STATUS:
       return isSetExperimentStatus();
-    case ERRORS:
-      return isSetErrors();
     }
     throw new IllegalStateException();
   }
@@ -702,15 +635,6 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_experimentStatus && that_present_experimentStatus))
         return false;
       if (!this.experimentStatus.equals(that.experimentStatus))
-        return false;
-    }
-
-    boolean this_present_errors = true && this.isSetErrors();
-    boolean that_present_errors = true && that.isSetErrors();
-    if (this_present_errors || that_present_errors) {
-      if (!(this_present_errors && that_present_errors))
-        return false;
-      if (!this.errors.equals(that.errors))
         return false;
     }
 
@@ -810,16 +734,6 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetErrors()).compareTo(other.isSetErrors());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSetErrors()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.errors, other.errors);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     return 0;
   }
 
@@ -904,16 +818,6 @@ import org.slf4j.LoggerFactory;
         sb.append("null");
       } else {
         sb.append(this.experimentStatus);
-      }
-      first = false;
-    }
-    if (isSetErrors()) {
-      if (!first) sb.append(", ");
-      sb.append("errors:");
-      if (this.errors == null) {
-        sb.append("null");
-      } else {
-        sb.append(this.errors);
       }
       first = false;
     }
@@ -1046,25 +950,6 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 9: // ERRORS
-            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
-              {
-                org.apache.thrift.protocol.TList _list152 = iprot.readListBegin();
-                struct.errors = new ArrayList<ErrorDetails>(_list152.size);
-                for (int _i153 = 0; _i153 < _list152.size; ++_i153)
-                {
-                  ErrorDetails _elem154;
-                  _elem154 = new ErrorDetails();
-                  _elem154.read(iprot);
-                  struct.errors.add(_elem154);
-                }
-                iprot.readListEnd();
-              }
-              struct.setErrorsIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1124,20 +1009,6 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldEnd();
         }
       }
-      if (struct.errors != null) {
-        if (struct.isSetErrors()) {
-          oprot.writeFieldBegin(ERRORS_FIELD_DESC);
-          {
-            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.errors.size()));
-            for (ErrorDetails _iter155 : struct.errors)
-            {
-              _iter155.write(oprot);
-            }
-            oprot.writeListEnd();
-          }
-          oprot.writeFieldEnd();
-        }
-      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1172,10 +1043,7 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetExperimentStatus()) {
         optionals.set(3);
       }
-      if (struct.isSetErrors()) {
-        optionals.set(4);
-      }
-      oprot.writeBitSet(optionals, 5);
+      oprot.writeBitSet(optionals, 4);
       if (struct.isSetCreationTime()) {
         oprot.writeI64(struct.creationTime);
       }
@@ -1187,15 +1055,6 @@ import org.slf4j.LoggerFactory;
       }
       if (struct.isSetExperimentStatus()) {
         struct.experimentStatus.write(oprot);
-      }
-      if (struct.isSetErrors()) {
-        {
-          oprot.writeI32(struct.errors.size());
-          for (ErrorDetails _iter156 : struct.errors)
-          {
-            _iter156.write(oprot);
-          }
-        }
       }
     }
 
@@ -1210,7 +1069,7 @@ import org.slf4j.LoggerFactory;
       struct.setUserNameIsSet(true);
       struct.name = iprot.readString();
       struct.setNameIsSet(true);
-      BitSet incoming = iprot.readBitSet(5);
+      BitSet incoming = iprot.readBitSet(4);
       if (incoming.get(0)) {
         struct.creationTime = iprot.readI64();
         struct.setCreationTimeIsSet(true);
@@ -1227,20 +1086,6 @@ import org.slf4j.LoggerFactory;
         struct.experimentStatus = new ExperimentStatus();
         struct.experimentStatus.read(iprot);
         struct.setExperimentStatusIsSet(true);
-      }
-      if (incoming.get(4)) {
-        {
-          org.apache.thrift.protocol.TList _list157 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.errors = new ArrayList<ErrorDetails>(_list157.size);
-          for (int _i158 = 0; _i158 < _list157.size; ++_i158)
-          {
-            ErrorDetails _elem159;
-            _elem159 = new ErrorDetails();
-            _elem159.read(iprot);
-            struct.errors.add(_elem159);
-          }
-        }
-        struct.setErrorsIsSet(true);
       }
     }
   }

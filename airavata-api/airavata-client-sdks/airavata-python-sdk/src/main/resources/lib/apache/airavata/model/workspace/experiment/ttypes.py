@@ -60,6 +60,32 @@ class ExperimentState:
     "UNKNOWN": 10,
   }
 
+class ExperimentSearchFields:
+  EXPERIMENT_NAME = 0
+  EXPERIMENT_DESC = 1
+  APPLICATION_ID = 2
+  FROM_DATE = 3
+  TO_DATE = 4
+  STATUS = 5
+
+  _VALUES_TO_NAMES = {
+    0: "EXPERIMENT_NAME",
+    1: "EXPERIMENT_DESC",
+    2: "APPLICATION_ID",
+    3: "FROM_DATE",
+    4: "TO_DATE",
+    5: "STATUS",
+  }
+
+  _NAMES_TO_VALUES = {
+    "EXPERIMENT_NAME": 0,
+    "EXPERIMENT_DESC": 1,
+    "APPLICATION_ID": 2,
+    "FROM_DATE": 3,
+    "TO_DATE": 4,
+    "STATUS": 5,
+  }
+
 class WorkflowNodeState:
   INVOKED = 0
   EXECUTING = 1
@@ -2902,7 +2928,6 @@ class ExperimentSummary:
    - description
    - applicationId
    - experimentStatus
-   - errors
   """
 
   thrift_spec = (
@@ -2915,10 +2940,9 @@ class ExperimentSummary:
     (6, TType.STRING, 'description', None, None, ), # 6
     (7, TType.STRING, 'applicationId', None, None, ), # 7
     (8, TType.STRUCT, 'experimentStatus', (ExperimentStatus, ExperimentStatus.thrift_spec), None, ), # 8
-    (9, TType.LIST, 'errors', (TType.STRUCT,(ErrorDetails, ErrorDetails.thrift_spec)), None, ), # 9
   )
 
-  def __init__(self, experimentID=None, projectID=None, creationTime=None, userName=None, name=None, description=None, applicationId=None, experimentStatus=None, errors=None,):
+  def __init__(self, experimentID=None, projectID=None, creationTime=None, userName=None, name=None, description=None, applicationId=None, experimentStatus=None,):
     self.experimentID = experimentID
     self.projectID = projectID
     self.creationTime = creationTime
@@ -2927,7 +2951,6 @@ class ExperimentSummary:
     self.description = description
     self.applicationId = applicationId
     self.experimentStatus = experimentStatus
-    self.errors = errors
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -2979,17 +3002,6 @@ class ExperimentSummary:
           self.experimentStatus.read(iprot)
         else:
           iprot.skip(ftype)
-      elif fid == 9:
-        if ftype == TType.LIST:
-          self.errors = []
-          (_etype136, _size133) = iprot.readListBegin()
-          for _i137 in xrange(_size133):
-            _elem138 = ErrorDetails()
-            _elem138.read(iprot)
-            self.errors.append(_elem138)
-          iprot.readListEnd()
-        else:
-          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -3032,13 +3044,6 @@ class ExperimentSummary:
       oprot.writeFieldBegin('experimentStatus', TType.STRUCT, 8)
       self.experimentStatus.write(oprot)
       oprot.writeFieldEnd()
-    if self.errors is not None:
-      oprot.writeFieldBegin('errors', TType.LIST, 9)
-      oprot.writeListBegin(TType.STRUCT, len(self.errors))
-      for iter139 in self.errors:
-        iter139.write(oprot)
-      oprot.writeListEnd()
-      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -3051,6 +3056,194 @@ class ExperimentSummary:
       raise TProtocol.TProtocolException(message='Required field userName is unset!')
     if self.name is None:
       raise TProtocol.TProtocolException(message='Required field name is unset!')
+    return
+
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class ExperimentStatistics:
+  """
+  Attributes:
+   - allExperimentCount
+   - completedExperimentCount
+   - cancelledExperimentCount
+   - failedExperimentCount
+   - allExperiments
+   - completedExperiments
+   - failedExperiments
+   - cancelledExperiments
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.I32, 'allExperimentCount', None, None, ), # 1
+    (2, TType.I32, 'completedExperimentCount', None, None, ), # 2
+    (3, TType.I32, 'cancelledExperimentCount', None, None, ), # 3
+    (4, TType.I32, 'failedExperimentCount', None, None, ), # 4
+    (5, TType.LIST, 'allExperiments', (TType.STRUCT,(ExperimentSummary, ExperimentSummary.thrift_spec)), None, ), # 5
+    (6, TType.LIST, 'completedExperiments', (TType.STRUCT,(ExperimentSummary, ExperimentSummary.thrift_spec)), None, ), # 6
+    (7, TType.LIST, 'failedExperiments', (TType.STRUCT,(ExperimentSummary, ExperimentSummary.thrift_spec)), None, ), # 7
+    (8, TType.LIST, 'cancelledExperiments', (TType.STRUCT,(ExperimentSummary, ExperimentSummary.thrift_spec)), None, ), # 8
+  )
+
+  def __init__(self, allExperimentCount=None, completedExperimentCount=None, cancelledExperimentCount=None, failedExperimentCount=None, allExperiments=None, completedExperiments=None, failedExperiments=None, cancelledExperiments=None,):
+    self.allExperimentCount = allExperimentCount
+    self.completedExperimentCount = completedExperimentCount
+    self.cancelledExperimentCount = cancelledExperimentCount
+    self.failedExperimentCount = failedExperimentCount
+    self.allExperiments = allExperiments
+    self.completedExperiments = completedExperiments
+    self.failedExperiments = failedExperiments
+    self.cancelledExperiments = cancelledExperiments
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.I32:
+          self.allExperimentCount = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.I32:
+          self.completedExperimentCount = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.I32:
+          self.cancelledExperimentCount = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.I32:
+          self.failedExperimentCount = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 5:
+        if ftype == TType.LIST:
+          self.allExperiments = []
+          (_etype136, _size133) = iprot.readListBegin()
+          for _i137 in xrange(_size133):
+            _elem138 = ExperimentSummary()
+            _elem138.read(iprot)
+            self.allExperiments.append(_elem138)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 6:
+        if ftype == TType.LIST:
+          self.completedExperiments = []
+          (_etype142, _size139) = iprot.readListBegin()
+          for _i143 in xrange(_size139):
+            _elem144 = ExperimentSummary()
+            _elem144.read(iprot)
+            self.completedExperiments.append(_elem144)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 7:
+        if ftype == TType.LIST:
+          self.failedExperiments = []
+          (_etype148, _size145) = iprot.readListBegin()
+          for _i149 in xrange(_size145):
+            _elem150 = ExperimentSummary()
+            _elem150.read(iprot)
+            self.failedExperiments.append(_elem150)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 8:
+        if ftype == TType.LIST:
+          self.cancelledExperiments = []
+          (_etype154, _size151) = iprot.readListBegin()
+          for _i155 in xrange(_size151):
+            _elem156 = ExperimentSummary()
+            _elem156.read(iprot)
+            self.cancelledExperiments.append(_elem156)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('ExperimentStatistics')
+    if self.allExperimentCount is not None:
+      oprot.writeFieldBegin('allExperimentCount', TType.I32, 1)
+      oprot.writeI32(self.allExperimentCount)
+      oprot.writeFieldEnd()
+    if self.completedExperimentCount is not None:
+      oprot.writeFieldBegin('completedExperimentCount', TType.I32, 2)
+      oprot.writeI32(self.completedExperimentCount)
+      oprot.writeFieldEnd()
+    if self.cancelledExperimentCount is not None:
+      oprot.writeFieldBegin('cancelledExperimentCount', TType.I32, 3)
+      oprot.writeI32(self.cancelledExperimentCount)
+      oprot.writeFieldEnd()
+    if self.failedExperimentCount is not None:
+      oprot.writeFieldBegin('failedExperimentCount', TType.I32, 4)
+      oprot.writeI32(self.failedExperimentCount)
+      oprot.writeFieldEnd()
+    if self.allExperiments is not None:
+      oprot.writeFieldBegin('allExperiments', TType.LIST, 5)
+      oprot.writeListBegin(TType.STRUCT, len(self.allExperiments))
+      for iter157 in self.allExperiments:
+        iter157.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.completedExperiments is not None:
+      oprot.writeFieldBegin('completedExperiments', TType.LIST, 6)
+      oprot.writeListBegin(TType.STRUCT, len(self.completedExperiments))
+      for iter158 in self.completedExperiments:
+        iter158.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.failedExperiments is not None:
+      oprot.writeFieldBegin('failedExperiments', TType.LIST, 7)
+      oprot.writeListBegin(TType.STRUCT, len(self.failedExperiments))
+      for iter159 in self.failedExperiments:
+        iter159.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.cancelledExperiments is not None:
+      oprot.writeFieldBegin('cancelledExperiments', TType.LIST, 8)
+      oprot.writeListBegin(TType.STRUCT, len(self.cancelledExperiments))
+      for iter160 in self.cancelledExperiments:
+        iter160.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.allExperimentCount is None:
+      raise TProtocol.TProtocolException(message='Required field allExperimentCount is unset!')
+    if self.completedExperimentCount is None:
+      raise TProtocol.TProtocolException(message='Required field completedExperimentCount is unset!')
+    if self.failedExperimentCount is None:
+      raise TProtocol.TProtocolException(message='Required field failedExperimentCount is unset!')
+    if self.allExperiments is None:
+      raise TProtocol.TProtocolException(message='Required field allExperiments is unset!')
     return
 
 

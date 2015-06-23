@@ -27,20 +27,21 @@ import org.apache.airavata.persistance.registry.jpa.ResourceType;
 import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.model.*;
 import org.apache.airavata.persistance.registry.jpa.utils.QueryGenerator;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.ResultOrderType;
 import org.apache.airavata.registry.cpi.utils.Constants;
 import org.apache.airavata.registry.cpi.utils.StatusType;
+import org.apache.openjpa.persistence.OpenJPAPersistence;
+import org.apache.openjpa.persistence.OpenJPAQuery;
+import org.apache.openjpa.persistence.jdbc.FetchMode;
+import org.apache.openjpa.persistence.jdbc.JDBCFetchPlan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.airavata.registry.cpi.RegistryException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class WorkerResource extends AbstractResource {
     private final static Logger logger = LoggerFactory.getLogger(WorkerResource.class);
@@ -612,21 +613,13 @@ public class WorkerResource extends AbstractResource {
     }
 
     /**
-     * To search experiments of user with the given filter criteria. All the matching results will be sent.
-     * Results are not ordered in any order
-     * @param filters
-     * @return
-     * @throws RegistryException
-     */
-    public List<ExperimentResource> searchExperiments (Map<String, String> filters) throws RegistryException{
-        return searchExperiments(filters, -1, -1, null, null);
-    }
-
-    /**
-     * To search the experiments of user with the given filter criteria and retrieve the results with
+     * To search the experiments of user with the given time period and filter criteria and retrieve the results with
      * pagination support. Results can be ordered based on an identifier (i.e column) either ASC or
-     * DESC. But in the current implementation ordering is only supported based on creationTime
+     * DESC. But in the current implementation ordering is only supported based on creationTime. Also if
+     * time period values i.e fromTime and toTime are null they will be ignored.
      *
+     * @param fromTime
+     * @param toTime
      * @param filters
      * @param limit
      * @param offset
@@ -635,24 +628,35 @@ public class WorkerResource extends AbstractResource {
      * @return
      * @throws RegistryException
      */
-    public List<ExperimentResource> searchExperiments(Map<String, String> filters, int limit,
-                                                      int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
-
-        List<ExperimentResource> result = new ArrayList<ExperimentResource>();
+    public List<ExperimentSummaryResource> searchExperiments(Timestamp fromTime, Timestamp toTime, Map<String, String> filters, int limit,
+                                                             int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
+        List<ExperimentSummaryResource> result = new ArrayList();
         EntityManager em = null;
         try {
-            String query = "SELECT e from Experiment e WHERE ";
+            String query = "SELECT e, s FROM Experiment e " +
+                    ",Status s WHERE e.expId=s.expId AND " +
+                    "s.statusType='" + StatusType.EXPERIMENT + "' AND ";
+            if (filters.get(StatusConstants.STATE) != null) {
+                String experimentState = ExperimentState.valueOf(filters.get(StatusConstants.STATE)).toString();
+                query += "s.state='" + experimentState + "' AND ";
+            }
+
+            if (toTime != null && fromTime != null && toTime.after(fromTime)) {
+                query += "e.creationTime > '" + fromTime + "' " + "AND e.creationTime <'" + toTime + "' AND ";
+            }
+
+            filters.remove(StatusConstants.STATE);
             if (filters != null && filters.size() != 0) {
                 for (String field : filters.keySet()) {
                     String filterVal = filters.get(field);
                     if (field.equals(ExperimentConstants.EXECUTION_USER)) {
                         query += "e." + field + "= '" + filterVal + "' AND ";
-                    }else if (field.equals(ExperimentConstants.GATEWAY_ID)) {
+                    } else if (field.equals(ExperimentConstants.GATEWAY_ID)) {
                         query += "e." + field + "= '" + filterVal + "' AND ";
                     } else if (field.equals(ExperimentConstants.PROJECT_ID)) {
                         query += "e." + field + "= '" + filterVal + "' AND ";
                     } else {
-                        if (filterVal.contains("*")){
+                        if (filterVal.contains("*")) {
                             filterVal = filterVal.replaceAll("\\*", "");
                         }
                         query += "e." + field + " LIKE '%" + filterVal + "%' AND ";
@@ -662,8 +666,8 @@ public class WorkerResource extends AbstractResource {
             query = query.substring(0, query.length() - 5);
 
             //ordering
-            if( orderByIdentifier != null && resultOrderType != null
-                    && orderByIdentifier.equals(Constants.FieldConstants.ExperimentConstants.CREATION_TIME)){
+            if (orderByIdentifier != null && resultOrderType != null
+                    && orderByIdentifier.equals(Constants.FieldConstants.ExperimentConstants.CREATION_TIME)) {
                 String order = (resultOrderType == ResultOrderType.ASC) ? "ASC" : "DESC";
                 query += " ORDER BY e." + ExperimentConstants.CREATION_TIME + " " + order;
             }
@@ -673,18 +677,23 @@ public class WorkerResource extends AbstractResource {
             Query q;
 
             //pagination
-            if(offset>=0 && limit >=0){
+            if (offset >= 0 && limit >= 0) {
                 q = em.createQuery(query).setFirstResult(offset).setMaxResults(limit);
-            }else{
+            } else {
                 q = em.createQuery(query);
             }
+            OpenJPAQuery kq = OpenJPAPersistence.cast(q);
+            JDBCFetchPlan fetch = (JDBCFetchPlan) kq.getFetchPlan();
+            fetch.setEagerFetchMode(FetchMode.JOIN);
 
             List resultList = q.getResultList();
             for (Object o : resultList) {
-                Experiment experiment = (Experiment) o;
-                ExperimentResource experimentResource =
-                        (ExperimentResource) Utils.getResource(ResourceType.EXPERIMENT, experiment);
-                result.add(experimentResource);
+                Experiment experiment = (Experiment) ((Object[]) o)[0];
+                Status experimentStatus = (Status) ((Object[]) o)[1];
+                experiment.setStatuses(Arrays.asList(experimentStatus));
+                ExperimentSummaryResource experimentSummaryResource =
+                        (ExperimentSummaryResource) Utils.getResource(ResourceType.EXPERIMENT_SUMMARY, experiment);
+                result.add(experimentSummaryResource);
             }
             em.getTransaction().commit();
             em.close();
@@ -693,7 +702,7 @@ public class WorkerResource extends AbstractResource {
             throw new RegistryException(e);
         } finally {
             if (em != null && em.isOpen()) {
-                if (em.getTransaction().isActive()){
+                if (em.getTransaction().isActive()) {
                     em.getTransaction().rollback();
                 }
                 em.close();
@@ -702,193 +711,66 @@ public class WorkerResource extends AbstractResource {
         return result;
     }
 
-    /**
-     * Method to get experiments by state
-     * @param filters
-     * @return
-     * @throws RegistryException
-     */
-    public List<ExperimentResource> searchExperimentsByState (Map<String, String> filters) throws RegistryException{
-        return searchExperimentsByState(filters, -1, -1, null, null);
-    }
 
     /**
-     * Method to get experiments of the given state with pagination and ordering
-     * @param filters
-     * @param limit
-     * @param offset
-     * @param orderByIdentifier
-     * @param resultOrderType
-     * @return
-     * @throws RegistryException
-     */
-    public List<ExperimentResource> searchExperimentsByState (Map<String, String> filters, int limit, int offset,
-            Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException{
-        List<ExperimentResource> result = new ArrayList<ExperimentResource>();
-        EntityManager em = null;
-        try {
-            String experimentState = ExperimentState.valueOf(filters.get(StatusConstants.STATE)).toString();
-            String query = "SELECT e FROM Status s " +
-                    "JOIN s.experiment e " +
-                    "WHERE s.state='" + experimentState +  "' " +
-                    "AND s.statusType='" + StatusType.EXPERIMENT + "' AND ";
-
-            filters.remove(StatusConstants.STATE);
-            if (filters.size() != 0) {
-                for (String field : filters.keySet()) {
-                    String filterVal = filters.get(field);
-                    if (field.equals(ExperimentConstants.EXECUTION_USER)) {
-                        query += "e." + field + "= '" + filterVal + "' AND ";
-                    }else if (field.equals(ExperimentConstants.GATEWAY_ID)) {
-                        query += "e." + field + "= '" + filterVal + "' AND ";
-                    } else if (field.equals(ExperimentConstants.PROJECT_ID)) {
-                        query += "e." + field + "= '" + filterVal + "' AND ";
-                    } else {
-                        if (filterVal.contains("*")){
-                            filterVal = filterVal.replaceAll("\\*", "");
-                        }
-                        query += "e." + field + " LIKE '%" + filterVal + "%' AND ";
-                    }
-                }
-            }
-            query = query.substring(0, query.length() - 5);
-
-            //ordering
-            if( orderByIdentifier != null && resultOrderType != null
-                    && orderByIdentifier.equals(Constants.FieldConstants.ExperimentConstants.CREATION_TIME)){
-                String order = (resultOrderType == ResultOrderType.ASC) ? "ASC" : "DESC";
-                query += " ORDER BY e." + ExperimentConstants.CREATION_TIME + " " + order;
-            }
-
-            em = ResourceUtils.getEntityManager();
-            em.getTransaction().begin();
-            Query q;
-
-            //pagination
-            if(offset>=0 && limit >=0){
-                q = em.createQuery(query).setFirstResult(offset).setMaxResults(limit);
-            }else{
-                q = em.createQuery(query);
-            }
-
-            List resultList = q.getResultList();
-            for (Object o : resultList) {
-                Experiment experiment = (Experiment) o;
-                ExperimentResource experimentResource = (ExperimentResource) Utils.getResource(ResourceType.EXPERIMENT, experiment);
-                result.add(experimentResource);
-            }
-            em.getTransaction().commit();
-            em.close();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw new RegistryException(e);
-        } finally {
-            if (em != null && em.isOpen()) {
-                if (em.getTransaction().isActive()){
-                    em.getTransaction().rollback();
-                }
-                em.close();
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Search experiments from creation time between interval. Returns all results
+     * Method to get experiment statistics for a gateway
+     *
+     * @param gatewayId
      * @param fromTime
      * @param toTime
      * @return
      * @throws RegistryException
      */
-    public List<ExperimentResource> searchExperimentsByCreationTime (Timestamp fromTime, Timestamp toTime) throws RegistryException{
-        return  searchExperimentsByCreationTime(fromTime, toTime, -1, -1, null, null);
+    public ExperimentStatisticsResource getExperimentStatistics(String gatewayId, Timestamp fromTime, Timestamp toTime) throws RegistryException {
+        ExperimentStatisticsResource experimentStatisticsResource = new ExperimentStatisticsResource();
+        List<ExperimentSummaryResource> allExperiments = getExperimentStatisticsForState(null, gatewayId, fromTime, toTime);
+        experimentStatisticsResource.setAllExperimentCount(allExperiments.size());
+        experimentStatisticsResource.setAllExperiments(allExperiments);
+
+        List<ExperimentSummaryResource> completedExperiments = getExperimentStatisticsForState(ExperimentState.COMPLETED, gatewayId, fromTime, toTime);
+        experimentStatisticsResource.setCompletedExperimentCount(completedExperiments.size());
+        experimentStatisticsResource.setCompletedExperiments(completedExperiments);
+
+        List<ExperimentSummaryResource> failedExperiments = getExperimentStatisticsForState(ExperimentState.FAILED, gatewayId, fromTime, toTime);
+        experimentStatisticsResource.setFailedExperimentCount(failedExperiments.size());
+        experimentStatisticsResource.setFailedExperiments(failedExperiments);
+
+        List<ExperimentSummaryResource> cancelledExperiments = getExperimentStatisticsForState(ExperimentState.CANCELED, gatewayId, fromTime, toTime);
+        experimentStatisticsResource.setCancelledExperimentCount(cancelledExperiments.size());
+        experimentStatisticsResource.setCancelledExperiments(cancelledExperiments);
+
+        return experimentStatisticsResource;
     }
 
-
-    /**
-     * Search experiments from creation time between interval. Results are ordered creation time DESC.
-     * Supports pagination
-     *
-     * @param fromTime
-     * @param toTime
-     * @param limit
-     * @param offset
-     * @param orderByIdentifier
-     * @param resultOrderType
-     * @return
-     * @throws RegistryException
-     */
-    public List<ExperimentResource> searchExperimentsByCreationTime(
-            Timestamp fromTime, Timestamp toTime, int limit, int offset, Object orderByIdentifier,
-            ResultOrderType resultOrderType) throws RegistryException{
-
-        List<ExperimentResource> result = new ArrayList<ExperimentResource>();
+    private List<ExperimentSummaryResource> getExperimentStatisticsForState(
+            ExperimentState expState, String gatewayId, Timestamp fromTime, Timestamp toTime) throws RegistryException {
         EntityManager em = null;
+        List<ExperimentSummaryResource> result = new ArrayList();
         try {
-            String query = "SELECT e FROM Experiment e " +
-                    "WHERE e.creationTime > '" + fromTime +  "' " +
-                    "AND e.creationTime <'" + toTime + "'";
-
-            //ordering
-            if( orderByIdentifier != null && resultOrderType != null
-                    && orderByIdentifier.equals(Constants.FieldConstants.ExperimentConstants.CREATION_TIME)){
-                String order = (resultOrderType == ResultOrderType.ASC) ? "ASC" : "DESC";
-                query += " ORDER BY e." + ExperimentConstants.CREATION_TIME + " " + order;
+            String query = "SELECT e, s FROM Experiment e " +
+                    ",Status s WHERE e.expId=s.expId AND " +
+                    "s.statusType='" + StatusType.EXPERIMENT + "' AND ";
+            if (expState != null) {
+                query += "s.state='" + expState.toString() + "' AND ";
             }
+            query += "e.creationTime > '" + fromTime + "' " + "AND e.creationTime <'" + toTime + "' AND ";
+            query += "e." + ExperimentConstants.GATEWAY_ID + "= '" + gatewayId + "'";
 
             em = ResourceUtils.getEntityManager();
-            em.getTransaction().begin();
-            Query q;
-
-            //pagination
-            if(offset>=0 && limit >=0){
-                q = em.createQuery(query).setFirstResult(offset).setMaxResults(limit);
-            }else{
-                q = em.createQuery(query);
-            }
-
-            List resultList = q.getResultList();
-            for (Object o : resultList) {
-                Experiment experiment = (Experiment) o;
-                ExperimentResource experimentResource = (ExperimentResource) Utils.getResource(ResourceType.EXPERIMENT, experiment);
-                result.add(experimentResource);
-            }
-            em.getTransaction().commit();
-            em.close();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw new RegistryException(e);
-        } finally {
-            if (em != null && em.isOpen()) {
-                if (em.getTransaction().isActive()){
-                    em.getTransaction().rollback();
-                }
-                em.close();
-            }
-        }
-        return result;
-    }
-
-    /**
-     *
-     * @return list of experiments for the user
-     */
-    public List<ExperimentResource> getExperimentsByCaching(String user) throws RegistryException{
-        List<ExperimentResource> result = new ArrayList<ExperimentResource>();
-        EntityManager em = null;
-        try {
-            String query = "SELECT e from Experiment e WHERE e.executionUser = '" + user + "'";
-            em = ResourceUtils.getEntityManager();
-//        OpenJPAEntityManagerFactory oemf = OpenJPAPersistence.cast(em.getEntityManagerFactory());
-//        QueryResultCache qcache = oemf.getQueryResultCache();
-            // qcache.evictAll(Experiment.class);
             em.getTransaction().begin();
             Query q = em.createQuery(query);
+            OpenJPAQuery kq = OpenJPAPersistence.cast(q);
+            JDBCFetchPlan fetch = (JDBCFetchPlan) kq.getFetchPlan();
+            fetch.setEagerFetchMode(FetchMode.JOIN);
+
             List resultList = q.getResultList();
             for (Object o : resultList) {
-                Experiment experiment = (Experiment) o;
-                ExperimentResource experimentResource = (ExperimentResource) Utils.getResource(ResourceType.EXPERIMENT, experiment);
-                result.add(experimentResource);
+                Experiment experiment = (Experiment) ((Object[]) o)[0];
+                Status experimentStatus = (Status) ((Object[]) o)[1];
+                experiment.setStatuses(Arrays.asList(experimentStatus));
+                ExperimentSummaryResource experimentSummaryResource =
+                        (ExperimentSummaryResource) Utils.getResource(ResourceType.EXPERIMENT_SUMMARY, experiment);
+                result.add(experimentSummaryResource);
             }
             em.getTransaction().commit();
             em.close();
@@ -897,7 +779,7 @@ public class WorkerResource extends AbstractResource {
             throw new RegistryException(e);
         } finally {
             if (em != null && em.isOpen()) {
-                if (em.getTransaction().isActive()){
+                if (em.getTransaction().isActive()) {
                     em.getTransaction().rollback();
                 }
                 em.close();
