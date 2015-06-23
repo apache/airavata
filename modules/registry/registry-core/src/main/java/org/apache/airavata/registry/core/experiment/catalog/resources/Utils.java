@@ -313,6 +313,20 @@ public class Utils {
                     logger.error("Object should be a task error data.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be task error data.");
                 }
+            case JOB:
+                if (o instanceof  Job){
+                    return createJobResource((Job) o);
+                }else {
+                    logger.error("Object should be a Job data.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a Job data.");
+                }
+            case JOB_STATUS:
+                if (o instanceof  JobStatus){
+                    return createJobStatusResource((JobStatus) o);
+                }else {
+                    logger.error("Object should be a JobStatus data.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a JobStatus data.");
+                }
             default:
                 logger.error("Illegal data type..", new IllegalArgumentException());
                 throw new IllegalArgumentException("Illegal data type..");
@@ -621,5 +635,31 @@ public class Utils {
             resourceScheduleResource.setTotalPhysicalMemory(o.getTotalPhysicalMemory());
         }
         return resourceScheduleResource;
+    }
+
+    private static ExperimentCatResource createJobResource (Job o){
+        JobResource jobResource = new JobResource();
+        if (o != null){
+            jobResource.setJobId(o.getJobId());
+            jobResource.setTaskId(o.getTaskId());
+            jobResource.setCreationTime(o.getCreationTime());
+            jobResource.setJobDescription(o.getJobDescription());
+            jobResource.setComputeResourceConsumed(o.getComputeResourceConsumed());
+            jobResource.setJobName(o.getJobName());
+            jobResource.setWorkingDir(o.getWorkingDir());
+        }
+        return jobResource;
+    }
+
+    private static ExperimentCatResource createJobStatusResource (JobStatus o){
+        JobStatusResource jobStatusResource = new JobStatusResource();
+        if (o != null){
+            jobStatusResource.setJobId(o.getJobId());
+            jobStatusResource.setState(o.getState());
+            jobStatusResource.setTimeOfStateChange(o.getTimeOfStateChange());
+            jobStatusResource.setReason(o.getReason());
+        }
+
+        return jobStatusResource;
     }
 }

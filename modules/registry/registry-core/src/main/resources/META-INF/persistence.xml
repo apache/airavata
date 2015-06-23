@@ -87,6 +87,8 @@
         <class>org.apache.airavata.registry.core.experiment.catalog.model.TaskStatus</class>
         <class>org.apache.airavata.registry.core.experiment.catalog.model.Users</class>
         <class>org.apache.airavata.registry.core.experiment.catalog.model.UserConfigurationData</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.Job</class>
+        <class>org.apache.airavata.registry.core.experiment.catalog.model.JobStatus</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
     </persistence-unit>
 </persistence>

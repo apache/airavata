@@ -28,6 +28,7 @@ import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentSummaryModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
+import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.*;
@@ -311,6 +312,20 @@ public class ThriftDataModelConversion {
         return null;
     }
 
+    public static JobStatus getJobStatus (JobStatusResource status){
+        if (status != null){
+            JobStatus jobStatus = new JobStatus();
+            if (status.getState() == null || status.getState().equals("")){
+                status.setState("UNKNOWN");
+            }
+            jobStatus.setJobState(JobState.valueOf(status.getState()));
+            jobStatus.setTimeOfStateChange(status.getTimeOfStateChange().getTime());
+            jobStatus.setReason(status.getReason());
+            return jobStatus;
+        }
+        return null;
+    }
+
     public static ProcessModel getProcesModel (ProcessResource processResource) throws RegistryException {
         if (processResource != null){
             ProcessModel processModel = new ProcessModel();
@@ -359,6 +374,20 @@ public class ThriftDataModelConversion {
 
         model.setTaskStatus(getTaskStatus(taskResource.getTaskStatus()));
         model.setTaskError(getErrorModel(taskResource.getTaskError()));
+
+        return model;
+    }
+
+    public static JobModel getJobModel (JobResource jobResource) throws RegistryException {
+        JobModel model = new JobModel();
+        model.setJobId(jobResource.getJobId());
+        model.setTaskId(jobResource.getTaskId());
+        model.setJobDescription(jobResource.getJobDescription());
+        model.setCreationTime(jobResource.getCreationTime().getTime());
+        model.setComputeResourceConsumed(jobResource.getComputeResourceConsumed());
+        model.setJobName(jobResource.getJobName());
+        model.setWorkingDir(jobResource.getWorkingDir());
+        model.setJobStatus(getJobStatus(jobResource.getJobStatus()));
 
         return model;
     }

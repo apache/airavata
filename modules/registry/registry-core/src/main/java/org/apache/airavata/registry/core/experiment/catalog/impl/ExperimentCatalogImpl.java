@@ -29,9 +29,11 @@ import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentSummaryModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
+import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.ExperimentStatus;
+import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskModel;
@@ -173,6 +175,10 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     return experimentRegistry.addTaskStatus((TaskStatus) newObjectToAdd, (String) dependentIdentifier);
                 case TASK_ERROR:
                     return experimentRegistry.addTaskError((ErrorModel) newObjectToAdd, (String) dependentIdentifier);
+                case JOB:
+                    return experimentRegistry.addJob((JobModel) newObjectToAdd, (String) dependentIdentifier);
+                case JOB_STATUS:
+                    return experimentRegistry.addJobStatus((JobStatus) newObjectToAdd, (String) dependentIdentifier);
                 default:
                     logger.error("Unsupported dependent data type...", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
@@ -243,6 +249,12 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     break;
                 case TASK_ERROR:
                     experimentRegistry.updateTaskError((ErrorModel) newObjectToUpdate, (String) identifier);
+                    break;
+                case JOB:
+                    experimentRegistry.updateJob((JobModel) newObjectToUpdate, (String) identifier);
+                    break;
+                case JOB_STATUS:
+                    experimentRegistry.updateJobStatus((JobStatus) newObjectToUpdate, (String) identifier);
                     break;
                 default:
                     logger.error("Unsupported data type...", new UnsupportedOperationException());
@@ -336,6 +348,10 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     return experimentRegistry.getTaskStatus((String) identifier);
                 case TASK_ERROR:
                     return experimentRegistry.getTaskError((String) identifier);
+                case JOB:
+                    return experimentRegistry.getJob((String) identifier, null);
+                case JOB_STATUS:
+                    return experimentRegistry.getJobStatus((String) identifier);
                 default:
                     logger.error("Unsupported data type...", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
@@ -388,6 +404,12 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                 case TASK:
                     List<TaskModel> taskList = experimentRegistry.getTaskList(fieldName, value);
                     for (TaskModel task : taskList) {
+                        result.add(task);
+                    }
+                    return result;
+                case JOB:
+                    List<JobModel> jobList = experimentRegistry.getJobList(fieldName, value);
+                    for (JobModel task : jobList) {
                         result.add(task);
                     }
                     return result;
@@ -561,6 +583,8 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     return experimentRegistry.getProcessIds(fieldName, value);
                 case TASK:
                     return experimentRegistry.getTaskIds(fieldName, value);
+                case JOB:
+                    return experimentRegistry.getJobIds(fieldName, value);
                 default:
                     logger.error("Unsupported data type...", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
@@ -605,6 +629,9 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                 case TASK:
                     experimentRegistry.removeTask((String) identifier);
                     break;
+                case JOB:
+                    experimentRegistry.removeJob((String) identifier);
+                    break;
                 default:
                     logger.error("Unsupported data type...", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
@@ -643,6 +670,8 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     return experimentRegistry.isProcessResourceScheduleExist((String) identifier);
                 case TASK:
                     return experimentRegistry.isTaskExist((String) identifier);
+                case JOB:
+                    return experimentRegistry.isJobExist((String) identifier);
                 default:
                     logger.error("Unsupported data type...", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
