@@ -21,61 +21,55 @@
 
 package org.apache.airavata.gfac.impl;
 
+import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
-import org.apache.airavata.gfac.core.config.DataTransferTaskConfig;
-import org.apache.airavata.gfac.core.config.GFacYamlConfigruation;
-import org.apache.airavata.gfac.core.config.JobSubmitterTaskConfig;
-import org.apache.airavata.gfac.core.config.ResourceConfig;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.task.Task;
-import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
+import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.task.TaskModel;
+import org.apache.airavata.registry.cpi.AppCatalog;
+import org.apache.airavata.registry.cpi.AppCatalogException;
+import org.apache.airavata.registry.cpi.ExperimentCatalog;
+import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
+import org.apache.airavata.registry.cpi.RegistryException;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 public class GFacEngineImpl implements GFacEngine {
-	private static GFacEngineImpl engine;
-	Map<JobSubmissionProtocol, Task> jobSubmissionTask;
-	Map<DataMovementProtocol, Task> dataMovementTask;
-	Map<ResourceJobManagerType, ResourceConfig> resources;
-
 
 	public GFacEngineImpl() throws GFacException {
-		GFacYamlConfigruation config = new GFacYamlConfigruation();
-		for (JobSubmitterTaskConfig jobSubmitterTaskConfig : config.getJobSbumitters()) {
-			jobSubmissionTask.put(jobSubmitterTaskConfig.getSubmissionProtocol(), null);
-		}
 
-		for (DataTransferTaskConfig dataTransferTaskConfig : config.getFileTransferTasks()) {
-			dataMovementTask.put(dataTransferTaskConfig.getTransferProtocol(), null);
-		}
-
-		for (ResourceConfig resourceConfig : config.getResourceConfiguration()) {
-			resources.put(resourceConfig.getJobManagerType(), resourceConfig);
-		}
 	}
 
 	@Override
 	public ProcessContext populateProcessContext(String experimentId, String processId, String gatewayId, String
 			tokenId) throws GFacException {
-		ProcessContext processContext = new ProcessContext(processId, gatewayId, tokenId);
-		processContext.setProcessModel(new ProcessModel());
-		// TODO: get process model from app catalog
-		// TODO: set datamovement protocol and jobsubmission protocol
-		// TODO: set up gatewayResourceProfile.
-		// TODO: set RemoteCluster
-		return processContext;
+		try {
+			ProcessContext processContext = new ProcessContext(processId, gatewayId, tokenId);
+			AppCatalog appCatalog = Factory.getDefaultAppCatalog();
+			ExperimentCatalog expCatalog = Factory.getDefaultExpCatalog();
+			processContext.setProcessModel((ProcessModel) expCatalog.get(ExperimentCatalogModelType.PROCESS, processId));
+			GatewayResourceProfile gatewayProfile = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
+			processContext.setGatewayResourceProfile(gatewayProfile);
+			processContext.setComputeResourcePreference(appCatalog.getGatewayProfile().getComputeResourcePreference
+					(gatewayId, processContext.getProcessModel().getComputeResourceId()));
+			processContext.setRemoteCluster(Factory.getRemoteCluster(processContext.getComputeResourcePreference()));
+			//
+			return processContext;
+		} catch (AppCatalogException e) {
+			throw new GFacException("App catalog access exception ", e);
+		} catch (RegistryException e) {
+			throw new GFacException("Registry access exception", e);
+		} catch (AiravataException e) {
+			throw new GFacException("Remote cluster initialization error", e);
+		}
 	}
 
 	@Override
@@ -95,7 +89,7 @@ public class GFacEngineImpl implements GFacEngine {
 						break;
 					case URI:
 						// TODO : provide data staging data model
-						taskChain.add(dataMovementTask.get(processContext.getDataMovementProtocol()));
+						taskChain.add(Factory.getDataMovementTask(processContext.getDataMovementProtocol()));
 						break;
 					default:
 						// nothing to do
@@ -103,7 +97,7 @@ public class GFacEngineImpl implements GFacEngine {
 				}
 			}
 		}
-		taskChain.add(jobSubmissionTask.get(processContext.getJobSubmissionProtocol()));
+		taskChain.add(Factory.getJobSubmissionTask(processContext.getJobSubmissionProtocol()));
 		List<OutputDataObjectType> processOutputs = processContext.getProcessModel().getProcessOutputs();
 		for (OutputDataObjectType processOutput : processOutputs) {
 			DataType type = processOutput.getType();
@@ -114,7 +108,7 @@ public class GFacEngineImpl implements GFacEngine {
 					break;
 				case URI:
 					// TODO : Provide data staging data model
-					taskChain.add(dataMovementTask.get(processContext.getDataMovementProtocol()));
+					taskChain.add(Factory.getDataMovementTask(processContext.getDataMovementProtocol()));
 					break;
 			}
 		}
@@ -160,4 +154,9 @@ public class GFacEngineImpl implements GFacEngine {
 			}
 		});
 	}
+
+
+
+
+
 }

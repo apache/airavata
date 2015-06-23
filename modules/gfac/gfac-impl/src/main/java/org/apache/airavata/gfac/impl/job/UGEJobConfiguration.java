@@ -23,26 +23,22 @@ package org.apache.airavata.gfac.impl.job;
 import org.apache.airavata.gfac.core.JobManagerConfiguration;
 import org.apache.airavata.gfac.core.cluster.OutputParser;
 import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
+import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
+import java.util.Map;
 
 public class UGEJobConfiguration implements JobManagerConfiguration {
-
+	private final Map<JobManagerCommand, String> jobManagerCommands;
     private String jobDescriptionTemplateName;
-
     private String scriptExtension;
-
     private String installedPath;
-
     private OutputParser parser;
 
-    public UGEJobConfiguration() {
-        // this can be used to construct and use setter methods to set all the params in order
-    }
-
     public UGEJobConfiguration(String jobDescriptionTemplateName,
-                               String scriptExtension, String installedPath, OutputParser parser) {
+                               String scriptExtension, String installedPath, Map<JobManagerCommand, String>
+		                               jobManagerCommands, OutputParser parser) {
         this.jobDescriptionTemplateName = jobDescriptionTemplateName;
         this.scriptExtension = scriptExtension;
         this.parser = parser;
@@ -51,6 +47,7 @@ public class UGEJobConfiguration implements JobManagerConfiguration {
         } else {
             this.installedPath = installedPath + "/";
         }
+	    this.jobManagerCommands = jobManagerCommands;
     }
 
     public RawCommandInfo getCancelCommand(String jobID) {
