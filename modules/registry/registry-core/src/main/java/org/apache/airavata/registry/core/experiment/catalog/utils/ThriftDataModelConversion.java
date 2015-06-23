@@ -98,9 +98,9 @@ public class ThriftDataModelConversion {
             experimentSummary.setUserName(experimentSummaryResource.getUserName());
             experimentSummary.setName(experimentSummaryResource.getExperimentName());
             experimentSummary.setDescription(experimentSummaryResource.getDescription());
-            experimentSummary.setExecutionId(experimentSummaryResource.getExecutionId());
-            experimentSummary.setExperimentStatus(experimentSummaryResource.getState());
-            experimentSummary.setStatusUpdateTime(experimentSummaryResource.getTimeOfStateChange().getTime());
+            ExperimentState experimentState = ExperimentState.valueOf(experimentSummaryResource.getState());
+//            FIXME : Experiment Summary resource is incomplete at this point
+//            experimentSummary.setExperimentStatus(experimentSummaryResource.getState());
             return experimentSummary;
         }
         return null;

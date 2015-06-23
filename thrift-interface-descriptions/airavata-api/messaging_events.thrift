@@ -80,7 +80,7 @@ struct ProcessStatusChangeEvent {
 }
 
 struct ProcessStatusChangeRequestEvent {
-    1: required status_models.TaskState state;
+    1: required status_models.ProcessState state;
     2: required ProcessIdentifier processIdentity;
 }
 
