@@ -237,7 +237,7 @@ public class GfacServerHandler implements GfacService.Iface {
                     ExperimentStatus status = new ExperimentStatus();
                     status.setState(ExperimentState.EXECUTING);
                     status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
-                    experimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT_STATUS, status, event.getExperimentId());
+                    Factory.getDefaultExpCatalog().update(ExperimentCatalogModelType.EXPERIMENT_STATUS, status, event.getExperimentId());
                     try {
 	                    GFacUtils.createExperimentNode(curatorClient, gfacServerName, event.getExperimentId(), message.getDeliveryTag(),
 			                    event.getTokenId());

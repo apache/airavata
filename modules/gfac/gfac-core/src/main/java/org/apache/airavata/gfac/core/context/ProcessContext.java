@@ -29,6 +29,7 @@ import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDes
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
@@ -64,6 +65,7 @@ public class ProcessContext {
 	private JobSubmissionProtocol jobSubmissionProtocol;
 	private DataMovementProtocol dataMovementProtocol;
     private JobModel jobModel;
+	private ComputeResourcePreference computeResourcePreference;
 
 	public ProcessContext(String processId, String gatewayId, String tokenId) {
 		this.processId = processId;
@@ -222,6 +224,9 @@ public class ProcessContext {
     }
 
 	public JobSubmissionProtocol getJobSubmissionProtocol() {
+		if (jobSubmissionProtocol == null) {
+			jobSubmissionProtocol = computeResourcePreference.getPreferredJobSubmissionProtocol();
+		}
 		return jobSubmissionProtocol;
 	}
 
@@ -230,6 +235,9 @@ public class ProcessContext {
 	}
 
 	public DataMovementProtocol getDataMovementProtocol() {
+		if (dataMovementProtocol == null) {
+			dataMovementProtocol = computeResourcePreference.getPreferredDataMovementProtocol();
+		}
 		return dataMovementProtocol;
 	}
 
@@ -244,4 +252,12 @@ public class ProcessContext {
     public void setJobModel(JobModel jobModel) {
         this.jobModel = jobModel;
     }
+
+	public ComputeResourcePreference getComputeResourcePreference() {
+		return computeResourcePreference;
+	}
+
+	public void setComputeResourcePreference(ComputeResourcePreference computeResourcePreference) {
+		this.computeResourcePreference = computeResourcePreference;
+	}
 }

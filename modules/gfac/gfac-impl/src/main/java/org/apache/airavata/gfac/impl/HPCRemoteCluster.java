@@ -26,16 +26,16 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UserInfo;
 import org.apache.airavata.common.exception.AiravataException;
-import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
+import org.apache.airavata.gfac.core.JobManagerConfiguration;
 import org.apache.airavata.gfac.core.SSHApiException;
+import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
 import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
+import org.apache.airavata.gfac.core.cluster.AbstractRemoteCluster;
 import org.apache.airavata.gfac.core.cluster.CommandInfo;
 import org.apache.airavata.gfac.core.cluster.CommandOutput;
 import org.apache.airavata.gfac.core.cluster.OutputParser;
 import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
-import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.cluster.ServerInfo;
-import org.apache.airavata.gfac.core.JobManagerConfiguration;
 import org.apache.airavata.model.status.JobStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,28 +49,24 @@ import java.util.Map;
 /**
  * One Remote cluster instance for each compute resource.
  */
-public class HPCRemoteCluster implements RemoteCluster{
+public class HPCRemoteCluster extends AbstractRemoteCluster{
     private static final Logger log = LoggerFactory.getLogger(HPCRemoteCluster.class);
 	private final SSHKeyAuthentication authentication;
-	private final ServerInfo serverInfo;
-	private final JobManagerConfiguration jobManagerConfiguration;
 	private final JSch jSch;
 	private Session session;
-	private OutputParser outputParser;
 
 	public HPCRemoteCluster(ServerInfo serverInfo, JobManagerConfiguration jobManagerConfiguration, AuthenticationInfo
-			authenticationInfo, OutputParser outputParser) throws AiravataException {
+			authenticationInfo) throws AiravataException {
+		super(serverInfo, jobManagerConfiguration, authenticationInfo);
 		try {
-			this.serverInfo = serverInfo;
-			this.jobManagerConfiguration = jobManagerConfiguration;
 			if (authenticationInfo instanceof SSHKeyAuthentication) {
 				authentication = (SSHKeyAuthentication) authenticationInfo;
 			} else {
 				throw new AiravataException("Support ssh key authentication only");
 			}
-			this.outputParser = outputParser;
 			jSch = new JSch();
-			jSch.addIdentity(authentication.getPrivateKeyFilePath(), authentication.getPublicKeyFilePath(), authentication
+			jSch.addIdentity(authentication.getPrivateKeyFilePath(), authentication.getPublicKeyFilePath(),
+					authentication
 					.getPassphrase().getBytes());
 			session = jSch.getSession(serverInfo.getUserName(), serverInfo.getHost(), serverInfo.getPort());
 			session.setUserInfo(new DefaultUserInfo(serverInfo.getUserName(), null, authentication.getPassphrase()));
