@@ -56,7 +56,7 @@ public class TaskIdentifier implements org.apache.thrift.TBase<TaskIdentifier, T
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("TaskIdentifier");
 
   private static final org.apache.thrift.protocol.TField TASK_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("taskId", org.apache.thrift.protocol.TType.STRING, (short)1);
-  private static final org.apache.thrift.protocol.TField WORKFLOW_NODE_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("workflowNodeId", org.apache.thrift.protocol.TType.STRING, (short)2);
+  private static final org.apache.thrift.protocol.TField PROCESS_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("processId", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField EXPERIMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentId", org.apache.thrift.protocol.TType.STRING, (short)3);
   private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)4);
 
@@ -67,14 +67,14 @@ public class TaskIdentifier implements org.apache.thrift.TBase<TaskIdentifier, T
   }
 
   private String taskId; // required
-  private String workflowNodeId; // required
+  private String processId; // required
   private String experimentId; // required
   private String gatewayId; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     TASK_ID((short)1, "taskId"),
-    WORKFLOW_NODE_ID((short)2, "workflowNodeId"),
+    PROCESS_ID((short)2, "processId"),
     EXPERIMENT_ID((short)3, "experimentId"),
     GATEWAY_ID((short)4, "gatewayId");
 
@@ -93,8 +93,8 @@ public class TaskIdentifier implements org.apache.thrift.TBase<TaskIdentifier, T
       switch(fieldId) {
         case 1: // TASK_ID
           return TASK_ID;
-        case 2: // WORKFLOW_NODE_ID
-          return WORKFLOW_NODE_ID;
+        case 2: // PROCESS_ID
+          return PROCESS_ID;
         case 3: // EXPERIMENT_ID
           return EXPERIMENT_ID;
         case 4: // GATEWAY_ID
@@ -144,7 +144,7 @@ public class TaskIdentifier implements org.apache.thrift.TBase<TaskIdentifier, T
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.TASK_ID, new org.apache.thrift.meta_data.FieldMetaData("taskId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.WORKFLOW_NODE_ID, new org.apache.thrift.meta_data.FieldMetaData("workflowNodeId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+    tmpMap.put(_Fields.PROCESS_ID, new org.apache.thrift.meta_data.FieldMetaData("processId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.EXPERIMENT_ID, new org.apache.thrift.meta_data.FieldMetaData("experimentId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
@@ -159,13 +159,13 @@ public class TaskIdentifier implements org.apache.thrift.TBase<TaskIdentifier, T
 
   public TaskIdentifier(
     String taskId,
-    String workflowNodeId,
+    String processId,
     String experimentId,
     String gatewayId)
   {
     this();
     this.taskId = taskId;
-    this.workflowNodeId = workflowNodeId;
+    this.processId = processId;
     this.experimentId = experimentId;
     this.gatewayId = gatewayId;
   }
@@ -177,8 +177,8 @@ public class TaskIdentifier implements org.apache.thrift.TBase<TaskIdentifier, T
     if (other.isSetTaskId()) {
       this.taskId = other.taskId;
     }
-    if (other.isSetWorkflowNodeId()) {
-      this.workflowNodeId = other.workflowNodeId;
+    if (other.isSetProcessId()) {
+      this.processId = other.processId;
     }
     if (other.isSetExperimentId()) {
       this.experimentId = other.experimentId;
@@ -195,7 +195,7 @@ public class TaskIdentifier implements org.apache.thrift.TBase<TaskIdentifier, T
   @Override
   public void clear() {
     this.taskId = null;
-    this.workflowNodeId = null;
+    this.processId = null;
     this.experimentId = null;
     this.gatewayId = null;
   }
@@ -223,26 +223,26 @@ public class TaskIdentifier implements org.apache.thrift.TBase<TaskIdentifier, T
     }
   }
 
-  public String getWorkflowNodeId() {
-    return this.workflowNodeId;
+  public String getProcessId() {
+    return this.processId;
   }
 
-  public void setWorkflowNodeId(String workflowNodeId) {
-    this.workflowNodeId = workflowNodeId;
+  public void setProcessId(String processId) {
+    this.processId = processId;
   }
 
-  public void unsetWorkflowNodeId() {
-    this.workflowNodeId = null;
+  public void unsetProcessId() {
+    this.processId = null;
   }
 
-  /** Returns true if field workflowNodeId is set (has been assigned a value) and false otherwise */
-  public boolean isSetWorkflowNodeId() {
-    return this.workflowNodeId != null;
+  /** Returns true if field processId is set (has been assigned a value) and false otherwise */
+  public boolean isSetProcessId() {
+    return this.processId != null;
   }
 
-  public void setWorkflowNodeIdIsSet(boolean value) {
+  public void setProcessIdIsSet(boolean value) {
     if (!value) {
-      this.workflowNodeId = null;
+      this.processId = null;
     }
   }
 
@@ -302,11 +302,11 @@ public class TaskIdentifier implements org.apache.thrift.TBase<TaskIdentifier, T
       }
       break;
 
-    case WORKFLOW_NODE_ID:
+    case PROCESS_ID:
       if (value == null) {
-        unsetWorkflowNodeId();
+        unsetProcessId();
       } else {
-        setWorkflowNodeId((String)value);
+        setProcessId((String)value);
       }
       break;
 
@@ -334,8 +334,8 @@ public class TaskIdentifier implements org.apache.thrift.TBase<TaskIdentifier, T
     case TASK_ID:
       return getTaskId();
 
-    case WORKFLOW_NODE_ID:
-      return getWorkflowNodeId();
+    case PROCESS_ID:
+      return getProcessId();
 
     case EXPERIMENT_ID:
       return getExperimentId();
@@ -356,8 +356,8 @@ public class TaskIdentifier implements org.apache.thrift.TBase<TaskIdentifier, T
     switch (field) {
     case TASK_ID:
       return isSetTaskId();
-    case WORKFLOW_NODE_ID:
-      return isSetWorkflowNodeId();
+    case PROCESS_ID:
+      return isSetProcessId();
     case EXPERIMENT_ID:
       return isSetExperimentId();
     case GATEWAY_ID:
@@ -388,12 +388,12 @@ public class TaskIdentifier implements org.apache.thrift.TBase<TaskIdentifier, T
         return false;
     }
 
-    boolean this_present_workflowNodeId = true && this.isSetWorkflowNodeId();
-    boolean that_present_workflowNodeId = true && that.isSetWorkflowNodeId();
-    if (this_present_workflowNodeId || that_present_workflowNodeId) {
-      if (!(this_present_workflowNodeId && that_present_workflowNodeId))
+    boolean this_present_processId = true && this.isSetProcessId();
+    boolean that_present_processId = true && that.isSetProcessId();
+    if (this_present_processId || that_present_processId) {
+      if (!(this_present_processId && that_present_processId))
         return false;
-      if (!this.workflowNodeId.equals(that.workflowNodeId))
+      if (!this.processId.equals(that.processId))
         return false;
     }
 
@@ -427,10 +427,10 @@ public class TaskIdentifier implements org.apache.thrift.TBase<TaskIdentifier, T
     if (present_taskId)
       list.add(taskId);
 
-    boolean present_workflowNodeId = true && (isSetWorkflowNodeId());
-    list.add(present_workflowNodeId);
-    if (present_workflowNodeId)
-      list.add(workflowNodeId);
+    boolean present_processId = true && (isSetProcessId());
+    list.add(present_processId);
+    if (present_processId)
+      list.add(processId);
 
     boolean present_experimentId = true && (isSetExperimentId());
     list.add(present_experimentId);
@@ -463,12 +463,12 @@ public class TaskIdentifier implements org.apache.thrift.TBase<TaskIdentifier, T
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSetWorkflowNodeId()).compareTo(other.isSetWorkflowNodeId());
+    lastComparison = Boolean.valueOf(isSetProcessId()).compareTo(other.isSetProcessId());
     if (lastComparison != 0) {
       return lastComparison;
     }
-    if (isSetWorkflowNodeId()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.workflowNodeId, other.workflowNodeId);
+    if (isSetProcessId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.processId, other.processId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -521,11 +521,11 @@ public class TaskIdentifier implements org.apache.thrift.TBase<TaskIdentifier, T
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("workflowNodeId:");
-    if (this.workflowNodeId == null) {
+    sb.append("processId:");
+    if (this.processId == null) {
       sb.append("null");
     } else {
-      sb.append(this.workflowNodeId);
+      sb.append(this.processId);
     }
     first = false;
     if (!first) sb.append(", ");
@@ -554,8 +554,8 @@ public class TaskIdentifier implements org.apache.thrift.TBase<TaskIdentifier, T
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'taskId' is unset! Struct:" + toString());
     }
 
-    if (!isSetWorkflowNodeId()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field 'workflowNodeId' is unset! Struct:" + toString());
+    if (!isSetProcessId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'processId' is unset! Struct:" + toString());
     }
 
     if (!isSetExperimentId()) {
@@ -611,10 +611,10 @@ public class TaskIdentifier implements org.apache.thrift.TBase<TaskIdentifier, T
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 2: // WORKFLOW_NODE_ID
+          case 2: // PROCESS_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
-              struct.workflowNodeId = iprot.readString();
-              struct.setWorkflowNodeIdIsSet(true);
+              struct.processId = iprot.readString();
+              struct.setProcessIdIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -653,9 +653,9 @@ public class TaskIdentifier implements org.apache.thrift.TBase<TaskIdentifier, T
         oprot.writeString(struct.taskId);
         oprot.writeFieldEnd();
       }
-      if (struct.workflowNodeId != null) {
-        oprot.writeFieldBegin(WORKFLOW_NODE_ID_FIELD_DESC);
-        oprot.writeString(struct.workflowNodeId);
+      if (struct.processId != null) {
+        oprot.writeFieldBegin(PROCESS_ID_FIELD_DESC);
+        oprot.writeString(struct.processId);
         oprot.writeFieldEnd();
       }
       if (struct.experimentId != null) {
@@ -686,7 +686,7 @@ public class TaskIdentifier implements org.apache.thrift.TBase<TaskIdentifier, T
     public void write(org.apache.thrift.protocol.TProtocol prot, TaskIdentifier struct) throws org.apache.thrift.TException {
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeString(struct.taskId);
-      oprot.writeString(struct.workflowNodeId);
+      oprot.writeString(struct.processId);
       oprot.writeString(struct.experimentId);
       oprot.writeString(struct.gatewayId);
     }
@@ -696,8 +696,8 @@ public class TaskIdentifier implements org.apache.thrift.TBase<TaskIdentifier, T
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.taskId = iprot.readString();
       struct.setTaskIdIsSet(true);
-      struct.workflowNodeId = iprot.readString();
-      struct.setWorkflowNodeIdIsSet(true);
+      struct.processId = iprot.readString();
+      struct.setProcessIdIsSet(true);
       struct.experimentId = iprot.readString();
       struct.setExperimentIdIsSet(true);
       struct.gatewayId = iprot.readString();

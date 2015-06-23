@@ -123,7 +123,7 @@ public class RabbitMQListener {
                         } catch (TException e) {
                             logger.error(e.getMessage(), e);
                         }
-                    }else if (message.getType().equals(MessageType.WORKFLOWNODE)){
+                    }else if (message.getType().equals(MessageType.PROCESS)){
                         /*try {
                             WorkflowNodeStatusChangeEvent event = new WorkflowNodeStatusChangeEvent();
                             TBase messageEvent = message.getEvent();
