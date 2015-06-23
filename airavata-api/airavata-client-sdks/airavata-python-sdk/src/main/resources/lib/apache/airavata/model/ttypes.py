@@ -11,6 +11,9 @@ import apache.airavata.model.workspace.ttypes
 import apache.airavata.api.error.ttypes
 import apache.airavata.model.messaging.event.ttypes
 import apache.airavata.model.security.ttypes
+import apache.airavata.model.job.ttypes
+import apache.airavata.model.task.ttypes
+import apache.airavata.model.process.ttypes
 
 
 from thrift.transport import TTransport

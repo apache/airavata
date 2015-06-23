@@ -121,7 +121,7 @@ class Project {
   /**
    * @var string
    */
-  public $projectID = "DEFAULT";
+  public $projectID = null;
   /**
    * @var string
    */

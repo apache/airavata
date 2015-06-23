@@ -37,11 +37,11 @@ class Workflow {
    */
   public $image = null;
   /**
-   * @var \Airavata\Model\AppCatalog\AppInterface\InputDataObjectType[]
+   * @var \Airavata\Model\Application\Io\InputDataObjectType[]
    */
   public $workflowInputs = null;
   /**
-   * @var \Airavata\Model\AppCatalog\AppInterface\OutputDataObjectType[]
+   * @var \Airavata\Model\Application\Io\OutputDataObjectType[]
    */
   public $workflowOutputs = null;
 
@@ -70,7 +70,7 @@ class Workflow {
           'etype' => TType::STRUCT,
           'elem' => array(
             'type' => TType::STRUCT,
-            'class' => '\Airavata\Model\AppCatalog\AppInterface\InputDataObjectType',
+            'class' => '\Airavata\Model\Application\Io\InputDataObjectType',
             ),
           ),
         6 => array(
@@ -79,7 +79,7 @@ class Workflow {
           'etype' => TType::STRUCT,
           'elem' => array(
             'type' => TType::STRUCT,
-            'class' => '\Airavata\Model\AppCatalog\AppInterface\OutputDataObjectType',
+            'class' => '\Airavata\Model\Application\Io\OutputDataObjectType',
             ),
           ),
         );
@@ -162,7 +162,7 @@ class Workflow {
             for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
             {
               $elem5 = null;
-              $elem5 = new \Airavata\Model\AppCatalog\AppInterface\InputDataObjectType();
+              $elem5 = new \Airavata\Model\Application\Io\InputDataObjectType();
               $xfer += $elem5->read($input);
               $this->workflowInputs []= $elem5;
             }
@@ -180,7 +180,7 @@ class Workflow {
             for ($_i10 = 0; $_i10 < $_size6; ++$_i10)
             {
               $elem11 = null;
-              $elem11 = new \Airavata\Model\AppCatalog\AppInterface\OutputDataObjectType();
+              $elem11 = new \Airavata\Model\Application\Io\OutputDataObjectType();
               $xfer += $elem11->read($input);
               $this->workflowOutputs []= $elem11;
             }

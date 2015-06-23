@@ -236,7 +236,7 @@ class AiravataIf {
    * @param userName
    * @param expName
    */
-  virtual void searchExperimentsByName(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& expName) = 0;
+  virtual void searchExperimentsByName(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& expName) = 0;
 
   /**
    * Search Experiments by experiment name with pagination. Results will be sorted
@@ -259,7 +259,7 @@ class AiravataIf {
    * @param limit
    * @param offset
    */
-  virtual void searchExperimentsByNameWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset) = 0;
+  virtual void searchExperimentsByNameWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset) = 0;
 
   /**
    * Search Experiments by experiment name
@@ -277,7 +277,7 @@ class AiravataIf {
    * @param userName
    * @param description
    */
-  virtual void searchExperimentsByDesc(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description) = 0;
+  virtual void searchExperimentsByDesc(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description) = 0;
 
   /**
    * Search Experiments by experiment name with pagination. Results will be sorted
@@ -300,7 +300,7 @@ class AiravataIf {
    * @param limit
    * @param offset
    */
-  virtual void searchExperimentsByDescWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) = 0;
+  virtual void searchExperimentsByDescWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) = 0;
 
   /**
    * Search Experiments by application id
@@ -318,7 +318,7 @@ class AiravataIf {
    * @param userName
    * @param applicationId
    */
-  virtual void searchExperimentsByApplication(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& applicationId) = 0;
+  virtual void searchExperimentsByApplication(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& applicationId) = 0;
 
   /**
    * Search Experiments by application id with pagination. Results will be sorted
@@ -341,7 +341,7 @@ class AiravataIf {
    * @param limit
    * @param offset
    */
-  virtual void searchExperimentsByApplicationWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset) = 0;
+  virtual void searchExperimentsByApplicationWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset) = 0;
 
   /**
    * Search Experiments by experiment status
@@ -359,7 +359,7 @@ class AiravataIf {
    * @param userName
    * @param experimentState
    */
-  virtual void searchExperimentsByStatus(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState) = 0;
+  virtual void searchExperimentsByStatus(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState) = 0;
 
   /**
    * Search Experiments by experiment status with pagination. Results will be sorted
@@ -382,7 +382,7 @@ class AiravataIf {
    * @param limit
    * @param offset
    */
-  virtual void searchExperimentsByStatusWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState, const int32_t limit, const int32_t offset) = 0;
+  virtual void searchExperimentsByStatusWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState, const int32_t limit, const int32_t offset) = 0;
 
   /**
    * Search Experiments by experiment creation time
@@ -403,7 +403,7 @@ class AiravataIf {
    * @param fromTime
    * @param toTime
    */
-  virtual void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime) = 0;
+  virtual void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime) = 0;
 
   /**
    * Search Experiments by experiment creation time with pagination. Results will be sorted
@@ -429,7 +429,7 @@ class AiravataIf {
    * @param limit
    * @param offset
    */
-  virtual void searchExperimentsByCreationTimeWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset) = 0;
+  virtual void searchExperimentsByCreationTimeWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset) = 0;
 
   /**
    * Search Experiments by using multiple filter criteria with pagination. Results will be sorted
@@ -452,7 +452,7 @@ class AiravataIf {
    * @param limit
    * @param offset
    */
-  virtual void searchExperiments(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::workspace::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset) = 0;
+  virtual void searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset) = 0;
 
   /**
    * Get Experiment Statisitics for the given gateway for a specific time period
@@ -468,7 +468,7 @@ class AiravataIf {
    * @param fromTime
    * @param toTime
    */
-  virtual void getExperimentStatistics( ::apache::airavata::model::workspace::experiment::ExperimentStatistics& _return, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime) = 0;
+  virtual void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime) = 0;
 
   /**
    * Get all Experiments within a Project
@@ -480,7 +480,7 @@ class AiravataIf {
    * 
    * @param projectId
    */
-  virtual void getAllExperimentsInProject(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& projectId) = 0;
+  virtual void getAllExperimentsInProject(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const std::string& projectId) = 0;
 
   /**
    * Get all Experiments within project with pagination. Results will be sorted
@@ -497,7 +497,7 @@ class AiravataIf {
    * @param limit
    * @param offset
    */
-  virtual void getAllExperimentsInProjectWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& projectId, const int32_t limit, const int32_t offset) = 0;
+  virtual void getAllExperimentsInProjectWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const std::string& projectId, const int32_t limit, const int32_t offset) = 0;
 
   /**
    * Get all Experiments by user
@@ -512,7 +512,7 @@ class AiravataIf {
    * @param gatewayId
    * @param userName
    */
-  virtual void getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& gatewayId, const std::string& userName) = 0;
+  virtual void getAllUserExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const std::string& gatewayId, const std::string& userName) = 0;
 
   /**
    * Get all Experiments by user pagination. Results will be sorted
@@ -532,7 +532,7 @@ class AiravataIf {
    * @param limit
    * @param offset
    */
-  virtual void getAllUserExperimentsWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset) = 0;
+  virtual void getAllUserExperimentsWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset) = 0;
 
   /**
    * Create an experiment for the specified user belonging to the gateway. The gateway identity is not explicitly passed
@@ -572,7 +572,7 @@ class AiravataIf {
    * @param gatewayId
    * @param experiment
    */
-  virtual void createExperiment(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment) = 0;
+  virtual void createExperiment(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::experiment::ExperimentModel& experiment) = 0;
 
   /**
    * Fetch previously created experiment metadata.
@@ -609,7 +609,7 @@ class AiravataIf {
    * 
    * @param airavataExperimentId
    */
-  virtual void getExperiment( ::apache::airavata::model::workspace::experiment::Experiment& _return, const std::string& airavataExperimentId) = 0;
+  virtual void getExperiment( ::apache::airavata::model::experiment::ExperimentModel& _return, const std::string& airavataExperimentId) = 0;
 
   /**
    * Configure a previously created experiment with required inputs, scheduling and other quality of service
@@ -653,9 +653,9 @@ class AiravataIf {
    * @param airavataExperimentId
    * @param experiment
    */
-  virtual void updateExperiment(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment) = 0;
-  virtual void updateExperimentConfiguration(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::UserConfigurationData& userConfiguration) = 0;
-  virtual void updateResourceScheduleing(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::ComputationalResourceScheduling& resourceScheduling) = 0;
+  virtual void updateExperiment(const std::string& airavataExperimentId, const  ::apache::airavata::model::experiment::ExperimentModel& experiment) = 0;
+  virtual void updateExperimentConfiguration(const std::string& airavataExperimentId, const  ::apache::airavata::model::experiment::UserConfigurationDataModel& userConfiguration) = 0;
+  virtual void updateResourceScheduleing(const std::string& airavataExperimentId, const  ::apache::airavata::model::scheduling::ComputationalResourceSchedulingModel& resourceScheduling) = 0;
 
   /**
    *  *
@@ -717,12 +717,11 @@ class AiravataIf {
    * @param airavataCredStoreToken
    */
   virtual void launchExperiment(const std::string& airavataExperimentId, const std::string& airavataCredStoreToken) = 0;
-  virtual void getExperimentStatus( ::apache::airavata::model::workspace::experiment::ExperimentStatus& _return, const std::string& airavataExperimentId) = 0;
-  virtual void getExperimentOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& airavataExperimentId) = 0;
-  virtual void getIntermediateOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& airavataExperimentId) = 0;
-  virtual void getJobStatuses(std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & _return, const std::string& airavataExperimentId) = 0;
-  virtual void getJobDetails(std::vector< ::apache::airavata::model::workspace::experiment::JobDetails> & _return, const std::string& airavataExperimentId) = 0;
-  virtual void getDataTransferDetails(std::vector< ::apache::airavata::model::workspace::experiment::DataTransferDetails> & _return, const std::string& airavataExperimentId) = 0;
+  virtual void getExperimentStatus( ::apache::airavata::model::status::ExperimentStatus& _return, const std::string& airavataExperimentId) = 0;
+  virtual void getExperimentOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return, const std::string& airavataExperimentId) = 0;
+  virtual void getIntermediateOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return, const std::string& airavataExperimentId) = 0;
+  virtual void getJobStatuses(std::map<std::string,  ::apache::airavata::model::status::JobStatus> & _return, const std::string& airavataExperimentId) = 0;
+  virtual void getJobDetails(std::vector< ::apache::airavata::model::job::JobModel> & _return, const std::string& airavataExperimentId) = 0;
 
   /**
    * Clone an specified experiment with a new name. A copy of the experiment configuration is made and is persisted with new metadata.
@@ -1054,7 +1053,7 @@ class AiravataIf {
    * 
    * @param appInterfaceId
    */
-  virtual void getApplicationInputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> & _return, const std::string& appInterfaceId) = 0;
+  virtual void getApplicationInputs(std::vector< ::apache::airavata::model::application::io::InputDataObjectType> & _return, const std::string& appInterfaceId) = 0;
 
   /**
    * Fetch the list of Application Outputs.
@@ -1068,7 +1067,7 @@ class AiravataIf {
    * 
    * @param appInterfaceId
    */
-  virtual void getApplicationOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& appInterfaceId) = 0;
+  virtual void getApplicationOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return, const std::string& appInterfaceId) = 0;
 
   /**
    * Fetch a list of all deployed Compute Hosts for a given application interfaces.
@@ -1866,67 +1865,67 @@ class AiravataNull : virtual public AiravataIf {
   void searchProjectsByProjectDescWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* description */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
-  void searchExperimentsByName(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* expName */) {
+  void searchExperimentsByName(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* expName */) {
     return;
   }
-  void searchExperimentsByNameWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* expName */, const int32_t /* limit */, const int32_t /* offset */) {
+  void searchExperimentsByNameWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* expName */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
-  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* description */) {
+  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* description */) {
     return;
   }
-  void searchExperimentsByDescWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* description */, const int32_t /* limit */, const int32_t /* offset */) {
+  void searchExperimentsByDescWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* description */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
-  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* applicationId */) {
+  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* applicationId */) {
     return;
   }
-  void searchExperimentsByApplicationWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* applicationId */, const int32_t /* limit */, const int32_t /* offset */) {
+  void searchExperimentsByApplicationWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::string& /* applicationId */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
-  void searchExperimentsByStatus(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type /* experimentState */) {
+  void searchExperimentsByStatus(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const  ::apache::airavata::model::status::ExperimentState::type /* experimentState */) {
     return;
   }
-  void searchExperimentsByStatusWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type /* experimentState */, const int32_t /* limit */, const int32_t /* offset */) {
+  void searchExperimentsByStatusWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const  ::apache::airavata::model::status::ExperimentState::type /* experimentState */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
-  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const int64_t /* fromTime */, const int64_t /* toTime */) {
+  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const int64_t /* fromTime */, const int64_t /* toTime */) {
     return;
   }
-  void searchExperimentsByCreationTimeWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const int64_t /* fromTime */, const int64_t /* toTime */, const int32_t /* limit */, const int32_t /* offset */) {
+  void searchExperimentsByCreationTimeWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const int64_t /* fromTime */, const int64_t /* toTime */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
-  void searchExperiments(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::map< ::apache::airavata::model::workspace::experiment::ExperimentSearchFields::type, std::string> & /* filters */, const int32_t /* limit */, const int32_t /* offset */) {
+  void searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & /* filters */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
-  void getExperimentStatistics( ::apache::airavata::model::workspace::experiment::ExperimentStatistics& /* _return */, const std::string& /* gatewayId */, const int64_t /* fromTime */, const int64_t /* toTime */) {
+  void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& /* _return */, const std::string& /* gatewayId */, const int64_t /* fromTime */, const int64_t /* toTime */) {
     return;
   }
-  void getAllExperimentsInProject(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & /* _return */, const std::string& /* projectId */) {
+  void getAllExperimentsInProject(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & /* _return */, const std::string& /* projectId */) {
     return;
   }
-  void getAllExperimentsInProjectWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & /* _return */, const std::string& /* projectId */, const int32_t /* limit */, const int32_t /* offset */) {
+  void getAllExperimentsInProjectWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & /* _return */, const std::string& /* projectId */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
-  void getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */) {
+  void getAllUserExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */) {
     return;
   }
-  void getAllUserExperimentsWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const int32_t /* limit */, const int32_t /* offset */) {
+  void getAllUserExperimentsWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */, const int32_t /* limit */, const int32_t /* offset */) {
     return;
   }
-  void createExperiment(std::string& /* _return */, const std::string& /* gatewayId */, const  ::apache::airavata::model::workspace::experiment::Experiment& /* experiment */) {
+  void createExperiment(std::string& /* _return */, const std::string& /* gatewayId */, const  ::apache::airavata::model::experiment::ExperimentModel& /* experiment */) {
     return;
   }
-  void getExperiment( ::apache::airavata::model::workspace::experiment::Experiment& /* _return */, const std::string& /* airavataExperimentId */) {
+  void getExperiment( ::apache::airavata::model::experiment::ExperimentModel& /* _return */, const std::string& /* airavataExperimentId */) {
     return;
   }
-  void updateExperiment(const std::string& /* airavataExperimentId */, const  ::apache::airavata::model::workspace::experiment::Experiment& /* experiment */) {
+  void updateExperiment(const std::string& /* airavataExperimentId */, const  ::apache::airavata::model::experiment::ExperimentModel& /* experiment */) {
     return;
   }
-  void updateExperimentConfiguration(const std::string& /* airavataExperimentId */, const  ::apache::airavata::model::workspace::experiment::UserConfigurationData& /* userConfiguration */) {
+  void updateExperimentConfiguration(const std::string& /* airavataExperimentId */, const  ::apache::airavata::model::experiment::UserConfigurationDataModel& /* userConfiguration */) {
     return;
   }
-  void updateResourceScheduleing(const std::string& /* airavataExperimentId */, const  ::apache::airavata::model::workspace::experiment::ComputationalResourceScheduling& /* resourceScheduling */) {
+  void updateResourceScheduleing(const std::string& /* airavataExperimentId */, const  ::apache::airavata::model::scheduling::ComputationalResourceSchedulingModel& /* resourceScheduling */) {
     return;
   }
   bool validateExperiment(const std::string& /* airavataExperimentId */) {
@@ -1936,22 +1935,19 @@ class AiravataNull : virtual public AiravataIf {
   void launchExperiment(const std::string& /* airavataExperimentId */, const std::string& /* airavataCredStoreToken */) {
     return;
   }
-  void getExperimentStatus( ::apache::airavata::model::workspace::experiment::ExperimentStatus& /* _return */, const std::string& /* airavataExperimentId */) {
+  void getExperimentStatus( ::apache::airavata::model::status::ExperimentStatus& /* _return */, const std::string& /* airavataExperimentId */) {
     return;
   }
-  void getExperimentOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & /* _return */, const std::string& /* airavataExperimentId */) {
+  void getExperimentOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & /* _return */, const std::string& /* airavataExperimentId */) {
     return;
   }
-  void getIntermediateOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & /* _return */, const std::string& /* airavataExperimentId */) {
+  void getIntermediateOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & /* _return */, const std::string& /* airavataExperimentId */) {
     return;
   }
-  void getJobStatuses(std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & /* _return */, const std::string& /* airavataExperimentId */) {
+  void getJobStatuses(std::map<std::string,  ::apache::airavata::model::status::JobStatus> & /* _return */, const std::string& /* airavataExperimentId */) {
     return;
   }
-  void getJobDetails(std::vector< ::apache::airavata::model::workspace::experiment::JobDetails> & /* _return */, const std::string& /* airavataExperimentId */) {
-    return;
-  }
-  void getDataTransferDetails(std::vector< ::apache::airavata::model::workspace::experiment::DataTransferDetails> & /* _return */, const std::string& /* airavataExperimentId */) {
+  void getJobDetails(std::vector< ::apache::airavata::model::job::JobModel> & /* _return */, const std::string& /* airavataExperimentId */) {
     return;
   }
   void cloneExperiment(std::string& /* _return */, const std::string& /* existingExperimentID */, const std::string& /* newExperimentName */) {
@@ -2017,10 +2013,10 @@ class AiravataNull : virtual public AiravataIf {
   void getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & /* _return */, const std::string& /* gatewayId */) {
     return;
   }
-  void getApplicationInputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> & /* _return */, const std::string& /* appInterfaceId */) {
+  void getApplicationInputs(std::vector< ::apache::airavata::model::application::io::InputDataObjectType> & /* _return */, const std::string& /* appInterfaceId */) {
     return;
   }
-  void getApplicationOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & /* _return */, const std::string& /* appInterfaceId */) {
+  void getApplicationOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & /* _return */, const std::string& /* appInterfaceId */) {
     return;
   }
   void getAvailableAppInterfaceComputeResources(std::map<std::string, std::string> & /* _return */, const std::string& /* appInterfaceId */) {
@@ -5188,8 +5184,8 @@ typedef struct _Airavata_searchExperimentsByName_result__isset {
 class Airavata_searchExperimentsByName_result {
  public:
 
-  static const char* ascii_fingerprint; // = "C4BC78CA92A32303D61DFDF7263A04B3";
-  static const uint8_t binary_fingerprint[16]; // = {0xC4,0xBC,0x78,0xCA,0x92,0xA3,0x23,0x03,0xD6,0x1D,0xFD,0xF7,0x26,0x3A,0x04,0xB3};
+  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
+  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
 
   Airavata_searchExperimentsByName_result(const Airavata_searchExperimentsByName_result&);
   Airavata_searchExperimentsByName_result& operator=(const Airavata_searchExperimentsByName_result&);
@@ -5197,14 +5193,14 @@ class Airavata_searchExperimentsByName_result {
   }
 
   virtual ~Airavata_searchExperimentsByName_result() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary>  success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_searchExperimentsByName_result__isset __isset;
 
-  void __set_success(const std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & val);
+  void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -5247,12 +5243,12 @@ typedef struct _Airavata_searchExperimentsByName_presult__isset {
 class Airavata_searchExperimentsByName_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "C4BC78CA92A32303D61DFDF7263A04B3";
-  static const uint8_t binary_fingerprint[16]; // = {0xC4,0xBC,0x78,0xCA,0x92,0xA3,0x23,0x03,0xD6,0x1D,0xFD,0xF7,0x26,0x3A,0x04,0xB3};
+  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
+  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
 
 
   virtual ~Airavata_searchExperimentsByName_presult() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> * success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -5350,8 +5346,8 @@ typedef struct _Airavata_searchExperimentsByNameWithPagination_result__isset {
 class Airavata_searchExperimentsByNameWithPagination_result {
  public:
 
-  static const char* ascii_fingerprint; // = "C4BC78CA92A32303D61DFDF7263A04B3";
-  static const uint8_t binary_fingerprint[16]; // = {0xC4,0xBC,0x78,0xCA,0x92,0xA3,0x23,0x03,0xD6,0x1D,0xFD,0xF7,0x26,0x3A,0x04,0xB3};
+  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
+  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
 
   Airavata_searchExperimentsByNameWithPagination_result(const Airavata_searchExperimentsByNameWithPagination_result&);
   Airavata_searchExperimentsByNameWithPagination_result& operator=(const Airavata_searchExperimentsByNameWithPagination_result&);
@@ -5359,14 +5355,14 @@ class Airavata_searchExperimentsByNameWithPagination_result {
   }
 
   virtual ~Airavata_searchExperimentsByNameWithPagination_result() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary>  success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_searchExperimentsByNameWithPagination_result__isset __isset;
 
-  void __set_success(const std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & val);
+  void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -5409,12 +5405,12 @@ typedef struct _Airavata_searchExperimentsByNameWithPagination_presult__isset {
 class Airavata_searchExperimentsByNameWithPagination_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "C4BC78CA92A32303D61DFDF7263A04B3";
-  static const uint8_t binary_fingerprint[16]; // = {0xC4,0xBC,0x78,0xCA,0x92,0xA3,0x23,0x03,0xD6,0x1D,0xFD,0xF7,0x26,0x3A,0x04,0xB3};
+  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
+  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
 
 
   virtual ~Airavata_searchExperimentsByNameWithPagination_presult() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> * success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -5500,8 +5496,8 @@ typedef struct _Airavata_searchExperimentsByDesc_result__isset {
 class Airavata_searchExperimentsByDesc_result {
  public:
 
-  static const char* ascii_fingerprint; // = "C4BC78CA92A32303D61DFDF7263A04B3";
-  static const uint8_t binary_fingerprint[16]; // = {0xC4,0xBC,0x78,0xCA,0x92,0xA3,0x23,0x03,0xD6,0x1D,0xFD,0xF7,0x26,0x3A,0x04,0xB3};
+  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
+  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
 
   Airavata_searchExperimentsByDesc_result(const Airavata_searchExperimentsByDesc_result&);
   Airavata_searchExperimentsByDesc_result& operator=(const Airavata_searchExperimentsByDesc_result&);
@@ -5509,14 +5505,14 @@ class Airavata_searchExperimentsByDesc_result {
   }
 
   virtual ~Airavata_searchExperimentsByDesc_result() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary>  success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_searchExperimentsByDesc_result__isset __isset;
 
-  void __set_success(const std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & val);
+  void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -5559,12 +5555,12 @@ typedef struct _Airavata_searchExperimentsByDesc_presult__isset {
 class Airavata_searchExperimentsByDesc_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "C4BC78CA92A32303D61DFDF7263A04B3";
-  static const uint8_t binary_fingerprint[16]; // = {0xC4,0xBC,0x78,0xCA,0x92,0xA3,0x23,0x03,0xD6,0x1D,0xFD,0xF7,0x26,0x3A,0x04,0xB3};
+  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
+  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
 
 
   virtual ~Airavata_searchExperimentsByDesc_presult() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> * success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -5662,8 +5658,8 @@ typedef struct _Airavata_searchExperimentsByDescWithPagination_result__isset {
 class Airavata_searchExperimentsByDescWithPagination_result {
  public:
 
-  static const char* ascii_fingerprint; // = "C4BC78CA92A32303D61DFDF7263A04B3";
-  static const uint8_t binary_fingerprint[16]; // = {0xC4,0xBC,0x78,0xCA,0x92,0xA3,0x23,0x03,0xD6,0x1D,0xFD,0xF7,0x26,0x3A,0x04,0xB3};
+  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
+  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
 
   Airavata_searchExperimentsByDescWithPagination_result(const Airavata_searchExperimentsByDescWithPagination_result&);
   Airavata_searchExperimentsByDescWithPagination_result& operator=(const Airavata_searchExperimentsByDescWithPagination_result&);
@@ -5671,14 +5667,14 @@ class Airavata_searchExperimentsByDescWithPagination_result {
   }
 
   virtual ~Airavata_searchExperimentsByDescWithPagination_result() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary>  success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_searchExperimentsByDescWithPagination_result__isset __isset;
 
-  void __set_success(const std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & val);
+  void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -5721,12 +5717,12 @@ typedef struct _Airavata_searchExperimentsByDescWithPagination_presult__isset {
 class Airavata_searchExperimentsByDescWithPagination_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "C4BC78CA92A32303D61DFDF7263A04B3";
-  static const uint8_t binary_fingerprint[16]; // = {0xC4,0xBC,0x78,0xCA,0x92,0xA3,0x23,0x03,0xD6,0x1D,0xFD,0xF7,0x26,0x3A,0x04,0xB3};
+  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
+  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
 
 
   virtual ~Airavata_searchExperimentsByDescWithPagination_presult() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> * success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -5812,8 +5808,8 @@ typedef struct _Airavata_searchExperimentsByApplication_result__isset {
 class Airavata_searchExperimentsByApplication_result {
  public:
 
-  static const char* ascii_fingerprint; // = "C4BC78CA92A32303D61DFDF7263A04B3";
-  static const uint8_t binary_fingerprint[16]; // = {0xC4,0xBC,0x78,0xCA,0x92,0xA3,0x23,0x03,0xD6,0x1D,0xFD,0xF7,0x26,0x3A,0x04,0xB3};
+  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
+  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
 
   Airavata_searchExperimentsByApplication_result(const Airavata_searchExperimentsByApplication_result&);
   Airavata_searchExperimentsByApplication_result& operator=(const Airavata_searchExperimentsByApplication_result&);
@@ -5821,14 +5817,14 @@ class Airavata_searchExperimentsByApplication_result {
   }
 
   virtual ~Airavata_searchExperimentsByApplication_result() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary>  success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_searchExperimentsByApplication_result__isset __isset;
 
-  void __set_success(const std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & val);
+  void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -5871,12 +5867,12 @@ typedef struct _Airavata_searchExperimentsByApplication_presult__isset {
 class Airavata_searchExperimentsByApplication_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "C4BC78CA92A32303D61DFDF7263A04B3";
-  static const uint8_t binary_fingerprint[16]; // = {0xC4,0xBC,0x78,0xCA,0x92,0xA3,0x23,0x03,0xD6,0x1D,0xFD,0xF7,0x26,0x3A,0x04,0xB3};
+  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
+  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
 
 
   virtual ~Airavata_searchExperimentsByApplication_presult() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> * success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -5974,8 +5970,8 @@ typedef struct _Airavata_searchExperimentsByApplicationWithPagination_result__is
 class Airavata_searchExperimentsByApplicationWithPagination_result {
  public:
 
-  static const char* ascii_fingerprint; // = "C4BC78CA92A32303D61DFDF7263A04B3";
-  static const uint8_t binary_fingerprint[16]; // = {0xC4,0xBC,0x78,0xCA,0x92,0xA3,0x23,0x03,0xD6,0x1D,0xFD,0xF7,0x26,0x3A,0x04,0xB3};
+  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
+  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
 
   Airavata_searchExperimentsByApplicationWithPagination_result(const Airavata_searchExperimentsByApplicationWithPagination_result&);
   Airavata_searchExperimentsByApplicationWithPagination_result& operator=(const Airavata_searchExperimentsByApplicationWithPagination_result&);
@@ -5983,14 +5979,14 @@ class Airavata_searchExperimentsByApplicationWithPagination_result {
   }
 
   virtual ~Airavata_searchExperimentsByApplicationWithPagination_result() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary>  success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_searchExperimentsByApplicationWithPagination_result__isset __isset;
 
-  void __set_success(const std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & val);
+  void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -6033,12 +6029,12 @@ typedef struct _Airavata_searchExperimentsByApplicationWithPagination_presult__i
 class Airavata_searchExperimentsByApplicationWithPagination_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "C4BC78CA92A32303D61DFDF7263A04B3";
-  static const uint8_t binary_fingerprint[16]; // = {0xC4,0xBC,0x78,0xCA,0x92,0xA3,0x23,0x03,0xD6,0x1D,0xFD,0xF7,0x26,0x3A,0x04,0xB3};
+  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
+  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
 
 
   virtual ~Airavata_searchExperimentsByApplicationWithPagination_presult() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> * success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -6059,19 +6055,19 @@ class Airavata_searchExperimentsByStatus_args {
 
   Airavata_searchExperimentsByStatus_args(const Airavata_searchExperimentsByStatus_args&);
   Airavata_searchExperimentsByStatus_args& operator=(const Airavata_searchExperimentsByStatus_args&);
-  Airavata_searchExperimentsByStatus_args() : gatewayId(), userName(), experimentState(( ::apache::airavata::model::workspace::experiment::ExperimentState::type)0) {
+  Airavata_searchExperimentsByStatus_args() : gatewayId(), userName(), experimentState(( ::apache::airavata::model::status::ExperimentState::type)0) {
   }
 
   virtual ~Airavata_searchExperimentsByStatus_args() throw();
   std::string gatewayId;
   std::string userName;
-   ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState;
+   ::apache::airavata::model::status::ExperimentState::type experimentState;
 
   void __set_gatewayId(const std::string& val);
 
   void __set_userName(const std::string& val);
 
-  void __set_experimentState(const  ::apache::airavata::model::workspace::experiment::ExperimentState::type val);
+  void __set_experimentState(const  ::apache::airavata::model::status::ExperimentState::type val);
 
   bool operator == (const Airavata_searchExperimentsByStatus_args & rhs) const
   {
@@ -6106,7 +6102,7 @@ class Airavata_searchExperimentsByStatus_pargs {
   virtual ~Airavata_searchExperimentsByStatus_pargs() throw();
   const std::string* gatewayId;
   const std::string* userName;
-  const  ::apache::airavata::model::workspace::experiment::ExperimentState::type* experimentState;
+  const  ::apache::airavata::model::status::ExperimentState::type* experimentState;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -6124,8 +6120,8 @@ typedef struct _Airavata_searchExperimentsByStatus_result__isset {
 class Airavata_searchExperimentsByStatus_result {
  public:
 
-  static const char* ascii_fingerprint; // = "C4BC78CA92A32303D61DFDF7263A04B3";
-  static const uint8_t binary_fingerprint[16]; // = {0xC4,0xBC,0x78,0xCA,0x92,0xA3,0x23,0x03,0xD6,0x1D,0xFD,0xF7,0x26,0x3A,0x04,0xB3};
+  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
+  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
 
   Airavata_searchExperimentsByStatus_result(const Airavata_searchExperimentsByStatus_result&);
   Airavata_searchExperimentsByStatus_result& operator=(const Airavata_searchExperimentsByStatus_result&);
@@ -6133,14 +6129,14 @@ class Airavata_searchExperimentsByStatus_result {
   }
 
   virtual ~Airavata_searchExperimentsByStatus_result() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary>  success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_searchExperimentsByStatus_result__isset __isset;
 
-  void __set_success(const std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & val);
+  void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -6183,12 +6179,12 @@ typedef struct _Airavata_searchExperimentsByStatus_presult__isset {
 class Airavata_searchExperimentsByStatus_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "C4BC78CA92A32303D61DFDF7263A04B3";
-  static const uint8_t binary_fingerprint[16]; // = {0xC4,0xBC,0x78,0xCA,0x92,0xA3,0x23,0x03,0xD6,0x1D,0xFD,0xF7,0x26,0x3A,0x04,0xB3};
+  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
+  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
 
 
   virtual ~Airavata_searchExperimentsByStatus_presult() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> * success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -6209,13 +6205,13 @@ class Airavata_searchExperimentsByStatusWithPagination_args {
 
   Airavata_searchExperimentsByStatusWithPagination_args(const Airavata_searchExperimentsByStatusWithPagination_args&);
   Airavata_searchExperimentsByStatusWithPagination_args& operator=(const Airavata_searchExperimentsByStatusWithPagination_args&);
-  Airavata_searchExperimentsByStatusWithPagination_args() : gatewayId(), userName(), experimentState(( ::apache::airavata::model::workspace::experiment::ExperimentState::type)0), limit(0), offset(0) {
+  Airavata_searchExperimentsByStatusWithPagination_args() : gatewayId(), userName(), experimentState(( ::apache::airavata::model::status::ExperimentState::type)0), limit(0), offset(0) {
   }
 
   virtual ~Airavata_searchExperimentsByStatusWithPagination_args() throw();
   std::string gatewayId;
   std::string userName;
-   ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState;
+   ::apache::airavata::model::status::ExperimentState::type experimentState;
   int32_t limit;
   int32_t offset;
 
@@ -6223,7 +6219,7 @@ class Airavata_searchExperimentsByStatusWithPagination_args {
 
   void __set_userName(const std::string& val);
 
-  void __set_experimentState(const  ::apache::airavata::model::workspace::experiment::ExperimentState::type val);
+  void __set_experimentState(const  ::apache::airavata::model::status::ExperimentState::type val);
 
   void __set_limit(const int32_t val);
 
@@ -6266,7 +6262,7 @@ class Airavata_searchExperimentsByStatusWithPagination_pargs {
   virtual ~Airavata_searchExperimentsByStatusWithPagination_pargs() throw();
   const std::string* gatewayId;
   const std::string* userName;
-  const  ::apache::airavata::model::workspace::experiment::ExperimentState::type* experimentState;
+  const  ::apache::airavata::model::status::ExperimentState::type* experimentState;
   const int32_t* limit;
   const int32_t* offset;
 
@@ -6286,8 +6282,8 @@ typedef struct _Airavata_searchExperimentsByStatusWithPagination_result__isset {
 class Airavata_searchExperimentsByStatusWithPagination_result {
  public:
 
-  static const char* ascii_fingerprint; // = "C4BC78CA92A32303D61DFDF7263A04B3";
-  static const uint8_t binary_fingerprint[16]; // = {0xC4,0xBC,0x78,0xCA,0x92,0xA3,0x23,0x03,0xD6,0x1D,0xFD,0xF7,0x26,0x3A,0x04,0xB3};
+  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
+  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
 
   Airavata_searchExperimentsByStatusWithPagination_result(const Airavata_searchExperimentsByStatusWithPagination_result&);
   Airavata_searchExperimentsByStatusWithPagination_result& operator=(const Airavata_searchExperimentsByStatusWithPagination_result&);
@@ -6295,14 +6291,14 @@ class Airavata_searchExperimentsByStatusWithPagination_result {
   }
 
   virtual ~Airavata_searchExperimentsByStatusWithPagination_result() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary>  success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_searchExperimentsByStatusWithPagination_result__isset __isset;
 
-  void __set_success(const std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & val);
+  void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -6345,12 +6341,12 @@ typedef struct _Airavata_searchExperimentsByStatusWithPagination_presult__isset 
 class Airavata_searchExperimentsByStatusWithPagination_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "C4BC78CA92A32303D61DFDF7263A04B3";
-  static const uint8_t binary_fingerprint[16]; // = {0xC4,0xBC,0x78,0xCA,0x92,0xA3,0x23,0x03,0xD6,0x1D,0xFD,0xF7,0x26,0x3A,0x04,0xB3};
+  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
+  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
 
 
   virtual ~Airavata_searchExperimentsByStatusWithPagination_presult() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> * success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -6442,8 +6438,8 @@ typedef struct _Airavata_searchExperimentsByCreationTime_result__isset {
 class Airavata_searchExperimentsByCreationTime_result {
  public:
 
-  static const char* ascii_fingerprint; // = "C4BC78CA92A32303D61DFDF7263A04B3";
-  static const uint8_t binary_fingerprint[16]; // = {0xC4,0xBC,0x78,0xCA,0x92,0xA3,0x23,0x03,0xD6,0x1D,0xFD,0xF7,0x26,0x3A,0x04,0xB3};
+  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
+  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
 
   Airavata_searchExperimentsByCreationTime_result(const Airavata_searchExperimentsByCreationTime_result&);
   Airavata_searchExperimentsByCreationTime_result& operator=(const Airavata_searchExperimentsByCreationTime_result&);
@@ -6451,14 +6447,14 @@ class Airavata_searchExperimentsByCreationTime_result {
   }
 
   virtual ~Airavata_searchExperimentsByCreationTime_result() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary>  success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_searchExperimentsByCreationTime_result__isset __isset;
 
-  void __set_success(const std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & val);
+  void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -6501,12 +6497,12 @@ typedef struct _Airavata_searchExperimentsByCreationTime_presult__isset {
 class Airavata_searchExperimentsByCreationTime_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "C4BC78CA92A32303D61DFDF7263A04B3";
-  static const uint8_t binary_fingerprint[16]; // = {0xC4,0xBC,0x78,0xCA,0x92,0xA3,0x23,0x03,0xD6,0x1D,0xFD,0xF7,0x26,0x3A,0x04,0xB3};
+  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
+  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
 
 
   virtual ~Airavata_searchExperimentsByCreationTime_presult() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> * success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -6610,8 +6606,8 @@ typedef struct _Airavata_searchExperimentsByCreationTimeWithPagination_result__i
 class Airavata_searchExperimentsByCreationTimeWithPagination_result {
  public:
 
-  static const char* ascii_fingerprint; // = "C4BC78CA92A32303D61DFDF7263A04B3";
-  static const uint8_t binary_fingerprint[16]; // = {0xC4,0xBC,0x78,0xCA,0x92,0xA3,0x23,0x03,0xD6,0x1D,0xFD,0xF7,0x26,0x3A,0x04,0xB3};
+  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
+  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
 
   Airavata_searchExperimentsByCreationTimeWithPagination_result(const Airavata_searchExperimentsByCreationTimeWithPagination_result&);
   Airavata_searchExperimentsByCreationTimeWithPagination_result& operator=(const Airavata_searchExperimentsByCreationTimeWithPagination_result&);
@@ -6619,14 +6615,14 @@ class Airavata_searchExperimentsByCreationTimeWithPagination_result {
   }
 
   virtual ~Airavata_searchExperimentsByCreationTimeWithPagination_result() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary>  success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_searchExperimentsByCreationTimeWithPagination_result__isset __isset;
 
-  void __set_success(const std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & val);
+  void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -6669,12 +6665,12 @@ typedef struct _Airavata_searchExperimentsByCreationTimeWithPagination_presult__
 class Airavata_searchExperimentsByCreationTimeWithPagination_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "C4BC78CA92A32303D61DFDF7263A04B3";
-  static const uint8_t binary_fingerprint[16]; // = {0xC4,0xBC,0x78,0xCA,0x92,0xA3,0x23,0x03,0xD6,0x1D,0xFD,0xF7,0x26,0x3A,0x04,0xB3};
+  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
+  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
 
 
   virtual ~Airavata_searchExperimentsByCreationTimeWithPagination_presult() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> * success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -6705,7 +6701,7 @@ class Airavata_searchExperiments_args {
   virtual ~Airavata_searchExperiments_args() throw();
   std::string gatewayId;
   std::string userName;
-  std::map< ::apache::airavata::model::workspace::experiment::ExperimentSearchFields::type, std::string>  filters;
+  std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string>  filters;
   int32_t limit;
   int32_t offset;
 
@@ -6715,7 +6711,7 @@ class Airavata_searchExperiments_args {
 
   void __set_userName(const std::string& val);
 
-  void __set_filters(const std::map< ::apache::airavata::model::workspace::experiment::ExperimentSearchFields::type, std::string> & val);
+  void __set_filters(const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & val);
 
   void __set_limit(const int32_t val);
 
@@ -6758,7 +6754,7 @@ class Airavata_searchExperiments_pargs {
   virtual ~Airavata_searchExperiments_pargs() throw();
   const std::string* gatewayId;
   const std::string* userName;
-  const std::map< ::apache::airavata::model::workspace::experiment::ExperimentSearchFields::type, std::string> * filters;
+  const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> * filters;
   const int32_t* limit;
   const int32_t* offset;
 
@@ -6778,8 +6774,8 @@ typedef struct _Airavata_searchExperiments_result__isset {
 class Airavata_searchExperiments_result {
  public:
 
-  static const char* ascii_fingerprint; // = "C4BC78CA92A32303D61DFDF7263A04B3";
-  static const uint8_t binary_fingerprint[16]; // = {0xC4,0xBC,0x78,0xCA,0x92,0xA3,0x23,0x03,0xD6,0x1D,0xFD,0xF7,0x26,0x3A,0x04,0xB3};
+  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
+  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
 
   Airavata_searchExperiments_result(const Airavata_searchExperiments_result&);
   Airavata_searchExperiments_result& operator=(const Airavata_searchExperiments_result&);
@@ -6787,14 +6783,14 @@ class Airavata_searchExperiments_result {
   }
 
   virtual ~Airavata_searchExperiments_result() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary>  success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_searchExperiments_result__isset __isset;
 
-  void __set_success(const std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & val);
+  void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -6837,12 +6833,12 @@ typedef struct _Airavata_searchExperiments_presult__isset {
 class Airavata_searchExperiments_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "C4BC78CA92A32303D61DFDF7263A04B3";
-  static const uint8_t binary_fingerprint[16]; // = {0xC4,0xBC,0x78,0xCA,0x92,0xA3,0x23,0x03,0xD6,0x1D,0xFD,0xF7,0x26,0x3A,0x04,0xB3};
+  static const char* ascii_fingerprint; // = "7001B7B9289164CB898AF0E0F4E6EE4A";
+  static const uint8_t binary_fingerprint[16]; // = {0x70,0x01,0xB7,0xB9,0x28,0x91,0x64,0xCB,0x89,0x8A,0xF0,0xE0,0xF4,0xE6,0xEE,0x4A};
 
 
   virtual ~Airavata_searchExperiments_presult() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> * success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -6928,8 +6924,8 @@ typedef struct _Airavata_getExperimentStatistics_result__isset {
 class Airavata_getExperimentStatistics_result {
  public:
 
-  static const char* ascii_fingerprint; // = "2C9764D6E86121F49BB9E1CCECEAFE39";
-  static const uint8_t binary_fingerprint[16]; // = {0x2C,0x97,0x64,0xD6,0xE8,0x61,0x21,0xF4,0x9B,0xB9,0xE1,0xCC,0xEC,0xEA,0xFE,0x39};
+  static const char* ascii_fingerprint; // = "273BA5B71C4B86001CF63C2B2FE6CEA4";
+  static const uint8_t binary_fingerprint[16]; // = {0x27,0x3B,0xA5,0xB7,0x1C,0x4B,0x86,0x00,0x1C,0xF6,0x3C,0x2B,0x2F,0xE6,0xCE,0xA4};
 
   Airavata_getExperimentStatistics_result(const Airavata_getExperimentStatistics_result&);
   Airavata_getExperimentStatistics_result& operator=(const Airavata_getExperimentStatistics_result&);
@@ -6937,14 +6933,14 @@ class Airavata_getExperimentStatistics_result {
   }
 
   virtual ~Airavata_getExperimentStatistics_result() throw();
-   ::apache::airavata::model::workspace::experiment::ExperimentStatistics success;
+   ::apache::airavata::model::experiment::ExperimentStatistics success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getExperimentStatistics_result__isset __isset;
 
-  void __set_success(const  ::apache::airavata::model::workspace::experiment::ExperimentStatistics& val);
+  void __set_success(const  ::apache::airavata::model::experiment::ExperimentStatistics& val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -6987,12 +6983,12 @@ typedef struct _Airavata_getExperimentStatistics_presult__isset {
 class Airavata_getExperimentStatistics_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "2C9764D6E86121F49BB9E1CCECEAFE39";
-  static const uint8_t binary_fingerprint[16]; // = {0x2C,0x97,0x64,0xD6,0xE8,0x61,0x21,0xF4,0x9B,0xB9,0xE1,0xCC,0xEC,0xEA,0xFE,0x39};
+  static const char* ascii_fingerprint; // = "273BA5B71C4B86001CF63C2B2FE6CEA4";
+  static const uint8_t binary_fingerprint[16]; // = {0x27,0x3B,0xA5,0xB7,0x1C,0x4B,0x86,0x00,0x1C,0xF6,0x3C,0x2B,0x2F,0xE6,0xCE,0xA4};
 
 
   virtual ~Airavata_getExperimentStatistics_presult() throw();
-   ::apache::airavata::model::workspace::experiment::ExperimentStatistics* success;
+   ::apache::airavata::model::experiment::ExperimentStatistics* success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -7067,8 +7063,8 @@ typedef struct _Airavata_getAllExperimentsInProject_result__isset {
 class Airavata_getAllExperimentsInProject_result {
  public:
 
-  static const char* ascii_fingerprint; // = "41576D99B3DCFAAD6CAD4D6AB133DFE2";
-  static const uint8_t binary_fingerprint[16]; // = {0x41,0x57,0x6D,0x99,0xB3,0xDC,0xFA,0xAD,0x6C,0xAD,0x4D,0x6A,0xB1,0x33,0xDF,0xE2};
+  static const char* ascii_fingerprint; // = "6B4769CBA7068AF3BD2B200CE0A4C648";
+  static const uint8_t binary_fingerprint[16]; // = {0x6B,0x47,0x69,0xCB,0xA7,0x06,0x8A,0xF3,0xBD,0x2B,0x20,0x0C,0xE0,0xA4,0xC6,0x48};
 
   Airavata_getAllExperimentsInProject_result(const Airavata_getAllExperimentsInProject_result&);
   Airavata_getAllExperimentsInProject_result& operator=(const Airavata_getAllExperimentsInProject_result&);
@@ -7076,7 +7072,7 @@ class Airavata_getAllExperimentsInProject_result {
   }
 
   virtual ~Airavata_getAllExperimentsInProject_result() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::Experiment>  success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentModel>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -7084,7 +7080,7 @@ class Airavata_getAllExperimentsInProject_result {
 
   _Airavata_getAllExperimentsInProject_result__isset __isset;
 
-  void __set_success(const std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & val);
+  void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentModel> & val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -7132,12 +7128,12 @@ typedef struct _Airavata_getAllExperimentsInProject_presult__isset {
 class Airavata_getAllExperimentsInProject_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "41576D99B3DCFAAD6CAD4D6AB133DFE2";
-  static const uint8_t binary_fingerprint[16]; // = {0x41,0x57,0x6D,0x99,0xB3,0xDC,0xFA,0xAD,0x6C,0xAD,0x4D,0x6A,0xB1,0x33,0xDF,0xE2};
+  static const char* ascii_fingerprint; // = "6B4769CBA7068AF3BD2B200CE0A4C648";
+  static const uint8_t binary_fingerprint[16]; // = {0x6B,0x47,0x69,0xCB,0xA7,0x06,0x8A,0xF3,0xBD,0x2B,0x20,0x0C,0xE0,0xA4,0xC6,0x48};
 
 
   virtual ~Airavata_getAllExperimentsInProject_presult() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::Experiment> * success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentModel> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -7225,8 +7221,8 @@ typedef struct _Airavata_getAllExperimentsInProjectWithPagination_result__isset 
 class Airavata_getAllExperimentsInProjectWithPagination_result {
  public:
 
-  static const char* ascii_fingerprint; // = "41576D99B3DCFAAD6CAD4D6AB133DFE2";
-  static const uint8_t binary_fingerprint[16]; // = {0x41,0x57,0x6D,0x99,0xB3,0xDC,0xFA,0xAD,0x6C,0xAD,0x4D,0x6A,0xB1,0x33,0xDF,0xE2};
+  static const char* ascii_fingerprint; // = "6B4769CBA7068AF3BD2B200CE0A4C648";
+  static const uint8_t binary_fingerprint[16]; // = {0x6B,0x47,0x69,0xCB,0xA7,0x06,0x8A,0xF3,0xBD,0x2B,0x20,0x0C,0xE0,0xA4,0xC6,0x48};
 
   Airavata_getAllExperimentsInProjectWithPagination_result(const Airavata_getAllExperimentsInProjectWithPagination_result&);
   Airavata_getAllExperimentsInProjectWithPagination_result& operator=(const Airavata_getAllExperimentsInProjectWithPagination_result&);
@@ -7234,7 +7230,7 @@ class Airavata_getAllExperimentsInProjectWithPagination_result {
   }
 
   virtual ~Airavata_getAllExperimentsInProjectWithPagination_result() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::Experiment>  success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentModel>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -7242,7 +7238,7 @@ class Airavata_getAllExperimentsInProjectWithPagination_result {
 
   _Airavata_getAllExperimentsInProjectWithPagination_result__isset __isset;
 
-  void __set_success(const std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & val);
+  void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentModel> & val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -7290,12 +7286,12 @@ typedef struct _Airavata_getAllExperimentsInProjectWithPagination_presult__isset
 class Airavata_getAllExperimentsInProjectWithPagination_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "41576D99B3DCFAAD6CAD4D6AB133DFE2";
-  static const uint8_t binary_fingerprint[16]; // = {0x41,0x57,0x6D,0x99,0xB3,0xDC,0xFA,0xAD,0x6C,0xAD,0x4D,0x6A,0xB1,0x33,0xDF,0xE2};
+  static const char* ascii_fingerprint; // = "6B4769CBA7068AF3BD2B200CE0A4C648";
+  static const uint8_t binary_fingerprint[16]; // = {0x6B,0x47,0x69,0xCB,0xA7,0x06,0x8A,0xF3,0xBD,0x2B,0x20,0x0C,0xE0,0xA4,0xC6,0x48};
 
 
   virtual ~Airavata_getAllExperimentsInProjectWithPagination_presult() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::Experiment> * success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentModel> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -7376,8 +7372,8 @@ typedef struct _Airavata_getAllUserExperiments_result__isset {
 class Airavata_getAllUserExperiments_result {
  public:
 
-  static const char* ascii_fingerprint; // = "604785897417B94CC709253F2B52CB8D";
-  static const uint8_t binary_fingerprint[16]; // = {0x60,0x47,0x85,0x89,0x74,0x17,0xB9,0x4C,0xC7,0x09,0x25,0x3F,0x2B,0x52,0xCB,0x8D};
+  static const char* ascii_fingerprint; // = "7F8F5E54F1D3996A9D4B47B330B0655D";
+  static const uint8_t binary_fingerprint[16]; // = {0x7F,0x8F,0x5E,0x54,0xF1,0xD3,0x99,0x6A,0x9D,0x4B,0x47,0xB3,0x30,0xB0,0x65,0x5D};
 
   Airavata_getAllUserExperiments_result(const Airavata_getAllUserExperiments_result&);
   Airavata_getAllUserExperiments_result& operator=(const Airavata_getAllUserExperiments_result&);
@@ -7385,14 +7381,14 @@ class Airavata_getAllUserExperiments_result {
   }
 
   virtual ~Airavata_getAllUserExperiments_result() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::Experiment>  success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentModel>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getAllUserExperiments_result__isset __isset;
 
-  void __set_success(const std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & val);
+  void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentModel> & val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -7435,12 +7431,12 @@ typedef struct _Airavata_getAllUserExperiments_presult__isset {
 class Airavata_getAllUserExperiments_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "604785897417B94CC709253F2B52CB8D";
-  static const uint8_t binary_fingerprint[16]; // = {0x60,0x47,0x85,0x89,0x74,0x17,0xB9,0x4C,0xC7,0x09,0x25,0x3F,0x2B,0x52,0xCB,0x8D};
+  static const char* ascii_fingerprint; // = "7F8F5E54F1D3996A9D4B47B330B0655D";
+  static const uint8_t binary_fingerprint[16]; // = {0x7F,0x8F,0x5E,0x54,0xF1,0xD3,0x99,0x6A,0x9D,0x4B,0x47,0xB3,0x30,0xB0,0x65,0x5D};
 
 
   virtual ~Airavata_getAllUserExperiments_presult() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::Experiment> * success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentModel> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -7532,8 +7528,8 @@ typedef struct _Airavata_getAllUserExperimentsWithPagination_result__isset {
 class Airavata_getAllUserExperimentsWithPagination_result {
  public:
 
-  static const char* ascii_fingerprint; // = "604785897417B94CC709253F2B52CB8D";
-  static const uint8_t binary_fingerprint[16]; // = {0x60,0x47,0x85,0x89,0x74,0x17,0xB9,0x4C,0xC7,0x09,0x25,0x3F,0x2B,0x52,0xCB,0x8D};
+  static const char* ascii_fingerprint; // = "7F8F5E54F1D3996A9D4B47B330B0655D";
+  static const uint8_t binary_fingerprint[16]; // = {0x7F,0x8F,0x5E,0x54,0xF1,0xD3,0x99,0x6A,0x9D,0x4B,0x47,0xB3,0x30,0xB0,0x65,0x5D};
 
   Airavata_getAllUserExperimentsWithPagination_result(const Airavata_getAllUserExperimentsWithPagination_result&);
   Airavata_getAllUserExperimentsWithPagination_result& operator=(const Airavata_getAllUserExperimentsWithPagination_result&);
@@ -7541,14 +7537,14 @@ class Airavata_getAllUserExperimentsWithPagination_result {
   }
 
   virtual ~Airavata_getAllUserExperimentsWithPagination_result() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::Experiment>  success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentModel>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getAllUserExperimentsWithPagination_result__isset __isset;
 
-  void __set_success(const std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & val);
+  void __set_success(const std::vector< ::apache::airavata::model::experiment::ExperimentModel> & val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -7591,12 +7587,12 @@ typedef struct _Airavata_getAllUserExperimentsWithPagination_presult__isset {
 class Airavata_getAllUserExperimentsWithPagination_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "604785897417B94CC709253F2B52CB8D";
-  static const uint8_t binary_fingerprint[16]; // = {0x60,0x47,0x85,0x89,0x74,0x17,0xB9,0x4C,0xC7,0x09,0x25,0x3F,0x2B,0x52,0xCB,0x8D};
+  static const char* ascii_fingerprint; // = "7F8F5E54F1D3996A9D4B47B330B0655D";
+  static const uint8_t binary_fingerprint[16]; // = {0x7F,0x8F,0x5E,0x54,0xF1,0xD3,0x99,0x6A,0x9D,0x4B,0x47,0xB3,0x30,0xB0,0x65,0x5D};
 
 
   virtual ~Airavata_getAllUserExperimentsWithPagination_presult() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::Experiment> * success;
+  std::vector< ::apache::airavata::model::experiment::ExperimentModel> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -7612,8 +7608,8 @@ class Airavata_getAllUserExperimentsWithPagination_presult {
 class Airavata_createExperiment_args {
  public:
 
-  static const char* ascii_fingerprint; // = "C58FE3632FD229B69FCF3D7C3CF5C880";
-  static const uint8_t binary_fingerprint[16]; // = {0xC5,0x8F,0xE3,0x63,0x2F,0xD2,0x29,0xB6,0x9F,0xCF,0x3D,0x7C,0x3C,0xF5,0xC8,0x80};
+  static const char* ascii_fingerprint; // = "F1584918A7370E4CF77D731E4B386990";
+  static const uint8_t binary_fingerprint[16]; // = {0xF1,0x58,0x49,0x18,0xA7,0x37,0x0E,0x4C,0xF7,0x7D,0x73,0x1E,0x4B,0x38,0x69,0x90};
 
   Airavata_createExperiment_args(const Airavata_createExperiment_args&);
   Airavata_createExperiment_args& operator=(const Airavata_createExperiment_args&);
@@ -7622,11 +7618,11 @@ class Airavata_createExperiment_args {
 
   virtual ~Airavata_createExperiment_args() throw();
   std::string gatewayId;
-   ::apache::airavata::model::workspace::experiment::Experiment experiment;
+   ::apache::airavata::model::experiment::ExperimentModel experiment;
 
   void __set_gatewayId(const std::string& val);
 
-  void __set_experiment(const  ::apache::airavata::model::workspace::experiment::Experiment& val);
+  void __set_experiment(const  ::apache::airavata::model::experiment::ExperimentModel& val);
 
   bool operator == (const Airavata_createExperiment_args & rhs) const
   {
@@ -7652,13 +7648,13 @@ class Airavata_createExperiment_args {
 class Airavata_createExperiment_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "C58FE3632FD229B69FCF3D7C3CF5C880";
-  static const uint8_t binary_fingerprint[16]; // = {0xC5,0x8F,0xE3,0x63,0x2F,0xD2,0x29,0xB6,0x9F,0xCF,0x3D,0x7C,0x3C,0xF5,0xC8,0x80};
+  static const char* ascii_fingerprint; // = "F1584918A7370E4CF77D731E4B386990";
+  static const uint8_t binary_fingerprint[16]; // = {0xF1,0x58,0x49,0x18,0xA7,0x37,0x0E,0x4C,0xF7,0x7D,0x73,0x1E,0x4B,0x38,0x69,0x90};
 
 
   virtual ~Airavata_createExperiment_pargs() throw();
   const std::string* gatewayId;
-  const  ::apache::airavata::model::workspace::experiment::Experiment* experiment;
+  const  ::apache::airavata::model::experiment::ExperimentModel* experiment;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -7815,8 +7811,8 @@ typedef struct _Airavata_getExperiment_result__isset {
 class Airavata_getExperiment_result {
  public:
 
-  static const char* ascii_fingerprint; // = "E5C7F34D41DEE2D37F02D64EA9EE7C04";
-  static const uint8_t binary_fingerprint[16]; // = {0xE5,0xC7,0xF3,0x4D,0x41,0xDE,0xE2,0xD3,0x7F,0x02,0xD6,0x4E,0xA9,0xEE,0x7C,0x04};
+  static const char* ascii_fingerprint; // = "B32084B61EFF58B48AE85AFCA19D92D5";
+  static const uint8_t binary_fingerprint[16]; // = {0xB3,0x20,0x84,0xB6,0x1E,0xFF,0x58,0xB4,0x8A,0xE8,0x5A,0xFC,0xA1,0x9D,0x92,0xD5};
 
   Airavata_getExperiment_result(const Airavata_getExperiment_result&);
   Airavata_getExperiment_result& operator=(const Airavata_getExperiment_result&);
@@ -7824,7 +7820,7 @@ class Airavata_getExperiment_result {
   }
 
   virtual ~Airavata_getExperiment_result() throw();
-   ::apache::airavata::model::workspace::experiment::Experiment success;
+   ::apache::airavata::model::experiment::ExperimentModel success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::ExperimentNotFoundException enf;
    ::apache::airavata::api::error::AiravataClientException ace;
@@ -7832,7 +7828,7 @@ class Airavata_getExperiment_result {
 
   _Airavata_getExperiment_result__isset __isset;
 
-  void __set_success(const  ::apache::airavata::model::workspace::experiment::Experiment& val);
+  void __set_success(const  ::apache::airavata::model::experiment::ExperimentModel& val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -7880,12 +7876,12 @@ typedef struct _Airavata_getExperiment_presult__isset {
 class Airavata_getExperiment_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "E5C7F34D41DEE2D37F02D64EA9EE7C04";
-  static const uint8_t binary_fingerprint[16]; // = {0xE5,0xC7,0xF3,0x4D,0x41,0xDE,0xE2,0xD3,0x7F,0x02,0xD6,0x4E,0xA9,0xEE,0x7C,0x04};
+  static const char* ascii_fingerprint; // = "B32084B61EFF58B48AE85AFCA19D92D5";
+  static const uint8_t binary_fingerprint[16]; // = {0xB3,0x20,0x84,0xB6,0x1E,0xFF,0x58,0xB4,0x8A,0xE8,0x5A,0xFC,0xA1,0x9D,0x92,0xD5};
 
 
   virtual ~Airavata_getExperiment_presult() throw();
-   ::apache::airavata::model::workspace::experiment::Experiment* success;
+   ::apache::airavata::model::experiment::ExperimentModel* success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::ExperimentNotFoundException enf;
    ::apache::airavata::api::error::AiravataClientException ace;
@@ -7902,8 +7898,8 @@ class Airavata_getExperiment_presult {
 class Airavata_updateExperiment_args {
  public:
 
-  static const char* ascii_fingerprint; // = "C58FE3632FD229B69FCF3D7C3CF5C880";
-  static const uint8_t binary_fingerprint[16]; // = {0xC5,0x8F,0xE3,0x63,0x2F,0xD2,0x29,0xB6,0x9F,0xCF,0x3D,0x7C,0x3C,0xF5,0xC8,0x80};
+  static const char* ascii_fingerprint; // = "F1584918A7370E4CF77D731E4B386990";
+  static const uint8_t binary_fingerprint[16]; // = {0xF1,0x58,0x49,0x18,0xA7,0x37,0x0E,0x4C,0xF7,0x7D,0x73,0x1E,0x4B,0x38,0x69,0x90};
 
   Airavata_updateExperiment_args(const Airavata_updateExperiment_args&);
   Airavata_updateExperiment_args& operator=(const Airavata_updateExperiment_args&);
@@ -7912,11 +7908,11 @@ class Airavata_updateExperiment_args {
 
   virtual ~Airavata_updateExperiment_args() throw();
   std::string airavataExperimentId;
-   ::apache::airavata::model::workspace::experiment::Experiment experiment;
+   ::apache::airavata::model::experiment::ExperimentModel experiment;
 
   void __set_airavataExperimentId(const std::string& val);
 
-  void __set_experiment(const  ::apache::airavata::model::workspace::experiment::Experiment& val);
+  void __set_experiment(const  ::apache::airavata::model::experiment::ExperimentModel& val);
 
   bool operator == (const Airavata_updateExperiment_args & rhs) const
   {
@@ -7942,13 +7938,13 @@ class Airavata_updateExperiment_args {
 class Airavata_updateExperiment_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "C58FE3632FD229B69FCF3D7C3CF5C880";
-  static const uint8_t binary_fingerprint[16]; // = {0xC5,0x8F,0xE3,0x63,0x2F,0xD2,0x29,0xB6,0x9F,0xCF,0x3D,0x7C,0x3C,0xF5,0xC8,0x80};
+  static const char* ascii_fingerprint; // = "F1584918A7370E4CF77D731E4B386990";
+  static const uint8_t binary_fingerprint[16]; // = {0xF1,0x58,0x49,0x18,0xA7,0x37,0x0E,0x4C,0xF7,0x7D,0x73,0x1E,0x4B,0x38,0x69,0x90};
 
 
   virtual ~Airavata_updateExperiment_pargs() throw();
   const std::string* airavataExperimentId;
-  const  ::apache::airavata::model::workspace::experiment::Experiment* experiment;
+  const  ::apache::airavata::model::experiment::ExperimentModel* experiment;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -8046,8 +8042,8 @@ class Airavata_updateExperiment_presult {
 class Airavata_updateExperimentConfiguration_args {
  public:
 
-  static const char* ascii_fingerprint; // = "84493E49A74912F49FA7509821557949";
-  static const uint8_t binary_fingerprint[16]; // = {0x84,0x49,0x3E,0x49,0xA7,0x49,0x12,0xF4,0x9F,0xA7,0x50,0x98,0x21,0x55,0x79,0x49};
+  static const char* ascii_fingerprint; // = "723AFB51C95762BE1744010484E7DA73";
+  static const uint8_t binary_fingerprint[16]; // = {0x72,0x3A,0xFB,0x51,0xC9,0x57,0x62,0xBE,0x17,0x44,0x01,0x04,0x84,0xE7,0xDA,0x73};
 
   Airavata_updateExperimentConfiguration_args(const Airavata_updateExperimentConfiguration_args&);
   Airavata_updateExperimentConfiguration_args& operator=(const Airavata_updateExperimentConfiguration_args&);
@@ -8056,11 +8052,11 @@ class Airavata_updateExperimentConfiguration_args {
 
   virtual ~Airavata_updateExperimentConfiguration_args() throw();
   std::string airavataExperimentId;
-   ::apache::airavata::model::workspace::experiment::UserConfigurationData userConfiguration;
+   ::apache::airavata::model::experiment::UserConfigurationDataModel userConfiguration;
 
   void __set_airavataExperimentId(const std::string& val);
 
-  void __set_userConfiguration(const  ::apache::airavata::model::workspace::experiment::UserConfigurationData& val);
+  void __set_userConfiguration(const  ::apache::airavata::model::experiment::UserConfigurationDataModel& val);
 
   bool operator == (const Airavata_updateExperimentConfiguration_args & rhs) const
   {
@@ -8086,13 +8082,13 @@ class Airavata_updateExperimentConfiguration_args {
 class Airavata_updateExperimentConfiguration_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "84493E49A74912F49FA7509821557949";
-  static const uint8_t binary_fingerprint[16]; // = {0x84,0x49,0x3E,0x49,0xA7,0x49,0x12,0xF4,0x9F,0xA7,0x50,0x98,0x21,0x55,0x79,0x49};
+  static const char* ascii_fingerprint; // = "723AFB51C95762BE1744010484E7DA73";
+  static const uint8_t binary_fingerprint[16]; // = {0x72,0x3A,0xFB,0x51,0xC9,0x57,0x62,0xBE,0x17,0x44,0x01,0x04,0x84,0xE7,0xDA,0x73};
 
 
   virtual ~Airavata_updateExperimentConfiguration_pargs() throw();
   const std::string* airavataExperimentId;
-  const  ::apache::airavata::model::workspace::experiment::UserConfigurationData* userConfiguration;
+  const  ::apache::airavata::model::experiment::UserConfigurationDataModel* userConfiguration;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -8148,8 +8144,8 @@ class Airavata_updateExperimentConfiguration_presult {
 class Airavata_updateResourceScheduleing_args {
  public:
 
-  static const char* ascii_fingerprint; // = "47142E1C1085EB1F558651FC01A325C5";
-  static const uint8_t binary_fingerprint[16]; // = {0x47,0x14,0x2E,0x1C,0x10,0x85,0xEB,0x1F,0x55,0x86,0x51,0xFC,0x01,0xA3,0x25,0xC5};
+  static const char* ascii_fingerprint; // = "1EAC5194A77E95F02DDCE08D538CB197";
+  static const uint8_t binary_fingerprint[16]; // = {0x1E,0xAC,0x51,0x94,0xA7,0x7E,0x95,0xF0,0x2D,0xDC,0xE0,0x8D,0x53,0x8C,0xB1,0x97};
 
   Airavata_updateResourceScheduleing_args(const Airavata_updateResourceScheduleing_args&);
   Airavata_updateResourceScheduleing_args& operator=(const Airavata_updateResourceScheduleing_args&);
@@ -8158,11 +8154,11 @@ class Airavata_updateResourceScheduleing_args {
 
   virtual ~Airavata_updateResourceScheduleing_args() throw();
   std::string airavataExperimentId;
-   ::apache::airavata::model::workspace::experiment::ComputationalResourceScheduling resourceScheduling;
+   ::apache::airavata::model::scheduling::ComputationalResourceSchedulingModel resourceScheduling;
 
   void __set_airavataExperimentId(const std::string& val);
 
-  void __set_resourceScheduling(const  ::apache::airavata::model::workspace::experiment::ComputationalResourceScheduling& val);
+  void __set_resourceScheduling(const  ::apache::airavata::model::scheduling::ComputationalResourceSchedulingModel& val);
 
   bool operator == (const Airavata_updateResourceScheduleing_args & rhs) const
   {
@@ -8188,13 +8184,13 @@ class Airavata_updateResourceScheduleing_args {
 class Airavata_updateResourceScheduleing_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "47142E1C1085EB1F558651FC01A325C5";
-  static const uint8_t binary_fingerprint[16]; // = {0x47,0x14,0x2E,0x1C,0x10,0x85,0xEB,0x1F,0x55,0x86,0x51,0xFC,0x01,0xA3,0x25,0xC5};
+  static const char* ascii_fingerprint; // = "1EAC5194A77E95F02DDCE08D538CB197";
+  static const uint8_t binary_fingerprint[16]; // = {0x1E,0xAC,0x51,0x94,0xA7,0x7E,0x95,0xF0,0x2D,0xDC,0xE0,0x8D,0x53,0x8C,0xB1,0x97};
 
 
   virtual ~Airavata_updateResourceScheduleing_pargs() throw();
   const std::string* airavataExperimentId;
-  const  ::apache::airavata::model::workspace::experiment::ComputationalResourceScheduling* resourceScheduling;
+  const  ::apache::airavata::model::scheduling::ComputationalResourceSchedulingModel* resourceScheduling;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -8450,19 +8446,18 @@ class Airavata_launchExperiment_pargs {
 };
 
 typedef struct _Airavata_launchExperiment_result__isset {
-  _Airavata_launchExperiment_result__isset() : ire(false), enf(false), ace(false), ase(false), lve(false) {}
+  _Airavata_launchExperiment_result__isset() : ire(false), enf(false), ace(false), ase(false) {}
   bool ire :1;
   bool enf :1;
   bool ace :1;
   bool ase :1;
-  bool lve :1;
 } _Airavata_launchExperiment_result__isset;
 
 class Airavata_launchExperiment_result {
  public:
 
-  static const char* ascii_fingerprint; // = "674D8B0A4324C1C58DDDD900B01F1024";
-  static const uint8_t binary_fingerprint[16]; // = {0x67,0x4D,0x8B,0x0A,0x43,0x24,0xC1,0xC5,0x8D,0xDD,0xD9,0x00,0xB0,0x1F,0x10,0x24};
+  static const char* ascii_fingerprint; // = "7A9AC13576AC44E67F29C5C4C3EF591E";
+  static const uint8_t binary_fingerprint[16]; // = {0x7A,0x9A,0xC1,0x35,0x76,0xAC,0x44,0xE6,0x7F,0x29,0xC5,0xC4,0xC3,0xEF,0x59,0x1E};
 
   Airavata_launchExperiment_result(const Airavata_launchExperiment_result&);
   Airavata_launchExperiment_result& operator=(const Airavata_launchExperiment_result&);
@@ -8474,7 +8469,6 @@ class Airavata_launchExperiment_result {
    ::apache::airavata::api::error::ExperimentNotFoundException enf;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::LaunchValidationException lve;
 
   _Airavata_launchExperiment_result__isset __isset;
 
@@ -8486,8 +8480,6 @@ class Airavata_launchExperiment_result {
 
   void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
 
-  void __set_lve(const  ::apache::airavata::api::error::LaunchValidationException& val);
-
   bool operator == (const Airavata_launchExperiment_result & rhs) const
   {
     if (!(ire == rhs.ire))
@@ -8497,8 +8489,6 @@ class Airavata_launchExperiment_result {
     if (!(ace == rhs.ace))
       return false;
     if (!(ase == rhs.ase))
-      return false;
-    if (!(lve == rhs.lve))
       return false;
     return true;
   }
@@ -8515,19 +8505,18 @@ class Airavata_launchExperiment_result {
 };
 
 typedef struct _Airavata_launchExperiment_presult__isset {
-  _Airavata_launchExperiment_presult__isset() : ire(false), enf(false), ace(false), ase(false), lve(false) {}
+  _Airavata_launchExperiment_presult__isset() : ire(false), enf(false), ace(false), ase(false) {}
   bool ire :1;
   bool enf :1;
   bool ace :1;
   bool ase :1;
-  bool lve :1;
 } _Airavata_launchExperiment_presult__isset;
 
 class Airavata_launchExperiment_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "674D8B0A4324C1C58DDDD900B01F1024";
-  static const uint8_t binary_fingerprint[16]; // = {0x67,0x4D,0x8B,0x0A,0x43,0x24,0xC1,0xC5,0x8D,0xDD,0xD9,0x00,0xB0,0x1F,0x10,0x24};
+  static const char* ascii_fingerprint; // = "7A9AC13576AC44E67F29C5C4C3EF591E";
+  static const uint8_t binary_fingerprint[16]; // = {0x7A,0x9A,0xC1,0x35,0x76,0xAC,0x44,0xE6,0x7F,0x29,0xC5,0xC4,0xC3,0xEF,0x59,0x1E};
 
 
   virtual ~Airavata_launchExperiment_presult() throw();
@@ -8535,7 +8524,6 @@ class Airavata_launchExperiment_presult {
    ::apache::airavata::api::error::ExperimentNotFoundException enf;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
-   ::apache::airavata::api::error::LaunchValidationException lve;
 
   _Airavata_launchExperiment_presult__isset __isset;
 
@@ -8607,8 +8595,8 @@ typedef struct _Airavata_getExperimentStatus_result__isset {
 class Airavata_getExperimentStatus_result {
  public:
 
-  static const char* ascii_fingerprint; // = "B1E7D1A6BF1BF52B4EBB6301CC20398E";
-  static const uint8_t binary_fingerprint[16]; // = {0xB1,0xE7,0xD1,0xA6,0xBF,0x1B,0xF5,0x2B,0x4E,0xBB,0x63,0x01,0xCC,0x20,0x39,0x8E};
+  static const char* ascii_fingerprint; // = "59F19E1FE513D47ECAB28E18CC53FAC9";
+  static const uint8_t binary_fingerprint[16]; // = {0x59,0xF1,0x9E,0x1F,0xE5,0x13,0xD4,0x7E,0xCA,0xB2,0x8E,0x18,0xCC,0x53,0xFA,0xC9};
 
   Airavata_getExperimentStatus_result(const Airavata_getExperimentStatus_result&);
   Airavata_getExperimentStatus_result& operator=(const Airavata_getExperimentStatus_result&);
@@ -8616,7 +8604,7 @@ class Airavata_getExperimentStatus_result {
   }
 
   virtual ~Airavata_getExperimentStatus_result() throw();
-   ::apache::airavata::model::workspace::experiment::ExperimentStatus success;
+   ::apache::airavata::model::status::ExperimentStatus success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::ExperimentNotFoundException enf;
    ::apache::airavata::api::error::AiravataClientException ace;
@@ -8624,7 +8612,7 @@ class Airavata_getExperimentStatus_result {
 
   _Airavata_getExperimentStatus_result__isset __isset;
 
-  void __set_success(const  ::apache::airavata::model::workspace::experiment::ExperimentStatus& val);
+  void __set_success(const  ::apache::airavata::model::status::ExperimentStatus& val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -8672,12 +8660,12 @@ typedef struct _Airavata_getExperimentStatus_presult__isset {
 class Airavata_getExperimentStatus_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "B1E7D1A6BF1BF52B4EBB6301CC20398E";
-  static const uint8_t binary_fingerprint[16]; // = {0xB1,0xE7,0xD1,0xA6,0xBF,0x1B,0xF5,0x2B,0x4E,0xBB,0x63,0x01,0xCC,0x20,0x39,0x8E};
+  static const char* ascii_fingerprint; // = "59F19E1FE513D47ECAB28E18CC53FAC9";
+  static const uint8_t binary_fingerprint[16]; // = {0x59,0xF1,0x9E,0x1F,0xE5,0x13,0xD4,0x7E,0xCA,0xB2,0x8E,0x18,0xCC,0x53,0xFA,0xC9};
 
 
   virtual ~Airavata_getExperimentStatus_presult() throw();
-   ::apache::airavata::model::workspace::experiment::ExperimentStatus* success;
+   ::apache::airavata::model::status::ExperimentStatus* success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::ExperimentNotFoundException enf;
    ::apache::airavata::api::error::AiravataClientException ace;
@@ -8762,7 +8750,7 @@ class Airavata_getExperimentOutputs_result {
   }
 
   virtual ~Airavata_getExperimentOutputs_result() throw();
-  std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType>  success;
+  std::vector< ::apache::airavata::model::application::io::OutputDataObjectType>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::ExperimentNotFoundException enf;
    ::apache::airavata::api::error::AiravataClientException ace;
@@ -8770,7 +8758,7 @@ class Airavata_getExperimentOutputs_result {
 
   _Airavata_getExperimentOutputs_result__isset __isset;
 
-  void __set_success(const std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & val);
+  void __set_success(const std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -8823,7 +8811,7 @@ class Airavata_getExperimentOutputs_presult {
 
 
   virtual ~Airavata_getExperimentOutputs_presult() throw();
-  std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> * success;
+  std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::ExperimentNotFoundException enf;
    ::apache::airavata::api::error::AiravataClientException ace;
@@ -8908,7 +8896,7 @@ class Airavata_getIntermediateOutputs_result {
   }
 
   virtual ~Airavata_getIntermediateOutputs_result() throw();
-  std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType>  success;
+  std::vector< ::apache::airavata::model::application::io::OutputDataObjectType>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::ExperimentNotFoundException enf;
    ::apache::airavata::api::error::AiravataClientException ace;
@@ -8916,7 +8904,7 @@ class Airavata_getIntermediateOutputs_result {
 
   _Airavata_getIntermediateOutputs_result__isset __isset;
 
-  void __set_success(const std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & val);
+  void __set_success(const std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -8969,7 +8957,7 @@ class Airavata_getIntermediateOutputs_presult {
 
 
   virtual ~Airavata_getIntermediateOutputs_presult() throw();
-  std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> * success;
+  std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::ExperimentNotFoundException enf;
    ::apache::airavata::api::error::AiravataClientException ace;
@@ -9045,8 +9033,8 @@ typedef struct _Airavata_getJobStatuses_result__isset {
 class Airavata_getJobStatuses_result {
  public:
 
-  static const char* ascii_fingerprint; // = "26102D0F8F1089460C344264EA4C99A0";
-  static const uint8_t binary_fingerprint[16]; // = {0x26,0x10,0x2D,0x0F,0x8F,0x10,0x89,0x46,0x0C,0x34,0x42,0x64,0xEA,0x4C,0x99,0xA0};
+  static const char* ascii_fingerprint; // = "81FA55BEAD909CC30303F7AFE21F0D19";
+  static const uint8_t binary_fingerprint[16]; // = {0x81,0xFA,0x55,0xBE,0xAD,0x90,0x9C,0xC3,0x03,0x03,0xF7,0xAF,0xE2,0x1F,0x0D,0x19};
 
   Airavata_getJobStatuses_result(const Airavata_getJobStatuses_result&);
   Airavata_getJobStatuses_result& operator=(const Airavata_getJobStatuses_result&);
@@ -9054,7 +9042,7 @@ class Airavata_getJobStatuses_result {
   }
 
   virtual ~Airavata_getJobStatuses_result() throw();
-  std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus>  success;
+  std::map<std::string,  ::apache::airavata::model::status::JobStatus>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::ExperimentNotFoundException enf;
    ::apache::airavata::api::error::AiravataClientException ace;
@@ -9062,7 +9050,7 @@ class Airavata_getJobStatuses_result {
 
   _Airavata_getJobStatuses_result__isset __isset;
 
-  void __set_success(const std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & val);
+  void __set_success(const std::map<std::string,  ::apache::airavata::model::status::JobStatus> & val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -9110,12 +9098,12 @@ typedef struct _Airavata_getJobStatuses_presult__isset {
 class Airavata_getJobStatuses_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "26102D0F8F1089460C344264EA4C99A0";
-  static const uint8_t binary_fingerprint[16]; // = {0x26,0x10,0x2D,0x0F,0x8F,0x10,0x89,0x46,0x0C,0x34,0x42,0x64,0xEA,0x4C,0x99,0xA0};
+  static const char* ascii_fingerprint; // = "81FA55BEAD909CC30303F7AFE21F0D19";
+  static const uint8_t binary_fingerprint[16]; // = {0x81,0xFA,0x55,0xBE,0xAD,0x90,0x9C,0xC3,0x03,0x03,0xF7,0xAF,0xE2,0x1F,0x0D,0x19};
 
 
   virtual ~Airavata_getJobStatuses_presult() throw();
-  std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> * success;
+  std::map<std::string,  ::apache::airavata::model::status::JobStatus> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::ExperimentNotFoundException enf;
    ::apache::airavata::api::error::AiravataClientException ace;
@@ -9191,8 +9179,8 @@ typedef struct _Airavata_getJobDetails_result__isset {
 class Airavata_getJobDetails_result {
  public:
 
-  static const char* ascii_fingerprint; // = "D5C08110DA9D4DAFCA7E4AF912D89970";
-  static const uint8_t binary_fingerprint[16]; // = {0xD5,0xC0,0x81,0x10,0xDA,0x9D,0x4D,0xAF,0xCA,0x7E,0x4A,0xF9,0x12,0xD8,0x99,0x70};
+  static const char* ascii_fingerprint; // = "8668A2ED03B4303863FA7C2A96FD7502";
+  static const uint8_t binary_fingerprint[16]; // = {0x86,0x68,0xA2,0xED,0x03,0xB4,0x30,0x38,0x63,0xFA,0x7C,0x2A,0x96,0xFD,0x75,0x02};
 
   Airavata_getJobDetails_result(const Airavata_getJobDetails_result&);
   Airavata_getJobDetails_result& operator=(const Airavata_getJobDetails_result&);
@@ -9200,7 +9188,7 @@ class Airavata_getJobDetails_result {
   }
 
   virtual ~Airavata_getJobDetails_result() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::JobDetails>  success;
+  std::vector< ::apache::airavata::model::job::JobModel>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::ExperimentNotFoundException enf;
    ::apache::airavata::api::error::AiravataClientException ace;
@@ -9208,7 +9196,7 @@ class Airavata_getJobDetails_result {
 
   _Airavata_getJobDetails_result__isset __isset;
 
-  void __set_success(const std::vector< ::apache::airavata::model::workspace::experiment::JobDetails> & val);
+  void __set_success(const std::vector< ::apache::airavata::model::job::JobModel> & val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -9256,12 +9244,12 @@ typedef struct _Airavata_getJobDetails_presult__isset {
 class Airavata_getJobDetails_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "D5C08110DA9D4DAFCA7E4AF912D89970";
-  static const uint8_t binary_fingerprint[16]; // = {0xD5,0xC0,0x81,0x10,0xDA,0x9D,0x4D,0xAF,0xCA,0x7E,0x4A,0xF9,0x12,0xD8,0x99,0x70};
+  static const char* ascii_fingerprint; // = "8668A2ED03B4303863FA7C2A96FD7502";
+  static const uint8_t binary_fingerprint[16]; // = {0x86,0x68,0xA2,0xED,0x03,0xB4,0x30,0x38,0x63,0xFA,0x7C,0x2A,0x96,0xFD,0x75,0x02};
 
 
   virtual ~Airavata_getJobDetails_presult() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::JobDetails> * success;
+  std::vector< ::apache::airavata::model::job::JobModel> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::ExperimentNotFoundException enf;
    ::apache::airavata::api::error::AiravataClientException ace;
@@ -9272,152 +9260,6 @@ class Airavata_getJobDetails_presult {
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
   friend std::ostream& operator<<(std::ostream& out, const Airavata_getJobDetails_presult& obj);
-};
-
-
-class Airavata_getDataTransferDetails_args {
- public:
-
-  static const char* ascii_fingerprint; // = "EFB929595D312AC8F305D5A794CFEDA1";
-  static const uint8_t binary_fingerprint[16]; // = {0xEF,0xB9,0x29,0x59,0x5D,0x31,0x2A,0xC8,0xF3,0x05,0xD5,0xA7,0x94,0xCF,0xED,0xA1};
-
-  Airavata_getDataTransferDetails_args(const Airavata_getDataTransferDetails_args&);
-  Airavata_getDataTransferDetails_args& operator=(const Airavata_getDataTransferDetails_args&);
-  Airavata_getDataTransferDetails_args() : airavataExperimentId() {
-  }
-
-  virtual ~Airavata_getDataTransferDetails_args() throw();
-  std::string airavataExperimentId;
-
-  void __set_airavataExperimentId(const std::string& val);
-
-  bool operator == (const Airavata_getDataTransferDetails_args & rhs) const
-  {
-    if (!(airavataExperimentId == rhs.airavataExperimentId))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_getDataTransferDetails_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_getDataTransferDetails_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getDataTransferDetails_args& obj);
-};
-
-
-class Airavata_getDataTransferDetails_pargs {
- public:
-
-  static const char* ascii_fingerprint; // = "EFB929595D312AC8F305D5A794CFEDA1";
-  static const uint8_t binary_fingerprint[16]; // = {0xEF,0xB9,0x29,0x59,0x5D,0x31,0x2A,0xC8,0xF3,0x05,0xD5,0xA7,0x94,0xCF,0xED,0xA1};
-
-
-  virtual ~Airavata_getDataTransferDetails_pargs() throw();
-  const std::string* airavataExperimentId;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getDataTransferDetails_pargs& obj);
-};
-
-typedef struct _Airavata_getDataTransferDetails_result__isset {
-  _Airavata_getDataTransferDetails_result__isset() : success(false), ire(false), enf(false), ace(false), ase(false) {}
-  bool success :1;
-  bool ire :1;
-  bool enf :1;
-  bool ace :1;
-  bool ase :1;
-} _Airavata_getDataTransferDetails_result__isset;
-
-class Airavata_getDataTransferDetails_result {
- public:
-
-  static const char* ascii_fingerprint; // = "6229FA2DA9754DAACF69918740DF4379";
-  static const uint8_t binary_fingerprint[16]; // = {0x62,0x29,0xFA,0x2D,0xA9,0x75,0x4D,0xAA,0xCF,0x69,0x91,0x87,0x40,0xDF,0x43,0x79};
-
-  Airavata_getDataTransferDetails_result(const Airavata_getDataTransferDetails_result&);
-  Airavata_getDataTransferDetails_result& operator=(const Airavata_getDataTransferDetails_result&);
-  Airavata_getDataTransferDetails_result() {
-  }
-
-  virtual ~Airavata_getDataTransferDetails_result() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::DataTransferDetails>  success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::ExperimentNotFoundException enf;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-
-  _Airavata_getDataTransferDetails_result__isset __isset;
-
-  void __set_success(const std::vector< ::apache::airavata::model::workspace::experiment::DataTransferDetails> & val);
-
-  void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
-
-  void __set_enf(const  ::apache::airavata::api::error::ExperimentNotFoundException& val);
-
-  void __set_ace(const  ::apache::airavata::api::error::AiravataClientException& val);
-
-  void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
-
-  bool operator == (const Airavata_getDataTransferDetails_result & rhs) const
-  {
-    if (!(success == rhs.success))
-      return false;
-    if (!(ire == rhs.ire))
-      return false;
-    if (!(enf == rhs.enf))
-      return false;
-    if (!(ace == rhs.ace))
-      return false;
-    if (!(ase == rhs.ase))
-      return false;
-    return true;
-  }
-  bool operator != (const Airavata_getDataTransferDetails_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Airavata_getDataTransferDetails_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getDataTransferDetails_result& obj);
-};
-
-typedef struct _Airavata_getDataTransferDetails_presult__isset {
-  _Airavata_getDataTransferDetails_presult__isset() : success(false), ire(false), enf(false), ace(false), ase(false) {}
-  bool success :1;
-  bool ire :1;
-  bool enf :1;
-  bool ace :1;
-  bool ase :1;
-} _Airavata_getDataTransferDetails_presult__isset;
-
-class Airavata_getDataTransferDetails_presult {
- public:
-
-  static const char* ascii_fingerprint; // = "6229FA2DA9754DAACF69918740DF4379";
-  static const uint8_t binary_fingerprint[16]; // = {0x62,0x29,0xFA,0x2D,0xA9,0x75,0x4D,0xAA,0xCF,0x69,0x91,0x87,0x40,0xDF,0x43,0x79};
-
-
-  virtual ~Airavata_getDataTransferDetails_presult() throw();
-  std::vector< ::apache::airavata::model::workspace::experiment::DataTransferDetails> * success;
-   ::apache::airavata::api::error::InvalidRequestException ire;
-   ::apache::airavata::api::error::ExperimentNotFoundException enf;
-   ::apache::airavata::api::error::AiravataClientException ace;
-   ::apache::airavata::api::error::AiravataSystemException ase;
-
-  _Airavata_getDataTransferDetails_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-  friend std::ostream& operator<<(std::ostream& out, const Airavata_getDataTransferDetails_presult& obj);
 };
 
 typedef struct _Airavata_cloneExperiment_args__isset {
@@ -12183,14 +12025,14 @@ class Airavata_getApplicationInputs_result {
   }
 
   virtual ~Airavata_getApplicationInputs_result() throw();
-  std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType>  success;
+  std::vector< ::apache::airavata::model::application::io::InputDataObjectType>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getApplicationInputs_result__isset __isset;
 
-  void __set_success(const std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> & val);
+  void __set_success(const std::vector< ::apache::airavata::model::application::io::InputDataObjectType> & val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -12238,7 +12080,7 @@ class Airavata_getApplicationInputs_presult {
 
 
   virtual ~Airavata_getApplicationInputs_presult() throw();
-  std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> * success;
+  std::vector< ::apache::airavata::model::application::io::InputDataObjectType> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -12321,14 +12163,14 @@ class Airavata_getApplicationOutputs_result {
   }
 
   virtual ~Airavata_getApplicationOutputs_result() throw();
-  std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType>  success;
+  std::vector< ::apache::airavata::model::application::io::OutputDataObjectType>  success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
 
   _Airavata_getApplicationOutputs_result__isset __isset;
 
-  void __set_success(const std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & val);
+  void __set_success(const std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & val);
 
   void __set_ire(const  ::apache::airavata::api::error::InvalidRequestException& val);
 
@@ -12376,7 +12218,7 @@ class Airavata_getApplicationOutputs_presult {
 
 
   virtual ~Airavata_getApplicationOutputs_presult() throw();
-  std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> * success;
+  std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> * success;
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
@@ -20689,68 +20531,68 @@ class AiravataClient : virtual public AiravataIf {
   void searchProjectsByProjectDescWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset);
   void send_searchProjectsByProjectDescWithPagination(const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset);
   void recv_searchProjectsByProjectDescWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return);
-  void searchExperimentsByName(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& expName);
+  void searchExperimentsByName(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& expName);
   void send_searchExperimentsByName(const std::string& gatewayId, const std::string& userName, const std::string& expName);
-  void recv_searchExperimentsByName(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return);
-  void searchExperimentsByNameWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset);
+  void recv_searchExperimentsByName(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
+  void searchExperimentsByNameWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset);
   void send_searchExperimentsByNameWithPagination(const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset);
-  void recv_searchExperimentsByNameWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return);
-  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description);
+  void recv_searchExperimentsByNameWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
+  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description);
   void send_searchExperimentsByDesc(const std::string& gatewayId, const std::string& userName, const std::string& description);
-  void recv_searchExperimentsByDesc(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return);
-  void searchExperimentsByDescWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset);
+  void recv_searchExperimentsByDesc(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
+  void searchExperimentsByDescWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset);
   void send_searchExperimentsByDescWithPagination(const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset);
-  void recv_searchExperimentsByDescWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return);
-  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& applicationId);
+  void recv_searchExperimentsByDescWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
+  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& applicationId);
   void send_searchExperimentsByApplication(const std::string& gatewayId, const std::string& userName, const std::string& applicationId);
-  void recv_searchExperimentsByApplication(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return);
-  void searchExperimentsByApplicationWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset);
+  void recv_searchExperimentsByApplication(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
+  void searchExperimentsByApplicationWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset);
   void send_searchExperimentsByApplicationWithPagination(const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset);
-  void recv_searchExperimentsByApplicationWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return);
-  void searchExperimentsByStatus(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState);
-  void send_searchExperimentsByStatus(const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState);
-  void recv_searchExperimentsByStatus(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return);
-  void searchExperimentsByStatusWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState, const int32_t limit, const int32_t offset);
-  void send_searchExperimentsByStatusWithPagination(const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState, const int32_t limit, const int32_t offset);
-  void recv_searchExperimentsByStatusWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return);
-  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime);
+  void recv_searchExperimentsByApplicationWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
+  void searchExperimentsByStatus(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState);
+  void send_searchExperimentsByStatus(const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState);
+  void recv_searchExperimentsByStatus(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
+  void searchExperimentsByStatusWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState, const int32_t limit, const int32_t offset);
+  void send_searchExperimentsByStatusWithPagination(const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState, const int32_t limit, const int32_t offset);
+  void recv_searchExperimentsByStatusWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
+  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime);
   void send_searchExperimentsByCreationTime(const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime);
-  void recv_searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return);
-  void searchExperimentsByCreationTimeWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset);
+  void recv_searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
+  void searchExperimentsByCreationTimeWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset);
   void send_searchExperimentsByCreationTimeWithPagination(const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset);
-  void recv_searchExperimentsByCreationTimeWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return);
-  void searchExperiments(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::workspace::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
-  void send_searchExperiments(const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::workspace::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
-  void recv_searchExperiments(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return);
-  void getExperimentStatistics( ::apache::airavata::model::workspace::experiment::ExperimentStatistics& _return, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime);
+  void recv_searchExperimentsByCreationTimeWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
+  void searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
+  void send_searchExperiments(const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset);
+  void recv_searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return);
+  void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime);
   void send_getExperimentStatistics(const std::string& gatewayId, const int64_t fromTime, const int64_t toTime);
-  void recv_getExperimentStatistics( ::apache::airavata::model::workspace::experiment::ExperimentStatistics& _return);
-  void getAllExperimentsInProject(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& projectId);
+  void recv_getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return);
+  void getAllExperimentsInProject(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const std::string& projectId);
   void send_getAllExperimentsInProject(const std::string& projectId);
-  void recv_getAllExperimentsInProject(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return);
-  void getAllExperimentsInProjectWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& projectId, const int32_t limit, const int32_t offset);
+  void recv_getAllExperimentsInProject(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return);
+  void getAllExperimentsInProjectWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const std::string& projectId, const int32_t limit, const int32_t offset);
   void send_getAllExperimentsInProjectWithPagination(const std::string& projectId, const int32_t limit, const int32_t offset);
-  void recv_getAllExperimentsInProjectWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return);
-  void getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& gatewayId, const std::string& userName);
+  void recv_getAllExperimentsInProjectWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return);
+  void getAllUserExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const std::string& gatewayId, const std::string& userName);
   void send_getAllUserExperiments(const std::string& gatewayId, const std::string& userName);
-  void recv_getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return);
-  void getAllUserExperimentsWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset);
+  void recv_getAllUserExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return);
+  void getAllUserExperimentsWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset);
   void send_getAllUserExperimentsWithPagination(const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset);
-  void recv_getAllUserExperimentsWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return);
-  void createExperiment(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment);
-  void send_createExperiment(const std::string& gatewayId, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment);
+  void recv_getAllUserExperimentsWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return);
+  void createExperiment(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::experiment::ExperimentModel& experiment);
+  void send_createExperiment(const std::string& gatewayId, const  ::apache::airavata::model::experiment::ExperimentModel& experiment);
   void recv_createExperiment(std::string& _return);
-  void getExperiment( ::apache::airavata::model::workspace::experiment::Experiment& _return, const std::string& airavataExperimentId);
+  void getExperiment( ::apache::airavata::model::experiment::ExperimentModel& _return, const std::string& airavataExperimentId);
   void send_getExperiment(const std::string& airavataExperimentId);
-  void recv_getExperiment( ::apache::airavata::model::workspace::experiment::Experiment& _return);
-  void updateExperiment(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment);
-  void send_updateExperiment(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment);
+  void recv_getExperiment( ::apache::airavata::model::experiment::ExperimentModel& _return);
+  void updateExperiment(const std::string& airavataExperimentId, const  ::apache::airavata::model::experiment::ExperimentModel& experiment);
+  void send_updateExperiment(const std::string& airavataExperimentId, const  ::apache::airavata::model::experiment::ExperimentModel& experiment);
   void recv_updateExperiment();
-  void updateExperimentConfiguration(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::UserConfigurationData& userConfiguration);
-  void send_updateExperimentConfiguration(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::UserConfigurationData& userConfiguration);
+  void updateExperimentConfiguration(const std::string& airavataExperimentId, const  ::apache::airavata::model::experiment::UserConfigurationDataModel& userConfiguration);
+  void send_updateExperimentConfiguration(const std::string& airavataExperimentId, const  ::apache::airavata::model::experiment::UserConfigurationDataModel& userConfiguration);
   void recv_updateExperimentConfiguration();
-  void updateResourceScheduleing(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::ComputationalResourceScheduling& resourceScheduling);
-  void send_updateResourceScheduleing(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::ComputationalResourceScheduling& resourceScheduling);
+  void updateResourceScheduleing(const std::string& airavataExperimentId, const  ::apache::airavata::model::scheduling::ComputationalResourceSchedulingModel& resourceScheduling);
+  void send_updateResourceScheduleing(const std::string& airavataExperimentId, const  ::apache::airavata::model::scheduling::ComputationalResourceSchedulingModel& resourceScheduling);
   void recv_updateResourceScheduleing();
   bool validateExperiment(const std::string& airavataExperimentId);
   void send_validateExperiment(const std::string& airavataExperimentId);
@@ -20758,24 +20600,21 @@ class AiravataClient : virtual public AiravataIf {
   void launchExperiment(const std::string& airavataExperimentId, const std::string& airavataCredStoreToken);
   void send_launchExperiment(const std::string& airavataExperimentId, const std::string& airavataCredStoreToken);
   void recv_launchExperiment();
-  void getExperimentStatus( ::apache::airavata::model::workspace::experiment::ExperimentStatus& _return, const std::string& airavataExperimentId);
+  void getExperimentStatus( ::apache::airavata::model::status::ExperimentStatus& _return, const std::string& airavataExperimentId);
   void send_getExperimentStatus(const std::string& airavataExperimentId);
-  void recv_getExperimentStatus( ::apache::airavata::model::workspace::experiment::ExperimentStatus& _return);
-  void getExperimentOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& airavataExperimentId);
+  void recv_getExperimentStatus( ::apache::airavata::model::status::ExperimentStatus& _return);
+  void getExperimentOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return, const std::string& airavataExperimentId);
   void send_getExperimentOutputs(const std::string& airavataExperimentId);
-  void recv_getExperimentOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return);
-  void getIntermediateOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& airavataExperimentId);
+  void recv_getExperimentOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return);
+  void getIntermediateOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return, const std::string& airavataExperimentId);
   void send_getIntermediateOutputs(const std::string& airavataExperimentId);
-  void recv_getIntermediateOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return);
-  void getJobStatuses(std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & _return, const std::string& airavataExperimentId);
+  void recv_getIntermediateOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return);
+  void getJobStatuses(std::map<std::string,  ::apache::airavata::model::status::JobStatus> & _return, const std::string& airavataExperimentId);
   void send_getJobStatuses(const std::string& airavataExperimentId);
-  void recv_getJobStatuses(std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & _return);
-  void getJobDetails(std::vector< ::apache::airavata::model::workspace::experiment::JobDetails> & _return, const std::string& airavataExperimentId);
+  void recv_getJobStatuses(std::map<std::string,  ::apache::airavata::model::status::JobStatus> & _return);
+  void getJobDetails(std::vector< ::apache::airavata::model::job::JobModel> & _return, const std::string& airavataExperimentId);
   void send_getJobDetails(const std::string& airavataExperimentId);
-  void recv_getJobDetails(std::vector< ::apache::airavata::model::workspace::experiment::JobDetails> & _return);
-  void getDataTransferDetails(std::vector< ::apache::airavata::model::workspace::experiment::DataTransferDetails> & _return, const std::string& airavataExperimentId);
-  void send_getDataTransferDetails(const std::string& airavataExperimentId);
-  void recv_getDataTransferDetails(std::vector< ::apache::airavata::model::workspace::experiment::DataTransferDetails> & _return);
+  void recv_getJobDetails(std::vector< ::apache::airavata::model::job::JobModel> & _return);
   void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const std::string& newExperimentName);
   void send_cloneExperiment(const std::string& existingExperimentID, const std::string& newExperimentName);
   void recv_cloneExperiment(std::string& _return);
@@ -20833,12 +20672,12 @@ class AiravataClient : virtual public AiravataIf {
   void getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & _return, const std::string& gatewayId);
   void send_getAllApplicationInterfaces(const std::string& gatewayId);
   void recv_getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & _return);
-  void getApplicationInputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> & _return, const std::string& appInterfaceId);
+  void getApplicationInputs(std::vector< ::apache::airavata::model::application::io::InputDataObjectType> & _return, const std::string& appInterfaceId);
   void send_getApplicationInputs(const std::string& appInterfaceId);
-  void recv_getApplicationInputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> & _return);
-  void getApplicationOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& appInterfaceId);
+  void recv_getApplicationInputs(std::vector< ::apache::airavata::model::application::io::InputDataObjectType> & _return);
+  void getApplicationOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return, const std::string& appInterfaceId);
   void send_getApplicationOutputs(const std::string& appInterfaceId);
-  void recv_getApplicationOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return);
+  void recv_getApplicationOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return);
   void getAvailableAppInterfaceComputeResources(std::map<std::string, std::string> & _return, const std::string& appInterfaceId);
   void send_getAvailableAppInterfaceComputeResources(const std::string& appInterfaceId);
   void recv_getAvailableAppInterfaceComputeResources(std::map<std::string, std::string> & _return);
@@ -21076,7 +20915,6 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_getIntermediateOutputs(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getJobStatuses(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_getJobDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_getDataTransferDetails(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_cloneExperiment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_terminateExperiment(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_registerApplicationModule(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
@@ -21207,7 +21045,6 @@ class AiravataProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["getIntermediateOutputs"] = &AiravataProcessor::process_getIntermediateOutputs;
     processMap_["getJobStatuses"] = &AiravataProcessor::process_getJobStatuses;
     processMap_["getJobDetails"] = &AiravataProcessor::process_getJobDetails;
-    processMap_["getDataTransferDetails"] = &AiravataProcessor::process_getDataTransferDetails;
     processMap_["cloneExperiment"] = &AiravataProcessor::process_cloneExperiment;
     processMap_["terminateExperiment"] = &AiravataProcessor::process_terminateExperiment;
     processMap_["registerApplicationModule"] = &AiravataProcessor::process_registerApplicationModule;
@@ -21510,7 +21347,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void searchExperimentsByName(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& expName) {
+  void searchExperimentsByName(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& expName) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -21520,7 +21357,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void searchExperimentsByNameWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset) {
+  void searchExperimentsByNameWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -21530,7 +21367,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description) {
+  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -21540,7 +21377,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void searchExperimentsByDescWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) {
+  void searchExperimentsByDescWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -21550,7 +21387,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& applicationId) {
+  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& applicationId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -21560,7 +21397,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void searchExperimentsByApplicationWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset) {
+  void searchExperimentsByApplicationWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -21570,7 +21407,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void searchExperimentsByStatus(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState) {
+  void searchExperimentsByStatus(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -21580,7 +21417,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void searchExperimentsByStatusWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::workspace::experiment::ExperimentState::type experimentState, const int32_t limit, const int32_t offset) {
+  void searchExperimentsByStatusWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState, const int32_t limit, const int32_t offset) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -21590,7 +21427,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime) {
+  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -21600,7 +21437,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void searchExperimentsByCreationTimeWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset) {
+  void searchExperimentsByCreationTimeWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -21610,7 +21447,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void searchExperiments(std::vector< ::apache::airavata::model::workspace::experiment::ExperimentSummary> & _return, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::workspace::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset) {
+  void searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -21620,7 +21457,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getExperimentStatistics( ::apache::airavata::model::workspace::experiment::ExperimentStatistics& _return, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime) {
+  void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -21630,7 +21467,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getAllExperimentsInProject(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& projectId) {
+  void getAllExperimentsInProject(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const std::string& projectId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -21640,7 +21477,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getAllExperimentsInProjectWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& projectId, const int32_t limit, const int32_t offset) {
+  void getAllExperimentsInProjectWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const std::string& projectId, const int32_t limit, const int32_t offset) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -21650,7 +21487,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getAllUserExperiments(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& gatewayId, const std::string& userName) {
+  void getAllUserExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const std::string& gatewayId, const std::string& userName) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -21660,7 +21497,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getAllUserExperimentsWithPagination(std::vector< ::apache::airavata::model::workspace::experiment::Experiment> & _return, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset) {
+  void getAllUserExperimentsWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -21670,7 +21507,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void createExperiment(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment) {
+  void createExperiment(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::experiment::ExperimentModel& experiment) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -21680,7 +21517,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getExperiment( ::apache::airavata::model::workspace::experiment::Experiment& _return, const std::string& airavataExperimentId) {
+  void getExperiment( ::apache::airavata::model::experiment::ExperimentModel& _return, const std::string& airavataExperimentId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -21690,7 +21527,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void updateExperiment(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::Experiment& experiment) {
+  void updateExperiment(const std::string& airavataExperimentId, const  ::apache::airavata::model::experiment::ExperimentModel& experiment) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -21699,7 +21536,7 @@ class AiravataMultiface : virtual public AiravataIf {
     ifaces_[i]->updateExperiment(airavataExperimentId, experiment);
   }
 
-  void updateExperimentConfiguration(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::UserConfigurationData& userConfiguration) {
+  void updateExperimentConfiguration(const std::string& airavataExperimentId, const  ::apache::airavata::model::experiment::UserConfigurationDataModel& userConfiguration) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -21708,7 +21545,7 @@ class AiravataMultiface : virtual public AiravataIf {
     ifaces_[i]->updateExperimentConfiguration(airavataExperimentId, userConfiguration);
   }
 
-  void updateResourceScheduleing(const std::string& airavataExperimentId, const  ::apache::airavata::model::workspace::experiment::ComputationalResourceScheduling& resourceScheduling) {
+  void updateResourceScheduleing(const std::string& airavataExperimentId, const  ::apache::airavata::model::scheduling::ComputationalResourceSchedulingModel& resourceScheduling) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -21735,7 +21572,7 @@ class AiravataMultiface : virtual public AiravataIf {
     ifaces_[i]->launchExperiment(airavataExperimentId, airavataCredStoreToken);
   }
 
-  void getExperimentStatus( ::apache::airavata::model::workspace::experiment::ExperimentStatus& _return, const std::string& airavataExperimentId) {
+  void getExperimentStatus( ::apache::airavata::model::status::ExperimentStatus& _return, const std::string& airavataExperimentId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -21745,7 +21582,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getExperimentOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& airavataExperimentId) {
+  void getExperimentOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return, const std::string& airavataExperimentId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -21755,7 +21592,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getIntermediateOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& airavataExperimentId) {
+  void getIntermediateOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return, const std::string& airavataExperimentId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -21765,7 +21602,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getJobStatuses(std::map<std::string,  ::apache::airavata::model::workspace::experiment::JobStatus> & _return, const std::string& airavataExperimentId) {
+  void getJobStatuses(std::map<std::string,  ::apache::airavata::model::status::JobStatus> & _return, const std::string& airavataExperimentId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -21775,23 +21612,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getJobDetails(std::vector< ::apache::airavata::model::workspace::experiment::JobDetails> & _return, const std::string& airavataExperimentId) {
+  void getJobDetails(std::vector< ::apache::airavata::model::job::JobModel> & _return, const std::string& airavataExperimentId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
       ifaces_[i]->getJobDetails(_return, airavataExperimentId);
     }
     ifaces_[i]->getJobDetails(_return, airavataExperimentId);
-    return;
-  }
-
-  void getDataTransferDetails(std::vector< ::apache::airavata::model::workspace::experiment::DataTransferDetails> & _return, const std::string& airavataExperimentId) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getDataTransferDetails(_return, airavataExperimentId);
-    }
-    ifaces_[i]->getDataTransferDetails(_return, airavataExperimentId);
     return;
   }
 
@@ -21978,7 +21805,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getApplicationInputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::InputDataObjectType> & _return, const std::string& appInterfaceId) {
+  void getApplicationInputs(std::vector< ::apache::airavata::model::application::io::InputDataObjectType> & _return, const std::string& appInterfaceId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
@@ -21988,7 +21815,7 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getApplicationOutputs(std::vector< ::apache::airavata::model::appcatalog::appinterface::OutputDataObjectType> & _return, const std::string& appInterfaceId) {
+  void getApplicationOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return, const std::string& appInterfaceId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {

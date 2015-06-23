@@ -60,11 +60,11 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('   getAllExperimentsInProjectWithPagination(string projectId, i32 limit, i32 offset)')
   print('   getAllUserExperiments(string gatewayId, string userName)')
   print('   getAllUserExperimentsWithPagination(string gatewayId, string userName, i32 limit, i32 offset)')
-  print('  string createExperiment(string gatewayId, Experiment experiment)')
-  print('  Experiment getExperiment(string airavataExperimentId)')
-  print('  void updateExperiment(string airavataExperimentId, Experiment experiment)')
-  print('  void updateExperimentConfiguration(string airavataExperimentId, UserConfigurationData userConfiguration)')
-  print('  void updateResourceScheduleing(string airavataExperimentId, ComputationalResourceScheduling resourceScheduling)')
+  print('  string createExperiment(string gatewayId, ExperimentModel experiment)')
+  print('  ExperimentModel getExperiment(string airavataExperimentId)')
+  print('  void updateExperiment(string airavataExperimentId, ExperimentModel experiment)')
+  print('  void updateExperimentConfiguration(string airavataExperimentId, UserConfigurationDataModel userConfiguration)')
+  print('  void updateResourceScheduleing(string airavataExperimentId, ComputationalResourceSchedulingModel resourceScheduling)')
   print('  bool validateExperiment(string airavataExperimentId)')
   print('  void launchExperiment(string airavataExperimentId, string airavataCredStoreToken)')
   print('  ExperimentStatus getExperimentStatus(string airavataExperimentId)')
@@ -72,7 +72,6 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('   getIntermediateOutputs(string airavataExperimentId)')
   print('   getJobStatuses(string airavataExperimentId)')
   print('   getJobDetails(string airavataExperimentId)')
-  print('   getDataTransferDetails(string airavataExperimentId)')
   print('  string cloneExperiment(string existingExperimentID, string newExperimentName)')
   print('  void terminateExperiment(string airavataExperimentId, string tokenId)')
   print('  string registerApplicationModule(string gatewayId, ApplicationModule applicationModule)')
@@ -495,12 +494,6 @@ elif cmd == 'getJobDetails':
     print('getJobDetails requires 1 args')
     sys.exit(1)
   pp.pprint(client.getJobDetails(args[0],))
-
-elif cmd == 'getDataTransferDetails':
-  if len(args) != 1:
-    print('getDataTransferDetails requires 1 args')
-    sys.exit(1)
-  pp.pprint(client.getDataTransferDetails(args[0],))
 
 elif cmd == 'cloneExperiment':
   if len(args) != 2:
