@@ -867,13 +867,6 @@ class Iface:
     """
     pass
 
-  def getDataTransferDetails(self, airavataExperimentId):
-    """
-    Parameters:
-     - airavataExperimentId
-    """
-    pass
-
   def cloneExperiment(self, existingExperimentID, newExperimentName):
     """
     Clone an specified experiment with a new name. A copy of the experiment configuration is made and is persisted with new metadata.
@@ -4331,8 +4324,6 @@ class Client(Iface):
       raise result.ace
     if result.ase is not None:
       raise result.ase
-    if result.lve is not None:
-      raise result.lve
     return
 
   def getExperimentStatus(self, airavataExperimentId):
@@ -4529,45 +4520,6 @@ class Client(Iface):
     if result.ase is not None:
       raise result.ase
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getJobDetails failed: unknown result");
-
-  def getDataTransferDetails(self, airavataExperimentId):
-    """
-    Parameters:
-     - airavataExperimentId
-    """
-    self.send_getDataTransferDetails(airavataExperimentId)
-    return self.recv_getDataTransferDetails()
-
-  def send_getDataTransferDetails(self, airavataExperimentId):
-    self._oprot.writeMessageBegin('getDataTransferDetails', TMessageType.CALL, self._seqid)
-    args = getDataTransferDetails_args()
-    args.airavataExperimentId = airavataExperimentId
-    args.write(self._oprot)
-    self._oprot.writeMessageEnd()
-    self._oprot.trans.flush()
-
-  def recv_getDataTransferDetails(self):
-    iprot = self._iprot
-    (fname, mtype, rseqid) = iprot.readMessageBegin()
-    if mtype == TMessageType.EXCEPTION:
-      x = TApplicationException()
-      x.read(iprot)
-      iprot.readMessageEnd()
-      raise x
-    result = getDataTransferDetails_result()
-    result.read(iprot)
-    iprot.readMessageEnd()
-    if result.success is not None:
-      return result.success
-    if result.ire is not None:
-      raise result.ire
-    if result.enf is not None:
-      raise result.enf
-    if result.ace is not None:
-      raise result.ace
-    if result.ase is not None:
-      raise result.ase
-    raise TApplicationException(TApplicationException.MISSING_RESULT, "getDataTransferDetails failed: unknown result");
 
   def cloneExperiment(self, existingExperimentID, newExperimentName):
     """
@@ -8319,7 +8271,6 @@ class Processor(Iface, TProcessor):
     self._processMap["getIntermediateOutputs"] = Processor.process_getIntermediateOutputs
     self._processMap["getJobStatuses"] = Processor.process_getJobStatuses
     self._processMap["getJobDetails"] = Processor.process_getJobDetails
-    self._processMap["getDataTransferDetails"] = Processor.process_getDataTransferDetails
     self._processMap["cloneExperiment"] = Processor.process_cloneExperiment
     self._processMap["terminateExperiment"] = Processor.process_terminateExperiment
     self._processMap["registerApplicationModule"] = Processor.process_registerApplicationModule
@@ -9190,8 +9141,6 @@ class Processor(Iface, TProcessor):
       result.ace = ace
     except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
       result.ase = ase
-    except apache.airavata.api.error.ttypes.LaunchValidationException, lve:
-      result.lve = lve
     oprot.writeMessageBegin("launchExperiment", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
@@ -9293,26 +9242,6 @@ class Processor(Iface, TProcessor):
     except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
       result.ase = ase
     oprot.writeMessageBegin("getJobDetails", TMessageType.REPLY, seqid)
-    result.write(oprot)
-    oprot.writeMessageEnd()
-    oprot.trans.flush()
-
-  def process_getDataTransferDetails(self, seqid, iprot, oprot):
-    args = getDataTransferDetails_args()
-    args.read(iprot)
-    iprot.readMessageEnd()
-    result = getDataTransferDetails_result()
-    try:
-      result.success = self._handler.getDataTransferDetails(args.airavataExperimentId)
-    except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
-      result.ire = ire
-    except apache.airavata.api.error.ttypes.ExperimentNotFoundException, enf:
-      result.enf = enf
-    except apache.airavata.api.error.ttypes.AiravataClientException, ace:
-      result.ace = ace
-    except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
-      result.ase = ase
-    oprot.writeMessageBegin("getDataTransferDetails", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
     oprot.trans.flush()
@@ -14704,7 +14633,7 @@ class searchExperimentsByName_result:
   """
 
   thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary, apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary.thrift_spec)), None, ), # 0
+    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.experiment.ttypes.ExperimentSummaryModel, apache.airavata.model.experiment.ttypes.ExperimentSummaryModel.thrift_spec)), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -14730,7 +14659,7 @@ class searchExperimentsByName_result:
           self.success = []
           (_etype61, _size58) = iprot.readListBegin()
           for _i62 in xrange(_size58):
-            _elem63 = apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary()
+            _elem63 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
             _elem63.read(iprot)
             self.success.append(_elem63)
           iprot.readListEnd()
@@ -14946,7 +14875,7 @@ class searchExperimentsByNameWithPagination_result:
   """
 
   thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary, apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary.thrift_spec)), None, ), # 0
+    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.experiment.ttypes.ExperimentSummaryModel, apache.airavata.model.experiment.ttypes.ExperimentSummaryModel.thrift_spec)), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -14972,7 +14901,7 @@ class searchExperimentsByNameWithPagination_result:
           self.success = []
           (_etype68, _size65) = iprot.readListBegin()
           for _i69 in xrange(_size65):
-            _elem70 = apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary()
+            _elem70 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
             _elem70.read(iprot)
             self.success.append(_elem70)
           iprot.readListEnd()
@@ -15158,7 +15087,7 @@ class searchExperimentsByDesc_result:
   """
 
   thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary, apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary.thrift_spec)), None, ), # 0
+    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.experiment.ttypes.ExperimentSummaryModel, apache.airavata.model.experiment.ttypes.ExperimentSummaryModel.thrift_spec)), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -15184,7 +15113,7 @@ class searchExperimentsByDesc_result:
           self.success = []
           (_etype75, _size72) = iprot.readListBegin()
           for _i76 in xrange(_size72):
-            _elem77 = apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary()
+            _elem77 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
             _elem77.read(iprot)
             self.success.append(_elem77)
           iprot.readListEnd()
@@ -15400,7 +15329,7 @@ class searchExperimentsByDescWithPagination_result:
   """
 
   thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary, apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary.thrift_spec)), None, ), # 0
+    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.experiment.ttypes.ExperimentSummaryModel, apache.airavata.model.experiment.ttypes.ExperimentSummaryModel.thrift_spec)), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -15426,7 +15355,7 @@ class searchExperimentsByDescWithPagination_result:
           self.success = []
           (_etype82, _size79) = iprot.readListBegin()
           for _i83 in xrange(_size79):
-            _elem84 = apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary()
+            _elem84 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
             _elem84.read(iprot)
             self.success.append(_elem84)
           iprot.readListEnd()
@@ -15612,7 +15541,7 @@ class searchExperimentsByApplication_result:
   """
 
   thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary, apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary.thrift_spec)), None, ), # 0
+    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.experiment.ttypes.ExperimentSummaryModel, apache.airavata.model.experiment.ttypes.ExperimentSummaryModel.thrift_spec)), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -15638,7 +15567,7 @@ class searchExperimentsByApplication_result:
           self.success = []
           (_etype89, _size86) = iprot.readListBegin()
           for _i90 in xrange(_size86):
-            _elem91 = apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary()
+            _elem91 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
             _elem91.read(iprot)
             self.success.append(_elem91)
           iprot.readListEnd()
@@ -15854,7 +15783,7 @@ class searchExperimentsByApplicationWithPagination_result:
   """
 
   thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary, apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary.thrift_spec)), None, ), # 0
+    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.experiment.ttypes.ExperimentSummaryModel, apache.airavata.model.experiment.ttypes.ExperimentSummaryModel.thrift_spec)), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -15880,7 +15809,7 @@ class searchExperimentsByApplicationWithPagination_result:
           self.success = []
           (_etype96, _size93) = iprot.readListBegin()
           for _i97 in xrange(_size93):
-            _elem98 = apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary()
+            _elem98 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
             _elem98.read(iprot)
             self.success.append(_elem98)
           iprot.readListEnd()
@@ -16066,7 +15995,7 @@ class searchExperimentsByStatus_result:
   """
 
   thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary, apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary.thrift_spec)), None, ), # 0
+    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.experiment.ttypes.ExperimentSummaryModel, apache.airavata.model.experiment.ttypes.ExperimentSummaryModel.thrift_spec)), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -16092,7 +16021,7 @@ class searchExperimentsByStatus_result:
           self.success = []
           (_etype103, _size100) = iprot.readListBegin()
           for _i104 in xrange(_size100):
-            _elem105 = apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary()
+            _elem105 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
             _elem105.read(iprot)
             self.success.append(_elem105)
           iprot.readListEnd()
@@ -16308,7 +16237,7 @@ class searchExperimentsByStatusWithPagination_result:
   """
 
   thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary, apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary.thrift_spec)), None, ), # 0
+    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.experiment.ttypes.ExperimentSummaryModel, apache.airavata.model.experiment.ttypes.ExperimentSummaryModel.thrift_spec)), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -16334,7 +16263,7 @@ class searchExperimentsByStatusWithPagination_result:
           self.success = []
           (_etype110, _size107) = iprot.readListBegin()
           for _i111 in xrange(_size107):
-            _elem112 = apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary()
+            _elem112 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
             _elem112.read(iprot)
             self.success.append(_elem112)
           iprot.readListEnd()
@@ -16535,7 +16464,7 @@ class searchExperimentsByCreationTime_result:
   """
 
   thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary, apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary.thrift_spec)), None, ), # 0
+    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.experiment.ttypes.ExperimentSummaryModel, apache.airavata.model.experiment.ttypes.ExperimentSummaryModel.thrift_spec)), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -16561,7 +16490,7 @@ class searchExperimentsByCreationTime_result:
           self.success = []
           (_etype117, _size114) = iprot.readListBegin()
           for _i118 in xrange(_size114):
-            _elem119 = apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary()
+            _elem119 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
             _elem119.read(iprot)
             self.success.append(_elem119)
           iprot.readListEnd()
@@ -16792,7 +16721,7 @@ class searchExperimentsByCreationTimeWithPagination_result:
   """
 
   thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary, apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary.thrift_spec)), None, ), # 0
+    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.experiment.ttypes.ExperimentSummaryModel, apache.airavata.model.experiment.ttypes.ExperimentSummaryModel.thrift_spec)), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -16818,7 +16747,7 @@ class searchExperimentsByCreationTimeWithPagination_result:
           self.success = []
           (_etype124, _size121) = iprot.readListBegin()
           for _i125 in xrange(_size121):
-            _elem126 = apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary()
+            _elem126 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
             _elem126.read(iprot)
             self.success.append(_elem126)
           iprot.readListEnd()
@@ -17042,7 +16971,7 @@ class searchExperiments_result:
   """
 
   thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary, apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary.thrift_spec)), None, ), # 0
+    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.experiment.ttypes.ExperimentSummaryModel, apache.airavata.model.experiment.ttypes.ExperimentSummaryModel.thrift_spec)), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -17068,7 +16997,7 @@ class searchExperiments_result:
           self.success = []
           (_etype140, _size137) = iprot.readListBegin()
           for _i141 in xrange(_size137):
-            _elem142 = apache.airavata.model.workspace.experiment.ttypes.ExperimentSummary()
+            _elem142 = apache.airavata.model.experiment.ttypes.ExperimentSummaryModel()
             _elem142.read(iprot)
             self.success.append(_elem142)
           iprot.readListEnd()
@@ -17254,7 +17183,7 @@ class getExperimentStatistics_result:
   """
 
   thrift_spec = (
-    (0, TType.STRUCT, 'success', (apache.airavata.model.workspace.experiment.ttypes.ExperimentStatistics, apache.airavata.model.workspace.experiment.ttypes.ExperimentStatistics.thrift_spec), None, ), # 0
+    (0, TType.STRUCT, 'success', (apache.airavata.model.experiment.ttypes.ExperimentStatistics, apache.airavata.model.experiment.ttypes.ExperimentStatistics.thrift_spec), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -17277,7 +17206,7 @@ class getExperimentStatistics_result:
         break
       if fid == 0:
         if ftype == TType.STRUCT:
-          self.success = apache.airavata.model.workspace.experiment.ttypes.ExperimentStatistics()
+          self.success = apache.airavata.model.experiment.ttypes.ExperimentStatistics()
           self.success.read(iprot)
         else:
           iprot.skip(ftype)
@@ -17429,7 +17358,7 @@ class getAllExperimentsInProject_result:
   """
 
   thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.workspace.experiment.ttypes.Experiment, apache.airavata.model.workspace.experiment.ttypes.Experiment.thrift_spec)), None, ), # 0
+    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.experiment.ttypes.ExperimentModel, apache.airavata.model.experiment.ttypes.ExperimentModel.thrift_spec)), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -17457,7 +17386,7 @@ class getAllExperimentsInProject_result:
           self.success = []
           (_etype147, _size144) = iprot.readListBegin()
           for _i148 in xrange(_size144):
-            _elem149 = apache.airavata.model.workspace.experiment.ttypes.Experiment()
+            _elem149 = apache.airavata.model.experiment.ttypes.ExperimentModel()
             _elem149.read(iprot)
             self.success.append(_elem149)
           iprot.readListEnd()
@@ -17655,7 +17584,7 @@ class getAllExperimentsInProjectWithPagination_result:
   """
 
   thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.workspace.experiment.ttypes.Experiment, apache.airavata.model.workspace.experiment.ttypes.Experiment.thrift_spec)), None, ), # 0
+    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.experiment.ttypes.ExperimentModel, apache.airavata.model.experiment.ttypes.ExperimentModel.thrift_spec)), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -17683,7 +17612,7 @@ class getAllExperimentsInProjectWithPagination_result:
           self.success = []
           (_etype154, _size151) = iprot.readListBegin()
           for _i155 in xrange(_size151):
-            _elem156 = apache.airavata.model.workspace.experiment.ttypes.Experiment()
+            _elem156 = apache.airavata.model.experiment.ttypes.ExperimentModel()
             _elem156.read(iprot)
             self.success.append(_elem156)
           iprot.readListEnd()
@@ -17865,7 +17794,7 @@ class getAllUserExperiments_result:
   """
 
   thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.workspace.experiment.ttypes.Experiment, apache.airavata.model.workspace.experiment.ttypes.Experiment.thrift_spec)), None, ), # 0
+    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.experiment.ttypes.ExperimentModel, apache.airavata.model.experiment.ttypes.ExperimentModel.thrift_spec)), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -17891,7 +17820,7 @@ class getAllUserExperiments_result:
           self.success = []
           (_etype161, _size158) = iprot.readListBegin()
           for _i162 in xrange(_size158):
-            _elem163 = apache.airavata.model.workspace.experiment.ttypes.Experiment()
+            _elem163 = apache.airavata.model.experiment.ttypes.ExperimentModel()
             _elem163.read(iprot)
             self.success.append(_elem163)
           iprot.readListEnd()
@@ -18092,7 +18021,7 @@ class getAllUserExperimentsWithPagination_result:
   """
 
   thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.workspace.experiment.ttypes.Experiment, apache.airavata.model.workspace.experiment.ttypes.Experiment.thrift_spec)), None, ), # 0
+    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.experiment.ttypes.ExperimentModel, apache.airavata.model.experiment.ttypes.ExperimentModel.thrift_spec)), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -18118,7 +18047,7 @@ class getAllUserExperimentsWithPagination_result:
           self.success = []
           (_etype168, _size165) = iprot.readListBegin()
           for _i169 in xrange(_size165):
-            _elem170 = apache.airavata.model.workspace.experiment.ttypes.Experiment()
+            _elem170 = apache.airavata.model.experiment.ttypes.ExperimentModel()
             _elem170.read(iprot)
             self.success.append(_elem170)
           iprot.readListEnd()
@@ -18207,7 +18136,7 @@ class createExperiment_args:
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'gatewayId', None, None, ), # 1
-    (2, TType.STRUCT, 'experiment', (apache.airavata.model.workspace.experiment.ttypes.Experiment, apache.airavata.model.workspace.experiment.ttypes.Experiment.thrift_spec), None, ), # 2
+    (2, TType.STRUCT, 'experiment', (apache.airavata.model.experiment.ttypes.ExperimentModel, apache.airavata.model.experiment.ttypes.ExperimentModel.thrift_spec), None, ), # 2
   )
 
   def __init__(self, gatewayId=None, experiment=None,):
@@ -18230,7 +18159,7 @@ class createExperiment_args:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRUCT:
-          self.experiment = apache.airavata.model.workspace.experiment.ttypes.Experiment()
+          self.experiment = apache.airavata.model.experiment.ttypes.ExperimentModel()
           self.experiment.read(iprot)
         else:
           iprot.skip(ftype)
@@ -18464,7 +18393,7 @@ class getExperiment_result:
   """
 
   thrift_spec = (
-    (0, TType.STRUCT, 'success', (apache.airavata.model.workspace.experiment.ttypes.Experiment, apache.airavata.model.workspace.experiment.ttypes.Experiment.thrift_spec), None, ), # 0
+    (0, TType.STRUCT, 'success', (apache.airavata.model.experiment.ttypes.ExperimentModel, apache.airavata.model.experiment.ttypes.ExperimentModel.thrift_spec), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'enf', (apache.airavata.api.error.ttypes.ExperimentNotFoundException, apache.airavata.api.error.ttypes.ExperimentNotFoundException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 3
@@ -18489,7 +18418,7 @@ class getExperiment_result:
         break
       if fid == 0:
         if ftype == TType.STRUCT:
-          self.success = apache.airavata.model.workspace.experiment.ttypes.Experiment()
+          self.success = apache.airavata.model.experiment.ttypes.ExperimentModel()
           self.success.read(iprot)
         else:
           iprot.skip(ftype)
@@ -18584,7 +18513,7 @@ class updateExperiment_args:
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'airavataExperimentId', None, None, ), # 1
-    (2, TType.STRUCT, 'experiment', (apache.airavata.model.workspace.experiment.ttypes.Experiment, apache.airavata.model.workspace.experiment.ttypes.Experiment.thrift_spec), None, ), # 2
+    (2, TType.STRUCT, 'experiment', (apache.airavata.model.experiment.ttypes.ExperimentModel, apache.airavata.model.experiment.ttypes.ExperimentModel.thrift_spec), None, ), # 2
   )
 
   def __init__(self, airavataExperimentId=None, experiment=None,):
@@ -18607,7 +18536,7 @@ class updateExperiment_args:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRUCT:
-          self.experiment = apache.airavata.model.workspace.experiment.ttypes.Experiment()
+          self.experiment = apache.airavata.model.experiment.ttypes.ExperimentModel()
           self.experiment.read(iprot)
         else:
           iprot.skip(ftype)
@@ -18775,7 +18704,7 @@ class updateExperimentConfiguration_args:
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'airavataExperimentId', None, None, ), # 1
-    (2, TType.STRUCT, 'userConfiguration', (apache.airavata.model.workspace.experiment.ttypes.UserConfigurationData, apache.airavata.model.workspace.experiment.ttypes.UserConfigurationData.thrift_spec), None, ), # 2
+    (2, TType.STRUCT, 'userConfiguration', (apache.airavata.model.experiment.ttypes.UserConfigurationDataModel, apache.airavata.model.experiment.ttypes.UserConfigurationDataModel.thrift_spec), None, ), # 2
   )
 
   def __init__(self, airavataExperimentId=None, userConfiguration=None,):
@@ -18798,7 +18727,7 @@ class updateExperimentConfiguration_args:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRUCT:
-          self.userConfiguration = apache.airavata.model.workspace.experiment.ttypes.UserConfigurationData()
+          self.userConfiguration = apache.airavata.model.experiment.ttypes.UserConfigurationDataModel()
           self.userConfiguration.read(iprot)
         else:
           iprot.skip(ftype)
@@ -18904,7 +18833,7 @@ class updateResourceScheduleing_args:
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'airavataExperimentId', None, None, ), # 1
-    (2, TType.STRUCT, 'resourceScheduling', (apache.airavata.model.workspace.experiment.ttypes.ComputationalResourceScheduling, apache.airavata.model.workspace.experiment.ttypes.ComputationalResourceScheduling.thrift_spec), None, ), # 2
+    (2, TType.STRUCT, 'resourceScheduling', (apache.airavata.model.scheduling.ttypes.ComputationalResourceSchedulingModel, apache.airavata.model.scheduling.ttypes.ComputationalResourceSchedulingModel.thrift_spec), None, ), # 2
   )
 
   def __init__(self, airavataExperimentId=None, resourceScheduling=None,):
@@ -18927,7 +18856,7 @@ class updateResourceScheduleing_args:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRUCT:
-          self.resourceScheduling = apache.airavata.model.workspace.experiment.ttypes.ComputationalResourceScheduling()
+          self.resourceScheduling = apache.airavata.model.scheduling.ttypes.ComputationalResourceSchedulingModel()
           self.resourceScheduling.read(iprot)
         else:
           iprot.skip(ftype)
@@ -19299,7 +19228,6 @@ class launchExperiment_result:
    - enf
    - ace
    - ase
-   - lve
   """
 
   thrift_spec = (
@@ -19308,15 +19236,13 @@ class launchExperiment_result:
     (2, TType.STRUCT, 'enf', (apache.airavata.api.error.ttypes.ExperimentNotFoundException, apache.airavata.api.error.ttypes.ExperimentNotFoundException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 3
     (4, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 4
-    (5, TType.STRUCT, 'lve', (apache.airavata.api.error.ttypes.LaunchValidationException, apache.airavata.api.error.ttypes.LaunchValidationException.thrift_spec), None, ), # 5
   )
 
-  def __init__(self, ire=None, enf=None, ace=None, ase=None, lve=None,):
+  def __init__(self, ire=None, enf=None, ace=None, ase=None,):
     self.ire = ire
     self.enf = enf
     self.ace = ace
     self.ase = ase
-    self.lve = lve
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -19351,12 +19277,6 @@ class launchExperiment_result:
           self.ase.read(iprot)
         else:
           iprot.skip(ftype)
-      elif fid == 5:
-        if ftype == TType.STRUCT:
-          self.lve = apache.airavata.api.error.ttypes.LaunchValidationException()
-          self.lve.read(iprot)
-        else:
-          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -19383,10 +19303,6 @@ class launchExperiment_result:
       oprot.writeFieldBegin('ase', TType.STRUCT, 4)
       self.ase.write(oprot)
       oprot.writeFieldEnd()
-    if self.lve is not None:
-      oprot.writeFieldBegin('lve', TType.STRUCT, 5)
-      self.lve.write(oprot)
-      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -19400,7 +19316,6 @@ class launchExperiment_result:
     value = (value * 31) ^ hash(self.enf)
     value = (value * 31) ^ hash(self.ace)
     value = (value * 31) ^ hash(self.ase)
-    value = (value * 31) ^ hash(self.lve)
     return value
 
   def __repr__(self):
@@ -19492,7 +19407,7 @@ class getExperimentStatus_result:
   """
 
   thrift_spec = (
-    (0, TType.STRUCT, 'success', (apache.airavata.model.workspace.experiment.ttypes.ExperimentStatus, apache.airavata.model.workspace.experiment.ttypes.ExperimentStatus.thrift_spec), None, ), # 0
+    (0, TType.STRUCT, 'success', (apache.airavata.model.status.ttypes.ExperimentStatus, apache.airavata.model.status.ttypes.ExperimentStatus.thrift_spec), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'enf', (apache.airavata.api.error.ttypes.ExperimentNotFoundException, apache.airavata.api.error.ttypes.ExperimentNotFoundException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 3
@@ -19517,7 +19432,7 @@ class getExperimentStatus_result:
         break
       if fid == 0:
         if ftype == TType.STRUCT:
-          self.success = apache.airavata.model.workspace.experiment.ttypes.ExperimentStatus()
+          self.success = apache.airavata.model.status.ttypes.ExperimentStatus()
           self.success.read(iprot)
         else:
           iprot.skip(ftype)
@@ -19680,7 +19595,7 @@ class getExperimentOutputs_result:
   """
 
   thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.appcatalog.appinterface.ttypes.OutputDataObjectType, apache.airavata.model.appcatalog.appinterface.ttypes.OutputDataObjectType.thrift_spec)), None, ), # 0
+    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.application.io.ttypes.OutputDataObjectType, apache.airavata.model.application.io.ttypes.OutputDataObjectType.thrift_spec)), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'enf', (apache.airavata.api.error.ttypes.ExperimentNotFoundException, apache.airavata.api.error.ttypes.ExperimentNotFoundException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 3
@@ -19708,7 +19623,7 @@ class getExperimentOutputs_result:
           self.success = []
           (_etype175, _size172) = iprot.readListBegin()
           for _i176 in xrange(_size172):
-            _elem177 = apache.airavata.model.appcatalog.appinterface.ttypes.OutputDataObjectType()
+            _elem177 = apache.airavata.model.application.io.ttypes.OutputDataObjectType()
             _elem177.read(iprot)
             self.success.append(_elem177)
           iprot.readListEnd()
@@ -19876,7 +19791,7 @@ class getIntermediateOutputs_result:
   """
 
   thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.appcatalog.appinterface.ttypes.OutputDataObjectType, apache.airavata.model.appcatalog.appinterface.ttypes.OutputDataObjectType.thrift_spec)), None, ), # 0
+    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.application.io.ttypes.OutputDataObjectType, apache.airavata.model.application.io.ttypes.OutputDataObjectType.thrift_spec)), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'enf', (apache.airavata.api.error.ttypes.ExperimentNotFoundException, apache.airavata.api.error.ttypes.ExperimentNotFoundException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 3
@@ -19904,7 +19819,7 @@ class getIntermediateOutputs_result:
           self.success = []
           (_etype182, _size179) = iprot.readListBegin()
           for _i183 in xrange(_size179):
-            _elem184 = apache.airavata.model.appcatalog.appinterface.ttypes.OutputDataObjectType()
+            _elem184 = apache.airavata.model.application.io.ttypes.OutputDataObjectType()
             _elem184.read(iprot)
             self.success.append(_elem184)
           iprot.readListEnd()
@@ -20072,7 +19987,7 @@ class getJobStatuses_result:
   """
 
   thrift_spec = (
-    (0, TType.MAP, 'success', (TType.STRING,None,TType.STRUCT,(apache.airavata.model.workspace.experiment.ttypes.JobStatus, apache.airavata.model.workspace.experiment.ttypes.JobStatus.thrift_spec)), None, ), # 0
+    (0, TType.MAP, 'success', (TType.STRING,None,TType.STRUCT,(apache.airavata.model.status.ttypes.JobStatus, apache.airavata.model.status.ttypes.JobStatus.thrift_spec)), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'enf', (apache.airavata.api.error.ttypes.ExperimentNotFoundException, apache.airavata.api.error.ttypes.ExperimentNotFoundException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 3
@@ -20101,7 +20016,7 @@ class getJobStatuses_result:
           (_ktype187, _vtype188, _size186 ) = iprot.readMapBegin()
           for _i190 in xrange(_size186):
             _key191 = iprot.readString();
-            _val192 = apache.airavata.model.workspace.experiment.ttypes.JobStatus()
+            _val192 = apache.airavata.model.status.ttypes.JobStatus()
             _val192.read(iprot)
             self.success[_key191] = _val192
           iprot.readMapEnd()
@@ -20270,7 +20185,7 @@ class getJobDetails_result:
   """
 
   thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.workspace.experiment.ttypes.JobDetails, apache.airavata.model.workspace.experiment.ttypes.JobDetails.thrift_spec)), None, ), # 0
+    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.job.ttypes.JobModel, apache.airavata.model.job.ttypes.JobModel.thrift_spec)), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'enf', (apache.airavata.api.error.ttypes.ExperimentNotFoundException, apache.airavata.api.error.ttypes.ExperimentNotFoundException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 3
@@ -20298,7 +20213,7 @@ class getJobDetails_result:
           self.success = []
           (_etype198, _size195) = iprot.readListBegin()
           for _i199 in xrange(_size195):
-            _elem200 = apache.airavata.model.workspace.experiment.ttypes.JobDetails()
+            _elem200 = apache.airavata.model.job.ttypes.JobModel()
             _elem200.read(iprot)
             self.success.append(_elem200)
           iprot.readListEnd()
@@ -20343,202 +20258,6 @@ class getJobDetails_result:
       oprot.writeListBegin(TType.STRUCT, len(self.success))
       for iter201 in self.success:
         iter201.write(oprot)
-      oprot.writeListEnd()
-      oprot.writeFieldEnd()
-    if self.ire is not None:
-      oprot.writeFieldBegin('ire', TType.STRUCT, 1)
-      self.ire.write(oprot)
-      oprot.writeFieldEnd()
-    if self.enf is not None:
-      oprot.writeFieldBegin('enf', TType.STRUCT, 2)
-      self.enf.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ace is not None:
-      oprot.writeFieldBegin('ace', TType.STRUCT, 3)
-      self.ace.write(oprot)
-      oprot.writeFieldEnd()
-    if self.ase is not None:
-      oprot.writeFieldBegin('ase', TType.STRUCT, 4)
-      self.ase.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.success)
-    value = (value * 31) ^ hash(self.ire)
-    value = (value * 31) ^ hash(self.enf)
-    value = (value * 31) ^ hash(self.ace)
-    value = (value * 31) ^ hash(self.ase)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class getDataTransferDetails_args:
-  """
-  Attributes:
-   - airavataExperimentId
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'airavataExperimentId', None, None, ), # 1
-  )
-
-  def __init__(self, airavataExperimentId=None,):
-    self.airavataExperimentId = airavataExperimentId
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.airavataExperimentId = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('getDataTransferDetails_args')
-    if self.airavataExperimentId is not None:
-      oprot.writeFieldBegin('airavataExperimentId', TType.STRING, 1)
-      oprot.writeString(self.airavataExperimentId)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    if self.airavataExperimentId is None:
-      raise TProtocol.TProtocolException(message='Required field airavataExperimentId is unset!')
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.airavataExperimentId)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class getDataTransferDetails_result:
-  """
-  Attributes:
-   - success
-   - ire
-   - enf
-   - ace
-   - ase
-  """
-
-  thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.workspace.experiment.ttypes.DataTransferDetails, apache.airavata.model.workspace.experiment.ttypes.DataTransferDetails.thrift_spec)), None, ), # 0
-    (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
-    (2, TType.STRUCT, 'enf', (apache.airavata.api.error.ttypes.ExperimentNotFoundException, apache.airavata.api.error.ttypes.ExperimentNotFoundException.thrift_spec), None, ), # 2
-    (3, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 3
-    (4, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 4
-  )
-
-  def __init__(self, success=None, ire=None, enf=None, ace=None, ase=None,):
-    self.success = success
-    self.ire = ire
-    self.enf = enf
-    self.ace = ace
-    self.ase = ase
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 0:
-        if ftype == TType.LIST:
-          self.success = []
-          (_etype205, _size202) = iprot.readListBegin()
-          for _i206 in xrange(_size202):
-            _elem207 = apache.airavata.model.workspace.experiment.ttypes.DataTransferDetails()
-            _elem207.read(iprot)
-            self.success.append(_elem207)
-          iprot.readListEnd()
-        else:
-          iprot.skip(ftype)
-      elif fid == 1:
-        if ftype == TType.STRUCT:
-          self.ire = apache.airavata.api.error.ttypes.InvalidRequestException()
-          self.ire.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRUCT:
-          self.enf = apache.airavata.api.error.ttypes.ExperimentNotFoundException()
-          self.enf.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRUCT:
-          self.ace = apache.airavata.api.error.ttypes.AiravataClientException()
-          self.ace.read(iprot)
-        else:
-          iprot.skip(ftype)
-      elif fid == 4:
-        if ftype == TType.STRUCT:
-          self.ase = apache.airavata.api.error.ttypes.AiravataSystemException()
-          self.ase.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('getDataTransferDetails_result')
-    if self.success is not None:
-      oprot.writeFieldBegin('success', TType.LIST, 0)
-      oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter208 in self.success:
-        iter208.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -21621,11 +21340,11 @@ class getAllAppModules_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype212, _size209) = iprot.readListBegin()
-          for _i213 in xrange(_size209):
-            _elem214 = apache.airavata.model.appcatalog.appdeployment.ttypes.ApplicationModule()
-            _elem214.read(iprot)
-            self.success.append(_elem214)
+          (_etype205, _size202) = iprot.readListBegin()
+          for _i206 in xrange(_size202):
+            _elem207 = apache.airavata.model.appcatalog.appdeployment.ttypes.ApplicationModule()
+            _elem207.read(iprot)
+            self.success.append(_elem207)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -21660,8 +21379,8 @@ class getAllAppModules_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter215 in self.success:
-        iter215.write(oprot)
+      for iter208 in self.success:
+        iter208.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -22701,11 +22420,11 @@ class getAllApplicationDeployments_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype219, _size216) = iprot.readListBegin()
-          for _i220 in xrange(_size216):
-            _elem221 = apache.airavata.model.appcatalog.appdeployment.ttypes.ApplicationDeploymentDescription()
-            _elem221.read(iprot)
-            self.success.append(_elem221)
+          (_etype212, _size209) = iprot.readListBegin()
+          for _i213 in xrange(_size209):
+            _elem214 = apache.airavata.model.appcatalog.appdeployment.ttypes.ApplicationDeploymentDescription()
+            _elem214.read(iprot)
+            self.success.append(_elem214)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -22740,8 +22459,8 @@ class getAllApplicationDeployments_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter222 in self.success:
-        iter222.write(oprot)
+      for iter215 in self.success:
+        iter215.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -22883,10 +22602,10 @@ class getAppModuleDeployedResources_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype226, _size223) = iprot.readListBegin()
-          for _i227 in xrange(_size223):
-            _elem228 = iprot.readString();
-            self.success.append(_elem228)
+          (_etype219, _size216) = iprot.readListBegin()
+          for _i220 in xrange(_size216):
+            _elem221 = iprot.readString();
+            self.success.append(_elem221)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -22921,8 +22640,8 @@ class getAppModuleDeployedResources_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRING, len(self.success))
-      for iter229 in self.success:
-        oprot.writeString(iter229)
+      for iter222 in self.success:
+        oprot.writeString(iter222)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -23789,11 +23508,11 @@ class getAllApplicationInterfaceNames_result:
       if fid == 0:
         if ftype == TType.MAP:
           self.success = {}
-          (_ktype231, _vtype232, _size230 ) = iprot.readMapBegin()
-          for _i234 in xrange(_size230):
-            _key235 = iprot.readString();
-            _val236 = iprot.readString();
-            self.success[_key235] = _val236
+          (_ktype224, _vtype225, _size223 ) = iprot.readMapBegin()
+          for _i227 in xrange(_size223):
+            _key228 = iprot.readString();
+            _val229 = iprot.readString();
+            self.success[_key228] = _val229
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -23828,9 +23547,9 @@ class getAllApplicationInterfaceNames_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.MAP, 0)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.success))
-      for kiter237,viter238 in self.success.items():
-        oprot.writeString(kiter237)
-        oprot.writeString(viter238)
+      for kiter230,viter231 in self.success.items():
+        oprot.writeString(kiter230)
+        oprot.writeString(viter231)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -23972,11 +23691,11 @@ class getAllApplicationInterfaces_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype242, _size239) = iprot.readListBegin()
-          for _i243 in xrange(_size239):
-            _elem244 = apache.airavata.model.appcatalog.appinterface.ttypes.ApplicationInterfaceDescription()
-            _elem244.read(iprot)
-            self.success.append(_elem244)
+          (_etype235, _size232) = iprot.readListBegin()
+          for _i236 in xrange(_size232):
+            _elem237 = apache.airavata.model.appcatalog.appinterface.ttypes.ApplicationInterfaceDescription()
+            _elem237.read(iprot)
+            self.success.append(_elem237)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -24011,8 +23730,8 @@ class getAllApplicationInterfaces_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter245 in self.success:
-        iter245.write(oprot)
+      for iter238 in self.success:
+        iter238.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -24130,7 +23849,7 @@ class getApplicationInputs_result:
   """
 
   thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.appcatalog.appinterface.ttypes.InputDataObjectType, apache.airavata.model.appcatalog.appinterface.ttypes.InputDataObjectType.thrift_spec)), None, ), # 0
+    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.application.io.ttypes.InputDataObjectType, apache.airavata.model.application.io.ttypes.InputDataObjectType.thrift_spec)), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -24154,11 +23873,11 @@ class getApplicationInputs_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype249, _size246) = iprot.readListBegin()
-          for _i250 in xrange(_size246):
-            _elem251 = apache.airavata.model.appcatalog.appinterface.ttypes.InputDataObjectType()
-            _elem251.read(iprot)
-            self.success.append(_elem251)
+          (_etype242, _size239) = iprot.readListBegin()
+          for _i243 in xrange(_size239):
+            _elem244 = apache.airavata.model.application.io.ttypes.InputDataObjectType()
+            _elem244.read(iprot)
+            self.success.append(_elem244)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -24193,8 +23912,8 @@ class getApplicationInputs_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter252 in self.success:
-        iter252.write(oprot)
+      for iter245 in self.success:
+        iter245.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -24312,7 +24031,7 @@ class getApplicationOutputs_result:
   """
 
   thrift_spec = (
-    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.appcatalog.appinterface.ttypes.OutputDataObjectType, apache.airavata.model.appcatalog.appinterface.ttypes.OutputDataObjectType.thrift_spec)), None, ), # 0
+    (0, TType.LIST, 'success', (TType.STRUCT,(apache.airavata.model.application.io.ttypes.OutputDataObjectType, apache.airavata.model.application.io.ttypes.OutputDataObjectType.thrift_spec)), None, ), # 0
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
@@ -24336,11 +24055,11 @@ class getApplicationOutputs_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype256, _size253) = iprot.readListBegin()
-          for _i257 in xrange(_size253):
-            _elem258 = apache.airavata.model.appcatalog.appinterface.ttypes.OutputDataObjectType()
-            _elem258.read(iprot)
-            self.success.append(_elem258)
+          (_etype249, _size246) = iprot.readListBegin()
+          for _i250 in xrange(_size246):
+            _elem251 = apache.airavata.model.application.io.ttypes.OutputDataObjectType()
+            _elem251.read(iprot)
+            self.success.append(_elem251)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -24375,8 +24094,8 @@ class getApplicationOutputs_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter259 in self.success:
-        iter259.write(oprot)
+      for iter252 in self.success:
+        iter252.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -24518,11 +24237,11 @@ class getAvailableAppInterfaceComputeResources_result:
       if fid == 0:
         if ftype == TType.MAP:
           self.success = {}
-          (_ktype261, _vtype262, _size260 ) = iprot.readMapBegin()
-          for _i264 in xrange(_size260):
-            _key265 = iprot.readString();
-            _val266 = iprot.readString();
-            self.success[_key265] = _val266
+          (_ktype254, _vtype255, _size253 ) = iprot.readMapBegin()
+          for _i257 in xrange(_size253):
+            _key258 = iprot.readString();
+            _val259 = iprot.readString();
+            self.success[_key258] = _val259
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -24557,9 +24276,9 @@ class getAvailableAppInterfaceComputeResources_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.MAP, 0)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.success))
-      for kiter267,viter268 in self.success.items():
-        oprot.writeString(kiter267)
-        oprot.writeString(viter268)
+      for kiter260,viter261 in self.success.items():
+        oprot.writeString(kiter260)
+        oprot.writeString(viter261)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -25028,11 +24747,11 @@ class getAllComputeResourceNames_result:
       if fid == 0:
         if ftype == TType.MAP:
           self.success = {}
-          (_ktype270, _vtype271, _size269 ) = iprot.readMapBegin()
-          for _i273 in xrange(_size269):
-            _key274 = iprot.readString();
-            _val275 = iprot.readString();
-            self.success[_key274] = _val275
+          (_ktype263, _vtype264, _size262 ) = iprot.readMapBegin()
+          for _i266 in xrange(_size262):
+            _key267 = iprot.readString();
+            _val268 = iprot.readString();
+            self.success[_key267] = _val268
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -25067,9 +24786,9 @@ class getAllComputeResourceNames_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.MAP, 0)
       oprot.writeMapBegin(TType.STRING, TType.STRING, len(self.success))
-      for kiter276,viter277 in self.success.items():
-        oprot.writeString(kiter276)
-        oprot.writeString(viter277)
+      for kiter269,viter270 in self.success.items():
+        oprot.writeString(kiter269)
+        oprot.writeString(viter270)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -30410,11 +30129,11 @@ class changeJobSubmissionPriorities_args:
       if fid == 1:
         if ftype == TType.MAP:
           self.jobSubmissionPriorityMap = {}
-          (_ktype279, _vtype280, _size278 ) = iprot.readMapBegin()
-          for _i282 in xrange(_size278):
-            _key283 = iprot.readString();
-            _val284 = iprot.readI32();
-            self.jobSubmissionPriorityMap[_key283] = _val284
+          (_ktype272, _vtype273, _size271 ) = iprot.readMapBegin()
+          for _i275 in xrange(_size271):
+            _key276 = iprot.readString();
+            _val277 = iprot.readI32();
+            self.jobSubmissionPriorityMap[_key276] = _val277
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -30431,9 +30150,9 @@ class changeJobSubmissionPriorities_args:
     if self.jobSubmissionPriorityMap is not None:
       oprot.writeFieldBegin('jobSubmissionPriorityMap', TType.MAP, 1)
       oprot.writeMapBegin(TType.STRING, TType.I32, len(self.jobSubmissionPriorityMap))
-      for kiter285,viter286 in self.jobSubmissionPriorityMap.items():
-        oprot.writeString(kiter285)
-        oprot.writeI32(viter286)
+      for kiter278,viter279 in self.jobSubmissionPriorityMap.items():
+        oprot.writeString(kiter278)
+        oprot.writeI32(viter279)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -30593,11 +30312,11 @@ class changeDataMovementPriorities_args:
       if fid == 1:
         if ftype == TType.MAP:
           self.dataMovementPriorityMap = {}
-          (_ktype288, _vtype289, _size287 ) = iprot.readMapBegin()
-          for _i291 in xrange(_size287):
-            _key292 = iprot.readString();
-            _val293 = iprot.readI32();
-            self.dataMovementPriorityMap[_key292] = _val293
+          (_ktype281, _vtype282, _size280 ) = iprot.readMapBegin()
+          for _i284 in xrange(_size280):
+            _key285 = iprot.readString();
+            _val286 = iprot.readI32();
+            self.dataMovementPriorityMap[_key285] = _val286
           iprot.readMapEnd()
         else:
           iprot.skip(ftype)
@@ -30614,9 +30333,9 @@ class changeDataMovementPriorities_args:
     if self.dataMovementPriorityMap is not None:
       oprot.writeFieldBegin('dataMovementPriorityMap', TType.MAP, 1)
       oprot.writeMapBegin(TType.STRING, TType.I32, len(self.dataMovementPriorityMap))
-      for kiter294,viter295 in self.dataMovementPriorityMap.items():
-        oprot.writeString(kiter294)
-        oprot.writeI32(viter295)
+      for kiter287,viter288 in self.dataMovementPriorityMap.items():
+        oprot.writeString(kiter287)
+        oprot.writeI32(viter288)
       oprot.writeMapEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -33228,11 +32947,11 @@ class getAllGatewayComputeResourcePreferences_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype299, _size296) = iprot.readListBegin()
-          for _i300 in xrange(_size296):
-            _elem301 = apache.airavata.model.appcatalog.gatewayprofile.ttypes.ComputeResourcePreference()
-            _elem301.read(iprot)
-            self.success.append(_elem301)
+          (_etype292, _size289) = iprot.readListBegin()
+          for _i293 in xrange(_size289):
+            _elem294 = apache.airavata.model.appcatalog.gatewayprofile.ttypes.ComputeResourcePreference()
+            _elem294.read(iprot)
+            self.success.append(_elem294)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -33267,8 +32986,8 @@ class getAllGatewayComputeResourcePreferences_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter302 in self.success:
-        iter302.write(oprot)
+      for iter295 in self.success:
+        iter295.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -33389,11 +33108,11 @@ class getAllGatewayComputeResources_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype306, _size303) = iprot.readListBegin()
-          for _i307 in xrange(_size303):
-            _elem308 = apache.airavata.model.appcatalog.gatewayprofile.ttypes.GatewayResourceProfile()
-            _elem308.read(iprot)
-            self.success.append(_elem308)
+          (_etype299, _size296) = iprot.readListBegin()
+          for _i300 in xrange(_size296):
+            _elem301 = apache.airavata.model.appcatalog.gatewayprofile.ttypes.GatewayResourceProfile()
+            _elem301.read(iprot)
+            self.success.append(_elem301)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -33428,8 +33147,8 @@ class getAllGatewayComputeResources_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRUCT, len(self.success))
-      for iter309 in self.success:
-        iter309.write(oprot)
+      for iter302 in self.success:
+        iter302.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:
@@ -33963,10 +33682,10 @@ class getAllWorkflows_result:
       if fid == 0:
         if ftype == TType.LIST:
           self.success = []
-          (_etype313, _size310) = iprot.readListBegin()
-          for _i314 in xrange(_size310):
-            _elem315 = iprot.readString();
-            self.success.append(_elem315)
+          (_etype306, _size303) = iprot.readListBegin()
+          for _i307 in xrange(_size303):
+            _elem308 = iprot.readString();
+            self.success.append(_elem308)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -34001,8 +33720,8 @@ class getAllWorkflows_result:
     if self.success is not None:
       oprot.writeFieldBegin('success', TType.LIST, 0)
       oprot.writeListBegin(TType.STRING, len(self.success))
-      for iter316 in self.success:
-        oprot.writeString(iter316)
+      for iter309 in self.success:
+        oprot.writeString(iter309)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.ire is not None:

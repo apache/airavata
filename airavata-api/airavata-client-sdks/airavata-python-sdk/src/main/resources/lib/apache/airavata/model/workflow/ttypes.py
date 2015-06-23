@@ -7,7 +7,7 @@
 #
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
-import apache.airavata.model.appcatalog.appinterface.ttypes
+import apache.airavata.model.application.io.ttypes
 
 
 from thrift.transport import TTransport
@@ -36,8 +36,8 @@ class Workflow:
     (2, TType.STRING, 'name', None, None, ), # 2
     (3, TType.STRING, 'graph', None, None, ), # 3
     (4, TType.STRING, 'image', None, None, ), # 4
-    (5, TType.LIST, 'workflowInputs', (TType.STRUCT,(apache.airavata.model.appcatalog.appinterface.ttypes.InputDataObjectType, apache.airavata.model.appcatalog.appinterface.ttypes.InputDataObjectType.thrift_spec)), None, ), # 5
-    (6, TType.LIST, 'workflowOutputs', (TType.STRUCT,(apache.airavata.model.appcatalog.appinterface.ttypes.OutputDataObjectType, apache.airavata.model.appcatalog.appinterface.ttypes.OutputDataObjectType.thrift_spec)), None, ), # 6
+    (5, TType.LIST, 'workflowInputs', (TType.STRUCT,(apache.airavata.model.application.io.ttypes.InputDataObjectType, apache.airavata.model.application.io.ttypes.InputDataObjectType.thrift_spec)), None, ), # 5
+    (6, TType.LIST, 'workflowOutputs', (TType.STRUCT,(apache.airavata.model.application.io.ttypes.OutputDataObjectType, apache.airavata.model.application.io.ttypes.OutputDataObjectType.thrift_spec)), None, ), # 6
   )
 
   def __init__(self, templateId=thrift_spec[1][4], name=None, graph=None, image=None, workflowInputs=None, workflowOutputs=None,):
@@ -82,7 +82,7 @@ class Workflow:
           self.workflowInputs = []
           (_etype3, _size0) = iprot.readListBegin()
           for _i4 in xrange(_size0):
-            _elem5 = apache.airavata.model.appcatalog.appinterface.ttypes.InputDataObjectType()
+            _elem5 = apache.airavata.model.application.io.ttypes.InputDataObjectType()
             _elem5.read(iprot)
             self.workflowInputs.append(_elem5)
           iprot.readListEnd()
@@ -93,7 +93,7 @@ class Workflow:
           self.workflowOutputs = []
           (_etype9, _size6) = iprot.readListBegin()
           for _i10 in xrange(_size6):
-            _elem11 = apache.airavata.model.appcatalog.appinterface.ttypes.OutputDataObjectType()
+            _elem11 = apache.airavata.model.application.io.ttypes.OutputDataObjectType()
             _elem11.read(iprot)
             self.workflowOutputs.append(_elem11)
           iprot.readListEnd()
