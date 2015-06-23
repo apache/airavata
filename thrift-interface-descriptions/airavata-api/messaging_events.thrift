@@ -38,7 +38,7 @@ enum MessageLevel {
 enum MessageType {
     EXPERIMENT,
     TASK,
-    WORKFLOWNODE,
+    PROCESS,
     JOB,
     LAUNCHTASK,
     TERMINATETASK,
@@ -51,9 +51,15 @@ struct ExperimentStatusChangeEvent {
     3: required string gatewayId;
 }
 
+struct ProcessIdentifier {
+    1: required string processId;
+    2: required string experimentId;
+    3: required string gatewayId;
+}
+
 struct TaskIdentifier {
     1: required string taskId;
-    2: required string workflowNodeId;
+    2: required string processId;
     3: required string experimentId;
     4: required string gatewayId;
 }
@@ -68,6 +74,16 @@ struct TaskStatusChangeRequestEvent {
     2: required TaskIdentifier taskIdentity;
 }
 
+struct ProcessStatusChangeEvent {
+    1: required status_models.ProcessState state;
+    2: required ProcessIdentifier processIdentity;
+}
+
+struct ProcessStatusChangeRequestEvent {
+    1: required status_models.ProcessState state;
+    2: required ProcessIdentifier processIdentity;
+}
+
 struct TaskOutputChangeEvent {
     1: required list<application_io_models.OutputDataObjectType> output;
     2: required TaskIdentifier taskIdentity;
@@ -76,7 +92,7 @@ struct TaskOutputChangeEvent {
 struct JobIdentifier {
     1: required string jobId;
     2: required string taskId;
-    3: required string workflowNodeId;
+    3: required string processId;
     4: required string experimentId;
     5: required string gatewayId;
 }
