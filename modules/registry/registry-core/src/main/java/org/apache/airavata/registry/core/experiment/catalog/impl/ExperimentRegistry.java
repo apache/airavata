@@ -29,6 +29,7 @@ import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentStatistics;
 import org.apache.airavata.model.experiment.ExperimentSummaryModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
+import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
 import org.apache.airavata.model.status.*;
@@ -459,6 +460,51 @@ public class ExperimentRegistry {
         return taskId;
     }
 
+    public String addJob(JobModel job, String taskId) throws RegistryException {
+        try {
+            JobResource jobResource = new JobResource();
+            jobResource.setJobId(getJobID(taskId));
+            jobResource.setTaskId(taskId);
+            jobResource.setJobDescription(job.getJobDescription());
+            jobResource.setCreationTime(AiravataUtils.getTime(job.getCreationTime()));
+            jobResource.setComputeResourceConsumed(job.getComputeResourceConsumed());
+            jobResource.setJobName(job.getJobName());
+            jobResource.setWorkingDir(job.getWorkingDir());
+
+            TaskStatus taskStatus = new TaskStatus();
+            taskStatus.setState(TaskState.CREATED);
+            addTaskStatus(taskStatus, job.getJobId());
+        } catch (Exception e) {
+            logger.error(taskId, "Error while adding task...", e);
+            throw new RegistryException(e);
+        }
+        return taskId;
+    }
+
+    public String addJobStatus(JobStatus jobStatus, String jobID) throws RegistryException {
+        try {
+            JobResource jobResource = new JobResource();
+            jobResource.setJobId(jobID);
+            JobStatusResource status = jobResource.getJobStatus();
+            if (status == null) {
+                status = new JobStatusResource();
+            }
+            if (isValidStatusTransition(ProcessState.valueOf(status.getState()), jobStatus.getJobState())) {
+                status.setStatusId(getStatusID(jobID));
+                status.setJobId(jobID);
+                status.setTimeOfStateChange(AiravataUtils.getTime(jobStatus.getTimeOfStateChange()));
+                status.setState(jobStatus.getJobState().toString());
+                status.setReason(jobStatus.getReason());
+                status.save();
+                logger.debug(jobID, "Added job {} status to {}.", jobID, jobStatus.toString());
+            }
+        } catch (Exception e) {
+            logger.error(jobID, "Error while adding job status...", e);
+            throw new RegistryException(e);
+        }
+        return jobID;
+    }
+
 
     //CPI Update Methods
     public void updateExperiment(ExperimentModel experiment, String expId) throws RegistryException {
@@ -761,6 +807,33 @@ public class ExperimentRegistry {
         return addTaskError(taskError, taskID);
     }
 
+    public String updateJob(JobModel job, String jobId) throws RegistryException {
+        try {
+            TaskResource taskResource = new TaskResource();
+            JobResource jobResource = taskResource.getJob(jobId);
+            jobResource.setJobId(jobId);
+            jobResource.setTaskId(job.getTaskId());
+            jobResource.setJobDescription(job.getJobDescription());
+            jobResource.setCreationTime(AiravataUtils.getTime(job.getCreationTime()));
+            jobResource.setComputeResourceConsumed(job.getComputeResourceConsumed());
+            jobResource.setJobName(job.getJobName());
+            jobResource.setWorkingDir(job.getWorkingDir());
+
+            TaskStatus taskStatus = new TaskStatus();
+            taskStatus.setState(TaskState.CREATED);
+            addTaskStatus(taskStatus, job.getJobId());
+        } catch (Exception e) {
+            logger.error(jobId, "Error while adding job...", e);
+            throw new RegistryException(e);
+        }
+        return jobId;
+    }
+
+    public String updateJobStatus(JobStatus jobStatus, String jobID) throws RegistryException {
+        return addJobStatus(jobStatus, jobID);
+    }
+
+
     //TODO
     public void updateExperimentField(String expID, String fieldName, Object value) throws RegistryException {
         try {
@@ -912,7 +985,7 @@ public class ExperimentRegistry {
             if (fieldName == null) {
                 return ThriftDataModelConversion.getProcesModel(resource);
             } else {
-                logger.error("Unsupported field name for experiment basic data..");
+                logger.error("Unsupported field name for process basic data..");
             }
         }catch (Exception e) {
             logger.error("Error while getting process data..", e);
@@ -948,10 +1021,10 @@ public class ExperimentRegistry {
             if (fieldName == null) {
                 return ThriftDataModelConversion.getTaskModel(resource);
             } else {
-                logger.error("Unsupported field name for experiment basic data..");
+                logger.error("Unsupported field name for task basic data..");
             }
         }catch (Exception e) {
-            logger.error("Error while getting process data..", e);
+            logger.error("Error while getting task data..", e);
             throw new RegistryException(e);
         }
         return null;
@@ -964,6 +1037,27 @@ public class ExperimentRegistry {
     public Object getTaskStatus(String identifier) {
         return null;
     }
+
+    public Object getJob(String jobId, String fieldName) throws RegistryException {
+        try {
+            TaskResource taskResource = new TaskResource();
+            JobResource resource = taskResource.getJob(jobId);
+            if (fieldName == null) {
+                return ThriftDataModelConversion.getJobModel(resource);
+            } else {
+                logger.error("Unsupported field name for job basic data..");
+            }
+        }catch (Exception e) {
+            logger.error("Error while getting job data..", e);
+            throw new RegistryException(e);
+        }
+        return null;
+    }
+
+    public Object getJobStatus(String identifier) {
+        return null;
+    }
+
 
     public List<ExperimentModel> getExperimentList(String fieldName, Object value) throws RegistryException {
         List<ExperimentModel> experiments = new ArrayList<ExperimentModel>();
@@ -1008,6 +1102,10 @@ public class ExperimentRegistry {
     }
 
     public List<TaskModel> getTaskList(String fieldName, Object value) {
+        return null;
+    }
+
+    public List<JobModel> getJobList(String fieldName, Object value) {
         return null;
     }
 
@@ -1193,6 +1291,15 @@ public class ExperimentRegistry {
         return taskIds;
     }
 
+    public List<String> getJobIds(String fieldName, Object value) throws RegistryException {
+        List<String> jobIds = new ArrayList<String>();
+        List<JobModel> jobs = getJobList(fieldName, value);
+        for (JobModel job : jobs) {
+            jobIds.add(job.getJobId());
+        }
+        return jobIds;
+    }
+
 
     //Remove CPI methods
     public void removeExperiment(String experimentId) throws RegistryException {
@@ -1240,6 +1347,16 @@ public class ExperimentRegistry {
         try {
             ProcessResource process = new ProcessResource();
             process.remove(ResourceType.TASK, taskId);
+        } catch (Exception e) {
+            logger.error("Error while removing task details..", e);
+            throw new RegistryException(e);
+        }
+    }
+
+    public void removeJob(String jobId) throws RegistryException {
+        try {
+            TaskResource taskResource = new TaskResource();
+            taskResource.remove(ResourceType.JOB, jobId);
         } catch (Exception e) {
             logger.error("Error while removing task details..", e);
             throw new RegistryException(e);
@@ -1298,6 +1415,17 @@ public class ExperimentRegistry {
         }
     }
 
+
+    public boolean isJobExist(String jobId) throws RegistryException {
+        try {
+            TaskResource taskResource = new TaskResource();
+            return taskResource.isExists(ResourceType.JOB, jobId);
+        } catch (Exception e) {
+            logger.error("Error while retrieving job.....", e);
+            throw new RegistryException(e);
+        }
+    }
+
     public String getExperimentID(String experimentName) {
         String exp = experimentName.replaceAll("\\s", "");
         return exp + "_" + UUID.randomUUID();
@@ -1311,6 +1439,11 @@ public class ExperimentRegistry {
     public String getTaskID(String processId) {
         String taskId = processId.replaceAll("\\s", "");
         return taskId + "_" + UUID.randomUUID();
+    }
+
+    public String getJobID(String taskId) {
+        String jobId = taskId.replaceAll("\\s", "");
+        return jobId + "_" + UUID.randomUUID();
     }
 
     public String getStatusID(String parentId) {
@@ -1386,6 +1519,17 @@ public class ExperimentRegistry {
             switch (oldState) {
                 case CREATED:
                     return true;
+                default:
+                    return false;
+            }
+        }else if (object1 instanceof JobState && object2 instanceof JobState) {
+            JobState oldState = (JobState) object1;
+            JobState nextState = (JobState) object2;
+            if (nextState == null) {
+                return false;
+            }
+            //TODO
+            switch (oldState) {
                 default:
                     return false;
             }

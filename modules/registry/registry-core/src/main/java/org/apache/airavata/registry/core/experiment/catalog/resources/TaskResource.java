@@ -24,6 +24,7 @@ package org.apache.airavata.registry.core.experiment.catalog.resources;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
+import org.apache.airavata.registry.core.experiment.catalog.model.Job;
 import org.apache.airavata.registry.core.experiment.catalog.model.Task;
 import org.apache.airavata.registry.core.experiment.catalog.model.TaskError;
 import org.apache.airavata.registry.core.experiment.catalog.model.TaskStatus;
@@ -114,8 +115,12 @@ public class TaskResource extends AbstractExpCatResource {
                 TaskErrorResource taskErrorResource = new TaskErrorResource();
                 taskErrorResource.setTaskId(taskId);
                 return taskErrorResource;
+            case JOB:
+                JobResource jobResource = new JobResource();
+                jobResource.setTaskId(taskId);
+                return jobResource;
             default:
-                logger.error("Unsupported resource type for job details data resource.", new UnsupportedOperationException());
+                logger.error("Unsupported resource type for task data resource.", new UnsupportedOperationException());
                 throw new UnsupportedOperationException();
         }
     }
@@ -138,6 +143,12 @@ public class TaskResource extends AbstractExpCatResource {
                 case TASK_ERROR:
                     generator = new QueryGenerator(TASK_ERROR);
                     generator.setParameter(TaskErrorConstants.ERROR_ID, name);
+                    q = generator.deleteQuery(em);
+                    q.executeUpdate();
+                    break;
+                case JOB:
+                    generator = new QueryGenerator(JOB);
+                    generator.setParameter(JobConstants.JOB_ID, name);
                     q = generator.deleteQuery(em);
                     q.executeUpdate();
                     break;
@@ -189,6 +200,15 @@ public class TaskResource extends AbstractExpCatResource {
                     em.getTransaction().commit();
                     em.close();
                     return errorResource;
+                case JOB:
+                    generator = new QueryGenerator(JOB);
+                    generator.setParameter(JobConstants.JOB_ID, name);
+                    q = generator.selectQuery(em);
+                    Job job = (Job) q.getSingleResult();
+                    JobResource jobResource = (JobResource) Utils.getResource(ResourceType.JOB, job);
+                    em.getTransaction().commit();
+                    em.close();
+                    return jobResource;
                 default:
                     em.getTransaction().commit();
                     em.close();
@@ -350,5 +370,9 @@ public class TaskResource extends AbstractExpCatResource {
             }
             return max;
         }
+    }
+
+    public JobResource getJob(String jobId) throws RegistryException {
+        return (JobResource) get(ResourceType.JOB, jobId);
     }
 }

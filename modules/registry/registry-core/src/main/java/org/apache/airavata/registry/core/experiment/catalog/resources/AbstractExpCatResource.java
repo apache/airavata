@@ -49,6 +49,8 @@ public abstract class AbstractExpCatResource implements ExperimentCatResource {
     public static final String TASK = "Task";
     public static final String TASK_ERROR = "TaskError";
     public static final String TASK_STATUS = "TaskStatus";
+    public static final String JOB = "Job";
+    public static final String JOB_STATUS = "JobStatus";
 
 
 	// Gateway Table
@@ -213,6 +215,21 @@ public abstract class AbstractExpCatResource implements ExperimentCatResource {
     //Process Resource Schedule table
     public final class ProcessResourceScheduleConstants {
         public static final String PROCESS_ID = "processId";
+    }
+
+    //Job Table
+    public final class JobConstants {
+        public static final String JOB_ID = "jobId";
+        public static final String TASK_ID = "taskId";
+    }
+
+    // Job Status table
+    public final class JobStatusConstants {
+        public static final String STATUS_ID = "statusId";
+        public static final String JOB_ID = "jobId";
+        public static final String STATE = "state";
+        public static final String TIME_OF_STATE_CHANGE = "timeOfStateChange";
+        public static final String REASON = "reason";
     }
 
     // Task Status table
