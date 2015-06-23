@@ -73,20 +73,20 @@ public class RabbitMQStatusPublisher implements Publisher {
             } else if (msgCtx.getType() == MessageType.TASK) {
                 TaskStatusChangeEvent event = (TaskStatusChangeEvent) msgCtx.getEvent();
                 routingKey = gatewayId + "." + event.getTaskIdentity().getExperimentId() + "." +
-                        event.getTaskIdentity().getWorkflowNodeId() + "." + event.getTaskIdentity().getTaskId();
+                        event.getTaskIdentity().getProcessId() + "." + event.getTaskIdentity().getTaskId();
             } else if (msgCtx.getType() == MessageType.TASKOUTPUT) {
                 TaskOutputChangeEvent event = (TaskOutputChangeEvent) msgCtx.getEvent();
                 routingKey = gatewayId + "." + event.getTaskIdentity().getExperimentId() + "." +
-                        event.getTaskIdentity().getWorkflowNodeId() + "." + event.getTaskIdentity().getTaskId();
-            } else if (msgCtx.getType() == MessageType.WORKFLOWNODE) {
-                /*WorkflowNodeStatusChangeEvent event = (WorkflowNodeStatusChangeEvent) msgCtx.getEvent();
-                WorkflowIdentifier workflowNodeIdentity = event.getWorkflowNodeIdentity();
-                routingKey = gatewayId + "." + workflowNodeIdentity.getExperimentId() + "." + workflowNodeIdentity.getWorkflowNodeId();*/
+                        event.getTaskIdentity().getProcessId() + "." + event.getTaskIdentity().getTaskId();
+            } else if (msgCtx.getType() == MessageType.PROCESS) {
+                ProcessStatusChangeEvent event = (ProcessStatusChangeEvent) msgCtx.getEvent();
+                ProcessIdentifier processIdentifier = event.getProcessIdentity();
+                routingKey = gatewayId + "." + processIdentifier.getExperimentId() + "." + processIdentifier.getProcessId();
             } else if (msgCtx.getType() == MessageType.JOB) {
                 JobStatusChangeEvent event = (JobStatusChangeEvent) msgCtx.getEvent();
                 JobIdentifier identity = event.getJobIdentity();
                 routingKey = gatewayId + "." + identity.getExperimentId() + "." +
-                        identity.getWorkflowNodeId() + "." +
+                        identity.getProcessId() + "." +
                         identity.getTaskId() + "." +
                         identity.getJobId();
             }

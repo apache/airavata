@@ -9,9 +9,13 @@
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
 import apache.airavata.api.error.ttypes
 import apache.airavata.model.ttypes
-import apache.airavata.model.workspace.experiment.ttypes
+import apache.airavata.model.status.ttypes
+import apache.airavata.model.job.ttypes
+import apache.airavata.model.experiment.ttypes
 import apache.airavata.model.workspace.ttypes
 import apache.airavata.model.appcatalog.computeresource.ttypes
+import apache.airavata.model.scheduling.ttypes
+import apache.airavata.model.application.io.ttypes
 import apache.airavata.model.appcatalog.appdeployment.ttypes
 import apache.airavata.model.appcatalog.appinterface.ttypes
 import apache.airavata.model.appcatalog.gatewayprofile.ttypes
