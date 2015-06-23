@@ -49,6 +49,7 @@ import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeRequestEvent;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.xmlbeans.XmlCursor;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.ggf.schemas.bes.x2006.x08.besFactory.ActivityStateEnumeration;
@@ -141,8 +142,6 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
             
             log.info("Submitted JSDL: " + jobDefinition.getJobDescription());
             
-            
-
             // upload files if any
             DataTransferrer dt = new DataTransferrer(jobExecutionContext, sc);
             dt.uploadLocalFiles();
@@ -228,7 +227,8 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
         } catch (Exception e) {
             log.error("Cannot create storage..");
             throw new GFacProviderException("Cannot create storage..", e);
-        } 
+        }
+        
     }
 	
 
