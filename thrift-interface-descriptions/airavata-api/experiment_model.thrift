@@ -76,31 +76,33 @@ struct UserConfigurationDataModel {
 struct ExperimentModel {
     1: required string experimentId,
     2: required string projectId,
-    3: required ExperimentType experimentType = ExperimentType.SINGLE_APPLICATION;
-    4: required string userName,
-    5: required string experimentName,
-    6: optional i64 creationTime,
-    7: optional string description,
-    8: optional string executionId,
-    9: optional string gatewayExecutionId,
-    10: optional bool enableEmailNotification,
-    11: optional list<string> emailAddresses,
-    12: optional UserConfigurationDataModel userConfigurationData,
-    13: optional list<application_io_models.InputDataObjectType> experimentInputs,
-    14: optional list<application_io_models.OutputDataObjectType> experimentOutputs,
-    15: optional status_models.ExperimentStatus experimentStatus,
-    16: optional list<airavata_commons.ErrorModel> errors
+    3: required string gatewayId,
+    4: required ExperimentType experimentType = ExperimentType.SINGLE_APPLICATION;
+    5: required string userName,
+    6: required string experimentName,
+    7: optional i64 creationTime,
+    8: optional string description,
+    9: optional string executionId,
+    10: optional string gatewayExecutionId,
+    11: optional bool enableEmailNotification,
+    12: optional list<string> emailAddresses,
+    13: optional UserConfigurationDataModel userConfigurationData,
+    14: optional list<application_io_models.InputDataObjectType> experimentInputs,
+    15: optional list<application_io_models.OutputDataObjectType> experimentOutputs,
+    16: optional status_models.ExperimentStatus experimentStatus,
+    17: optional list<airavata_commons.ErrorModel> errors
 }
 
 struct ExperimentSummaryModel {
     1: required string experimentId,
     2: required string projectId,
-    3: optional i64 creationTime,
-    4: required string userName,
-    5: required string name,
-    6: optional string description,
-    7: optional string applicationId,
-    8: optional status_models.ExperimentStatus experimentStatus,
+    3: required string gatewayId,
+    4: optional i64 creationTime,
+    5: required string userName,
+    6: required string name,
+    7: optional string description,
+    8: optional string applicationId,
+    9: optional status_models.ExperimentStatus experimentStatus,
 }
 
 struct ExperimentStatistics {

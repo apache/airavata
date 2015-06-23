@@ -64,14 +64,14 @@ public class ProcessStatusChangeRequestEvent implements org.apache.thrift.TBase<
     schemes.put(TupleScheme.class, new ProcessStatusChangeRequestEventTupleSchemeFactory());
   }
 
-  private org.apache.airavata.model.status.TaskState state; // required
+  private org.apache.airavata.model.status.ProcessState state; // required
   private ProcessIdentifier processIdentity; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     /**
      * 
-     * @see org.apache.airavata.model.status.TaskState
+     * @see org.apache.airavata.model.status.ProcessState
      */
     STATE((short)1, "state"),
     PROCESS_IDENTITY((short)2, "processIdentity");
@@ -137,7 +137,7 @@ public class ProcessStatusChangeRequestEvent implements org.apache.thrift.TBase<
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
     tmpMap.put(_Fields.STATE, new org.apache.thrift.meta_data.FieldMetaData("state", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, org.apache.airavata.model.status.TaskState.class)));
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, org.apache.airavata.model.status.ProcessState.class)));
     tmpMap.put(_Fields.PROCESS_IDENTITY, new org.apache.thrift.meta_data.FieldMetaData("processIdentity", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ProcessIdentifier.class)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -148,7 +148,7 @@ public class ProcessStatusChangeRequestEvent implements org.apache.thrift.TBase<
   }
 
   public ProcessStatusChangeRequestEvent(
-    org.apache.airavata.model.status.TaskState state,
+    org.apache.airavata.model.status.ProcessState state,
     ProcessIdentifier processIdentity)
   {
     this();
@@ -180,17 +180,17 @@ public class ProcessStatusChangeRequestEvent implements org.apache.thrift.TBase<
 
   /**
    * 
-   * @see org.apache.airavata.model.status.TaskState
+   * @see org.apache.airavata.model.status.ProcessState
    */
-  public org.apache.airavata.model.status.TaskState getState() {
+  public org.apache.airavata.model.status.ProcessState getState() {
     return this.state;
   }
 
   /**
    * 
-   * @see org.apache.airavata.model.status.TaskState
+   * @see org.apache.airavata.model.status.ProcessState
    */
-  public void setState(org.apache.airavata.model.status.TaskState state) {
+  public void setState(org.apache.airavata.model.status.ProcessState state) {
     this.state = state;
   }
 
@@ -238,7 +238,7 @@ public class ProcessStatusChangeRequestEvent implements org.apache.thrift.TBase<
       if (value == null) {
         unsetState();
       } else {
-        setState((org.apache.airavata.model.status.TaskState)value);
+        setState((org.apache.airavata.model.status.ProcessState)value);
       }
       break;
 
@@ -450,7 +450,7 @@ public class ProcessStatusChangeRequestEvent implements org.apache.thrift.TBase<
         switch (schemeField.id) {
           case 1: // STATE
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct.state = org.apache.airavata.model.status.TaskState.findByValue(iprot.readI32());
+              struct.state = org.apache.airavata.model.status.ProcessState.findByValue(iprot.readI32());
               struct.setStateIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
@@ -512,7 +512,7 @@ public class ProcessStatusChangeRequestEvent implements org.apache.thrift.TBase<
     @Override
     public void read(org.apache.thrift.protocol.TProtocol prot, ProcessStatusChangeRequestEvent struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
-      struct.state = org.apache.airavata.model.status.TaskState.findByValue(iprot.readI32());
+      struct.state = org.apache.airavata.model.status.ProcessState.findByValue(iprot.readI32());
       struct.setStateIsSet(true);
       struct.processIdentity = new ProcessIdentifier();
       struct.processIdentity.read(iprot);

@@ -73,20 +73,21 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
 
   private static final org.apache.thrift.protocol.TField EXPERIMENT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentId", org.apache.thrift.protocol.TType.STRING, (short)1);
   private static final org.apache.thrift.protocol.TField PROJECT_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("projectId", org.apache.thrift.protocol.TType.STRING, (short)2);
-  private static final org.apache.thrift.protocol.TField EXPERIMENT_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentType", org.apache.thrift.protocol.TType.I32, (short)3);
-  private static final org.apache.thrift.protocol.TField USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("userName", org.apache.thrift.protocol.TType.STRING, (short)4);
-  private static final org.apache.thrift.protocol.TField EXPERIMENT_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentName", org.apache.thrift.protocol.TType.STRING, (short)5);
-  private static final org.apache.thrift.protocol.TField CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("creationTime", org.apache.thrift.protocol.TType.I64, (short)6);
-  private static final org.apache.thrift.protocol.TField DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("description", org.apache.thrift.protocol.TType.STRING, (short)7);
-  private static final org.apache.thrift.protocol.TField EXECUTION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("executionId", org.apache.thrift.protocol.TType.STRING, (short)8);
-  private static final org.apache.thrift.protocol.TField GATEWAY_EXECUTION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayExecutionId", org.apache.thrift.protocol.TType.STRING, (short)9);
-  private static final org.apache.thrift.protocol.TField ENABLE_EMAIL_NOTIFICATION_FIELD_DESC = new org.apache.thrift.protocol.TField("enableEmailNotification", org.apache.thrift.protocol.TType.BOOL, (short)10);
-  private static final org.apache.thrift.protocol.TField EMAIL_ADDRESSES_FIELD_DESC = new org.apache.thrift.protocol.TField("emailAddresses", org.apache.thrift.protocol.TType.LIST, (short)11);
-  private static final org.apache.thrift.protocol.TField USER_CONFIGURATION_DATA_FIELD_DESC = new org.apache.thrift.protocol.TField("userConfigurationData", org.apache.thrift.protocol.TType.STRUCT, (short)12);
-  private static final org.apache.thrift.protocol.TField EXPERIMENT_INPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentInputs", org.apache.thrift.protocol.TType.LIST, (short)13);
-  private static final org.apache.thrift.protocol.TField EXPERIMENT_OUTPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentOutputs", org.apache.thrift.protocol.TType.LIST, (short)14);
-  private static final org.apache.thrift.protocol.TField EXPERIMENT_STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentStatus", org.apache.thrift.protocol.TType.STRUCT, (short)15);
-  private static final org.apache.thrift.protocol.TField ERRORS_FIELD_DESC = new org.apache.thrift.protocol.TField("errors", org.apache.thrift.protocol.TType.LIST, (short)16);
+  private static final org.apache.thrift.protocol.TField GATEWAY_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayId", org.apache.thrift.protocol.TType.STRING, (short)3);
+  private static final org.apache.thrift.protocol.TField EXPERIMENT_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentType", org.apache.thrift.protocol.TType.I32, (short)4);
+  private static final org.apache.thrift.protocol.TField USER_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("userName", org.apache.thrift.protocol.TType.STRING, (short)5);
+  private static final org.apache.thrift.protocol.TField EXPERIMENT_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentName", org.apache.thrift.protocol.TType.STRING, (short)6);
+  private static final org.apache.thrift.protocol.TField CREATION_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("creationTime", org.apache.thrift.protocol.TType.I64, (short)7);
+  private static final org.apache.thrift.protocol.TField DESCRIPTION_FIELD_DESC = new org.apache.thrift.protocol.TField("description", org.apache.thrift.protocol.TType.STRING, (short)8);
+  private static final org.apache.thrift.protocol.TField EXECUTION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("executionId", org.apache.thrift.protocol.TType.STRING, (short)9);
+  private static final org.apache.thrift.protocol.TField GATEWAY_EXECUTION_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("gatewayExecutionId", org.apache.thrift.protocol.TType.STRING, (short)10);
+  private static final org.apache.thrift.protocol.TField ENABLE_EMAIL_NOTIFICATION_FIELD_DESC = new org.apache.thrift.protocol.TField("enableEmailNotification", org.apache.thrift.protocol.TType.BOOL, (short)11);
+  private static final org.apache.thrift.protocol.TField EMAIL_ADDRESSES_FIELD_DESC = new org.apache.thrift.protocol.TField("emailAddresses", org.apache.thrift.protocol.TType.LIST, (short)12);
+  private static final org.apache.thrift.protocol.TField USER_CONFIGURATION_DATA_FIELD_DESC = new org.apache.thrift.protocol.TField("userConfigurationData", org.apache.thrift.protocol.TType.STRUCT, (short)13);
+  private static final org.apache.thrift.protocol.TField EXPERIMENT_INPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentInputs", org.apache.thrift.protocol.TType.LIST, (short)14);
+  private static final org.apache.thrift.protocol.TField EXPERIMENT_OUTPUTS_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentOutputs", org.apache.thrift.protocol.TType.LIST, (short)15);
+  private static final org.apache.thrift.protocol.TField EXPERIMENT_STATUS_FIELD_DESC = new org.apache.thrift.protocol.TField("experimentStatus", org.apache.thrift.protocol.TType.STRUCT, (short)16);
+  private static final org.apache.thrift.protocol.TField ERRORS_FIELD_DESC = new org.apache.thrift.protocol.TField("errors", org.apache.thrift.protocol.TType.LIST, (short)17);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -96,6 +97,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
 
   private String experimentId; // required
   private String projectId; // required
+  private String gatewayId; // required
   private ExperimentType experimentType; // required
   private String userName; // required
   private String experimentName; // required
@@ -115,24 +117,25 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
     EXPERIMENT_ID((short)1, "experimentId"),
     PROJECT_ID((short)2, "projectId"),
+    GATEWAY_ID((short)3, "gatewayId"),
     /**
      * 
      * @see ExperimentType
      */
-    EXPERIMENT_TYPE((short)3, "experimentType"),
-    USER_NAME((short)4, "userName"),
-    EXPERIMENT_NAME((short)5, "experimentName"),
-    CREATION_TIME((short)6, "creationTime"),
-    DESCRIPTION((short)7, "description"),
-    EXECUTION_ID((short)8, "executionId"),
-    GATEWAY_EXECUTION_ID((short)9, "gatewayExecutionId"),
-    ENABLE_EMAIL_NOTIFICATION((short)10, "enableEmailNotification"),
-    EMAIL_ADDRESSES((short)11, "emailAddresses"),
-    USER_CONFIGURATION_DATA((short)12, "userConfigurationData"),
-    EXPERIMENT_INPUTS((short)13, "experimentInputs"),
-    EXPERIMENT_OUTPUTS((short)14, "experimentOutputs"),
-    EXPERIMENT_STATUS((short)15, "experimentStatus"),
-    ERRORS((short)16, "errors");
+    EXPERIMENT_TYPE((short)4, "experimentType"),
+    USER_NAME((short)5, "userName"),
+    EXPERIMENT_NAME((short)6, "experimentName"),
+    CREATION_TIME((short)7, "creationTime"),
+    DESCRIPTION((short)8, "description"),
+    EXECUTION_ID((short)9, "executionId"),
+    GATEWAY_EXECUTION_ID((short)10, "gatewayExecutionId"),
+    ENABLE_EMAIL_NOTIFICATION((short)11, "enableEmailNotification"),
+    EMAIL_ADDRESSES((short)12, "emailAddresses"),
+    USER_CONFIGURATION_DATA((short)13, "userConfigurationData"),
+    EXPERIMENT_INPUTS((short)14, "experimentInputs"),
+    EXPERIMENT_OUTPUTS((short)15, "experimentOutputs"),
+    EXPERIMENT_STATUS((short)16, "experimentStatus"),
+    ERRORS((short)17, "errors");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -151,33 +154,35 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
           return EXPERIMENT_ID;
         case 2: // PROJECT_ID
           return PROJECT_ID;
-        case 3: // EXPERIMENT_TYPE
+        case 3: // GATEWAY_ID
+          return GATEWAY_ID;
+        case 4: // EXPERIMENT_TYPE
           return EXPERIMENT_TYPE;
-        case 4: // USER_NAME
+        case 5: // USER_NAME
           return USER_NAME;
-        case 5: // EXPERIMENT_NAME
+        case 6: // EXPERIMENT_NAME
           return EXPERIMENT_NAME;
-        case 6: // CREATION_TIME
+        case 7: // CREATION_TIME
           return CREATION_TIME;
-        case 7: // DESCRIPTION
+        case 8: // DESCRIPTION
           return DESCRIPTION;
-        case 8: // EXECUTION_ID
+        case 9: // EXECUTION_ID
           return EXECUTION_ID;
-        case 9: // GATEWAY_EXECUTION_ID
+        case 10: // GATEWAY_EXECUTION_ID
           return GATEWAY_EXECUTION_ID;
-        case 10: // ENABLE_EMAIL_NOTIFICATION
+        case 11: // ENABLE_EMAIL_NOTIFICATION
           return ENABLE_EMAIL_NOTIFICATION;
-        case 11: // EMAIL_ADDRESSES
+        case 12: // EMAIL_ADDRESSES
           return EMAIL_ADDRESSES;
-        case 12: // USER_CONFIGURATION_DATA
+        case 13: // USER_CONFIGURATION_DATA
           return USER_CONFIGURATION_DATA;
-        case 13: // EXPERIMENT_INPUTS
+        case 14: // EXPERIMENT_INPUTS
           return EXPERIMENT_INPUTS;
-        case 14: // EXPERIMENT_OUTPUTS
+        case 15: // EXPERIMENT_OUTPUTS
           return EXPERIMENT_OUTPUTS;
-        case 15: // EXPERIMENT_STATUS
+        case 16: // EXPERIMENT_STATUS
           return EXPERIMENT_STATUS;
-        case 16: // ERRORS
+        case 17: // ERRORS
           return ERRORS;
         default:
           return null;
@@ -230,6 +235,8 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.PROJECT_ID, new org.apache.thrift.meta_data.FieldMetaData("projectId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.GATEWAY_ID, new org.apache.thrift.meta_data.FieldMetaData("gatewayId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.EXPERIMENT_TYPE, new org.apache.thrift.meta_data.FieldMetaData("experimentType", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, ExperimentType.class)));
     tmpMap.put(_Fields.USER_NAME, new org.apache.thrift.meta_data.FieldMetaData("userName", org.apache.thrift.TFieldRequirementType.REQUIRED, 
@@ -274,6 +281,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
   public ExperimentModel(
     String experimentId,
     String projectId,
+    String gatewayId,
     ExperimentType experimentType,
     String userName,
     String experimentName)
@@ -281,6 +289,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
     this();
     this.experimentId = experimentId;
     this.projectId = projectId;
+    this.gatewayId = gatewayId;
     this.experimentType = experimentType;
     this.userName = userName;
     this.experimentName = experimentName;
@@ -296,6 +305,9 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
     }
     if (other.isSetProjectId()) {
       this.projectId = other.projectId;
+    }
+    if (other.isSetGatewayId()) {
+      this.gatewayId = other.gatewayId;
     }
     if (other.isSetExperimentType()) {
       this.experimentType = other.experimentType;
@@ -358,6 +370,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
   public void clear() {
     this.experimentId = null;
     this.projectId = null;
+    this.gatewayId = null;
     this.experimentType = org.apache.airavata.model.experiment.ExperimentType.SINGLE_APPLICATION;
 
     this.userName = null;
@@ -420,6 +433,29 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
   public void setProjectIdIsSet(boolean value) {
     if (!value) {
       this.projectId = null;
+    }
+  }
+
+  public String getGatewayId() {
+    return this.gatewayId;
+  }
+
+  public void setGatewayId(String gatewayId) {
+    this.gatewayId = gatewayId;
+  }
+
+  public void unsetGatewayId() {
+    this.gatewayId = null;
+  }
+
+  /** Returns true if field gatewayId is set (has been assigned a value) and false otherwise */
+  public boolean isSetGatewayId() {
+    return this.gatewayId != null;
+  }
+
+  public void setGatewayIdIsSet(boolean value) {
+    if (!value) {
+      this.gatewayId = null;
     }
   }
 
@@ -829,6 +865,14 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
       }
       break;
 
+    case GATEWAY_ID:
+      if (value == null) {
+        unsetGatewayId();
+      } else {
+        setGatewayId((String)value);
+      }
+      break;
+
     case EXPERIMENT_TYPE:
       if (value == null) {
         unsetExperimentType();
@@ -952,6 +996,9 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
     case PROJECT_ID:
       return getProjectId();
 
+    case GATEWAY_ID:
+      return getGatewayId();
+
     case EXPERIMENT_TYPE:
       return getExperimentType();
 
@@ -1009,6 +1056,8 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
       return isSetExperimentId();
     case PROJECT_ID:
       return isSetProjectId();
+    case GATEWAY_ID:
+      return isSetGatewayId();
     case EXPERIMENT_TYPE:
       return isSetExperimentType();
     case USER_NAME:
@@ -1069,6 +1118,15 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
       if (!(this_present_projectId && that_present_projectId))
         return false;
       if (!this.projectId.equals(that.projectId))
+        return false;
+    }
+
+    boolean this_present_gatewayId = true && this.isSetGatewayId();
+    boolean that_present_gatewayId = true && that.isSetGatewayId();
+    if (this_present_gatewayId || that_present_gatewayId) {
+      if (!(this_present_gatewayId && that_present_gatewayId))
+        return false;
+      if (!this.gatewayId.equals(that.gatewayId))
         return false;
     }
 
@@ -1215,6 +1273,11 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
     if (present_projectId)
       list.add(projectId);
 
+    boolean present_gatewayId = true && (isSetGatewayId());
+    list.add(present_gatewayId);
+    if (present_gatewayId)
+      list.add(gatewayId);
+
     boolean present_experimentType = true && (isSetExperimentType());
     list.add(present_experimentType);
     if (present_experimentType)
@@ -1312,6 +1375,16 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
     }
     if (isSetProjectId()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.projectId, other.projectId);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetGatewayId()).compareTo(other.isSetGatewayId());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetGatewayId()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.gatewayId, other.gatewayId);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -1492,6 +1565,14 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
     }
     first = false;
     if (!first) sb.append(", ");
+    sb.append("gatewayId:");
+    if (this.gatewayId == null) {
+      sb.append("null");
+    } else {
+      sb.append(this.gatewayId);
+    }
+    first = false;
+    if (!first) sb.append(", ");
     sb.append("experimentType:");
     if (this.experimentType == null) {
       sb.append("null");
@@ -1631,6 +1712,10 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'projectId' is unset! Struct:" + toString());
     }
 
+    if (!isSetGatewayId()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'gatewayId' is unset! Struct:" + toString());
+    }
+
     if (!isSetExperimentType()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'experimentType' is unset! Struct:" + toString());
     }
@@ -1704,7 +1789,15 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 3: // EXPERIMENT_TYPE
+          case 3: // GATEWAY_ID
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.gatewayId = iprot.readString();
+              struct.setGatewayIdIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 4: // EXPERIMENT_TYPE
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct.experimentType = org.apache.airavata.model.experiment.ExperimentType.findByValue(iprot.readI32());
               struct.setExperimentTypeIsSet(true);
@@ -1712,7 +1805,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 4: // USER_NAME
+          case 5: // USER_NAME
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.userName = iprot.readString();
               struct.setUserNameIsSet(true);
@@ -1720,7 +1813,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // EXPERIMENT_NAME
+          case 6: // EXPERIMENT_NAME
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.experimentName = iprot.readString();
               struct.setExperimentNameIsSet(true);
@@ -1728,7 +1821,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // CREATION_TIME
+          case 7: // CREATION_TIME
             if (schemeField.type == org.apache.thrift.protocol.TType.I64) {
               struct.creationTime = iprot.readI64();
               struct.setCreationTimeIsSet(true);
@@ -1736,7 +1829,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // DESCRIPTION
+          case 8: // DESCRIPTION
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.description = iprot.readString();
               struct.setDescriptionIsSet(true);
@@ -1744,7 +1837,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 8: // EXECUTION_ID
+          case 9: // EXECUTION_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.executionId = iprot.readString();
               struct.setExecutionIdIsSet(true);
@@ -1752,7 +1845,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 9: // GATEWAY_EXECUTION_ID
+          case 10: // GATEWAY_EXECUTION_ID
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.gatewayExecutionId = iprot.readString();
               struct.setGatewayExecutionIdIsSet(true);
@@ -1760,7 +1853,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 10: // ENABLE_EMAIL_NOTIFICATION
+          case 11: // ENABLE_EMAIL_NOTIFICATION
             if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
               struct.enableEmailNotification = iprot.readBool();
               struct.setEnableEmailNotificationIsSet(true);
@@ -1768,7 +1861,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 11: // EMAIL_ADDRESSES
+          case 12: // EMAIL_ADDRESSES
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list0 = iprot.readListBegin();
@@ -1786,7 +1879,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 12: // USER_CONFIGURATION_DATA
+          case 13: // USER_CONFIGURATION_DATA
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
               struct.userConfigurationData = new UserConfigurationDataModel();
               struct.userConfigurationData.read(iprot);
@@ -1795,7 +1888,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 13: // EXPERIMENT_INPUTS
+          case 14: // EXPERIMENT_INPUTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list3 = iprot.readListBegin();
@@ -1814,7 +1907,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 14: // EXPERIMENT_OUTPUTS
+          case 15: // EXPERIMENT_OUTPUTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list6 = iprot.readListBegin();
@@ -1833,7 +1926,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 15: // EXPERIMENT_STATUS
+          case 16: // EXPERIMENT_STATUS
             if (schemeField.type == org.apache.thrift.protocol.TType.STRUCT) {
               struct.experimentStatus = new org.apache.airavata.model.status.ExperimentStatus();
               struct.experimentStatus.read(iprot);
@@ -1842,7 +1935,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 16: // ERRORS
+          case 17: // ERRORS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list9 = iprot.readListBegin();
@@ -1882,6 +1975,11 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
       if (struct.projectId != null) {
         oprot.writeFieldBegin(PROJECT_ID_FIELD_DESC);
         oprot.writeString(struct.projectId);
+        oprot.writeFieldEnd();
+      }
+      if (struct.gatewayId != null) {
+        oprot.writeFieldBegin(GATEWAY_ID_FIELD_DESC);
+        oprot.writeString(struct.gatewayId);
         oprot.writeFieldEnd();
       }
       if (struct.experimentType != null) {
@@ -2019,6 +2117,7 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
       TTupleProtocol oprot = (TTupleProtocol) prot;
       oprot.writeString(struct.experimentId);
       oprot.writeString(struct.projectId);
+      oprot.writeString(struct.gatewayId);
       oprot.writeI32(struct.experimentType.getValue());
       oprot.writeString(struct.userName);
       oprot.writeString(struct.experimentName);
@@ -2123,6 +2222,8 @@ public class ExperimentModel implements org.apache.thrift.TBase<ExperimentModel,
       struct.setExperimentIdIsSet(true);
       struct.projectId = iprot.readString();
       struct.setProjectIdIsSet(true);
+      struct.gatewayId = iprot.readString();
+      struct.setGatewayIdIsSet(true);
       struct.experimentType = org.apache.airavata.model.experiment.ExperimentType.findByValue(iprot.readI32());
       struct.setExperimentTypeIsSet(true);
       struct.userName = iprot.readString();
