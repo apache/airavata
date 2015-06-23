@@ -41,14 +41,10 @@ import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.job.JobModel;
-import org.apache.airavata.model.messaging.event.JobIdentifier;
-import org.apache.airavata.model.messaging.event.JobStatusChangeRequestEvent;
+import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.status.ExperimentState;
-import org.apache.airavata.model.status.ExperimentStatus;
-import org.apache.airavata.model.status.JobState;
-import org.apache.airavata.model.status.JobStatus;
+import org.apache.airavata.model.status.*;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.commons.io.FileUtils;
@@ -250,7 +246,6 @@ public class GFacUtils {
 //            experimentCatalog.add(ExpCatChildDataType.JOB_DETAIL, jobModel,
 //                    new CompositeIdentifier(jobExecutionContext.getTaskData()
 //                            .getTaskID(), jobModel.getJobID()));
-            // FIXME - Routing keys might need to identify according to new data models
             JobIdentifier identifier = new JobIdentifier(jobModel.getJobId(), taskContext.getTaskModel().getTaskId(),
                     processContext.getProcessId(), processContext.getProcessModel().getExperimentId(),
                     processContext.getGatewayId());
@@ -261,6 +256,64 @@ public class GFacUtils {
 					+ e.getLocalizedMessage(), e);
 		}
 	}
+
+    public static void saveTaskStatus(TaskContext taskContext,
+                                      TaskState state) throws GFacException {
+        try {
+            // first we save job jobModel to the registry for sa and then save the job status.
+            ProcessContext processContext = taskContext.getParentProcessContext();
+            ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+            TaskStatus status = new TaskStatus();
+            status.setState(state);
+            taskContext.getTaskModel().setTaskStatus(status);
+            experimentCatalog.add(ExpCatChildDataType.TASK_STATUS, status, taskContext.getTaskModel().getTaskId());
+            TaskIdentifier identifier = new TaskIdentifier(taskContext.getTaskModel().getTaskId(),
+                    processContext.getProcessId(), processContext.getProcessModel().getExperimentId(),
+                    processContext.getGatewayId());
+            TaskStatusChangeRequestEvent taskStatusChangeRequestEvent = new TaskStatusChangeRequestEvent(state, identifier);
+            processContext.getLocalEventPublisher().publish(taskStatusChangeRequestEvent);
+        } catch (Exception e) {
+            throw new GFacException("Error persisting task status"
+                    + e.getLocalizedMessage(), e);
+        }
+    }
+
+    public static void saveProcessStatus(ProcessContext processContext,
+                                      ProcessState state) throws GFacException {
+        try {
+            // first we save job jobModel to the registry for sa and then save the job status.
+            ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+            ProcessStatus status = new ProcessStatus();
+            status.setState(state);
+            processContext.getProcessModel().setProcessStatus(status);
+            experimentCatalog.add(ExpCatChildDataType.PROCESS_STATUS, status, processContext.getProcessId());
+            ProcessIdentifier identifier = new ProcessIdentifier(processContext.getProcessId(),
+                                                                 processContext.getProcessModel().getExperimentId(),
+                                                                 processContext.getGatewayId());
+            ProcessStatusChangeRequestEvent processStatusChangeRequestEvent = new ProcessStatusChangeRequestEvent(state, identifier);
+            processContext.getLocalEventPublisher().publish(processStatusChangeRequestEvent);
+        } catch (Exception e) {
+            throw new GFacException("Error persisting process status"
+                    + e.getLocalizedMessage(), e);
+        }
+    }
+
+    public static void saveExperimentStatus(ProcessContext processContext,
+                                         ExperimentState state) throws GFacException {
+        try {
+            // first we save job jobModel to the registry for sa and then save the job status.
+            ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+            ExperimentStatus status = new ExperimentStatus();
+            status.setState(state);
+
+            experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_STATUS, status, processContext.getProcessModel().getExperimentId());
+            ExperimentStatusChangeEvent experimentStatusChangeEvent = new ExperimentStatusChangeEvent(state, processContext.getProcessModel().getExperimentId(), processContext.getGatewayId());
+            processContext.getLocalEventPublisher().publish(experimentStatusChangeEvent);
+        } catch (Exception e) {
+            throw new GFacException("Error persisting experiment status"
+                    + e.getLocalizedMessage(), e);
+        }
+    }
 
 //	public static void updateJobStatus(JobExecutionContext jobExecutionContext,
 //			JobDetails details, JobState state) throws GFacException {
