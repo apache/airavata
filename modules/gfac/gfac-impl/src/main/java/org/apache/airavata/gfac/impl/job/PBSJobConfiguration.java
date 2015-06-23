@@ -23,35 +23,32 @@ package org.apache.airavata.gfac.impl.job;
 import org.apache.airavata.gfac.core.JobManagerConfiguration;
 import org.apache.airavata.gfac.core.cluster.OutputParser;
 import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
+import org.apache.airavata.model.appcatalog.computeresource.JobManagerCommand;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
+import java.util.Map;
 
 public class PBSJobConfiguration implements JobManagerConfiguration {
 
-    private String jobDescriptionTemplateName;
-
+	private final Map<JobManagerCommand, String> jobManagerCommands;
+	private String jobDescriptionTemplateName;
     private String scriptExtension;
-
     private String installedPath;
-
     private OutputParser parser;
 
-    public PBSJobConfiguration() {
-        // this can be used to construct and use setter methods to set all the params in order
-    }
-
-    public PBSJobConfiguration(String jobDescriptionTemplateName,
-                               String scriptExtension, String installedPath, OutputParser parser) {
-        this.jobDescriptionTemplateName = jobDescriptionTemplateName;
-        this.scriptExtension = scriptExtension;
-        this.parser = parser;
-        if (installedPath.endsWith("/")) {
-            this.installedPath = installedPath;
-        } else {
-            this.installedPath = installedPath + "/";
-        }
-    }
+	public PBSJobConfiguration(String jobDescriptionTemplateName, String scriptExtension, String installedPath,
+	                           Map<JobManagerCommand, String> jobManagerCommands, OutputParser parser) {
+		this.jobDescriptionTemplateName = jobDescriptionTemplateName;
+		this.scriptExtension = scriptExtension;
+		this.parser = parser;
+		if (installedPath.endsWith("/")) {
+			this.installedPath = installedPath;
+		} else {
+			this.installedPath = installedPath + "/";
+		}
+		this.jobManagerCommands = jobManagerCommands;
+	}
 
     public RawCommandInfo getCancelCommand(String jobID) {
         return new RawCommandInfo(this.installedPath + "qdel " + jobID);
