@@ -33,7 +33,7 @@ final class MessageLevel {
 final class MessageType {
   const EXPERIMENT = 0;
   const TASK = 1;
-  const WORKFLOWNODE = 2;
+  const PROCESS = 2;
   const JOB = 3;
   const LAUNCHTASK = 4;
   const TERMINATETASK = 5;
@@ -41,7 +41,7 @@ final class MessageType {
   static public $__names = array(
     0 => 'EXPERIMENT',
     1 => 'TASK',
-    2 => 'WORKFLOWNODE',
+    2 => 'PROCESS',
     3 => 'JOB',
     4 => 'LAUNCHTASK',
     5 => 'TERMINATETASK',
@@ -170,13 +170,13 @@ class ExperimentStatusChangeEvent {
 
 }
 
-class WorkflowIdentifier {
+class ProcessIdentifier {
   static $_TSPEC;
 
   /**
    * @var string
    */
-  public $workflowNodeId = null;
+  public $processId = null;
   /**
    * @var string
    */
@@ -190,7 +190,7 @@ class WorkflowIdentifier {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
-          'var' => 'workflowNodeId',
+          'var' => 'processId',
           'type' => TType::STRING,
           ),
         2 => array(
@@ -204,8 +204,8 @@ class WorkflowIdentifier {
         );
     }
     if (is_array($vals)) {
-      if (isset($vals['workflowNodeId'])) {
-        $this->workflowNodeId = $vals['workflowNodeId'];
+      if (isset($vals['processId'])) {
+        $this->processId = $vals['processId'];
       }
       if (isset($vals['experimentId'])) {
         $this->experimentId = $vals['experimentId'];
@@ -217,7 +217,7 @@ class WorkflowIdentifier {
   }
 
   public function getName() {
-    return 'WorkflowIdentifier';
+    return 'ProcessIdentifier';
   }
 
   public function read($input)
@@ -237,7 +237,7 @@ class WorkflowIdentifier {
       {
         case 1:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->workflowNodeId);
+            $xfer += $input->readString($this->processId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -268,10 +268,10 @@ class WorkflowIdentifier {
 
   public function write($output) {
     $xfer = 0;
-    $xfer += $output->writeStructBegin('WorkflowIdentifier');
-    if ($this->workflowNodeId !== null) {
-      $xfer += $output->writeFieldBegin('workflowNodeId', TType::STRING, 1);
-      $xfer += $output->writeString($this->workflowNodeId);
+    $xfer += $output->writeStructBegin('ProcessIdentifier');
+    if ($this->processId !== null) {
+      $xfer += $output->writeFieldBegin('processId', TType::STRING, 1);
+      $xfer += $output->writeString($this->processId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->experimentId !== null) {
@@ -291,109 +291,6 @@ class WorkflowIdentifier {
 
 }
 
-class WorkflowNodeStatusChangeEvent {
-  static $_TSPEC;
-
-  /**
-   * @var int
-   */
-  public $state = null;
-  /**
-   * @var \Airavata\Model\Messaging\Event\WorkflowIdentifier
-   */
-  public $workflowNodeIdentity = null;
-
-  public function __construct($vals=null) {
-    if (!isset(self::$_TSPEC)) {
-      self::$_TSPEC = array(
-        1 => array(
-          'var' => 'state',
-          'type' => TType::I32,
-          ),
-        2 => array(
-          'var' => 'workflowNodeIdentity',
-          'type' => TType::STRUCT,
-          'class' => '\Airavata\Model\Messaging\Event\WorkflowIdentifier',
-          ),
-        );
-    }
-    if (is_array($vals)) {
-      if (isset($vals['state'])) {
-        $this->state = $vals['state'];
-      }
-      if (isset($vals['workflowNodeIdentity'])) {
-        $this->workflowNodeIdentity = $vals['workflowNodeIdentity'];
-      }
-    }
-  }
-
-  public function getName() {
-    return 'WorkflowNodeStatusChangeEvent';
-  }
-
-  public function read($input)
-  {
-    $xfer = 0;
-    $fname = null;
-    $ftype = 0;
-    $fid = 0;
-    $xfer += $input->readStructBegin($fname);
-    while (true)
-    {
-      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
-      if ($ftype == TType::STOP) {
-        break;
-      }
-      switch ($fid)
-      {
-        case 1:
-          if ($ftype == TType::I32) {
-            $xfer += $input->readI32($this->state);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        case 2:
-          if ($ftype == TType::STRUCT) {
-            $this->workflowNodeIdentity = new \Airavata\Model\Messaging\Event\WorkflowIdentifier();
-            $xfer += $this->workflowNodeIdentity->read($input);
-          } else {
-            $xfer += $input->skip($ftype);
-          }
-          break;
-        default:
-          $xfer += $input->skip($ftype);
-          break;
-      }
-      $xfer += $input->readFieldEnd();
-    }
-    $xfer += $input->readStructEnd();
-    return $xfer;
-  }
-
-  public function write($output) {
-    $xfer = 0;
-    $xfer += $output->writeStructBegin('WorkflowNodeStatusChangeEvent');
-    if ($this->state !== null) {
-      $xfer += $output->writeFieldBegin('state', TType::I32, 1);
-      $xfer += $output->writeI32($this->state);
-      $xfer += $output->writeFieldEnd();
-    }
-    if ($this->workflowNodeIdentity !== null) {
-      if (!is_object($this->workflowNodeIdentity)) {
-        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
-      }
-      $xfer += $output->writeFieldBegin('workflowNodeIdentity', TType::STRUCT, 2);
-      $xfer += $this->workflowNodeIdentity->write($output);
-      $xfer += $output->writeFieldEnd();
-    }
-    $xfer += $output->writeFieldStop();
-    $xfer += $output->writeStructEnd();
-    return $xfer;
-  }
-
-}
-
 class TaskIdentifier {
   static $_TSPEC;
 
@@ -404,7 +301,7 @@ class TaskIdentifier {
   /**
    * @var string
    */
-  public $workflowNodeId = null;
+  public $processId = null;
   /**
    * @var string
    */
@@ -422,7 +319,7 @@ class TaskIdentifier {
           'type' => TType::STRING,
           ),
         2 => array(
-          'var' => 'workflowNodeId',
+          'var' => 'processId',
           'type' => TType::STRING,
           ),
         3 => array(
@@ -439,8 +336,8 @@ class TaskIdentifier {
       if (isset($vals['taskId'])) {
         $this->taskId = $vals['taskId'];
       }
-      if (isset($vals['workflowNodeId'])) {
-        $this->workflowNodeId = $vals['workflowNodeId'];
+      if (isset($vals['processId'])) {
+        $this->processId = $vals['processId'];
       }
       if (isset($vals['experimentId'])) {
         $this->experimentId = $vals['experimentId'];
@@ -479,7 +376,7 @@ class TaskIdentifier {
           break;
         case 2:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->workflowNodeId);
+            $xfer += $input->readString($this->processId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -516,9 +413,9 @@ class TaskIdentifier {
       $xfer += $output->writeString($this->taskId);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->workflowNodeId !== null) {
-      $xfer += $output->writeFieldBegin('workflowNodeId', TType::STRING, 2);
-      $xfer += $output->writeString($this->workflowNodeId);
+    if ($this->processId !== null) {
+      $xfer += $output->writeFieldBegin('processId', TType::STRING, 2);
+      $xfer += $output->writeString($this->processId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->experimentId !== null) {
@@ -744,11 +641,217 @@ class TaskStatusChangeRequestEvent {
 
 }
 
+class ProcessStatusChangeEvent {
+  static $_TSPEC;
+
+  /**
+   * @var int
+   */
+  public $state = null;
+  /**
+   * @var \Airavata\Model\Messaging\Event\ProcessIdentifier
+   */
+  public $processIdentity = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'state',
+          'type' => TType::I32,
+          ),
+        2 => array(
+          'var' => 'processIdentity',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Messaging\Event\ProcessIdentifier',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['state'])) {
+        $this->state = $vals['state'];
+      }
+      if (isset($vals['processIdentity'])) {
+        $this->processIdentity = $vals['processIdentity'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'ProcessStatusChangeEvent';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->state);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->processIdentity = new \Airavata\Model\Messaging\Event\ProcessIdentifier();
+            $xfer += $this->processIdentity->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('ProcessStatusChangeEvent');
+    if ($this->state !== null) {
+      $xfer += $output->writeFieldBegin('state', TType::I32, 1);
+      $xfer += $output->writeI32($this->state);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->processIdentity !== null) {
+      if (!is_object($this->processIdentity)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('processIdentity', TType::STRUCT, 2);
+      $xfer += $this->processIdentity->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
+class ProcessStatusChangeRequestEvent {
+  static $_TSPEC;
+
+  /**
+   * @var int
+   */
+  public $state = null;
+  /**
+   * @var \Airavata\Model\Messaging\Event\ProcessIdentifier
+   */
+  public $processIdentity = null;
+
+  public function __construct($vals=null) {
+    if (!isset(self::$_TSPEC)) {
+      self::$_TSPEC = array(
+        1 => array(
+          'var' => 'state',
+          'type' => TType::I32,
+          ),
+        2 => array(
+          'var' => 'processIdentity',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Messaging\Event\ProcessIdentifier',
+          ),
+        );
+    }
+    if (is_array($vals)) {
+      if (isset($vals['state'])) {
+        $this->state = $vals['state'];
+      }
+      if (isset($vals['processIdentity'])) {
+        $this->processIdentity = $vals['processIdentity'];
+      }
+    }
+  }
+
+  public function getName() {
+    return 'ProcessStatusChangeRequestEvent';
+  }
+
+  public function read($input)
+  {
+    $xfer = 0;
+    $fname = null;
+    $ftype = 0;
+    $fid = 0;
+    $xfer += $input->readStructBegin($fname);
+    while (true)
+    {
+      $xfer += $input->readFieldBegin($fname, $ftype, $fid);
+      if ($ftype == TType::STOP) {
+        break;
+      }
+      switch ($fid)
+      {
+        case 1:
+          if ($ftype == TType::I32) {
+            $xfer += $input->readI32($this->state);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
+          if ($ftype == TType::STRUCT) {
+            $this->processIdentity = new \Airavata\Model\Messaging\Event\ProcessIdentifier();
+            $xfer += $this->processIdentity->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        default:
+          $xfer += $input->skip($ftype);
+          break;
+      }
+      $xfer += $input->readFieldEnd();
+    }
+    $xfer += $input->readStructEnd();
+    return $xfer;
+  }
+
+  public function write($output) {
+    $xfer = 0;
+    $xfer += $output->writeStructBegin('ProcessStatusChangeRequestEvent');
+    if ($this->state !== null) {
+      $xfer += $output->writeFieldBegin('state', TType::I32, 1);
+      $xfer += $output->writeI32($this->state);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->processIdentity !== null) {
+      if (!is_object($this->processIdentity)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('processIdentity', TType::STRUCT, 2);
+      $xfer += $this->processIdentity->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
+    $xfer += $output->writeFieldStop();
+    $xfer += $output->writeStructEnd();
+    return $xfer;
+  }
+
+}
+
 class TaskOutputChangeEvent {
   static $_TSPEC;
 
   /**
-   * @var \Airavata\Model\AppCatalog\AppInterface\OutputDataObjectType[]
+   * @var \Airavata\Model\Application\Io\OutputDataObjectType[]
    */
   public $output = null;
   /**
@@ -765,7 +868,7 @@ class TaskOutputChangeEvent {
           'etype' => TType::STRUCT,
           'elem' => array(
             'type' => TType::STRUCT,
-            'class' => '\Airavata\Model\AppCatalog\AppInterface\OutputDataObjectType',
+            'class' => '\Airavata\Model\Application\Io\OutputDataObjectType',
             ),
           ),
         2 => array(
@@ -813,7 +916,7 @@ class TaskOutputChangeEvent {
             for ($_i4 = 0; $_i4 < $_size0; ++$_i4)
             {
               $elem5 = null;
-              $elem5 = new \Airavata\Model\AppCatalog\AppInterface\OutputDataObjectType();
+              $elem5 = new \Airavata\Model\Application\Io\OutputDataObjectType();
               $xfer += $elem5->read($input);
               $this->output []= $elem5;
             }
@@ -889,7 +992,7 @@ class JobIdentifier {
   /**
    * @var string
    */
-  public $workflowNodeId = null;
+  public $processId = null;
   /**
    * @var string
    */
@@ -911,7 +1014,7 @@ class JobIdentifier {
           'type' => TType::STRING,
           ),
         3 => array(
-          'var' => 'workflowNodeId',
+          'var' => 'processId',
           'type' => TType::STRING,
           ),
         4 => array(
@@ -931,8 +1034,8 @@ class JobIdentifier {
       if (isset($vals['taskId'])) {
         $this->taskId = $vals['taskId'];
       }
-      if (isset($vals['workflowNodeId'])) {
-        $this->workflowNodeId = $vals['workflowNodeId'];
+      if (isset($vals['processId'])) {
+        $this->processId = $vals['processId'];
       }
       if (isset($vals['experimentId'])) {
         $this->experimentId = $vals['experimentId'];
@@ -978,7 +1081,7 @@ class JobIdentifier {
           break;
         case 3:
           if ($ftype == TType::STRING) {
-            $xfer += $input->readString($this->workflowNodeId);
+            $xfer += $input->readString($this->processId);
           } else {
             $xfer += $input->skip($ftype);
           }
@@ -1020,9 +1123,9 @@ class JobIdentifier {
       $xfer += $output->writeString($this->taskId);
       $xfer += $output->writeFieldEnd();
     }
-    if ($this->workflowNodeId !== null) {
-      $xfer += $output->writeFieldBegin('workflowNodeId', TType::STRING, 3);
-      $xfer += $output->writeString($this->workflowNodeId);
+    if ($this->processId !== null) {
+      $xfer += $output->writeFieldBegin('processId', TType::STRING, 3);
+      $xfer += $output->writeString($this->processId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->experimentId !== null) {

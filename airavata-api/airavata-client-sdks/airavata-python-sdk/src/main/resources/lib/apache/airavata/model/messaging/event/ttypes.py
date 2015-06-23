@@ -7,8 +7,8 @@
 #
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
-import apache.airavata.model.workspace.experiment.ttypes
-import apache.airavata.model.appcatalog.appinterface.ttypes
+import apache.airavata.model.status.ttypes
+import apache.airavata.model.application.io.ttypes
 
 
 from thrift.transport import TTransport
@@ -42,7 +42,7 @@ class MessageLevel:
 class MessageType:
   EXPERIMENT = 0
   TASK = 1
-  WORKFLOWNODE = 2
+  PROCESS = 2
   JOB = 3
   LAUNCHTASK = 4
   TERMINATETASK = 5
@@ -51,7 +51,7 @@ class MessageType:
   _VALUES_TO_NAMES = {
     0: "EXPERIMENT",
     1: "TASK",
-    2: "WORKFLOWNODE",
+    2: "PROCESS",
     3: "JOB",
     4: "LAUNCHTASK",
     5: "TERMINATETASK",
@@ -61,7 +61,7 @@ class MessageType:
   _NAMES_TO_VALUES = {
     "EXPERIMENT": 0,
     "TASK": 1,
-    "WORKFLOWNODE": 2,
+    "PROCESS": 2,
     "JOB": 3,
     "LAUNCHTASK": 4,
     "TERMINATETASK": 5,
@@ -166,23 +166,23 @@ class ExperimentStatusChangeEvent:
   def __ne__(self, other):
     return not (self == other)
 
-class WorkflowIdentifier:
+class ProcessIdentifier:
   """
   Attributes:
-   - workflowNodeId
+   - processId
    - experimentId
    - gatewayId
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'workflowNodeId', None, None, ), # 1
+    (1, TType.STRING, 'processId', None, None, ), # 1
     (2, TType.STRING, 'experimentId', None, None, ), # 2
     (3, TType.STRING, 'gatewayId', None, None, ), # 3
   )
 
-  def __init__(self, workflowNodeId=None, experimentId=None, gatewayId=None,):
-    self.workflowNodeId = workflowNodeId
+  def __init__(self, processId=None, experimentId=None, gatewayId=None,):
+    self.processId = processId
     self.experimentId = experimentId
     self.gatewayId = gatewayId
 
@@ -197,7 +197,7 @@ class WorkflowIdentifier:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.workflowNodeId = iprot.readString();
+          self.processId = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 2:
@@ -219,10 +219,10 @@ class WorkflowIdentifier:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('WorkflowIdentifier')
-    if self.workflowNodeId is not None:
-      oprot.writeFieldBegin('workflowNodeId', TType.STRING, 1)
-      oprot.writeString(self.workflowNodeId)
+    oprot.writeStructBegin('ProcessIdentifier')
+    if self.processId is not None:
+      oprot.writeFieldBegin('processId', TType.STRING, 1)
+      oprot.writeString(self.processId)
       oprot.writeFieldEnd()
     if self.experimentId is not None:
       oprot.writeFieldBegin('experimentId', TType.STRING, 2)
@@ -236,8 +236,8 @@ class WorkflowIdentifier:
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.workflowNodeId is None:
-      raise TProtocol.TProtocolException(message='Required field workflowNodeId is unset!')
+    if self.processId is None:
+      raise TProtocol.TProtocolException(message='Required field processId is unset!')
     if self.experimentId is None:
       raise TProtocol.TProtocolException(message='Required field experimentId is unset!')
     if self.gatewayId is None:
@@ -247,92 +247,9 @@ class WorkflowIdentifier:
 
   def __hash__(self):
     value = 17
-    value = (value * 31) ^ hash(self.workflowNodeId)
+    value = (value * 31) ^ hash(self.processId)
     value = (value * 31) ^ hash(self.experimentId)
     value = (value * 31) ^ hash(self.gatewayId)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class WorkflowNodeStatusChangeEvent:
-  """
-  Attributes:
-   - state
-   - workflowNodeIdentity
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.I32, 'state', None, None, ), # 1
-    (2, TType.STRUCT, 'workflowNodeIdentity', (WorkflowIdentifier, WorkflowIdentifier.thrift_spec), None, ), # 2
-  )
-
-  def __init__(self, state=None, workflowNodeIdentity=None,):
-    self.state = state
-    self.workflowNodeIdentity = workflowNodeIdentity
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.I32:
-          self.state = iprot.readI32();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRUCT:
-          self.workflowNodeIdentity = WorkflowIdentifier()
-          self.workflowNodeIdentity.read(iprot)
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('WorkflowNodeStatusChangeEvent')
-    if self.state is not None:
-      oprot.writeFieldBegin('state', TType.I32, 1)
-      oprot.writeI32(self.state)
-      oprot.writeFieldEnd()
-    if self.workflowNodeIdentity is not None:
-      oprot.writeFieldBegin('workflowNodeIdentity', TType.STRUCT, 2)
-      self.workflowNodeIdentity.write(oprot)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    if self.state is None:
-      raise TProtocol.TProtocolException(message='Required field state is unset!')
-    if self.workflowNodeIdentity is None:
-      raise TProtocol.TProtocolException(message='Required field workflowNodeIdentity is unset!')
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.state)
-    value = (value * 31) ^ hash(self.workflowNodeIdentity)
     return value
 
   def __repr__(self):
@@ -350,7 +267,7 @@ class TaskIdentifier:
   """
   Attributes:
    - taskId
-   - workflowNodeId
+   - processId
    - experimentId
    - gatewayId
   """
@@ -358,14 +275,14 @@ class TaskIdentifier:
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'taskId', None, None, ), # 1
-    (2, TType.STRING, 'workflowNodeId', None, None, ), # 2
+    (2, TType.STRING, 'processId', None, None, ), # 2
     (3, TType.STRING, 'experimentId', None, None, ), # 3
     (4, TType.STRING, 'gatewayId', None, None, ), # 4
   )
 
-  def __init__(self, taskId=None, workflowNodeId=None, experimentId=None, gatewayId=None,):
+  def __init__(self, taskId=None, processId=None, experimentId=None, gatewayId=None,):
     self.taskId = taskId
-    self.workflowNodeId = workflowNodeId
+    self.processId = processId
     self.experimentId = experimentId
     self.gatewayId = gatewayId
 
@@ -385,7 +302,7 @@ class TaskIdentifier:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.workflowNodeId = iprot.readString();
+          self.processId = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 3:
@@ -412,9 +329,9 @@ class TaskIdentifier:
       oprot.writeFieldBegin('taskId', TType.STRING, 1)
       oprot.writeString(self.taskId)
       oprot.writeFieldEnd()
-    if self.workflowNodeId is not None:
-      oprot.writeFieldBegin('workflowNodeId', TType.STRING, 2)
-      oprot.writeString(self.workflowNodeId)
+    if self.processId is not None:
+      oprot.writeFieldBegin('processId', TType.STRING, 2)
+      oprot.writeString(self.processId)
       oprot.writeFieldEnd()
     if self.experimentId is not None:
       oprot.writeFieldBegin('experimentId', TType.STRING, 3)
@@ -430,8 +347,8 @@ class TaskIdentifier:
   def validate(self):
     if self.taskId is None:
       raise TProtocol.TProtocolException(message='Required field taskId is unset!')
-    if self.workflowNodeId is None:
-      raise TProtocol.TProtocolException(message='Required field workflowNodeId is unset!')
+    if self.processId is None:
+      raise TProtocol.TProtocolException(message='Required field processId is unset!')
     if self.experimentId is None:
       raise TProtocol.TProtocolException(message='Required field experimentId is unset!')
     if self.gatewayId is None:
@@ -442,7 +359,7 @@ class TaskIdentifier:
   def __hash__(self):
     value = 17
     value = (value * 31) ^ hash(self.taskId)
-    value = (value * 31) ^ hash(self.workflowNodeId)
+    value = (value * 31) ^ hash(self.processId)
     value = (value * 31) ^ hash(self.experimentId)
     value = (value * 31) ^ hash(self.gatewayId)
     return value
@@ -624,6 +541,172 @@ class TaskStatusChangeRequestEvent:
   def __ne__(self, other):
     return not (self == other)
 
+class ProcessStatusChangeEvent:
+  """
+  Attributes:
+   - state
+   - processIdentity
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.I32, 'state', None, None, ), # 1
+    (2, TType.STRUCT, 'processIdentity', (ProcessIdentifier, ProcessIdentifier.thrift_spec), None, ), # 2
+  )
+
+  def __init__(self, state=None, processIdentity=None,):
+    self.state = state
+    self.processIdentity = processIdentity
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.I32:
+          self.state = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.processIdentity = ProcessIdentifier()
+          self.processIdentity.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('ProcessStatusChangeEvent')
+    if self.state is not None:
+      oprot.writeFieldBegin('state', TType.I32, 1)
+      oprot.writeI32(self.state)
+      oprot.writeFieldEnd()
+    if self.processIdentity is not None:
+      oprot.writeFieldBegin('processIdentity', TType.STRUCT, 2)
+      self.processIdentity.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.state is None:
+      raise TProtocol.TProtocolException(message='Required field state is unset!')
+    if self.processIdentity is None:
+      raise TProtocol.TProtocolException(message='Required field processIdentity is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.state)
+    value = (value * 31) ^ hash(self.processIdentity)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
+class ProcessStatusChangeRequestEvent:
+  """
+  Attributes:
+   - state
+   - processIdentity
+  """
+
+  thrift_spec = (
+    None, # 0
+    (1, TType.I32, 'state', None, None, ), # 1
+    (2, TType.STRUCT, 'processIdentity', (ProcessIdentifier, ProcessIdentifier.thrift_spec), None, ), # 2
+  )
+
+  def __init__(self, state=None, processIdentity=None,):
+    self.state = state
+    self.processIdentity = processIdentity
+
+  def read(self, iprot):
+    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
+      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
+      return
+    iprot.readStructBegin()
+    while True:
+      (fname, ftype, fid) = iprot.readFieldBegin()
+      if ftype == TType.STOP:
+        break
+      if fid == 1:
+        if ftype == TType.I32:
+          self.state = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRUCT:
+          self.processIdentity = ProcessIdentifier()
+          self.processIdentity.read(iprot)
+        else:
+          iprot.skip(ftype)
+      else:
+        iprot.skip(ftype)
+      iprot.readFieldEnd()
+    iprot.readStructEnd()
+
+  def write(self, oprot):
+    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
+      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
+      return
+    oprot.writeStructBegin('ProcessStatusChangeRequestEvent')
+    if self.state is not None:
+      oprot.writeFieldBegin('state', TType.I32, 1)
+      oprot.writeI32(self.state)
+      oprot.writeFieldEnd()
+    if self.processIdentity is not None:
+      oprot.writeFieldBegin('processIdentity', TType.STRUCT, 2)
+      self.processIdentity.write(oprot)
+      oprot.writeFieldEnd()
+    oprot.writeFieldStop()
+    oprot.writeStructEnd()
+
+  def validate(self):
+    if self.state is None:
+      raise TProtocol.TProtocolException(message='Required field state is unset!')
+    if self.processIdentity is None:
+      raise TProtocol.TProtocolException(message='Required field processIdentity is unset!')
+    return
+
+
+  def __hash__(self):
+    value = 17
+    value = (value * 31) ^ hash(self.state)
+    value = (value * 31) ^ hash(self.processIdentity)
+    return value
+
+  def __repr__(self):
+    L = ['%s=%r' % (key, value)
+      for key, value in self.__dict__.iteritems()]
+    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+  def __eq__(self, other):
+    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+  def __ne__(self, other):
+    return not (self == other)
+
 class TaskOutputChangeEvent:
   """
   Attributes:
@@ -633,7 +716,7 @@ class TaskOutputChangeEvent:
 
   thrift_spec = (
     None, # 0
-    (1, TType.LIST, 'output', (TType.STRUCT,(apache.airavata.model.appcatalog.appinterface.ttypes.OutputDataObjectType, apache.airavata.model.appcatalog.appinterface.ttypes.OutputDataObjectType.thrift_spec)), None, ), # 1
+    (1, TType.LIST, 'output', (TType.STRUCT,(apache.airavata.model.application.io.ttypes.OutputDataObjectType, apache.airavata.model.application.io.ttypes.OutputDataObjectType.thrift_spec)), None, ), # 1
     (2, TType.STRUCT, 'taskIdentity', (TaskIdentifier, TaskIdentifier.thrift_spec), None, ), # 2
   )
 
@@ -655,7 +738,7 @@ class TaskOutputChangeEvent:
           self.output = []
           (_etype3, _size0) = iprot.readListBegin()
           for _i4 in xrange(_size0):
-            _elem5 = apache.airavata.model.appcatalog.appinterface.ttypes.OutputDataObjectType()
+            _elem5 = apache.airavata.model.application.io.ttypes.OutputDataObjectType()
             _elem5.read(iprot)
             self.output.append(_elem5)
           iprot.readListEnd()
@@ -721,7 +804,7 @@ class JobIdentifier:
   Attributes:
    - jobId
    - taskId
-   - workflowNodeId
+   - processId
    - experimentId
    - gatewayId
   """
@@ -730,15 +813,15 @@ class JobIdentifier:
     None, # 0
     (1, TType.STRING, 'jobId', None, None, ), # 1
     (2, TType.STRING, 'taskId', None, None, ), # 2
-    (3, TType.STRING, 'workflowNodeId', None, None, ), # 3
+    (3, TType.STRING, 'processId', None, None, ), # 3
     (4, TType.STRING, 'experimentId', None, None, ), # 4
     (5, TType.STRING, 'gatewayId', None, None, ), # 5
   )
 
-  def __init__(self, jobId=None, taskId=None, workflowNodeId=None, experimentId=None, gatewayId=None,):
+  def __init__(self, jobId=None, taskId=None, processId=None, experimentId=None, gatewayId=None,):
     self.jobId = jobId
     self.taskId = taskId
-    self.workflowNodeId = workflowNodeId
+    self.processId = processId
     self.experimentId = experimentId
     self.gatewayId = gatewayId
 
@@ -763,7 +846,7 @@ class JobIdentifier:
           iprot.skip(ftype)
       elif fid == 3:
         if ftype == TType.STRING:
-          self.workflowNodeId = iprot.readString();
+          self.processId = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 4:
@@ -794,9 +877,9 @@ class JobIdentifier:
       oprot.writeFieldBegin('taskId', TType.STRING, 2)
       oprot.writeString(self.taskId)
       oprot.writeFieldEnd()
-    if self.workflowNodeId is not None:
-      oprot.writeFieldBegin('workflowNodeId', TType.STRING, 3)
-      oprot.writeString(self.workflowNodeId)
+    if self.processId is not None:
+      oprot.writeFieldBegin('processId', TType.STRING, 3)
+      oprot.writeString(self.processId)
       oprot.writeFieldEnd()
     if self.experimentId is not None:
       oprot.writeFieldBegin('experimentId', TType.STRING, 4)
@@ -814,8 +897,8 @@ class JobIdentifier:
       raise TProtocol.TProtocolException(message='Required field jobId is unset!')
     if self.taskId is None:
       raise TProtocol.TProtocolException(message='Required field taskId is unset!')
-    if self.workflowNodeId is None:
-      raise TProtocol.TProtocolException(message='Required field workflowNodeId is unset!')
+    if self.processId is None:
+      raise TProtocol.TProtocolException(message='Required field processId is unset!')
     if self.experimentId is None:
       raise TProtocol.TProtocolException(message='Required field experimentId is unset!')
     if self.gatewayId is None:
@@ -827,7 +910,7 @@ class JobIdentifier:
     value = 17
     value = (value * 31) ^ hash(self.jobId)
     value = (value * 31) ^ hash(self.taskId)
-    value = (value * 31) ^ hash(self.workflowNodeId)
+    value = (value * 31) ^ hash(self.processId)
     value = (value * 31) ^ hash(self.experimentId)
     value = (value * 31) ^ hash(self.gatewayId)
     return value

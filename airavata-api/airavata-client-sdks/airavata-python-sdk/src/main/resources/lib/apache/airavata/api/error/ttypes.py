@@ -7,7 +7,7 @@
 #
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
-import apache.airavata.model.workspace.experiment.ttypes
+import apache.airavata.model.experiment.ttypes
 
 
 from thrift.transport import TTransport

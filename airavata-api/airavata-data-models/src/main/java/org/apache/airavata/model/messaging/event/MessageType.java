@@ -31,7 +31,7 @@ import org.apache.thrift.TEnum;
 public enum MessageType implements org.apache.thrift.TEnum {
   EXPERIMENT(0),
   TASK(1),
-  WORKFLOWNODE(2),
+  PROCESS(2),
   JOB(3),
   LAUNCHTASK(4),
   TERMINATETASK(5),
@@ -61,7 +61,7 @@ public enum MessageType implements org.apache.thrift.TEnum {
       case 1:
         return TASK;
       case 2:
-        return WORKFLOWNODE;
+        return PROCESS;
       case 3:
         return JOB;
       case 4:
