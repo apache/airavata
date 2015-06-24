@@ -99,7 +99,7 @@ public class SSHOutputHandler extends AbstractHandler {
 //            if (taskData.getAdvancedOutputDataHandling() != null) {
 //                outputDataDir = taskData.getAdvancedOutputDataHandling().getOutputDataDir();
 //            }
-            if (outputDataDir == null) {
+            if (outputDataDir == null || outputDataDir.equals("")) {
                 outputDataDir = File.separator + "tmp";
             }
             outputDataDir = outputDataDir + File.separator + jobExecutionContext.getExperimentID() + "-" + jobExecutionContext.getTaskData().getTaskID();
