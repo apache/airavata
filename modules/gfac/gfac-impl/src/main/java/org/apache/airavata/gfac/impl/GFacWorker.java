@@ -35,14 +35,29 @@ public class GFacWorker implements Runnable {
 	private String processId;
 	private String gatewayId;
 	private String tokenId;
+	private boolean isProcessContextPopulated = false;
 
 
+	/**
+	 * This will be called by monitoring service.
+	 * @param processContext
+	 * @throws GFacException
+	 */
     public   GFacWorker(ProcessContext processContext) throws GFacException {
         if (processContext == null) {
             throw new GFacException("Worker must initialize with valide processContext, Process context is null");
         }
 	    this.processContext = processContext;
     }
+
+	/**
+	 * This constructor will be called when new or recovery request comes.
+	 * @param experimentId
+	 * @param processId
+	 * @param gatewayId
+	 * @param tokenId
+	 * @throws GFacException
+	 */
 	public GFacWorker(String experimentId, String processId, String gatewayId, String tokenId) throws GFacException {
 		this.experimentId = experimentId;
 		this.processId = processId;
@@ -57,6 +72,7 @@ public class GFacWorker implements Runnable {
 		    ProcessType type = getProcessType(processContext);
 		    if (processContext == null) {
 			    processContext = engine.populateProcessContext(experimentId, processId, gatewayId, tokenId);
+			    isProcessContextPopulated = true;
 		    }
 		    try {
 			    switch (type) {
@@ -100,7 +116,33 @@ public class GFacWorker implements Runnable {
 
 	private ProcessType getProcessType(ProcessContext processContext) {
 		// check the status and return correct type of process.
-		return ProcessType.NEW;
+		switch (processContext.getProcessState()) {
+			case CREATED:
+			case VALIDATED:
+				return ProcessType.NEW;
+			case PRE_PROCESSING:
+			case CONFIGURING_WORKSPACE:
+			case INPUT_DATA_STAGING:
+			case EXECUTING:
+				return ProcessType.RECOVER;
+			case MONITORING:
+				if (isProcessContextPopulated) {
+					return ProcessType.RECOVER; // hand over to monitor task
+				} else {
+					return ProcessType.OUTFLOW; // execute outflow
+				}
+			case OUTPUT_DATA_STAGING:
+			case POST_PROCESSING:
+				return ProcessType.RECOVER_OUTFLOW;
+			case COMPLETED:
+			case CANCELED:
+			case FAILED:
+				return ProcessType.COMPLETED;
+			//case CANCELLING: // TODO: handle this
+			default:
+				// this will never hit as we have handle all states in cases.
+				return ProcessType.NEW;
+		}
 	}
 
 
@@ -108,6 +150,7 @@ public class GFacWorker implements Runnable {
 		NEW,
 		RECOVER,
 		OUTFLOW,
-		RECOVER_OUTFLOW
+		RECOVER_OUTFLOW,
+		COMPLETED
 	}
 }
