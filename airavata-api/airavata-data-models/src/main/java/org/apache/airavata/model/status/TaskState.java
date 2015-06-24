@@ -30,16 +30,10 @@ import org.apache.thrift.TEnum;
 
 public enum TaskState implements org.apache.thrift.TEnum {
   CREATED(0),
-  PRE_PROCESSING(1),
-  CONFIGURING_WORKSPACE(2),
-  INPUT_DATA_STAGING(3),
-  EXECUTING(4),
-  MONITORING(5),
-  OUTPUT_DATA_STAGING(6),
-  POST_PROCESSING(7),
-  COMPLETED(8),
-  FAILED(9),
-  CANCELED(10);
+  EXECUTING(1),
+  COMPLETED(2),
+  FAILED(3),
+  CANCELED(4);
 
   private final int value;
 
@@ -63,24 +57,12 @@ public enum TaskState implements org.apache.thrift.TEnum {
       case 0:
         return CREATED;
       case 1:
-        return PRE_PROCESSING;
-      case 2:
-        return CONFIGURING_WORKSPACE;
-      case 3:
-        return INPUT_DATA_STAGING;
-      case 4:
         return EXECUTING;
-      case 5:
-        return MONITORING;
-      case 6:
-        return OUTPUT_DATA_STAGING;
-      case 7:
-        return POST_PROCESSING;
-      case 8:
+      case 2:
         return COMPLETED;
-      case 9:
+      case 3:
         return FAILED;
-      case 10:
+      case 4:
         return CANCELED;
       default:
         return null;
