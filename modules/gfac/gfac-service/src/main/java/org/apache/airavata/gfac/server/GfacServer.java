@@ -52,8 +52,8 @@ public class GfacServer implements IServer{
     public void StartGfacServer(GfacService.Processor<GfacServerHandler> gfacServerHandlerProcessor)
             throws Exception {
         try {
-            final int serverPort = Integer.parseInt(ServerSettings.getSetting(Constants.GFAC_SERVER_PORT, "8950"));
-            final String serverHost = ServerSettings.getSetting(Constants.GFAC_SERVER_HOST, null);
+            final int serverPort = Integer.parseInt(ServerSettings.getGFacServerPort());
+            final String serverHost = ServerSettings.getGfacServerHost();
 
             InetSocketAddress inetSocketAddress = new InetSocketAddress(serverHost, serverPort);
 

@@ -33,7 +33,7 @@ package org.apache.airavata.gfac.core.authentication;
  * The public key and private key are returned as byte arrays. Useful when we store private key/public key
  * in a secure storage such as credential store. API user should implement this.
  */
-public interface SSHPublicKeyAuthentication extends SSHKeyAuthentication {
+public interface SSHPublicKeyAuthentication extends AuthenticationInfo {
 
     /**
      * Gets the public key as byte array.
