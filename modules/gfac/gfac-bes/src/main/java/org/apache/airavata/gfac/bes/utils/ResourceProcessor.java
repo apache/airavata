@@ -34,8 +34,6 @@ public class ResourceProcessor {
 		
 		TaskDetails taskData = context.getTaskData();
 		
-		
-		
 		if(taskData != null && taskData.isSetTaskScheduling()){
 			try {
 				

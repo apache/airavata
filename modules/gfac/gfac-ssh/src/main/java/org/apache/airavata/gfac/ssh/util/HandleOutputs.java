@@ -27,7 +27,7 @@ public class HandleOutputs {
 		List<OutputDataObjectType> outputArray = new ArrayList<OutputDataObjectType>();
 		try {
             String outputDataDir = ServerSettings.getSetting(Constants.OUTPUT_DATA_DIR);
-            if (outputDataDir == null){
+            if (outputDataDir == null || outputDataDir.equals("")){
                 outputDataDir = File.separator + "tmp";
             }
 
