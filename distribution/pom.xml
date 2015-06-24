@@ -296,11 +296,11 @@
             <artifactId>airavata-gfac-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-gfac-bes</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-gfac-core</artifactId>
@@ -311,11 +311,11 @@
             <artifactId>airavata-gfac-service</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-workflow-model-core</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-model-utils</artifactId>
