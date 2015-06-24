@@ -34,7 +34,6 @@ import org.apache.airavata.gfac.monitor.HostMonitorData;
 import org.apache.airavata.gfac.monitor.UserMonitorData;
 import org.apache.airavata.gfac.monitor.core.PullMonitor;
 import org.apache.airavata.gfac.monitor.exception.AiravataMonitorException;
-import org.apache.airavata.gfac.monitor.impl.push.amqp.SimpleJobFinishConsumer;
 import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.authentication.AuthenticationInfo;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
@@ -68,8 +67,6 @@ public class HPCPullMonitor extends PullMonitor {
 
     private LinkedBlockingQueue<String> cancelJobList;
 
-    private List<String> completedJobsFromPush;
-
     private GFac gfac;
 
     private AuthenticationInfo authenticationInfo;
@@ -81,8 +78,6 @@ public class HPCPullMonitor extends PullMonitor {
         queue = new LinkedBlockingDeque<UserMonitorData>();
         publisher = new MonitorPublisher(new EventBus());
         cancelJobList = new LinkedBlockingQueue<String>();
-        completedJobsFromPush = new ArrayList<String>();
-        (new SimpleJobFinishConsumer(this.completedJobsFromPush)).listen();
         removeList = new ArrayList<MonitorID>();
     }
 
@@ -92,8 +87,6 @@ public class HPCPullMonitor extends PullMonitor {
         publisher = monitorPublisher;
         authenticationInfo = authInfo;
         cancelJobList = new LinkedBlockingQueue<String>();
-        this.completedJobsFromPush = new ArrayList<String>();
-        (new SimpleJobFinishConsumer(this.completedJobsFromPush)).listen();
         removeList = new ArrayList<MonitorID>();
     }
 
@@ -102,8 +95,6 @@ public class HPCPullMonitor extends PullMonitor {
         this.publisher = publisher;
         connections = new HashMap<String, ResourceConnection>();
         cancelJobList = new LinkedBlockingQueue<String>();
-        this.completedJobsFromPush = new ArrayList<String>();
-        (new SimpleJobFinishConsumer(this.completedJobsFromPush)).listen();
         removeList = new ArrayList<MonitorID>();
     }
 
@@ -202,34 +193,6 @@ public class HPCPullMonitor extends PullMonitor {
                             }
                         }
                         iterator1 = cancelJobList.iterator();
-                    }
-
-                    cleanup(take);
-
-                    synchronized (completedJobsFromPush) {
-                        for (ListIterator<String> iterator = completedJobsFromPush.listIterator(); iterator.hasNext(); ) {
-                            String completeId = iterator.next();
-                            for (monitorIDListIterator = monitorID.listIterator(); monitorIDListIterator.hasNext(); ) {
-                                MonitorID iMonitorID = monitorIDListIterator.next();
-                                if (completeId.equals(iMonitorID.getUserName() + "," + iMonitorID.getJobName())) {
-                                    logger.info("This job is finished because push notification came with <username,jobName> " + completeId);
-                                    iMonitorID.setStatus(JobState.COMPLETE);
-//                                    CommonUtils.removeMonitorFromQueue(take, iMonitorID);//we have to make this empty everytime we iterate, otherwise this list will accumulate and will lead to a memory leak
-                                    removeList.add(iMonitorID);
-                                    logger.debugId(completeId, "Push notification updated job {} status to {}. " +
-                                                    "experiment {} , task {}.", iMonitorID.getJobID(), JobState.COMPLETE.toString(),
-                                            iMonitorID.getExperimentID(), iMonitorID.getTaskID());
-                                    logger.info("AMQP message recieved: marking the Job as ************COMPLETE************ experiment {}, task {}, job name {} .",
-                                            iMonitorID.getExperimentID(), iMonitorID.getTaskID(), iMonitorID.getJobName());
-
-                                    sendNotification(iMonitorID);
-                                    logger.info("To avoid timing issues we sleep sometime and try to retrieve output files");
-                                    Thread.sleep(10000);
-                                    GFacThreadPoolExecutor.getCachedThreadPool().execute(new OutHandlerWorker(gfac, iMonitorID, publisher));
-                                    break;
-                                }
-                            }
-                        }
                     }
 
                     cleanup(take);
