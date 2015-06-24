@@ -25,6 +25,9 @@ import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescr
 import org.apache.airavata.model.error.ValidationResults;
 import org.apache.airavata.model.error.ValidatorResult;
 import org.apache.airavata.model.experiment.*;
+import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.*;
@@ -51,11 +54,11 @@ public class BatchQueueValidator implements JobMetadataValidator {
         }
     }
 
-    public ValidationResults validate(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID) {
+    public ValidationResults validate(ExperimentModel experiment, ProcessModel processModel, TaskModel taskModel) {
         ValidationResults validationResults = new ValidationResults();
         validationResults.setValidationState(true);
         try {
-            List<ValidatorResult> validatorResultList = validateUserConfiguration(experiment, taskID);
+            List<ValidatorResult> validatorResultList = validateUserConfiguration(experiment, processModel);
             for (ValidatorResult result : validatorResultList){
                 if (!result.isResult()){
                     validationResults.setValidationState(false);
@@ -69,18 +72,18 @@ public class BatchQueueValidator implements JobMetadataValidator {
         return validationResults;
     }
 
-    private List<ValidatorResult> validateUserConfiguration (Experiment experiment, TaskDetails taskDetail) throws AppCatalogException{
+    private List<ValidatorResult> validateUserConfiguration (ExperimentModel experiment, ProcessModel processModel) throws AppCatalogException{
         List<ValidatorResult> validatorResultList = new ArrayList<ValidatorResult>();
         try {
-            UserConfigurationData userConfigurationData = experiment.getUserConfigurationData();
-            ComputationalResourceScheduling computationalResourceScheduling = userConfigurationData.getComputationalResourceScheduling();
+            UserConfigurationDataModel userConfigurationData = experiment.getUserConfigurationData();
+            ComputationalResourceSchedulingModel computationalResourceScheduling = userConfigurationData.getComputationalResourceScheduling();
             if (userConfigurationData.isAiravataAutoSchedule()) {
                 logger.error("Auto-Schedule is not yet supported. Experiment will proceed with provided scheduling information");
                 ValidatorResult validatorResult = new ValidatorResult();
                 validatorResult.setResult(false);
                 validatorResultList.add(validatorResult);
             }
-            ComputeResourceDescription computeResource = appCatalog.getComputeResource().getComputeResource(taskDetail.getTaskScheduling().getResourceHostId());
+            ComputeResourceDescription computeResource = appCatalog.getComputeResource().getComputeResource(processModel.getResourceSchedule().getResourceHostId());
             List<BatchQueue> batchQueues = computeResource.getBatchQueues();
 
             if (batchQueues != null && !batchQueues.isEmpty()) {

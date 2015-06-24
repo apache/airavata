@@ -23,7 +23,7 @@ package org.apache.airavata.workflow.model.component;
 
 import javax.xml.namespace.QName;
 
-import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.workflow.model.graph.DataPort;
 
 public abstract class ComponentDataPort extends ComponentPort {

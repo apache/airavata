@@ -23,7 +23,7 @@ package org.apache.airavata.workflow.model.graph.ws;
 
 import com.google.gson.JsonObject;
 import org.apache.airavata.common.utils.WSConstants;
-import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.workflow.model.component.ComponentPort;
 import org.apache.airavata.workflow.model.component.system.SystemComponentDataPort;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;

@@ -24,7 +24,8 @@ package org.apache.airavata.workflow.model.graph.system;
 import java.util.List;
 
 import com.google.gson.JsonObject;
-import org.apache.airavata.model.appcatalog.appinterface.DataType;
+
+import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.graph.DataEdge;
 import org.apache.airavata.workflow.model.graph.DataPort;

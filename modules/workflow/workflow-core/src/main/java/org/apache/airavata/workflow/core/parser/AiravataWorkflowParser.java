@@ -21,8 +21,8 @@
 
 package org.apache.airavata.workflow.core.parser;
 
-import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
-import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.application.io.InputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.*;
@@ -64,7 +64,7 @@ public class AiravataWorkflowParser implements WorkflowParser {
 
     private String credentialToken ;
 
-    private Experiment experiment;
+    private ExperimentModel experiment;
     private Map<String, WorkflowNode> wfNodes = new HashMap<String, WorkflowNode>();
 
 
@@ -73,7 +73,7 @@ public class AiravataWorkflowParser implements WorkflowParser {
         this.credentialToken = credentialToken;
     }
 
-    public AiravataWorkflowParser(Experiment experiment, String credentialToken) {
+    public AiravataWorkflowParser(ExperimentModel experiment, String credentialToken) {
         this.credentialToken = credentialToken;
         this.experiment = experiment;
     }
@@ -255,14 +255,14 @@ public class AiravataWorkflowParser implements WorkflowParser {
         return outputDataObjectType;
     }
 
-    private Experiment getExperiment(String experimentId) throws RegistryException {
+    private ExperimentModel getExperiment(String experimentId) throws RegistryException {
         Registry registry = RegistryFactory.getRegistry();
-        return (Experiment)registry.getExperimentCatalog().get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+        return (ExperimentModel)registry.getExperimentCatalog().get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
     }
 
-    private Workflow getWorkflowFromExperiment(Experiment experiment) throws RegistryException, AppCatalogException, GraphException, ComponentException {
+    private Workflow getWorkflowFromExperiment(ExperimentModel experiment) throws RegistryException, AppCatalogException, GraphException, ComponentException {
         WorkflowCatalog workflowCatalog = getWorkflowCatalog();
-        return new Workflow(workflowCatalog.getWorkflow(experiment.getApplicationId()).getGraph());
+        return new Workflow(workflowCatalog.getWorkflow(experiment.getExecutionId()).getGraph());
     }
 
     private WorkflowCatalog getWorkflowCatalog() throws AppCatalogException {

@@ -34,11 +34,11 @@ import org.slf4j.LoggerFactory;
 public class DataModelUtils {
 
     private final static Logger logger = LoggerFactory.getLogger(DataModelUtils.class);
-	public static ExecutionType getExecutionType(String gatewayId, Experiment experiment){
+	public static ExecutionType getExecutionType(String gatewayId, ExperimentModel experiment){
 		try {
 			ApplicationInterface applicationInterface = RegistryFactory.getAppCatalog().getApplicationInterface();
 			List<String> allApplicationInterfaceIds = applicationInterface.getAllApplicationInterfaceIds();
-			String applicationId = experiment.getApplicationId();
+			String applicationId = experiment.getExecutionId();
 			if (allApplicationInterfaceIds.contains(applicationId)){
 				return ExecutionType.SINGLE_APP;
 			} else {
