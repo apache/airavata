@@ -92,6 +92,7 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
+                            <tarLongFileMode>posix</tarLongFileMode>
                             <finalName>${archieve.name}-${project.version}</finalName>
                             <descriptors>
                                 <descriptor>src/main/assembly/bin-assembly.xml</descriptor>
