@@ -21,7 +21,8 @@
 
 package org.apache.airavata.workflow.model.wf;
 
-import org.apache.airavata.model.appcatalog.appinterface.DataType;
+
+import org.apache.airavata.model.application.io.DataType;
 
 public class WorkflowInput {
 	private String name;

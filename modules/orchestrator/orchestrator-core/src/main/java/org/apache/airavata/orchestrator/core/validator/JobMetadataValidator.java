@@ -22,8 +22,8 @@ package org.apache.airavata.orchestrator.core.validator;
 
 import org.apache.airavata.model.error.ValidationResults;
 import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.experiment.TaskDetails;
-import org.apache.airavata.model.experiment.WorkflowNodeDetails;
+import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.model.task.TaskModel;
 
 /**
  * This is the interface to implement a validation logic, users can implement their validation
@@ -38,9 +38,9 @@ public interface JobMetadataValidator {
      * and set the results as failed (false) and return in, orchestrator will wrap them to an Exception and
      * thrown to the client side
      * @param experiment
-     * @param workflowNodeDetail
-     * @param taskID
+     * @param processModel
+     * @param taskModel
      * @return
      */
-    ValidationResults validate(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID);
+    ValidationResults validate(ExperimentModel experiment, ProcessModel processModel, TaskModel taskModel);
 }

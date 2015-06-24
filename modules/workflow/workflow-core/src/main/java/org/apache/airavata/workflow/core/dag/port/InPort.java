@@ -21,7 +21,7 @@
 
 package org.apache.airavata.workflow.core.dag.port;
 
-import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.workflow.core.dag.edge.Edge;
 
 public interface InPort extends Port {

@@ -21,7 +21,7 @@
 package org.apache.airavata.workflow.engine.invoker;
 
 import org.apache.airavata.common.utils.StringUtil;
-import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
 
 public class WorkflowInputUtil {

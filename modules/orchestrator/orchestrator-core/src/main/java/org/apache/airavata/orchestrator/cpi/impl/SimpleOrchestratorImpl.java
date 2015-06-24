@@ -20,9 +20,12 @@
 */
 package org.apache.airavata.orchestrator.cpi.impl;
 
+import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.error.ValidationResults;
 import org.apache.airavata.model.error.ValidatorResult;
+import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
@@ -64,10 +67,10 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         }
     }
 
-    public boolean launchExperiment(Experiment experiment, WorkflowNodeDetails workflowNode, TaskDetails task,String tokenId) throws OrchestratorException {
+    public boolean launchExperiment(ExperimentModel experiment, ProcessModel processModel, TaskModel task,String tokenId) throws OrchestratorException {
         // we give higher priority to userExperimentID
-        String experimentId = experiment.getExperimentID();
-        String taskId = task.getTaskID();
+        String experimentId = experiment.getExperimentId();
+        String taskId = task.getTaskId();
         // creating monitorID to register with monitoring queue
         // this is a special case because amqp has to be in place before submitting the job
         try {
@@ -85,36 +88,37 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
      * @return
      * @throws OrchestratorException
      */
-    public List<TaskDetails> createTasks(String experimentId) throws OrchestratorException {
-        Experiment experiment = null;
-        List<TaskDetails> tasks = new ArrayList<TaskDetails>();
-        try {
-            Registry newRegistry = orchestratorContext.getNewRegistry();
-            experiment = (Experiment) newRegistry.getExperimentCatalog().get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
-            List<WorkflowNodeDetails> workflowNodeDetailsList = experiment.getWorkflowNodeDetailsList();
-            if (workflowNodeDetailsList != null && !workflowNodeDetailsList.isEmpty()){
-                for (WorkflowNodeDetails wfn : workflowNodeDetailsList){
-                    List<TaskDetails> taskDetailsList = wfn.getTaskDetailsList();
-                    if (taskDetailsList != null && !taskDetailsList.isEmpty()){
-                        return taskDetailsList;
-                    }
-                }
-            }else {
-                WorkflowNodeDetails iDontNeedaNode = ExperimentModelUtil.createWorkflowNode("tempNode", null);
-                String nodeID = (String) newRegistry.getExperimentCatalog().add(ExpCatChildDataType.WORKFLOW_NODE_DETAIL, iDontNeedaNode, experimentId);
+    public List<TaskModel> createTasks(String experimentId) throws OrchestratorException {
+        ExperimentModel experiment = null;
+        List<TaskModel> tasks = new ArrayList<TaskModel>();
+        // FIXME : should change as create processes
+//        try {
+//            Registry newRegistry = orchestratorContext.getNewRegistry();
+//            experiment = (ExperimentModel) newRegistry.getExperimentCatalog().get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+//            List<ProcessModel> workflowNodeDetailsList = experiment.getWorkflowNodeDetailsList();
+//            if (workflowNodeDetailsList != null && !workflowNodeDetailsList.isEmpty()){
+//                for (WorkflowNodeDetails wfn : workflowNodeDetailsList){
+//                    List<TaskDetails> taskDetailsList = wfn.getTaskDetailsList();
+//                    if (taskDetailsList != null && !taskDetailsList.isEmpty()){
+//                        return taskDetailsList;
+//                    }
+//                }
+//            }else {
+//                WorkflowNodeDetails iDontNeedaNode = ExperimentModelUtil.createWorkflowNode("tempNode", null);
+//                String nodeID = (String) newRegistry.getExperimentCatalog().add(ExpCatChildDataType.WORKFLOW_NODE_DETAIL, iDontNeedaNode, experimentId);
+//
+//                TaskDetails taskDetails = ExperimentModelUtil.cloneTaskFromExperiment(experiment);
+//                taskDetails.setTaskID((String) newRegistry.getExperimentCatalog().add(ExpCatChildDataType.TASK_DETAIL, taskDetails, nodeID));
+//                tasks.add(taskDetails);
+//            }
 
-                TaskDetails taskDetails = ExperimentModelUtil.cloneTaskFromExperiment(experiment);
-                taskDetails.setTaskID((String) newRegistry.getExperimentCatalog().add(ExpCatChildDataType.TASK_DETAIL, taskDetails, nodeID));
-                tasks.add(taskDetails);
-            }
-
-        } catch (Exception e) {
-            throw new OrchestratorException("Error during creating a task");
-        }
+//        } catch (Exception e) {
+//            throw new OrchestratorException("Error during creating a task");
+//        }
         return tasks;
     }
 
-    public ValidationResults validateExperiment(Experiment experiment, WorkflowNodeDetails workflowNodeDetail, TaskDetails taskID) throws OrchestratorException,LaunchValidationException {
+    public ValidationResults validateExperiment(ExperimentModel experiment, ProcessModel processModel, TaskModel taskModel) throws OrchestratorException,LaunchValidationException {
         org.apache.airavata.model.error.ValidationResults validationResults = new org.apache.airavata.model.error.ValidationResults();
         validationResults.setValidationState(true); // initially making it to success, if atleast one failed them simply mark it failed.
         String errorMsg = "Validation Errors : ";
@@ -124,7 +128,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 try {
                     Class<? extends JobMetadataValidator> vClass = Class.forName(validator.trim()).asSubclass(JobMetadataValidator.class);
                     JobMetadataValidator jobMetadataValidator = vClass.newInstance();
-                    validationResults = jobMetadataValidator.validate(experiment, workflowNodeDetail, taskID);
+                    validationResults = jobMetadataValidator.validate(experiment, processModel, taskModel);
                     if (validationResults.isValidationState()) {
                         logger.info("Validation of " + validator + " is SUCCESSFUL");
                     } else {
@@ -137,17 +141,14 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                                 }
                             }
                         }
-                        logger.error("Validation of " + validator + " for experiment Id " + experiment.getExperimentID() + " is FAILED:[error]. " + errorMsg);
+                        logger.error("Validation of " + validator + " for experiment Id " + experiment.getExperimentId() + " is FAILED:[error]. " + errorMsg);
                         validationResults.setValidationState(false);
                         try {
-                            ErrorDetails details = new ErrorDetails();
+                            ErrorModel details = new ErrorModel();
                             details.setActualErrorMessage(errorMsg);
-                            details.setCorrectiveAction(CorrectiveAction.RETRY_SUBMISSION);
-                            details.setActionableGroup(ActionableGroup.GATEWAYS_ADMINS);
                             details.setCreationTime(Calendar.getInstance().getTimeInMillis());
-                            details.setErrorCategory(ErrorCategory.APPLICATION_FAILURE);
-                            orchestratorContext.getNewRegistry().getExperimentCatalog().add(ExpCatChildDataType.ERROR_DETAIL, details,
-                                    taskID.getTaskID());
+                            orchestratorContext.getNewRegistry().getExperimentCatalog().add(ExpCatChildDataType.TASK_ERROR, details,
+                                    taskModel.getTaskId());
                         } catch (RegistryException e) {
                             logger.error("Error while saving error details to registry", e);
                         }
@@ -176,18 +177,19 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         }
     }
 
-    public void cancelExperiment(Experiment experiment, WorkflowNodeDetails workflowNode, TaskDetails task, String tokenId)
+    public void cancelExperiment(ExperimentModel experiment, ProcessModel processModel, TaskModel task, String tokenId)
             throws OrchestratorException {
-        List<JobDetails> jobDetailsList = task.getJobDetailsList();
-        for(JobDetails jobDetails:jobDetailsList) {
-            JobState jobState = jobDetails.getJobStatus().getJobState();
-            if (jobState.getValue() > 4){
-                logger.error("Cannot cancel the job, because current job state is : " + jobState.toString() +
-                "jobId: " + jobDetails.getJobID() + " Job Name: " + jobDetails.getJobName());
-                return;
-            }
-        }
-        jobSubmitter.terminate(experiment.getExperimentID(),task.getTaskID(),tokenId);
+        // FIXME
+//        List<JobDetails> jobDetailsList = task.getJobDetailsList();
+//        for(JobDetails jobDetails:jobDetailsList) {
+//            JobState jobState = jobDetails.getJobStatus().getJobState();
+//            if (jobState.getValue() > 4){
+//                logger.error("Cannot cancel the job, because current job state is : " + jobState.toString() +
+//                "jobId: " + jobDetails.getJobID() + " Job Name: " + jobDetails.getJobName());
+//                return;
+//            }
+//        }
+//        jobSubmitter.terminate(experiment.getExperimentID(),task.getTaskID(),tokenId);
     }
 
 

@@ -22,8 +22,7 @@
 package org.apache.airavata.workflow.model.graph.system;
 
 import com.google.gson.JsonObject;
-import org.apache.airavata.common.utils.WSConstants;
-import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.workflow.model.component.ws.WSComponentPort;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;
 import org.apache.airavata.workflow.model.graph.DataEdge;
