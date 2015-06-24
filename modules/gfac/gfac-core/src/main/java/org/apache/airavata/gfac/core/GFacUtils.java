@@ -241,10 +241,7 @@ public class GFacUtils {
             JobStatus status = new JobStatus();
             status.setJobState(state);
             jobModel.setJobStatus(status);
-            // FIXME - Should change according to the experiment catalog impl
-//            experimentCatalog.add(ExpCatChildDataType.JOB_DETAIL, jobModel,
-//                    new CompositeIdentifier(jobExecutionContext.getTaskData()
-//                            .getTaskID(), jobModel.getJobID()));
+            experimentCatalog.add(ExpCatChildDataType.JOB_STATUS, status, jobModel.getJobId());
             JobIdentifier identifier = new JobIdentifier(jobModel.getJobId(), taskContext.getTaskModel().getTaskId(),
                     processContext.getProcessId(), processContext.getProcessModel().getExperimentId(),
                     processContext.getGatewayId());
