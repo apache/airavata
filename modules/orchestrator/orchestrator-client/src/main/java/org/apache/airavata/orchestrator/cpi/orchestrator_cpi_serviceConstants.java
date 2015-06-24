@@ -52,6 +52,6 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings({"cast", "rawtypes", "serial", "unchecked"})
 public class orchestrator_cpi_serviceConstants {
 
-  public static final String ORCHESTRATOR_CPI_VERSION = "0.13.0";
+  public static final String ORCHESTRATOR_CPI_VERSION = "0.16.0";
 
 }

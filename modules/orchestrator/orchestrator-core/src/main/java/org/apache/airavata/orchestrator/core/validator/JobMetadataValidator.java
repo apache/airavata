@@ -39,8 +39,7 @@ public interface JobMetadataValidator {
      * thrown to the client side
      * @param experiment
      * @param processModel
-     * @param taskModel
      * @return
      */
-    ValidationResults validate(ExperimentModel experiment, ProcessModel processModel, TaskModel taskModel);
+    ValidationResults validate(ExperimentModel experiment, ProcessModel processModel);
 }
