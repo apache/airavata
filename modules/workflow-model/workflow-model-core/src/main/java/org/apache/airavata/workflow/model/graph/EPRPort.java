@@ -22,7 +22,7 @@
 package org.apache.airavata.workflow.model.graph;
 
 import org.apache.airavata.common.utils.WSConstants;
-import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.application.io.DataType;
 import org.xmlpull.infoset.XmlElement;
 
 public class EPRPort extends DataPort {

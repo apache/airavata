@@ -31,10 +31,12 @@ import org.apache.airavata.common.utils.XMLUtil;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
-import org.apache.airavata.model.appcatalog.appinterface.DataType;
-import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
-import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.messaging.event.*;
+import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.model.status.ExperimentState;
+import org.apache.airavata.model.status.ProcessState;
+import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
@@ -101,9 +103,9 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 	
 	private WorkflowInterpreterInteractor interactor;
 
-	private Map<Node,WorkflowNodeDetails> nodeInstanceList;
+	private Map<Node,ProcessModel> nodeInstanceList;
 
-	private Experiment experiment;
+	private ExperimentModel experiment;
 	private ExperimentCatalog experimentCatalog;
 
     public void setGatewayId(String gatewayId) {
@@ -131,7 +133,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
      * @param config
      * @param orchestratorClient
      */
-	public WorkflowInterpreter(Experiment experiment, String credentialStoreToken,
+	public WorkflowInterpreter(ExperimentModel experiment, String credentialStoreToken,
                                WorkflowInterpreterConfiguration config, OrchestratorService.Client orchestratorClient, Publisher publisher) {
 		this.setConfig(config);
 		this.setExperiment(experiment);
@@ -363,18 +365,18 @@ public class WorkflowInterpreter implements AbstractActivityListener{
 		} finally{
         	cleanup();
 			this.getWorkflow().setExecutionState(WorkflowExecutionState.NONE);
-            ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.COMPLETED, experiment.getExperimentID(), gatewayId);
+            ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.COMPLETED, experiment.getExperimentId(), gatewayId);
             MessageContext msgCtx = new MessageContext(event, MessageType.EXPERIMENT, AiravataUtils.getId("EXPERIMENT"), gatewayId);
             msgCtx.setUpdatedTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
             publisher.publish(msgCtx);
         }
     }
 
-    private void publishNodeStatusChange(WorkflowNodeState state, String nodeId , String expId)
+    private void publishNodeStatusChange(ProcessState state, String nodeId , String expId)
             throws AiravataException {
         if (publisher != null) {
-            MessageContext msgCtx = new MessageContext(new WorkflowNodeStatusChangeEvent(state, new WorkflowIdentifier(nodeId,
-                    expId, gatewayId)), MessageType.WORKFLOWNODE, AiravataUtils.getId("NODE"), gatewayId);
+            MessageContext msgCtx = new MessageContext(new ProcessStatusChangeEvent(state, new ProcessIdentifier(nodeId,
+                    expId, gatewayId)), MessageType.PROCESS, AiravataUtils.getId("NODE"), gatewayId);
             msgCtx.setUpdatedTime(new Timestamp(Calendar.getInstance().getTimeInMillis()));
             publisher.publish(msgCtx);
         } else {
@@ -1399,11 +1401,11 @@ public class WorkflowInterpreter implements AbstractActivityListener{
         return workflowInterpreterConfigurationThreadLocal.get();
     }
 
-	public Experiment getExperiment() {
+	public ExperimentModel getExperiment() {
 		return experiment;
 	}
 
-	public void setExperiment(Experiment experiment) {
+	public void setExperiment(ExperimentModel experiment) {
 		this.experiment = experiment;
 	}
 
@@ -1424,7 +1426,7 @@ public class WorkflowInterpreter implements AbstractActivityListener{
     public void taskOutputChanged(TaskOutputChangeEvent taskOutputEvent){
 		String taskId = taskOutputEvent.getTaskIdentity().getTaskId();
 		if (isTaskAwaiting(taskId)){
-        	WorkflowNodeState state=WorkflowNodeState.COMPLETED;
+        	ProcessState state=ProcessState.COMPLETED;
 			Node node = getAwaitingNodeForTask(taskId);
     		List<OutputDataObjectType> applicationOutputs = taskOutputEvent.getOutput();
 			Map<String, String> outputData = new HashMap<String, String>();

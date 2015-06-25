@@ -110,7 +110,7 @@ struct JobIdentifier {
 // }
 
 struct ProcessSubmitEvent{
-    1: required string taskId;
+    1: required string processId;
     2: required string credentialToken;
 }
 

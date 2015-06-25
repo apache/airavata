@@ -24,7 +24,7 @@ package org.apache.airavata.workflow.model.graph.system;
 import java.util.List;
 
 import org.apache.airavata.common.utils.WSConstants;
-import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.workflow.model.component.ComponentDataPort;
 import org.apache.airavata.workflow.model.component.system.EndDoWhileComponent;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;

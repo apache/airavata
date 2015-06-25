@@ -22,18 +22,14 @@
 package org.apache.airavata.gfac.impl.task;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.Constants;
-import org.apache.airavata.common.utils.LocalEventPublisher;
 import org.apache.airavata.gfac.core.*;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.context.TaskContext;
-import org.apache.airavata.gfac.core.monitor.MonitorID;
 import org.apache.airavata.gfac.core.task.JobSubmissionTask;
 import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.gfac.impl.Factory;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
-import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
@@ -67,26 +63,8 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
             jobModel.setJobName(jobDescriptor.getJobName());
             ResourceJobManager resourceJobManager = GFacUtils.getResourceJobManager(processContext);
             JobManagerConfiguration jConfig = null;
-            if (resourceJobManager != null){
-                String installedParentPath = resourceJobManager.getJobManagerBinPath();
-                if (installedParentPath == null) {
-                    installedParentPath = "/";
-                }
-                ResourceJobManagerType resourceJobManagerType = resourceJobManager.getResourceJobManagerType();
-                if (resourceJobManagerType == null) {
-                    log.error("No Job Manager is configured, so we are picking pbs as the default job manager");
-                    jConfig = Factory.getPBSJobManager(installedParentPath);
-                } else {
-                    if (ResourceJobManagerType.PBS == resourceJobManagerType) {
-                        jConfig = Factory.getPBSJobManager(installedParentPath);
-                    } else if (ResourceJobManagerType.SLURM == resourceJobManagerType) {
-                        jConfig = Factory.getSLURMJobManager(installedParentPath);
-                    } else if (ResourceJobManagerType.UGE == resourceJobManagerType) {
-                        jConfig = Factory.getUGEJobManager(installedParentPath);
-                    } else if (ResourceJobManagerType.LSF == resourceJobManagerType) {
-                        jConfig = Factory.getLSFJobManager(installedParentPath);
-                    }
-                }
+            if (resourceJobManager != null) {
+                jConfig = Factory.getJobManagerConfiguration(resourceJobManager);
             }
             File jobFile = GFacUtils.createJobFile(jobDescriptor, jConfig);
             if (jobFile != null && jobFile.exists()){

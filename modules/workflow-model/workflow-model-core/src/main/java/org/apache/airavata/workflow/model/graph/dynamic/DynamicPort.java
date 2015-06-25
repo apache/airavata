@@ -21,7 +21,7 @@
 
 package org.apache.airavata.workflow.model.graph.dynamic;
 
-import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.workflow.model.component.ComponentPort;
 import org.apache.airavata.workflow.model.component.dynamic.DynamicComponentPort;
 import org.apache.airavata.workflow.model.exceptions.WorkflowRuntimeException;

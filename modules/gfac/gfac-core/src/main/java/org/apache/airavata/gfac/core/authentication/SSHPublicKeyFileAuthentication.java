@@ -30,7 +30,7 @@ package org.apache.airavata.gfac.core.authentication;/*
  * Public key authentication for vanilla SSH.
  * The public key and private key stored files are returned. API user should implement this.
  */
-public interface SSHPublicKeyFileAuthentication extends SSHKeyAuthentication {
+public interface SSHPublicKeyFileAuthentication extends AuthenticationInfo {
 
     /**
      * The file which contains the public key.
