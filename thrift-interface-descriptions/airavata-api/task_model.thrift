@@ -55,7 +55,7 @@ struct TaskModel {
     5: required i64 lastUpdateTime,
     6: required status_models.TaskStatus taskStatus,
     7: optional string taskDetail,
-    8: optional byte taskInternalStore,
+    8: optional binary subTaskModel,
     9: optional airavata_commons.ErrorModel taskError
 }
 
