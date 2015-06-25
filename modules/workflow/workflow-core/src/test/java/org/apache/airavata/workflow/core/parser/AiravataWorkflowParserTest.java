@@ -21,8 +21,8 @@
 
 package org.apache.airavata.workflow.core.parser;
 
-import org.apache.airavata.model.appcatalog.appinterface.DataType;
-import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
+import org.apache.airavata.model.application.io.DataType;
+import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.workflow.core.dag.nodes.ApplicationNode;
 import org.apache.airavata.workflow.core.dag.nodes.WorkflowInputNode;
@@ -64,7 +64,7 @@ public class AiravataWorkflowParserTest {
             nextLine = br.readLine();
         }
         Workflow workflow = new Workflow(sb.toString());
-        Experiment experiment = new Experiment();
+        ExperimentModel experiment = new ExperimentModel();
         InputDataObjectType x = new InputDataObjectType();
         x.setValue("6");
         x.setType(DataType.STRING);

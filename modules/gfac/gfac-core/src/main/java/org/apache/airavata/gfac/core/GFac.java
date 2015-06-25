@@ -21,8 +21,8 @@
 package org.apache.airavata.gfac.core;
 
 import org.apache.airavata.common.utils.LocalEventPublisher;
+import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.registry.cpi.AppCatalog;
-import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.curator.framework.CuratorFramework;
 
@@ -54,17 +54,17 @@ public interface GFac {
 
     /**
      * This method can be used in a handler to ivvoke outhandler asynchronously
-     * @param jobExecutionContext
+     * @param processContext
      * @throws GFacException
      */
-    public void invokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException;
+    public void invokeOutFlowHandlers(ProcessContext processContext) throws GFacException;
 
     /**
      * This method can be used to handle re-run case asynchronously
-     * @param jobExecutionContext
+     * @param processContext
      * @throws GFacException
      */
-    public void reInvokeOutFlowHandlers(JobExecutionContext jobExecutionContext) throws GFacException;
+    public void reInvokeOutFlowHandlers(ProcessContext processContext) throws GFacException;
 
     /**
      * This operation can be used to cancel an already running experiment

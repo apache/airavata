@@ -23,7 +23,7 @@ package org.apache.airavata.workflow.model.component.ws;
 
 import org.apache.airavata.common.utils.WSConstants;
 import org.apache.airavata.common.utils.XMLUtil;
-import org.apache.airavata.model.appcatalog.appinterface.DataType;
+import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.workflow.model.component.ComponentDataPort;
 import org.apache.airavata.workflow.model.component.ComponentException;
 import org.apache.airavata.workflow.model.graph.ws.WSPort;

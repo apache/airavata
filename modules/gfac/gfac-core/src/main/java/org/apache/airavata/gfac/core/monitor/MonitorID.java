@@ -20,7 +20,7 @@
 */
 package org.apache.airavata.gfac.core.monitor;
 
-import org.apache.airavata.gfac.core.context.JobExecutionContext;
+import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.status.JobState;
 import org.slf4j.Logger;
@@ -61,7 +61,7 @@ public class MonitorID {
 
     private JobState state;
 
-    private JobExecutionContext jobExecutionContext;
+    private ProcessContext processContext;
 
     public MonitorID() {
     }
@@ -86,16 +86,16 @@ public class MonitorID {
         this.jobName = jobName;
     }
 
-    public MonitorID(JobExecutionContext jobExecutionContext) {
-/*        this.jobExecutionContext = jobExecutionContext;
-        this.computeResourceDescription = jobExecutionContext.getApplicationContext().getComputeResourceDescription();
-        userName = jobExecutionContext.getExperiment().getUserName();
-        taskID = jobExecutionContext.getTaskData().getTaskID();
-        experimentID = jobExecutionContext.getExperiment().getExperimentID();
-        workflowNodeID = jobExecutionContext.getWorkflowNodeDetails().getNodeInstanceId();// at this point we only have one node todo: fix this
+    public MonitorID(ProcessContext processContext) {
+/*        this.processContext = processContext;
+        this.computeResourceDescription = processContext.getApplicationContext().getComputeResourceDescription();
+        userName = processContext.getExperiment().getUserName();
+        taskID = processContext.getTaskData().getTaskID();
+        experimentID = processContext.getExperiment().getExperimentID();
+        workflowNodeID = processContext.getWorkflowNodeDetails().getNodeInstanceId();// at this point we only have one node todo: fix this
         try {
-            jobName = jobExecutionContext.getJobDetails().getJobName();
-            jobID = jobExecutionContext.getJobDetails().getJobID();
+            jobName = processContext.getJobDetails().getJobName();
+            jobID = processContext.getJobDetails().getJobID();
         }catch(NullPointerException e){
             logger.error("There is not job created at this point");
             // this is not a big deal we create MonitorId before having a jobId or job Name
@@ -210,12 +210,12 @@ public class MonitorID {
         this.workflowNodeID = workflowNodeID;
     }
 
-    public JobExecutionContext getJobExecutionContext() {
-        return jobExecutionContext;
+    public ProcessContext getProcessContext() {
+        return processContext;
     }
 
-    public void setJobExecutionContext(JobExecutionContext jobExecutionContext) {
-        this.jobExecutionContext = jobExecutionContext;
+    public void setProcessContext(ProcessContext processContext) {
+        this.processContext = processContext;
     }
 
     public String getJobName() {

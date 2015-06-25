@@ -21,7 +21,7 @@
 
 package org.apache.airavata.workflow.core.dag.port;
 
-import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.workflow.core.dag.edge.Edge;
 
 import java.util.List;

@@ -33,9 +33,9 @@ public class PBSJobConfiguration implements JobManagerConfiguration {
 
 	private final Map<JobManagerCommand, String> jobManagerCommands;
 	private String jobDescriptionTemplateName;
-    private String scriptExtension;
-    private String installedPath;
-    private OutputParser parser;
+	private String scriptExtension;
+	private String installedPath;
+	private OutputParser parser;
 
 	public PBSJobConfiguration(String jobDescriptionTemplateName, String scriptExtension, String installedPath,
 	                           Map<JobManagerCommand, String> jobManagerCommands, OutputParser parser) {
@@ -50,69 +50,73 @@ public class PBSJobConfiguration implements JobManagerConfiguration {
 		this.jobManagerCommands = jobManagerCommands;
 	}
 
-    public RawCommandInfo getCancelCommand(String jobID) {
-        return new RawCommandInfo(this.installedPath + "qdel " + jobID);
-    }
+	public RawCommandInfo getCancelCommand(String jobID) {
+		return new RawCommandInfo(this.installedPath + jobManagerCommands.get(JobManagerCommand.DELETION) + " " +
+				jobID);
+	}
 
-    public String getJobDescriptionTemplateName() {
-        return jobDescriptionTemplateName;
-    }
+	public String getJobDescriptionTemplateName() {
+		return jobDescriptionTemplateName;
+	}
 
-    public void setJobDescriptionTemplateName(String jobDescriptionTemplateName) {
-        this.jobDescriptionTemplateName = jobDescriptionTemplateName;
-    }
+	public void setJobDescriptionTemplateName(String jobDescriptionTemplateName) {
+		this.jobDescriptionTemplateName = jobDescriptionTemplateName;
+	}
 
-    public RawCommandInfo getMonitorCommand(String jobID) {
-        return new RawCommandInfo(this.installedPath + "qstat -f " + jobID);
-    }
+	public RawCommandInfo getMonitorCommand(String jobID) {
+		return new RawCommandInfo(this.installedPath + jobManagerCommands.get(JobManagerCommand.JOB_MONITORING)
+				+ " -f " + jobID);
+	}
 
-    public String getScriptExtension() {
-        return scriptExtension;
-    }
+	public String getScriptExtension() {
+		return scriptExtension;
+	}
 
-    public RawCommandInfo getSubmitCommand(String workingDirectory, String pbsFilePath) {
-        return new RawCommandInfo(this.installedPath + "qsub " +
-                workingDirectory + File.separator + FilenameUtils.getName(pbsFilePath));
-    }
+	public RawCommandInfo getSubmitCommand(String workingDirectory, String pbsFilePath) {
+		return new RawCommandInfo(this.installedPath + jobManagerCommands.get(JobManagerCommand.SUBMISSION) + " " +
+				workingDirectory + File.separator + FilenameUtils.getName(pbsFilePath));
+	}
 
-    public String getInstalledPath() {
-        return installedPath;
-    }
+	public String getInstalledPath() {
+		return installedPath;
+	}
 
-    public void setInstalledPath(String installedPath) {
-        this.installedPath = installedPath;
-    }
+	public void setInstalledPath(String installedPath) {
+		this.installedPath = installedPath;
+	}
 
-    public OutputParser getParser() {
-        return parser;
-    }
+	public OutputParser getParser() {
+		return parser;
+	}
 
-    public void setParser(OutputParser parser) {
-        this.parser = parser;
-    }
+	public void setParser(OutputParser parser) {
+		this.parser = parser;
+	}
 
-    public RawCommandInfo getUserBasedMonitorCommand(String userName) {
-        return new RawCommandInfo(this.installedPath + "qstat -u " + userName);
-    }
+	public RawCommandInfo getUserBasedMonitorCommand(String userName) {
+		return new RawCommandInfo(this.installedPath + jobManagerCommands.get(JobManagerCommand.JOB_MONITORING)
+				+ " -u " + userName);
+	}
 
-    @Override
-    public RawCommandInfo getJobIdMonitorCommand(String jobName, String userName) {
-        // For PBS there is no option to get jobDetails by JobName, so we search with userName
-        return new RawCommandInfo(this.installedPath + "qstat -u " + userName + " -f  | grep \"Job_Name = " + jobName + "\" -B1");
-    }
+	@Override
+	public RawCommandInfo getJobIdMonitorCommand(String jobName, String userName) {
+		// For PBS there is no option to get jobDetails by JobName, so we search with userName
+		return new RawCommandInfo(this.installedPath + jobManagerCommands.get(JobManagerCommand.JOB_MONITORING)
+				+ " -u " + userName + " -f  | grep \"Job_Name = " + jobName + "\" -B1");
+	}
 
-    @Override
-    public String  getBaseCancelCommand() {
-        return "qdel";
-    }
+	@Override
+	public String getBaseCancelCommand() {
+		return jobManagerCommands.get(JobManagerCommand.DELETION);
+	}
 
-    @Override
-    public String  getBaseMonitorCommand() {
-        return "qstat";
-    }
+	@Override
+	public String getBaseMonitorCommand() {
+		return jobManagerCommands.get(JobManagerCommand.JOB_MONITORING);
+	}
 
-    @Override
-    public String getBaseSubmitCommand() {
-        return "qsub ";
-    }
+	@Override
+	public String getBaseSubmitCommand() {
+		return jobManagerCommands.get(JobManagerCommand.SUBMISSION);
+	}
 }

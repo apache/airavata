@@ -22,7 +22,6 @@
 package com.jcraft.jsch;
 
 import org.apache.airavata.gfac.core.authentication.GSIAuthenticationInfo;
-import org.apache.airavata.gfac.gsi.ssh.GSSContextX509;
 import org.globus.gsi.gssapi.GSSConstants;
 import org.ietf.jgss.GSSException;
 import org.ietf.jgss.Oid;

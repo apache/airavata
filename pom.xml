@@ -551,16 +551,16 @@
 				<module>modules/commons</module>
                 <module>modules/messaging</module>
 				<module>modules/gfac</module>
-				<module>modules/workflow-model</module>
+				<!--<module>modules/workflow-model</module>-->
 				<module>modules/registry</module>
 				<module>modules/security</module>
 				<module>modules/credential-store</module>
 				<module>modules/orchestrator</module>
 				<module>modules/server</module>
-				<module>modules/test-suite</module>
+				<!--<module>modules/test-suite</module>-->
 				<!--<module>modules/integration-tests</module>-->
-				<module>modules/workflow</module>
-				<module>modules/xbaya-gui</module>
+				<!--<module>modules/workflow</module>-->
+				<!--<module>modules/xbaya-gui</module>-->
 				<module>distribution</module>
 			</modules>
 		</profile>

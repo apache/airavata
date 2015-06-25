@@ -23,11 +23,9 @@ package org.apache.airavata.orchestrator.cpi;
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.error.ValidationResults;
 import org.apache.airavata.model.experiment.ExperimentModel;
-import org.apache.airavata.model.experiment.TaskDetails;
-import org.apache.airavata.model.experiment.WorkflowNodeDetails;
+import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 
-import javax.validation.Validation;
 import java.util.List;
 
 /*
@@ -40,13 +38,11 @@ public interface Orchestrator {
      * This method can be used to run all custom validators plugged in to the orchestrator and make
      * sure the experiment is ready to launch and if its not this will return false
      * @param experiment
-     * @param workflowNodeDetail
-     * @param taskID
+     * @param processModel
      * @return boolean if the experiments are valids after executing all the validators return true otherwise it iwll return false
      * @throws OrchestratorException
      */
-     ValidationResults validateExperiment(Experiment experiment, WorkflowNodeDetails workflowNodeDetail,
-                            TaskDetails taskID) throws OrchestratorException,LaunchValidationException;
+     ValidationResults validateExperiment(ExperimentModel experiment, ProcessModel processModel) throws OrchestratorException,LaunchValidationException;
     /**
      * After creating the experiment Data user have the
      * experimentID as the handler to the experiment, during the launchExperiment
@@ -56,8 +52,7 @@ public interface Orchestrator {
      * @return launchExperiment status
      * @throws OrchestratorException
      */
-    boolean launchExperiment(Experiment experiment, WorkflowNodeDetails workflowNodeDetail,
-                            TaskDetails taskID,String tokenId) throws OrchestratorException;
+    boolean launchExperiment(ExperimentModel experiment, ProcessModel processModel,String tokenId) throws OrchestratorException;
 
 
     /**
@@ -67,7 +62,7 @@ public interface Orchestrator {
      * @return
      * @throws OrchestratorException
      */
-    public List<TaskDetails> createTasks(String experimentId) throws OrchestratorException;
+    public List<ProcessModel> createProcesses(String experimentId) throws OrchestratorException;
 
     /**
      * After creating the experiment Data user have the
@@ -75,12 +70,11 @@ public interface Orchestrator {
      * We just have to give the experimentID
      *
      * @param experiment
-     * @param workflowNode
-     * @param task
+     * @param processModel
      * @param tokenId
      * @throws OrchestratorException
      */
-    void cancelExperiment(Experiment experiment, WorkflowNodeDetails workflowNode, TaskDetails task,String tokenId) throws OrchestratorException;
+    void cancelExperiment(ExperimentModel experiment, ProcessModel processModel, String tokenId) throws OrchestratorException;
     //todo have to add another method to handle failed or jobs to be recovered by orchestrator
     //todo if you don't add these this is not an orchestrator, its just an intemediate component which invoke gfac
 

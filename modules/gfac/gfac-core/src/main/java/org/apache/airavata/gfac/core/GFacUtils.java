@@ -26,7 +26,6 @@ import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.credential.store.store.impl.CredentialReaderImpl;
-import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.watcher.CancelRequestWatcher;
@@ -242,10 +241,7 @@ public class GFacUtils {
             JobStatus status = new JobStatus();
             status.setJobState(state);
             jobModel.setJobStatus(status);
-            // FIXME - Should change according to the experiment catalog impl
-//            experimentCatalog.add(ExpCatChildDataType.JOB_DETAIL, jobModel,
-//                    new CompositeIdentifier(jobExecutionContext.getTaskData()
-//                            .getTaskID(), jobModel.getJobID()));
+            experimentCatalog.add(ExpCatChildDataType.JOB_STATUS, status, jobModel.getJobId());
             JobIdentifier identifier = new JobIdentifier(jobModel.getJobId(), taskContext.getTaskModel().getTaskId(),
                     processContext.getProcessId(), processContext.getProcessModel().getExperimentId(),
                     processContext.getGatewayId());
@@ -609,18 +605,18 @@ public class GFacUtils {
 //		}
 //	}
 
-    public static String getHandlerData(JobExecutionContext jobExecutionContext, String className) throws Exception {
-        CuratorFramework curatorClient = jobExecutionContext.getCuratorClient();
-        if (curatorClient != null) {
-            String expZnodeHandlerPath = AiravataZKUtils
-                    .getExpZnodeHandlerPath(
-                            jobExecutionContext.getExperimentID(),
-                            className);
-            Stat exists = curatorClient.checkExists().forPath(expZnodeHandlerPath);
-            return new String(jobExecutionContext.getCuratorClient().getData().storingStatIn(exists).forPath(expZnodeHandlerPath));
-        }
-        return null;
-    }
+//    public static String getHandlerData(ProcessContext processContext, String className) throws Exception {
+//        CuratorFramework curatorClient = processContext.getCuratorClient();
+//        if (curatorClient != null) {
+//            String expZnodeHandlerPath = AiravataZKUtils
+//                    .getExpZnodeHandlerPath(
+//                            processContext.getExperimentID(),
+//                            className);
+//            Stat exists = curatorClient.checkExists().forPath(expZnodeHandlerPath);
+//            return new String(processContext.getCuratorClient().getData().storingStatIn(exists).forPath(expZnodeHandlerPath));
+//        }
+//        return null;
+//    }
 
     public static CredentialReader getCredentialReader()
             throws ApplicationSettingsException, IllegalAccessException,
@@ -730,13 +726,13 @@ public class GFacUtils {
         return details.getExperimentStatus().getState();
     }
 
-    public static boolean isFailedJob(JobExecutionContext jec) {
-//        JobStatus jobStatus = jec.getJobDetails().getJobStatus();
-//        if (jobStatus.getJobState() == JobState.FAILED) {
-//            return true;
-//        }
-        return false;
-    }
+//    public static boolean isFailedJob(JobExecutionContext jec) {
+////        JobStatus jobStatus = jec.getJobDetails().getJobStatus();
+////        if (jobStatus.getJobState() == JobState.FAILED) {
+////            return true;
+////        }
+//        return false;
+//    }
 
     public static boolean ackCancelRequest(String experimentId, CuratorFramework curatorClient) throws Exception {
         String experimentEntry = GFacUtils.findExperimentEntry(experimentId, curatorClient);

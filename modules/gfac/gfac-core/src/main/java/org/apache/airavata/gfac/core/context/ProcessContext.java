@@ -33,6 +33,7 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePrefer
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
+import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.curator.framework.CuratorFramework;
@@ -260,4 +261,9 @@ public class ProcessContext {
 	public void setComputeResourcePreference(ComputeResourcePreference computeResourcePreference) {
 		this.computeResourcePreference = computeResourcePreference;
 	}
+
+	public ProcessState getProcessState() {
+		return processModel.getProcessStatus().getState();
+	}
+
 }

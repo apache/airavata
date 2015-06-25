@@ -26,12 +26,12 @@ import java.util.concurrent.Executors;
 
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.logger.AiravataLogger;
-import org.apache.airavata.common.logger.AiravataLoggerFactory;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OrchestratorServerThreadPoolExecutor {
-	    private final static AiravataLogger logger = AiravataLoggerFactory.getLogger(OrchestratorServerThreadPoolExecutor.class);
+	    private final static Logger logger = LoggerFactory.getLogger(OrchestratorServerThreadPoolExecutor.class);
 	    public static final String AIRAVATA_SERVER_THREAD_POOL_SIZE = "airavata.server.thread.pool.size";
 
 	    private static ExecutorService threadPool;
