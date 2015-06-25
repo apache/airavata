@@ -24,8 +24,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OAuthTokenRetrievalClient {
-
-    public String retrieveAccessToken(String consumerId, String consumerSecret, String userName, String password)
+    /**
+     * Retrieve the OAuth Access token via the specified grant type.
+     * @param consumerId
+     * @param consumerSecret
+     * @param userName
+     * @param password
+     * @param grantType
+     * @return
+     * @throws SecurityException
+     */
+    public String retrieveAccessToken(String consumerId, String consumerSecret, String userName, String password, int grantType)
             throws SecurityException {
 
         HttpPost postMethod = null;
@@ -47,9 +56,15 @@ public class OAuthTokenRetrievalClient {
             postMethod.setHeader("Authorization", "Basic " + authHeader);
 
             List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
-            urlParameters.add(new BasicNameValuePair("grant_type", "password"));
-            urlParameters.add(new BasicNameValuePair("username", userName));
-            urlParameters.add(new BasicNameValuePair("password", password));
+
+            if (grantType == 1) {
+                urlParameters.add(new BasicNameValuePair("grant_type", "password"));
+                urlParameters.add(new BasicNameValuePair("username", userName));
+                urlParameters.add(new BasicNameValuePair("password", password));
+
+            } else if (grantType == 2) {
+                urlParameters.add(new BasicNameValuePair("grant_type", "client_credentials"));
+            }
 
             postMethod.setEntity(new UrlEncodedFormEntity(urlParameters));
 
@@ -83,5 +98,4 @@ public class OAuthTokenRetrievalClient {
             }
         }
     }
-
 }

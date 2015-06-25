@@ -34,6 +34,7 @@ public class Properties {
     public static int authzServerPort = 9443;
     public static String adminUserName = "admin";
     public static String adminPassword = "admin";
+    public static int grantType = 1;
 
     //OAuth consumer app properties
     public static String appName = "AiravataGWP1";

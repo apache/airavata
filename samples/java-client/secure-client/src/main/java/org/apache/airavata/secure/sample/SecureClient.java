@@ -92,32 +92,48 @@ public class SecureClient {
             //obtain OAuth access token
 
             /************************Start obtaining input from user*****************************/
-            System.out.println("Obtaining OAuth access token via 'Resource Owner Password' grant type....");
-            System.out.println("Please enter following information as you prefer, or use defaults.");
-            System.out.println("End user's name: (default:" + Properties.userName +
-                    ", press 'd' to use default value.)");
-            String userNameInput = scanner.next();
-            String userName = null;
-            if (userNameInput.trim().equals("d")) {
-                userName = Properties.userName;
+            System.out.println("Please select the preferred grant type: (or press d to use the default option" + Properties.grantType + ")");
+            System.out.println("1. Resource Owner Password Credential.");
+            System.out.println("2. Client Credential.");
+
+            String grantTypeInput = scanner.next().trim();
+            int grantType = 0;
+            if (grantTypeInput.equals("d")) {
+                grantType = Properties.grantType;
             } else {
-                userName = userNameInput.trim();
+                grantType = Integer.valueOf(grantTypeInput);
+            }
+            String userName = null;
+            String password = null;
+            if (grantType == 1) {
+                System.out.println("Obtaining OAuth access token via 'Resource Owner Password' grant type....");
+                System.out.println("Please enter following information as you prefer, or use defaults.");
+                System.out.println("End user's name: (default:" + Properties.userName +
+                        ", press 'd' to use default value.)");
+                String userNameInput = scanner.next();
+                if (userNameInput.trim().equals("d")) {
+                    userName = Properties.userName;
+                } else {
+                    userName = userNameInput.trim();
+                }
+
+                System.out.println("End user's password: (default:" + Properties.password + ", press 'd' to use default value.)");
+                String passwordInput = scanner.next();
+                if (passwordInput.trim().equals("d")) {
+                    password = Properties.password;
+                } else {
+                    password = passwordInput.trim();
+                }
+            } else if (grantType == 2) {
+                System.out.println("Obtaining OAuth access token via 'Client Credential' grant type...' grant type....");
             }
 
-            System.out.println("End user's password: (default:" + Properties.password + ", press 'd' to use default value.)");
-            String passwordInput = scanner.next();
-            String password = null;
-            if (passwordInput.trim().equals("d")) {
-                password = Properties.password;
-            } else {
-                password = passwordInput.trim();
-            }
             /***************************** Finish obtaining input from user*******************************************/
 
             //obtain the OAuth token for the specified end user.
-            String accessToken = new OAuthTokenRetrievalClient().retrieveAccessToken(consumerId, consumerSecret, userName,
-                    password);
-            System.out.println("OAuth access token obtained for the user: " + userName + " is: " + accessToken);
+            String accessToken = new OAuthTokenRetrievalClient().retrieveAccessToken(consumerId, consumerSecret,
+                    userName, password, grantType);
+            System.out.println("OAuth access token is: " + accessToken);
             System.out.println("");
 
             //invoke Airavata API by the SecureClient, on behalf of the user.
@@ -137,6 +153,7 @@ public class SecureClient {
             String version = client.getAPIVersion(authzToken);
             System.out.println("Airavata API version: " + version);
             System.out.println("");
+            
         } catch (InvalidRequestException e) {
             e.printStackTrace();
         } catch (TException e) {
