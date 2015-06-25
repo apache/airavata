@@ -31,7 +31,6 @@ public class GFacWorker implements Runnable {
 
 	private static final Logger log = LoggerFactory.getLogger(GFacWorker.class);
 	private ProcessContext processContext;
-	private String experimentId;
 	private String processId;
 	private String gatewayId;
 	private String tokenId;
@@ -52,14 +51,12 @@ public class GFacWorker implements Runnable {
 
 	/**
 	 * This constructor will be called when new or recovery request comes.
-	 * @param experimentId
 	 * @param processId
 	 * @param gatewayId
 	 * @param tokenId
 	 * @throws GFacException
 	 */
-	public GFacWorker(String experimentId, String processId, String gatewayId, String tokenId) throws GFacException {
-		this.experimentId = experimentId;
+	public GFacWorker(String processId, String gatewayId, String tokenId) throws GFacException {
 		this.processId = processId;
 		this.gatewayId = gatewayId;
 		this.tokenId = tokenId;
@@ -71,7 +68,7 @@ public class GFacWorker implements Runnable {
 		    GFacEngine engine = Factory.getGFacEngine();
 		    ProcessType type = getProcessType(processContext);
 		    if (processContext == null) {
-			    processContext = engine.populateProcessContext(experimentId, processId, gatewayId, tokenId);
+			    processContext = engine.populateProcessContext(processId, gatewayId, tokenId);
 			    isProcessContextPopulated = true;
 		    }
 		    try {

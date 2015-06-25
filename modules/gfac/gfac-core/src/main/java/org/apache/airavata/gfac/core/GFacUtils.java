@@ -559,9 +559,9 @@ public class GFacUtils {
         return null;
     }
 
-    public static boolean setExperimentCancelRequest(String experimentId, CuratorFramework curatorClient, long
+    public static boolean setExperimentCancelRequest(String processId, CuratorFramework curatorClient, long
 		    deliveryTag) throws Exception {
-	    String experimentNode = ZKPaths.makePath(GFacConstants.ZOOKEEPER_EXPERIMENT_NODE, experimentId);
+	    String experimentNode = ZKPaths.makePath(GFacConstants.ZOOKEEPER_EXPERIMENT_NODE, processId);
 	    String cancelListenerNodePath = ZKPaths.makePath(experimentNode, GFacConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
 	    curatorClient.setData().withVersion(-1).forPath(cancelListenerNodePath, GFacConstants.ZOOKEEPER_CANCEL_REQEUST
 			    .getBytes());
@@ -1088,24 +1088,24 @@ public class GFacUtils {
 	}
 
 	public static void createExperimentNode(CuratorFramework curatorClient, String gfacServerName, String
-			experimentId, long deliveryTag, String token) throws Exception {
-		// create /experiments/experimentId node and set data - serverName, add redelivery listener
-		String experimentPath = ZKPaths.makePath(GFacConstants.ZOOKEEPER_EXPERIMENT_NODE, experimentId);
+			processId, long deliveryTag, String token) throws Exception {
+		// create /experiments/processId node and set data - serverName, add redelivery listener
+		String experimentPath = ZKPaths.makePath(GFacConstants.ZOOKEEPER_EXPERIMENT_NODE, processId);
 		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentPath);
 		curatorClient.setData().withVersion(-1).forPath(experimentPath, gfacServerName.getBytes());
 		curatorClient.getData().usingWatcher(new RedeliveryRequestWatcher()).forPath(experimentPath);
 
-		// create /experiments/experimentId/deliveryTag node and set data - deliveryTag
+		// create /experiments/processId/deliveryTag node and set data - deliveryTag
 		String deliveryTagPath = ZKPaths.makePath(experimentPath, GFacConstants.ZOOKEEPER_DELIVERYTAG_NODE);
 		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), deliveryTagPath);
 		curatorClient.setData().withVersion(-1).forPath(deliveryTagPath, GFacUtils.longToBytes(deliveryTag));
 
-		// create /experiments/experimentId/token node and set data - token
-		String tokenNodePath = ZKPaths.makePath(experimentId, GFacConstants.ZOOKEEPER_TOKEN_NODE);
+		// create /experiments/processId/token node and set data - token
+		String tokenNodePath = ZKPaths.makePath(processId, GFacConstants.ZOOKEEPER_TOKEN_NODE);
 		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), tokenNodePath);
 		curatorClient.setData().withVersion(-1).forPath(tokenNodePath, token.getBytes());
 
-		// create /experiments/experimentId/cancelListener node and set watcher for data changes
+		// create /experiments/processId/cancelListener node and set watcher for data changes
 		String cancelListenerNode = ZKPaths.makePath(experimentPath, GFacConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
 		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), cancelListenerNode);
 		curatorClient.getData().usingWatcher(new CancelRequestWatcher()).forPath(cancelListenerNode);

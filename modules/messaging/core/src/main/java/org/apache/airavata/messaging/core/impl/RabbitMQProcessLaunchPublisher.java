@@ -17,8 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- */
-
+*/
 package org.apache.airavata.messaging.core.impl;
 
 import org.apache.airavata.common.exception.AiravataException;
@@ -28,51 +27,46 @@ import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessagingConstants;
 import org.apache.airavata.messaging.core.Publisher;
-import org.apache.airavata.model.messaging.event.Message;
-import org.apache.airavata.model.messaging.event.MessageType;
+import org.apache.airavata.model.messaging.event.*;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-public class RabbitMQProcessPublisher implements Publisher {
-
-    private static final Logger log = LoggerFactory.getLogger(RabbitMQProcessPublisher.class);
-    public static final String PROCESS = "process.queue" ;
-
+public class RabbitMQProcessLaunchPublisher implements Publisher{
+    private final static Logger log = LoggerFactory.getLogger(RabbitMQProcessLaunchPublisher.class);
+    private  String launchTask;
+    
     private RabbitMQProducer rabbitMQProducer;
 
-    public RabbitMQProcessPublisher() throws Exception {
+    public RabbitMQProcessLaunchPublisher() throws Exception {
         String brokerUrl;
-        String exchangeName;
         try {
             brokerUrl = ServerSettings.getSetting(MessagingConstants.RABBITMQ_BROKER_URL);
-//            exchangeName = ServerSettings.getSetting(MessagingConstants.RABBITMQ_STATUS_EXCHANGE_NAME);
+            launchTask = ServerSettings.getLaunchQueueName();
         } catch (ApplicationSettingsException e) {
             String message = "Failed to get read the required properties from airavata to initialize rabbitmq";
             log.error(message, e);
             throw new AiravataException(message, e);
         }
-        rabbitMQProducer = new RabbitMQProducer(brokerUrl, null, null);
+        rabbitMQProducer = new RabbitMQProducer(brokerUrl, null,null);
         rabbitMQProducer.open();
     }
 
-    @Override
     public void publish(MessageContext msgCtx) throws AiravataException {
         try {
-            log.info("Publishing to process queue ...");
+            log.info("Publishing to launch queue ...");
             byte[] body = ThriftUtils.serializeThriftObject(msgCtx.getEvent());
             Message message = new Message();
             message.setEvent(body);
             message.setMessageId(msgCtx.getMessageId());
             message.setMessageType(msgCtx.getType());
             message.setUpdatedTime(msgCtx.getUpdatedTime().getTime());
-            String queueName = PROCESS;
-            message.setMessageType(MessageType.TASK);
+            String routingKey = launchTask;
             byte[] messageBody = ThriftUtils.serializeThriftObject(message);
-            rabbitMQProducer.sendToWorkerQueue(messageBody, queueName);
+            rabbitMQProducer.sendToWorkerQueue(messageBody, routingKey);
+            log.info("Successfully published to launch queue ...");
         } catch (TException e) {
-            String msg = "Error while serializing the thrift object";
+            String msg = "Error while deserializing the object";
             log.error(msg, e);
             throw new AiravataException(msg, e);
         } catch (Exception e) {

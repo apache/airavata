@@ -23,7 +23,6 @@ package org.apache.airavata.gfac.server;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.AiravataStartupException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.LocalEventPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
@@ -38,14 +37,10 @@ import org.apache.airavata.gfac.impl.GFacWorker;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.messaging.core.MessagingConstants;
-import org.apache.airavata.messaging.core.Publisher;
-import org.apache.airavata.messaging.core.PublisherFactory;
-import org.apache.airavata.messaging.core.impl.RabbitMQTaskLaunchConsumer;
-import org.apache.airavata.model.messaging.event.MessageType;
-import org.apache.airavata.model.messaging.event.TaskSubmitEvent;
-import org.apache.airavata.model.messaging.event.TaskTerminateEvent;
-import org.apache.airavata.model.status.ExperimentState;
-import org.apache.airavata.model.status.ExperimentStatus;
+import org.apache.airavata.messaging.core.impl.RabbitMQProcessLaunchConsumer;
+import org.apache.airavata.model.messaging.event.*;
+import org.apache.airavata.model.status.ProcessState;
+import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
@@ -70,7 +65,7 @@ import java.util.concurrent.Executors;
 
 public class GfacServerHandler implements GfacService.Iface {
     private final static Logger log = LoggerFactory.getLogger(GfacServerHandler.class);
-    private RabbitMQTaskLaunchConsumer rabbitMQTaskLaunchConsumer;
+    private RabbitMQProcessLaunchConsumer rabbitMQProcessLaunchConsumer;
     private static int requestCount=0;
     private ExperimentCatalog experimentCatalog;
     private AppCatalog appCatalog;
@@ -88,15 +83,15 @@ public class GfacServerHandler implements GfacService.Iface {
             initZkDataStructure();
             initAMQPClient();
 	        executorService = Executors.newFixedThreadPool(ServerSettings.getGFacThreadPoolSize());
-            startStatusUpdators(experimentCatalog, curatorClient, localEventPublisher, rabbitMQTaskLaunchConsumer);
+            startStatusUpdators(experimentCatalog, curatorClient, localEventPublisher, rabbitMQProcessLaunchConsumer);
         } catch (Exception e) {
             throw new AiravataStartupException("Gfac Server Initialization error ", e);
         }
     }
 
     private void initAMQPClient() throws AiravataException {
-        rabbitMQTaskLaunchConsumer = new RabbitMQTaskLaunchConsumer();
-        rabbitMQTaskLaunchConsumer.listen(new TaskLaunchMessageHandler());
+        rabbitMQProcessLaunchConsumer = new RabbitMQProcessLaunchConsumer();
+        rabbitMQProcessLaunchConsumer.listen(new TaskLaunchMessageHandler());
     }
 
     private void startCuratorClient() throws ApplicationSettingsException {
@@ -144,19 +139,18 @@ public class GfacServerHandler implements GfacService.Iface {
      * *
      * *
      *
-     * @param experimentId - ExperimentModel id in registry
      * @param processId - processModel id in registry
      * @param gatewayId - gateway Identification
      */
-    public boolean submitJob(String experimentId, String processId, String gatewayId, String tokenId) throws
+    public boolean submitProcess(String processId, String gatewayId, String tokenId) throws
             TException {
         requestCount++;
         log.info("-----------------------------------" + requestCount + "-----------------------------------------");
-        log.info(experimentId, "GFac Received submit job request for the Experiment: {} process: {}", experimentId,
+        log.info(processId, "GFac Received submit job request for the Process: {} process: {}", processId,
                 processId);
 
         try {
-	        executorService.execute(new GFacWorker(experimentId, processId, gatewayId, tokenId));
+	        executorService.execute(new GFacWorker(processId, gatewayId, tokenId));
         } catch (GFacException e) {
             log.error("Failed to submit process", e);
             return false;
@@ -166,29 +160,14 @@ public class GfacServerHandler implements GfacService.Iface {
 	    return true;
     }
 
-    public boolean cancelJob(String experimentId, String taskId, String gatewayId, String tokenId) throws TException {
-    /*    log.info(experimentId, "GFac Received cancel job request for Experiment: {} TaskId: {} ", experimentId, taskId);
-        try {
-            if (BetterGfacImpl.getInstance().cancel(experimentId, taskId, gatewayId, tokenId)) {
-                log.debug(experimentId, "Successfully cancelled job, experiment {} , task {}", experimentId, taskId);
-                return true;
-            } else {
-                log.error(experimentId, "Job cancellation failed, experiment {} , task {}", experimentId, taskId);
-                return false;
-            }
-        } catch (Exception e) {
-            log.error(experimentId, "Error cancelling the experiment {}.", experimentId);
-            throw new TException("Error cancelling the experiment : " + e.getMessage(), e);
-        }*/
-	    return false;
+    @Override
+    public boolean cancelProcess(String processId, String gatewayId, String tokenId) throws TException {
+        return false;
     }
-
-
-
 
     public static void startStatusUpdators(ExperimentCatalog experimentCatalog, CuratorFramework curatorClient, LocalEventPublisher publisher,
 
-                                           RabbitMQTaskLaunchConsumer rabbitMQTaskLaunchConsumer) {
+                                           RabbitMQProcessLaunchConsumer rabbitMQProcessLaunchConsumer) {
        /* try {
             String[] listenerClassList = ServerSettings.getActivityListeners();
             Publisher rabbitMQPublisher = PublisherFactory.createActivityPublisher();
@@ -227,51 +206,51 @@ public class GfacServerHandler implements GfacService.Iface {
         public void onMessage(MessageContext message) {
             System.out.println(" Message Received with message id '" + message.getMessageId()
                     + "' and with message type '" + message.getType());
-            if (message.getType().equals(MessageType.LAUNCHTASK)) {
+            if (message.getType().equals(MessageType.LAUNCHPROCESS)) {
                 try {
-                    TaskSubmitEvent event = new TaskSubmitEvent();
+                    ProcessSubmitEvent event = new ProcessSubmitEvent();
                     TBase messageEvent = message.getEvent();
                     byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
                     ThriftUtils.createThriftFromBytes(bytes, event);
-                    // update experiment status to executing
-                    ExperimentStatus status = new ExperimentStatus();
-                    status.setState(ExperimentState.EXECUTING);
+                    // update process status to executing
+                    ProcessStatus status = new ProcessStatus();
+                    status.setState(ProcessState.EXECUTING);
                     status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
-                    Factory.getDefaultExpCatalog().update(ExperimentCatalogModelType.EXPERIMENT_STATUS, status, event.getExperimentId());
+                    Factory.getDefaultExpCatalog().update(ExperimentCatalogModelType.PROCESS_STATUS, status, event.getProcessId());
                     try {
-	                    GFacUtils.createExperimentNode(curatorClient, gfacServerName, event.getExperimentId(), message.getDeliveryTag(),
+	                    GFacUtils.createExperimentNode(curatorClient, gfacServerName, event.getProcessId(), message.getDeliveryTag(),
 			                    event.getTokenId());
-                        submitJob(event.getExperimentId(), event.getTaskId(), event.getGatewayId(), event.getTokenId());
+                        submitProcess(event.getProcessId(), event.getGatewayId(), event.getTokenId());
                     } catch (Exception e) {
                         log.error(e.getMessage(), e);
-                        rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
+                        rabbitMQProcessLaunchConsumer.sendAck(message.getDeliveryTag());
                     }
                 } catch (TException e) {
                     log.error(e.getMessage(), e); //nobody is listening so nothing to throw
                 } catch (RegistryException e) {
                     log.error("Error while updating experiment status", e);
                 }
-            } else if (message.getType().equals(MessageType.TERMINATETASK)) {
-                TaskTerminateEvent event = new TaskTerminateEvent();
+            } else if (message.getType().equals(MessageType.TERMINATEPROCESS)) {
+                ProcessTerminateEvent event = new ProcessTerminateEvent();
                 TBase messageEvent = message.getEvent();
                 try {
                     byte[] bytes = ThriftUtils.serializeThriftObject(messageEvent);
                     ThriftUtils.createThriftFromBytes(bytes, event);
-	                boolean success = GFacUtils.setExperimentCancelRequest(event.getExperimentId(), curatorClient,
+	                boolean success = GFacUtils.setExperimentCancelRequest(event.getProcessId(), curatorClient,
 			                message.getDeliveryTag());
 	                if (success) {
-		                log.info("expId:{} - Experiment cancel request save successfully", event.getExperimentId());
+		                log.info("processId:{} - Process cancel request save successfully", event.getProcessId());
 	                }
                 } catch (Exception e) {
-	                log.error("expId:" + event.getExperimentId() + " - Experiment cancel reqeust failed", e);
+	                log.error("processId:" + event.getProcessId() + " - Process cancel reqeust failed", e);
                 }finally {
 	                try {
-		                if (!rabbitMQTaskLaunchConsumer.isOpen()) {
-			                rabbitMQTaskLaunchConsumer.reconnect();
+		                if (!rabbitMQProcessLaunchConsumer.isOpen()) {
+			                rabbitMQProcessLaunchConsumer.reconnect();
 		                }
-		                rabbitMQTaskLaunchConsumer.sendAck(message.getDeliveryTag());
+		                rabbitMQProcessLaunchConsumer.sendAck(message.getDeliveryTag());
 	                } catch (AiravataException e) {
-		                log.error("expId: " + event.getExperimentId() + " - Failed to send acknowledgement back to cancel request.", e);
+		                log.error("processId: " + event.getProcessId() + " - Failed to send acknowledgement back to cancel request.", e);
 	                }
                 }
             }
