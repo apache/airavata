@@ -333,7 +333,7 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                 case PROCESS:
                     return experimentRegistry.getProcess((String) identifier, null);
                 case PROCESS_RESOURCE_SCHEDULE:
-                    return experimentRegistry.getProcessResourceSchedule((String) identifier, null);
+                    return experimentRegistry.getProcessResourceSchedule((String) identifier);
                 case PROCESS_INPUT:
                     return experimentRegistry.getProcessInputs((String) identifier);
                 case PROCESS_OUTPUT:

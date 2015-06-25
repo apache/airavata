@@ -269,6 +269,20 @@ public class TaskResource extends AbstractExpCatResource {
                         }
                     }
                     break;
+                case JOB:
+                    generator = new QueryGenerator(JOB);
+                    generator.setParameter(JobConstants.TASK_ID, taskId);
+                    q = generator.selectQuery(em);
+                    results = q.getResultList();
+                    if (results.size() != 0) {
+                        for (Object result : results) {
+                            Job job = (Job) result;
+                            JobResource jobResource =
+                                    (JobResource) Utils.getResource(ResourceType.JOB, job);
+                            resourceList.add(jobResource);
+                        }
+                    }
+                    break;
                 default:
                     em.getTransaction().commit();
                     em.close();
@@ -374,8 +388,17 @@ public class TaskResource extends AbstractExpCatResource {
         }
     }
 
-    public JobResource getJob(String taskId, String jobId) throws RegistryException {
-        this.taskId = taskId;
+    public JobResource getJob(String jobId) throws RegistryException {
         return (JobResource) get(ResourceType.JOB, jobId);
+    }
+
+    public List<JobResource> getJobList() throws RegistryException {
+        List<JobResource> jobResources = new ArrayList();
+        List<ExperimentCatResource> resources = get(ResourceType.JOB);
+        for (ExperimentCatResource resource : resources) {
+            JobResource jobResource = (JobResource) resource;
+            jobResources.add(jobResource);
+        }
+        return jobResources;
     }
 }
