@@ -65,11 +65,24 @@ public class Constants {
         public final class ProcessConstants {
             public static final String EXPERIMENT_ID = "experimentId";
             public static final String PROCESS_ID = "processId";
+            public static final String PROCESS_STATUS = "processStatus";
+            public static final String PROCESS_ERROR = "processError";
+            public static final String PROCESS_INPUTS = "processInputs";
+            public static final String PROCESS_OUTPUTS = "processOutputs";
+            public static final String PROCESS_RESOURCE_SCHEDULE = "processResourceSchedule";
         }
 
         public final class TaskConstants {
             public static final String PARENT_PROCESS_ID = "parentProcessId";
             public static final String TASK_ID = "taskId";
+            public static final String TASK_STATUS = "taskStatus";
+            public static final String TASK_ERROR = "taskError";
+        }
+
+        public final class JobConstants {
+            public static final String JOB_ID = "jobId";
+            public static final String TASK_ID = "taskId";
+            public static final String JOB_STATUS = "taskStatus";
         }
     }
 }
