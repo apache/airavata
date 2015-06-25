@@ -227,6 +227,7 @@ public abstract class AbstractExpCatResource implements ExperimentCatResource {
     public final class JobStatusConstants {
         public static final String STATUS_ID = "statusId";
         public static final String JOB_ID = "jobId";
+        public static final String TASK_ID = "taskId";
         public static final String STATE = "state";
         public static final String TIME_OF_STATE_CHANGE = "timeOfStateChange";
         public static final String REASON = "reason";

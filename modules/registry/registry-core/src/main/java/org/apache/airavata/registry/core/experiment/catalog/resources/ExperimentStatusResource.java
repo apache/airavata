@@ -122,6 +122,7 @@ public class ExperimentStatusResource extends AbstractExpCatResource {
             if(experimentStatus == null){
                 experimentStatus = new ExperimentStatus();
             }
+            experimentStatus.setStatusId(statusId);
             experimentStatus.setExperimentId(experimentId);
             experimentStatus.setState(state);
             experimentStatus.setReason(reason);

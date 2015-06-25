@@ -38,6 +38,7 @@ public class JobStatusResource extends AbstractExpCatResource {
     private static final Logger logger = LoggerFactory.getLogger(JobStatusResource.class);
     private String statusId;
     private String jobId;
+    private String taskId;
     private String state;
     private Timestamp timeOfStateChange;
     private String reason;
@@ -56,6 +57,14 @@ public class JobStatusResource extends AbstractExpCatResource {
 
     public void setJobId(String jobId) {
         this.jobId = jobId;
+    }
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 
     public String getState() {
@@ -112,17 +121,20 @@ public class JobStatusResource extends AbstractExpCatResource {
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
             JobStatus jobStatus;
-            if(jobId == null || statusId == null){
-                throw new RegistryException("Does not have the job id or status id");
+            if(jobId == null || statusId == null || taskId == null){
+                throw new RegistryException("Does not have the job id or status id or task id");
             }
             JobStatusPK jobStatusPK = new JobStatusPK();
             jobStatusPK.setJobId(jobId);
             jobStatusPK.setStatusId(statusId);
+            jobStatusPK.setTaskId(taskId);
             jobStatus = em.find(JobStatus.class, jobStatusPK);
             if(jobStatus == null){
                 jobStatus = new JobStatus();
             }
+            jobStatus.setStatusId(statusId);
             jobStatus.setJobId(jobId);
+            jobStatus.setTaskId(taskId);
             jobStatus.setState(state);
             jobStatus.setReason(reason);
             em.persist(jobStatus);
