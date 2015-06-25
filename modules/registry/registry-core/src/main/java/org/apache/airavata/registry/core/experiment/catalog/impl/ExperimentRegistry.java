@@ -253,6 +253,18 @@ public class ExperimentRegistry {
             processResource.setProcessDetail(process.getProcessDetail());
             processResource.setApplicationInterfaceId(process.getApplicationInterfaceId());
             processResource.setTaskDag(process.getTaskDag());
+            processResource.setGatewayExecutionId(process.getGatewayExecutionId());
+            processResource.setComputeResourceId(process.getComputeResourceId());
+            processResource.setApplicationInterfaceId(process.getApplicationInterfaceId());
+            if(process.isEnableEmailNotification()){
+                processResource.setEnableEmailNotification(true);
+                if(process.getEmailAddresses() != null){
+                    processResource.setEmailAddresses(StringUtils.join(process.getEmailAddresses(), ","));
+                }
+            }else{
+                processResource.setEnableEmailNotification(false);
+            }
+
             processResource.save();
 
             if(process.getResourceSchedule() != null) {
@@ -663,6 +675,18 @@ public class ExperimentRegistry {
             processResource.setProcessDetail(process.getProcessDetail());
             processResource.setApplicationInterfaceId(process.getApplicationInterfaceId());
             processResource.setTaskDag(process.getTaskDag());
+            processResource.setGatewayExecutionId(process.getGatewayExecutionId());
+            processResource.setComputeResourceId(process.getComputeResourceId());
+            processResource.setApplicationInterfaceId(process.getApplicationInterfaceId());
+            if(process.isEnableEmailNotification()){
+                processResource.setEnableEmailNotification(true);
+                if(process.getEmailAddresses() != null){
+                    processResource.setEmailAddresses(StringUtils.join(process.getEmailAddresses(), ","));
+                }
+            }else{
+                processResource.setEnableEmailNotification(false);
+            }
+
             processResource.save();
 
             if(process.getResourceSchedule() != null) {

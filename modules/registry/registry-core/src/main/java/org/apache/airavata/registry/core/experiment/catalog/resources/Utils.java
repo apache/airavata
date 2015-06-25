@@ -521,6 +521,11 @@ public class Utils {
             processResource.setProcessDetail(o.getProcessDetail());
             processResource.setApplicationInterfaceId(o.getApplicationInterfaceId());
             processResource.setTaskDag(o.getTaskDag());
+            processResource.setGatewayExecutionId(o.getGatewayExecutionId());
+            processResource.setComputeResourceId(o.getComputeResourceId());
+            processResource.setApplicationInterfaceId(o.getApplicationInterfaceId());
+            processResource.setEnableEmailNotification(o.getEnableEmailNotification());
+            processResource.setEmailAddresses(o.getEmailAddresses());
         }
         return processResource;
     }

@@ -38,6 +38,11 @@ public class Process {
     private String processDetail;
     private String applicationInterfaceId;
     private String taskDag;
+    private String applicationDeploymentId;
+    private String computeResourceId;
+    private String gatewayExecutionId;
+    private Boolean enableEmailNotification;
+    private String emailAddresses;
     private Experiment experiment;
     private Collection<ProcessError> processErrors;
     private Collection<ProcessInput> processInputs;
@@ -114,6 +119,57 @@ public class Process {
 
     public void setTaskDag(String taskDag) {
         this.taskDag = taskDag;
+    }
+
+    @Basic
+    @Column(name = "APPLICATION_DEPLOYMENT_ID")
+    public String getApplicationDeploymentId() {
+        return applicationDeploymentId;
+    }
+
+    public void setApplicationDeploymentId(String applicationDeploymentId) {
+        this.applicationDeploymentId = applicationDeploymentId;
+    }
+
+    @Basic
+    @Column(name = "COMPUTE_RESOURCE_ID")
+    public String getComputeResourceId() {
+        return computeResourceId;
+    }
+
+    public void setComputeResourceId(String computeResourceId) {
+        this.computeResourceId = computeResourceId;
+    }
+
+    @Basic
+    @Column(name = "GATEWAY_EXECUTION_ID")
+    public String getGatewayExecutionId() {
+        return gatewayExecutionId;
+    }
+
+    public void setGatewayExecutionId(String gatewayExecutionId) {
+        this.gatewayExecutionId = gatewayExecutionId;
+    }
+
+
+    @Basic
+    @Column(name = "ENABLE_EMAIL_NOTIFICATION")
+    public Boolean getEnableEmailNotification() {
+        return enableEmailNotification;
+    }
+
+    public void setEnableEmailNotification(Boolean enableEmailNotification) {
+        this.enableEmailNotification = enableEmailNotification;
+    }
+
+    @Basic
+    @Column(name = "EMAIL_ADDRESSES")
+    public String getEmailAddresses() {
+        return emailAddresses;
+    }
+
+    public void setEmailAddresses(String emailAddresses) {
+        this.emailAddresses = emailAddresses;
     }
 
 //    @Override
