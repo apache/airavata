@@ -46,6 +46,11 @@ public class ProcessResource extends AbstractExpCatResource {
     private String processDetail;
     private String applicationInterfaceId;
     private String taskDag;
+    private String applicationDeploymentId;
+    private String computeResourceId;
+    private String gatewayExecutionId;
+    private Boolean enableEmailNotification;
+    private String emailAddresses;
 
     public String getProcessId() {
         return processId;
@@ -101,6 +106,46 @@ public class ProcessResource extends AbstractExpCatResource {
 
     public void setTaskDag(String taskDag) {
         this.taskDag = taskDag;
+    }
+
+    public String getApplicationDeploymentId() {
+        return applicationDeploymentId;
+    }
+
+    public void setApplicationDeploymentId(String applicationDeploymentId) {
+        this.applicationDeploymentId = applicationDeploymentId;
+    }
+
+    public String getComputeResourceId() {
+        return computeResourceId;
+    }
+
+    public void setComputeResourceId(String computeResourceId) {
+        this.computeResourceId = computeResourceId;
+    }
+
+    public String getGatewayExecutionId() {
+        return gatewayExecutionId;
+    }
+
+    public void setGatewayExecutionId(String gatewayExecutionId) {
+        this.gatewayExecutionId = gatewayExecutionId;
+    }
+
+    public Boolean getEnableEmailNotification() {
+        return enableEmailNotification;
+    }
+
+    public void setEnableEmailNotification(Boolean enableEmailNotification) {
+        this.enableEmailNotification = enableEmailNotification;
+    }
+
+    public String getEmailAddresses() {
+        return emailAddresses;
+    }
+
+    public void setEmailAddresses(String emailAddresses) {
+        this.emailAddresses = emailAddresses;
     }
 
     public ExperimentCatResource create(ResourceType type) throws RegistryException{
@@ -405,6 +450,11 @@ public class ProcessResource extends AbstractExpCatResource {
             process.setProcessDetail(processDetail);
             process.setApplicationInterfaceId(applicationInterfaceId);
             process.setTaskDag(taskDag);
+            process.setComputeResourceId(computeResourceId);
+            process.setApplicationInterfaceId(applicationInterfaceId);
+            process.setGatewayExecutionId(gatewayExecutionId);
+            process.setEnableEmailNotification(enableEmailNotification);
+            process.setEmailAddresses(emailAddresses);
             em.persist(process);
             em.getTransaction().commit();
         } catch (Exception e) {
