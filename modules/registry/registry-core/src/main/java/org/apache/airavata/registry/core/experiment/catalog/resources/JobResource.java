@@ -25,6 +25,7 @@ import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
 import org.apache.airavata.registry.core.experiment.catalog.model.Job;
+import org.apache.airavata.registry.core.experiment.catalog.model.JobPK;
 import org.apache.airavata.registry.core.experiment.catalog.model.JobStatus;
 import org.apache.airavata.registry.core.experiment.catalog.utils.QueryGenerator;
 import org.apache.airavata.registry.cpi.RegistryException;
@@ -200,6 +201,7 @@ public class JobResource extends AbstractExpCatResource {
                 case JOB_STATUS:
                     generator = new QueryGenerator(JOB_STATUS);
                     generator.setParameter(JobStatusConstants.JOB_ID, jobId);
+                    generator.setParameter(JobStatusConstants.TASK_ID, taskId);
                     q = generator.selectQuery(em);
                     results = q.getResultList();
                     if (results.size() != 0) {
@@ -239,7 +241,10 @@ public class JobResource extends AbstractExpCatResource {
         try {
             em = ExpCatResourceUtils.getEntityManager();
             em.getTransaction().begin();
-            Job job = em.find(Job.class, jobId);
+            JobPK jobPK = new JobPK();
+            jobPK.setJobId(jobId);
+            jobPK.setTaskId(taskId);
+            Job job = em.find(Job.class, jobPK);
             if(job == null){
                 job = new Job();
             }

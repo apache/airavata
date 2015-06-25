@@ -33,6 +33,7 @@ public class JobStatus {
     private final static Logger logger = LoggerFactory.getLogger(JobStatus.class);
     private String statusId;
     private String jobId;
+    private String taskId;
     private String state;
     private Timestamp timeOfStateChange;
     private String reason;
@@ -56,6 +57,16 @@ public class JobStatus {
 
     public void setJobId(String jobId) {
         this.jobId = jobId;
+    }
+
+    @Id
+    @Column(name = "TASK_ID")
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
     }
 
     @Basic

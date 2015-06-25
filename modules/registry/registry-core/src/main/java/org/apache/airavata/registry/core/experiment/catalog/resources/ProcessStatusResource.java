@@ -122,6 +122,7 @@ public class ProcessStatusResource extends AbstractExpCatResource {
             if(processStatus == null){
                 processStatus = new ProcessStatus();
             }
+            processStatus.setStatusId(statusId);
             processStatus.setProcessId(processId);
             processStatus.setState(state);
             processStatus.setReason(reason);
