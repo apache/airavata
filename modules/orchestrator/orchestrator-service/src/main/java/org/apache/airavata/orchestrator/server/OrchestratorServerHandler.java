@@ -29,12 +29,8 @@ import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.scheduler.HostScheduler;
 import org.apache.airavata.messaging.core.MessageContext;
-import org.apache.airavata.messaging.core.MessageHandler;
-import org.apache.airavata.messaging.core.MessagingConstants;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.PublisherFactory;
-import org.apache.airavata.messaging.core.impl.RabbitMQProcessConsumer;
-import org.apache.airavata.messaging.core.impl.RabbitMQProcessPublisher;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
@@ -43,7 +39,6 @@ import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
-import org.apache.airavata.model.messaging.event.ProcessSubmitEvent;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ExperimentState;
 import org.apache.airavata.model.status.ExperimentStatus;
@@ -56,12 +51,14 @@ import org.apache.airavata.registry.core.app.catalog.resources.AppCatAbstractRes
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.core.experiment.catalog.resources.AbstractExpCatResource;
 import org.apache.airavata.registry.cpi.*;
-import org.apache.thrift.TBase;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	private static Logger log = LoggerFactory.getLogger(OrchestratorServerHandler.class);
@@ -72,8 +69,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	private String airavataUserName;
 	private String gatewayName;
 	private Publisher publisher;
-    private RabbitMQProcessConsumer rabbitMQProcessConsumer;
-    private RabbitMQProcessPublisher rabbitMQProcessPublisher;
 
     /**
 	 * Query orchestrator server to fetch the CPI version
@@ -99,7 +94,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             appCatalog = RegistryFactory.getAppCatalog();
 			orchestrator.initialize();
 			orchestrator.getOrchestratorContext().setPublisher(this.publisher);
-            startProcessConsumer();
         } catch (OrchestratorException e) {
             log.error(e.getMessage(), e);
             throw new OrchestratorException("Error while initializing orchestrator service", e);
@@ -112,18 +106,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
         }
     }
 
-    private void startProcessConsumer() throws OrchestratorException {
-        try {
-            rabbitMQProcessConsumer = new RabbitMQProcessConsumer();
-            ProcessConsumer processConsumer = new ProcessConsumer();
-            Thread thread = new Thread(processConsumer);
-            thread.start();
-        } catch (AiravataException e) {
-            throw new OrchestratorException("Error while starting process consumer", e);
-        }
-
-    }
-
     /**
 	 * * After creating the experiment Data user have the * experimentID as the
 	 * handler to the experiment, during the launchExperiment * We just have to
@@ -133,10 +115,9 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	 * @param experimentId
 	 */
 	public boolean launchExperiment(String experimentId, String token) throws TException {
-        ExperimentModel experiment = null; // this will inside the bottom catch statement
+        ExperimentModel experiment = null;
         try {
-            experiment = (ExperimentModel) experimentCatalog.get(
-                    ExperimentCatalogModelType.EXPERIMENT, experimentId);
+            experiment = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
             if (experiment == null) {
                 log.error(experimentId, "Error retrieving the Experiment by the given experimentID: {} ", experimentId);
                 return false;
@@ -430,14 +411,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 //        }
     }
 
-    public synchronized RabbitMQProcessPublisher getRabbitMQProcessPublisher() throws Exception {
-        if (rabbitMQProcessPublisher == null) {
-            rabbitMQProcessPublisher = new RabbitMQProcessPublisher();
-        }
-        return rabbitMQProcessPublisher;
-    }
-
-
     private class SingleAppExperimentRunner implements Runnable {
 
         String experimentId;
@@ -497,39 +470,4 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             return true;
         }
     }
-
-    private class ProcessConsumer implements Runnable, MessageHandler{
-
-
-        @Override
-        public void run() {
-            try {
-                rabbitMQProcessConsumer.listen(this);
-            } catch (AiravataException e) {
-                log.error("Error while listen to the RabbitMQProcessConsumer");
-            }
-        }
-
-        @Override
-        public Map<String, Object> getProperties() {
-            Map<String, Object> props = new HashMap<String, Object>();
-            props.put(MessagingConstants.RABBIT_QUEUE, RabbitMQProcessPublisher.PROCESS);
-            props.put(MessagingConstants.RABBIT_ROUTING_KEY, RabbitMQProcessPublisher.PROCESS);
-            return props;
-        }
-
-        @Override
-        public void onMessage(MessageContext msgCtx) {
-            TBase event = msgCtx.getEvent();
-            if (event instanceof ProcessSubmitEvent) {
-                ProcessSubmitEvent processSubmitEvent = (ProcessSubmitEvent) event;
-                try {
-                    launchProcess(processSubmitEvent.getProcessId(), processSubmitEvent.getCredentialToken());
-                } catch (TException e) {
-                    log.error("Error while launching task : " + processSubmitEvent.getProcessId());
-                }
-            }
-        }
-    }
-
 }

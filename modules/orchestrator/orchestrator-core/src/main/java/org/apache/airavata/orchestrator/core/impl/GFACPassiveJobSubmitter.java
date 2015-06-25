@@ -29,9 +29,7 @@ import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.PublisherFactory;
-import org.apache.airavata.model.messaging.event.MessageType;
-import org.apache.airavata.model.messaging.event.TaskSubmitEvent;
-import org.apache.airavata.model.messaging.event.TaskTerminateEvent;
+import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.orchestrator.core.context.OrchestratorContext;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
@@ -47,14 +45,11 @@ import java.util.UUID;
  */
 public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
     private final static Logger logger = LoggerFactory.getLogger(GFACPassiveJobSubmitter.class);
-    public static final String IP = "ip";
-    private OrchestratorContext orchestratorContext;
     private static Integer mutex = -1;
     private Publisher publisher;
 
     public void initialize(OrchestratorContext orchestratorContext) throws OrchestratorException {
-        this.orchestratorContext = orchestratorContext;
-        if(orchestratorContext.getPublisher()!=null){ // use the same publisher this will be empty if rabbitmq.publish is not enabled in the configuraiton
+        if(orchestratorContext.getPublisher()!=null){
             this.publisher = orchestratorContext.getPublisher();
         }else {
             try {
@@ -72,20 +67,16 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
         return null;
     }
 
-    public boolean submit(String experimentID, String taskID) throws OrchestratorException {
-        return submit(experimentID, taskID, null);
-    }
-
     /**
      * Submit the job to a shared launch.queue accross multiple gfac instances
      *
-     * @param experimentID
-     * @param taskID
+     * @param experimentId
+     * @param processId
      * @param tokenId
      * @return
      * @throws OrchestratorException
      */
-    public boolean submit(String experimentID, String taskID, String tokenId) throws OrchestratorException {
+    public boolean submit(String experimentId, String processId, String tokenId) throws OrchestratorException {
         try {
             String gatewayId = null;
             CredentialReader credentialReader = GFacUtils.getCredentialReader();
@@ -99,8 +90,8 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
             if (gatewayId == null || gatewayId.isEmpty()) {
                 gatewayId = ServerSettings.getDefaultUserGateway();
             }
-            TaskSubmitEvent taskSubmitEvent = new TaskSubmitEvent(experimentID, taskID, gatewayId, tokenId);
-            MessageContext messageContext = new MessageContext(taskSubmitEvent, MessageType.LAUNCHTASK, "LAUNCH.TASK-" + UUID.randomUUID().toString(), gatewayId);
+            ProcessSubmitEvent processSubmitEvent = new ProcessSubmitEvent(processId, gatewayId, tokenId);
+            MessageContext messageContext = new MessageContext(processSubmitEvent, MessageType.LAUNCHPROCESS, "LAUNCH.TASK-" + UUID.randomUUID().toString(), gatewayId);
             messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             publisher.publish(messageContext);
         } catch (Exception e) {
@@ -113,12 +104,12 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
 
     /**
      * Submit the experiment the terminate.queue job queue and remove the experiment from shared launch.queue
-     * @param experimentID
-     * @param taskID
+     * @param experimentId
+     * @param processId
      * @return
      * @throws OrchestratorException
      */
-    public boolean terminate(String experimentID, String taskID, String tokenId) throws OrchestratorException {
+    public boolean terminate(String experimentId, String processId, String tokenId) throws OrchestratorException {
         String gatewayId = null;
         try {
             CredentialReader credentialReader = GFacUtils.getCredentialReader();
@@ -134,8 +125,8 @@ public class GFACPassiveJobSubmitter implements JobSubmitter,Watcher {
                 gatewayId = ServerSettings.getDefaultUserGateway();
 
             }
-            TaskTerminateEvent taskTerminateEvent = new TaskTerminateEvent(experimentID, taskID, gatewayId, tokenId);
-            MessageContext messageContext = new MessageContext(taskTerminateEvent, MessageType.TERMINATETASK, "LAUNCH.TERMINATE-" + UUID.randomUUID().toString(), gatewayId);
+            ProcessTerminateEvent processTerminateEvent = new ProcessTerminateEvent(processId, gatewayId, tokenId);
+            MessageContext messageContext = new MessageContext(processTerminateEvent, MessageType.TERMINATEPROCESS, "LAUNCH.TERMINATE-" + UUID.randomUUID().toString(), gatewayId);
             messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
             publisher.publish(messageContext);
             return true;

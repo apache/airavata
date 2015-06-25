@@ -40,9 +40,9 @@ enum MessageType {
     TASK,
     PROCESS,
     JOB,
-    LAUNCHTASK,
-    TERMINATETASK,
-    TASKOUTPUT
+    LAUNCHPROCESS,
+    TERMINATEPROCESS,
+    PROCESSOUTPUT
 }
 
 struct ExperimentStatusChangeEvent {
@@ -110,22 +110,15 @@ struct JobIdentifier {
 // }
 
 struct ProcessSubmitEvent{
-    1: required string processId;
-    2: required string credentialToken;
+    1: required string processId,
+    2: required string gatewayId,
+    3: required string tokenId
 }
 
-struct TaskSubmitEvent{
-    1: required string experimentId,
-    2: required string taskId,
-    3: required string gatewayId,
-    4: required string tokenId
-}
-
-struct TaskTerminateEvent{
-    1: required string experimentId,
-    2: required string taskId,
-    3: required string gatewayId,
-    4: required string tokenId
+struct ProcessTerminateEvent{
+    1: required string processId,
+    2: required string gatewayId,
+    3: required string tokenId
 }
 
 struct JobStatusChangeEvent {

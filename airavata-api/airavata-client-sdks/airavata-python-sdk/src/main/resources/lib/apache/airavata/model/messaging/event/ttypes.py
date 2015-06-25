@@ -44,18 +44,18 @@ class MessageType:
   TASK = 1
   PROCESS = 2
   JOB = 3
-  LAUNCHTASK = 4
-  TERMINATETASK = 5
-  TASKOUTPUT = 6
+  LAUNCHPROCESS = 4
+  TERMINATEPROCESS = 5
+  PROCESSOUTPUT = 6
 
   _VALUES_TO_NAMES = {
     0: "EXPERIMENT",
     1: "TASK",
     2: "PROCESS",
     3: "JOB",
-    4: "LAUNCHTASK",
-    5: "TERMINATETASK",
-    6: "TASKOUTPUT",
+    4: "LAUNCHPROCESS",
+    5: "TERMINATEPROCESS",
+    6: "PROCESSOUTPUT",
   }
 
   _NAMES_TO_VALUES = {
@@ -63,9 +63,9 @@ class MessageType:
     "TASK": 1,
     "PROCESS": 2,
     "JOB": 3,
-    "LAUNCHTASK": 4,
-    "TERMINATETASK": 5,
-    "TASKOUTPUT": 6,
+    "LAUNCHPROCESS": 4,
+    "TERMINATEPROCESS": 5,
+    "PROCESSOUTPUT": 6,
   }
 
 
@@ -930,18 +930,21 @@ class ProcessSubmitEvent:
   """
   Attributes:
    - processId
-   - credentialToken
+   - gatewayId
+   - tokenId
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'processId', None, None, ), # 1
-    (2, TType.STRING, 'credentialToken', None, None, ), # 2
+    (2, TType.STRING, 'gatewayId', None, None, ), # 2
+    (3, TType.STRING, 'tokenId', None, None, ), # 3
   )
 
-  def __init__(self, processId=None, credentialToken=None,):
+  def __init__(self, processId=None, gatewayId=None, tokenId=None,):
     self.processId = processId
-    self.credentialToken = credentialToken
+    self.gatewayId = gatewayId
+    self.tokenId = tokenId
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -959,7 +962,12 @@ class ProcessSubmitEvent:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.credentialToken = iprot.readString();
+          self.gatewayId = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 3:
+        if ftype == TType.STRING:
+          self.tokenId = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -976,9 +984,13 @@ class ProcessSubmitEvent:
       oprot.writeFieldBegin('processId', TType.STRING, 1)
       oprot.writeString(self.processId)
       oprot.writeFieldEnd()
-    if self.credentialToken is not None:
-      oprot.writeFieldBegin('credentialToken', TType.STRING, 2)
-      oprot.writeString(self.credentialToken)
+    if self.gatewayId is not None:
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
+      oprot.writeString(self.gatewayId)
+      oprot.writeFieldEnd()
+    if self.tokenId is not None:
+      oprot.writeFieldBegin('tokenId', TType.STRING, 3)
+      oprot.writeString(self.tokenId)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
@@ -986,114 +998,6 @@ class ProcessSubmitEvent:
   def validate(self):
     if self.processId is None:
       raise TProtocol.TProtocolException(message='Required field processId is unset!')
-    if self.credentialToken is None:
-      raise TProtocol.TProtocolException(message='Required field credentialToken is unset!')
-    return
-
-
-  def __hash__(self):
-    value = 17
-    value = (value * 31) ^ hash(self.processId)
-    value = (value * 31) ^ hash(self.credentialToken)
-    return value
-
-  def __repr__(self):
-    L = ['%s=%r' % (key, value)
-      for key, value in self.__dict__.iteritems()]
-    return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
-
-  def __eq__(self, other):
-    return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
-
-  def __ne__(self, other):
-    return not (self == other)
-
-class TaskSubmitEvent:
-  """
-  Attributes:
-   - experimentId
-   - taskId
-   - gatewayId
-   - tokenId
-  """
-
-  thrift_spec = (
-    None, # 0
-    (1, TType.STRING, 'experimentId', None, None, ), # 1
-    (2, TType.STRING, 'taskId', None, None, ), # 2
-    (3, TType.STRING, 'gatewayId', None, None, ), # 3
-    (4, TType.STRING, 'tokenId', None, None, ), # 4
-  )
-
-  def __init__(self, experimentId=None, taskId=None, gatewayId=None, tokenId=None,):
-    self.experimentId = experimentId
-    self.taskId = taskId
-    self.gatewayId = gatewayId
-    self.tokenId = tokenId
-
-  def read(self, iprot):
-    if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
-      fastbinary.decode_binary(self, iprot.trans, (self.__class__, self.thrift_spec))
-      return
-    iprot.readStructBegin()
-    while True:
-      (fname, ftype, fid) = iprot.readFieldBegin()
-      if ftype == TType.STOP:
-        break
-      if fid == 1:
-        if ftype == TType.STRING:
-          self.experimentId = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 2:
-        if ftype == TType.STRING:
-          self.taskId = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRING:
-          self.gatewayId = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 4:
-        if ftype == TType.STRING:
-          self.tokenId = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      else:
-        iprot.skip(ftype)
-      iprot.readFieldEnd()
-    iprot.readStructEnd()
-
-  def write(self, oprot):
-    if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
-      oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
-      return
-    oprot.writeStructBegin('TaskSubmitEvent')
-    if self.experimentId is not None:
-      oprot.writeFieldBegin('experimentId', TType.STRING, 1)
-      oprot.writeString(self.experimentId)
-      oprot.writeFieldEnd()
-    if self.taskId is not None:
-      oprot.writeFieldBegin('taskId', TType.STRING, 2)
-      oprot.writeString(self.taskId)
-      oprot.writeFieldEnd()
-    if self.gatewayId is not None:
-      oprot.writeFieldBegin('gatewayId', TType.STRING, 3)
-      oprot.writeString(self.gatewayId)
-      oprot.writeFieldEnd()
-    if self.tokenId is not None:
-      oprot.writeFieldBegin('tokenId', TType.STRING, 4)
-      oprot.writeString(self.tokenId)
-      oprot.writeFieldEnd()
-    oprot.writeFieldStop()
-    oprot.writeStructEnd()
-
-  def validate(self):
-    if self.experimentId is None:
-      raise TProtocol.TProtocolException(message='Required field experimentId is unset!')
-    if self.taskId is None:
-      raise TProtocol.TProtocolException(message='Required field taskId is unset!')
     if self.gatewayId is None:
       raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
     if self.tokenId is None:
@@ -1103,8 +1007,7 @@ class TaskSubmitEvent:
 
   def __hash__(self):
     value = 17
-    value = (value * 31) ^ hash(self.experimentId)
-    value = (value * 31) ^ hash(self.taskId)
+    value = (value * 31) ^ hash(self.processId)
     value = (value * 31) ^ hash(self.gatewayId)
     value = (value * 31) ^ hash(self.tokenId)
     return value
@@ -1120,26 +1023,23 @@ class TaskSubmitEvent:
   def __ne__(self, other):
     return not (self == other)
 
-class TaskTerminateEvent:
+class ProcessTerminateEvent:
   """
   Attributes:
-   - experimentId
-   - taskId
+   - processId
    - gatewayId
    - tokenId
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'experimentId', None, None, ), # 1
-    (2, TType.STRING, 'taskId', None, None, ), # 2
-    (3, TType.STRING, 'gatewayId', None, None, ), # 3
-    (4, TType.STRING, 'tokenId', None, None, ), # 4
+    (1, TType.STRING, 'processId', None, None, ), # 1
+    (2, TType.STRING, 'gatewayId', None, None, ), # 2
+    (3, TType.STRING, 'tokenId', None, None, ), # 3
   )
 
-  def __init__(self, experimentId=None, taskId=None, gatewayId=None, tokenId=None,):
-    self.experimentId = experimentId
-    self.taskId = taskId
+  def __init__(self, processId=None, gatewayId=None, tokenId=None,):
+    self.processId = processId
     self.gatewayId = gatewayId
     self.tokenId = tokenId
 
@@ -1154,20 +1054,15 @@ class TaskTerminateEvent:
         break
       if fid == 1:
         if ftype == TType.STRING:
-          self.experimentId = iprot.readString();
+          self.processId = iprot.readString();
         else:
           iprot.skip(ftype)
       elif fid == 2:
         if ftype == TType.STRING:
-          self.taskId = iprot.readString();
-        else:
-          iprot.skip(ftype)
-      elif fid == 3:
-        if ftype == TType.STRING:
           self.gatewayId = iprot.readString();
         else:
           iprot.skip(ftype)
-      elif fid == 4:
+      elif fid == 3:
         if ftype == TType.STRING:
           self.tokenId = iprot.readString();
         else:
@@ -1181,31 +1076,25 @@ class TaskTerminateEvent:
     if oprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and self.thrift_spec is not None and fastbinary is not None:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
-    oprot.writeStructBegin('TaskTerminateEvent')
-    if self.experimentId is not None:
-      oprot.writeFieldBegin('experimentId', TType.STRING, 1)
-      oprot.writeString(self.experimentId)
-      oprot.writeFieldEnd()
-    if self.taskId is not None:
-      oprot.writeFieldBegin('taskId', TType.STRING, 2)
-      oprot.writeString(self.taskId)
+    oprot.writeStructBegin('ProcessTerminateEvent')
+    if self.processId is not None:
+      oprot.writeFieldBegin('processId', TType.STRING, 1)
+      oprot.writeString(self.processId)
       oprot.writeFieldEnd()
     if self.gatewayId is not None:
-      oprot.writeFieldBegin('gatewayId', TType.STRING, 3)
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
       oprot.writeString(self.gatewayId)
       oprot.writeFieldEnd()
     if self.tokenId is not None:
-      oprot.writeFieldBegin('tokenId', TType.STRING, 4)
+      oprot.writeFieldBegin('tokenId', TType.STRING, 3)
       oprot.writeString(self.tokenId)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
   def validate(self):
-    if self.experimentId is None:
-      raise TProtocol.TProtocolException(message='Required field experimentId is unset!')
-    if self.taskId is None:
-      raise TProtocol.TProtocolException(message='Required field taskId is unset!')
+    if self.processId is None:
+      raise TProtocol.TProtocolException(message='Required field processId is unset!')
     if self.gatewayId is None:
       raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
     if self.tokenId is None:
@@ -1215,8 +1104,7 @@ class TaskTerminateEvent:
 
   def __hash__(self):
     value = 17
-    value = (value * 31) ^ hash(self.experimentId)
-    value = (value * 31) ^ hash(self.taskId)
+    value = (value * 31) ^ hash(self.processId)
     value = (value * 31) ^ hash(self.gatewayId)
     value = (value * 31) ^ hash(self.tokenId)
     return value
