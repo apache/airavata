@@ -73,6 +73,7 @@ public class AiravataClientFactory {
             return new Airavata.Client(protocol);
 
         } catch (TTransportException e) {
+            e.printStackTrace();
             throw new AiravataClientConnectException("Unable to connect to the server at " + serverHost + ":"
                     + serverPort);
         }

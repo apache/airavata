@@ -21,7 +21,7 @@
 package org.apache.airavata.secure.sample;
 
 import org.apache.airavata.api.client.AiravataClientFactory;
-import org.apache.airavata.model.error.AiravataClientConnectException;
+import org.apache.airavata.model.error.*;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.axis2.AxisFault;
@@ -37,7 +37,7 @@ import java.util.Scanner;
 public class SecureClient {
     private static Logger logger = LoggerFactory.getLogger(SecureClient.class);
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) /*throws Exception*/ {
         //register OAuth application - this happens once during initialization of the gateway.
 
         /************************Start obtaining input from user*****************************/
@@ -76,66 +76,80 @@ public class SecureClient {
         /***************************** Finish obtaining input from user*******************************************/
 
         /*********************** Perform registration of the client as an OAuth app***************************/
-        ConfigurationContext configContext =
-                ConfigurationContextFactory.createConfigurationContextFromFileSystem(null, null);
-        OAuthAppRegisteringClient authAppRegisteringClient = new OAuthAppRegisteringClient(
-                Properties.oauthAuthzServerURL, Properties.adminUserName, Properties.adminPassword, configContext);
-        OAuthConsumerAppDTO appDTO = authAppRegisteringClient.registerApplication(appName, consumerId, consumerSecret);
-        /********************* Complete registering the client ***********************************************/
-        System.out.println("");
-        System.out.println("Registered OAuth app successfully. Following is app's details:");
-        System.out.println("App Name: " + appDTO.getApplicationName());
-        System.out.println("Consumer ID: " + appDTO.getOauthConsumerKey());
-        System.out.println("Consumer Secret: " + appDTO.getOauthConsumerSecret());
-        System.out.println("");
-        //obtain OAuth access token
+        try {
+            ConfigurationContext configContext =
+                    ConfigurationContextFactory.createConfigurationContextFromFileSystem(null, null);
+            OAuthAppRegisteringClient authAppRegisteringClient = new OAuthAppRegisteringClient(
+                    Properties.oauthAuthzServerURL, Properties.adminUserName, Properties.adminPassword, configContext);
+            OAuthConsumerAppDTO appDTO = authAppRegisteringClient.registerApplication(appName, consumerId, consumerSecret);
+            /********************* Complete registering the client ***********************************************/
+            System.out.println("");
+            System.out.println("Registered OAuth app successfully. Following is app's details:");
+            System.out.println("App Name: " + appDTO.getApplicationName());
+            System.out.println("Consumer ID: " + appDTO.getOauthConsumerKey());
+            System.out.println("Consumer Secret: " + appDTO.getOauthConsumerSecret());
+            System.out.println("");
+            //obtain OAuth access token
 
-        /************************Start obtaining input from user*****************************/
-        System.out.println("Obtaining OAuth access token via 'Resource Owner Password' grant type....");
-        System.out.println("Please enter following information as you prefer, or use defaults.");
-        System.out.println("End user's name: (default:" + Properties.userName +
-                ", press 'd' to use default value.)");
-        String userNameInput = scanner.next();
-        String userName = null;
-        if (userNameInput.trim().equals("d")) {
-            userName = Properties.userName;
-        } else {
-            userName = userNameInput.trim();
+            /************************Start obtaining input from user*****************************/
+            System.out.println("Obtaining OAuth access token via 'Resource Owner Password' grant type....");
+            System.out.println("Please enter following information as you prefer, or use defaults.");
+            System.out.println("End user's name: (default:" + Properties.userName +
+                    ", press 'd' to use default value.)");
+            String userNameInput = scanner.next();
+            String userName = null;
+            if (userNameInput.trim().equals("d")) {
+                userName = Properties.userName;
+            } else {
+                userName = userNameInput.trim();
+            }
+
+            System.out.println("End user's password: (default:" + Properties.password + ", press 'd' to use default value.)");
+            String passwordInput = scanner.next();
+            String password = null;
+            if (passwordInput.trim().equals("d")) {
+                password = Properties.password;
+            } else {
+                password = passwordInput.trim();
+            }
+            /***************************** Finish obtaining input from user*******************************************/
+
+            //obtain the OAuth token for the specified end user.
+            String accessToken = new OAuthTokenRetrievalClient().retrieveAccessToken(consumerId, consumerSecret, userName,
+                    password);
+            System.out.println("OAuth access token obtained for the user: " + userName + " is: " + accessToken);
+            System.out.println("");
+
+            //invoke Airavata API by the SecureClient, on behalf of the user.
+            System.out.println("Invoking Airavata API...");
+            System.out.println("Enter the access token to be used: (default:" + accessToken + ", press 'd' to use default value.)");
+            String accessTokenInput = scanner.next();
+            String acTk = null;
+            if (accessTokenInput.trim().equals("d")) {
+                acTk = accessToken;
+            } else {
+                acTk = accessTokenInput.trim();
+            }
+
+            Airavata.Client client = createAiravataClient(Properties.SERVER_HOST, Properties.SERVER_PORT);
+            AuthzToken authzToken = new AuthzToken();
+            authzToken.setAccessToken(acTk);
+            String version = client.getAPIVersion(authzToken);
+            System.out.println("Airavata API version: " + version);
+            System.out.println("");
+        } catch (InvalidRequestException e) {
+            e.printStackTrace();
+        } catch (TException e) {
+            e.printStackTrace();
+        } catch (AiravataClientConnectException e) {
+            e.printStackTrace();
+        } catch (AxisFault axisFault) {
+            axisFault.printStackTrace();
+        } catch (AiravataSecurityException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        System.out.println("End user's password: (default:" + Properties.password + ", press 'd' to use default value.)");
-        String passwordInput = scanner.next();
-        String password = null;
-        if (passwordInput.trim().equals("d")) {
-            password = Properties.password;
-        } else {
-            password = passwordInput.trim();
-        }
-        /***************************** Finish obtaining input from user*******************************************/
-
-        //obtain the OAuth token for the specified end user.
-        String accessToken = new OAuthTokenRetrievalClient().retrieveAccessToken(consumerId, consumerSecret, userName,
-                password);
-        System.out.println("OAuth access token obtained for the user: " + userName + " is: " + accessToken);
-        System.out.println("");
-
-        //invoke Airavata API by the SecureClient, on behalf of the user.
-        System.out.println("Invoking Airavata API...");
-        System.out.println("Enter the access token to be used: (default:" + accessToken + ", press 'd' to use default value.)");
-        String accessTokenInput = scanner.next();
-        String acTk = null;
-        if (accessTokenInput.trim().equals("d")) {
-            acTk = accessToken;
-        } else {
-            acTk = accessTokenInput.trim();
-        }
-
-        Airavata.Client client = createAiravataClient(Properties.SERVER_HOST, Properties.SERVER_PORT);
-        AuthzToken authzToken = new AuthzToken();
-        authzToken.setAccessToken(acTk);
-        String version = client.getAPIVersion(authzToken);
-        System.out.println("Airavata API version: " + version);
-        System.out.println("");
     }
 
     public static Airavata.Client createAiravataClient(String serverHost, int serverPort) throws
@@ -143,7 +157,7 @@ public class SecureClient {
         try {
             //Airavata.Client client = AiravataClientFactory.createAiravataClient(serverHost, serverPort);
             Airavata.Client client = AiravataClientFactory.createAiravataSecureClient(serverHost, serverPort,
-            Properties.TRUST_STORE_PATH, Properties.TRUST_STORE_PASSWORD, 10000);
+                    Properties.TRUST_STORE_PATH, Properties.TRUST_STORE_PASSWORD, 10000);
             return client;
 
         } catch (AiravataClientConnectException e) {

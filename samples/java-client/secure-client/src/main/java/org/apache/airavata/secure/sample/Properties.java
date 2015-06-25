@@ -26,7 +26,7 @@ public class Properties {
     public static final int SERVER_PORT = 9930;
 
     //trust store parameters
-    public static final String TRUST_STORE_PATH = "../../../../../../../../../../../../airavata/modules/distribution/server/src/main/resources/bin/client_truststore.jks";
+    public static final String TRUST_STORE_PATH = "../../../../modules/distribution/server/src/main/resources/bin/client_truststore.jks";
     public static final String TRUST_STORE_PASSWORD = "airavata";
 
     public static String oauthAuthzServerURL = "https://localhost:9443/services/";
