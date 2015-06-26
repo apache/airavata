@@ -44,7 +44,7 @@ enum TaskTypes {
  * taskDetail:
  *   A friendly description of the task, usally used to communicate information to users.
  *
- * taskInternalStore:
+ * subTaskModel:
  *   A generic byte object for the Task developer to store internal serialized data into registry catalogs.
 */
 struct TaskModel {

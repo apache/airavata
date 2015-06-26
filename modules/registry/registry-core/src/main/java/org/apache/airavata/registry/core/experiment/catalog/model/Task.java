@@ -38,7 +38,7 @@ public class Task {
     private Timestamp creationTime;
     private Timestamp lastUpdateTime;
     private String taskDetail;
-    private Byte taskInternalStore;
+    private byte[] setSubTaskModel;
     private Process process;
     private Collection<TaskError> taskErrors;
     private Collection<TaskStatus> taskStatuses;
@@ -104,13 +104,13 @@ public class Task {
     }
 
     @Basic
-    @Column(name = "TASK_INTERNAL_STORE")
-    public Byte getTaskInternalStore() {
-        return taskInternalStore;
+    @Column(name = "SUB_TASK_MODEL")
+    public byte[] getSetSubTaskModel() {
+        return setSubTaskModel;
     }
 
-    public void setTaskInternalStore(Byte taskInternalStore) {
-        this.taskInternalStore = taskInternalStore;
+    public void setSetSubTaskModel(byte[] taskInternalStore) {
+        this.setSubTaskModel = taskInternalStore;
     }
 
 //    @Override
