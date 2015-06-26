@@ -74,7 +74,7 @@ public class RabbitMQStatusPublisher implements Publisher {
                 TaskStatusChangeEvent event = (TaskStatusChangeEvent) msgCtx.getEvent();
                 routingKey = gatewayId + "." + event.getTaskIdentity().getExperimentId() + "." +
                         event.getTaskIdentity().getProcessId() + "." + event.getTaskIdentity().getTaskId();
-            } else if (msgCtx.getType() == MessageType.TASKOUTPUT) {
+            } else if (msgCtx.getType() == MessageType.PROCESSOUTPUT) {
                 TaskOutputChangeEvent event = (TaskOutputChangeEvent) msgCtx.getEvent();
                 routingKey = gatewayId + "." + event.getTaskIdentity().getExperimentId() + "." +
                         event.getTaskIdentity().getProcessId() + "." + event.getTaskIdentity().getTaskId();

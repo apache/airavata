@@ -177,7 +177,7 @@ public class RabbitMQStatusConsumer implements Consumer {
                                     taskStatusChangeEvent.getState());
                             event = taskStatusChangeEvent;
                             gatewayId = taskStatusChangeEvent.getTaskIdentity().getGatewayId();
-                        }else if (message.getMessageType() == MessageType.TASKOUTPUT) {
+                        }else if (message.getMessageType() == MessageType.PROCESSOUTPUT) {
                             TaskOutputChangeEvent taskOutputChangeEvent = new TaskOutputChangeEvent();
                             ThriftUtils.createThriftFromBytes(message.getEvent(), taskOutputChangeEvent);
                             log.debug(" Message Received with message id '" + message.getMessageId() + "' and with message type '" + message.getMessageType());
@@ -191,7 +191,7 @@ public class RabbitMQStatusConsumer implements Consumer {
                                     jobStatusChangeEvent.getState());
                             event = jobStatusChangeEvent;
                             gatewayId = jobStatusChangeEvent.getJobIdentity().getGatewayId();
-                        } else if (message.getMessageType().equals(MessageType.LAUNCHTASK)) {
+                        } else if (message.getMessageType().equals(MessageType.LAUNCHPROCESS)) {
                             TaskSubmitEvent taskSubmitEvent = new TaskSubmitEvent();
                             ThriftUtils.createThriftFromBytes(message.getEvent(), taskSubmitEvent);
                             log.debug(" Message Received with message id '" + message.getMessageId()
@@ -199,7 +199,7 @@ public class RabbitMQStatusConsumer implements Consumer {
                                     taskSubmitEvent.getExperimentId() + "and taskId: " + taskSubmitEvent.getTaskId());
                             event = taskSubmitEvent;
                             gatewayId = taskSubmitEvent.getGatewayId();
-                        } else if (message.getMessageType().equals(MessageType.TERMINATETASK)) {
+                        } else if (message.getMessageType().equals(MessageType.TERMINATEPROCESS)) {
                             TaskTerminateEvent taskTerminateEvent = new TaskTerminateEvent();
                             ThriftUtils.createThriftFromBytes(message.getEvent(), taskTerminateEvent);
                             log.debug(" Message Received with message id '" + message.getMessageId()

@@ -28,6 +28,7 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 @Entity
+@IdClass(JobPK.class)
 public class Job {
     private final static Logger logger = LoggerFactory.getLogger(Job.class);
     private String jobId;
@@ -50,7 +51,7 @@ public class Job {
         this.jobId = jobId;
     }
 
-    @Basic
+    @Id
     @Column(name = "TASK_ID")
     public String getTaskId() {
         return taskId;

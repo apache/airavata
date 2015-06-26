@@ -178,7 +178,7 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                 case JOB:
                     return experimentRegistry.addJob((JobModel) newObjectToAdd, (String) dependentIdentifier);
                 case JOB_STATUS:
-                    return experimentRegistry.addJobStatus((JobStatus) newObjectToAdd, (String) dependentIdentifier);
+                    return experimentRegistry.addJobStatus((JobStatus) newObjectToAdd, (CompositeIdentifier) dependentIdentifier);
                 default:
                     logger.error("Unsupported dependent data type...", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
@@ -251,10 +251,10 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     experimentRegistry.updateTaskError((ErrorModel) newObjectToUpdate, (String) identifier);
                     break;
                 case JOB:
-                    experimentRegistry.updateJob((JobModel) newObjectToUpdate, (String) identifier);
+                    experimentRegistry.updateJob((JobModel) newObjectToUpdate, (CompositeIdentifier) identifier);
                     break;
                 case JOB_STATUS:
-                    experimentRegistry.updateJobStatus((JobStatus) newObjectToUpdate, (String) identifier);
+                    experimentRegistry.updateJobStatus((JobStatus) newObjectToUpdate, (CompositeIdentifier) identifier);
                     break;
                 default:
                     logger.error("Unsupported data type...", new UnsupportedOperationException());
@@ -333,7 +333,7 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                 case PROCESS:
                     return experimentRegistry.getProcess((String) identifier, null);
                 case PROCESS_RESOURCE_SCHEDULE:
-                    return experimentRegistry.getProcessResourceSchedule((String) identifier, null);
+                    return experimentRegistry.getProcessResourceSchedule((String) identifier);
                 case PROCESS_INPUT:
                     return experimentRegistry.getProcessInputs((String) identifier);
                 case PROCESS_OUTPUT:
@@ -349,9 +349,9 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                 case TASK_ERROR:
                     return experimentRegistry.getTaskError((String) identifier);
                 case JOB:
-                    return experimentRegistry.getJob((String) identifier, null);
+                    return experimentRegistry.getJob((CompositeIdentifier) identifier, null);
                 case JOB_STATUS:
-                    return experimentRegistry.getJobStatus((String) identifier);
+                    return experimentRegistry.getJobStatus((CompositeIdentifier) identifier);
                 default:
                     logger.error("Unsupported data type...", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();
@@ -630,7 +630,7 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                     experimentRegistry.removeTask((String) identifier);
                     break;
                 case JOB:
-                    experimentRegistry.removeJob((String) identifier);
+                    experimentRegistry.removeJob((CompositeIdentifier) identifier);
                     break;
                 default:
                     logger.error("Unsupported data type...", new UnsupportedOperationException());
@@ -671,7 +671,7 @@ public class ExperimentCatalogImpl implements ExperimentCatalog {
                 case TASK:
                     return experimentRegistry.isTaskExist((String) identifier);
                 case JOB:
-                    return experimentRegistry.isJobExist((String) identifier);
+                    return experimentRegistry.isJobExist((CompositeIdentifier) identifier);
                 default:
                     logger.error("Unsupported data type...", new UnsupportedOperationException());
                     throw new UnsupportedOperationException();

@@ -45,20 +45,20 @@ public interface JobSubmitter {
 
     /**
      * This is similar to submit with expId and taskId but this has extra param called token
-     * @param experimentID
-     * @param taskID
+     * @param experimentId
+     * @param processId
      * @param tokenId
      * @return
      * @throws OrchestratorException
      */
-    boolean submit(String experimentID,String taskID,String tokenId) throws OrchestratorException;
+    boolean submit(String experimentId,String processId,String tokenId) throws OrchestratorException;
 
     /**
      * This can be used to terminate the experiment
-     * @param experimentID
-     * @param taskID
+     * @param experimentId
+     * @param processId
      * @return
      * @throws OrchestratorException
      */
-    boolean terminate(String experimentID,String taskID, String tokenId)throws OrchestratorException;
+    boolean terminate(String experimentId,String processId, String tokenId)throws OrchestratorException;
 }

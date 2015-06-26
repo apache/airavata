@@ -27,7 +27,6 @@ import org.apache.airavata.model.error.ValidatorResult;
 import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
-import org.apache.airavata.model.task.TaskModel;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.*;
@@ -54,7 +53,7 @@ public class BatchQueueValidator implements JobMetadataValidator {
         }
     }
 
-    public ValidationResults validate(ExperimentModel experiment, ProcessModel processModel, TaskModel taskModel) {
+    public ValidationResults validate(ExperimentModel experiment, ProcessModel processModel) {
         ValidationResults validationResults = new ValidationResults();
         validationResults.setValidationState(true);
         try {
