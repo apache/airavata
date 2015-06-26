@@ -73,7 +73,7 @@ public class AiravataClientFactory {
             return new Airavata.Client(protocol);
 
         } catch (TTransportException e) {
-            e.printStackTrace();
+            logger.error("Error while connecting to the server over TLS.", e);
             throw new AiravataClientConnectException("Unable to connect to the server at " + serverHost + ":"
                     + serverPort);
         }

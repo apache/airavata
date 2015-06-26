@@ -20,13 +20,40 @@
  */
 package org.apache.airavata.api.server.security;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ServerSettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This initializes an instance of the appropriate security manager according to the
  * configuration.
  */
 public class SecurityManagerFactory {
-    public static AiravataSecurityManager getSecurityManager(){
-        //TODO:read from configuration and create the appropriate security manager.
-        return new DefaultAiravataSecurityManager();
+    private final static Logger logger = LoggerFactory.getLogger(SecurityManagerFactory.class);
+
+    public static AiravataSecurityManager getSecurityManager() throws SecurityException {
+        try {
+            Class secManagerImpl = Class.forName(ServerSettings.getSecurityManagerClassName());
+            AiravataSecurityManager securityManager = (AiravataSecurityManager) secManagerImpl.newInstance();
+            return  securityManager;
+        } catch (ClassNotFoundException e) {
+            String error = "Security Manager class could not be found.";
+            logger.error(error);
+            throw new SecurityException(error, e);
+        } catch (ApplicationSettingsException e) {
+            String error = "Error in reading the configuration related to Security Manager class.";
+            logger.error(error);
+            throw new SecurityException(error, e);
+        } catch (InstantiationException e) {
+            String error = "Error in instantiating the Security Manager class.";
+            logger.error(error);
+            throw new SecurityException(error, e);
+        } catch (IllegalAccessException e) {
+            String error = "Error in instantiating the Security Manager class.";
+            logger.error(error);
+            throw new SecurityException(error, e);
+
+        }
     }
 }

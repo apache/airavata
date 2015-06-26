@@ -21,6 +21,8 @@
 
 package org.apache.airavata.common.utils;
 
+import java.lang.String;
+
 /**
  * Constants used in Airavata should go here.
  */
@@ -60,6 +62,7 @@ public final class Constants {
     public static final String ZOOKEEPER_TIMEOUT = "zookeeper.timeout";
     //API security related property names
     public static final String IS_API_SECURED = "api.secured";
+    public static final String SECURITY_MANAGER_CLASS = "security.manager.class";
     public static final String REMOTE_OAUTH_SERVER_URL = "remote.oauth.authorization.server";
     public static final String ADMIN_USERNAME = "admin.user.name";
     public static final String ADMIN_PASSWORD = "admin.password";

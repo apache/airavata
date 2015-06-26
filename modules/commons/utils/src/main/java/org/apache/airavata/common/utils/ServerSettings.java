@@ -288,4 +288,8 @@ public class ServerSettings extends ApplicationSettings {
     public static int getTLSClientTimeout() throws ApplicationSettingsException {
         return Integer.valueOf(getSetting(Constants.TLS_CLIENT_TIMEOUT));
     }
+
+    public static String getSecurityManagerClassName() throws ApplicationSettingsException {
+        return getSetting(Constants.SECURITY_MANAGER_CLASS);
+    }
 }

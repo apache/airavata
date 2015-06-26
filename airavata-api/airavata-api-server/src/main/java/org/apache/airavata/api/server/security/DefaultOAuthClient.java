@@ -38,6 +38,7 @@ import java.rmi.RemoteException;
  * to get the OAuth token validated.
  */
 public class DefaultOAuthClient {
+
     private OAuth2TokenValidationServiceStub stub;
     private final static Logger logger = LoggerFactory.getLogger(DefaultOAuthClient.class);
     public static final String BEARER_TOKEN_TYPE = "bearer";
@@ -93,7 +94,6 @@ public class DefaultOAuthClient {
             SSLContext.setDefault(sc);
         } catch (Exception e) {
             e.printStackTrace();
-            //ignore
         }
     }
 

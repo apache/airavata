@@ -5,6 +5,10 @@ public class SecurityException extends Exception {
         super(message);
     }
 
+    public SecurityException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
     public SecurityException() {
         super();
     }

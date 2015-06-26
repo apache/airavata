@@ -153,7 +153,7 @@ public class SecureClient {
             String version = client.getAPIVersion(authzToken);
             System.out.println("Airavata API version: " + version);
             System.out.println("");
-            
+
         } catch (InvalidRequestException e) {
             e.printStackTrace();
         } catch (TException e) {
