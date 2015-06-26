@@ -19,6 +19,7 @@
 
 package org.apache.airavata.experiment.catalog;
 
+import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
 import org.apache.airavata.registry.core.experiment.catalog.resources.ExperimentResource;
@@ -69,7 +70,7 @@ public class JobResourceTest extends AbstractResourceTest{
         taskResource.setParentProcessId(processId);
         taskResource.setTaskType(TaskTypes.DATA_STAGING.toString());
         taskResource.setTaskDetail("task detail");
-        taskResource.setTaskInternalStore((byte)2);
+        taskResource.setSubTaskModel(new DataStagingTaskModel("source","destination").toString().getBytes());
         taskResource.save();
 
         jobResource = (JobResource)taskResource.create(ResourceType.JOB);

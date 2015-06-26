@@ -370,7 +370,7 @@ public class ThriftDataModelConversion {
         model.setCreationTime(taskResource.getCreationTime().getTime());
         model.setLastUpdateTime(taskResource.getLastUpdateTime().getTime());
         model.setTaskDetail(taskResource.getTaskDetail());
-        model.setTaskInternalStore(taskResource.getTaskInternalStore());
+        model.setSubTaskModel(taskResource.getSubTaskModel());
 
         model.setTaskStatus(getTaskStatus(taskResource.getTaskStatus()));
         model.setTaskError(getErrorModel(taskResource.getTaskError()));

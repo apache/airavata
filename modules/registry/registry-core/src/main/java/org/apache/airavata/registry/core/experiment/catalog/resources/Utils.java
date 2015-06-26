@@ -583,7 +583,7 @@ public class Utils {
             taskResource.setCreationTime(o.getCreationTime());
             taskResource.setLastUpdateTime(o.getLastUpdateTime());
             taskResource.setTaskDetail(o.getTaskDetail());
-            taskResource.setTaskInternalStore(o.getTaskInternalStore());
+            taskResource.setSubTaskModel(o.getSetSubTaskModel());
         }
         return taskResource;
     }

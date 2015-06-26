@@ -47,7 +47,7 @@ public class TaskResource extends AbstractExpCatResource {
     private Timestamp creationTime;
     private Timestamp lastUpdateTime;
     private String taskDetail;
-    private Byte taskInternalStore;
+    private byte[] subTaskModel;
 
     public String getTaskId() {
         return taskId;
@@ -97,12 +97,12 @@ public class TaskResource extends AbstractExpCatResource {
         this.taskDetail = taskDetail;
     }
 
-    public Byte getTaskInternalStore() {
-        return taskInternalStore;
+    public byte[] getSubTaskModel() {
+        return subTaskModel;
     }
 
-    public void setTaskInternalStore(Byte taskInternalStore) {
-        this.taskInternalStore = taskInternalStore;
+    public void setSubTaskModel(byte[] subTaskModel) {
+        this.subTaskModel = subTaskModel;
     }
 
     public ExperimentCatResource create(ResourceType type) throws RegistryException {
@@ -305,7 +305,7 @@ public class TaskResource extends AbstractExpCatResource {
             task.setCreationTime(creationTime);
             task.setLastUpdateTime(lastUpdateTime);
             task.setTaskDetail(taskDetail);
-            task.setTaskInternalStore(taskInternalStore);
+            task.setSetSubTaskModel(subTaskModel);
             em.persist(task);
             em.getTransaction().commit();
             em.close();
