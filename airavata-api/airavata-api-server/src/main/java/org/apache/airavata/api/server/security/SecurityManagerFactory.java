@@ -31,28 +31,31 @@ import org.slf4j.LoggerFactory;
  */
 public class SecurityManagerFactory {
     private final static Logger logger = LoggerFactory.getLogger(SecurityManagerFactory.class);
+    private static Class secManagerImpl = null;
 
     public static AiravataSecurityManager getSecurityManager() throws SecurityException {
         try {
-            Class secManagerImpl = Class.forName(ServerSettings.getSecurityManagerClassName());
+            if(secManagerImpl == null){
+                secManagerImpl = Class.forName(ServerSettings.getSecurityManagerClassName());
+            }
             AiravataSecurityManager securityManager = (AiravataSecurityManager) secManagerImpl.newInstance();
             return  securityManager;
         } catch (ClassNotFoundException e) {
             String error = "Security Manager class could not be found.";
-            logger.error(error);
-            throw new SecurityException(error, e);
+            logger.error(e.getMessage(), e);
+            throw new SecurityException(error);
         } catch (ApplicationSettingsException e) {
             String error = "Error in reading the configuration related to Security Manager class.";
-            logger.error(error);
-            throw new SecurityException(error, e);
+            logger.error(e.getMessage(), e);
+            throw new SecurityException(error);
         } catch (InstantiationException e) {
             String error = "Error in instantiating the Security Manager class.";
-            logger.error(error);
-            throw new SecurityException(error, e);
+            logger.error(e.getMessage(), e);
+            throw new SecurityException(error);
         } catch (IllegalAccessException e) {
             String error = "Error in instantiating the Security Manager class.";
-            logger.error(error);
-            throw new SecurityException(error, e);
+            logger.error(e.getMessage(), e);
+            throw new SecurityException(error);
 
         }
     }

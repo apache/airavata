@@ -3511,10 +3511,11 @@ public class AiravataServerHandler implements Airavata.Iface {
                 }
             }
         } catch (org.apache.airavata.api.server.security.SecurityException e) {
-            throw new AuthorizationException(e.getMessage());
+            logger.error(e.getMessage(), e);
+            throw new AuthorizationException("Error in obtaining initiating Security Manager.");
         } catch (ApplicationSettingsException e) {
-            logger.error("Error in reading API security settings.");
-            throw new AuthorizationException(e.getMessage());
+            logger.error(e.getMessage(), e);
+            throw new AuthorizationException("Error in reading API security settings.");
         }
     }
 

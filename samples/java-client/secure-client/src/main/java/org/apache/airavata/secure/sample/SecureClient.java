@@ -32,6 +32,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wso2.carbon.identity.oauth.stub.dto.OAuthConsumerAppDTO;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class SecureClient {
@@ -150,6 +152,10 @@ public class SecureClient {
             Airavata.Client client = createAiravataClient(Properties.SERVER_HOST, Properties.SERVER_PORT);
             AuthzToken authzToken = new AuthzToken();
             authzToken.setAccessToken(acTk);
+            Map<String, String> claimsMap = new HashMap<>();
+            claimsMap.put("userName", "hasinitg");
+            claimsMap.put("email", "hasini@gmail.com");
+            authzToken.setClaimsMap(claimsMap);
             String version = client.getAPIVersion(authzToken);
             System.out.println("Airavata API version: " + version);
             System.out.println("");
