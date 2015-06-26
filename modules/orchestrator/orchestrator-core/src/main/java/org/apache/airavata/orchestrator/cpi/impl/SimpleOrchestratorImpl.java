@@ -103,7 +103,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                             ErrorModel details = new ErrorModel();
                             details.setActualErrorMessage(errorMsg);
                             details.setCreationTime(Calendar.getInstance().getTimeInMillis());
-                            orchestratorContext.getNewRegistry().getExperimentCatalog().add(ExpCatChildDataType.PROCESS_ERROR, details,
+                            orchestratorContext.getRegistry().getExperimentCatalog().add(ExpCatChildDataType.PROCESS_ERROR, details,
                                     processModel.getProcessId());
                         } catch (RegistryException e) {
                             logger.error("Error while saving error details to registry", e);

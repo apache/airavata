@@ -91,7 +91,7 @@ public class GfacServerHandler implements GfacService.Iface {
 
     private void initAMQPClient() throws AiravataException {
         rabbitMQProcessLaunchConsumer = new RabbitMQProcessLaunchConsumer();
-        rabbitMQProcessLaunchConsumer.listen(new TaskLaunchMessageHandler());
+        rabbitMQProcessLaunchConsumer.listen(new ProcessLaunchMessageHandler());
     }
 
     private void startCuratorClient() throws ApplicationSettingsException {
@@ -184,11 +184,11 @@ public class GfacServerHandler implements GfacService.Iface {
         }*/
     }
 
-    private class TaskLaunchMessageHandler implements MessageHandler {
+    private class ProcessLaunchMessageHandler implements MessageHandler {
         private String experimentNode;
         private String gfacServerName;
 
-        public TaskLaunchMessageHandler() throws ApplicationSettingsException {
+        public ProcessLaunchMessageHandler() throws ApplicationSettingsException {
             experimentNode = GFacConstants.ZOOKEEPER_EXPERIMENT_NODE;
             gfacServerName = ServerSettings.getGFacServerName();
         }
@@ -204,7 +204,7 @@ public class GfacServerHandler implements GfacService.Iface {
         }
 
         public void onMessage(MessageContext message) {
-            System.out.println(" Message Received with message id '" + message.getMessageId()
+            log.info(" Message Received with message id '" + message.getMessageId()
                     + "' and with message type '" + message.getType());
             if (message.getType().equals(MessageType.LAUNCHPROCESS)) {
                 try {
