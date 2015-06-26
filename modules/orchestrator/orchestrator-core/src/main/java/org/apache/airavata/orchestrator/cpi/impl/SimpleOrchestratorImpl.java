@@ -34,7 +34,6 @@ import org.apache.airavata.registry.cpi.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -66,54 +65,13 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
     }
 
     public boolean launchExperiment(ExperimentModel experiment, ProcessModel processModel, String tokenId) throws OrchestratorException {
-        // we give higher priority to userExperimentID
         String experimentId = experiment.getExperimentId();
         String processId = processModel.getProcessId();
-        // creating monitorID to register with monitoring queue
-        // this is a special case because amqp has to be in place before submitting the job
         try {
             return jobSubmitter.submit(experimentId, processId, tokenId);
         } catch (Exception e) {
             throw new OrchestratorException("Error launching the job", e);
         }
-    }
-
-    /**
-     * This method will parse the ExperimentConfiguration and based on the configuration
-     * we create a single or multiple tasks for the experiment.
-     *
-     * @param experimentId
-     * @return
-     * @throws OrchestratorException
-     */
-    public List<ProcessModel> createProcesses(String experimentId) throws OrchestratorException {
-        ExperimentModel experiment = null;
-        List<ProcessModel> processModels = new ArrayList<ProcessModel>();
-        // FIXME : should change as create processes
-//        try {
-//            Registry newRegistry = orchestratorContext.getNewRegistry();
-//            experiment = (ExperimentModel) newRegistry.getExperimentCatalog().get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
-//            List<ProcessModel> workflowNodeDetailsList = experiment.getWorkflowNodeDetailsList();
-//            if (workflowNodeDetailsList != null && !workflowNodeDetailsList.isEmpty()){
-//                for (WorkflowNodeDetails wfn : workflowNodeDetailsList){
-//                    List<TaskDetails> taskDetailsList = wfn.getTaskDetailsList();
-//                    if (taskDetailsList != null && !taskDetailsList.isEmpty()){
-//                        return taskDetailsList;
-//                    }
-//                }
-//            }else {
-//                WorkflowNodeDetails iDontNeedaNode = ExperimentModelUtil.createWorkflowNode("tempNode", null);
-//                String nodeID = (String) newRegistry.getExperimentCatalog().add(ExpCatChildDataType.WORKFLOW_NODE_DETAIL, iDontNeedaNode, experimentId);
-//
-//                TaskDetails taskDetails = ExperimentModelUtil.cloneTaskFromExperiment(experiment);
-//                taskDetails.setTaskID((String) newRegistry.getExperimentCatalog().add(ExpCatChildDataType.TASK_DETAIL, taskDetails, nodeID));
-//                processModels.add(taskDetails);
-//            }
-
-//        } catch (Exception e) {
-//            throw new OrchestratorException("Error during creating a task");
-//        }
-        return processModels;
     }
 
     public ValidationResults validateExperiment(ExperimentModel experiment, ProcessModel processModel) throws OrchestratorException,LaunchValidationException {

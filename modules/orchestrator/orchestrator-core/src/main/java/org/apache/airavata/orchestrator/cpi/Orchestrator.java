@@ -26,8 +26,6 @@ import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 
-import java.util.List;
-
 /*
    This is the interface for orchestrator functionality exposed to the out side of the
    module
@@ -54,15 +52,6 @@ public interface Orchestrator {
      */
     boolean launchExperiment(ExperimentModel experiment, ProcessModel processModel,String tokenId) throws OrchestratorException;
 
-
-    /**
-     * This method will parseSingleJob the ExperimentConfiguration and based on the configuration
-     * we create a single or multiple tasks for the experiment.
-     * @param experimentId
-     * @return
-     * @throws OrchestratorException
-     */
-    public List<ProcessModel> createProcesses(String experimentId) throws OrchestratorException;
 
     /**
      * After creating the experiment Data user have the
