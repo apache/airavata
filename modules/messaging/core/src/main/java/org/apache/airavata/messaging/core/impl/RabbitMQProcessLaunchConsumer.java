@@ -24,7 +24,6 @@ import com.rabbitmq.client.*;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.AiravataUtils;
-import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.messaging.core.MessageContext;
@@ -42,8 +41,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RabbitMQTaskLaunchConsumer {
-    private final static Logger logger = LoggerFactory.getLogger(RabbitMQTaskLaunchConsumer.class);
+public class RabbitMQProcessLaunchConsumer {
+    private final static Logger logger = LoggerFactory.getLogger(RabbitMQProcessLaunchConsumer.class);
     private static Logger log = LoggerFactory.getLogger(RabbitMQStatusConsumer.class);
 
     private String taskLaunchExchangeName;
@@ -56,7 +55,7 @@ public class RabbitMQTaskLaunchConsumer {
     private int prefetchCount;
 
 
-    public RabbitMQTaskLaunchConsumer() throws AiravataException {
+    public RabbitMQProcessLaunchConsumer() throws AiravataException {
         try {
             url = ServerSettings.getSetting(MessagingConstants.RABBITMQ_BROKER_URL);
             durableQueue = Boolean.parseBoolean(ServerSettings.getSetting(MessagingConstants.DURABLE_QUEUE));
@@ -70,7 +69,7 @@ public class RabbitMQTaskLaunchConsumer {
         }
     }
 
-    public RabbitMQTaskLaunchConsumer(String brokerUrl, String exchangeName) throws AiravataException {
+    public RabbitMQProcessLaunchConsumer(String brokerUrl, String exchangeName) throws AiravataException {
         this.taskLaunchExchangeName = exchangeName;
         this.url = brokerUrl;
 
@@ -171,33 +170,27 @@ public class RabbitMQTaskLaunchConsumer {
                         ThriftUtils.createThriftFromBytes(body, message);
                         TBase event = null;
                         String gatewayId = null;
-                        long deliveryTag = envelope.getDeliveryTag(); //todo store this in zookeeper, once job is done we can ack
-                        if(message.getMessageType().equals(MessageType.LAUNCHTASK)) {
-                            TaskSubmitEvent taskSubmitEvent = new TaskSubmitEvent();
-                            ThriftUtils.createThriftFromBytes(message.getEvent(), taskSubmitEvent);
+                        long deliveryTag = envelope.getDeliveryTag();
+                        if(message.getMessageType().equals(MessageType.LAUNCHPROCESS)) {
+                            ProcessSubmitEvent processSubmitEvent = new ProcessSubmitEvent();
+                            ThriftUtils.createThriftFromBytes(message.getEvent(), processSubmitEvent);
                             log.debug(" Message Received with message id '" + message.getMessageId()
                                     + "' and with message type '" + message.getMessageType() + "'  for experimentId: " +
-                                    taskSubmitEvent.getExperimentId() + "and taskId: " + taskSubmitEvent.getTaskId());
-                            event = taskSubmitEvent;
-                            gatewayId = taskSubmitEvent.getGatewayId();
-                        }else if(message.getMessageType().equals(MessageType.TERMINATETASK)) {
-                            TaskTerminateEvent taskTerminateEvent = new TaskTerminateEvent();
-                            ThriftUtils.createThriftFromBytes(message.getEvent(), taskTerminateEvent);
+                                    processSubmitEvent.getProcessId());
+                            event = processSubmitEvent;
+                            gatewayId = processSubmitEvent.getGatewayId();
+                        }else if(message.getMessageType().equals(MessageType.LAUNCHPROCESS)) {
+                            ProcessTerminateEvent processTerminateEvent = new ProcessTerminateEvent();
+                            ThriftUtils.createThriftFromBytes(message.getEvent(), processTerminateEvent);
                             log.debug(" Message Received with message id '" + message.getMessageId()
-                                    + "' and with message type '" + message.getMessageType() + "'  for experimentId: " +
-                                    taskTerminateEvent.getExperimentId() + "and taskId: " + taskTerminateEvent.getTaskId());
-                            event = taskTerminateEvent;
-                            gatewayId = taskTerminateEvent.getGatewayId();
+                                    + "' and with message type '" + message.getMessageType() + "'  for processId: " +
+                                    processTerminateEvent.getProcessId());
+                            event = processTerminateEvent;
+                            gatewayId = processTerminateEvent.getGatewayId();
                         }
-                        System.out.println("*deliveryTag:"+deliveryTag);
                         MessageContext messageContext = new MessageContext(event, message.getMessageType(), message.getMessageId(), gatewayId,deliveryTag);
                         messageContext.setUpdatedTime(AiravataUtils.getTime(message.getUpdatedTime()));
                         handler.onMessage(messageContext);
-                        /*try {
-                            channel.basicAck(deliveryTag,false); //todo move this logic to monitoring component to ack when the job is done
-                        } catch (IOException e) {
-                            logger.error(e.getMessage(), e);
-                        }*/
                     } catch (TException e) {
                         String msg = "Failed to de-serialize the thrift message, from routing keys and queueName " + id;
                         log.warn(msg, e);

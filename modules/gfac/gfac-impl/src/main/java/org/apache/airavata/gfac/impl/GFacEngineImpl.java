@@ -49,7 +49,7 @@ public class GFacEngineImpl implements GFacEngine {
 	}
 
 	@Override
-	public ProcessContext populateProcessContext(String experimentId, String processId, String gatewayId, String
+	public ProcessContext populateProcessContext(String processId, String gatewayId, String
 			tokenId) throws GFacException {
 		try {
 			ProcessContext processContext = new ProcessContext(processId, gatewayId, tokenId);

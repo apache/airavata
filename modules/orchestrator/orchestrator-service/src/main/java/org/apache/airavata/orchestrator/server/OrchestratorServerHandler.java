@@ -22,40 +22,40 @@
 package org.apache.airavata.orchestrator.server;
 
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.credential.store.store.CredentialReader;
 import org.apache.airavata.gfac.core.GFacUtils;
+import org.apache.airavata.gfac.core.scheduler.HostScheduler;
 import org.apache.airavata.messaging.core.MessageContext;
-import org.apache.airavata.messaging.core.MessageHandler;
-import org.apache.airavata.messaging.core.MessagingConstants;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.PublisherFactory;
-import org.apache.airavata.messaging.core.impl.RabbitMQProcessConsumer;
-import org.apache.airavata.messaging.core.impl.RabbitMQProcessPublisher;
+import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
-import org.apache.airavata.model.messaging.event.ProcessSubmitEvent;
+import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
+import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.task.TaskModel;
+import org.apache.airavata.model.status.ExperimentState;
+import org.apache.airavata.model.status.ExperimentStatus;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.cpi.OrchestratorService;
 import org.apache.airavata.orchestrator.cpi.impl.SimpleOrchestratorImpl;
 import org.apache.airavata.orchestrator.cpi.orchestrator_cpi_serviceConstants;
 import org.apache.airavata.orchestrator.util.OrchestratorServerThreadPoolExecutor;
+import org.apache.airavata.registry.core.app.catalog.resources.AppCatAbstractResource;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.core.experiment.catalog.resources.AbstractExpCatResource;
-import org.apache.airavata.registry.cpi.AppCatalog;
-import org.apache.airavata.registry.cpi.AppCatalogException;
-import org.apache.airavata.registry.cpi.ExperimentCatalog;
-import org.apache.airavata.registry.cpi.ExperimentCatalogModelType;
-import org.apache.airavata.registry.cpi.RegistryException;
-import org.apache.thrift.TBase;
+import org.apache.airavata.registry.cpi.*;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,12 +64,11 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	private static Logger log = LoggerFactory.getLogger(OrchestratorServerHandler.class);
 	private SimpleOrchestratorImpl orchestrator = null;
 	private ExperimentCatalog experimentCatalog;
+    private AppCatalog appCatalog;
 	private static Integer mutex = new Integer(-1);
 	private String airavataUserName;
 	private String gatewayName;
 	private Publisher publisher;
-    private RabbitMQProcessConsumer rabbitMQProcessConsumer;
-    private RabbitMQProcessPublisher rabbitMQProcessPublisher;
 
     /**
 	 * Query orchestrator server to fetch the CPI version
@@ -79,7 +78,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	}
 
 	public OrchestratorServerHandler() throws OrchestratorException{
-		// registering with zk
 		try {
 	        publisher = PublisherFactory.createActivityPublisher();
             setAiravataUserName(ServerSettings.getDefaultUser());
@@ -93,29 +91,19 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 			// the required properties
 			orchestrator = new SimpleOrchestratorImpl();
 			experimentCatalog = RegistryFactory.getDefaultExpCatalog();
+            appCatalog = RegistryFactory.getAppCatalog();
 			orchestrator.initialize();
 			orchestrator.getOrchestratorContext().setPublisher(this.publisher);
-            startProcessConsumer();
         } catch (OrchestratorException e) {
             log.error(e.getMessage(), e);
             throw new OrchestratorException("Error while initializing orchestrator service", e);
 		} catch (RegistryException e) {
             log.error(e.getMessage(), e);
             throw new OrchestratorException("Error while initializing orchestrator service", e);
-		}
-	}
-
-    private void startProcessConsumer() throws OrchestratorException {
-        try {
-            rabbitMQProcessConsumer = new RabbitMQProcessConsumer();
-            ProcessConsumer processConsumer = new ProcessConsumer();
-            Thread thread = new Thread(processConsumer);
-            thread.start();
-
-        } catch (AiravataException e) {
-            throw new OrchestratorException("Error while starting process consumer", e);
+		} catch (AppCatalogException e) {
+            log.error(e.getMessage(), e);
+            throw new OrchestratorException("Error while initializing orchestrator service", e);
         }
-
     }
 
     /**
@@ -127,10 +115,9 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	 * @param experimentId
 	 */
 	public boolean launchExperiment(String experimentId, String token) throws TException {
-        ExperimentModel experiment = null; // this will inside the bottom catch statement
+        ExperimentModel experiment = null;
         try {
-            experiment = (ExperimentModel) experimentCatalog.get(
-                    ExperimentCatalogModelType.EXPERIMENT, experimentId);
+            experiment = (ExperimentModel) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
             if (experiment == null) {
                 log.error(experimentId, "Error retrieving the Experiment by the given experimentID: {} ", experimentId);
                 return false;
@@ -177,41 +164,16 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	 * @return
 	 * @throws TException
 	 */
-	public boolean validateExperiment(String experimentId) throws TException,
-			LaunchValidationException {
-		// TODO: Write the Orchestrator implementaion
+	public boolean validateExperiment(String experimentId) throws TException, LaunchValidationException {
 		try {
-			List<TaskModel> tasks = orchestrator.createTasks(experimentId);
-			if (tasks.size() > 1) {
-				log.info("There are multiple tasks for this experiment, So Orchestrator will launch multiple Jobs");
-			}
-			List<String> ids = experimentCatalog.getIds(
-					ExperimentCatalogModelType.PROCESS,
-					AbstractExpCatResource.ProcessConstants.EXPERIMENT_ID, experimentId);
-			for (String processId : ids) {
-				ProcessModel processModel = (ProcessModel) experimentCatalog
-						.get(ExperimentCatalogModelType.PROCESS,
-								processId);
-                // FIXME : no need to create tasks at orchestrator level
-//				List<Object> taskDetailList = experimentCatalog.get(
-//						ExperimentCatalogModelType.TASK_DETAIL,
-////						TaskDetailConstants.NODE_ID, processId);
-//				for (Object o : taskDetailList) {
-//					TaskDetails taskID = (TaskDetails) o;
-//					// iterate through all the generated tasks and performs the
-//					// job submisssion+monitoring
-//					Experiment experiment = (Experiment) experimentCatalog.get(
-//							ExperimentCatalogModelType.EXPERIMENT, experimentId);
-//					if (experiment == null) {
-//						log.errorId(experimentId, "Error retrieving the Experiment by the given experimentID: {}.",
-//                                experimentId);
-//						return false;
-//					}
-//					return orchestrator.validateExperiment(experiment,
-//							processModel, taskID).isSetValidationState();
-//				}
-			}
-
+            ExperimentModel experimentModel = (ExperimentModel)experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+			List<String> ids = experimentCatalog.getIds(ExperimentCatalogModelType.PROCESS,AbstractExpCatResource.ProcessConstants.EXPERIMENT_ID, experimentId);
+			if (ids != null && !ids.isEmpty()){
+                for (String processId : ids) {
+                    ProcessModel processModel = (ProcessModel) experimentCatalog.get(ExperimentCatalogModelType.PROCESS,processId);
+                    return orchestrator.validateExperiment(experimentModel,processModel).isSetValidationState();
+                }
+            }
 		} catch (OrchestratorException e) {
             log.error(experimentId, "Error while validating experiment", e);
 			throw new TException(e);
@@ -252,79 +214,58 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	}
 
 	@Override
-	public boolean launchTask(String taskId, String airavataCredStoreToken) throws TException {
-        // FIXME : should be launch process instead of the task
-//		try {
-//			TaskDetails taskData = (TaskDetails) experimentCatalog.get(
-//					ExperimentCatalogModelType.TASK_DETAIL, taskId);
-//			String applicationId = taskData.getApplicationId();
-//			if (applicationId == null) {
-//                log.errorId(taskId, "Application id shouldn't be null.");
-//				throw new OrchestratorException("Error executing the job, application id shouldn't be null.");
-//			}
-//			ApplicationDeploymentDescription applicationDeploymentDescription = getAppDeployment(taskData, applicationId);
-//            taskData.setApplicationDeploymentId(applicationDeploymentDescription.getAppDeploymentId());
-//			experimentCatalog.update(ExperimentCatalogModelType.TASK_DETAIL, taskData,taskData.getTaskID());
-//			List<Object> workflowNodeDetailList = experimentCatalog.get(ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL,
-//							org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.WorkflowNodeConstants.TASK_LIST, taskData);
-//			if (workflowNodeDetailList != null
-//					&& workflowNodeDetailList.size() > 0) {
-//				List<Object> experimentList = experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT,
-//								org.apache.airavata.registry.cpi.utils.Constants.FieldConstants.ExperimentConstants.WORKFLOW_NODE_LIST,
-//								(WorkflowNodeDetails) workflowNodeDetailList.get(0));
-//				if (experimentList != null && experimentList.size() > 0) {
-//					return orchestrator
-//							.launchExperiment(
-//									(Experiment) experimentList.get(0),
-//									(WorkflowNodeDetails) workflowNodeDetailList
-//											.get(0), taskData,airavataCredStoreToken);
-//				}
-//			}
-//		} catch (Exception e) {
-//            log.errorId(taskId, "Error while launching task ", e);
-//            throw new TException(e);
-//        }
-//        log.infoId(taskId, "No experiment found associated in task {}", taskId);
-        return false;
+	public boolean launchProcess(String processId, String airavataCredStoreToken) throws TException {
+		try {
+			ProcessModel processModel = (ProcessModel) experimentCatalog.get(
+					ExperimentCatalogModelType.PROCESS, processId);
+            String experimentId = processModel.getExperimentId();
+            ExperimentModel experimentModel = (ExperimentModel)experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+            String applicationId = processModel.getApplicationInterfaceId();
+			if (applicationId == null) {
+                log.error(processId, "Application interface id shouldn't be null.");
+				throw new OrchestratorException("Error executing the job, application interface id shouldn't be null.");
+			}
+            ApplicationDeploymentDescription applicationDeploymentDescription = getAppDeployment(processModel, applicationId);
+            processModel.setApplicationDeploymentId(applicationDeploymentDescription.getAppDeploymentId());
+			experimentCatalog.update(ExperimentCatalogModelType.PROCESS, processModel,processModel.getProcessId());
+		    return orchestrator.launchExperiment(experimentModel, processModel, airavataCredStoreToken);
+		} catch (Exception e) {
+            log.error(processId, "Error while launching process ", e);
+            throw new TException(e);
+        }
 	}
 
-//	private ApplicationDeploymentDescription getAppDeployment(
-//			TaskDetails taskData, String applicationId)
-//			throws AppCatalogException, OrchestratorException,
-//			ClassNotFoundException, ApplicationSettingsException,
-//			InstantiationException, IllegalAccessException {
-//		AppCatalog appCatalog = RegistryFactory.getAppCatalog();
-//		String selectedModuleId = getModuleId(appCatalog, applicationId);
-//		ApplicationDeploymentDescription applicationDeploymentDescription = getAppDeployment(
-//				appCatalog, taskData, selectedModuleId);
-//		return applicationDeploymentDescription;
-//	}
+    private ApplicationDeploymentDescription getAppDeployment(ProcessModel processModel, String applicationId)
+            throws AppCatalogException, OrchestratorException,
+            ClassNotFoundException, ApplicationSettingsException,
+            InstantiationException, IllegalAccessException {
+        String selectedModuleId = getModuleId(appCatalog, applicationId);
+        return getAppDeploymentForModule(processModel, selectedModuleId);
+    }
 
-//	private ApplicationDeploymentDescription getAppDeployment(
-//			AppCatalog appCatalog, TaskDetails taskData, String selectedModuleId)
-//			throws AppCatalogException, ClassNotFoundException,
-//			ApplicationSettingsException, InstantiationException,
-//			IllegalAccessException {
-//		Map<String, String> moduleIdFilter = new HashMap<String, String>();
-//		moduleIdFilter.put(AppCatAbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, selectedModuleId);
-//		if (taskData.getTaskScheduling()!=null && taskData.getTaskScheduling().getResourceHostId() != null) {
-//		    moduleIdFilter.put(AppCatAbstractResource.ApplicationDeploymentConstants.COMPUTE_HOST_ID, taskData.getTaskScheduling().getResourceHostId());
-//		}
-//		List<ApplicationDeploymentDescription> applicationDeployements = appCatalog.getApplicationDeployment().getApplicationDeployements(moduleIdFilter);
-//		Map<ComputeResourceDescription, ApplicationDeploymentDescription> deploymentMap = new HashMap<ComputeResourceDescription, ApplicationDeploymentDescription>();
-//		ComputeResource computeResource = appCatalog.getComputeResource();
-//		for (ApplicationDeploymentDescription deploymentDescription : applicationDeployements) {
-//			deploymentMap.put(computeResource.getComputeResource(deploymentDescription.getComputeHostId()),deploymentDescription);
-//		}
-//		List<ComputeResourceDescription> computeHostList = Arrays.asList(deploymentMap.keySet().toArray(new ComputeResourceDescription[]{}));
-//		Class<? extends HostScheduler> aClass = Class.forName(
-//				ServerSettings.getHostScheduler()).asSubclass(
-//				HostScheduler.class);
-//		HostScheduler hostScheduler = aClass.newInstance();
-//		ComputeResourceDescription ComputeResourceDescription = hostScheduler.schedule(computeHostList);
-//		ApplicationDeploymentDescription applicationDeploymentDescription = deploymentMap.get(ComputeResourceDescription);
-//		return applicationDeploymentDescription;
-//	}
+    private ApplicationDeploymentDescription getAppDeploymentForModule(ProcessModel processModel, String selectedModuleId)
+            throws AppCatalogException, ClassNotFoundException,
+            ApplicationSettingsException, InstantiationException,
+            IllegalAccessException {
+        Map<String, String> moduleIdFilter = new HashMap<String, String>();
+        moduleIdFilter.put(AppCatAbstractResource.ApplicationDeploymentConstants.APP_MODULE_ID, selectedModuleId);
+        if (processModel.getResourceSchedule() != null && processModel.getResourceSchedule().getResourceHostId() != null) {
+            moduleIdFilter.put(AppCatAbstractResource.ApplicationDeploymentConstants.COMPUTE_HOST_ID, processModel.getResourceSchedule().getResourceHostId());
+        }
+        List<ApplicationDeploymentDescription> applicationDeployements = appCatalog.getApplicationDeployment().getApplicationDeployements(moduleIdFilter);
+        Map<ComputeResourceDescription, ApplicationDeploymentDescription> deploymentMap = new HashMap<ComputeResourceDescription, ApplicationDeploymentDescription>();
+        ComputeResource computeResource = appCatalog.getComputeResource();
+        for (ApplicationDeploymentDescription deploymentDescription : applicationDeployements) {
+            deploymentMap.put(computeResource.getComputeResource(deploymentDescription.getComputeHostId()), deploymentDescription);
+        }
+        List<ComputeResourceDescription> computeHostList = Arrays.asList(deploymentMap.keySet().toArray(new ComputeResourceDescription[]{}));
+        Class<? extends HostScheduler> aClass = Class.forName(
+                ServerSettings.getHostScheduler()).asSubclass(
+                HostScheduler.class);
+        HostScheduler hostScheduler = aClass.newInstance();
+        ComputeResourceDescription ComputeResourceDescription = hostScheduler.schedule(computeHostList);
+        return deploymentMap.get(ComputeResourceDescription);
+    }
 
 	private String getModuleId(AppCatalog appCatalog, String applicationId)
 			throws AppCatalogException, OrchestratorException {
@@ -470,14 +411,6 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 //        }
     }
 
-    public synchronized RabbitMQProcessPublisher getRabbitMQProcessPublisher() throws Exception {
-        if (rabbitMQProcessPublisher == null) {
-            rabbitMQProcessPublisher = new RabbitMQProcessPublisher();
-        }
-        return rabbitMQProcessPublisher;
-    }
-
-
     private class SingleAppExperimentRunner implements Runnable {
 
         String experimentId;
@@ -495,101 +428,46 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             }
         }
 
-        // FIXME
         private boolean launchSingleAppExperiment() throws TException {
-//            ExperimentModel experiment = null;
-//            try {
-//                List<String> ids = experimentCatalog.getIds(ExperimentCatalogModelType.WORKFLOW_NODE_DETAIL, WorkflowNodeConstants.EXPERIMENT_ID, experimentId);
-//                for (String workflowNodeId : ids) {
-////                WorkflowNodeDetails workflowNodeDetail = (WorkflowNodeDetails) registry.get(RegistryModelType.WORKFLOW_NODE_DETAIL, workflowNodeId);
-//                    List<Object> taskDetailList = experimentCatalog.get(ExperimentCatalogModelType.TASK_DETAIL, TaskDetailConstants.NODE_ID, workflowNodeId);
-//                    for (Object o : taskDetailList) {
-//                        TaskDetails taskData = (TaskDetails) o;
-//                        //iterate through all the generated tasks and performs the job submisssion+monitoring
-//                        experiment = (Experiment) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
-//                        if (experiment == null) {
-//                            log.errorId(experimentId, "Error retrieving the Experiment by the given experimentID: {}", experimentId);
-//                            return false;
-//                        }
-//                        String gatewayId = null;
-//                        CredentialReader credentialReader = GFacUtils.getCredentialReader();
-//                        if (credentialReader != null) {
-//                            try {
-//                                gatewayId = credentialReader.getGatewayID(airavataCredStoreToken);
-//                            } catch (Exception e) {
-//                                log.error(e.getLocalizedMessage());
-//                            }
-//                        }
-//                        if (gatewayId == null || gatewayId.isEmpty()) {
-//                            gatewayId = ServerSettings.getDefaultUserGateway();
-//                        }
-//                        ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.LAUNCHED,
-//                                experimentId,
-//                                gatewayId);
-//                        String messageId = AiravataUtils.getId("EXPERIMENT");
-//                        MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT, messageId, gatewayId);
-//                        messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-//                        publisher.publish(messageContext);
-//                        experimentCatalog.update(ExperimentCatalogModelType.TASK_DETAIL, taskData, taskData.getTaskID());
-//                        //launching the experiment
-//                        launchTask(taskData.getTaskID(), airavataCredStoreToken);
-//                    }
-//                }
-//
-//            } catch (Exception e) {
-//                // Here we really do not have to do much because only potential failure can happen
-//                // is in gfac, if there are errors in gfac, it will handle the experiment/task/job statuses
-//                // We might get failures in registry access before submitting the jobs to gfac, in that case we
-//                // leave the status of these as created.
-//                ExperimentStatus status = new ExperimentStatus();
-//                status.setExperimentState(ExperimentState.FAILED);
-//                status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
-//                experiment.setExperimentStatus(status);
-//                try {
-//                    experimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT_STATUS, status, experimentId);
-//                } catch (RegistryException e1) {
-//                    log.errorId(experimentId, "Error while updating experiment status to " + status.toString(), e);
-//                    throw new TException(e);
-//                }
-//                log.errorId(experimentId, "Error while updating task status, hence updated experiment status to " + status.toString(), e);
-//                throw new TException(e);
-//            }
+            try {
+                List<String> processIds = experimentCatalog.getIds(ExperimentCatalogModelType.PROCESS, AbstractExpCatResource.ProcessConstants.EXPERIMENT_ID, experimentId);
+                for (String processId : processIds) {
+                    String gatewayId = null;
+                    CredentialReader credentialReader = GFacUtils.getCredentialReader();
+                    if (credentialReader != null) {
+                        try {
+                            gatewayId = credentialReader.getGatewayID(airavataCredStoreToken);
+                        } catch (Exception e) {
+                            log.error(e.getLocalizedMessage());
+                        }
+                    }
+                    if (gatewayId == null || gatewayId.isEmpty()) {
+                        gatewayId = ServerSettings.getDefaultUserGateway();
+                    }
+                    ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.LAUNCHED,
+                            experimentId,
+                            gatewayId);
+                    String messageId = AiravataUtils.getId("EXPERIMENT");
+                    MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT, messageId, gatewayId);
+                    messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+                    publisher.publish(messageContext);
+                    launchProcess(processId, airavataCredStoreToken);
+                }
+
+            } catch (Exception e) {
+                ExperimentStatus status = new ExperimentStatus();
+                status.setState(ExperimentState.FAILED);
+                status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+                try {
+                    experimentCatalog.update(ExperimentCatalogModelType.EXPERIMENT_STATUS, status, experimentId);
+                } catch (RegistryException e1) {
+                    log.error(experimentId, "Error while updating experiment status to " + status.toString(), e);
+                    throw new TException(e);
+                }
+                log.error(experimentId, "Error while updating task status, hence updated experiment status to " + status.toString(), e);
+                throw new TException(e);
+            }
             return true;
         }
     }
-
-    private class ProcessConsumer implements Runnable, MessageHandler{
-
-
-        @Override
-        public void run() {
-            try {
-                rabbitMQProcessConsumer.listen(this);
-            } catch (AiravataException e) {
-                log.error("Error while listen to the RabbitMQProcessConsumer");
-            }
-        }
-
-        @Override
-        public Map<String, Object> getProperties() {
-            Map<String, Object> props = new HashMap<String, Object>();
-            props.put(MessagingConstants.RABBIT_QUEUE, RabbitMQProcessPublisher.PROCESS);
-            props.put(MessagingConstants.RABBIT_ROUTING_KEY, RabbitMQProcessPublisher.PROCESS);
-            return props;
-        }
-
-        @Override
-        public void onMessage(MessageContext msgCtx) {
-            TBase event = msgCtx.getEvent();
-            if (event instanceof ProcessSubmitEvent) {
-                ProcessSubmitEvent processSubmitEvent = (ProcessSubmitEvent) event;
-                try {
-                    launchTask(processSubmitEvent.getTaskId(), processSubmitEvent.getCredentialToken());
-                } catch (TException e) {
-                    log.error("Error while launching task : " + processSubmitEvent.getTaskId());
-                }
-            }
-        }
-    }
-
 }

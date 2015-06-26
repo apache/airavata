@@ -336,6 +336,14 @@ public class ThriftDataModelConversion {
             processModel.setProcessDetail(processResource.getProcessDetail());
             processModel.setApplicationInterfaceId(processResource.getApplicationInterfaceId());
             processModel.setTaskDag(processResource.getTaskDag());
+            processModel.setGatewayExecutionId(processResource.getGatewayExecutionId());
+            processModel.setApplicationInterfaceId(processResource.getApplicationInterfaceId());
+            processModel.setComputeResourceId(processResource.getComputeResourceId());
+            processModel.setEnableEmailNotification(processResource.getEnableEmailNotification());
+            if (processModel.isEnableEmailNotification()){
+                String notificationEmails = processResource.getEmailAddresses();
+                processModel.setEmailAddresses(getEmailAddresses(notificationEmails.split(",")));
+            }
 
             processModel.setProcessInputs(getProcessInputs(processResource.getProcessInputs()));
             processModel.setProcessOutputs(getProcessOutputs(processResource.getProcessOutputs()));

@@ -25,7 +25,7 @@ import org.apache.airavata.gfac.core.context.ProcessContext;
 public interface GFacEngine {
 
 
-	public ProcessContext populateProcessContext(String experimentId, String processId, String gatewayId, String tokenId) throws GFacException;
+	public ProcessContext populateProcessContext(String processId, String gatewayId, String tokenId) throws GFacException;
 
 	public void createTaskChain(ProcessContext processContext) throws GFacException;
 

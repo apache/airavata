@@ -25,8 +25,6 @@ import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.error.ValidationResults;
 import org.apache.airavata.model.error.ValidatorResult;
 import org.apache.airavata.model.process.ProcessModel;
-import org.apache.airavata.model.task.TaskModel;
-import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.experiment.*;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.impl.GFACPassiveJobSubmitter;
@@ -67,14 +65,14 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         }
     }
 
-    public boolean launchExperiment(ExperimentModel experiment, ProcessModel processModel, TaskModel task,String tokenId) throws OrchestratorException {
+    public boolean launchExperiment(ExperimentModel experiment, ProcessModel processModel, String tokenId) throws OrchestratorException {
         // we give higher priority to userExperimentID
         String experimentId = experiment.getExperimentId();
-        String taskId = task.getTaskId();
+        String processId = processModel.getProcessId();
         // creating monitorID to register with monitoring queue
         // this is a special case because amqp has to be in place before submitting the job
         try {
-            return jobSubmitter.submit(experimentId, taskId,tokenId);
+            return jobSubmitter.submit(experimentId, processId, tokenId);
         } catch (Exception e) {
             throw new OrchestratorException("Error launching the job", e);
         }
@@ -88,9 +86,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
      * @return
      * @throws OrchestratorException
      */
-    public List<TaskModel> createTasks(String experimentId) throws OrchestratorException {
+    public List<ProcessModel> createProcesses(String experimentId) throws OrchestratorException {
         ExperimentModel experiment = null;
-        List<TaskModel> tasks = new ArrayList<TaskModel>();
+        List<ProcessModel> processModels = new ArrayList<ProcessModel>();
         // FIXME : should change as create processes
 //        try {
 //            Registry newRegistry = orchestratorContext.getNewRegistry();
@@ -109,16 +107,16 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
 //
 //                TaskDetails taskDetails = ExperimentModelUtil.cloneTaskFromExperiment(experiment);
 //                taskDetails.setTaskID((String) newRegistry.getExperimentCatalog().add(ExpCatChildDataType.TASK_DETAIL, taskDetails, nodeID));
-//                tasks.add(taskDetails);
+//                processModels.add(taskDetails);
 //            }
 
 //        } catch (Exception e) {
 //            throw new OrchestratorException("Error during creating a task");
 //        }
-        return tasks;
+        return processModels;
     }
 
-    public ValidationResults validateExperiment(ExperimentModel experiment, ProcessModel processModel, TaskModel taskModel) throws OrchestratorException,LaunchValidationException {
+    public ValidationResults validateExperiment(ExperimentModel experiment, ProcessModel processModel) throws OrchestratorException,LaunchValidationException {
         org.apache.airavata.model.error.ValidationResults validationResults = new org.apache.airavata.model.error.ValidationResults();
         validationResults.setValidationState(true); // initially making it to success, if atleast one failed them simply mark it failed.
         String errorMsg = "Validation Errors : ";
@@ -128,7 +126,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                 try {
                     Class<? extends JobMetadataValidator> vClass = Class.forName(validator.trim()).asSubclass(JobMetadataValidator.class);
                     JobMetadataValidator jobMetadataValidator = vClass.newInstance();
-                    validationResults = jobMetadataValidator.validate(experiment, processModel, taskModel);
+                    validationResults = jobMetadataValidator.validate(experiment, processModel);
                     if (validationResults.isValidationState()) {
                         logger.info("Validation of " + validator + " is SUCCESSFUL");
                     } else {
@@ -147,8 +145,8 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
                             ErrorModel details = new ErrorModel();
                             details.setActualErrorMessage(errorMsg);
                             details.setCreationTime(Calendar.getInstance().getTimeInMillis());
-                            orchestratorContext.getNewRegistry().getExperimentCatalog().add(ExpCatChildDataType.TASK_ERROR, details,
-                                    taskModel.getTaskId());
+                            orchestratorContext.getNewRegistry().getExperimentCatalog().add(ExpCatChildDataType.PROCESS_ERROR, details,
+                                    processModel.getProcessId());
                         } catch (RegistryException e) {
                             logger.error("Error while saving error details to registry", e);
                         }
@@ -177,7 +175,7 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         }
     }
 
-    public void cancelExperiment(ExperimentModel experiment, ProcessModel processModel, TaskModel task, String tokenId)
+    public void cancelExperiment(ExperimentModel experiment, ProcessModel processModel, String tokenId)
             throws OrchestratorException {
         // FIXME
 //        List<JobDetails> jobDetailsList = task.getJobDetailsList();

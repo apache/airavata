@@ -122,6 +122,7 @@ public class TaskStatusResource extends AbstractExpCatResource {
             if(taskStatus == null){
                 taskStatus = new TaskStatus();
             }
+            taskStatus.setStatusId(statusId);
             taskStatus.setTaskId(taskId);
             taskStatus.setState(state);
             taskStatus.setReason(reason);

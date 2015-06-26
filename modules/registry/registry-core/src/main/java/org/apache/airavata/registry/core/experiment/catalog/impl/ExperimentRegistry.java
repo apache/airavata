@@ -38,6 +38,7 @@ import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
 import org.apache.airavata.registry.core.experiment.catalog.resources.*;
 import org.apache.airavata.registry.core.experiment.catalog.utils.ThriftDataModelConversion;
+import org.apache.airavata.registry.cpi.CompositeIdentifier;
 import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.ResultOrderType;
 import org.apache.airavata.registry.cpi.utils.Constants;
@@ -252,6 +253,18 @@ public class ExperimentRegistry {
             processResource.setProcessDetail(process.getProcessDetail());
             processResource.setApplicationInterfaceId(process.getApplicationInterfaceId());
             processResource.setTaskDag(process.getTaskDag());
+            processResource.setGatewayExecutionId(process.getGatewayExecutionId());
+            processResource.setComputeResourceId(process.getComputeResourceId());
+            processResource.setApplicationInterfaceId(process.getApplicationInterfaceId());
+            if(process.isEnableEmailNotification()){
+                processResource.setEnableEmailNotification(true);
+                if(process.getEmailAddresses() != null){
+                    processResource.setEmailAddresses(StringUtils.join(process.getEmailAddresses(), ","));
+                }
+            }else{
+                processResource.setEnableEmailNotification(false);
+            }
+
             processResource.save();
 
             if(process.getResourceSchedule() != null) {
@@ -394,7 +407,8 @@ public class ExperimentRegistry {
     public String addTask(TaskModel task, String processID) throws RegistryException {
         try {
             TaskResource taskResource = new TaskResource();
-            taskResource.setParentProcessId(getProcessID(processID));
+            taskResource.setTaskId(getTaskID(processID));
+            taskResource.setParentProcessId(task.getParentProcessId());
             taskResource.setTaskType(task.getTaskType().toString());
             taskResource.setCreationTime(AiravataUtils.getTime(task.getCreationTime()));
             taskResource.setLastUpdateTime(AiravataUtils.getTime(task.getLastUpdateTime()));
@@ -463,7 +477,7 @@ public class ExperimentRegistry {
     public String addJob(JobModel job, String taskId) throws RegistryException {
         try {
             JobResource jobResource = new JobResource();
-            jobResource.setJobId(getJobID(taskId));
+            jobResource.setJobId(job.getJobId());
             jobResource.setTaskId(taskId);
             jobResource.setJobDescription(job.getJobDescription());
             jobResource.setCreationTime(AiravataUtils.getTime(job.getCreationTime()));
@@ -481,7 +495,9 @@ public class ExperimentRegistry {
         return taskId;
     }
 
-    public String addJobStatus(JobStatus jobStatus, String jobID) throws RegistryException {
+    public String addJobStatus(JobStatus jobStatus, CompositeIdentifier cis) throws RegistryException {
+        String taskID = (String)cis.getTopLevelIdentifier();
+        String jobID = (String)cis.getSecondLevelIdentifier();
         try {
             JobResource jobResource = new JobResource();
             jobResource.setJobId(jobID);
@@ -492,6 +508,7 @@ public class ExperimentRegistry {
             if (isValidStatusTransition(ProcessState.valueOf(status.getState()), jobStatus.getJobState())) {
                 status.setStatusId(getStatusID(jobID));
                 status.setJobId(jobID);
+                status.setTaskId(taskID);
                 status.setTimeOfStateChange(AiravataUtils.getTime(jobStatus.getTimeOfStateChange()));
                 status.setState(jobStatus.getJobState().toString());
                 status.setReason(jobStatus.getReason());
@@ -659,6 +676,18 @@ public class ExperimentRegistry {
             processResource.setProcessDetail(process.getProcessDetail());
             processResource.setApplicationInterfaceId(process.getApplicationInterfaceId());
             processResource.setTaskDag(process.getTaskDag());
+            processResource.setGatewayExecutionId(process.getGatewayExecutionId());
+            processResource.setComputeResourceId(process.getComputeResourceId());
+            processResource.setApplicationInterfaceId(process.getApplicationInterfaceId());
+            if(process.isEnableEmailNotification()){
+                processResource.setEnableEmailNotification(true);
+                if(process.getEmailAddresses() != null){
+                    processResource.setEmailAddresses(StringUtils.join(process.getEmailAddresses(), ","));
+                }
+            }else{
+                processResource.setEnableEmailNotification(false);
+            }
+
             processResource.save();
 
             if(process.getResourceSchedule() != null) {
@@ -778,6 +807,7 @@ public class ExperimentRegistry {
         try {
             ProcessResource processResource = new ProcessResource();
             TaskResource taskResource = processResource.getTask(taskID);
+            taskResource.setTaskId(task.getTaskId());
             taskResource.setParentProcessId(task.getParentProcessId());
             taskResource.setTaskType(task.getTaskType().toString());
             taskResource.setCreationTime(AiravataUtils.getTime(task.getCreationTime()));
@@ -807,9 +837,12 @@ public class ExperimentRegistry {
         return addTaskError(taskError, taskID);
     }
 
-    public String updateJob(JobModel job, String jobId) throws RegistryException {
+    public String updateJob(JobModel job, CompositeIdentifier cis) throws RegistryException {
+        String taskId = (String) cis.getTopLevelIdentifier();
+        String jobId = (String) cis.getSecondLevelIdentifier();
         try {
             TaskResource taskResource = new TaskResource();
+            taskResource.setTaskId(taskId);
             JobResource jobResource = taskResource.getJob(jobId);
             jobResource.setJobId(jobId);
             jobResource.setTaskId(job.getTaskId());
@@ -829,12 +862,11 @@ public class ExperimentRegistry {
         return jobId;
     }
 
-    public String updateJobStatus(JobStatus jobStatus, String jobID) throws RegistryException {
-        return addJobStatus(jobStatus, jobID);
+    public String updateJobStatus(JobStatus jobStatus, CompositeIdentifier cis) throws RegistryException {
+        return addJobStatus(jobStatus, cis);
     }
 
 
-    //TODO
     public void updateExperimentField(String expID, String fieldName, Object value) throws RegistryException {
         try {
             ExperimentResource experiment = gatewayResource.getExperiment(expID);
@@ -903,20 +935,6 @@ public class ExperimentRegistry {
             ExperimentResource resource = gatewayResource.getExperiment(expId);
             if (fieldName == null) {
                 return ThriftDataModelConversion.getExperiment(resource);
-            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_NAME)) {
-                return resource.getUserName();
-            }else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY_ID)) {
-                return resource.getGatewayId();
-            }else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.GATEWAY_EXECUTION_ID)) {
-                return resource.getGatewayExecutionId();
-            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME)) {
-                return resource.getExperimentName();
-            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.DESCRIPTION)) {
-                return resource.getDescription();
-            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXECUTION_ID)) {
-                return resource.getExecutionId();
-            } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.PROJECT_ID)) {
-                return resource.getProjectId();
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_INPUTS)) {
                 return ThriftDataModelConversion.getExpInputs(resource.getExperimentInputs());
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_OUTPUTS)) {
@@ -928,7 +946,7 @@ public class ExperimentRegistry {
             } else if (fieldName.equals(Constants.FieldConstants.ExperimentConstants.USER_CONFIGURATION_DATA)) {
                 return ThriftDataModelConversion.getUserConfigData(resource.getUserConfigurationDataResource());
             } else {
-                logger.error("Unsupported field name for experiment basic data..");
+                logger.error("Unsupported field name for experiment data..");
             }
         } catch (Exception e) {
             logger.error("Error while getting experiment info...", e);
@@ -959,12 +977,6 @@ public class ExperimentRegistry {
             UserConfigurationDataResource userConfigData = resource.getUserConfigurationDataResource();
             if (fieldName == null) {
                 return ThriftDataModelConversion.getUserConfigData(userConfigData);
-            } else if (fieldName.equals(Constants.FieldConstants.UserConfigurationDataConstants.AIRAVATA_AUTO_SCHEDULE)) {
-                return userConfigData.getAiravataAutoSchedule();
-            } else if (fieldName.equals(Constants.FieldConstants.UserConfigurationDataConstants.OVERRIDE_MANUAL_PARAMS)) {
-                return userConfigData.getOverrideManualScheduledParams();
-            } else if (fieldName.equals(Constants.FieldConstants.UserConfigurationDataConstants.SHARE_EXP)) {
-                return userConfigData.getShareExperimentPublically();
             } else if (fieldName.equals(Constants.FieldConstants.UserConfigurationDataConstants.COMPUTATIONAL_RESOURCE_SCHEDULING)){
                 return ThriftDataModelConversion.getComputationalResourceScheduling(userConfigData);
             } else {
@@ -977,15 +989,24 @@ public class ExperimentRegistry {
         return null;
     }
 
-    //Todo
     public Object getProcess(String processId, String fieldName) throws RegistryException {
         try {
             ExperimentResource experimentResource = new ExperimentResource();
             ProcessResource resource = experimentResource.getProcess(processId);
             if (fieldName == null) {
                 return ThriftDataModelConversion.getProcesModel(resource);
+            } else if (fieldName.equals(Constants.FieldConstants.ProcessConstants.PROCESS_ERROR)) {
+                return ThriftDataModelConversion.getErrorModel(resource.getProcessError());
+            } else if (fieldName.equals(Constants.FieldConstants.ProcessConstants.PROCESS_STATUS)) {
+                return ThriftDataModelConversion.getProcessStatus(resource.getProcessStatus());
+            } else if (fieldName.equals(Constants.FieldConstants.ProcessConstants.PROCESS_INPUTS)) {
+                return ThriftDataModelConversion.getProcessInputs(resource.getProcessInputs());
+            } else if (fieldName.equals(Constants.FieldConstants.ProcessConstants.PROCESS_OUTPUTS)) {
+                return ThriftDataModelConversion.getErrorModel(resource.getProcessOutputs());
+            } else if (fieldName.equals(Constants.FieldConstants.ProcessConstants.PROCESS_RESOURCE_SCHEDULE)) {
+                return ThriftDataModelConversion.getProcessResourceSchedule(resource.getProcessResourceSchedule());
             } else {
-                logger.error("Unsupported field name for process basic data..");
+                logger.error("Unsupported field name for process data..");
             }
         }catch (Exception e) {
             logger.error("Error while getting process data..", e);
@@ -994,24 +1015,24 @@ public class ExperimentRegistry {
         return null;
     }
 
-    public Object getProcessError(String identifier) {
-        return null;
+    public Object getProcessError(String processId) throws RegistryException {
+        return getProcess(processId, Constants.FieldConstants.ProcessConstants.PROCESS_ERROR);
     }
 
-    public Object getProcessStatus(String identifier) {
-        return null;
+    public Object getProcessStatus(String processId) throws RegistryException {
+        return getProcess(processId, Constants.FieldConstants.ProcessConstants.PROCESS_STATUS);
     }
 
-    public Object getProcessInputs(String identifier) {
-        return null;
+    public Object getProcessInputs(String processId) throws RegistryException {
+        return getProcess(processId, Constants.FieldConstants.ProcessConstants.PROCESS_INPUTS);
     }
 
-    public Object getProcessOutputs(String identifier) {
-        return null;
+    public Object getProcessOutputs(String processId) throws RegistryException {
+        return getProcess(processId, Constants.FieldConstants.ProcessConstants.PROCESS_OUTPUTS);
     }
 
-    public Object getProcessResourceSchedule(String identifier, Object o) {
-        return null;
+    public Object getProcessResourceSchedule(String processId) throws RegistryException {
+        return getProcess(processId, Constants.FieldConstants.ProcessConstants.PROCESS_RESOURCE_SCHEDULE);
     }
 
     public Object getTask(String taskId, String fieldName) throws RegistryException {
@@ -1020,8 +1041,12 @@ public class ExperimentRegistry {
             TaskResource resource = processResource.getTask(taskId);
             if (fieldName == null) {
                 return ThriftDataModelConversion.getTaskModel(resource);
+            } else if (fieldName.equals(Constants.FieldConstants.TaskConstants.TASK_ERROR)) {
+                return ThriftDataModelConversion.getErrorModel(resource.getTaskError());
+            } else if (fieldName.equals(Constants.FieldConstants.TaskConstants.TASK_STATUS)) {
+                return ThriftDataModelConversion.getTaskStatus(resource.getTaskStatus());
             } else {
-                logger.error("Unsupported field name for task basic data..");
+                logger.error("Unsupported field name for task data..");
             }
         }catch (Exception e) {
             logger.error("Error while getting task data..", e);
@@ -1030,20 +1055,25 @@ public class ExperimentRegistry {
         return null;
     }
 
-    public Object getTaskError(String identifier) {
-        return null;
+    public Object getTaskError(String taskId) throws RegistryException {
+        return getTask(taskId, Constants.FieldConstants.TaskConstants.TASK_ERROR);
     }
 
-    public Object getTaskStatus(String identifier) {
-        return null;
+    public Object getTaskStatus(String taskId) throws RegistryException {
+        return getTask(taskId, Constants.FieldConstants.TaskConstants.TASK_STATUS);
     }
 
-    public Object getJob(String jobId, String fieldName) throws RegistryException {
+    public Object getJob(CompositeIdentifier cis, String fieldName) throws RegistryException {
+        String taskID = (String) cis.getTopLevelIdentifier();
+        String jobId = (String) cis.getSecondLevelIdentifier();
         try {
             TaskResource taskResource = new TaskResource();
+            taskResource.setTaskId(taskID);
             JobResource resource = taskResource.getJob(jobId);
             if (fieldName == null) {
                 return ThriftDataModelConversion.getJobModel(resource);
+            } else if (fieldName.equals(Constants.FieldConstants.JobConstants.JOB_STATUS)) {
+                return ThriftDataModelConversion.getJobStatus(resource.getJobStatus());
             } else {
                 logger.error("Unsupported field name for job basic data..");
             }
@@ -1054,8 +1084,8 @@ public class ExperimentRegistry {
         return null;
     }
 
-    public Object getJobStatus(String identifier) {
-        return null;
+    public Object getJobStatus(CompositeIdentifier cis) throws RegistryException {
+        return getJob(cis, Constants.FieldConstants.JobConstants.JOB_STATUS);
     }
 
 
@@ -1096,17 +1126,70 @@ public class ExperimentRegistry {
         return experiments;
     }
 
-    //Todo
-    public List<ProcessModel> getProcessList(String fieldName, Object value) {
-        return null;
+    public List<ProcessModel> getProcessList(String fieldName, Object value) throws RegistryException {
+        List<ProcessModel> processes = new ArrayList<ProcessModel>();
+        try {
+            if (fieldName.equals(Constants.FieldConstants.ProcessConstants.EXPERIMENT_ID)) {
+                ExperimentResource experimentResource = new ExperimentResource();
+                experimentResource.setExperimentId((String) value);
+                List<ProcessResource> resources = experimentResource.getProcessList();
+                for (ProcessResource processResource : resources) {
+                    ProcessModel processModel = ThriftDataModelConversion.getProcesModel(processResource);
+                    processes.add(processModel);
+                }
+                return processes;
+            } else {
+                logger.error("Unsupported field name to retrieve process list...");
+            }
+        } catch (Exception e) {
+            logger.error("Error while getting process list...", e);
+            throw new RegistryException(e);
+        }
+        return processes;
     }
 
-    public List<TaskModel> getTaskList(String fieldName, Object value) {
-        return null;
+    public List<TaskModel> getTaskList(String fieldName, Object value) throws RegistryException {
+        List<TaskModel> tasks = new ArrayList<TaskModel>();
+        try {
+            if (fieldName.equals(Constants.FieldConstants.TaskConstants.PARENT_PROCESS_ID)) {
+                ProcessResource processResource = new ProcessResource();
+                processResource.setProcessId((String) value);
+                List<TaskResource> resources = processResource.getTaskList();
+                for (TaskResource taskResource : resources) {
+                    TaskModel taskModel = ThriftDataModelConversion.getTaskModel(taskResource);
+                    tasks.add(taskModel);
+                }
+                return tasks;
+            } else {
+                logger.error("Unsupported field name to retrieve task list...");
+            }
+        } catch (Exception e) {
+            logger.error("Error while getting task list...", e);
+            throw new RegistryException(e);
+        }
+        return tasks;
     }
 
-    public List<JobModel> getJobList(String fieldName, Object value) {
-        return null;
+    public List<JobModel> getJobList(String fieldName, Object value) throws RegistryException {
+        List<JobModel> jobs = new ArrayList<JobModel>();
+        try {
+            if (fieldName.equals(Constants.FieldConstants.JobConstants.TASK_ID)) {
+                TaskResource taskResource = new TaskResource();
+                taskResource.setTaskId((String) value);
+                List<JobResource> resources = taskResource.getJobList();
+                for (JobResource jobResource : resources) {
+                    JobModel jobModel = ThriftDataModelConversion.getJobModel(jobResource);
+                    jobs.add(jobModel);
+                }
+                return jobs;
+            } else {
+                logger.error("Unsupported field name to retrieve job list...");
+            }
+        } catch (Exception e) {
+            logger.error("Error while getting job list...", e);
+            throw new RegistryException(e);
+        }
+        return jobs;
     }
 
     public List<ExperimentModel> getExperimentList(String fieldName, Object value, int limit, int offset,
@@ -1353,9 +1436,12 @@ public class ExperimentRegistry {
         }
     }
 
-    public void removeJob(String jobId) throws RegistryException {
+    public void removeJob(CompositeIdentifier cis) throws RegistryException {
         try {
+            String taskId = (String) cis.getTopLevelIdentifier();
+            String jobId = (String) cis.getSecondLevelIdentifier();
             TaskResource taskResource = new TaskResource();
+            taskResource.setTaskId(taskId);
             taskResource.remove(ResourceType.JOB, jobId);
         } catch (Exception e) {
             logger.error("Error while removing task details..", e);
@@ -1416,9 +1502,12 @@ public class ExperimentRegistry {
     }
 
 
-    public boolean isJobExist(String jobId) throws RegistryException {
+    public boolean isJobExist(CompositeIdentifier cis) throws RegistryException {
+        String taskId = (String) cis.getTopLevelIdentifier();
+        String jobId = (String) cis.getSecondLevelIdentifier();
         try {
             TaskResource taskResource = new TaskResource();
+            taskResource.setTaskId(taskId);
             return taskResource.isExists(ResourceType.JOB, jobId);
         } catch (Exception e) {
             logger.error("Error while retrieving job.....", e);
@@ -1439,11 +1528,6 @@ public class ExperimentRegistry {
     public String getTaskID(String processId) {
         String taskId = processId.replaceAll("\\s", "");
         return taskId + "_" + UUID.randomUUID();
-    }
-
-    public String getJobID(String taskId) {
-        String jobId = taskId.replaceAll("\\s", "");
-        return jobId + "_" + UUID.randomUUID();
     }
 
     public String getStatusID(String parentId) {
@@ -1502,37 +1586,40 @@ public class ExperimentRegistry {
             if (nextState == null) {
                 return false;
             }
-            //TODO
-            switch (oldState) {
-                case CREATED:
-                    return true;
-                default:
-                    return false;
-            }
+            return true;
+//            TODO - need the state machine to complete these data
+//            switch (oldState) {
+//                case CREATED:
+//                    return true;
+//                default:
+//                    return false;
+//            }
         } else if (object1 instanceof TaskState && object2 instanceof TaskState) {
             TaskState oldState = (TaskState) object1;
             TaskState nextState = (TaskState) object2;
             if (nextState == null) {
                 return false;
             }
-            //TODO
-            switch (oldState) {
-                case CREATED:
-                    return true;
-                default:
-                    return false;
-            }
+            return true;
+//            TODO - need the state machine to complete these data
+//            switch (oldState) {
+//                case CREATED:
+//                    return true;
+//                default:
+//                    return false;
+//            }
         }else if (object1 instanceof JobState && object2 instanceof JobState) {
             JobState oldState = (JobState) object1;
             JobState nextState = (JobState) object2;
             if (nextState == null) {
                 return false;
             }
-            //TODO
-            switch (oldState) {
-                default:
-                    return false;
-            }
+            return true;
+//            TODO - need the state machine to complete these data
+//            switch (oldState) {
+//                default:
+//                    return false;
+//            }
         }
         return false;
     }

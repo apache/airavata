@@ -36,7 +36,7 @@ import java.util.List;
 public class ExperimentStatusValidator implements JobMetadataValidator {
     private static Logger log = LoggerFactory.getLogger(ExperimentStatusValidator.class);
 
-    public ValidationResults validate(ExperimentModel experiment, ProcessModel processModel, TaskModel taskModel) {
+    public ValidationResults validate(ExperimentModel experiment, ProcessModel processModel) {
         String error = "During the validation step experiment status should be CREATED, But this experiment status is : ";
         ValidationResults validationResults = new ValidationResults();
         validationResults.setValidationState(true);

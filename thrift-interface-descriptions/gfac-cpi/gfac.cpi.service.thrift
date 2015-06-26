@@ -25,7 +25,7 @@
 
 namespace java org.apache.airavata.gfac.cpi
 
-const string GFAC_CPI_VERSION = "0.13.0"
+const string GFAC_CPI_VERSION = "0.16.0"
 
 service GfacService {
 
@@ -33,36 +33,25 @@ service GfacService {
   string getGFACServiceVersion(),
 
     /**
-     * After creating the experiment Data and Task Data in the orchestrator
-     * Orchestrator has to invoke this operation for each Task per experiment to run
-     * the actual Job related actions.
-     *
-     * @param experimentID
-     * @param taskID
-     * @param gatewayId:
-     *  The GatewayId is inferred from security context and passed onto gfac.
+     * @param processId
+     * @param gatewayId: The GatewayId is inferred from security context and passed onto gfac.
+     * @param tokenId
      * @return sucess/failure
      *
     **/
-  bool submitJob (1: required string experimentId,
-                  2: required string taskId
-                  3: required string gatewayId,
-                  4: required string tokenId)
+  bool submitProcess (1: required string processId,
+                      2: required string gatewayId,
+                      3: required string tokenId)
 
     /**
      *
-     * Terminate the running job.At this point user
-     * does not have to know the job ID so in the argument
-     * we do not make it to required jobID to provide.
-     *
-     *
-     * @param experimentID
-     * @param taskID
+     * @param processId
+     * @param gatewayId: The GatewayId is inferred from security context and passed onto gfac.
+     * @param tokenId
      * @return sucess/failure
      *
     **/
-  bool cancelJob (1: required string experimentId,
-                  2: required string taskId,
-                  3: required string gatewayId,
-                  4: required string tokenId)
+  bool cancelProcess (1: required string processId,
+                      2: required string gatewayId,
+                      3: required string tokenId)
 }

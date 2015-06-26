@@ -26,7 +26,7 @@
 include "../airavata-api/airavata_errors.thrift"
 namespace java org.apache.airavata.orchestrator.cpi
 
-const string ORCHESTRATOR_CPI_VERSION = "0.13.0"
+const string ORCHESTRATOR_CPI_VERSION = "0.16.0"
 
 service OrchestratorService {
 
@@ -46,15 +46,15 @@ service OrchestratorService {
 
     /**
      * In order to run single applications users should create an associating 
-     * WorkflowNodeDetails and a TaskDetails for it and hand it over for execution
+     * process and hand it over for execution
      * along with a credential store token for authentication
      *
-     * @param taskId
+     * @param processId
      * @param airavataCredStoreToken
      * @return sucess/failure
      *
     **/
-  bool launchTask (1: required string taskId, 2: required string airavataCredStoreToken),
+  bool launchProcess (1: required string processId, 2: required string airavataCredStoreToken),
 
     /**
      *
