@@ -2,4 +2,24 @@ Apache Airavata Thrift PHP Software Development Kit.
 
 The lib directory has THRIFT files and Airavata generated PHP stubs.
 
-The samples directory has example PHP code.
+The sample_scripts directory has sample_scripts used to test airavata.
+sample_scripts contains
+add.sh - it add 6 to the given number
+echo.sh - it echoes given string
+multiply.sh - it multiply 6 to the given number
+subtract.sh - it subtract 6 from the given number
+
+First, All the scripts must be registered
+to register execute 
+php register.php (Note: it must be executed from resources folder or else change the executable path to absolute path of sample_scripts in modulesUtils.php  ... absolute/path/resources/sample_scripts)
+
+Now, 
+go to resources folder and execute
+
+./airavatarun-0.15 add.sh 5
+expected output 
+Result=11 or 
+some error 
+if error is 
+There is some connection problem, please check if airavata is runnig properly and try again later
+it is the socket error wait for sometime and try again

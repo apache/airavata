@@ -1,7 +1,0 @@
-﻿This directory contains files that can be used to test the Apache Airavata client API using PHP command-line tools.
-  You will need PHP installed on your test environment.
-  To run a command from a terminal shell prompt, use, for example:
-        [prompt%> php createProject.php project-name
-
-Please see the wiki page for detailed descriptions and usage of the scripts:
-https://cwiki.apache.org/confluence/display/AIRAVATA/Airavata+API+PHP+Client+Samples
