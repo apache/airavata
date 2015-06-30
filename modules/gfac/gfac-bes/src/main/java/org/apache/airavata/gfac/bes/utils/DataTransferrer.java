@@ -75,6 +75,7 @@ public class DataTransferrer {
 		
 		String stdout = jobContext.getStandardOutput();
 		String stderr = jobContext.getStandardError();
+
 		if(stdout != null) {
 			stdout = stdout.substring(stdout.lastIndexOf('/')+1);
 		}

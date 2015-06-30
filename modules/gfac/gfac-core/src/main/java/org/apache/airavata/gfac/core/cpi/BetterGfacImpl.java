@@ -382,21 +382,27 @@ public class BetterGfacImpl implements GFac {
             }
             if (objectType.getType() == DataType.STDOUT) {
                	String stdout = objectType.getValue();
+               	String stdoutLocation = null;
                 if(objectType.getValue() == null || "".equals(objectType.getValue())) {
-            		objectType.setValue(jobExecutionContext.getOutputDir() + File.separator + jobExecutionContext.getApplicationName() + ".stdout");
+                	stdoutLocation = jobExecutionContext.getOutputDir() + File.separator + jobExecutionContext.getApplicationName() + ".stdout";
             	}
             	else {
-            		objectType.setValue(jobExecutionContext.getOutputDir() + File.separator + stdout);
+            		stdoutLocation = jobExecutionContext.getOutputDir() + File.separator + stdout;
             	}
+                objectType.setValue(stdoutLocation);
+                jobExecutionContext.setStandardOutput(stdoutLocation);
             }
             if (objectType.getType() == DataType.STDERR) {
             	String stderr = objectType.getValue();
+            	String stderrLocation = null;
             	if(stderr == null || "".equals(stderr)) {
-                    objectType.setValue(jobExecutionContext.getOutputDir() + File.separator + jobExecutionContext.getApplicationName() + ".stderr");
+            		stderrLocation = jobExecutionContext.getOutputDir() + File.separator + jobExecutionContext.getApplicationName() + ".stderr";
                 }
                 else {
-                		objectType.setValue(jobExecutionContext.getOutputDir() + File.separator + stderr);
+                		stderrLocation = jobExecutionContext.getOutputDir() + File.separator + stderr;
                 }
+            	objectType.setValue(stderrLocation);
+            	jobExecutionContext.setStandardError(stderrLocation);
             }
         }
         jobExecutionContext.setOutMessageContext(new MessageContext(GFacUtils.getOuputParamMap(taskOutputs)));

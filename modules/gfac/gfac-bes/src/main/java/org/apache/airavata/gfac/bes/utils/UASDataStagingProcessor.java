@@ -146,14 +146,9 @@ public class UASDataStagingProcessor {
 					createInURISMSElement(value, smsUrl, input.getValue(), false);
 				}
 				else if(input.getType().equals(DataType.STRING) && input.isDataStaged()){
-					System.out.println("INPUT DATA VALUE-SBZ: "+input.getValue());
-					System.out.println("INPUT DATA flag-SBZ: "+input.isDataStaged());
-
 					createInURISMSElement(value, smsUrl, input.getValue(), false);
 				}
 				else if(input.getType().equals(DataType.STRING) && !input.isDataStaged()){
-					System.out.println("INPUT DATA value for arg-SBZ: "+input.getValue());
-					System.out.println("INPUT DATA flag for arg-SBZ: "+input.isDataStaged());
 					ApplicationProcessor.addApplicationArgument(value, context, input.getValue());
 				}
 				else if (input.getType().equals(DataType.FLOAT) || input.getType().equals(DataType.INTEGER)){
