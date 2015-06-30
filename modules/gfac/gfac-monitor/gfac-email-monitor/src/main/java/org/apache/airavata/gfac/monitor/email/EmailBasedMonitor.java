@@ -90,6 +90,7 @@ public class EmailBasedMonitor implements Runnable{
     private Date monitorStartDate;
     private Map<ResourceJobManagerType, EmailParser> emailParserMap = new HashMap<ResourceJobManagerType, EmailParser>();
     private ExecutorService executor;
+    private Message[] flushUnseenMessages;
 
     public EmailBasedMonitor(ResourceJobManagerType type) throws AiravataException {
         init();
@@ -161,6 +162,7 @@ public class EmailBasedMonitor implements Runnable{
                 return ResourceJobManagerType.PBS;
             case "SDSC Admin <slurm@comet-fe3.sdsc.edu>": // comet
             case "slurm@batch1.stampede.tacc.utexas.edu": // stampede
+            case "slurm user <slurm@tempest.dsc.soic.indiana.edu>": //tempest
                 return ResourceJobManagerType.SLURM;
 //            case "lsf":
 //                return ResourceJobManagerType.LSF;
@@ -184,7 +186,6 @@ public class EmailBasedMonitor implements Runnable{
             store.connect(host, emailAddress, password);
             emailFolder = store.getFolder(folderName);
             // first time we search for all unread messages.
-            SearchTerm unseenBefore = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
             while (!(stopMonitoring || ServerSettings.isStopAllThreads())) {
                 Thread.sleep(ServerSettings.getEmailMonitorPeriod());// sleep a bit - get a rest till job finishes
                 if (jobMonitorMap.isEmpty()) {
@@ -197,15 +198,30 @@ public class EmailBasedMonitor implements Runnable{
                     store.connect();
                     emailFolder = store.getFolder(folderName);
                 }
-                log.info("[EJM]: Retrieving unseen emails");
                 emailFolder.open(Folder.READ_WRITE);
-                Message[] searchMessages = emailFolder.search(unseenBefore);
-                if (searchMessages == null || searchMessages.length == 0) {
-                    log.info("[EJM]: No new email messages");
-                } else {
-                    log.info("[EJM]: "+searchMessages.length + " new email/s received");
+                if (emailFolder.isOpen()) {
+                    // flush if any message left in flushUnseenMessage
+                    if (flushUnseenMessages != null && flushUnseenMessages.length > 0) {
+                        try {
+                            emailFolder.setFlags(flushUnseenMessages, new Flags(Flags.Flag.SEEN), false);
+                            flushUnseenMessages = null;
+                        } catch (MessagingException e) {
+                            if (!store.isConnected()) {
+                                store.connect();
+                                emailFolder.setFlags(flushUnseenMessages, new Flags(Flags.Flag.SEEN), false);
+                                flushUnseenMessages = null;
+                            }
+                        }
+                    }
+                    // read unread messages
+                    Message[] searchMessages = getMessagesToProcess();
+                    if (searchMessages == null || searchMessages.length == 0) {
+                        log.info("[EJM]: No new email messages");
+                    } else {
+                        log.info("[EJM]: " + searchMessages.length + " new email/s received");
+                    }
+                    processMessages(searchMessages);
                 }
-                processMessages(searchMessages);
                 emailFolder.close(false);
             }
         } catch (MessagingException e) {
@@ -222,6 +238,19 @@ public class EmailBasedMonitor implements Runnable{
                 log.error("[EJM]: Store close operation failed, couldn't close store", e);
             }
         }
+        // Recursively try to connect to email server and monitor
+        if (!(stopMonitoring || ServerSettings.isStopAllThreads())) {
+            log.info("[EJM]: Retry email monitoring on exceptions");
+            run();
+        }
+
+    }
+
+    private Message[] getMessagesToProcess() throws MessagingException {
+        //TODO: improve this logic to get only previously unprocessed unread mails.
+        SearchTerm unseenBefore = new FlagTerm(new Flags(Flags.Flag.SEEN), false);
+        log.info("[EJM]: Retrieving unseen emails");
+        return emailFolder.search(unseenBefore);
     }
 
     private void processMessages(Message[] searchMessages) throws MessagingException {
@@ -298,8 +327,13 @@ public class EmailBasedMonitor implements Runnable{
                 emailFolder.setFlags(unseenMessages, new Flags(Flags.Flag.SEEN), false);
             } catch (MessagingException e) {
                 if (!store.isConnected()) {
-                    store.connect();
-                    emailFolder.setFlags(unseenMessages, new Flags(Flags.Flag.SEEN), false);
+                    try {
+                        store.connect();
+                        emailFolder.setFlags(unseenMessages, new Flags(Flags.Flag.SEEN), false);
+                    } catch (MessagingException e1) {
+                        flushUnseenMessages = unseenMessages; // anyway we need to push this update.
+                        throw e1;
+                    }
 
                 }
             }

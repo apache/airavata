@@ -49,6 +49,7 @@ import org.apache.airavata.model.messaging.event.JobIdentifier;
 import org.apache.airavata.model.messaging.event.JobStatusChangeRequestEvent;
 import org.apache.airavata.model.workspace.experiment.JobDetails;
 import org.apache.airavata.model.workspace.experiment.JobState;
+import org.apache.airavata.registry.cpi.ChildDataType;
 import org.apache.xmlbeans.XmlCursor;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.ggf.schemas.bes.x2006.x08.besFactory.ActivityStateEnumeration;
@@ -108,7 +109,7 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
 			log.debug("Security properties initialized.");
 		}
 	}
-
+	
 	public void execute(JobExecutionContext jobExecutionContext)
 			throws GFacProviderException, GFacException {
 
@@ -131,16 +132,16 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
                 userDN = "CN=zdv575, O=Ultrascan Gateway, C=DE";
             }
             CreateActivityDocument cad = CreateActivityDocument.Factory.newInstance();
-            JobDefinitionDocument jobDefDoc = JobDefinitionDocument.Factory.newInstance();
-
+            
             // create storage
             StorageCreator storageCreator = new StorageCreator(secProperties, factoryUrl, 5, null);
             sc = storageCreator.createStorage();
 
             JobDefinitionType jobDefinition = JSDLGenerator.buildJSDLInstance(jobExecutionContext, sc.getUrl()).getJobDefinition();
             cad.addNewCreateActivity().addNewActivityDocument().setJobDefinition(jobDefinition);
-            log.info("JSDL" + jobDefDoc.toString());
-
+            
+            log.info("Submitted JSDL: " + jobDefinition.getJobDescription());
+            
             // upload files if any
             DataTransferrer dt = new DataTransferrer(jobExecutionContext, sc);
             dt.uploadLocalFiles();
@@ -181,6 +182,7 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
             log.info(formatStatusMessage(activityEpr.getAddress().getStringValue(), activityStatus.getState().toString()));
             ActivityClient activityClient;
             activityClient = new ActivityClient(activityEpr, secProperties);
+            // now use the activity working directory property
             dt.setStorageClient(activityClient.getUspaceClient());
 
             if ((activityStatus.getState() == ActivityStateEnumeration.FAILED)) {
@@ -190,7 +192,7 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
                         + activityStatus.getFault().getFaultstring()
                         + "\n EXITCODE: " + activityStatus.getExitCode();
                 log.info(error);
-  
+                
                 JobState applicationJobStatus = JobState.FAILED;
                 sendNotification(jobExecutionContext,applicationJobStatus);
                 GFacUtils.updateJobStatus(jobExecutionContext, jobDetails, applicationJobStatus);
@@ -220,25 +222,16 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
                     dt.downloadStdOuts();
                 }
             }
+            
+            dt.publishFinalOutputs();
         } catch (AppCatalogException e) {
             log.error("Error while retrieving UNICORE job submission..");
             throw new GFacProviderException("Error while retrieving UNICORE job submission..", e);
         } catch (Exception e) {
             log.error("Cannot create storage..");
             throw new GFacProviderException("Cannot create storage..", e);
-        } finally {
-            // destroy sms instance
-            try {
-                if (sc != null) {
-                    sc.destroy();
-                }
-            } catch (Exception e) {
-                log.warn(
-                        "Cannot destroy temporary SMS instance:" + sc.getUrl(),
-                        e);
-            }
         }
-
+        
     }
 	
 

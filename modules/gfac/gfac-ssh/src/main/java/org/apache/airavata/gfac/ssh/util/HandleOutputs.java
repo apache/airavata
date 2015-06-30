@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.GFacHandlerException;
 import org.apache.airavata.gfac.core.utils.GFacUtils;
@@ -24,7 +26,12 @@ public class HandleOutputs {
 	public static List<OutputDataObjectType> handleOutputs(JobExecutionContext jobExecutionContext, Cluster cluster) throws GFacHandlerException {
 		List<OutputDataObjectType> outputArray = new ArrayList<OutputDataObjectType>();
 		try {
-			String outputDataDir = File.separator + "tmp" + File.separator + jobExecutionContext.getExperimentID();
+            String outputDataDir = ServerSettings.getSetting(Constants.OUTPUT_DATA_DIR);
+            if (outputDataDir == null || outputDataDir.equals("")){
+                outputDataDir = File.separator + "tmp";
+            }
+
+            outputDataDir += File.separator + jobExecutionContext.getExperimentID();
 			(new File(outputDataDir)).mkdirs();
 
 			List<OutputDataObjectType> outputs = jobExecutionContext.getTaskData().getApplicationOutputs();

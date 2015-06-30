@@ -381,10 +381,28 @@ public class BetterGfacImpl implements GFac {
 
             }
             if (objectType.getType() == DataType.STDOUT) {
-                objectType.setValue(jobExecutionContext.getOutputDir() + File.separator + jobExecutionContext.getApplicationName() + ".stdout");
+               	String stdout = objectType.getValue();
+               	String stdoutLocation = null;
+                if(objectType.getValue() == null || "".equals(objectType.getValue())) {
+                	stdoutLocation = jobExecutionContext.getOutputDir() + File.separator + jobExecutionContext.getApplicationName() + ".stdout";
+            	}
+            	else {
+            		stdoutLocation = jobExecutionContext.getOutputDir() + File.separator + stdout;
+            	}
+                objectType.setValue(stdoutLocation);
+                jobExecutionContext.setStandardOutput(stdoutLocation);
             }
             if (objectType.getType() == DataType.STDERR) {
-                objectType.setValue(jobExecutionContext.getOutputDir() + File.separator + jobExecutionContext.getApplicationName() + ".stderr");
+            	String stderr = objectType.getValue();
+            	String stderrLocation = null;
+            	if(stderr == null || "".equals(stderr)) {
+            		stderrLocation = jobExecutionContext.getOutputDir() + File.separator + jobExecutionContext.getApplicationName() + ".stderr";
+                }
+                else {
+                		stderrLocation = jobExecutionContext.getOutputDir() + File.separator + stderr;
+                }
+            	objectType.setValue(stderrLocation);
+            	jobExecutionContext.setStandardError(stderrLocation);
             }
         }
         jobExecutionContext.setOutMessageContext(new MessageContext(GFacUtils.getOuputParamMap(taskOutputs)));

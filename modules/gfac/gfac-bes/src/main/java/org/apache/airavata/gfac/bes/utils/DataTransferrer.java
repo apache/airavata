@@ -26,39 +26,79 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
-import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
+import org.apache.airavata.registry.cpi.ChildDataType;
+import org.apache.airavata.registry.cpi.Registry;
+import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.fzj.unicore.uas.client.StorageClient;
 
-
+/**
+ * Data movement utility class for transferring files before and after the job execution phase.   
+ * 
+ * */
 public class DataTransferrer {
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+   
+	protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
-	private JobExecutionContext jobContext;
+	protected JobExecutionContext jobContext;
 	
-	private StorageClient storageClient;
+	protected StorageClient storageClient;
+	
+	protected List<OutputDataObjectType> resultantOutputsLst;
+	
+	protected String gatewayDownloadLocation, stdoutLocation, stderrLocation;
 	
 	public DataTransferrer(JobExecutionContext jobContext, StorageClient storageClient) {
 		this.jobContext = jobContext;
 		this.storageClient = storageClient;
+		resultantOutputsLst = new ArrayList<OutputDataObjectType>();
+		initStdoutsLocation();
 	}
 	
+	private void initStdoutsLocation() {
+
+		gatewayDownloadLocation = getDownloadLocation();
+		
+		String stdout = jobContext.getStandardOutput();
+		String stderr = jobContext.getStandardError();
+
+		if(stdout != null) {
+			stdout = stdout.substring(stdout.lastIndexOf('/')+1);
+		}
+		
+		if(stderr != null) {
+			stderr = stderr.substring(stderr.lastIndexOf('/')+1);
+		}
+		
+		String stdoutFileName = (stdout == null || stdout.equals("")) ? "stdout"
+				: stdout;
+		String stderrFileName = (stdout == null || stderr.equals("")) ? "stderr"
+				: stderr;
+		
+		stdoutLocation = gatewayDownloadLocation+File.separator+stdoutFileName;
+		
+		stderrLocation = gatewayDownloadLocation+File.separator+stderrFileName;
+		
+		jobContext.addOutputFile(stdoutLocation);
+		jobContext.setStandardOutput(stdoutLocation);
+		jobContext.addOutputFile(stderrLocation);
+		jobContext.setStandardError(stderrLocation);
+		
+	}
 	
 	public void uploadLocalFiles() throws GFacProviderException {
 		List<String> inFilePrms = extractInFileParams();
@@ -82,114 +122,114 @@ public class DataTransferrer {
 		
 	}
 	
+
 	/**
 	 * This method will download all the remote files specified in the output 
 	 * context of a job.  
 	 * */
 	public void downloadRemoteFiles() throws GFacProviderException {
 		
-		String downloadLocation = getDownloadLocation();
+		if(log.isDebugEnabled()) {
+			log.debug("Download location is:"+gatewayDownloadLocation);
+		}
 		
-		File file = new File(downloadLocation);
-		if(!file.exists()){
-			file.mkdirs();	
-		}
-
-		Map<String, Object> output = jobContext.getOutMessageContext().getParameters();
-        Set<String> keys = output.keySet();
-        
-		for (String outPrm : keys) {
-			OutputDataObjectType actualParameter = (OutputDataObjectType) output.get(outPrm);
-				if (DataType.STDERR == actualParameter.getType()) continue;
-				if (DataType.STDOUT == actualParameter.getType()) continue;
-				
-				String value = actualParameter.getValue();
-				FileDownloader fileDownloader = new FileDownloader(value,downloadLocation, Mode.overwrite);
-				try {
-					fileDownloader.perform(storageClient);
-					String outputPath = downloadLocation + File.separator + value.substring(value.lastIndexOf('/')+1);
-					actualParameter.setValue(outputPath);
-					actualParameter.setType(DataType.URI);
-					jobContext.addOutputFile(outputPath);
-				} catch (Exception e) {
-					throw new GFacProviderException(e.getLocalizedMessage(),e);
+		List<OutputDataObjectType> applicationOutputs = jobContext.getTaskData().getApplicationOutputs();
+		 if (applicationOutputs != null && !applicationOutputs.isEmpty()){
+            for (OutputDataObjectType output : applicationOutputs){
+				if("".equals(output.getValue()) || output.getValue() == null) {
+					continue;
 				}
-		}
-		downloadStdOuts();
+	           	if(output.getType().equals(DataType.STDOUT)) {
+	           		output.setValue(jobContext.getStandardOutput());
+	           		resultantOutputsLst.add(output);
+	           	}
+	           	
+	           	else if(output.getType().equals(DataType.STDERR)) {
+	           		output.setValue(jobContext.getStandardError());
+	           		resultantOutputsLst.add(output);
+	           	}
+				else if(output.getType().equals(DataType.STRING)) {
+					String value = output.getValue();
+					String outputPath = gatewayDownloadLocation + File.separator + value;
+					FileDownloader fileDownloader = new FileDownloader(value,outputPath, Mode.overwrite);
+					try {
+						fileDownloader.perform(storageClient);
+						output.setType(DataType.URI);
+						output.setValue(outputPath);
+						jobContext.addOutputFile(outputPath);
+						resultantOutputsLst.add(output);
+					} catch (Exception e) {
+						log.error("Error downloading "+value+" from job working directory. ");
+						throw new GFacProviderException(e.getLocalizedMessage(),e);
+					}
+	           	}
+	           	
+            }
+            
+		 }
+		 
+		 downloadStdOuts();
+
 	}
 	
-	
 	public void downloadStdOuts()  throws GFacProviderException{
-		String downloadLocation = getDownloadLocation();
-		File file = new File(downloadLocation);
-		if(!file.exists()){
-			file.mkdirs();	
-		}
 		
-		String stdout = jobContext.getStandardOutput();
-		String stderr = jobContext.getStandardError();
-		if(stdout != null) {
-			stdout = stdout.substring(stdout.lastIndexOf('/')+1);
-		}
+		String stdoutFileName = new File(stdoutLocation).getName();
 		
-		if(stderr != null) {
-			stderr = stderr.substring(stderr.lastIndexOf('/')+1);
-		}
+		String stderrFileName = new File(stderrLocation).getName();
 		
-		String stdoutFileName = (stdout == null || stdout.equals("")) ? "stdout"
-				: stdout;
-		String stderrFileName = (stdout == null || stderr.equals("")) ? "stderr"
-				: stderr;
-		
-		ApplicationDeploymentDescription application = jobContext.getApplicationContext().getApplicationDeploymentDescription();
-		
-		String stdoutLocation = downloadLocation+File.separator+stdoutFileName;
-		FileDownloader f1 = new FileDownloader(stdoutFileName,stdoutLocation, Mode.overwrite);
+		FileDownloader f1 = null;  
 		try {
-			f1.perform(storageClient);
 			log.info("Downloading stdout and stderr..");
+			log.info(stdoutFileName + " -> "+stdoutLocation);
+			
+			f1 = new FileDownloader(stdoutFileName,stdoutLocation, Mode.overwrite);
+			f1.perform(storageClient);
 			String stdoutput = readFile(stdoutLocation);
-			jobContext.addOutputFile(stdoutLocation);
-			jobContext.setStandardOutput(stdoutLocation);
-			log.info("Stdout downloaded to -> "+stdoutLocation);
-			if(UASDataStagingProcessor.isUnicoreEndpoint(jobContext)) {
-				String scriptExitCodeFName = "UNICORE_SCRIPT_EXIT_CODE";
-				String scriptCodeLocation = downloadLocation+File.separator+scriptExitCodeFName;
-				f1.setFrom(scriptExitCodeFName);
-				f1.setTo(scriptCodeLocation);
-				f1.perform(storageClient);
-				log.info("UNICORE_SCRIPT_EXIT_CODE downloaded to "+scriptCodeLocation);
-			}
-			String stderrLocation = downloadLocation+File.separator+stderrFileName;
+
+			log.info(stderrFileName + " -> " + stderrLocation);
 			f1.setFrom(stderrFileName);
 			f1.setTo(stderrLocation);
 			f1.perform(storageClient);
 			String stderror = readFile(stderrLocation);
-			jobContext.addOutputFile(stderrLocation);
-			jobContext.setStandardError(stderrLocation);
-			log.info("Stderr downloaded to -> "+stderrLocation);
+
+			if(UASDataStagingProcessor.isUnicoreEndpoint(jobContext)) {
+				String scriptExitCodeFName = "UNICORE_SCRIPT_EXIT_CODE";
+				String scriptCodeLocation = gatewayDownloadLocation+File.separator+scriptExitCodeFName;
+				f1.setFrom(scriptExitCodeFName);
+				f1.setTo(scriptCodeLocation);
+				f1.perform(storageClient);
+				jobContext.addOutputFile(scriptCodeLocation);
+				log.info("UNICORE_SCRIPT_EXIT_CODE -> "+scriptCodeLocation);
+				log.info("EXIT CODE: "+ readFile(scriptCodeLocation)); 
+			}
 		} catch (Exception e) {
 			throw new GFacProviderException(e.getLocalizedMessage(),e);
 		}
 		
 	}
 	
-	public List<String> extractOutParams(JobExecutionContext context) {
-		List<String> outPrmsList = new ArrayList<String>();
-		List<OutputDataObjectType> applicationOutputs = jobContext.getTaskData().getApplicationOutputs();
-		 if (applicationOutputs != null && !applicationOutputs.isEmpty()){
-           for (OutputDataObjectType output : applicationOutputs){
-          	 if(output.getType().equals(DataType.STRING)) {
-          		outPrmsList.add(output.getValue());
-          	 }
-          	 else if(output.getType().equals(DataType.FLOAT) || output.getType().equals(DataType.INTEGER)) {
-          		outPrmsList.add(String.valueOf(output.getValue()));
-          		 
-          	 }
-           }
-		 }
-		return outPrmsList;
+	/**
+	 * This method should be called once all the output files are successfully 
+	 * transferred from the remote Unicore endpoint.
+	 * Its access is made public to give clients a room for 
+	 * graceful invocation after the required outputs are downloaded. 
+	 * 
+	 * */
+	public void publishFinalOutputs() throws GFacProviderException {
+        try {
+        	if(!resultantOutputsLst.isEmpty()) {
+        		log.debug("Publishing the list of outputs to the registry instance..");
+	        	Registry registry = jobContext.getRegistry();
+				registry.add(ChildDataType.EXPERIMENT_OUTPUT, resultantOutputsLst, jobContext.getExperimentID());
+        	}
+		} catch (RegistryException e) {
+			throw new GFacProviderException("Cannot publish outputs to the registry.");
+		}
+
+		
 	}
+	
 	
 	public List<String> extractInFileParams() {
 		List<String> filePrmsList = new ArrayList<String>();
@@ -225,14 +265,56 @@ public class DataTransferrer {
 	
 	private String getDownloadLocation() {
 		TaskDetails taskData = jobContext.getTaskData();
-		//In case of third party transfer this will not work.
-//		if (taskData != null && taskData.getAdvancedOutputDataHandling() != null) {
-//			String outputDataDirectory = taskData.getAdvancedOutputDataHandling().getOutputDataDir();
-//			return outputDataDirectory;
-//		}
-		String outputDataDir = File.separator + "tmp";
-        outputDataDir = outputDataDir + File.separator + jobContext.getExperimentID();
-        (new File(outputDataDir)).mkdirs();
+		String outputDataDir = "";
+
+		if (taskData != null
+				&& taskData.getAdvancedOutputDataHandling() != null ) {
+
+			outputDataDir = taskData.getAdvancedOutputDataHandling().getOutputDataDir();
+			
+			
+			if (outputDataDir == null || "".equals(outputDataDir)) {
+				outputDataDir = getTempPath(jobContext.getExperimentID());
+			}
+
+			else {
+				
+				// in case of remote locations use the tmp location
+				if (outputDataDir.startsWith("scp:") || 
+						outputDataDir.startsWith("ftp:") ||
+						outputDataDir.startsWith("gsiftp:")) {
+						outputDataDir = getTempPath(jobContext.getExperimentID());
+				} else if ( outputDataDir.startsWith("file:")  && 
+						     outputDataDir.contains("@")){
+							outputDataDir = getTempPath(jobContext.getExperimentID());
+					
+				} else {
+					try {
+						URI u = new URI(outputDataDir);
+						outputDataDir = u.getPath();
+					} catch (URISyntaxException e) {
+						outputDataDir = getTempPath(jobContext.getExperimentID());
+					}
+
+					
+				}
+			}
+		}
+		
+		File file = new File(outputDataDir);
+		if(!file.exists()){
+			file.mkdirs();	
+		}
+
+		
 		return outputDataDir;
 	}
+
+	private String getTempPath(String experimentID) {
+		String tmpOutputDir = File.separator + "tmp" + File.separator
+				+ jobContext.getExperimentID();
+		(new File(tmpOutputDir)).mkdirs();
+		return tmpOutputDir;
+	}	
+	
 }

@@ -20,6 +20,8 @@
 */
 package org.apache.airavata.gfac.ssh.handler;
 
+import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.gfac.Constants;
 import org.apache.airavata.gfac.GFacException;
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.handler.AbstractHandler;
@@ -90,14 +92,14 @@ public class SSHOutputHandler extends AbstractHandler {
             String timeStampedExperimentID = GFacUtils.createUniqueNameWithDate(jobExecutionContext.getExperimentID());
 
             TaskDetails taskData = jobExecutionContext.getTaskData();
-            String outputDataDir = null;
+            String outputDataDir = ServerSettings.getSetting(Constants.OUTPUT_DATA_DIR);
             File localStdOutFile;
             File localStdErrFile;
             //FIXME: AdvancedOutput is remote location and third party transfer should work to make this work 
 //            if (taskData.getAdvancedOutputDataHandling() != null) {
 //                outputDataDir = taskData.getAdvancedOutputDataHandling().getOutputDataDir();
 //            }
-            if (outputDataDir == null) {
+            if (outputDataDir == null || outputDataDir.equals("")) {
                 outputDataDir = File.separator + "tmp";
             }
             outputDataDir = outputDataDir + File.separator + jobExecutionContext.getExperimentID() + "-" + jobExecutionContext.getTaskData().getTaskID();
