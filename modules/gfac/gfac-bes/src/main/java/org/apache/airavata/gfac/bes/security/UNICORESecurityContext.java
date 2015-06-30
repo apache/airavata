@@ -39,6 +39,7 @@ import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.fzj.unicore.uas.security.ProxyCertOutHandler;
 import eu.emi.security.authn.x509.X509Credential;
 import eu.emi.security.authn.x509.impl.KeyAndCertCredential;
 import eu.emi.security.authn.x509.impl.X500NameUtils;
@@ -73,11 +74,7 @@ public class UNICORESecurityContext extends X509SecurityContext {
 		catch (Exception e) {
 			throw new GFacException(e.getMessage(), e); 
 		} 
-		secProperties.getETDSettings().setExtendTrustDelegation(true);
 		if(enableMessageLogging) secProperties.setMessageLogging(true);
-//		secProperties.setMessageLogging(true);
-//		secProperties.setDoSignMessage(true);
-		secProperties.getETDSettings().setIssuerCertificateChain(secProperties.getCredential().getCertificateChain());
 		
 		return secProperties;
 	}
@@ -180,18 +177,19 @@ public class UNICORESecurityContext extends X509SecurityContext {
 		p.setProperty("http.connection.timeout", "5000");
 		p.setProperty("http.socket.timeout", "5000");
 		
-		secProperties.setExtraSettings(p);
-
 		if (outHandlers == null) {
 			outHandlerLst = new HashSet<String>();
 		} else {
 			outHandlerLst = new HashSet<String>(Arrays.asList(outHandlers));
 		}
 
-		outHandlerLst.add("de.fzj.unicore.uas.security.ProxyCertOutHandler");
-
+		outHandlerLst.add(ProxyCertOutHandler.class.getName());
+		
 		secProperties.setOutHandlerClassNames(outHandlerLst
 				.toArray(new String[outHandlerLst.size()]));
+		
+		secProperties.getETDSettings().setExtendTrustDelegation(true);
+
 	}
 
 

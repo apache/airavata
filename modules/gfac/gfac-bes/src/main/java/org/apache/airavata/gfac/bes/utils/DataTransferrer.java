@@ -46,17 +46,21 @@ import org.slf4j.LoggerFactory;
 
 import de.fzj.unicore.uas.client.StorageClient;
 
-
+/**
+ * Data movement utility class for transferring files before and after the job execution phase.   
+ * 
+ * */
 public class DataTransferrer {
-    protected final Logger log = LoggerFactory.getLogger(this.getClass());
+   
+	protected final Logger log = LoggerFactory.getLogger(this.getClass());
 
-	private JobExecutionContext jobContext;
+	protected JobExecutionContext jobContext;
 	
-	private StorageClient storageClient;
+	protected StorageClient storageClient;
 	
-	private List<OutputDataObjectType> resultantOutputsLst;
+	protected List<OutputDataObjectType> resultantOutputsLst;
 	
-	private String downloadLocation, stdoutLocation, stderrLocation;
+	protected String gatewayDownloadLocation, stdoutLocation, stderrLocation;
 	
 	public DataTransferrer(JobExecutionContext jobContext, StorageClient storageClient) {
 		this.jobContext = jobContext;
@@ -67,7 +71,7 @@ public class DataTransferrer {
 	
 	private void initStdoutsLocation() {
 
-		downloadLocation = getDownloadLocation();
+		gatewayDownloadLocation = getDownloadLocation();
 		
 		String stdout = jobContext.getStandardOutput();
 		String stderr = jobContext.getStandardError();
@@ -84,10 +88,14 @@ public class DataTransferrer {
 		String stderrFileName = (stdout == null || stderr.equals("")) ? "stderr"
 				: stderr;
 		
-		stdoutLocation = downloadLocation+File.separator+stdoutFileName;
+		stdoutLocation = gatewayDownloadLocation+File.separator+stdoutFileName;
 		
-		stderrLocation = downloadLocation+File.separator+stderrFileName;
-
+		stderrLocation = gatewayDownloadLocation+File.separator+stderrFileName;
+		
+		jobContext.addOutputFile(stdoutLocation);
+		jobContext.setStandardOutput(stdoutLocation);
+		jobContext.addOutputFile(stderrLocation);
+		jobContext.setStandardError(stderrLocation);
 		
 	}
 	
@@ -121,7 +129,7 @@ public class DataTransferrer {
 	public void downloadRemoteFiles() throws GFacProviderException {
 		
 		if(log.isDebugEnabled()) {
-			log.debug("Download location is:"+downloadLocation);
+			log.debug("Download location is:"+gatewayDownloadLocation);
 		}
 		
 		List<OutputDataObjectType> applicationOutputs = jobContext.getTaskData().getApplicationOutputs();
@@ -130,31 +138,37 @@ public class DataTransferrer {
 				if("".equals(output.getValue()) || output.getValue() == null) {
 					continue;
 				}
-
-	           	if(output.getType().equals(DataType.STRING)) {
+	           	if(output.getType().equals(DataType.STDOUT)) {
+	           		output.setValue(jobContext.getStandardOutput());
+	           		resultantOutputsLst.add(output);
+	           	}
+	           	
+	           	else if(output.getType().equals(DataType.STDERR)) {
+	           		output.setValue(jobContext.getStandardError());
+	           		resultantOutputsLst.add(output);
+	           	}
+				else if(output.getType().equals(DataType.STRING)) {
 					String value = output.getValue();
-					String outputPath = downloadLocation + File.separator + value;
+					String outputPath = gatewayDownloadLocation + File.separator + value;
 					FileDownloader fileDownloader = new FileDownloader(value,outputPath, Mode.overwrite);
 					try {
 						fileDownloader.perform(storageClient);
+						output.setType(DataType.URI);
+						output.setValue(outputPath);
+						jobContext.addOutputFile(outputPath);
+						resultantOutputsLst.add(output);
 					} catch (Exception e) {
-						log.error("Error downloading remote files..");
+						log.error("Error downloading "+value+" from job working directory. ");
 						throw new GFacProviderException(e.getLocalizedMessage(),e);
 					}
-					resultantOutputsLst.add(output);
-					jobContext.addOutputFile(outputPath);
 	           	}
 	           	
-	           	if(output.getType().equals(DataType.STDOUT)) {
-	           		resultantOutputsLst.add(output);
-	           	}
-	           	
-	           	if(output.getType().equals(DataType.STDERR)) {
-	           		resultantOutputsLst.add(output);
-	           	}
             }
+            
 		 }
-		downloadStdOuts();
+		 
+		 downloadStdOuts();
+
 	}
 	
 	public void downloadStdOuts()  throws GFacProviderException{
@@ -163,41 +177,48 @@ public class DataTransferrer {
 		
 		String stderrFileName = new File(stderrLocation).getName();
 		
-		FileDownloader f1 = new FileDownloader(stdoutFileName,stdoutLocation, Mode.overwrite);
+		FileDownloader f1 = null;  
 		try {
-			f1.perform(storageClient);
 			log.info("Downloading stdout and stderr..");
-			String stdoutput = readFile(stdoutLocation);
-			jobContext.addOutputFile(stdoutLocation);
-			jobContext.setStandardOutput(stdoutLocation);
 			log.info(stdoutFileName + " -> "+stdoutLocation);
+			
+			f1 = new FileDownloader(stdoutFileName,stdoutLocation, Mode.overwrite);
+			f1.perform(storageClient);
+			String stdoutput = readFile(stdoutLocation);
+
+			log.info(stderrFileName + " -> " + stderrLocation);
+			f1.setFrom(stderrFileName);
+			f1.setTo(stderrLocation);
+			f1.perform(storageClient);
+			String stderror = readFile(stderrLocation);
+
 			if(UASDataStagingProcessor.isUnicoreEndpoint(jobContext)) {
 				String scriptExitCodeFName = "UNICORE_SCRIPT_EXIT_CODE";
-				String scriptCodeLocation = downloadLocation+File.separator+scriptExitCodeFName;
+				String scriptCodeLocation = gatewayDownloadLocation+File.separator+scriptExitCodeFName;
 				f1.setFrom(scriptExitCodeFName);
 				f1.setTo(scriptCodeLocation);
 				f1.perform(storageClient);
 				jobContext.addOutputFile(scriptCodeLocation);
 				log.info("UNICORE_SCRIPT_EXIT_CODE -> "+scriptCodeLocation);
+				log.info("EXIT CODE: "+ readFile(scriptCodeLocation)); 
 			}
-			
-			f1.setFrom(stderrFileName);
-			f1.setTo(stderrLocation);
-			f1.perform(storageClient);
-			String stderror = readFile(stderrLocation);
-			jobContext.addOutputFile(stderrLocation);
-			jobContext.setStandardError(stderrLocation);
-			log.info(stderrFileName + " -> " + stderrLocation);
 		} catch (Exception e) {
 			throw new GFacProviderException(e.getLocalizedMessage(),e);
 		}
 		
-		publishFinalOutputs();
 	}
 	
-	protected void publishFinalOutputs() throws GFacProviderException {
+	/**
+	 * This method should be called once all the output files are successfully 
+	 * transferred from the remote Unicore endpoint.
+	 * Its access is made public to give clients a room for 
+	 * graceful invocation after the required outputs are downloaded. 
+	 * 
+	 * */
+	public void publishFinalOutputs() throws GFacProviderException {
         try {
-        	if(!resultantOutputsLst.isEmpty()) { 
+        	if(!resultantOutputsLst.isEmpty()) {
+        		log.debug("Publishing the list of outputs to the registry instance..");
 	        	Registry registry = jobContext.getRegistry();
 				registry.add(ChildDataType.EXPERIMENT_OUTPUT, resultantOutputsLst, jobContext.getExperimentID());
         	}

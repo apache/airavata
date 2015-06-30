@@ -109,7 +109,7 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
 			log.debug("Security properties initialized.");
 		}
 	}
-
+	
 	public void execute(JobExecutionContext jobExecutionContext)
 			throws GFacProviderException, GFacException {
 
@@ -182,6 +182,7 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
             log.info(formatStatusMessage(activityEpr.getAddress().getStringValue(), activityStatus.getState().toString()));
             ActivityClient activityClient;
             activityClient = new ActivityClient(activityEpr, secProperties);
+            // now use the activity working directory property
             dt.setStorageClient(activityClient.getUspaceClient());
 
             if ((activityStatus.getState() == ActivityStateEnumeration.FAILED)) {
@@ -191,7 +192,7 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
                         + activityStatus.getFault().getFaultstring()
                         + "\n EXITCODE: " + activityStatus.getExitCode();
                 log.info(error);
-  
+                
                 JobState applicationJobStatus = JobState.FAILED;
                 sendNotification(jobExecutionContext,applicationJobStatus);
                 GFacUtils.updateJobStatus(jobExecutionContext, jobDetails, applicationJobStatus);
@@ -221,6 +222,8 @@ public class BESProvider extends AbstractProvider implements GFacProvider,
                     dt.downloadStdOuts();
                 }
             }
+            
+            dt.publishFinalOutputs();
         } catch (AppCatalogException e) {
             log.error("Error while retrieving UNICORE job submission..");
             throw new GFacProviderException("Error while retrieving UNICORE job submission..", e);

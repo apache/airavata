@@ -23,14 +23,20 @@ package org.apache.airavata.gfac.bes.utils;
 
 import java.io.File;
 import java.util.List;
+
 import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class UASDataStagingProcessor {
+	
+	protected final Logger log = LoggerFactory.getLogger(this.getClass());
+
 	
 	public static void generateDataStagingElements(JobDefinitionType value, JobExecutionContext context, String smsUrl) throws Exception{
 		smsUrl = "BFT:"+smsUrl;
@@ -44,10 +50,11 @@ public class UASDataStagingProcessor {
 		}
 	}
 	
-	private static void createInURISMSElement(JobDefinitionType value, String smsUrl, String uri)
+	private static void createInURISMSElement(JobDefinitionType value, String smsUrl, String uri, boolean useSMS)
 			throws Exception {
 		String fileName = new File(uri).getName();
-		if (uri.startsWith("file")) {
+		
+		if (useSMS && uri.startsWith("file:")) {
 			uri = smsUrl+"#/"+fileName;
 			
 		} 
@@ -136,9 +143,17 @@ public class UASDataStagingProcessor {
 					continue;
 				}
 				if(input.getType().equals(DataType.URI)){
-					createInURISMSElement(value, smsUrl, input.getValue());
+					createInURISMSElement(value, smsUrl, input.getValue(), false);
 				}
-				else if(input.getType().equals(DataType.STRING)){
+				else if(input.getType().equals(DataType.STRING) && input.isDataStaged()){
+					System.out.println("INPUT DATA VALUE-SBZ: "+input.getValue());
+					System.out.println("INPUT DATA flag-SBZ: "+input.isDataStaged());
+
+					createInURISMSElement(value, smsUrl, input.getValue(), false);
+				}
+				else if(input.getType().equals(DataType.STRING) && !input.isDataStaged()){
+					System.out.println("INPUT DATA value for arg-SBZ: "+input.getValue());
+					System.out.println("INPUT DATA flag for arg-SBZ: "+input.isDataStaged());
 					ApplicationProcessor.addApplicationArgument(value, context, input.getValue());
 				}
 				else if (input.getType().equals(DataType.FLOAT) || input.getType().equals(DataType.INTEGER)){
