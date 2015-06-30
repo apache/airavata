@@ -106,6 +106,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
                     inputResource.setStandardInput(input.isStandardInput());
                     inputResource.setAppArgument(input.getApplicationArgument());
                     inputResource.setInputOrder(input.getInputOrder());
+                    inputResource.setDataStaged(input.isDataStaged());
                     inputResource.setRequired(input.isIsRequired());
                     inputResource.setRequiredToCMD(input.isRequiredToAddedToCommandLine());
                     inputResource.save();
@@ -230,6 +231,7 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
                     inputResource.setStandardInput(input.isStandardInput());
                     inputResource.setAppArgument(input.getApplicationArgument());
                     inputResource.setInputOrder(input.getInputOrder());
+                    inputResource.setDataStaged(input.isDataStaged());
                     inputResource.setRequired(input.isIsRequired());
                     inputResource.setRequiredToCMD(input.isRequiredToAddedToCommandLine());
                     inputResource.save();
