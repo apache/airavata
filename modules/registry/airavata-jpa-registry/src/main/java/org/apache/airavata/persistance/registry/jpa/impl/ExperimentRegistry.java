@@ -1176,6 +1176,7 @@ public class ExperimentRegistry {
                     resource.setInputOrder(input.getInputOrder());
                     resource.setRequired(input.isIsRequired());
                     resource.setRequiredToCMD(input.isRequiredToAddedToCommandLine());
+                    resource.setDataStaged(input.isDataStaged());
                     resource.save();
                 }
 
