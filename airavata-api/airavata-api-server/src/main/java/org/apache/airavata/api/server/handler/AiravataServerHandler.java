@@ -928,6 +928,115 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     /**
+     * Search Experiments by using multiple filter criteria with pagination. Results will be sorted
+     * based on creation time DESC
+     *
+     * @param gatewayId
+     *       Identifier of the requested gateway
+     * @param userName
+     *       Username of the requested user
+     * @param filters
+     *       map of multiple filter criteria.
+     * @param limit
+     *       Amount of results to be fetched
+     * @param offset
+     *       The starting point of the results to be fetched
+     */
+    @Override
+    public List<ExperimentSummary> searchExperiments(String gatewayId, String userName, Map<ExperimentSearchFields, String> filters, int limit, int offset)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        if (!validateString(userName)){
+            logger.error("Username cannot be empty. Please provide a valid user..");
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Username cannot be empty. Please provide a valid user..");
+            throw exception;
+        }
+        if (!isGatewayExist(gatewayId)){
+            logger.error("Gateway does not exist.Please provide a valid gateway id...");
+            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+        }
+        try {
+            if (!ResourceUtils.isUserExist(userName)){
+                logger.error("User does not exist in the system. Please provide a valid user..");
+                AiravataSystemException exception = new AiravataSystemException();
+                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                exception.setMessage("User does not exist in the system. Please provide a valid user..");
+                throw exception;
+            }
+            List<ExperimentSummary> summaries = new ArrayList<ExperimentSummary>();
+            registry = RegistryFactory.getRegistry(gatewayId);
+            Map<String, String> regFilters = new HashMap();
+            regFilters.put(Constants.FieldConstants.ExperimentConstants.USER_NAME, userName);
+            regFilters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);
+            for(Map.Entry<ExperimentSearchFields, String> entry : filters.entrySet())
+            {
+                if(entry.getKey().equals(ExperimentSearchFields.EXPERIMENT_NAME)){
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_NAME, entry.getValue());
+                }else if(entry.getKey().equals(ExperimentSearchFields.EXPERIMENT_DESC)){
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_DESC, entry.getValue());
+                }else if(entry.getKey().equals(ExperimentSearchFields.APPLICATION_ID)){
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.APPLICATION_ID, entry.getValue());
+                }else if(entry.getKey().equals(ExperimentSearchFields.STATUS)){
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.EXPERIMENT_STATUS, entry.getValue());
+                }else if(entry.getKey().equals(ExperimentSearchFields.FROM_DATE)){
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.FROM_DATE, entry.getValue());
+                }else if(entry.getKey().equals(ExperimentSearchFields.TO_DATE)){
+                    regFilters.put(Constants.FieldConstants.ExperimentConstants.TO_DATE, entry.getValue());
+                }
+            }
+            List<Object> results = registry.search(RegistryModelType.EXPERIMENT, regFilters, limit,
+                    offset, Constants.FieldConstants.ExperimentConstants.CREATION_TIME, ResultOrderType.DESC);
+            for (Object object : results) {
+                summaries.add((ExperimentSummary) object);
+            }
+            return summaries;
+        }catch (Exception e) {
+            logger.error("Error while retrieving experiments", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving experiments. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
+     * Get Experiment execution statisitics by sending the gateway id and the time period interested in.
+     * This method will retrun an ExperimentStatistics object which contains the number of successfully
+     * completed experiments, failed experiments etc.
+     * @param gatewayId
+     * @param fromTime
+     * @param toTime
+     * @return
+     * @throws InvalidRequestException
+     * @throws AiravataClientException
+     * @throws AiravataSystemException
+     * @throws TException
+     */
+    @Override
+    public ExperimentStatistics getExperimentStatistics(String gatewayId, long fromTime, long toTime) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        if (!isGatewayExist(gatewayId)){
+            logger.error("Gateway does not exist.Please provide a valid gateway id...");
+            throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
+        }
+        try {
+            Map<String, String> filters = new HashMap();
+            filters.put(Constants.FieldConstants.ExperimentConstants.GATEWAY, gatewayId);
+            filters.put(Constants.FieldConstants.ExperimentConstants.FROM_DATE, fromTime+"");
+            filters.put(Constants.FieldConstants.ExperimentConstants.TO_DATE, toTime+"");
+
+            List<Object> results = registry.search(RegistryModelType.EXPERIMENT_STATISTICS, filters);
+            return (ExperimentStatistics) results.get(0);
+        }catch (Exception e) {
+            logger.error("Error while retrieving experiments", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while retrieving experiments. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /**
      * Get all Experiments within a Project
      *
      * @param projectId

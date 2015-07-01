@@ -2905,18 +2905,17 @@ public class ExperimentRegistry {
                         toTime = Long.parseLong(filters.get(field));
                     }
                 }
+                List<ExperimentSummaryResource> experimentSummaryResources;
                 if (fromTime != 0 && toTime != 0) {
-                    return searchExperimentsByCreationTime(new Timestamp(fromTime), new Timestamp(toTime)
-                            , limit, offset, orderByIdentifier, resultOrderType);
-                } else if(fil.get(AbstractResource.StatusConstants.STATE) != null ) {
-                    return searchExperimentsByStatus(fil, limit, offset, orderByIdentifier, resultOrderType);
+                    experimentSummaryResources = workerResource.searchExperiments(new Timestamp(fromTime), new Timestamp(toTime), fil
+                            ,limit , offset, orderByIdentifier, resultOrderType);
                 } else {
-                    List<ExperimentResource> experimentResources = workerResource
-                            .searchExperiments(fil, limit, offset, orderByIdentifier, resultOrderType);
-                    if (experimentResources != null && !experimentResources.isEmpty()) {
-                        for (ExperimentResource ex : experimentResources) {
-                            experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
-                        }
+                    experimentSummaryResources = workerResource
+                            .searchExperiments(null, null, fil, limit, offset, orderByIdentifier, resultOrderType);
+                }
+                if (experimentSummaryResources != null && !experimentSummaryResources.isEmpty()) {
+                    for (ExperimentSummaryResource ex : experimentSummaryResources) {
+                        experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
                     }
                 }
                 return experimentSummaries;
@@ -2929,86 +2928,54 @@ public class ExperimentRegistry {
         return null;
     }
 
+
     /**
-     * To get list of experiments of specified state
+     * Method to get experiment execution statistics for a specific time period
      * @param filters
      * @return
      * @throws RegistryException
      */
-    public List<ExperimentSummary> searchExperimentsByStatus(Map<String, String> filters) throws RegistryException {
-        return searchExperimentsByStatus(filters, -1, -1, null, null);
-    }
-
-    /**
-     * To get list of experiments of specified state with pagination and ordering
-     *
-     * @param filters
-     * @param limit
-     * @param offset
-     * @param orderByIdentifier
-     * @param resultOrderType
-     * @return
-     * @throws RegistryException
-     */
-    public List<ExperimentSummary> searchExperimentsByStatus(Map<String, String> filters, int limit,
-        int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
+    public ExperimentStatistics getExperimentStatistics(Map<String,String> filters) throws RegistryException {
         try {
-            List<ExperimentSummary> experimentSummaries = new ArrayList<ExperimentSummary>();
-            List<ExperimentResource> experimentResources = workerResource.searchExperimentsByState(filters, limit, offset,
-                    orderByIdentifier, resultOrderType);
-            if (experimentResources != null && !experimentResources.isEmpty()) {
-                for (ExperimentResource ex : experimentResources) {
-                    experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
-                }
+            ExperimentStatistics experimentStatistics = new ExperimentStatistics();
+            ExperimentStatisticsResource experimentStatisticsResource = workerResource.getExperimentStatistics(
+                    filters.get(Constants.FieldConstants.ExperimentConstants.GATEWAY),
+                    new Timestamp(Long.parseLong(filters.get(Constants.FieldConstants.ExperimentConstants.FROM_DATE))),
+                    new Timestamp(Long.parseLong(filters.get(Constants.FieldConstants.ExperimentConstants.TO_DATE)))
+            );
+
+            experimentStatistics.setAllExperimentCount(experimentStatisticsResource.getAllExperimentCount());
+            experimentStatistics.setCompletedExperimentCount(experimentStatisticsResource.getCompletedExperimentCount());
+            experimentStatistics.setFailedExperimentCount(experimentStatisticsResource.getFailedExperimentCount());
+            experimentStatistics.setCancelledExperimentCount(experimentStatisticsResource.getCancelledExperimentCount());
+
+            ArrayList<ExperimentSummary> experimentSummaries = new ArrayList();
+            for (ExperimentSummaryResource ex : experimentStatisticsResource.getAllExperiments()) {
+                experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
             }
-            return experimentSummaries;
+            experimentStatistics.setAllExperiments(experimentSummaries);
 
-        } catch (Exception e) {
-            logger.error("Error while retrieving experiment summary from registry", e);
-            throw new RegistryException(e);
-        }
-    }
-
-
-    /**
-     * Search experiements based on creation time within specified time interval.
-     * @param fromTime
-     * @param toTime
-     * @return
-     * @throws RegistryException
-     */
-    public List<ExperimentSummary> searchExperimentsByCreationTime(Timestamp fromTime, Timestamp toTime) throws RegistryException {
-        return searchExperimentsByCreationTime(fromTime, toTime, -1, -1, null, null);
-    }
-
-    /**
-     * Search experiements based on creation time within specified time interval with pagination.
-     * @param fromTime
-     * @param toTime
-     * @param limit
-     * @param offset
-     * @param orderByIdentifier
-     * @param resultOrderType
-     * @return
-     * @throws RegistryException
-     */
-    public List<ExperimentSummary> searchExperimentsByCreationTime(
-            Timestamp fromTime, Timestamp toTime, int limit,
-            int offset, Object orderByIdentifier, ResultOrderType resultOrderType) throws RegistryException {
-        try {
-            List<ExperimentSummary> experimentSummaries = new ArrayList<ExperimentSummary>();
-            List<ExperimentResource> experimentResources
-                    = workerResource.searchExperimentsByCreationTime(fromTime, toTime, limit, offset,
-                    orderByIdentifier, resultOrderType);
-            if (experimentResources != null && !experimentResources.isEmpty()) {
-                for (ExperimentResource ex : experimentResources) {
-                    experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
-                }
+            experimentSummaries = new ArrayList();
+            for (ExperimentSummaryResource ex : experimentStatisticsResource.getCompletedExperiments()) {
+                experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
             }
-            return experimentSummaries;
+            experimentStatistics.setCompletedExperiments(experimentSummaries);
 
-        } catch (Exception e) {
-            logger.error("Error while retrieving experiment summary from registry", e);
+            experimentSummaries = new ArrayList();
+            for (ExperimentSummaryResource ex : experimentStatisticsResource.getFailedExperiments()) {
+                experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
+            }
+            experimentStatistics.setFailedExperiments(experimentSummaries);
+
+            experimentSummaries = new ArrayList();
+            for (ExperimentSummaryResource ex : experimentStatisticsResource.getCancelledExperiments()) {
+                experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
+            }
+            experimentStatistics.setCancelledExperiments(experimentSummaries);
+
+            return experimentStatistics;
+        } catch (RegistryException e) {
+            logger.error("Error while retrieving experiment statistics from registry", e);
             throw new RegistryException(e);
         }
     }

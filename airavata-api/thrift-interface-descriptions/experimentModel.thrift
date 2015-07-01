@@ -27,7 +27,7 @@ namespace cpp apache.airavata.model.workspace.experiment
 namespace py apache.airavata.model.workspace.experiment
 
 /*
- * This file describes the definitions of the Airavata Experiment Data Structures. Each of the
+ * This file describes the definitions of the.airavata.registry.core.experiment.Data Structures. Each of the
  *   language specific Airavata Client SDK's will translate this neutral data model into an
  *   appropriate form for passing to the Airavata Server Execution API Calls.
  * 
@@ -70,6 +70,15 @@ enum ExperimentState {
     COMPLETED,
     FAILED,
     UNKNOWN
+}
+
+enum ExperimentSearchFields {
+    EXPERIMENT_NAME,
+    EXPERIMENT_DESC,
+    APPLICATION_ID,
+    FROM_DATE,
+    TO_DATE,
+    STATUS
 }
 
 struct ExperimentStatus {
@@ -399,5 +408,15 @@ struct ExperimentSummary {
     6: optional string description,
     7: optional string applicationId,
     8: optional ExperimentStatus experimentStatus,
-    9: optional list<ErrorDetails> errors
+}
+
+struct ExperimentStatistics {
+    1: required i32 allExperimentCount,
+    2: required i32 completedExperimentCount,
+    3: optional i32 cancelledExperimentCount,
+    4: required i32 failedExperimentCount,
+    5: required list<ExperimentSummary> allExperiments,
+    6: optional list<ExperimentSummary> completedExperiments,
+    7: optional list<ExperimentSummary> failedExperiments,
+    8: optional list<ExperimentSummary> cancelledExperiments,
 }

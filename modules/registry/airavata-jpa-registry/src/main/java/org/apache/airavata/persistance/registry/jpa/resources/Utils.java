@@ -214,6 +214,13 @@ public class Utils {
                     logger.error("Object should be a Experiment.", new IllegalArgumentException());
                     throw new IllegalArgumentException("Object should be a Experiment.");
                 }
+            case EXPERIMENT_SUMMARY:
+                if (o instanceof  Experiment){
+                    return createExperimentSummary((Experiment)o);
+                }else {
+                    logger.error("Object should be a ExperimentSummary.", new IllegalArgumentException());
+                    throw new IllegalArgumentException("Object should be a ExperimentSummary.");
+                }
             case NOTIFICATION_EMAIL:
                 if (o instanceof  Notification_Email){
                     return createNotificationEmail((Notification_Email)o);
@@ -470,6 +477,34 @@ public class Utils {
         }
 
         return experimentResource;
+    }
+
+    private static ExperimentSummaryResource createExperimentSummary(Experiment o) {
+        ExperimentSummaryResource experimentSummaryResource = new ExperimentSummaryResource();
+        if (o != null){
+            experimentSummaryResource.setExecutionUser(o.getExecutionUser());
+            experimentSummaryResource.setExpID(o.getExpId());
+            experimentSummaryResource.setExpName(o.getExpName());
+            experimentSummaryResource.setProjectID(o.getProjectId());
+            experimentSummaryResource.setCreationTime(o.getCreationTime());
+            experimentSummaryResource.setDescription(o.getExpDesc());
+            experimentSummaryResource.setApplicationId(o.getApplicationId());
+
+            if(o.getStatuses() != null && !o.getStatuses().isEmpty()) {
+                Status experimentStatus = o.getStatuses().iterator().next();
+                if (experimentStatus != null) {
+                    StatusResource statusResource = new StatusResource();
+                    statusResource.setStatusId(experimentStatus.getStatusId());
+                    statusResource.setJobId(experimentStatus.getJobId());
+                    statusResource.setState(experimentStatus.getState());
+                    statusResource.setStatusUpdateTime(experimentStatus.getStatusUpdateTime());
+                    statusResource.setStatusType(experimentStatus.getStatusType());
+                    experimentSummaryResource.setStatus(statusResource);
+                }
+            }
+        }
+
+        return experimentSummaryResource;
     }
 
     private static Resource createNotificationEmail (Notification_Email o){

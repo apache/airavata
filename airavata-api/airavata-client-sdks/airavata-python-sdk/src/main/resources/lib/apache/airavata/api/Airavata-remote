@@ -53,6 +53,8 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print '   searchExperimentsByStatusWithPagination(string gatewayId, string userName, ExperimentState experimentState, i32 limit, i32 offset)'
   print '   searchExperimentsByCreationTime(string gatewayId, string userName, i64 fromTime, i64 toTime)'
   print '   searchExperimentsByCreationTimeWithPagination(string gatewayId, string userName, i64 fromTime, i64 toTime, i32 limit, i32 offset)'
+  print '   searchExperiments(string gatewayId, string userName,  filters, i32 limit, i32 offset)'
+  print '  ExperimentStatistics getExperimentStatistics(string gatewayId, i64 fromTime, i64 toTime)'
   print '   getAllExperimentsInProject(string projectId)'
   print '   getAllExperimentsInProjectWithPagination(string projectId, i32 limit, i32 offset)'
   print '   getAllUserExperiments(string gatewayId, string userName)'
@@ -379,6 +381,18 @@ elif cmd == 'searchExperimentsByCreationTimeWithPagination':
     print 'searchExperimentsByCreationTimeWithPagination requires 6 args'
     sys.exit(1)
   pp.pprint(client.searchExperimentsByCreationTimeWithPagination(args[0],args[1],eval(args[2]),eval(args[3]),eval(args[4]),eval(args[5]),))
+
+elif cmd == 'searchExperiments':
+  if len(args) != 5:
+    print 'searchExperiments requires 5 args'
+    sys.exit(1)
+  pp.pprint(client.searchExperiments(args[0],args[1],eval(args[2]),eval(args[3]),eval(args[4]),))
+
+elif cmd == 'getExperimentStatistics':
+  if len(args) != 3:
+    print 'getExperimentStatistics requires 3 args'
+    sys.exit(1)
+  pp.pprint(client.getExperimentStatistics(args[0],eval(args[1]),eval(args[2]),))
 
 elif cmd == 'getAllExperimentsInProject':
   if len(args) != 1:
