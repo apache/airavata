@@ -140,7 +140,7 @@ public class RegistryImpl implements Registry {
                 case EXPERIMENT_OUTPUT:
                     return experimentRegistry.addExpOutputs((List<OutputDataObjectType>) newObjectToAdd, (String) dependentIdentifier);
                 case EXPERIMENT_STATUS:
-                    return experimentRegistry.updateExperimentStatus((ExperimentStatus) newObjectToAdd, (String) dependentIdentifier);
+                    return experimentRegistry.addExperimentStatus((ExperimentStatus) newObjectToAdd, (String) dependentIdentifier);
                 case WORKFLOW_NODE_DETAIL:
                     return experimentRegistry.addWorkflowNodeDetails((WorkflowNodeDetails) newObjectToAdd, (String) dependentIdentifier);
                 case WORKFLOW_NODE_STATUS:

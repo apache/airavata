@@ -498,6 +498,32 @@ public class ExperimentRegistry {
         return expId;
     }
 
+    public String addExperimentStatus(ExperimentStatus newStatus, String expId) throws RegistryException {
+        try {
+            ExperimentResource experiment = gatewayResource.getExperiment(expId);
+            StatusResource curStatus = experiment.getExperimentStatus();
+            if (curStatus == null) {
+                curStatus = (StatusResource) experiment.create(ResourceType.STATUS);
+            }
+            StatusResource addStatus = (StatusResource) experiment.create(ResourceType.STATUS);
+            addStatus.setExperimentResource(experiment);
+            addStatus.setStatusUpdateTime(AiravataUtils.getTime(newStatus.getTimeOfStateChange()));
+            if (curStatus.getState() == null) {
+                addStatus.setState(ExperimentState.UNKNOWN.name());
+            }
+            if (isValidStatusTransition(ExperimentState.valueOf(curStatus.getState()), newStatus.getExperimentState())) {
+                addStatus.setState(newStatus.getExperimentState().toString());
+                addStatus.setStatusType(StatusType.EXPERIMENT.toString());
+                addStatus.save();
+                logger.debugId(expId, "Added experiment {} status to {}.", expId, newStatus.toString());
+            }
+        } catch (Exception e) {
+            logger.errorId(expId, "Error while updating experiment status...", e);
+            throw new RegistryException(e);
+        }
+        return expId;
+    }
+
     public String addWorkflowNodeStatus(WorkflowNodeStatus status, CompositeIdentifier ids) throws RegistryException {
         try {
             ExperimentResource experiment = gatewayResource.getExperiment((String) ids.getTopLevelIdentifier());
