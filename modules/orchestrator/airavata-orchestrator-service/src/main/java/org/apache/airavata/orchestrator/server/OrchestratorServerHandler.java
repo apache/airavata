@@ -383,13 +383,8 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             }
             ExperimentState experimentState = experiment.getExperimentStatus().getExperimentState();
             if (isCancelValid(experimentState)){
-                ExperimentStatus status = new ExperimentStatus();
-                status.setExperimentState(ExperimentState.CANCELING);
-                status.setTimeOfStateChange(Calendar.getInstance()
-                        .getTimeInMillis());
-                experiment.setExperimentStatus(status);
-                registry.update(RegistryModelType.EXPERIMENT, experiment,
-                        experimentId);
+
+                GFacUtils.updateExperimentStatus(experimentId, ExperimentState.CANCELING);
 
                 List<String> ids = registry.getIds(
                         RegistryModelType.WORKFLOW_NODE_DETAIL,
@@ -439,13 +434,9 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 if (isCancelAllowed(experimentState)){
                     // when experiment status is < 3 no jobDetails object is created,
                     // so we don't have to worry, we simply have to change the status and stop the execution
-                    ExperimentStatus status = new ExperimentStatus();
-                    status.setExperimentState(ExperimentState.CANCELED);
-                    status.setTimeOfStateChange(Calendar.getInstance()
-                            .getTimeInMillis());
-                    experiment.setExperimentStatus(status);
-                    registry.update(RegistryModelType.EXPERIMENT, experiment,
-                            experimentId);
+
+                    GFacUtils.updateExperimentStatus(experimentId, ExperimentState.CANCELED);
+
                     List<String> ids = registry.getIds(
                             RegistryModelType.WORKFLOW_NODE_DETAIL,
                             WorkflowNodeConstants.EXPERIMENT_ID, experimentId);
@@ -589,17 +580,13 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                 // is in gfac, if there are errors in gfac, it will handle the experiment/task/job statuses
                 // We might get failures in registry access before submitting the jobs to gfac, in that case we
                 // leave the status of these as created.
-                ExperimentStatus status = new ExperimentStatus();
-                status.setExperimentState(ExperimentState.FAILED);
-                status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
-                experiment.setExperimentStatus(status);
                 try {
-                    registry.update(RegistryModelType.EXPERIMENT_STATUS, status, experimentId);
+                    GFacUtils.updateExperimentStatus(experimentId, ExperimentState.FAILED);
                 } catch (RegistryException e1) {
-                    log.errorId(experimentId, "Error while updating experiment status to " + status.toString(), e);
+                    log.errorId(experimentId, "Error while updating experiment status to FAILED", e);
                     throw new TException(e);
                 }
-                log.errorId(experimentId, "Error while updating task status, hence updated experiment status to " + status.toString(), e);
+                log.errorId(experimentId, "Error while updating task status, hence updated experiment status to FAILED", e);
                 throw new TException(e);
             }
             return true;
