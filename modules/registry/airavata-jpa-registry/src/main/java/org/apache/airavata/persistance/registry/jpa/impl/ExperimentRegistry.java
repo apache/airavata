@@ -296,6 +296,7 @@ public class ExperimentRegistry {
                 resource.setInputOrder(input.getInputOrder());
                 resource.setRequired(input.isIsRequired());
                 resource.setRequiredToCMD(input.isRequiredToAddedToCommandLine());
+                resource.setDataStaged(input.isDataStaged());
                 resource.save();
             }
         } catch (Exception e) {
@@ -319,6 +320,7 @@ public class ExperimentRegistry {
                         exinput.setInputOrder(input.getInputOrder());
                         exinput.setRequired(input.isIsRequired());
                         exinput.setRequiredToCMD(input.isRequiredToAddedToCommandLine());
+                        exinput.setDataStaged(input.isDataStaged());
                         exinput.save();
                     }
                 }
@@ -877,6 +879,7 @@ public class ExperimentRegistry {
                 resource.setInputOrder(input.getInputOrder());
                 resource.setRequired(input.isIsRequired());
                 resource.setRequiredToCMD(input.isRequiredToAddedToCommandLine());
+                resource.setDataStaged(input.isDataStaged());
                 resource.save();
             }
         } catch (Exception e) {
@@ -1091,6 +1094,7 @@ public class ExperimentRegistry {
                 resource.setInputOrder(input.getInputOrder());
                 resource.setRequired(input.isIsRequired());
                 resource.setRequiredToCMD(input.isRequiredToAddedToCommandLine());
+                resource.setDataStaged(input.isDataStaged());
                 resource.save();
             }
         } catch (Exception e) {
