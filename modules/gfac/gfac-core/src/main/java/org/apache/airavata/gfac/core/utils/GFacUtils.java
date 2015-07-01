@@ -670,20 +670,34 @@ public class GFacUtils {
             details = new Experiment();
             details.setExperimentID(experimentId);
         }
-        ExperimentState currentState = details.getExperimentStatus().getExperimentState();
-        ExperimentStatus status = new ExperimentStatus();
+        ExperimentStatus curStatus = details.getExperimentStatus();
+        ExperimentState curState = curStatus.getExperimentState();
+        ExperimentStatus newStatus = new ExperimentStatus();
 
-        status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
+        newStatus.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
 
-        if (!currentState.equals(ExperimentState.CANCELED) && !currentState.equals(ExperimentState.CANCELING)) {
-            status.setExperimentState(newState);
+        if (!curState.equals(ExperimentState.CANCELED) && !curState.equals(ExperimentState.CANCELING)) {
+            newStatus.setExperimentState(newState);
         } else {
-            status.setExperimentState(currentState);
+            newStatus.setExperimentState(curState);
         }
 
-        details.setExperimentStatus(status);
-        log.info("Updating the experiment status of experiment: " + experimentId + " to " + status.getExperimentState().toString());
-        airavataRegistry.update(RegistryModelType.EXPERIMENT_STATUS, status, experimentId);
+        details.setExperimentStatus(newStatus);
+        if (curState.equals(newState)) {
+          log.info("~~~ Updating the experiment status of experiment: " + experimentId + " to " + newStatus.getExperimentState().toString());
+          airavataRegistry.update(RegistryModelType.EXPERIMENT_STATUS, newStatus, experimentId);
+        } else {
+          log.info("~~~ Adding a NEW experiment status of experiment: " + experimentId + " to " + newStatus.getExperimentState().toString());
+          //airavataRegistry.add(ChildDataType.EXPERIMENT_STATUS, newStatus, experimentId);
+
+          ExperimentStatus oldStatus = new ExperimentStatus();
+          oldStatus.setTimeOfStateChange(curStatus.getTimeOfStateChange());
+          oldStatus.setExperimentState(curStatus.getExperimentState());
+          airavataRegistry.add(ChildDataType.EXPERIMENT_STATUS, oldStatus, experimentId);
+
+          airavataRegistry.update(RegistryModelType.EXPERIMENT_STATUS, newStatus, experimentId);
+        }
+
         return details.getExperimentStatus().getExperimentState();
     }
 
