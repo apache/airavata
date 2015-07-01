@@ -104,15 +104,25 @@ public class AppInterfaceTest {
                 ainterface = appInterface.getApplicationInterface(appID);
                 OutputDataObjectType output3 = createAppOutput("output3", "", DataType.STRING);
                 OutputDataObjectType output4 = createAppOutput("output4", "", DataType.STRING);
+                List<InputDataObjectType> applicationInputs = appInterface.getApplicationInputs(appID);
+                for (InputDataObjectType input : applicationInputs){
+                    System.out.println("######### Previous saved data staged fileld : " + String.valueOf(input.isDataStaged()));
+                    input.setDataStaged(true);
+                }
+                ainterface.setApplicationInputs(applicationInputs);
                 outputs.add(output3);
                 outputs.add(output4);
                 ainterface.setApplicationOutputs(outputs);
                 appInterface.updateApplicationInterface(appID, ainterface);
                 ApplicationInterfaceDescription updateApp = appInterface.getApplicationInterface(appID);
                 List<OutputDataObjectType> appOutputs = updateApp.getApplicationOutputs();
+                List<InputDataObjectType> appInputs = updateApp.getApplicationInputs();
                 System.out.println("********** application name ************* : " + updateApp.getApplicationName());
                 System.out.println("********** application description ************* : " + updateApp.getApplicationDescription());
                 System.out.println("********** output size ************* : " + appOutputs.size());
+                for (InputDataObjectType input : appInputs){
+                    System.out.println("######### updated data staged fileld : " + String.valueOf(input.isDataStaged()));
+                }
             }
             ApplicationModule wrfModule = appInterface.getApplicationModule(wrfModuleId);
             System.out.println("********** WRF module name ************* : " + wrfModule.getAppModuleName());
@@ -177,6 +187,7 @@ public class AppInterfaceTest {
         input.setName(inputName);
         input.setValue(value);
         input.setType(type);
+        input.setDataStaged(false);
         input.setApplicationArgument("test arg");
         input.setInputOrder(order++);
         return input;
