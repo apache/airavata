@@ -75,7 +75,6 @@ public class ServerSettings extends ApplicationSettings {
     private static final String MY_PROXY_LIFETIME = "myproxy.life";
     private static final String STATUS_PUBLISHER = "status.publisher";
     private static final String TASK_LAUNCH_PUBLISHER = "task.launch.publisher";
-    private static final String ACTIVITY_LISTENERS = "activity.listeners";
     public static final String JOB_NOTIFICATION_ENABLE = "job.notification.enable";
     public static final String JOB_NOTIFICATION_EMAILIDS = "job.notification.emailids";
     public static final String JOB_NOTIFICATION_FLAGS = "job.notification.flags";
@@ -193,10 +192,6 @@ public class ServerSettings extends ApplicationSettings {
 
     public static int getMyProxyLifetime() throws ApplicationSettingsException {
         return Integer.parseInt(getSetting(MY_PROXY_LIFETIME));
-    }
-
-    public static String[] getActivityListeners() throws ApplicationSettingsException {
-        return getSetting(ACTIVITY_LISTENERS).split(",");
     }
 
     public static String getStatusPublisher() throws ApplicationSettingsException {

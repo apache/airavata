@@ -32,18 +32,9 @@ import org.apache.airavata.registry.cpi.Registry;
  * This is the context object used in orchestrator which
  */
 public class OrchestratorContext {
-    private List<GFACInstance> gfacInstanceList;
     private OrchestratorConfiguration orchestratorConfiguration;
-    private Registry newRegistry;
+    private Registry registry;
     private Publisher publisher;
-    
-    public OrchestratorContext(List<GFACInstance> gfacInstanceList) {
-        if (gfacInstanceList != null) {
-            this.gfacInstanceList = gfacInstanceList;
-        }else {
-            this.gfacInstanceList = new ArrayList<GFACInstance>();
-        }
-    }
 
     public Publisher getPublisher() {
         return publisher;
@@ -53,18 +44,6 @@ public class OrchestratorContext {
         this.publisher = publisher;
     }
 
-    public OrchestratorContext() {
-        this(null);
-    }
-
-    public List<GFACInstance> getGfacInstanceList() {
-        return gfacInstanceList;
-    }
-
-    public void addGfacInstanceList(GFACInstance instance) {
-        this.gfacInstanceList.add(instance);
-    }
-
     public OrchestratorConfiguration getOrchestratorConfiguration() {
         return orchestratorConfiguration;
     }
@@ -72,16 +51,12 @@ public class OrchestratorContext {
     public void setOrchestratorConfiguration(OrchestratorConfiguration orchestratorConfiguration) {
         this.orchestratorConfiguration = orchestratorConfiguration;
     }
-
-    public Registry getNewRegistry() {
-        return newRegistry;
+    public Registry getRegistry() {
+        return registry;
     }
 
-    public void setNewRegistry(Registry newRegistry) {
-        this.newRegistry = newRegistry;
+    public void setRegistry(Registry registry) {
+        this.registry = registry;
     }
 
-    public void setGfacInstanceList(List<GFACInstance> gfacInstanceList) {
-        this.gfacInstanceList.addAll(gfacInstanceList);
-    }
 }
