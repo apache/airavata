@@ -20,7 +20,6 @@
 */
 package org.apache.airavata.gfac.server;
 
-import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.IServer;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.core.GFacThreadPoolExecutor;
