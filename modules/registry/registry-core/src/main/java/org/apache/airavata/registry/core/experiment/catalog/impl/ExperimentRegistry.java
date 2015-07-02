@@ -207,15 +207,13 @@ public class ExperimentRegistry {
             if (status == null) {
                 status = (ExperimentStatusResource) experiment.create(ResourceType.EXPERIMENT_STATUS);
             }
-            if (isValidStatusTransition(ExperimentState.valueOf(status.getState()), experimentStatus.getState())) {
-                status.setStatusId(getStatusID(expId));
-                status.setExperimentId(expId);
-                status.setTimeOfStateChange(AiravataUtils.getTime(experimentStatus.getTimeOfStateChange()));
-                status.setState(experimentStatus.getState().toString());
-                status.setReason(experimentStatus.getReason());
-                status.save();
-                logger.debug(expId, "Added experiment {} status to {}.", expId, experimentStatus.toString());
-            }
+	        status.setStatusId(getStatusID(expId));
+	        status.setExperimentId(expId);
+	        status.setTimeOfStateChange(AiravataUtils.getTime(experimentStatus.getTimeOfStateChange()));
+	        status.setState(experimentStatus.getState().toString());
+	        status.setReason(experimentStatus.getReason());
+	        status.save();
+	        logger.debug(expId, "Added experiment {} status to {}.", expId, experimentStatus.toString());
         } catch (Exception e) {
             logger.error(expId, "Error while adding experiment status...", e);
             throw new RegistryException(e);
