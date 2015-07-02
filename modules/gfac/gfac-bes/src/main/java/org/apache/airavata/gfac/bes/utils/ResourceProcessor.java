@@ -25,7 +25,13 @@ import org.apache.airavata.gfac.core.context.JobExecutionContext;
 import org.apache.airavata.gfac.core.provider.GFacProviderException;
 import org.apache.airavata.model.workspace.experiment.ComputationalResourceScheduling;
 import org.apache.airavata.model.workspace.experiment.TaskDetails;
+import org.apache.cxf.helpers.XMLUtils;
 import org.ggf.schemas.jsdl.x2005.x11.jsdl.JobDefinitionType;
+import org.ggf.schemas.jsdl.x2005.x11.jsdl.ResourcesType;
+
+import de.fzj.unicore.wsrflite.xmlbeans.WSUtilities;
+import eu.unicore.jsdl.extensions.ResourceRequestDocument;
+import eu.unicore.jsdl.extensions.ResourceRequestType;
 
 public class ResourceProcessor {
 
@@ -33,6 +39,7 @@ public class ResourceProcessor {
 	public static void generateResourceElements(JobDefinitionType value, JobExecutionContext context) throws Exception{
 		
 		TaskDetails taskData = context.getTaskData();
+		
 		
 		if(taskData != null && taskData.isSetTaskScheduling()){
 			try {
@@ -53,8 +60,6 @@ public class ResourceProcessor {
 					rangeType.setUpperBound(Double.NaN);
 					rangeType.setExact(crs.getNodeCount());
 					JSDLUtils.setTotalResourceCountRequirements(value, rangeType);
-					// set totalcpu count to -1 as we dont need that
-					crs.setTotalCPUCount(0);
 				}
 	
 				if(crs.getWallTimeLimit() > 0) {
@@ -65,13 +70,26 @@ public class ResourceProcessor {
 					cpuTime.setExact(wallTime);
 					JSDLUtils.setIndividualCPUTimeRequirements(value, cpuTime);
 				}
-				
+				// the total cpu count is total cpus per node 
 				if(crs.getTotalCPUCount() > 0) {
 					RangeValueType rangeType = new RangeValueType();
 					rangeType.setLowerBound(Double.NaN);
 					rangeType.setUpperBound(Double.NaN);
 					rangeType.setExact(crs.getTotalCPUCount());
-					JSDLUtils.setTotalCPUCountRequirements(value, rangeType);
+					JSDLUtils.setIndividualCPUCountRequirements(value, rangeType);
+				}
+
+				String qName = crs.getQueueName(); 
+				if(!( qName == null || "".equals(qName) ) ) {
+					// ignore "default" queue names
+					if(! (crs.getQueueName().trim().equalsIgnoreCase("default")) ) {
+						ResourceRequestDocument rqDoc = ResourceRequestDocument.Factory.newInstance();
+						ResourceRequestType rq = rqDoc.addNewResourceRequest();
+						rq.setName("Queue");
+						rq.setValue(qName);
+						ResourcesType res = JSDLUtils.getOrCreateResources(value);
+						WSUtilities.insertAny(rqDoc, res);
+					}
 				}
 				
 			} catch (NullPointerException npe) {

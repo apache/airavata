@@ -143,7 +143,7 @@ public class UASDataStagingProcessor {
 					continue;
 				}
 				if(input.getType().equals(DataType.URI)){
-					createInURISMSElement(value, smsUrl, input.getValue(), false);
+					createInURISMSElement(value, smsUrl, input.getValue(), true);
 				}
 				else if(input.getType().equals(DataType.STRING) && input.isDataStaged()){
 					createInURISMSElement(value, smsUrl, input.getValue(), false);
