@@ -64,6 +64,7 @@ public class ProcessOutput {
     }
 
     @Basic
+    @Lob
     @Column(name = "OUTPUT_VALUE")
     public String getOutputValue() {
         return outputValue;

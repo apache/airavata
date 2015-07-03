@@ -66,6 +66,7 @@ public class ProcessInput {
     }
 
     @Basic
+    @Lob
     @Column(name = "INPUT_VALUE")
     public String getInputValue() {
         return inputValue;

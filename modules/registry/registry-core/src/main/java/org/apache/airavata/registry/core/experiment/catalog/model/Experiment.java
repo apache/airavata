@@ -163,6 +163,7 @@ public class Experiment {
     }
 
     @Basic
+    @Lob
     @Column(name = "EMAIL_ADDRESSES")
     public String getEmailAddresses() {
         return emailAddresses;
