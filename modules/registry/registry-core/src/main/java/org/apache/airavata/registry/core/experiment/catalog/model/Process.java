@@ -92,6 +92,7 @@ public class Process {
     }
 
     @Basic
+    @Lob
     @Column(name = "PROCESS_DETAIL")
     public String getProcessDetail() {
         return processDetail;
@@ -163,6 +164,7 @@ public class Process {
     }
 
     @Basic
+    @Lob
     @Column(name = "EMAIL_ADDRESSES")
     public String getEmailAddresses() {
         return emailAddresses;

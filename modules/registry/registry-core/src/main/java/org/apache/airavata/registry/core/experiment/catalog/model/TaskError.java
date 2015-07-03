@@ -71,6 +71,7 @@ public class TaskError {
     }
 
     @Basic
+    @Lob
     @Column(name = "ACTUAL_ERROR_MESSAGE")
     public String getActualErrorMessage() {
         return actualErrorMessage;
@@ -81,6 +82,7 @@ public class TaskError {
     }
 
     @Basic
+    @Lob
     @Column(name = "USER_FRIENDLY_MESSAGE")
     public String getUserFriendlyMessage() {
         return userFriendlyMessage;
@@ -101,6 +103,7 @@ public class TaskError {
     }
 
     @Basic
+    @Lob
     @Column(name = "ROOT_CAUSE_ERROR_ID_LIST")
     public String getRootCauseErrorIdList() {
         return rootCauseErrorIdList;

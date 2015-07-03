@@ -65,6 +65,7 @@ public class ExperimentInput {
     }
 
     @Basic
+    @Lob
     @Column(name = "INPUT_VALUE")
     public String getInputValue() {
         return inputValue;

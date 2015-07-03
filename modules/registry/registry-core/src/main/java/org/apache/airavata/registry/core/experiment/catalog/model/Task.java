@@ -94,6 +94,7 @@ public class Task {
     }
 
     @Basic
+    @Lob
     @Column(name = "TASK_DETAIL")
     public String getTaskDetail() {
         return taskDetail;
