@@ -94,7 +94,9 @@ public class AppModuleMappingResource extends AbstractResource {
             em = AppCatalogJPAUtils.getEntityManager();
             em.getTransaction().begin();
             AppCatalogQueryGenerator generator= new AppCatalogQueryGenerator(APP_MODULE_MAPPING);
-            generator.setParameter(AppModuleMappingConstants.INTERFACE_ID, ids.get(AppModuleMappingConstants.INTERFACE_ID));
+            if (ids.get(AppModuleMappingConstants.INTERFACE_ID) != null) {
+                generator.setParameter(AppModuleMappingConstants.INTERFACE_ID, ids.get(AppModuleMappingConstants.INTERFACE_ID));
+            }
             if (ids.get(AppModuleMappingConstants.MODULE_ID) != null){
                 generator.setParameter(AppModuleMappingConstants.MODULE_ID, ids.get(AppModuleMappingConstants.MODULE_ID));
             }

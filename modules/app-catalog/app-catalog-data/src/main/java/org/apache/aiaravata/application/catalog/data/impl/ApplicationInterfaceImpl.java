@@ -395,8 +395,12 @@ public class ApplicationInterfaceImpl implements ApplicationInterface {
     @Override
     public boolean removeApplicationModule(String moduleId) throws AppCatalogException {
         try {
-            AppModuleResource resource = new AppModuleResource();
-            resource.remove(moduleId);
+            AppModuleResource appModuleResource = new AppModuleResource();
+            appModuleResource.remove(moduleId);
+            AppModuleMappingResource appModuleMappingResource = new AppModuleMappingResource();
+            HashMap ids = new HashMap();
+            ids.put(AbstractResource.AppModuleMappingConstants.MODULE_ID, appModuleResource.getModuleId());
+            appModuleMappingResource.remove(ids);
             return true;
         }catch (Exception e){
             logger.error("Error while removing app module "+moduleId, e);
