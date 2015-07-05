@@ -104,7 +104,7 @@ public class DataTransferrer {
 		List<String> inFilePrms = extractInFileParams();
 		for (String uri : inFilePrms) {
 			String fileName = new File(uri).getName();
-				if (uri.startsWith("file")) {
+				if (uri.startsWith("file:")) {
 					try {
 						String uriWithoutProtocol = uri.substring(uri.lastIndexOf("://") + 1, uri.length());
 						FileUploader fileUploader = new FileUploader(uriWithoutProtocol,fileName,Mode.overwrite);
