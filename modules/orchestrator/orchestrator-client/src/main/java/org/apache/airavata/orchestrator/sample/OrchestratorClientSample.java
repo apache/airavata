@@ -103,7 +103,7 @@ public class OrchestratorClientSample {
                     output.setValue("");
                     exOut.add(output);
 
-                    ExperimentModel simpleExperiment = ExperimentModelUtil.createSimpleExperiment("default", "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
+                    ExperimentModel simpleExperiment = ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY,"default", "admin", "echoExperiment", "SimpleEcho2", "SimpleEcho2", exInputs);
                     simpleExperiment.setExperimentOutputs(exOut);
 
                     ComputationalResourceSchedulingModel scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "normal", 0, 0);

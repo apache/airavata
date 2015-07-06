@@ -235,7 +235,7 @@ public class CreateLaunchBES {
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
 
             ExperimentModel simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "echoExperiment", "SimpleEcho2", echoAppId, exInputs);
+                    ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY,"default", "admin", "echoExperiment", "SimpleEcho2", echoAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
 
@@ -301,7 +301,7 @@ public class CreateLaunchBES {
 			}
             
             ExperimentModel simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "mpiExperiment", "HelloMPI", mpiAppId, exInputs);
+                    ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY,"default", "admin", "mpiExperiment", "HelloMPI", mpiAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
 
