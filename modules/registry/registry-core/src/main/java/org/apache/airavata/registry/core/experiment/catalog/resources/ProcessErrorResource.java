@@ -41,7 +41,7 @@ public class ProcessErrorResource extends AbstractExpCatResource {
     private Timestamp creationTime;
     private String actualErrorMessage;
     private String userFriendlyMessage;
-    private Boolean transientOrPersistent;
+    private boolean transientOrPersistent;
     private String rootCauseErrorIdList;
 
     public String getErrorId() {
@@ -84,11 +84,11 @@ public class ProcessErrorResource extends AbstractExpCatResource {
         this.userFriendlyMessage = userFriendlyMessage;
     }
 
-    public Boolean getTransientOrPersistent() {
+    public boolean getTransientOrPersistent() {
         return transientOrPersistent;
     }
 
-    public void setTransientOrPersistent(Boolean transientOrPersistent) {
+    public void setTransientOrPersistent(boolean transientOrPersistent) {
         this.transientOrPersistent = transientOrPersistent;
     }
 

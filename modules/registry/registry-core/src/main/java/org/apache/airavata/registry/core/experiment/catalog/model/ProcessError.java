@@ -37,7 +37,7 @@ public class ProcessError {
     private Timestamp creationTime;
     private String actualErrorMessage;
     private String userFriendlyMessage;
-    private Boolean transientOrPersistent;
+    private boolean transientOrPersistent;
     private String rootCauseErrorIdList;
     private Process process;
 
@@ -95,11 +95,11 @@ public class ProcessError {
 
     @Basic
     @Column(name = "TRANSIENT_OR_PERSISTENT")
-    public Boolean getTransientOrPersistent() {
+    public boolean getTransientOrPersistent() {
         return transientOrPersistent;
     }
 
-    public void setTransientOrPersistent(Boolean transientOrPersistent) {
+    public void setTransientOrPersistent(boolean transientOrPersistent) {
         this.transientOrPersistent = transientOrPersistent;
     }
 

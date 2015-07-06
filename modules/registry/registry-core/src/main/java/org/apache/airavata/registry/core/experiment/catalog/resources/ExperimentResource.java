@@ -49,7 +49,7 @@ public class ExperimentResource extends AbstractExpCatResource {
     private String description;
     private String executionId;
     private String gatewayExecutionId;
-    private Boolean enableEmailNotification;
+    private boolean enableEmailNotification;
     private String emailAddresses;
 
     public String getExperimentId() {
@@ -132,11 +132,11 @@ public class ExperimentResource extends AbstractExpCatResource {
         this.gatewayExecutionId = gatewayExecutionId;
     }
 
-    public Boolean getEnableEmailNotification() {
+    public boolean getEnableEmailNotification() {
         return enableEmailNotification;
     }
 
-    public void setEnableEmailNotification(Boolean enableEmailNotification) {
+    public void setEnableEmailNotification(boolean enableEmailNotification) {
         this.enableEmailNotification = enableEmailNotification;
     }
 

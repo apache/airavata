@@ -35,12 +35,12 @@ import java.util.List;
 public class UserConfigurationDataResource extends AbstractExpCatResource {
     private static final Logger logger = LoggerFactory.getLogger(UserConfigurationDataResource.class);
     private String experimentId;
-    private Boolean airavataAutoSchedule;
-    private Boolean overrideManualScheduledParams;
-    private Boolean shareExperimentPublically;
-    private Boolean throttleResources;
+    private boolean airavataAutoSchedule;
+    private boolean overrideManualScheduledParams;
+    private boolean shareExperimentPublically;
+    private boolean throttleResources;
     private String userDn;
-    private Boolean generateCert;
+    private boolean generateCert;
     private String resourceHostId;
     private Integer totalCpuCount;
     private Integer nodeCount;
@@ -113,35 +113,35 @@ public class UserConfigurationDataResource extends AbstractExpCatResource {
         this.totalPhysicalMemory = totalPhysicalMemory;
     }
 
-    public Boolean getAiravataAutoSchedule() {
+    public boolean getAiravataAutoSchedule() {
         return airavataAutoSchedule;
     }
 
-    public void setAiravataAutoSchedule(Boolean airavataAutoSchedule) {
+    public void setAiravataAutoSchedule(boolean airavataAutoSchedule) {
         this.airavataAutoSchedule = airavataAutoSchedule;
     }
 
-    public Boolean getOverrideManualScheduledParams() {
+    public boolean getOverrideManualScheduledParams() {
         return overrideManualScheduledParams;
     }
 
-    public void setOverrideManualScheduledParams(Boolean overrideManualScheduledParams) {
+    public void setOverrideManualScheduledParams(boolean overrideManualScheduledParams) {
         this.overrideManualScheduledParams = overrideManualScheduledParams;
     }
 
-    public Boolean getShareExperimentPublically() {
+    public boolean getShareExperimentPublically() {
         return shareExperimentPublically;
     }
 
-    public void setShareExperimentPublically(Boolean shareExperimentPublically) {
+    public void setShareExperimentPublically(boolean shareExperimentPublically) {
         this.shareExperimentPublically = shareExperimentPublically;
     }
 
-    public Boolean getThrottleResources() {
+    public boolean getThrottleResources() {
         return throttleResources;
     }
 
-    public void setThrottleResources(Boolean throttleResources) {
+    public void setThrottleResources(boolean throttleResources) {
         this.throttleResources = throttleResources;
     }
 
@@ -153,11 +153,11 @@ public class UserConfigurationDataResource extends AbstractExpCatResource {
         this.userDn = userDn;
     }
 
-    public Boolean getGenerateCert() {
+    public boolean getGenerateCert() {
         return generateCert;
     }
 
-    public void setGenerateCert(Boolean generateCert) {
+    public void setGenerateCert(boolean generateCert) {
         this.generateCert = generateCert;
     }
 
