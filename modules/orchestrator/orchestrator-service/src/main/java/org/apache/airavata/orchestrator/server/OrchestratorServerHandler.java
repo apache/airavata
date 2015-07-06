@@ -166,12 +166,11 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 	 */
 	public boolean validateExperiment(String experimentId) throws TException, LaunchValidationException {
 		try {
+            List<ProcessModel> processes = orchestrator.createProcesses(experimentId);
             ExperimentModel experimentModel = (ExperimentModel)experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
-			List<String> ids = experimentCatalog.getIds(ExperimentCatalogModelType.PROCESS,AbstractExpCatResource.ProcessConstants.EXPERIMENT_ID, experimentId);
-			if (ids != null && !ids.isEmpty()){
-                for (String processId : ids) {
-                    ProcessModel processModel = (ProcessModel) experimentCatalog.get(ExperimentCatalogModelType.PROCESS,processId);
-                    return orchestrator.validateExperiment(experimentModel,processModel).isSetValidationState();
+			if (processes != null && !processes.isEmpty()){
+                for (ProcessModel process : processes) {
+                    return orchestrator.validateExperiment(experimentModel,process).isSetValidationState();
                 }
             }
 		} catch (OrchestratorException e) {

@@ -414,6 +414,7 @@ public class Utils {
         if (o != null){
             experimentResource.setExperimentId(o.getExperimentId());
             experimentResource.setProjectId(o.getProjectId());
+            experimentResource.setGatewayId(o.getGatewayId());
             experimentResource.setExperimentType(o.getExperimentType());
             experimentResource.setUserName(o.getUserName());
             experimentResource.setExperimentName(o.getExperimentName());
