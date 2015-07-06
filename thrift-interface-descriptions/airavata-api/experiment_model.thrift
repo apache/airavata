@@ -76,8 +76,8 @@ struct UserConfigurationDataModel {
 struct ExperimentModel {
     1: required string experimentId = airavata_commons.DEFAULT_ID,
     2: required string projectId,
-    3: required string gatewayId
-    4: required ExperimentType experimentType = ExperimentType.SINGLE_APPLICATION;
+    3: required string gatewayId,
+    4: required ExperimentType experimentType = ExperimentType.SINGLE_APPLICATION,
     5: required string userName,
     6: required string experimentName,
     7: optional i64 creationTime,

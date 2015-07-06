@@ -45,9 +45,9 @@ import org.slf4j.LoggerFactory;
 public class RegisterSampleApplications {
 
 //    public static final String THRIFT_SERVER_HOST = "gw127.iu.xsede.org";
-    public static final String THRIFT_SERVER_HOST = "localhost";
+    public static final String THRIFT_SERVER_HOST = CreateLaunchExperiment.THRIFT_SERVER_HOST;
 //    public static final int THRIFT_SERVER_PORT = 9930;
-    public static final int THRIFT_SERVER_PORT = 8930;
+    public static final int THRIFT_SERVER_PORT = CreateLaunchExperiment.THRIFT_SERVER_PORT;
     private final static Logger logger = LoggerFactory.getLogger(RegisterSampleApplications.class);
 //    private static final String DEFAULT_GATEWAY = "default";
     private static final String DEFAULT_GATEWAY = CreateLaunchExperiment.DEFAULT_GATEWAY;
