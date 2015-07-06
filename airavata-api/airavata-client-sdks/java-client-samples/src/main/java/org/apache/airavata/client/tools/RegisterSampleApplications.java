@@ -28,6 +28,7 @@ import java.util.*;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.client.samples.CreateLaunchExperiment;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
 import org.apache.airavata.model.appcatalog.computeresource.*;
@@ -49,7 +50,7 @@ public class RegisterSampleApplications {
     public static final int THRIFT_SERVER_PORT = 8930;
     private final static Logger logger = LoggerFactory.getLogger(RegisterSampleApplications.class);
 //    private static final String DEFAULT_GATEWAY = "default";
-    private static final String DEFAULT_GATEWAY = "php_reference_gateway";
+    private static final String DEFAULT_GATEWAY = CreateLaunchExperiment.DEFAULT_GATEWAY;
     private static Airavata.Client airavataClient;
 
     //Host Id's

@@ -47,6 +47,7 @@ public class ExperimentModelUtil {
         experiment.setExperimentType(ExperimentType.SINGLE_APPLICATION);
         experiment.setUserName(userName);
         experiment.setExperimentName(experimentName);
+        experiment.setExperimentId(experimentName);
         experiment.setDescription(expDescription);
         experiment.setExecutionId(applicationId);
         experiment.setExperimentInputs(experimentInputList);
