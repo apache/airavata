@@ -23,6 +23,8 @@ namespace php Airavata.Model.Workspace
 namespace cpp apache.airavata.model.workspace
 namespace py apache.airavata.model.workspace
 
+include "airavata_commons.thrift"
+
 /*
  * This file describes the definitions of the Airavata Workspace. The workspace is a container for all user data
  *   organized as Projects and Experiment within them.
@@ -39,7 +41,7 @@ struct Group {
 }
 
 struct Project {
-    1: required string projectID,
+    1: required string projectID = airavata_commons.DEFAULT_ID,
     2: required string owner,
     3: required string name,
     4: optional string description
