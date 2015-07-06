@@ -40,9 +40,9 @@ public class ExperimentOutputResource extends AbstractExpCatResource {
     private String outputValue;
     private String dataType;
     private String applicationArgument;
-    private Boolean isRequired;
-    private Boolean requiredToAddedToCmd;
-    private Boolean dataMovement;
+    private boolean isRequired;
+    private boolean requiredToAddedToCmd;
+    private boolean dataMovement;
     private String location;
     private String searchQuery;
 
@@ -86,27 +86,27 @@ public class ExperimentOutputResource extends AbstractExpCatResource {
         this.applicationArgument = applicationArgument;
     }
 
-    public Boolean getIsRequired() {
+    public boolean getIsRequired() {
         return isRequired;
     }
 
-    public void setIsRequired(Boolean isRequired) {
+    public void setIsRequired(boolean isRequired) {
         this.isRequired = isRequired;
     }
 
-    public Boolean getRequiredToAddedToCmd() {
+    public boolean getRequiredToAddedToCmd() {
         return requiredToAddedToCmd;
     }
 
-    public void setRequiredToAddedToCmd(Boolean requiredToAddedToCmd) {
+    public void setRequiredToAddedToCmd(boolean requiredToAddedToCmd) {
         this.requiredToAddedToCmd = requiredToAddedToCmd;
     }
 
-    public Boolean getDataMovement() {
+    public boolean getDataMovement() {
         return dataMovement;
     }
 
-    public void setDataMovement(Boolean dataMovement) {
+    public void setDataMovement(boolean dataMovement) {
         this.dataMovement = dataMovement;
     }
 

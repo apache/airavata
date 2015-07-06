@@ -30,12 +30,12 @@ import javax.persistence.*;
 public class UserConfigurationData {
     private final static Logger logger = LoggerFactory.getLogger(UserConfigurationData.class);
     private String experimentId;
-    private Boolean airavataAutoSchedule;
-    private Boolean overrideManualScheduledParams;
-    private Boolean shareExperimentPublically;
-    private Boolean throttleResources;
+    private boolean airavataAutoSchedule;
+    private boolean overrideManualScheduledParams;
+    private boolean shareExperimentPublically;
+    private boolean throttleResources;
     private String userDn;
-    private Boolean generateCert;
+    private boolean generateCert;
     private String resourceHostId;
     private Integer totalCpuCount;
     private Integer nodeCount;
@@ -57,41 +57,41 @@ public class UserConfigurationData {
 
     @Basic
     @Column(name = "AIRAVATA_AUTO_SCHEDULE")
-    public Boolean getAiravataAutoSchedule() {
+    public boolean getAiravataAutoSchedule() {
         return airavataAutoSchedule;
     }
 
-    public void setAiravataAutoSchedule(Boolean airavataAutoSchedule) {
+    public void setAiravataAutoSchedule(boolean airavataAutoSchedule) {
         this.airavataAutoSchedule = airavataAutoSchedule;
     }
 
     @Basic
     @Column(name = "OVERRIDE_MANUAL_SCHEDULED_PARAMS")
-    public Boolean getOverrideManualScheduledParams() {
+    public boolean getOverrideManualScheduledParams() {
         return overrideManualScheduledParams;
     }
 
-    public void setOverrideManualScheduledParams(Boolean overrideManualScheduledParams) {
+    public void setOverrideManualScheduledParams(boolean overrideManualScheduledParams) {
         this.overrideManualScheduledParams = overrideManualScheduledParams;
     }
 
     @Basic
     @Column(name = "SHARE_EXPERIMENT_PUBLICALLY")
-    public Boolean getShareExperimentPublically() {
+    public boolean getShareExperimentPublically() {
         return shareExperimentPublically;
     }
 
-    public void setShareExperimentPublically(Boolean shareExperimentPublically) {
+    public void setShareExperimentPublically(boolean shareExperimentPublically) {
         this.shareExperimentPublically = shareExperimentPublically;
     }
 
     @Basic
     @Column(name = "THROTTLE_RESOURCES")
-    public Boolean getThrottleResources() {
+    public boolean getThrottleResources() {
         return throttleResources;
     }
 
-    public void setThrottleResources(Boolean throttleResources) {
+    public void setThrottleResources(boolean throttleResources) {
         this.throttleResources = throttleResources;
     }
 
@@ -107,11 +107,11 @@ public class UserConfigurationData {
 
     @Basic
     @Column(name = "GENERATE_CERT")
-    public Boolean getGenerateCert() {
+    public boolean getGenerateCert() {
         return generateCert;
     }
 
-    public void setGenerateCert(Boolean generateCert) {
+    public void setGenerateCert(boolean generateCert) {
         this.generateCert = generateCert;
     }
 

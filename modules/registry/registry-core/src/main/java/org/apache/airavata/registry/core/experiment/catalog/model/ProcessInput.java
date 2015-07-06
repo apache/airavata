@@ -36,13 +36,13 @@ public class ProcessInput {
     private String inputValue;
     private String dataType;
     private String applicationArgument;
-    private Boolean standardInput;
+    private boolean standardInput;
     private String userFriendlyDescription;
     private String metadata;
     private Integer inputOrder;
-    private Boolean isRequired;
-    private Boolean requiredToAddedToCmd;
-    private Boolean dataStaged;
+    private boolean isRequired;
+    private boolean requiredToAddedToCmd;
+    private boolean dataStaged;
     private Process process;
 
     @Id
@@ -98,11 +98,11 @@ public class ProcessInput {
 
     @Basic
     @Column(name = "STANDARD_INPUT")
-    public Boolean getStandardInput() {
+    public boolean getStandardInput() {
         return standardInput;
     }
 
-    public void setStandardInput(Boolean standardInput) {
+    public void setStandardInput(boolean standardInput) {
         this.standardInput = standardInput;
     }
 
@@ -138,31 +138,31 @@ public class ProcessInput {
 
     @Basic
     @Column(name = "IS_REQUIRED")
-    public Boolean getIsRequired() {
+    public boolean getIsRequired() {
         return isRequired;
     }
 
-    public void setIsRequired(Boolean isRequired) {
+    public void setIsRequired(boolean isRequired) {
         this.isRequired = isRequired;
     }
 
     @Basic
     @Column(name = "REQUIRED_TO_ADDED_TO_CMD")
-    public Boolean getRequiredToAddedToCmd() {
+    public boolean getRequiredToAddedToCmd() {
         return requiredToAddedToCmd;
     }
 
-    public void setRequiredToAddedToCmd(Boolean requiredToAddedToCmd) {
+    public void setRequiredToAddedToCmd(boolean requiredToAddedToCmd) {
         this.requiredToAddedToCmd = requiredToAddedToCmd;
     }
 
     @Basic
     @Column(name = "DATA_STAGED")
-    public Boolean getDataStaged() {
+    public boolean getDataStaged() {
         return dataStaged;
     }
 
-    public void setDataStaged(Boolean dataStaged) {
+    public void setDataStaged(boolean dataStaged) {
         this.dataStaged = dataStaged;
     }
 

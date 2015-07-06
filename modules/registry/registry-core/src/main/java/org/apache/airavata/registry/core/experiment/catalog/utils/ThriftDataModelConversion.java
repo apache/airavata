@@ -21,6 +21,7 @@
 
 package org.apache.airavata.registry.core.experiment.catalog.utils;
 
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
@@ -42,6 +43,7 @@ import org.apache.airavata.registry.cpi.RegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -273,11 +275,12 @@ public class ThriftDataModelConversion {
     public static ExperimentStatus getExperimentStatus(ExperimentStatusResource status){
         if (status != null){
             ExperimentStatus experimentStatus = new ExperimentStatus();
-            if (status.getState() == null || status.getState().equals("")){
-                status.setState("UNKNOWN");
-            }
             experimentStatus.setState(ExperimentState.valueOf(status.getState()));
-            experimentStatus.setTimeOfStateChange(status.getTimeOfStateChange().getTime());
+            Timestamp timeOfStateChange = status.getTimeOfStateChange();
+            if (timeOfStateChange == null){
+                timeOfStateChange = AiravataUtils.getCurrentTimestamp();
+            }
+            experimentStatus.setTimeOfStateChange(timeOfStateChange.getTime());
             experimentStatus.setReason(status.getReason());
             return experimentStatus;
         }
@@ -287,11 +290,12 @@ public class ThriftDataModelConversion {
     public static ProcessStatus getProcessStatus (ProcessStatusResource status){
         if (status != null){
             ProcessStatus processStatus = new ProcessStatus();
-            if (status.getState() == null || status.getState().equals("")){
-                status.setState("UNKNOWN");
-            }
             processStatus.setState(ProcessState.valueOf(status.getState()));
-            processStatus.setTimeOfStateChange(status.getTimeOfStateChange().getTime());
+            Timestamp timeOfStateChange = status.getTimeOfStateChange();
+            if (timeOfStateChange == null){
+                timeOfStateChange = AiravataUtils.getCurrentTimestamp();
+            }
+            processStatus.setTimeOfStateChange(timeOfStateChange.getTime());
             processStatus.setReason(status.getReason());
             return processStatus;
         }
@@ -301,11 +305,12 @@ public class ThriftDataModelConversion {
     public static TaskStatus getTaskStatus (TaskStatusResource status){
         if (status != null){
             TaskStatus taskStatus = new TaskStatus();
-            if (status.getState() == null || status.getState().equals("")){
-                status.setState("UNKNOWN");
-            }
             taskStatus.setState(TaskState.valueOf(status.getState()));
-            taskStatus.setTimeOfStateChange(status.getTimeOfStateChange().getTime());
+            Timestamp timeOfStateChange = status.getTimeOfStateChange();
+            if (timeOfStateChange == null){
+                timeOfStateChange = AiravataUtils.getCurrentTimestamp();
+            }
+            taskStatus.setTimeOfStateChange(timeOfStateChange.getTime());
             taskStatus.setReason(status.getReason());
             return taskStatus;
         }
@@ -315,11 +320,12 @@ public class ThriftDataModelConversion {
     public static JobStatus getJobStatus (JobStatusResource status){
         if (status != null){
             JobStatus jobStatus = new JobStatus();
-            if (status.getState() == null || status.getState().equals("")){
-                status.setState("UNKNOWN");
-            }
             jobStatus.setJobState(JobState.valueOf(status.getState()));
-            jobStatus.setTimeOfStateChange(status.getTimeOfStateChange().getTime());
+            Timestamp timeOfStateChange = status.getTimeOfStateChange();
+            if (timeOfStateChange == null){
+                timeOfStateChange = AiravataUtils.getCurrentTimestamp();
+            }
+            jobStatus.setTimeOfStateChange(timeOfStateChange.getTime());
             jobStatus.setReason(status.getReason());
             return jobStatus;
         }

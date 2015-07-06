@@ -49,7 +49,7 @@ public class ProcessResource extends AbstractExpCatResource {
     private String applicationDeploymentId;
     private String computeResourceId;
     private String gatewayExecutionId;
-    private Boolean enableEmailNotification;
+    private boolean enableEmailNotification;
     private String emailAddresses;
 
     public String getProcessId() {
@@ -132,11 +132,11 @@ public class ProcessResource extends AbstractExpCatResource {
         this.gatewayExecutionId = gatewayExecutionId;
     }
 
-    public Boolean getEnableEmailNotification() {
+    public boolean getEnableEmailNotification() {
         return enableEmailNotification;
     }
 
-    public void setEnableEmailNotification(Boolean enableEmailNotification) {
+    public void setEnableEmailNotification(boolean enableEmailNotification) {
         this.enableEmailNotification = enableEmailNotification;
     }
 
