@@ -35,23 +35,25 @@ import java.util.List;
 
 
 public class ExperimentModelUtil {
-	
-    public static ExperimentModel createSimpleExperiment(String projectID,
-                                                    String userName,
-                                                    String experimentName,
-                                                    String expDescription,
-                                                    String applicationId,
-                                                    List<InputDataObjectType> experimentInputList) {
-        ExperimentModel experiment = new ExperimentModel();
-        experiment.setProjectId(projectID);
-        experiment.setExperimentType(ExperimentType.SINGLE_APPLICATION);
-        experiment.setUserName(userName);
-        experiment.setExperimentName(experimentName);
-        experiment.setDescription(expDescription);
-        experiment.setExecutionId(applicationId);
-        experiment.setExperimentInputs(experimentInputList);
-        return experiment;
-    }
+
+	public static ExperimentModel createSimpleExperiment(String gatewayId,
+	                                                     String projectID,
+	                                                     String userName,
+	                                                     String experimentName,
+	                                                     String expDescription,
+	                                                     String applicationId,
+	                                                     List<InputDataObjectType> experimentInputList) {
+		ExperimentModel experiment = new ExperimentModel();
+		experiment.setGatewayId(gatewayId);
+		experiment.setProjectId(projectID);
+		experiment.setExperimentType(ExperimentType.SINGLE_APPLICATION);
+		experiment.setUserName(userName);
+		experiment.setExperimentName(experimentName);
+		experiment.setDescription(expDescription);
+		experiment.setExecutionId(applicationId);
+		experiment.setExperimentInputs(experimentInputList);
+		return experiment;
+	}
 
 
     public static ComputationalResourceSchedulingModel createComputationResourceScheduling(String resourceHostId,

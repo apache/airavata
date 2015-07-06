@@ -86,8 +86,8 @@ public class CreateLaunchExperiment {
         airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
         AuthzToken token = new AuthzToken("empty_token");
         System.out.println("API version is " + airavataClient.getAPIVersion(token));
-        registerApplications(); // run this only the first time
-//        createAndLaunchExp();
+//        registerApplications(); // run this only the first time
+        createAndLaunchExp();
     }
 
     private static String fsdResourceId;
@@ -272,9 +272,10 @@ public class CreateLaunchExperiment {
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
             String projectId = client.createProject(DEFAULT_GATEWAY, project);
 
-            ExperimentModel simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho3", echoAppId, exInputs);
-            simpleExperiment.setExperimentOutputs(exOut);
+	        ExperimentModel simpleExperiment =
+			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, projectId, "admin", "echoExperiment",
+					        "SimpleEcho3", echoAppId, exInputs);
+	        simpleExperiment.setExperimentOutputs(exOut);
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(echoAppId);
             if (computeResources != null && computeResources.size() != 0) {
@@ -322,9 +323,10 @@ public class CreateLaunchExperiment {
             }
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
 
-            ExperimentModel simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "echoExperiment", "SimpleEcho2", echoAppId, exInputs);
-            simpleExperiment.setExperimentOutputs(exOut);
+	        ExperimentModel simpleExperiment =
+			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, "default", "admin", "echoExperiment",
+					        "SimpleEcho2", echoAppId, exInputs);
+	        simpleExperiment.setExperimentOutputs(exOut);
 
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(echoAppId);
@@ -373,9 +375,10 @@ public class CreateLaunchExperiment {
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(mpiAppId);
 
 
-            ExperimentModel simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "mpiExperiment", "HelloMPI", mpiAppId, null);
-            simpleExperiment.setExperimentOutputs(exOut);
+	        ExperimentModel simpleExperiment =
+			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, "default", "admin", "mpiExperiment",
+					        "HelloMPI", mpiAppId, null);
+	        simpleExperiment.setExperimentOutputs(exOut);
 
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(mpiAppId);
@@ -421,9 +424,10 @@ public class CreateLaunchExperiment {
             setWRFInputs(exInputs);
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(wrfAppId);
 
-            ExperimentModel simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "WRFExperiment", "Testing", wrfAppId, exInputs);
-            simpleExperiment.setExperimentOutputs(exOut);
+	        ExperimentModel simpleExperiment =
+			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, "default", "admin", "WRFExperiment",
+					        "Testing", wrfAppId, exInputs);
+	        simpleExperiment.setExperimentOutputs(exOut);
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(wrfAppId);
             if (computeResources != null && computeResources.size() != 0) {
@@ -477,9 +481,10 @@ public class CreateLaunchExperiment {
             setGROMACSInputs(exInputs);
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(gromacsAppId);
 
-            ExperimentModel simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "GromacsExperiment", "Testing", gromacsAppId, exInputs);
-            simpleExperiment.setExperimentOutputs(exOut);
+	        ExperimentModel simpleExperiment =
+			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, "default", "admin",
+					        "GromacsExperiment", "Testing", gromacsAppId, exInputs);
+	        simpleExperiment.setExperimentOutputs(exOut);
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(gromacsAppId);
             if (computeResources != null && computeResources.size() != 0) {
@@ -528,9 +533,10 @@ public class CreateLaunchExperiment {
             setESPRESSOInputs(exInputs);
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(espressoAppId);
 
-            ExperimentModel simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "EspressoExperiment", "Testing", espressoAppId, exInputs);
-            simpleExperiment.setExperimentOutputs(exOut);
+	        ExperimentModel simpleExperiment =
+			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, "default", "admin",
+					        "EspressoExperiment", "Testing", espressoAppId, exInputs);
+	        simpleExperiment.setExperimentOutputs(exOut);
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(espressoAppId);
             if (computeResources != null && computeResources.size() != 0) {
@@ -579,9 +585,10 @@ public class CreateLaunchExperiment {
             setTRINITYInputs(exInputs);
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(trinityAppId);
 
-            ExperimentModel simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "TrinityExperiment", "Testing", trinityAppId, exInputs);
-            simpleExperiment.setExperimentOutputs(exOut);
+	        ExperimentModel simpleExperiment =
+			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, "default", "admin",
+					        "TrinityExperiment", "Testing", trinityAppId, exInputs);
+	        simpleExperiment.setExperimentOutputs(exOut);
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(trinityAppId);
             if (computeResources != null && computeResources.size() != 0) {
@@ -630,9 +637,10 @@ public class CreateLaunchExperiment {
             setLAMMPSInputs(exInputs);
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(lammpsAppId);
 
-            ExperimentModel simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "LAMMPSExperiment", "Testing", lammpsAppId, exInputs);
-            simpleExperiment.setExperimentOutputs(exOut);
+	        ExperimentModel simpleExperiment =
+			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, "default", "admin",
+					        "LAMMPSExperiment", "Testing", lammpsAppId, exInputs);
+	        simpleExperiment.setExperimentOutputs(exOut);
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(lammpsAppId);
             if (computeResources != null && computeResources.size() != 0) {
@@ -679,9 +687,10 @@ public class CreateLaunchExperiment {
             setNWCHEMInputs(exInputs);
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(nwchemAppId);
 
-            ExperimentModel simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "NWchemExperiment", "Testing", nwchemAppId, exInputs);
-            simpleExperiment.setExperimentOutputs(exOut);
+	        ExperimentModel simpleExperiment =
+			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, "default", "admin",
+					        "NWchemExperiment", "Testing", nwchemAppId, exInputs);
+	        simpleExperiment.setExperimentOutputs(exOut);
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(nwchemAppId);
             if (computeResources != null && computeResources.size() != 0) {
@@ -728,9 +737,10 @@ public class CreateLaunchExperiment {
             setAUTODOCKInputs(exInputs);
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(nwchemAppId);
 
-            ExperimentModel simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "AutoDockExperiment", "Testing", autodockAppId, exInputs);
-            simpleExperiment.setExperimentOutputs(exOut);
+	        ExperimentModel simpleExperiment =
+			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, "default", "admin",
+					        "AutoDockExperiment", "Testing", autodockAppId, exInputs);
+	        simpleExperiment.setExperimentOutputs(exOut);
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(autodockAppId);
             if (computeResources != null && computeResources.size() != 0) {
@@ -800,9 +810,10 @@ public class CreateLaunchExperiment {
             setWRFInputs(exInputs);
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(wrfAppId);
 
-            ExperimentModel simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("default", "admin", "WRFExperiment", "Testing", wrfAppId, exInputs);
-            simpleExperiment.setExperimentOutputs(exOut);
+	        ExperimentModel simpleExperiment =
+			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, "default", "admin", "WRFExperiment",
+					        "Testing", wrfAppId, exInputs);
+	        simpleExperiment.setExperimentOutputs(exOut);
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(wrfAppId);
             if (computeResources != null && computeResources.size() != 0) {
@@ -870,9 +881,10 @@ public class CreateLaunchExperiment {
             Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
             String projectId = client.createProject(DEFAULT_GATEWAY, project);
 
-            ExperimentModel simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "Echo Test", echoAppId, exInputs);
-            simpleExperiment.setExperimentOutputs(exOut);
+	        ExperimentModel simpleExperiment =
+			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, projectId, "admin", "echoExperiment",
+					        "Echo Test", echoAppId, exInputs);
+	        simpleExperiment.setExperimentOutputs(exOut);
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(echoAppId);
             if (computeResources != null && computeResources.size() != 0) {
@@ -962,11 +974,12 @@ public class CreateLaunchExperiment {
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
-            String projectId = client.createProject(DEFAULT_GATEWAY, project);
+	        String projectId = client.createProject(DEFAULT_GATEWAY, project);
 
             ExperimentModel simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "echoExperiment", "SimpleEcho3", echoAppId, exInputs);
+                    ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY,projectId, "admin", "echoExperiment", "SimpleEcho3", echoAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
+	        simpleExperiment.setGatewayId(DEFAULT_GATEWAY);
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(echoAppId);
             if (computeResources != null && computeResources.size() != 0) {
@@ -1083,9 +1096,10 @@ public class CreateLaunchExperiment {
             Project project = ProjectModelUtil.createProject("default", "lahiru", "test project");
             String projectId = client.createProject(DEFAULT_GATEWAY, project);
 
-            ExperimentModel simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment(projectId, "lahiru", "sshEchoExperiment", "SimpleEchoBR", echoAppId, exInputs);
-            simpleExperiment.setExperimentOutputs(exOut);
+	        ExperimentModel simpleExperiment =
+			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, projectId, "lahiru",
+					        "sshEchoExperiment", "SimpleEchoBR", echoAppId, exInputs);
+	        simpleExperiment.setExperimentOutputs(exOut);
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(echoAppId);
             if (computeResources != null && computeResources.size() != 0) {
@@ -1130,9 +1144,10 @@ public class CreateLaunchExperiment {
             String projectId = client.createProject(DEFAULT_GATEWAY, project);
 
 
-            ExperimentModel simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment(projectId, "lg11w", "sshEchoExperiment", "StressMem", echoAppId, exInputs);
-            simpleExperiment.setExperimentOutputs(exOut);
+	        ExperimentModel simpleExperiment =
+			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, projectId, "lg11w",
+					        "sshEchoExperiment", "StressMem", echoAppId, exInputs);
+	        simpleExperiment.setExperimentOutputs(exOut);
             simpleExperiment.setExperimentInputs(exInputs);
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(echoAppId);
@@ -1191,9 +1206,10 @@ public class CreateLaunchExperiment {
             exOut.add(outputDataObjectType);
             exOut.add(output1);*/
 
-            ExperimentModel simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment("default", "lg11w", "LAMMPSExperiment", "Testing", lammpsAppId, exInputs);
-            simpleExperiment.setExperimentOutputs(exOut);
+	        ExperimentModel simpleExperiment =
+			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, "default", "lg11w",
+					        "LAMMPSExperiment", "Testing", lammpsAppId, exInputs);
+	        simpleExperiment.setExperimentOutputs(exOut);
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(lammpsAppId);
             if (computeResources != null && computeResources.size() != 0) {
@@ -1255,9 +1271,10 @@ public class CreateLaunchExperiment {
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
             String projectId = client.createProject(DEFAULT_GATEWAY, project);
 
-            ExperimentModel simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "sshEchoExperiment", "SimpleEchoBR", amberAppId, exInputs);
-            simpleExperiment.setExperimentOutputs(exOut);
+	        ExperimentModel simpleExperiment =
+			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, projectId, "admin",
+					        "sshEchoExperiment", "SimpleEchoBR", amberAppId, exInputs);
+	        simpleExperiment.setExperimentOutputs(exOut);
 
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(amberAppId);
@@ -1320,9 +1337,10 @@ public class CreateLaunchExperiment {
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
             String projectId = client.createProject(DEFAULT_GATEWAY, project);
 
-            ExperimentModel simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "sshEchoExperiment", "SimpleEchoBR", amberAppId, exInputs);
-            simpleExperiment.setExperimentOutputs(exOut);
+	        ExperimentModel simpleExperiment =
+			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, projectId, "admin",
+					        "sshEchoExperiment", "SimpleEchoBR", amberAppId, exInputs);
+	        simpleExperiment.setExperimentOutputs(exOut);
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(amberAppId);
             if (computeResources != null && computeResources.size() != 0) {
@@ -1383,9 +1401,10 @@ public class CreateLaunchExperiment {
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
             String projectId = client.createProject(DEFAULT_GATEWAY, project);
 
-            ExperimentModel simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "sshEchoExperiment", "SimpleEchoBR", amberAppId, exInputs);
-            simpleExperiment.setExperimentOutputs(exOut);
+	        ExperimentModel simpleExperiment =
+			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, projectId, "admin",
+					        "sshEchoExperiment", "SimpleEchoBR", amberAppId, exInputs);
+	        simpleExperiment.setExperimentOutputs(exOut);
             simpleExperiment.setEnableEmailNotification(true);
 //            simpleExperiment.addToEmailAddresses("raman@ogce.org");
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(amberAppId);
