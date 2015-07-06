@@ -162,9 +162,10 @@ public class CreateLaunchExperimentUS3 {
             Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
             String projectId = client.createProject(DEFAULT_GATEWAY, project);
 
-            ExperimentModel simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "US3EchoExperimentTrestles", "US3EchoTrestles", "US3EchoTrestles", exInputs);
-            simpleExperiment.setExperimentOutputs(exOut);
+	        ExperimentModel simpleExperiment =
+			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, projectId, "admin",
+					        "US3EchoExperimentTrestles", "US3EchoTrestles", "US3EchoTrestles", exInputs);
+	        simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceSchedulingModel scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.edu", 1, 1, 1, "shared", 0, 0);
             scheduling.setResourceHostId("gsissh-trestles");
@@ -229,8 +230,10 @@ public class CreateLaunchExperimentUS3 {
             Project project = ProjectModelUtil.createProject("ultrascan", "ultrascan", "test project");
             String projectId = client.createProject(DEFAULT_GATEWAY, project);
 
-            ExperimentModel simpleExperiment = ExperimentModelUtil.createSimpleExperiment(projectId, "ultrascan", "US3ExperimentTrestles", "US3AppTrestles", "ultrascan_7ce6cd43-622c-44e0-87c5-fb7a6528c799", exInputs);
-            simpleExperiment.setExperimentOutputs(exOut);
+	        ExperimentModel simpleExperiment = ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, projectId,
+			        "ultrascan", "US3ExperimentTrestles", "US3AppTrestles",
+			        "ultrascan_7ce6cd43-622c-44e0-87c5-fb7a6528c799", exInputs);
+	        simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceSchedulingModel scheduling = ExperimentModelUtil.createComputationResourceScheduling("trestles.sdsc.xsede.org_72b9181b-7156-4975-a386-ed98b4949496", 32, 1, 0, "shared", 30, 0);
             UserConfigurationDataModel userConfigurationData = new UserConfigurationDataModel();
@@ -301,8 +304,10 @@ public class CreateLaunchExperimentUS3 {
             Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
             String projectId = client.createProject(DEFAULT_GATEWAY, project);
 
-            ExperimentModel simpleExperiment = ExperimentModelUtil.createSimpleExperiment(projectId, "ultrascan", "US3ExperimentStampede", "US3AppStampede", "ultrascan_7ce6cd43-622c-44e0-87c5-fb7a6528c799", exInputs);
-            simpleExperiment.setExperimentOutputs(exOut);
+	        ExperimentModel simpleExperiment = ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, projectId,
+			        "ultrascan", "US3ExperimentStampede", "US3AppStampede",
+			        "ultrascan_7ce6cd43-622c-44e0-87c5-fb7a6528c799", exInputs);
+	        simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceSchedulingModel scheduling = ExperimentModelUtil.createComputationResourceScheduling("stampede.tacc.xsede.org_e59e046f-e0e1-49c4-8475-2fab2e35d044", 32, 2, 0, "normal", 30, 0);
 
@@ -373,8 +378,10 @@ public class CreateLaunchExperimentUS3 {
 //            Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
 //            String projectId = client.createProject(project);
 
-            ExperimentModel simpleExperiment = ExperimentModelUtil.createSimpleExperiment("ultrascan_41574ef5-b054-4d03-ab20-2cfe768d5096", "ultrascan", "US3ExperimentLonestar", "US3AppLonestar", "ultrascan_e76ab5cf-79f6-44df-a244-10a734183fec", exInputs);
-            simpleExperiment.setExperimentOutputs(exOut);
+	        ExperimentModel simpleExperiment = ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY,
+			        "ultrascan_41574ef5-b054-4d03-ab20-2cfe768d5096", "ultrascan", "US3ExperimentLonestar",
+			        "US3AppLonestar", "ultrascan_e76ab5cf-79f6-44df-a244-10a734183fec", exInputs);
+	        simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceSchedulingModel scheduling = ExperimentModelUtil.createComputationResourceScheduling("lonestar.tacc.teragrid.org_2e0273bc-324b-419b-9786-38a360d44772", 12, 2, 0, "normal", 30, 0);
 
@@ -446,8 +453,10 @@ public class CreateLaunchExperimentUS3 {
 //            Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
 //            String projectId = client.createProject(project);
 
-            ExperimentModel simpleExperiment = ExperimentModelUtil.createSimpleExperiment("ultrascan_41574ef5-b054-4d03-ab20-2cfe768d5096", "ultrascan", "US3ExperimentStampede", "US3AppStampede", "ultrascan_e76ab5cf-79f6-44df-a244-10a734183fec", exInputs);
-            simpleExperiment.setExperimentOutputs(exOut);
+	        ExperimentModel simpleExperiment = ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY,
+			        "ultrascan_41574ef5-b054-4d03-ab20-2cfe768d5096", "ultrascan", "US3ExperimentStampede",
+			        "US3AppStampede", "ultrascan_e76ab5cf-79f6-44df-a244-10a734183fec", exInputs);
+	        simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceSchedulingModel scheduling = ExperimentModelUtil.createComputationResourceScheduling("alamo.uthscsa.edu_7b6cf99a-af2e-4e8b-9eff-998a5ef60fe5", 4, 2, 0, "default", 30, 0);
 
@@ -498,7 +507,7 @@ public class CreateLaunchExperimentUS3 {
             String projectId = client.createProject(DEFAULT_GATEWAY, project);
 
             ExperimentModel simpleExperiment =
-                    ExperimentModelUtil.createSimpleExperiment(projectId, "admin", "US3EchoExperimentStatus", "US3EchoStampede", "US3EchoStampede", exInputs);
+                    ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY,projectId, "admin", "US3EchoExperimentStatus", "US3EchoStampede", "US3EchoStampede", exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
             ComputationalResourceSchedulingModel scheduling =
