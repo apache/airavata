@@ -105,7 +105,7 @@ public abstract class AbstractExpCatResource implements ExperimentCatResource {
 	// Task table
     public final class TaskConstants {
         public static final String TASK_ID = "taskId";
-        public static final String PROCESS_ID = "processId";
+        public static final String PROCESS_ID = "parentProcessId";
     }
 
     // Task Error table

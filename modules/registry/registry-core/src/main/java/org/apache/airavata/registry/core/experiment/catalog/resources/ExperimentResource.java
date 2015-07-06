@@ -21,6 +21,7 @@
 
 package org.apache.airavata.registry.core.experiment.catalog.resources;
 
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
@@ -506,8 +507,11 @@ public class ExperimentResource extends AbstractExpCatResource {
         }else{
             ExperimentStatusResource max = experimentStatusResources.get(0);
             for(int i=1; i<experimentStatusResources.size();i++){
-                if(experimentStatusResources.get(i).getTimeOfStateChange().after(max.getTimeOfStateChange())){
-                    max = experimentStatusResources.get(i);
+                Timestamp timeOfStateChange = experimentStatusResources.get(i).getTimeOfStateChange();
+                if (timeOfStateChange != null){
+                    if(timeOfStateChange.after(max.getTimeOfStateChange())){
+                        max = experimentStatusResources.get(i);
+                    }
                 }
             }
             return max;

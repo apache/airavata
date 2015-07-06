@@ -242,9 +242,12 @@ public class ExperimentRegistry {
     }
 
     public String addProcess(ProcessModel process, String expId) throws RegistryException {
+
         try {
             ProcessResource processResource = new ProcessResource();
-            processResource.setProcessId(getProcessID(expId));
+            String processId = getProcessID(expId);
+            process.setProcessId(processId);
+            processResource.setProcessId(processId);
             processResource.setExperimentId(expId);
             processResource.setCreationTime(AiravataUtils.getTime(process.getCreationTime()));
             processResource.setLastUpdateTime(AiravataUtils.getTime(process.getLastUpdateTime()));
@@ -286,7 +289,7 @@ public class ExperimentRegistry {
             logger.error(expId, "Error while adding process...", e);
             throw new RegistryException(e);
         }
-        return expId;
+        return process.getProcessId();
     }
 
 
@@ -364,17 +367,18 @@ public class ExperimentRegistry {
             processResource.setProcessId(processID);
             ProcessStatusResource status = processResource.getProcessStatus();
             if (status == null) {
-                status = (ProcessStatusResource) processResource.create(ResourceType.EXPERIMENT_STATUS);
+                status = (ProcessStatusResource) processResource.create(ResourceType.PROCESS_STATUS);
             }
-            if (isValidStatusTransition(ProcessState.valueOf(status.getState()), processStatus.getState())) {
-                status.setStatusId(getStatusID(processID));
-                status.setProcessId(processID);
-                status.setTimeOfStateChange(AiravataUtils.getTime(processStatus.getTimeOfStateChange()));
-                status.setState(processStatus.getState().toString());
-                status.setReason(processStatus.getReason());
-                status.save();
-                logger.debug(processID, "Added process {} status to {}.", processID, processStatus.toString());
+            status.setStatusId(getStatusID(processID));
+            status.setProcessId(processID);
+            status.setTimeOfStateChange(AiravataUtils.getTime(processStatus.getTimeOfStateChange()));
+            ProcessState state = processStatus.getState();
+            if (state != null){
+                status.setState(state.toString());
             }
+            status.setReason(processStatus.getReason());
+            status.save();
+            logger.debug(processID, "Added process {} status to {}.", processID, processStatus.toString());
         } catch (Exception e) {
             logger.error(processID, "Error while adding process status...", e);
             throw new RegistryException(e);
