@@ -40,13 +40,13 @@ public class ExperimentInputResource extends AbstractExpCatResource {
     private String inputValue;
     private String dataType;
     private String applicationArgument;
-    private Boolean standardInput;
+    private Boolean standardInput = false;
     private String userFriendlyDescription;
     private String metadata;
     private Integer inputOrder;
     private Boolean isRequired;
     private Boolean requiredToAddedToCmd;
-    private Boolean dataStaged;
+    private Boolean dataStaged = false;
 
     public String getExperimentId() {
         return experimentId;

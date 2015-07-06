@@ -69,13 +69,13 @@ struct InputDataObjectType {
     2: optional string value,
     3: optional DataType type,
     4: optional string applicationArgument,
-    5: optional bool standardInput = 0,
+    5: optional bool standardInput,
     6: optional string userFriendlyDescription,
     7: optional string metaData,
     8: optional i32 inputOrder,
     9: optional bool isRequired,
     10: optional bool requiredToAddedToCommandLine,
-    11: optional bool dataStaged = 0
+    11: optional bool dataStaged
 }
 
 /**

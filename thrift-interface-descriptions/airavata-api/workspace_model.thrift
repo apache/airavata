@@ -18,6 +18,8 @@
  *
  */
 
+include "airavata_commons.thrift"
+
 namespace java org.apache.airavata.model.workspace
 namespace php Airavata.Model.Workspace
 namespace cpp apache.airavata.model.workspace
@@ -39,7 +41,7 @@ struct Group {
 }
 
 struct Project {
-    1: required string projectID,
+    1: required string projectID = airavata_commons.DEFAULT_ID,
     2: required string owner,
     3: required string name,
     4: optional string description
