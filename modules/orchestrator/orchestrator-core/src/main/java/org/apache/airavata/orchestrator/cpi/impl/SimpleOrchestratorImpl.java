@@ -26,14 +26,17 @@ import org.apache.airavata.model.error.ValidationResults;
 import org.apache.airavata.model.error.ValidatorResult;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.experiment.*;
+import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.orchestrator.core.exception.OrchestratorException;
 import org.apache.airavata.orchestrator.core.impl.GFACPassiveJobSubmitter;
 import org.apache.airavata.orchestrator.core.job.JobSubmitter;
 import org.apache.airavata.orchestrator.core.validator.JobMetadataValidator;
 import org.apache.airavata.registry.cpi.*;
+import org.apache.airavata.registry.cpi.utils.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -167,6 +170,29 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
 
     public void initialize() throws OrchestratorException {
 
+    }
+
+    public List<ProcessModel> createProcesses (String experimentId) throws OrchestratorException {
+        List<ProcessModel> processModels = new ArrayList<ProcessModel>();
+        try {
+            Registry registry = orchestratorContext.getRegistry();
+            ExperimentModel experimentModel = (ExperimentModel)registry.getExperimentCatalog().get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
+            List<Object> processList = registry.getExperimentCatalog().get(ExperimentCatalogModelType.PROCESS, Constants.FieldConstants.ExperimentConstants.EXPERIMENT_ID, experimentId);
+            if (processList != null && !processList.isEmpty()) {
+                for (Object processObject : processList) {
+                    ProcessModel processModel = (ProcessModel)processObject;
+                    processModels.add(processModel);
+                }
+            }else {
+                ProcessModel processModel = ExperimentModelUtil.cloneProcessFromExperiment(experimentModel);
+                String processId = (String)registry.getExperimentCatalog().add(ExpCatChildDataType.PROCESS, processModel, experimentId);
+                processModel.setProcessId(processId);
+                processModels.add(processModel);
+            }
+        } catch (Exception e) {
+            throw new OrchestratorException("Error during creating process");
+        }
+        return processModels;
     }
 
 }

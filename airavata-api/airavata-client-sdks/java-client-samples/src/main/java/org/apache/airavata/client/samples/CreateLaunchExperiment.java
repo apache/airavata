@@ -48,17 +48,17 @@ import java.util.*;
 public class CreateLaunchExperiment {
 
     //FIXME: Read from a config file
-    public static final String THRIFT_SERVER_HOST = "localhost";
+    public static final String THRIFT_SERVER_HOST = "gw56.iu.xsede.org";
     public static final int THRIFT_SERVER_PORT = 8930;
 //	public static final String THRIFT_SERVER_HOST = "gw111.iu.xsede.org";
 //	public static final int THRIFT_SERVER_PORT = 9930;
 
     private final static Logger logger = LoggerFactory.getLogger(CreateLaunchExperiment.class);
-    private static final String DEFAULT_USER = "default.registry.user";
-    public static final String DEFAULT_GATEWAY = "php_reference_gateway";
+    public static final String DEFAULT_USER = "default.registry.user";
+    public static final String DEFAULT_GATEWAY = "default";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_53fcb5cd-7eda-485e-a9bc-fcf7c84a2e26";
+    private static String echoAppId = "Echo_ce3f152e-7757-41ea-880d-cc868063fb1b";
     private static String mpiAppId = "HelloMPI_bfd56d58-6085-4b7f-89fc-646576830518";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
     private static String amberAppId = "Amber_357ba0ea-038c-4f14-b5f3-16bab331031b";
@@ -165,9 +165,9 @@ public class CreateLaunchExperiment {
 //                final String expId = createExperimentForSSHHost(airavata);
 //                final String expId = createEchoExperimentForFSD(airavataClient);
 //                final String expId = createMPIExperimentForFSD(airavataClient);
-//               final String expId = createEchoExperimentForStampede(airavataClient);
+               final String expId = createEchoExperimentForStampede(airavataClient);
 //                final String expId = createEchoExperimentForTrestles(airavataClient);
-                final String expId = createExperimentEchoForLocalHost(airavataClient);
+//                final String expId = createExperimentEchoForLocalHost(airavataClient);
 //                final String expId = createExperimentWRFTrestles(airavataClient);
 //                final String expId = createExperimentForBR2(airavataClient);
 //                final String expId = createExperimentForBR2Amber(airavataClient);
