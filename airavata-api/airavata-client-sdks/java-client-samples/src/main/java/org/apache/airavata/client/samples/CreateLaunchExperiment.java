@@ -55,7 +55,7 @@ public class CreateLaunchExperiment {
 
     private final static Logger logger = LoggerFactory.getLogger(CreateLaunchExperiment.class);
     private static final String DEFAULT_USER = "default.registry.user";
-    private static final String DEFAULT_GATEWAY = "php_reference_gateway";
+    public static final String DEFAULT_GATEWAY = "php_reference_gateway";
     private static Airavata.Client airavataClient;
 
     private static String echoAppId = "Echo_53fcb5cd-7eda-485e-a9bc-fcf7c84a2e26";
