@@ -35,9 +35,9 @@ public class ExperimentOutput {
     private String outputValue;
     private String dataType;
     private String applicationArgument;
-    private Boolean isRequired;
-    private Boolean requiredToAddedToCmd;
-    private Boolean dataMovement;
+    private boolean isRequired;
+    private boolean requiredToAddedToCmd;
+    private boolean dataMovement;
     private String location;
     private String searchQuery;
     private Experiment experiment;
@@ -95,31 +95,31 @@ public class ExperimentOutput {
 
     @Basic
     @Column(name = "IS_REQUIRED")
-    public Boolean getIsRequired() {
+    public boolean getIsRequired() {
         return isRequired;
     }
 
-    public void setIsRequired(Boolean isRequired) {
+    public void setIsRequired(boolean isRequired) {
         this.isRequired = isRequired;
     }
 
     @Basic
     @Column(name = "REQUIRED_TO_ADDED_TO_CMD")
-    public Boolean getRequiredToAddedToCmd() {
+    public boolean getRequiredToAddedToCmd() {
         return requiredToAddedToCmd;
     }
 
-    public void setRequiredToAddedToCmd(Boolean requiredToAddedToCmd) {
+    public void setRequiredToAddedToCmd(boolean requiredToAddedToCmd) {
         this.requiredToAddedToCmd = requiredToAddedToCmd;
     }
 
     @Basic
     @Column(name = "DATA_MOVEMENT")
-    public Boolean getDataMovement() {
+    public boolean getDataMovement() {
         return dataMovement;
     }
 
-    public void setDataMovement(Boolean dataMovement) {
+    public void setDataMovement(boolean dataMovement) {
         this.dataMovement = dataMovement;
     }
 
