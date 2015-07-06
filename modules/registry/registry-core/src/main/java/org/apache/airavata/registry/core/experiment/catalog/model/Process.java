@@ -41,7 +41,7 @@ public class Process {
     private String applicationDeploymentId;
     private String computeResourceId;
     private String gatewayExecutionId;
-    private Boolean enableEmailNotification;
+    private boolean enableEmailNotification;
     private String emailAddresses;
     private Experiment experiment;
     private Collection<ProcessError> processErrors;
@@ -155,11 +155,11 @@ public class Process {
 
     @Basic
     @Column(name = "ENABLE_EMAIL_NOTIFICATION")
-    public Boolean getEnableEmailNotification() {
+    public boolean getEnableEmailNotification() {
         return enableEmailNotification;
     }
 
-    public void setEnableEmailNotification(Boolean enableEmailNotification) {
+    public void setEnableEmailNotification(boolean enableEmailNotification) {
         this.enableEmailNotification = enableEmailNotification;
     }
 
