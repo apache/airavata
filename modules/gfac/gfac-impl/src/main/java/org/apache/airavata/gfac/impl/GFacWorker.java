@@ -66,11 +66,11 @@ public class GFacWorker implements Runnable {
     public void run() {
 	    try {
 		    GFacEngine engine = Factory.getGFacEngine();
-		    ProcessType type = getProcessType(processContext);
 		    if (processContext == null) {
 			    processContext = engine.populateProcessContext(processId, gatewayId, tokenId);
 			    isProcessContextPopulated = true;
 		    }
+		    ProcessType type = getProcessType(processContext);
 		    try {
 			    switch (type) {
 				    case NEW:
