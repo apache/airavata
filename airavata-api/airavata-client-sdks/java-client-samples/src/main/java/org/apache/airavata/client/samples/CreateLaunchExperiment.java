@@ -979,7 +979,6 @@ public class CreateLaunchExperiment {
             ExperimentModel simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY,projectId, "admin", "echoExperiment", "SimpleEcho3", echoAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
-	        simpleExperiment.setGatewayId(DEFAULT_GATEWAY);
 
             Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(echoAppId);
             if (computeResources != null && computeResources.size() != 0) {

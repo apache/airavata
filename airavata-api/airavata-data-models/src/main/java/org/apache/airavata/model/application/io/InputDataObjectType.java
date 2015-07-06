@@ -241,10 +241,6 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
   }
 
   public InputDataObjectType() {
-    this.standardInput = false;
-
-    this.dataStaged = false;
-
   }
 
   public InputDataObjectType(
@@ -294,8 +290,8 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
     this.value = null;
     this.type = null;
     this.applicationArgument = null;
+    setStandardInputIsSet(false);
     this.standardInput = false;
-
     this.userFriendlyDescription = null;
     this.metaData = null;
     setInputOrderIsSet(false);
@@ -304,8 +300,8 @@ public class InputDataObjectType implements org.apache.thrift.TBase<InputDataObj
     this.isRequired = false;
     setRequiredToAddedToCommandLineIsSet(false);
     this.requiredToAddedToCommandLine = false;
+    setDataStagedIsSet(false);
     this.dataStaged = false;
-
   }
 
   public String getName() {
