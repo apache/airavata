@@ -21,6 +21,7 @@
 
 package org.apache.airavata.registry.core.experiment.catalog.resources;
 
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExpCatResourceUtils;
 import org.apache.airavata.registry.core.experiment.catalog.ExperimentCatResource;
 import org.apache.airavata.registry.core.experiment.catalog.ResourceType;
@@ -448,10 +449,10 @@ public class ProcessResource extends AbstractExpCatResource {
             process.setCreationTime(creationTime);
             process.setLastUpdateTime(lastUpdateTime);
             process.setProcessDetail(processDetail);
-            process.setApplicationInterfaceId(applicationInterfaceId);
             process.setTaskDag(taskDag);
             process.setComputeResourceId(computeResourceId);
             process.setApplicationInterfaceId(applicationInterfaceId);
+            process.setApplicationDeploymentId(applicationDeploymentId);
             process.setGatewayExecutionId(gatewayExecutionId);
             process.setEnableEmailNotification(enableEmailNotification);
             process.setEmailAddresses(emailAddresses);
@@ -507,8 +508,11 @@ public class ProcessResource extends AbstractExpCatResource {
         }else{
             ProcessStatusResource max = processStatusResources.get(0);
             for(int i=1; i<processStatusResources.size();i++){
-                if(processStatusResources.get(i).getTimeOfStateChange().after(max.getTimeOfStateChange())){
-                    max = processStatusResources.get(i);
+                Timestamp timeOfStateChange = processStatusResources.get(i).getTimeOfStateChange();
+                if (timeOfStateChange != null){
+                    if(timeOfStateChange.after(max.getTimeOfStateChange())){
+                        max = processStatusResources.get(i);
+                    }
                 }
             }
             return max;
