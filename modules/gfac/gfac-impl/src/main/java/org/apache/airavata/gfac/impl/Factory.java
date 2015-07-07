@@ -29,6 +29,7 @@ import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.JobManagerConfiguration;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
+import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.cluster.ServerInfo;
 import org.apache.airavata.gfac.core.config.DataTransferTaskConfig;
@@ -188,6 +189,7 @@ public abstract class Factory {
 			for (JobSubmissionInterface jobSubmissionInterface : jobSubmissionInterfaces) {
 				if (jobSubmissionInterface.getJobSubmissionProtocol() == cRP.getPreferredJobSubmissionProtocol()) {
 					jsInterface = jobSubmissionInterface;
+					break;
 				}
 			}
 			if (jsInterface == null) {
@@ -209,11 +211,20 @@ public abstract class Factory {
 			}
 
 			JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(resourceJobManager);
-			AuthenticationInfo authenticationInfo = null;
-			remoteCluster = new HPCRemoteCluster(serverInfo, jobManagerConfiguration, null);
+			AuthenticationInfo authenticationInfo = getSSHKeyAuthentication();
+			remoteCluster = new HPCRemoteCluster(serverInfo, jobManagerConfiguration, authenticationInfo);
 			remoteClusterMap.put(key, remoteCluster);
 		}
 		return remoteCluster;
+	}
+
+	private static SSHKeyAuthentication getSSHKeyAuthentication() throws ApplicationSettingsException {
+		String username = ServerSettings.getSetting("ssh.user");
+		String privateKeyFilePath = ServerSettings.getSetting("private.ssh.key");
+		String publicKeyFilePath = ServerSettings.getSetting("public.ssh.key");
+		String passphrase = ServerSettings.getSetting("ssh.keypass");
+		return new SSHKeyAuthentication(username, privateKeyFilePath,
+				publicKeyFilePath, passphrase);
 	}
 
 	public static JobSubmissionTask getJobSubmissionTask(JobSubmissionProtocol jobSubmissionProtocol) throws
