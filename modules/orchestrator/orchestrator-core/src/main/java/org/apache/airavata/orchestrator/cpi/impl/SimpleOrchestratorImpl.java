@@ -67,11 +67,9 @@ public class SimpleOrchestratorImpl extends AbstractOrchestrator{
         }
     }
 
-    public boolean launchExperiment(ExperimentModel experiment, ProcessModel processModel, String tokenId) throws OrchestratorException {
-        String experimentId = experiment.getExperimentId();
-        String processId = processModel.getProcessId();
+    public boolean launchProcess(ProcessModel processModel, String tokenId) throws OrchestratorException {
         try {
-            return jobSubmitter.submit(experimentId, processId, tokenId);
+	        return jobSubmitter.submit(processModel.getExperimentId(), processModel.getProcessId(), tokenId);
         } catch (Exception e) {
             throw new OrchestratorException("Error launching the job", e);
         }

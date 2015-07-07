@@ -43,19 +43,20 @@ public interface Orchestrator {
      ValidationResults validateExperiment(ExperimentModel experiment, ProcessModel processModel) throws OrchestratorException,LaunchValidationException;
     /**
      * After creating the experiment Data user have the
-     * experimentID as the handler to the experiment, during the launchExperiment
+     * experimentID as the handler to the experiment, during the launchProcess
      * We just have to give the experimentID
      *
-     * @param experiment
-     * @return launchExperiment status
+     * @param processModel - Process model created for this process.
+     * @param tokenId - token id for this request.
+     * @return launchProcess status
      * @throws OrchestratorException
      */
-    boolean launchExperiment(ExperimentModel experiment, ProcessModel processModel,String tokenId) throws OrchestratorException;
+    boolean launchProcess(ProcessModel processModel, String tokenId) throws OrchestratorException;
 
 
     /**
      * After creating the experiment Data user have the
-     * experimentID as the handler to the experiment, during the launchExperiment
+     * experimentID as the handler to the experiment, during the launchProcess
      * We just have to give the experimentID
      *
      * @param experiment
