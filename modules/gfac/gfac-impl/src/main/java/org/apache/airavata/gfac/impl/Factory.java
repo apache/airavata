@@ -219,7 +219,7 @@ public abstract class Factory {
 	}
 
 	private static SSHKeyAuthentication getSSHKeyAuthentication() throws ApplicationSettingsException {
-		String username = ServerSettings.getSetting("ssh.user");
+		String username = ServerSettings.getSetting("ssh.username");
 		String privateKeyFilePath = ServerSettings.getSetting("private.ssh.key");
 		String publicKeyFilePath = ServerSettings.getSetting("public.ssh.key");
 		String passphrase = ServerSettings.getSetting("ssh.keypass");
