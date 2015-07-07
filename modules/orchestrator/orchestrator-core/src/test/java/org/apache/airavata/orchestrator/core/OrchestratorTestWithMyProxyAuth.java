@@ -75,7 +75,7 @@ public class OrchestratorTestWithMyProxyAuth extends BaseOrchestratorTest {
 //
 //        for (TaskDetails taskDetail: tasks)
 //        {
-//            orchestrator.launchExperiment(simpleExperiment,test, taskDetail,null);
+//            orchestrator.launchProcess(simpleExperiment,test, taskDetail,null);
 //        }
 //    }
 }

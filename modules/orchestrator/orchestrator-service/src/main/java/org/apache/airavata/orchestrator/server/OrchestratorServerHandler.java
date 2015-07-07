@@ -37,6 +37,7 @@ import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescr
 import org.apache.airavata.model.error.LaunchValidationException;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.ExperimentType;
+import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.messaging.event.ExperimentStatusChangeEvent;
 import org.apache.airavata.model.messaging.event.MessageType;
 import org.apache.airavata.model.process.ProcessModel;
@@ -108,7 +109,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 
     /**
 	 * * After creating the experiment Data user have the * experimentID as the
-	 * handler to the experiment, during the launchExperiment * We just have to
+	 * handler to the experiment, during the launchProcess * We just have to
 	 * give the experimentID * * @param experimentID * @return sucess/failure *
 	 * *
 	 * 
@@ -217,17 +218,18 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
 		try {
 			ProcessModel processModel = (ProcessModel) experimentCatalog.get(
 					ExperimentCatalogModelType.PROCESS, processId);
-            String experimentId = processModel.getExperimentId();
-            ExperimentModel experimentModel = (ExperimentModel)experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT, experimentId);
             String applicationId = processModel.getApplicationInterfaceId();
 			if (applicationId == null) {
                 log.error(processId, "Application interface id shouldn't be null.");
 				throw new OrchestratorException("Error executing the job, application interface id shouldn't be null.");
 			}
+			// set application deployment id to process model
             ApplicationDeploymentDescription applicationDeploymentDescription = getAppDeployment(processModel, applicationId);
             processModel.setApplicationDeploymentId(applicationDeploymentDescription.getAppDeploymentId());
+			// set compute resource id to process model, default we set the same in the user preferred compute host id
+			processModel.setComputeResourceId(processModel.getResourceSchedule().getResourceHostId());
 			experimentCatalog.update(ExperimentCatalogModelType.PROCESS, processModel,processModel.getProcessId());
-		    return orchestrator.launchExperiment(experimentModel, processModel, airavataCredStoreToken);
+		    return orchestrator.launchProcess(processModel, airavataCredStoreToken);
 		} catch (Exception e) {
             log.error(processId, "Error while launching process ", e);
             throw new TException(e);
