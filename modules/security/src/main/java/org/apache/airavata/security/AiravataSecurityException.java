@@ -18,11 +18,19 @@
  * under the License.
  *
  */
-package org.apache.airavata.secure.sample;
+package org.apache.airavata.security;
 
+/**
+ * This class is named as AiravataSecurityException in order to avoid the conflicts with the
+ * SecurityException class provided in Java.
+ */
 public class AiravataSecurityException extends Exception {
     public AiravataSecurityException(String message) {
         super(message);
+    }
+
+    public AiravataSecurityException(String message, Throwable cause) {
+        super(message, cause);
     }
 
     public AiravataSecurityException() {

@@ -60,6 +60,7 @@ import org.apache.airavata.persistance.registry.jpa.ResourceUtils;
 import org.apache.airavata.persistance.registry.jpa.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.*;
 import org.apache.airavata.registry.cpi.utils.Constants;
+import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.thrift.TException;
 
 import java.util.ArrayList;
@@ -3510,12 +3511,12 @@ public class AiravataServerHandler implements Airavata.Iface {
                     throw new AuthorizationException("User is not authenticated or authorized.");
                 }
             }
-        } catch (org.apache.airavata.api.server.security.SecurityException e) {
+        } catch (AiravataSecurityException e) {
             logger.error(e.getMessage(), e);
             throw new AuthorizationException("Error in obtaining initiating Security Manager.");
         } catch (ApplicationSettingsException e) {
             logger.error(e.getMessage(), e);
-            throw new AuthorizationException("Error in reading API security settings.");
+            throw new AuthorizationException("Error in reading security configuration.");
         }
     }
 

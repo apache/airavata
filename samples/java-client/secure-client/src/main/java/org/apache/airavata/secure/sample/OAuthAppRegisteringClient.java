@@ -20,6 +20,8 @@
  */
 package org.apache.airavata.secure.sample;
 
+import org.apache.airavata.security.AiravataSecurityException;
+import org.apache.airavata.security.util.TrustStoreManager;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.slf4j.Logger;
@@ -46,7 +48,7 @@ public class OAuthAppRegisteringClient {
             logger.error("Error initializing OAuth2 Client");
             throw new Exception("Error initializing OAuth Client", e);
         }
-        //TODO:enable proper SSL handshake with WSO2 IS.
+        /*//TODO:enable proper SSL handshake with WSO2 IS.
         try {
             // Get SSL context
             SSLContext sc = SSLContext.getInstance("SSL");
@@ -79,7 +81,7 @@ public class OAuthAppRegisteringClient {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+*/
     }
 
     public OAuthConsumerAppDTO registerApplication(String appName, String consumerId, String consumerSecret)
@@ -92,6 +94,9 @@ public class OAuthAppRegisteringClient {
             consumerAppDTO.setOauthConsumerKey(consumerId);
             consumerAppDTO.setOauthConsumerSecret(consumerSecret);
             //consumerAppDTO.setUsername(adminUserName);
+            //initialize trust store for SSL handshake
+            TrustStoreManager trustStoreManager = new TrustStoreManager();
+            trustStoreManager.initializeTrustStoreManager(Properties.TRUST_STORE_PATH, Properties.TRUST_STORE_PASSWORD);
             stub.registerOAuthApplicationData(consumerAppDTO);
             // After registration application is retrieve
             return stub.getOAuthApplicationDataByAppName(appName);

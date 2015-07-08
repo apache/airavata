@@ -22,6 +22,7 @@ package org.apache.airavata.api.server.security;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.security.AiravataSecurityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +34,7 @@ public class SecurityManagerFactory {
     private final static Logger logger = LoggerFactory.getLogger(SecurityManagerFactory.class);
     private static Class secManagerImpl = null;
 
-    public static AiravataSecurityManager getSecurityManager() throws SecurityException {
+    public static AiravataSecurityManager getSecurityManager() throws AiravataSecurityException {
         try {
             if(secManagerImpl == null){
                 secManagerImpl = Class.forName(ServerSettings.getSecurityManagerClassName());
@@ -43,19 +44,19 @@ public class SecurityManagerFactory {
         } catch (ClassNotFoundException e) {
             String error = "Security Manager class could not be found.";
             logger.error(e.getMessage(), e);
-            throw new SecurityException(error);
+            throw new AiravataSecurityException(error);
         } catch (ApplicationSettingsException e) {
             String error = "Error in reading the configuration related to Security Manager class.";
             logger.error(e.getMessage(), e);
-            throw new SecurityException(error);
+            throw new AiravataSecurityException(error);
         } catch (InstantiationException e) {
             String error = "Error in instantiating the Security Manager class.";
             logger.error(e.getMessage(), e);
-            throw new SecurityException(error);
+            throw new AiravataSecurityException(error);
         } catch (IllegalAccessException e) {
             String error = "Error in instantiating the Security Manager class.";
             logger.error(e.getMessage(), e);
-            throw new SecurityException(error);
+            throw new AiravataSecurityException(error);
 
         }
     }
