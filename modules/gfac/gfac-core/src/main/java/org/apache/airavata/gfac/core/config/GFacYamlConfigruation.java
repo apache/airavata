@@ -46,6 +46,7 @@ public class GFacYamlConfigruation {
 	private static final String COMMAND_OUTPUT_PARSER = "commandOutputParser";
 	private static final String EMAIL_PARSER = "emailParser";
 	private static final String RESOURCE_EMAIL_ADDRESS = "resourceEmailAddress";
+	private static final String PROPERTIES = "properties";
 
 	private List<JobSubmitterTaskConfig> jobSubmitters = new ArrayList<>();
 	private List<DataTransferTaskConfig> fileTransferTasks = new ArrayList<>();
@@ -71,26 +72,44 @@ public class GFacYamlConfigruation {
 		if (load instanceof Map) {
 			Map<String, Object> loadMap = (Map<String, Object>) load;
 			String identifier;
-			List<Map<String, String>> jobSubYamls = (List<Map<String, String>>) loadMap.get(JOB_SUBMITTERS);
+			List<Map<String,Object >> jobSubYamls = (List<Map<String, Object>>) loadMap.get(JOB_SUBMITTERS);
 			JobSubmitterTaskConfig jobSubmitterTaskConfig;
 			if (jobSubYamls != null) {
-				for (Map<String, String> jobSub : jobSubYamls) {
+				for (Map<String, Object> jobSub : jobSubYamls) {
 					jobSubmitterTaskConfig = new JobSubmitterTaskConfig();
-					identifier = jobSub.get (SUBMISSIO_PROTOCOL);
+					identifier = ((String) jobSub.get(SUBMISSIO_PROTOCOL));
 					jobSubmitterTaskConfig.setSubmissionProtocol(JobSubmissionProtocol.valueOf(identifier));
-					jobSubmitterTaskConfig.setTaskClass(jobSub.get(TASK_CLASS));
+					jobSubmitterTaskConfig.setTaskClass(((String) jobSub.get(TASK_CLASS)));
+					Object propertiesObj = jobSub.get(PROPERTIES);
+					List propertiesList;
+					if (propertiesObj instanceof List) {
+						propertiesList = ((List) propertiesObj);
+						if (propertiesList.size() > 0) {
+							Map<String, String> props = (Map<String, String>) propertiesList.get(0);
+							jobSubmitterTaskConfig.addProperties(props);
+						}
+					}
 					jobSubmitters.add(jobSubmitterTaskConfig);
 				}
 			}
 
-			List<Map<String, String>> fileTransYamls = (List<Map<String, String>>) loadMap.get(FILE_TRANSFER_TASKS);
+			List<Map<String, Object>> fileTransYamls = (List<Map<String, Object>>) loadMap.get(FILE_TRANSFER_TASKS);
 			DataTransferTaskConfig dataTransferTaskConfig;
 			if (fileTransYamls != null) {
-				for (Map<String, String> fileTransConfig : fileTransYamls) {
+				for (Map<String, Object> fileTransConfig : fileTransYamls) {
 					dataTransferTaskConfig = new DataTransferTaskConfig();
-					identifier = fileTransConfig.get (TRANSFER_PROTOCOL);
+					identifier = ((String) fileTransConfig.get(TRANSFER_PROTOCOL));
 					dataTransferTaskConfig.setTransferProtocol(DataMovementProtocol.valueOf(identifier));
-					dataTransferTaskConfig.setTaskClass(fileTransConfig.get(TASK_CLASS));
+					dataTransferTaskConfig.setTaskClass(((String) fileTransConfig.get(TASK_CLASS)));
+					Object propertiesObj = fileTransConfig.get(PROPERTIES);
+					List propertiesList;
+					if (propertiesObj instanceof List) {
+						propertiesList = (List) propertiesObj;
+						if (propertiesList.size() > 0) {
+							Map<String, String> props = (Map<String, String>) propertiesList.get(0);
+							dataTransferTaskConfig.addProperties(props);
+						}
+					}
 					fileTransferTasks.add(dataTransferTaskConfig);
 				}
 			}

@@ -22,9 +22,14 @@ package org.apache.airavata.gfac.core.config;
 
 import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class DataTransferTaskConfig {
 	private DataMovementProtocol transferProtocol;
 	private String taskClass;
+	private Map<String,String> properties = new HashMap<>();
+
 
 	public DataMovementProtocol getTransferProtocol() {
 		return transferProtocol;
@@ -40,5 +45,17 @@ public class DataTransferTaskConfig {
 
 	public void setTaskClass(String taskClass) {
 		this.taskClass = taskClass;
+	}
+
+	public void addProperty(String key, String value) {
+		properties.put(key, value);
+	}
+
+	public void addProperties(Map<String, String> propMap) {
+		propMap.forEach(properties::put);
+	}
+
+	public Map<String,String> getProperties(){
+		return properties;
 	}
 }
