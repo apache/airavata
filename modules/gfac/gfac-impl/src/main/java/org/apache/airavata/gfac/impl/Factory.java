@@ -23,7 +23,6 @@ package org.apache.airavata.gfac.impl;
 import com.google.common.eventbus.EventBus;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.common.utils.LocalEventPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.core.GFacEngine;
@@ -85,6 +84,7 @@ public abstract class Factory {
 	private static Map<JobSubmissionProtocol, JobSubmissionTask> jobSubmissionTask = new HashMap<>();
 	private static Map<DataMovementProtocol, Task> dataMovementTask = new HashMap<>();
 	private static Map<ResourceJobManagerType, ResourceConfig> resources = new HashMap<>();
+	private static boolean readConfig = false;
 
 	public static GFacEngine getGFacEngine() throws GFacException {
 		if (engine == null) {
@@ -236,14 +236,14 @@ public abstract class Factory {
 
 	public static JobSubmissionTask getJobSubmissionTask(JobSubmissionProtocol jobSubmissionProtocol) throws
 			GFacException {
-		if (jobSubmissionTask == null) {
+		if (!readConfig) {
 			loadConfiguration();
 		}
 		return jobSubmissionTask.get(jobSubmissionProtocol);
 	}
 
 	public static Task getDataMovementTask(DataMovementProtocol dataMovementProtocol) throws GFacException {
-		if (dataMovementTask == null) {
+		if (!readConfig) {
 			loadConfiguration();
 		}
 		return dataMovementTask.get(dataMovementProtocol);
@@ -251,7 +251,7 @@ public abstract class Factory {
 
 	public static ResourceConfig getResourceConfig(ResourceJobManagerType resourceJobManagerType) throws
 			GFacException {
-		if (resources == null) {
+		if (!readConfig) {
 			loadConfiguration();
 		}
 		return resources.get(resourceJobManagerType);
@@ -270,6 +270,7 @@ public abstract class Factory {
 		for (ResourceConfig resourceConfig : config.getResourceConfiguration()) {
 			resources.put(resourceConfig.getJobManagerType(), resourceConfig);
 		}
+		readConfig = true;
 	}
 
 
