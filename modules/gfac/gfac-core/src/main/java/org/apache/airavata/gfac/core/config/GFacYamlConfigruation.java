@@ -27,6 +27,7 @@ import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerTy
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -46,9 +47,9 @@ public class GFacYamlConfigruation {
 	private static final String EMAIL_PARSER = "emailParser";
 	private static final String RESOURCE_EMAIL_ADDRESS = "resourceEmailAddress";
 
-	private List<JobSubmitterTaskConfig> jobSubmitters;
-	private List<DataTransferTaskConfig> fileTransferTasks;
-	private List<ResourceConfig> resources;
+	private List<JobSubmitterTaskConfig> jobSubmitters = new ArrayList<>();
+	private List<DataTransferTaskConfig> fileTransferTasks = new ArrayList<>();
+	private List<ResourceConfig> resources = new ArrayList<>();
 
 
 	public GFacYamlConfigruation() throws GFacException {
@@ -72,39 +73,43 @@ public class GFacYamlConfigruation {
 			String identifier;
 			List<Map<String, String>> jobSubYamls = (List<Map<String, String>>) loadMap.get(JOB_SUBMITTERS);
 			JobSubmitterTaskConfig jobSubmitterTaskConfig;
-			for (Map<String, String> jobSub : jobSubYamls) {
-				jobSubmitterTaskConfig = new JobSubmitterTaskConfig();
-				identifier = jobSub.get (SUBMISSIO_PROTOCOL);
-				jobSubmitterTaskConfig.setSubmissionProtocol(JobSubmissionProtocol.valueOf(identifier));
-				jobSubmitterTaskConfig.setTaskClass(jobSub.get(TASK_CLASS));
-				jobSubmitters.add(jobSubmitterTaskConfig);
+			if (jobSubYamls != null) {
+				for (Map<String, String> jobSub : jobSubYamls) {
+					jobSubmitterTaskConfig = new JobSubmitterTaskConfig();
+					identifier = jobSub.get (SUBMISSIO_PROTOCOL);
+					jobSubmitterTaskConfig.setSubmissionProtocol(JobSubmissionProtocol.valueOf(identifier));
+					jobSubmitterTaskConfig.setTaskClass(jobSub.get(TASK_CLASS));
+					jobSubmitters.add(jobSubmitterTaskConfig);
+				}
 			}
 
 			List<Map<String, String>> fileTransYamls = (List<Map<String, String>>) loadMap.get(FILE_TRANSFER_TASKS);
 			DataTransferTaskConfig dataTransferTaskConfig;
-			for (Map<String, String> fileTransConfig : fileTransYamls) {
-				dataTransferTaskConfig = new DataTransferTaskConfig();
-				identifier = fileTransConfig.get (TRANSFER_PROTOCOL);
-				dataTransferTaskConfig.setTransferProtocol(DataMovementProtocol.valueOf(identifier));
-				dataTransferTaskConfig.setTaskClass(fileTransConfig.get(TASK_CLASS));
-				fileTransferTasks.add(dataTransferTaskConfig);
+			if (fileTransYamls != null) {
+				for (Map<String, String> fileTransConfig : fileTransYamls) {
+					dataTransferTaskConfig = new DataTransferTaskConfig();
+					identifier = fileTransConfig.get (TRANSFER_PROTOCOL);
+					dataTransferTaskConfig.setTransferProtocol(DataMovementProtocol.valueOf(identifier));
+					dataTransferTaskConfig.setTaskClass(fileTransConfig.get(TASK_CLASS));
+					fileTransferTasks.add(dataTransferTaskConfig);
+				}
 			}
 
 			List<Map<String, Object>> resourcesYaml = (List<Map<String, Object>>) loadMap.get(RESOURCES);
 			ResourceConfig resourceConfig;
-			for (Map<String, Object> resource : resourcesYaml) {
-				resourceConfig = new ResourceConfig();
-				identifier = resource.get(JOB_MANAGER_TYPE).toString();
-				resourceConfig.setJobManagerType(ResourceJobManagerType.valueOf(identifier));
-				resourceConfig.setCommandOutputParser(resource.get(COMMAND_OUTPUT_PARSER).toString());
-				resourceConfig.setEmailParser(resource.get(EMAIL_PARSER).toString());
-				List<String> emailAddressList = (List<String>) resource.get(RESOURCE_EMAIL_ADDRESS);
-				resourceConfig.setResourceEmailAddresses(emailAddressList);
-				resources.add(resourceConfig);
+			if (resourcesYaml != null) {
+				for (Map<String, Object> resource : resourcesYaml) {
+					resourceConfig = new ResourceConfig();
+					identifier = resource.get(JOB_MANAGER_TYPE).toString();
+					resourceConfig.setJobManagerType(ResourceJobManagerType.valueOf(identifier));
+					resourceConfig.setCommandOutputParser(resource.get(COMMAND_OUTPUT_PARSER).toString());
+					resourceConfig.setEmailParser(resource.get(EMAIL_PARSER).toString());
+					List<String> emailAddressList = (List<String>) resource.get(RESOURCE_EMAIL_ADDRESS);
+					resourceConfig.setResourceEmailAddresses(emailAddressList);
+					resources.add(resourceConfig);
+				}
 			}
-
 		}
-
 	}
 
 	public List<JobSubmitterTaskConfig> getJobSbumitters() {
