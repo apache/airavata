@@ -97,7 +97,7 @@
 				<include>host.xml</include>
 				<include>persistence.xml</include>
 				<include>provenance.sql</include>
-				<include>gfac-config.xml</include>
+				<include>gfac-config.yaml</include>
 				<include>PBSTemplate.xslt</include>
 				<include>SLURMTemplate.xslt</include>
 				<include>LSFTemplate.xslt</include>
