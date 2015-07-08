@@ -66,10 +66,14 @@ public class HPCRemoteCluster extends AbstractRemoteCluster{
 			}
 			jSch = new JSch();
 			jSch.addIdentity(authentication.getPrivateKeyFilePath(), authentication.getPublicKeyFilePath(),
-					authentication
-					.getPassphrase().getBytes());
+					authentication.getPassphrase().getBytes());
 			session = jSch.getSession(serverInfo.getUserName(), serverInfo.getHost(), serverInfo.getPort());
 			session.setUserInfo(new DefaultUserInfo(serverInfo.getUserName(), null, authentication.getPassphrase()));
+			if (authentication.getStrictHostKeyChecking().equals("yes")) {
+				jSch.setKnownHosts(authentication.getKnownHostsFilePath());
+			} else {
+				session.setConfig("StrictHostKeyChecking","no");
+			}
 			session.connect(); // 0 connection timeout
 		} catch (JSchException e) {
 			throw new AiravataException("JSch initialization error ", e);

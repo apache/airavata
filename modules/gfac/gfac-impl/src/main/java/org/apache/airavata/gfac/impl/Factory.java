@@ -23,6 +23,7 @@ package org.apache.airavata.gfac.impl;
 import com.google.common.eventbus.EventBus;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.ApplicationSettings;
 import org.apache.airavata.common.utils.LocalEventPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.core.GFacEngine;
@@ -178,8 +179,8 @@ public abstract class Factory {
 		if (remoteCluster == null) {
 			String hostName = Factory.getDefaultAppCatalog().getComputeResource().getComputeResource(cRP
 					.getComputeResourceId()).getHostName();
-			ServerInfo serverInfo = new ServerInfo(cRP.getLoginUserName(), hostName);
-
+			// fixme - read login user name from computeResourcePreference
+			ServerInfo serverInfo = new ServerInfo(ServerSettings.getSetting("ssh.username"), hostName);
 			List<JobSubmissionInterface> jobSubmissionInterfaces = Factory.getDefaultAppCatalog().getComputeResource()
 					.getComputeResource(cRP.getComputeResourceId())
 					.getJobSubmissionInterfaces();
@@ -219,12 +220,18 @@ public abstract class Factory {
 	}
 
 	private static SSHKeyAuthentication getSSHKeyAuthentication() throws ApplicationSettingsException {
-		String username = ServerSettings.getSetting("ssh.username");
-		String privateKeyFilePath = ServerSettings.getSetting("private.ssh.key");
-		String publicKeyFilePath = ServerSettings.getSetting("public.ssh.key");
-		String passphrase = ServerSettings.getSetting("ssh.keypass");
-		return new SSHKeyAuthentication(username, privateKeyFilePath,
-				publicKeyFilePath, passphrase);
+		SSHKeyAuthentication sshKA = new SSHKeyAuthentication();
+		sshKA.setUserName(ServerSettings.getSetting("ssh.username"));
+		sshKA.setPassphrase(ServerSettings.getSetting("ssh.keypass"));
+		sshKA.setPrivateKeyFilePath(ServerSettings.getSetting("ssh.private.key"));
+		sshKA.setPublicKeyFilePath(ServerSettings.getSetting("ssh.public.key"));
+		sshKA.setStrictHostKeyChecking(ServerSettings.getSetting("ssh.strict.hostKey.checking", "no"));
+		sshKA.setKnownHostsFilePath(ServerSettings.getSetting("ssh.known.hosts.file", null));
+		if (sshKA.getStrictHostKeyChecking().equals("yes") && sshKA.getKnownHostsFilePath() == null) {
+			throw new ApplicationSettingsException("If ssh scrict hostky checking property is set to yes, you must " +
+					"provid known host file path");
+		}
+		return sshKA;
 	}
 
 	public static JobSubmissionTask getJobSubmissionTask(JobSubmissionProtocol jobSubmissionProtocol) throws

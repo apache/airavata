@@ -34,28 +34,57 @@ public class SSHKeyAuthentication implements AuthenticationInfo {
 	private String privateKeyFilePath;
 	private String publicKeyFilePath;
 	private String passphrase;
+	private String knownHostsFilePath;
+	private String strictHostKeyChecking; // yes or no
 
-	public SSHKeyAuthentication(String userName, String privateKeyFilePath, String publicKeyFilePath, String
-			passphrase) {
-		this.userName = userName;
-		this.privateKeyFilePath = privateKeyFilePath;
-		this.publicKeyFilePath = publicKeyFilePath;
-		this.passphrase = passphrase;
+	public SSHKeyAuthentication() {
 	}
 
 	public String getUserName() {
 		return userName;
 	}
 
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
 	public String getPrivateKeyFilePath() {
 		return privateKeyFilePath;
+	}
+
+	public void setPrivateKeyFilePath(String privateKeyFilePath) {
+		this.privateKeyFilePath = privateKeyFilePath;
 	}
 
 	public String getPublicKeyFilePath() {
 		return publicKeyFilePath;
 	}
 
+	public void setPublicKeyFilePath(String publicKeyFilePath) {
+		this.publicKeyFilePath = publicKeyFilePath;
+	}
+
 	public String getPassphrase() {
 		return passphrase;
+	}
+
+	public void setPassphrase(String passphrase) {
+		this.passphrase = passphrase;
+	}
+
+	public String getKnownHostsFilePath() {
+		return knownHostsFilePath;
+	}
+
+	public void setKnownHostsFilePath(String knownHostsFilePath) {
+		this.knownHostsFilePath = knownHostsFilePath;
+	}
+
+	public String getStrictHostKeyChecking() {
+		return strictHostKeyChecking;
+	}
+
+	public void setStrictHostKeyChecking(String strictHostKeyChecking) {
+		this.strictHostKeyChecking = strictHostKeyChecking;
 	}
 }
