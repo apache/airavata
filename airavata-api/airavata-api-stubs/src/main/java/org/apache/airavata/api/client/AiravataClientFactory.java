@@ -29,6 +29,7 @@ import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
+import org.apache.thrift.transport.TSSLTransportFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +48,35 @@ public class AiravataClientFactory {
             AiravataClientException exception = new AiravataClientException();
             exception.setParameter("Unable to connect to the server at "+serverHost+":"+serverPort);
             throw exception;
+        }
+    }
+
+    /**
+     * This method returns a Airavata Client that talks to the API Server exposed over TLS.
+     *
+     * @param serverHost
+     * @param serverPort
+     * @param trustStorePath
+     * @param trustStorePassword
+     * @param clientTimeOut
+     * @return
+     * @throws AiravataClientConnectException
+     */
+    public static Airavata.Client createAiravataSecureClient(String serverHost, int serverPort, String trustStorePath,
+                                                             String trustStorePassword, int clientTimeOut)
+            throws AiravataClientException {
+        try {
+            TSSLTransportFactory.TSSLTransportParameters params =
+                    new TSSLTransportFactory.TSSLTransportParameters();
+            params.setTrustStore(trustStorePath, trustStorePassword);
+            TSocket transport = TSSLTransportFactory.getClientSocket(serverHost, serverPort, clientTimeOut, params);
+            TProtocol protocol = new TBinaryProtocol(transport);
+            return new Airavata.Client(protocol);
+        } catch (TTransportException e) {
+            logger.error(e.getMessage(), e);
+            AiravataClientException clientError = new AiravataClientException();
+            clientError.setParameter("Unable to connect to the server at " + serverHost + ":" + serverPort);
+            throw clientError;
         }
     }
 }

@@ -67,6 +67,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-security</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.thrift</groupId>
             <artifactId>libthrift</artifactId>
             <version>${thrift.version}</version>

@@ -5,29 +5,28 @@
     <parent>
         <artifactId>samples</artifactId>
         <groupId>org.apache.airavata</groupId>
-        <version>0.15-SNAPSHOT</version>
+        <version>0.16-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
+    <groupId>org.apache.airavata</groupId>
     <artifactId>secure-client</artifactId>
+    <version>0.16-SNAPSHOT</version>
     <packaging>jar</packaging>
-
-    <repositories>
-        <repository>
-            <id>wso2-nexus</id>
-            <name>WSO2 internal Repository</name>
-            <url>http://maven.wso2.org/nexus/content/groups/wso2-public/</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-                <checksumPolicy>ignore</checksumPolicy>
-            </releases>
-        </repository>
-    </repositories>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.airavata</groupId>
             <artifactId>airavata-api-stubs</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-model-utils</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.airavata</groupId>
+            <artifactId>airavata-security</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -326,4 +326,24 @@ public class ServerSettings extends ApplicationSettings {
 	public static int getOrchestratorServerPort() throws ApplicationSettingsException {
 		return Integer.valueOf(getSetting(ORCHESTRATOR_SERVER_PORT));
 	}
+
+    public static boolean isTLSEnabled() throws ApplicationSettingsException {
+        return Boolean.valueOf(getSetting(Constants.IS_TLS_ENABLED));
+    }
+    public static int getTLSServerPort() throws ApplicationSettingsException {
+        return Integer.valueOf(getSetting(Constants.TLS_SERVER_PORT));
+    }
+    public static String getKeyStorePath() throws ApplicationSettingsException {
+        return getSetting(Constants.KEYSTORE_PATH);
+    }
+    public static String getKeyStorePassword() throws ApplicationSettingsException {
+        return getSetting(Constants.KEYSTORE_PASSWORD);
+    }
+    public static int getTLSClientTimeout() throws ApplicationSettingsException {
+        return Integer.valueOf(getSetting(Constants.TLS_CLIENT_TIMEOUT));
+    }
+
+    public static String getSecurityManagerClassName() throws ApplicationSettingsException {
+        return getSetting(Constants.SECURITY_MANAGER_CLASS);
+    }
 }

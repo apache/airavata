@@ -103,6 +103,8 @@
 				<include>LSFTemplate.xslt</include>
 				<include>UGETemplate.xslt</include>
 				<include>gsissh.properties</include>
+				<include>airavata.jks</include>
+				<include>client_truststore.jks</include>
 			</includes>
 		</fileSet>
 
