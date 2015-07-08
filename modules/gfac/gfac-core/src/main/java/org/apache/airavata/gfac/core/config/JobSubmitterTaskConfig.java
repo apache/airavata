@@ -22,9 +22,13 @@ package org.apache.airavata.gfac.core.config;
 
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class JobSubmitterTaskConfig {
 	private JobSubmissionProtocol submissionProtocol;
 	private String taskClass;
+	private Map<String,String> properties = new HashMap<>();
 
 	public JobSubmissionProtocol getSubmissionProtocol() {
 		return submissionProtocol;
@@ -40,5 +44,17 @@ public class JobSubmitterTaskConfig {
 
 	public void setTaskClass(String taskClass) {
 		this.taskClass = taskClass;
+	}
+
+	public void addProperty(String key, String value) {
+		properties.put(key, value);
+	}
+
+	public void addProperties(Map<String, String> propMap) {
+		propMap.forEach(properties::put);
+	}
+
+	public Map<String,String> getProperties(){
+		return properties;
 	}
 }

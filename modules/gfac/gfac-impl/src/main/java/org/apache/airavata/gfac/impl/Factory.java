@@ -40,6 +40,7 @@ import org.apache.airavata.gfac.core.monitor.JobMonitor;
 import org.apache.airavata.gfac.core.scheduler.HostScheduler;
 import org.apache.airavata.gfac.core.task.JobSubmissionTask;
 import org.apache.airavata.gfac.core.task.Task;
+import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.gfac.impl.job.LSFJobConfiguration;
 import org.apache.airavata.gfac.impl.job.LSFOutputParser;
 import org.apache.airavata.gfac.impl.job.PBSJobConfiguration;
@@ -67,6 +68,8 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -259,18 +262,32 @@ public abstract class Factory {
 
 	private static void loadConfiguration() throws GFacException {
 		GFacYamlConfigruation config = new GFacYamlConfigruation();
-		for (JobSubmitterTaskConfig jobSubmitterTaskConfig : config.getJobSbumitters()) {
-			jobSubmissionTask.put(jobSubmitterTaskConfig.getSubmissionProtocol(), null);
-		}
+		try {
+			for (JobSubmitterTaskConfig jobSubmitterTaskConfig : config.getJobSbumitters()) {
+				String taskClass = jobSubmitterTaskConfig.getTaskClass();
+				Class<?> aClass = Class.forName(taskClass);
+				Constructor<?> constructor = aClass.getConstructor();
+				JobSubmissionTask task = (JobSubmissionTask) constructor.newInstance();
+				task.init(jobSubmitterTaskConfig.getProperties());
+				jobSubmissionTask.put(jobSubmitterTaskConfig.getSubmissionProtocol(), task);
+			}
 
-		for (DataTransferTaskConfig dataTransferTaskConfig : config.getFileTransferTasks()) {
-			dataMovementTask.put(dataTransferTaskConfig.getTransferProtocol(), null);
-		}
+			for (DataTransferTaskConfig dataTransferTaskConfig : config.getFileTransferTasks()) {
+				String taskClass = dataTransferTaskConfig.getTaskClass();
+				Class<?> aClass = Class.forName(taskClass);
+				Constructor<?> constructor = aClass.getConstructor();
+				Task task = (Task) constructor.newInstance();
+				task.init(dataTransferTaskConfig.getProperties());
+				dataMovementTask.put(dataTransferTaskConfig.getTransferProtocol(), task);
+			}
 
-		for (ResourceConfig resourceConfig : config.getResourceConfiguration()) {
-			resources.put(resourceConfig.getJobManagerType(), resourceConfig);
+			for (ResourceConfig resourceConfig : config.getResourceConfiguration()) {
+				resources.put(resourceConfig.getJobManagerType(), resourceConfig);
+			}
+			readConfig = true;
+		} catch (Exception e) {
+			throw new GFacException("Gfac config issue", e);
 		}
-		readConfig = true;
 	}
 
 
