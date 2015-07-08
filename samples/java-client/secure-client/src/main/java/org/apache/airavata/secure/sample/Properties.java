@@ -23,13 +23,18 @@ package org.apache.airavata.secure.sample;
 public class Properties {
     //Airavata server host, port
     public static final String SERVER_HOST = "localhost";
-    public static final int SERVER_PORT = 8930;
+    public static final int SERVER_PORT = 9930;
+
+    //trust store parameters
+    public static final String TRUST_STORE_PATH = "../../../../../airavata/modules/configuration/server/src/main/resources/client_truststore.jks";
+    public static final String TRUST_STORE_PASSWORD = "airavata";
 
     public static String oauthAuthzServerURL = "https://localhost:9443/services/";
     public static String oauthTokenEndPointURL = "https://localhost:9443/oauth2/token";
     public static int authzServerPort = 9443;
     public static String adminUserName = "admin";
     public static String adminPassword = "admin";
+    public static int grantType = 1;
 
     //OAuth consumer app properties
     public static String appName = "AiravataGWP1";

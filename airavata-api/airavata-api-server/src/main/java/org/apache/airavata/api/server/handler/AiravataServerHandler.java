@@ -104,6 +104,7 @@ import org.apache.airavata.registry.cpi.RegistryException;
 import org.apache.airavata.registry.cpi.ResultOrderType;
 import org.apache.airavata.registry.cpi.WorkflowCatalog;
 import org.apache.airavata.registry.cpi.utils.Constants;
+import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -3555,11 +3556,12 @@ public class AiravataServerHandler implements Airavata.Iface {
                     throw new AuthorizationException("User is not authenticated or authorized.");
                 }
             }
-        } catch (org.apache.airavata.api.server.security.SecurityException e) {
-            throw new AuthorizationException(e.getMessage());
+        } catch (AiravataSecurityException e) {
+            logger.error(e.getMessage(), e);
+            throw new AuthorizationException("Error in obtaining initiating Security Manager.");
         } catch (ApplicationSettingsException e) {
-            logger.error("Error in reading API security settings.");
-            throw new AuthorizationException(e.getMessage());
+            logger.error(e.getMessage(), e);
+            throw new AuthorizationException("Error in reading security configuration.");
         }
     }
 

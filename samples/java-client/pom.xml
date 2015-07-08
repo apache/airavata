@@ -12,11 +12,12 @@
     <parent>
         <groupId>org.apache.airavata</groupId>
         <artifactId>airavata</artifactId>
-        <version>0.15-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <version>0.16-SNAPSHOT</version>
+        <relativePath>../../../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
+    <groupId>org.apache.airavata</groupId>
     <artifactId>samples</artifactId>
     <name>Samples - Airavata Client Samples</name>
     <packaging>pom</packaging>

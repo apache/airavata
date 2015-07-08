@@ -20,8 +20,10 @@
  */
 package org.apache.airavata.api.server.security;
 
+import org.apache.airavata.common.exception.ApplicationSettingsException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
@@ -35,7 +37,7 @@ import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2TokenValidationResponseDTO
 public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
     private final static Logger logger = LoggerFactory.getLogger(DefaultAiravataSecurityManager.class);
 
-    public boolean isUserAuthenticatedAndAuthorized(AuthzToken authzToken) throws SecurityException {
+    public boolean isUserAuthenticatedAndAuthorized(AuthzToken authzToken) throws AiravataSecurityException {
         try {
             ConfigurationContext configContext =
                     ConfigurationContextFactory.createConfigurationContextFromFileSystem(null, null);
@@ -46,10 +48,11 @@ public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
                     authzToken.getAccessToken());
             return validationResponse.getValid();
         } catch (AxisFault axisFault) {
-            throw new SecurityException(axisFault.getMessage());
-        } catch (Exception exception) {
-            logger.error(exception.getCause().toString());
-            throw new SecurityException(exception.getMessage());
+            logger.error(axisFault.getMessage(), axisFault);
+            throw new AiravataSecurityException("Error in initializing the configuration context for creating the OAuth validation client.");
+        } catch (ApplicationSettingsException e) {
+            logger.error(e.getMessage(), e);
+            throw new AiravataSecurityException("Error in reading OAuth server configuration.");
         }
     }
 }
