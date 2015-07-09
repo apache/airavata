@@ -344,7 +344,7 @@ public class ThriftDataModelConversion {
             processModel.setApplicationInterfaceId(processResource.getApplicationInterfaceId());
             processModel.setTaskDag(processResource.getTaskDag());
             processModel.setGatewayExecutionId(processResource.getGatewayExecutionId());
-            processModel.setApplicationInterfaceId(processResource.getApplicationInterfaceId());
+            processModel.setApplicationDeploymentId(processResource.getApplicationDeploymentId());
             processModel.setComputeResourceId(processResource.getComputeResourceId());
             processModel.setEnableEmailNotification(processResource.getEnableEmailNotification());
             if (processModel.isEnableEmailNotification()){
