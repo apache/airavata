@@ -46,6 +46,7 @@ public class ComputeResourceResource extends AbstractResource {
     private Timestamp createdTime;
     private Timestamp updatedTime;
     private int maxMemoryPerNode;
+    private boolean enabled;
 
     public int getMaxMemoryPerNode() {
         return maxMemoryPerNode;
@@ -69,6 +70,14 @@ public class ComputeResourceResource extends AbstractResource {
 
     public void setUpdatedTime(Timestamp updatedTime) {
         this.updatedTime = updatedTime;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override

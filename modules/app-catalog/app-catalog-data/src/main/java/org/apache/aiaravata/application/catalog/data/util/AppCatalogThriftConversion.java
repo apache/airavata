@@ -50,6 +50,7 @@ public class AppCatalogThriftConversion {
         resource.setResourceDescription(description.getResourceDescription());
         resource.setResourceId(description.getComputeResourceId());
         resource.setMaxMemoryPerNode(description.getMaxMemoryPerNode());
+        resource.setEnabled(description.isEnabled());
         return resource;
     }
 

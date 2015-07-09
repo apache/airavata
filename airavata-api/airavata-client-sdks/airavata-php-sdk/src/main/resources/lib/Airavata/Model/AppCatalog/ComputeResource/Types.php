@@ -1893,6 +1893,7 @@ class ComputeResourceDescription {
   public $hostAliases = null;
   public $ipAddresses = null;
   public $resourceDescription = null;
+  public $enabled = null;
   public $batchQueues = null;
   public $fileSystems = null;
   public $jobSubmissionInterfaces = null;
@@ -1931,6 +1932,10 @@ class ComputeResourceDescription {
           'type' => TType::STRING,
           ),
         6 => array(
+          'var' => 'enabled',
+          'type' => TType::BOOL,
+          ),
+        7 => array(
           'var' => 'batchQueues',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -1939,7 +1944,7 @@ class ComputeResourceDescription {
             'class' => '\Airavata\Model\AppCatalog\ComputeResource\BatchQueue',
             ),
           ),
-        7 => array(
+        8 => array(
           'var' => 'fileSystems',
           'type' => TType::MAP,
           'ktype' => TType::I32,
@@ -1951,7 +1956,7 @@ class ComputeResourceDescription {
             'type' => TType::STRING,
             ),
           ),
-        8 => array(
+        9 => array(
           'var' => 'jobSubmissionInterfaces',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -1960,7 +1965,7 @@ class ComputeResourceDescription {
             'class' => '\Airavata\Model\AppCatalog\ComputeResource\JobSubmissionInterface',
             ),
           ),
-        9 => array(
+        10 => array(
           'var' => 'dataMovementInterfaces',
           'type' => TType::LST,
           'etype' => TType::STRUCT,
@@ -1969,7 +1974,7 @@ class ComputeResourceDescription {
             'class' => '\Airavata\Model\AppCatalog\ComputeResource\DataMovementInterface',
             ),
           ),
-        10 => array(
+        11 => array(
           'var' => 'maxMemoryPerNode',
           'type' => TType::I32,
           ),
@@ -1990,6 +1995,9 @@ class ComputeResourceDescription {
       }
       if (isset($vals['resourceDescription'])) {
         $this->resourceDescription = $vals['resourceDescription'];
+      }
+      if (isset($vals['enabled'])) {
+        $this->enabled = $vals['enabled'];
       }
       if (isset($vals['batchQueues'])) {
         $this->batchQueues = $vals['batchQueues'];
@@ -2084,6 +2092,13 @@ class ComputeResourceDescription {
           }
           break;
         case 6:
+          if ($ftype == TType::BOOL) {
+            $xfer += $input->readBool($this->enabled);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 7:
           if ($ftype == TType::LST) {
             $this->batchQueues = array();
             $_size35 = 0;
@@ -2101,7 +2116,7 @@ class ComputeResourceDescription {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 7:
+        case 8:
           if ($ftype == TType::MAP) {
             $this->fileSystems = array();
             $_size41 = 0;
@@ -2121,7 +2136,7 @@ class ComputeResourceDescription {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 8:
+        case 9:
           if ($ftype == TType::LST) {
             $this->jobSubmissionInterfaces = array();
             $_size48 = 0;
@@ -2139,7 +2154,7 @@ class ComputeResourceDescription {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 9:
+        case 10:
           if ($ftype == TType::LST) {
             $this->dataMovementInterfaces = array();
             $_size54 = 0;
@@ -2157,7 +2172,7 @@ class ComputeResourceDescription {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 10:
+        case 11:
           if ($ftype == TType::I32) {
             $xfer += $input->readI32($this->maxMemoryPerNode);
           } else {
@@ -2226,11 +2241,16 @@ class ComputeResourceDescription {
       $xfer += $output->writeString($this->resourceDescription);
       $xfer += $output->writeFieldEnd();
     }
+    if ($this->enabled !== null) {
+      $xfer += $output->writeFieldBegin('enabled', TType::BOOL, 6);
+      $xfer += $output->writeBool($this->enabled);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->batchQueues !== null) {
       if (!is_array($this->batchQueues)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('batchQueues', TType::LST, 6);
+      $xfer += $output->writeFieldBegin('batchQueues', TType::LST, 7);
       {
         $output->writeListBegin(TType::STRUCT, count($this->batchQueues));
         {
@@ -2247,7 +2267,7 @@ class ComputeResourceDescription {
       if (!is_array($this->fileSystems)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('fileSystems', TType::MAP, 7);
+      $xfer += $output->writeFieldBegin('fileSystems', TType::MAP, 8);
       {
         $output->writeMapBegin(TType::I32, TType::STRING, count($this->fileSystems));
         {
@@ -2265,7 +2285,7 @@ class ComputeResourceDescription {
       if (!is_array($this->jobSubmissionInterfaces)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('jobSubmissionInterfaces', TType::LST, 8);
+      $xfer += $output->writeFieldBegin('jobSubmissionInterfaces', TType::LST, 9);
       {
         $output->writeListBegin(TType::STRUCT, count($this->jobSubmissionInterfaces));
         {
@@ -2282,7 +2302,7 @@ class ComputeResourceDescription {
       if (!is_array($this->dataMovementInterfaces)) {
         throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
       }
-      $xfer += $output->writeFieldBegin('dataMovementInterfaces', TType::LST, 9);
+      $xfer += $output->writeFieldBegin('dataMovementInterfaces', TType::LST, 10);
       {
         $output->writeListBegin(TType::STRUCT, count($this->dataMovementInterfaces));
         {
@@ -2296,7 +2316,7 @@ class ComputeResourceDescription {
       $xfer += $output->writeFieldEnd();
     }
     if ($this->maxMemoryPerNode !== null) {
-      $xfer += $output->writeFieldBegin('maxMemoryPerNode', TType::I32, 10);
+      $xfer += $output->writeFieldBegin('maxMemoryPerNode', TType::I32, 11);
       $xfer += $output->writeI32($this->maxMemoryPerNode);
       $xfer += $output->writeFieldEnd();
     }

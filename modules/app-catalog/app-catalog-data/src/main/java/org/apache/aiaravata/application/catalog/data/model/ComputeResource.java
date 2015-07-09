@@ -21,15 +21,14 @@
 
 package org.apache.aiaravata.application.catalog.data.model;
 
-import java.io.Serializable;
-import java.sql.Timestamp;
+import org.apache.openjpa.persistence.DataCache;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import org.apache.openjpa.persistence.DataCache;
+import java.io.Serializable;
+import java.sql.Timestamp;
 
 @DataCache
 @Entity
@@ -54,6 +53,9 @@ public class ComputeResource implements Serializable {
 
     @Column(name = "UPDATE_TIME")
     private Timestamp updateTime;
+
+    @Column(name = "ENABLED")
+    private boolean enabled;
 
     public Timestamp getCreationTime() {
         return creationTime;
@@ -101,5 +103,13 @@ public class ComputeResource implements Serializable {
 
     public void setMaxMemoryPerNode(int maxMemoryPerNode) {
         this.maxMemoryPerNode = maxMemoryPerNode;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 }

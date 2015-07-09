@@ -1624,8 +1624,8 @@ void swap(DataMovementInterface &a, DataMovementInterface &b) {
   swap(a.priorityOrder, b.priorityOrder);
 }
 
-const char* ComputeResourceDescription::ascii_fingerprint = "3CD4212965217787DCD6081F1744069F";
-const uint8_t ComputeResourceDescription::binary_fingerprint[16] = {0x3C,0xD4,0x21,0x29,0x65,0x21,0x77,0x87,0xDC,0xD6,0x08,0x1F,0x17,0x44,0x06,0x9F};
+const char* ComputeResourceDescription::ascii_fingerprint = "FEBE7045EBC701802205EA9BA436FCE2";
+const uint8_t ComputeResourceDescription::binary_fingerprint[16] = {0xFE,0xBE,0x70,0x45,0xEB,0xC7,0x01,0x80,0x22,0x05,0xEA,0x9B,0xA4,0x36,0xFC,0xE2};
 
 uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -1714,6 +1714,14 @@ uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol*
         }
         break;
       case 6:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->enabled);
+          this->__isset.enabled = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 7:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->batchQueues.clear();
@@ -1733,7 +1741,7 @@ uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol*
           xfer += iprot->skip(ftype);
         }
         break;
-      case 7:
+      case 8:
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->fileSystems.clear();
@@ -1758,7 +1766,7 @@ uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol*
           xfer += iprot->skip(ftype);
         }
         break;
-      case 8:
+      case 9:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->jobSubmissionInterfaces.clear();
@@ -1778,7 +1786,7 @@ uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol*
           xfer += iprot->skip(ftype);
         }
         break;
-      case 9:
+      case 10:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->dataMovementInterfaces.clear();
@@ -1798,7 +1806,7 @@ uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol*
           xfer += iprot->skip(ftype);
         }
         break;
-      case 10:
+      case 11:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->maxMemoryPerNode);
           this->__isset.maxMemoryPerNode = true;
@@ -1865,8 +1873,13 @@ uint32_t ComputeResourceDescription::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeString(this->resourceDescription);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.enabled) {
+    xfer += oprot->writeFieldBegin("enabled", ::apache::thrift::protocol::T_BOOL, 6);
+    xfer += oprot->writeBool(this->enabled);
+    xfer += oprot->writeFieldEnd();
+  }
   if (this->__isset.batchQueues) {
-    xfer += oprot->writeFieldBegin("batchQueues", ::apache::thrift::protocol::T_LIST, 6);
+    xfer += oprot->writeFieldBegin("batchQueues", ::apache::thrift::protocol::T_LIST, 7);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->batchQueues.size()));
       std::vector<BatchQueue> ::const_iterator _iter68;
@@ -1879,7 +1892,7 @@ uint32_t ComputeResourceDescription::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.fileSystems) {
-    xfer += oprot->writeFieldBegin("fileSystems", ::apache::thrift::protocol::T_MAP, 7);
+    xfer += oprot->writeFieldBegin("fileSystems", ::apache::thrift::protocol::T_MAP, 8);
     {
       xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_I32, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->fileSystems.size()));
       std::map<FileSystems::type, std::string> ::const_iterator _iter69;
@@ -1893,7 +1906,7 @@ uint32_t ComputeResourceDescription::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.jobSubmissionInterfaces) {
-    xfer += oprot->writeFieldBegin("jobSubmissionInterfaces", ::apache::thrift::protocol::T_LIST, 8);
+    xfer += oprot->writeFieldBegin("jobSubmissionInterfaces", ::apache::thrift::protocol::T_LIST, 9);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->jobSubmissionInterfaces.size()));
       std::vector<JobSubmissionInterface> ::const_iterator _iter70;
@@ -1906,7 +1919,7 @@ uint32_t ComputeResourceDescription::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.dataMovementInterfaces) {
-    xfer += oprot->writeFieldBegin("dataMovementInterfaces", ::apache::thrift::protocol::T_LIST, 9);
+    xfer += oprot->writeFieldBegin("dataMovementInterfaces", ::apache::thrift::protocol::T_LIST, 10);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->dataMovementInterfaces.size()));
       std::vector<DataMovementInterface> ::const_iterator _iter71;
@@ -1919,7 +1932,7 @@ uint32_t ComputeResourceDescription::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.maxMemoryPerNode) {
-    xfer += oprot->writeFieldBegin("maxMemoryPerNode", ::apache::thrift::protocol::T_I32, 10);
+    xfer += oprot->writeFieldBegin("maxMemoryPerNode", ::apache::thrift::protocol::T_I32, 11);
     xfer += oprot->writeI32(this->maxMemoryPerNode);
     xfer += oprot->writeFieldEnd();
   }
@@ -1935,6 +1948,7 @@ void swap(ComputeResourceDescription &a, ComputeResourceDescription &b) {
   swap(a.hostAliases, b.hostAliases);
   swap(a.ipAddresses, b.ipAddresses);
   swap(a.resourceDescription, b.resourceDescription);
+  swap(a.enabled, b.enabled);
   swap(a.batchQueues, b.batchQueues);
   swap(a.fileSystems, b.fileSystems);
   swap(a.jobSubmissionInterfaces, b.jobSubmissionInterfaces);

@@ -1209,6 +1209,23 @@ public class AiravataServerHandler implements Airavata.Iface {
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             }
+
+            if(experiment.getUserConfigurationData() != null && experiment.getUserConfigurationData()
+                    .getComputationalResourceScheduling() != null){
+                String compResourceId = experiment.getUserConfigurationData()
+                        .getComputationalResourceScheduling().getResourceHostId();
+                appCatalog = AppCatalogFactory.getAppCatalog();
+                ComputeResourceDescription computeResourceDescription = appCatalog.getComputeResource()
+                        .getComputeResource(compResourceId);
+                if(!computeResourceDescription.isEnabled()){
+                    logger.error("Compute Resource is not enabled by the Admin!");
+                    AiravataSystemException exception = new AiravataSystemException();
+                    exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                    exception.setMessage("Compute Resource is not enabled by the Admin!");
+                    throw exception;
+                }
+            }
+
             String experimentId = (String) registry.add(ParentDataType.EXPERIMENT, experiment, gatewayId);
             ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.CREATED,
                     experimentId,
@@ -1307,6 +1324,21 @@ public class AiravataServerHandler implements Airavata.Iface {
                 ExperimentState experimentState = experimentStatus.getExperimentState();
                 switch (experimentState){
                     case CREATED: case VALIDATED:case UNKNOWN:
+                        if(experiment.getUserConfigurationData() != null && experiment.getUserConfigurationData()
+                                .getComputationalResourceScheduling() != null){
+                            String compResourceId = experiment.getUserConfigurationData()
+                                    .getComputationalResourceScheduling().getResourceHostId();
+                            appCatalog = AppCatalogFactory.getAppCatalog();
+                            ComputeResourceDescription computeResourceDescription = appCatalog.getComputeResource()
+                                    .getComputeResource(compResourceId);
+                            if(!computeResourceDescription.isEnabled()){
+                                logger.error("Compute Resource is not enabled by the Admin!");
+                                AiravataSystemException exception = new AiravataSystemException();
+                                exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+                                exception.setMessage("Compute Resource is not enabled by the Admin!");
+                                throw exception;
+                            }
+                        }
                         registry.update(RegistryModelType.EXPERIMENT, experiment, airavataExperimentId);
                         logger.infoId(airavataExperimentId, "Successfully updated experiment {} ", experiment.getName());
                         break;
@@ -1389,7 +1421,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                         break;
                     default:
                         logger.errorId(airavataExperimentId, "Error while updating scheduling info. Update experiment is only valid for experiments " +
-                                "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the given " +
+                                "with status CREATED, VALIDATED, CANCELLED, FAILED and UNKNOWN. Make sure the giv   en " +
                                 "experiment is in one of above statuses... ");
                         AiravataSystemException exception = new AiravataSystemException();
                         exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
@@ -1771,6 +1803,19 @@ public class AiravataServerHandler implements Airavata.Iface {
             if (existingExperiment.getErrors() != null ){
                 existingExperiment.getErrors().clear();
             }
+
+            if(existingExperiment.getUserConfigurationData() != null && existingExperiment.getUserConfigurationData()
+                    .getComputationalResourceScheduling() != null){
+                String compResourceId = existingExperiment.getUserConfigurationData()
+                        .getComputationalResourceScheduling().getResourceHostId();
+                appCatalog = AppCatalogFactory.getAppCatalog();
+                ComputeResourceDescription computeResourceDescription = appCatalog.getComputeResource()
+                        .getComputeResource(compResourceId);
+                if(!computeResourceDescription.isEnabled()){
+                    existingExperiment.getUserConfigurationData().setComputationalResourceScheduling(null);
+                }
+            }
+
             return (String)registry.add(ParentDataType.EXPERIMENT, existingExperiment, gatewayId);
         } catch (Exception e) {
             logger.errorId(existingExperimentID, "Error while cloning the experiment with existing configuration...", e);
