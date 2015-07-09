@@ -138,6 +138,13 @@ public interface Cluster {
      * @throws SSHApiException throws during error
      */
     public List<String> listDirectory(String directoryPath) throws SSHApiException;
+    
+    /**
+     * This will list directories in computing resources
+     * @param directoryPath the full qualified path for the directory user wants to create
+     * @throws SSHApiException throws during error
+     */
+    public List<String> listDirectory(String directoryPath, boolean recursive) throws SSHApiException;
 
     /**
      * This method can be used to get created ssh session

@@ -701,10 +701,15 @@ public class SSHUtils {
         channel.disconnect();
     }
 
-    public static List<String> listDirectory(String path, Session session) throws IOException, JSchException, SSHApiException {
+    public static List<String> listDirectory(String path, Session session, boolean recursive) throws IOException, JSchException, SSHApiException {
 
         // exec 'scp -t rfile' remotely
-        String command = "ls " + path;
+    	String command;
+    	if(recursive){
+    		command = "ls -LR " + path;
+    	}else{
+    		command = "ls " + path;
+    	}
         Channel channel = session.openChannel("exec");
         StandardOutReader stdOutReader = new StandardOutReader();
 

@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.Constants;
@@ -35,30 +38,58 @@ public class HandleOutputs {
 			(new File(outputDataDir)).mkdirs();
 
 			List<OutputDataObjectType> outputs = jobExecutionContext.getTaskData().getApplicationOutputs();
-			List<String> outputList = cluster.listDirectory(jobExecutionContext.getWorkingDir());
+			List<String> outputList = cluster.listDirectory(jobExecutionContext.getWorkingDir(),true);
 			boolean missingOutput = false;
 
 			for (OutputDataObjectType output : outputs) {
-				// FIXME: Validation of outputs based on required and optional and search based on REGEX provided in search.
+				// FIXME: Validation of outputs based on required and optional
+				// and search based on REGEX provided in search.
 
 				if (DataType.URI == output.getType()) {
-                    // for failed jobs outputs are not generated. So we should not download outputs
-                    if (GFacUtils.isFailedJob(jobExecutionContext)){
-                       continue;
-                    }
+					// for failed jobs outputs are not generated. So we should
+					// not download outputs
+					if (GFacUtils.isFailedJob(jobExecutionContext)) {
+						continue;
+					}
 					String outputFile = output.getValue();
 					String fileName = outputFile.substring(outputFile.lastIndexOf(File.separatorChar) + 1, outputFile.length());
-
 					if (output.getLocation() == null && !outputList.contains(fileName) && output.isIsRequired()) {
 						missingOutput = true;
-					} else {
+					}else {
+					// if user value has any pattern char.
+					Pattern p = Pattern.compile("[*:<>?\\|]", Pattern.CASE_INSENSITIVE);
+					Matcher m = p.matcher(outputFile);
+					// boolean b = m.matches();
+					boolean b = m.find();
+					if (b) {
+						if(fileName.isEmpty() && !output.getSearchQuery().isEmpty()){
+							fileName = output.getSearchQuery();
+						}
+						if(fileName.isEmpty()){
+							throw new GFacHandlerException("Define a output value or search query");
+						}
+						String fileregex = wildcardToRegex(fileName);
+						log.info("Regex for: "+ fileName+ " is: " + fileregex);
 						cluster.scpFrom(outputFile, outputDataDir);
-						String localFile = outputDataDir + File.separator + fileName;
-						jobExecutionContext.addOutputFile(localFile);
-						output.setValue(localFile);
-						outputArray.add(output);
+						ListIterator<String> li = outputList.listIterator();
+						while (li.hasNext()) {
+							String next = li.next();
+							if (Pattern.matches(fileregex, next)) {
+								String localFile = outputDataDir + File.separator + next;
+								jobExecutionContext.addOutputFile(localFile);
+								output.setValue(localFile);
+								outputArray.add(output);
+								break;
+							}
+						}
+					} else {
+							cluster.scpFrom(outputFile, outputDataDir);
+							String localFile = outputDataDir + File.separator + fileName;
+							jobExecutionContext.addOutputFile(localFile);
+							output.setValue(localFile);
+							outputArray.add(output);
+						}
 					}
-
 				} else if (DataType.STDOUT == output.getType()) {
 					String downloadFile = jobExecutionContext.getStandardOutput();
 					String fileName = downloadFile.substring(downloadFile.lastIndexOf(File.separatorChar) + 1, downloadFile.length());
@@ -100,4 +131,31 @@ public class HandleOutputs {
 		jobExecutionContext.getTaskData().setApplicationOutputs(outputArray);
 		return outputArray;
 	}
+	public static String wildcardToRegex(String wildcard){
+        StringBuffer s = new StringBuffer(wildcard.length());
+        s.append('^');
+        for (int i = 0, is = wildcard.length(); i < is; i++) {
+            char c = wildcard.charAt(i);
+            switch(c) {
+                case '*':
+                    s.append(".*");
+                    break;
+                case '?':
+                    s.append(".");
+                    break;
+                    // escape special regexp-characters
+                case '(': case ')': case '[': case ']': case '$':
+                case '^': case '.': case '{': case '}': case '|':
+                case '\\':
+                    s.append("\\");
+                    s.append(c);
+                    break;
+                default:
+                    s.append(c);
+                    break;
+            }
+        }
+        s.append('$');
+        return(s.toString());
+    }
 }
