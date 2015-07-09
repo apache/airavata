@@ -74,13 +74,12 @@ public class GFacWorker implements Runnable {
 		    try {
 			    switch (type) {
 				    case NEW:
-					    engine.createTaskChain(processContext);
 					    engine.executeProcess(processContext);
 					    break;
 				    case RECOVER:
 					    // recover the process
-					    engine.createTaskChain(processContext);
-					    engine.recoverProcess(processContext);
+//					    engine.recoverProcess(processContext);
+					    engine.executeProcess(processContext);
 					    break;
 				    case OUTFLOW:
 					    // run the outflow task

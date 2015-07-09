@@ -34,6 +34,7 @@ import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.JobStatus;
 import org.apache.airavata.model.status.TaskState;
+import org.apache.airavata.model.task.TaskTypes;
 import org.apache.airavata.registry.cpi.AppCatalogException;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -160,4 +161,9 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
                 return TaskState.COMPLETED;
             }
     }
+
+	@Override
+	public TaskTypes getType() {
+		return TaskTypes.JOB_SUBMISSION;
+	}
 }

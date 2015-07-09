@@ -27,8 +27,6 @@ public interface GFacEngine {
 
 	public ProcessContext populateProcessContext(String processId, String gatewayId, String tokenId) throws GFacException;
 
-	public void createTaskChain(ProcessContext processContext) throws GFacException;
-
 	public void executeProcess(ProcessContext processContext) throws GFacException ;
 
 	public void recoverProcess(ProcessContext processContext) throws GFacException ;

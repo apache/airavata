@@ -34,6 +34,7 @@ import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfil
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.process.ProcessModel;
 import org.apache.airavata.model.status.ProcessState;
+import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.curator.framework.CuratorFramework;
@@ -54,7 +55,7 @@ public class ProcessContext {
 	private String workingDir;
 	private String inputDir;
     private String outputDir;
-	private List<Task> taskChain;
+	private List<TaskContext> taskChain;
 	private GatewayResourceProfile gatewayResourceProfile;
     private ComputeResourceDescription computeResourceDescription;
     private ApplicationDeploymentDescription applicationDeploymentDescription;
@@ -136,11 +137,11 @@ public class ProcessContext {
 		this.workingDir = workingDir;
 	}
 
-	public List<Task> getTaskChain() {
+	public List<TaskContext> getTaskChain() {
 		return taskChain;
 	}
 
-	public void setTaskChain(List<Task> taskChain) {
+	public void setTaskChain(List<TaskContext> taskChain) {
 		this.taskChain = taskChain;
 	}
 
@@ -266,4 +267,10 @@ public class ProcessContext {
 		return processModel.getProcessStatus().getState();
 	}
 
+	public void setProcessStatus(ProcessStatus status) {
+		if (status != null) {
+			processModel.setProcessStatus(status);
+			// TODO publish process status change.
+		}
+	}
 }

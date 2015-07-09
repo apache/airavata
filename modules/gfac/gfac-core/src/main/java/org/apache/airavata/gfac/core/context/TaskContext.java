@@ -20,7 +20,10 @@
  */
 package org.apache.airavata.gfac.core.context;
 
+import org.apache.airavata.model.status.TaskState;
+import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskModel;
+import org.apache.airavata.model.task.TaskTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,4 +49,27 @@ public class TaskContext {
 		this.parentProcessContext = parentProcessContext;
 	}
 
+	public String getWorkingDir() {
+		return getParentProcessContext().getWorkingDir();
+	}
+
+	public void setTaskStatus(TaskStatus taskStatus) {
+		taskModel.setTaskStatus(taskStatus);
+	}
+
+	public TaskStatus getTaskStatus() {
+		return taskModel.getTaskStatus();
+	}
+
+	public TaskState getTaskState() {
+		return taskModel.getTaskStatus().getState();
+	}
+
+	public TaskTypes getTaskType() {
+		return taskModel.getTaskType();
+	}
+
+	public String getTaskId() {
+		return taskModel.getTaskId();
+	}
 }

@@ -26,6 +26,7 @@ import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.model.status.TaskState;
+import org.apache.airavata.model.task.TaskTypes;
 
 import java.util.Map;
 
@@ -51,5 +52,10 @@ public class SSHEnvironmentSetupTask implements Task {
 	@Override
 	public TaskState recover(TaskContext taskContext) throws TaskException {
 		return execute(taskContext);
+	}
+
+	@Override
+	public TaskTypes getType() {
+		return TaskTypes.ENV_SETUP;
 	}
 }
