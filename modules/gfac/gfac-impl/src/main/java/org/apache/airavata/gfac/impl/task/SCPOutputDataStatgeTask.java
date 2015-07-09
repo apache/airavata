@@ -77,4 +77,9 @@ public class SCPOutputDataStatgeTask extends AbstractSCPTask {
 	public TaskState recover(TaskContext taskContext) throws TaskException {
 		return null;
 	}
+
+	@Override
+	public TaskTypes getType() {
+		return TaskTypes.DATA_STAGING;
+	}
 }

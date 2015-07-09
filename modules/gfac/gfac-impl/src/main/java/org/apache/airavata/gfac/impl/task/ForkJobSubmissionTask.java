@@ -25,6 +25,7 @@ import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.JobSubmissionTask;
 import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.model.status.TaskState;
+import org.apache.airavata.model.task.TaskTypes;
 
 import java.util.Map;
 
@@ -43,4 +44,9 @@ public class ForkJobSubmissionTask implements JobSubmissionTask {
     public TaskState recover(TaskContext taskContext) throws TaskException {
         return null;
     }
+
+	@Override
+	public TaskTypes getType() {
+		return TaskTypes.JOB_SUBMISSION;
+	}
 }

@@ -22,6 +22,7 @@ package org.apache.airavata.gfac.core.task;
 
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.model.status.TaskState;
+import org.apache.airavata.model.task.TaskTypes;
 
 import java.util.Map;
 
@@ -54,4 +55,11 @@ public interface Task {
 	 * @return
 	 */
 	public TaskState recover(TaskContext taskContext) throws TaskException;
+
+	/**
+	 * Task type will be used to identify the task behaviour. eg : DATA_STAGING , JOB_SUBMISSION
+	 * @return type of this task object
+	 */
+	public TaskTypes getType();
+
 }

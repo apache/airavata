@@ -27,7 +27,7 @@ import org.apache.airavata.model.status.TaskState;
 
 import java.util.Map;
 
-public class AbstractSCPTask implements Task {
+public abstract class AbstractSCPTask implements Task {
 	protected static final int DEFAULT_SSH_PORT = 22;
 	protected String password;
 	protected String publicKeyPath;
@@ -47,17 +47,5 @@ public class AbstractSCPTask implements Task {
 		hostName = propertyMap.get("hostName");
 		inputPath = propertyMap.get("inputPath");
 	}
-
-	@Override
-	public TaskState execute(TaskContext taskContext) throws TaskException {
-		return null;
-	}
-
-	@Override
-	public TaskState recover(TaskContext taskContext) throws TaskException {
-		return null;
-	}
-
-
 
 }

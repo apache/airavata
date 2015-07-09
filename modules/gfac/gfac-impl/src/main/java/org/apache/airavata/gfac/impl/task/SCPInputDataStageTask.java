@@ -84,5 +84,10 @@ public class SCPInputDataStageTask extends AbstractSCPTask {
 		return null;
 	}
 
+	@Override
+	public TaskTypes getType() {
+		return TaskTypes.DATA_STAGING;
+	}
+
 
 }
