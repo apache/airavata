@@ -35,6 +35,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ComputeResourceResource extends AbstractResource {
@@ -190,6 +191,8 @@ public class ComputeResourceResource extends AbstractResource {
                 em.close();
             }
         }
+        Collections.sort(computeResourceResources, (o1, o2) -> ((ComputeResource) o1).getCreationTime()
+                .compareTo(((ComputeResource) o2).getCreationTime()));
         return computeResourceResources;
     }
 

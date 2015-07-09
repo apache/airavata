@@ -37,6 +37,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class AppDeploymentResource extends AbstractResource {
@@ -274,6 +275,8 @@ public class AppDeploymentResource extends AbstractResource {
                 em.close();
             }
         }
+        Collections.sort(appDeployments, (o1, o2) -> ((AppDeploymentResource) o1).getCreatedTime()
+                .compareTo(((AppDeploymentResource) o2).getCreatedTime()));
         return appDeployments;
     }
 

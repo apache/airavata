@@ -35,6 +35,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class AppInterfaceResource extends AbstractResource {
@@ -223,6 +224,8 @@ public class AppInterfaceResource extends AbstractResource {
                 em.close();
             }
         }
+        Collections.sort(resourceList, (o1, o2) -> ((AppInterfaceResource) o1).getCreatedTime()
+                .compareTo(((AppInterfaceResource) o2).getCreatedTime()));
         return resourceList;
     }
 
