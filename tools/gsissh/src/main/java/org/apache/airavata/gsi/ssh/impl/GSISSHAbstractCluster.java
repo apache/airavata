@@ -593,7 +593,52 @@ public class GSISSHAbstractCluster implements Cluster {
                     session.connect();
                 }
                 log.info("Listing directory: " + serverInfo.getHost() + ":" + directoryPath);
-                files = SSHUtils.listDirectory(directoryPath, session);
+                files = SSHUtils.listDirectory(directoryPath, session, false);
+                retry=0;
+            } catch (IOException e) {
+                log.error(e.getMessage(), e);
+                retry--;
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e1) {
+                    log.error(e1.getMessage(), e1);
+                }
+                reconnect(serverInfo, authenticationInfo);
+                if (retry == 0) {
+                    throw new SSHApiException("Failed during listing directory:" + directoryPath + " to remote file ", e);
+                }
+            } catch (JSchException e) {
+                retry--;
+                reconnect(serverInfo, authenticationInfo);
+                if (retry == 0) {
+                    throw new SSHApiException("Failed during listing directory :" + directoryPath + " to remote file ", e);
+                }
+            }catch (SSHApiException e) {
+                retry--;
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e1) {
+                    log.error(e1.getMessage(), e1);
+                }
+                reconnect(serverInfo, authenticationInfo);
+                if (retry == 0) {
+                    throw new SSHApiException("Failed during listing directory :" + directoryPath + " to remote file "
+                            + serverInfo.getHost() + ":rFile", e);
+                }
+            }
+        }
+        return files;
+    }
+    public synchronized List<String> listDirectory(String directoryPath, boolean recursive) throws SSHApiException {
+        int retry = 3;
+        List<String> files = null;
+        while (retry > 0) {
+            try {
+                if (!session.isConnected()) {
+                    session.connect();
+                }
+                log.info("Listing directory: " + serverInfo.getHost() + ":" + directoryPath);
+                files = SSHUtils.listDirectory(directoryPath, session, recursive);
                 retry=0;
             } catch (IOException e) {
                 log.error(e.getMessage(), e);
