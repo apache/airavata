@@ -677,7 +677,7 @@ public class ExperimentRegistry {
             processResource.setTaskDag(process.getTaskDag());
             processResource.setGatewayExecutionId(process.getGatewayExecutionId());
             processResource.setComputeResourceId(process.getComputeResourceId());
-            processResource.setApplicationInterfaceId(process.getApplicationInterfaceId());
+            processResource.setApplicationDeploymentId(process.getApplicationDeploymentId());
             if(process.isEnableEmailNotification()){
                 processResource.setEnableEmailNotification(true);
                 if(process.getEmailAddresses() != null){
