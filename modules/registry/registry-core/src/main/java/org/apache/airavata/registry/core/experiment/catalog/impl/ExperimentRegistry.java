@@ -409,7 +409,8 @@ public class ExperimentRegistry {
     public String addTask(TaskModel task, String processID) throws RegistryException {
         try {
             TaskResource taskResource = new TaskResource();
-            taskResource.setTaskId(getTaskID(processID));
+	        task.setTaskId(getTaskID(processID));
+            taskResource.setTaskId(task.getTaskId());
             taskResource.setParentProcessId(task.getParentProcessId());
             taskResource.setTaskType(task.getTaskType().toString());
             taskResource.setCreationTime(AiravataUtils.getTime(task.getCreationTime()));
@@ -429,7 +430,7 @@ public class ExperimentRegistry {
             logger.error(processID, "Error while adding task...", e);
             throw new RegistryException(e);
         }
-        return processID;
+        return task.getTaskId();
     }
 
     public String addTaskStatus(TaskStatus taskStatus, String taskID) throws RegistryException {
@@ -440,15 +441,13 @@ public class ExperimentRegistry {
             if (status == null) {
                 status = new TaskStatusResource();
             }
-            if (isValidStatusTransition(ProcessState.valueOf(status.getState()), taskStatus.getState())) {
-                status.setStatusId(getStatusID(taskID));
-                status.setTaskId(taskID);
-                status.setTimeOfStateChange(AiravataUtils.getTime(taskStatus.getTimeOfStateChange()));
-                status.setState(taskStatus.getState().toString());
-                status.setReason(taskStatus.getReason());
-                status.save();
-                logger.debug(taskID, "Added task {} status to {}.", taskID, taskStatus.toString());
-            }
+	        status.setStatusId(getStatusID(taskID));
+	        status.setTaskId(taskID);
+	        status.setTimeOfStateChange(AiravataUtils.getTime(taskStatus.getTimeOfStateChange()));
+	        status.setState(taskStatus.getState().toString());
+	        status.setReason(taskStatus.getReason());
+	        status.save();
+	        logger.debug(taskID, "Added task {} status to {}.", taskID, taskStatus.toString());
         } catch (Exception e) {
             logger.error(taskID, "Error while adding task status...", e);
             throw new RegistryException(e);
@@ -507,16 +506,14 @@ public class ExperimentRegistry {
             if (status == null) {
                 status = new JobStatusResource();
             }
-            if (isValidStatusTransition(ProcessState.valueOf(status.getState()), jobStatus.getJobState())) {
-                status.setStatusId(getStatusID(jobID));
-                status.setJobId(jobID);
-                status.setTaskId(taskID);
-                status.setTimeOfStateChange(AiravataUtils.getTime(jobStatus.getTimeOfStateChange()));
-                status.setState(jobStatus.getJobState().toString());
-                status.setReason(jobStatus.getReason());
-                status.save();
-                logger.debug(jobID, "Added job {} status to {}.", jobID, jobStatus.toString());
-            }
+	        status.setStatusId(getStatusID(jobID));
+	        status.setJobId(jobID);
+	        status.setTaskId(taskID);
+	        status.setTimeOfStateChange(AiravataUtils.getTime(jobStatus.getTimeOfStateChange()));
+	        status.setState(jobStatus.getJobState().toString());
+	        status.setReason(jobStatus.getReason());
+	        status.save();
+	        logger.debug(jobID, "Added job {} status to {}.", jobID, jobStatus.toString());
         } catch (Exception e) {
             logger.error(jobID, "Error while adding job status...", e);
             throw new RegistryException(e);
