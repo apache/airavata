@@ -200,8 +200,8 @@ public class ComputeResourceResource extends AbstractResource {
                 em.close();
             }
         }
-        Collections.sort(computeResourceResources, (o1, o2) -> ((ComputeResource) o1).getCreationTime()
-                .compareTo(((ComputeResource) o2).getCreationTime()));
+        Collections.sort(computeResourceResources, (o1, o2) -> ((ComputeResourceResource) o1).getCreatedTime()
+                .compareTo(((ComputeResourceResource) o2).getCreatedTime()));
         return computeResourceResources;
     }
 
