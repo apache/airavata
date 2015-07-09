@@ -36,12 +36,11 @@ import org.apache.airavata.gfac.core.config.DataTransferTaskConfig;
 import org.apache.airavata.gfac.core.config.GFacYamlConfigruation;
 import org.apache.airavata.gfac.core.config.JobSubmitterTaskConfig;
 import org.apache.airavata.gfac.core.config.ResourceConfig;
-import org.apache.airavata.gfac.core.context.TaskContext;
+import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.monitor.JobMonitor;
 import org.apache.airavata.gfac.core.scheduler.HostScheduler;
 import org.apache.airavata.gfac.core.task.JobSubmissionTask;
 import org.apache.airavata.gfac.core.task.Task;
-import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.gfac.impl.job.LSFJobConfiguration;
 import org.apache.airavata.gfac.impl.job.LSFOutputParser;
 import org.apache.airavata.gfac.impl.job.PBSJobConfiguration;
@@ -58,7 +57,6 @@ import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
-import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.registry.core.experiment.catalog.impl.RegistryFactory;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.AppCatalogException;
@@ -70,7 +68,6 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -175,24 +172,23 @@ public abstract class Factory {
 	}
 
 
-	public static RemoteCluster getRemoteCluster(ComputeResourcePreference cRP) throws GFacException,
+	public static RemoteCluster getRemoteCluster(ProcessContext processCtx) throws GFacException,
 			AppCatalogException, AiravataException {
 
-		String key = cRP.getPreferredJobSubmissionProtocol().toString() + ":" + cRP.getComputeResourceId();
+		String key = processCtx.getJobSubmissionProtocol().toString() + ":" + processCtx.getComputeResourceId();
 		RemoteCluster remoteCluster = remoteClusterMap.get(key);
 		if (remoteCluster == null) {
-			String hostName = Factory.getDefaultAppCatalog().getComputeResource().getComputeResource(cRP
+			String hostName = Factory.getDefaultAppCatalog().getComputeResource().getComputeResource(processCtx
 					.getComputeResourceId()).getHostName();
 			// fixme - read login user name from computeResourcePreference
 			ServerInfo serverInfo = new ServerInfo(ServerSettings.getSetting("ssh.username"), hostName);
 			List<JobSubmissionInterface> jobSubmissionInterfaces = Factory.getDefaultAppCatalog().getComputeResource()
-					.getComputeResource(cRP.getComputeResourceId())
-					.getJobSubmissionInterfaces();
+					.getComputeResource(processCtx.getComputeResourceId()) .getJobSubmissionInterfaces();
 
 			ResourceJobManager resourceJobManager = null;
 			JobSubmissionInterface jsInterface = null;
 			for (JobSubmissionInterface jobSubmissionInterface : jobSubmissionInterfaces) {
-				if (jobSubmissionInterface.getJobSubmissionProtocol() == cRP.getPreferredJobSubmissionProtocol()) {
+				if (jobSubmissionInterface.getJobSubmissionProtocol() == processCtx.getJobSubmissionProtocol()) {
 					jsInterface = jobSubmissionInterface;
 					break;
 				}

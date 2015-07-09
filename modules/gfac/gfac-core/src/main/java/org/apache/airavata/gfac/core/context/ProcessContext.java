@@ -23,7 +23,6 @@ package org.apache.airavata.gfac.core.context;
 
 import org.apache.airavata.common.utils.LocalEventPublisher;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
-import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
@@ -44,7 +43,7 @@ import java.util.Map;
 
 public class ProcessContext {
 	// process model
-    private ExperimentCatalog experimentCatalog;
+	private ExperimentCatalog experimentCatalog;
 	private AppCatalog appCatalog;
 	private CuratorFramework curatorClient;
 	private LocalEventPublisher localEventPublisher;
@@ -54,21 +53,25 @@ public class ProcessContext {
 	private ProcessModel processModel;
 	private String workingDir;
 	private String inputDir;
-    private String outputDir;
+	private String outputDir;
 	private List<TaskContext> taskChain;
 	private GatewayResourceProfile gatewayResourceProfile;
-    private ComputeResourceDescription computeResourceDescription;
-    private ApplicationDeploymentDescription applicationDeploymentDescription;
-    private ApplicationInterfaceDescription applicationInterfaceDescription;
+	private ComputeResourceDescription computeResourceDescription;
+	private ApplicationDeploymentDescription applicationDeploymentDescription;
+	private ApplicationInterfaceDescription applicationInterfaceDescription;
 	private RemoteCluster remoteCluster;
 	private Map<String, String> sshProperties;
-    private String stdoutLocation;
-    private String stderrLocation;
+	private String stdoutLocation;
+	private String stderrLocation;
 	private JobSubmissionProtocol jobSubmissionProtocol;
 	private DataMovementProtocol dataMovementProtocol;
-    private JobModel jobModel;
+	private JobModel jobModel;
 	private ComputeResourcePreference computeResourcePreference;
 
+	/**
+	 * Note: process context property use lazy loading approach. In runtime you will see some properties as null
+	 * unless you have access it previously. Once that property access using the api,it will be set to correct value.
+	 */
 	public ProcessContext(String processId, String gatewayId, String tokenId) {
 		this.processId = processId;
 		this.gatewayId = gatewayId;
@@ -76,7 +79,6 @@ public class ProcessContext {
 	}
 
 
-	// Getters and Setters
 	public ExperimentCatalog getExperimentCatalog() {
 		return experimentCatalog;
 	}
@@ -130,6 +132,9 @@ public class ProcessContext {
 	}
 
 	public String getWorkingDir() {
+		if (workingDir == null) {
+			workingDir = computeResourcePreference.getScratchLocation();
+		}
 		return workingDir;
 	}
 
@@ -169,61 +174,68 @@ public class ProcessContext {
 		this.sshProperties = sshProperties;
 	}
 
-    public ComputeResourceDescription getComputeResourceDescription() {
-        return computeResourceDescription;
-    }
+	public ComputeResourceDescription getComputeResourceDescription() {
+		return computeResourceDescription;
+	}
 
-    public void setComputeResourceDescription(ComputeResourceDescription computeResourceDescription) {
-        this.computeResourceDescription = computeResourceDescription;
-    }
+	public void setComputeResourceDescription(ComputeResourceDescription computeResourceDescription) {
+		this.computeResourceDescription = computeResourceDescription;
+	}
 
-    public ApplicationDeploymentDescription getApplicationDeploymentDescription() {
-        return applicationDeploymentDescription;
-    }
+	public ApplicationDeploymentDescription getApplicationDeploymentDescription() {
+		return applicationDeploymentDescription;
+	}
 
-    public void setApplicationDeploymentDescription(ApplicationDeploymentDescription applicationDeploymentDescription) {
-        this.applicationDeploymentDescription = applicationDeploymentDescription;
-    }
+	public void setApplicationDeploymentDescription(ApplicationDeploymentDescription
+			                                                applicationDeploymentDescription) {
+		this.applicationDeploymentDescription = applicationDeploymentDescription;
+	}
 
-    public ApplicationInterfaceDescription getApplicationInterfaceDescription() {
-        return applicationInterfaceDescription;
-    }
+	public ApplicationInterfaceDescription getApplicationInterfaceDescription() {
+		return applicationInterfaceDescription;
+	}
 
-    public void setApplicationInterfaceDescription(ApplicationInterfaceDescription applicationInterfaceDescription) {
-        this.applicationInterfaceDescription = applicationInterfaceDescription;
-    }
+	public void setApplicationInterfaceDescription(ApplicationInterfaceDescription applicationInterfaceDescription) {
+		this.applicationInterfaceDescription = applicationInterfaceDescription;
+	}
 
-    public String getStdoutLocation() {
-        return stdoutLocation;
-    }
+	public String getStdoutLocation() {
+		return stdoutLocation;
+	}
 
-    public void setStdoutLocation(String stdoutLocation) {
-        this.stdoutLocation = stdoutLocation;
-    }
+	public void setStdoutLocation(String stdoutLocation) {
+		this.stdoutLocation = stdoutLocation;
+	}
 
-    public String getStderrLocation() {
-        return stderrLocation;
-    }
+	public String getStderrLocation() {
+		return stderrLocation;
+	}
 
-    public void setStderrLocation(String stderrLocation) {
-        this.stderrLocation = stderrLocation;
-    }
+	public void setStderrLocation(String stderrLocation) {
+		this.stderrLocation = stderrLocation;
+	}
 
-    public void setOutputDir(String outputDir) {
-        this.outputDir = outputDir;
-    }
+	public void setOutputDir(String outputDir) {
+		this.outputDir = outputDir;
+	}
 
-    public String getOutputDir() {
-        return outputDir;
-    }
+	public String getOutputDir() {
+		if (outputDir == null) {
+			outputDir = getWorkingDir();
+		}
+		return outputDir;
+	}
 
-    public String getInputDir() {
-        return inputDir;
-    }
+	public String getInputDir() {
+		if (inputDir == null) {
+			inputDir = getWorkingDir();
+		}
+		return inputDir;
+	}
 
-    public void setInputDir(String inputDir) {
-        this.inputDir = inputDir;
-    }
+	public void setInputDir(String inputDir) {
+		this.inputDir = inputDir;
+	}
 
 	public JobSubmissionProtocol getJobSubmissionProtocol() {
 		if (jobSubmissionProtocol == null) {
@@ -247,13 +259,13 @@ public class ProcessContext {
 		this.dataMovementProtocol = dataMovementProtocol;
 	}
 
-    public JobModel getJobModel() {
-        return jobModel;
-    }
+	public JobModel getJobModel() {
+		return jobModel;
+	}
 
-    public void setJobModel(JobModel jobModel) {
-        this.jobModel = jobModel;
-    }
+	public void setJobModel(JobModel jobModel) {
+		this.jobModel = jobModel;
+	}
 
 	public ComputeResourcePreference getComputeResourcePreference() {
 		return computeResourcePreference;
@@ -272,5 +284,9 @@ public class ProcessContext {
 			processModel.setProcessStatus(status);
 			// TODO publish process status change.
 		}
+	}
+
+	public String getComputeResourceId() {
+		return getComputeResourceDescription().getComputeResourceId();
 	}
 }

@@ -74,13 +74,21 @@ public class GFacEngineImpl implements GFacEngine {
 			ProcessContext processContext = new ProcessContext(processId, gatewayId, tokenId);
 			AppCatalog appCatalog = Factory.getDefaultAppCatalog();
 			ExperimentCatalog expCatalog = Factory.getDefaultExpCatalog();
-			processContext.setProcessModel((ProcessModel) expCatalog.get(ExperimentCatalogModelType.PROCESS,
-					processId));
+			ProcessModel processModel = (ProcessModel) expCatalog.get(ExperimentCatalogModelType.PROCESS,
+					processId);
+			processContext.setProcessModel(processModel);
 			GatewayResourceProfile gatewayProfile = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
 			processContext.setGatewayResourceProfile(gatewayProfile);
 			processContext.setComputeResourcePreference(appCatalog.getGatewayProfile().getComputeResourcePreference
-					(gatewayId, processContext.getProcessModel().getComputeResourceId()));
-			processContext.setRemoteCluster(Factory.getRemoteCluster(processContext.getComputeResourcePreference()));
+					(gatewayId, processModel.getComputeResourceId()));
+			processContext.setComputeResourceDescription(appCatalog.getComputeResource().getComputeResource
+					(processContext.getComputeResourcePreference().getComputeResourceId()));
+			processContext.setApplicationDeploymentDescription(appCatalog.getApplicationDeployment()
+					.getApplicationDeployement(processModel.getApplicationDeploymentId()));
+			processContext.setApplicationInterfaceDescription(appCatalog.getApplicationInterface()
+					.getApplicationInterface(processModel.getApplicationInterfaceId()));
+			processContext.setRemoteCluster(Factory.getRemoteCluster(processContext));
+
 			//
 			return processContext;
 		} catch (AppCatalogException e) {
