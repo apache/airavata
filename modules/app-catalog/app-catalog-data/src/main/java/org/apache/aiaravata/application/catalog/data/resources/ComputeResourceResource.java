@@ -296,6 +296,7 @@ public class ComputeResourceResource extends AbstractResource {
 			computeResource.setResourceId(getResourceId());
 			computeResource.setHostName(getHostName());
 			computeResource.setMaxMemoryPerNode(getMaxMemoryPerNode());
+            computeResource.setEnabled(isEnabled());
 			if (existingComputeResource == null) {
 				em.persist(computeResource);
 			} else {
