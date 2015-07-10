@@ -2314,7 +2314,8 @@ public class AiravataServerHandler implements Airavata.Iface {
         try {
             appCatalog = AppCatalogFactory.getAppCatalog();
             ApplicationDeployment applicationDeployment = appCatalog.getApplicationDeployment();
-            Map<String, String> allComputeResources = appCatalog.getComputeResource().getAllComputeResourceIdList();
+            Map<String, String> availableComputeResourceIdList = appCatalog.getComputeResource()
+                    .getAvailableComputeResourceIdList();
             Map<String, String> availableComputeResources = new HashMap<String, String>();
             ApplicationInterfaceDescription applicationInterface =
                     appCatalog.getApplicationInterface().getApplicationInterface(appInterfaceId);
@@ -2326,9 +2327,9 @@ public class AiravataServerHandler implements Airavata.Iface {
                     List<ApplicationDeploymentDescription> applicationDeployments =
                             applicationDeployment.getApplicationDeployements(filters);
                     for (ApplicationDeploymentDescription deploymentDescription : applicationDeployments) {
-                        if (allComputeResources.get(deploymentDescription.getComputeHostId()) != null){
+                        if (availableComputeResourceIdList.get(deploymentDescription.getComputeHostId()) != null){
                             availableComputeResources.put(deploymentDescription.getComputeHostId(),
-                                    allComputeResources.get(deploymentDescription.getComputeHostId()));
+                                    availableComputeResourceIdList.get(deploymentDescription.getComputeHostId()));
                         }
                     }
                 }

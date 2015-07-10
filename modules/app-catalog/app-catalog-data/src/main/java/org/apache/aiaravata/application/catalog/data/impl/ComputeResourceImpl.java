@@ -21,8 +21,6 @@
 
 package org.apache.aiaravata.application.catalog.data.impl;
 
-import java.util.*;
-
 import org.airavata.appcatalog.cpi.AppCatalogException;
 import org.airavata.appcatalog.cpi.ComputeResource;
 import org.apache.aiaravata.application.catalog.data.resources.*;
@@ -31,6 +29,11 @@ import org.apache.aiaravata.application.catalog.data.util.AppCatalogUtils;
 import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ComputeResourceImpl implements ComputeResource {
     private final static Logger logger = LoggerFactory.getLogger(ComputeResourceImpl.class);
@@ -472,6 +475,28 @@ public class ComputeResourceImpl implements ComputeResource {
             throw new AppCatalogException(e);
         }
     }
+
+    @Override
+    public Map<String, String> getAvailableComputeResourceIdList() throws AppCatalogException {
+        try {
+            Map<String, String> computeResourceMap = new HashMap<String, String>();
+            ComputeResourceResource resource = new ComputeResourceResource();
+            List<Resource> allComputeResources = resource.getAll();
+            if (allComputeResources != null && !allComputeResources.isEmpty()){
+                for (Resource cm : allComputeResources){
+                    ComputeResourceResource cmr = (ComputeResourceResource)cm;
+                    if(cmr.isEnabled()) {
+                        computeResourceMap.put(cmr.getResourceId(), cmr.getHostName());
+                    }
+                }
+            }
+            return computeResourceMap;
+        }catch (Exception e){
+            logger.error("Error while retrieving compute resource list...", e);
+            throw new AppCatalogException(e);
+        }
+    }
+
 
 //    @Override
 //    public GSISSHJobSubmission getGSISSHJobSubmission(String submissionId) throws AppCatalogException {

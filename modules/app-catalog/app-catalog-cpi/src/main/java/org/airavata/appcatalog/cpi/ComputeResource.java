@@ -19,10 +19,10 @@
 
 package org.airavata.appcatalog.cpi;
 
+import org.apache.airavata.model.appcatalog.computeresource.*;
+
 import java.util.List;
 import java.util.Map;
-
-import org.apache.airavata.model.appcatalog.computeresource.*;
 
 public interface ComputeResource {
     /**
@@ -138,6 +138,12 @@ public interface ComputeResource {
      */
     Map<String, String> getAllComputeResourceIdList () throws AppCatalogException;
 
+    /**
+     * This method will retrieve only the enabled the compute resource id with it's name
+     * @return map of compute resource ids + name
+     * @throws AppCatalogException
+     */
+    Map<String, String> getAvailableComputeResourceIdList () throws AppCatalogException;
 
 
 //    /**
