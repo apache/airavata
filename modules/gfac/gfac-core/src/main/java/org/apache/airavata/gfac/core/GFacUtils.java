@@ -248,9 +248,10 @@ public class GFacUtils {
             JobIdentifier identifier = new JobIdentifier(jobModel.getJobId(), taskContext.getTaskModel().getTaskId(),
                     processContext.getProcessId(), processContext.getProcessModel().getExperimentId(),
                     processContext.getGatewayId());
-            JobStatusChangeRequestEvent jobStatusChangeRequestEvent = new JobStatusChangeRequestEvent(state, identifier);
-			MessageContext msgCtx = new MessageContext(jobStatusChangeRequestEvent, MessageType.JOB, jobModel.getJobId
-					(), taskContext.getParentProcessContext().getGatewayId());
+            JobStatusChangeEvent jobStatusChangeEvent = new JobStatusChangeEvent(state, identifier);
+			MessageContext msgCtx = new MessageContext(jobStatusChangeEvent, MessageType.JOB, AiravataUtils.getId
+					(MessageType.JOB.name()), taskContext.getParentProcessContext().getGatewayId());
+			msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
 			processContext.getStatusPublisher().publish(msgCtx);
         } catch (Exception e) {
 			throw new GFacException("Error persisting job status"
@@ -272,10 +273,11 @@ public class GFacUtils {
 	        TaskIdentifier identifier = new TaskIdentifier(taskContext.getTaskId(),
 			        processContext.getProcessId(), processContext.getProcessModel().getExperimentId(),
 			        processContext.getGatewayId());
-	        TaskStatusChangeRequestEvent taskStatusChangeRequestEvent = new TaskStatusChangeRequestEvent(state,
+	        TaskStatusChangeEvent taskStatusChangeEvent = new TaskStatusChangeEvent(state,
 			        identifier);
-	        MessageContext msgCtx = new MessageContext(taskStatusChangeRequestEvent, MessageType.TASK, taskContext
-			        .getTaskId(), taskContext.getParentProcessContext().getGatewayId());
+	        MessageContext msgCtx = new MessageContext(taskStatusChangeEvent, MessageType.TASK, AiravataUtils.getId
+			        (MessageType.TASK.name()), taskContext.getParentProcessContext().getGatewayId());
+	        msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
 	        processContext.getStatusPublisher().publish(msgCtx);
         } catch (Exception e) {
             throw new GFacException("Error persisting task status"
@@ -296,9 +298,10 @@ public class GFacUtils {
             ProcessIdentifier identifier = new ProcessIdentifier(processContext.getProcessId(),
                                                                  processContext.getProcessModel().getExperimentId(),
                                                                  processContext.getGatewayId());
-            ProcessStatusChangeRequestEvent processStatusChangeRequestEvent = new ProcessStatusChangeRequestEvent(state, identifier);
-	        MessageContext msgCtx = new MessageContext(processStatusChangeRequestEvent, MessageType.PROCESS,
-			        processContext.getProcessId(), processContext.getGatewayId());
+            ProcessStatusChangeEvent processStatusChangeEvent = new ProcessStatusChangeEvent(state, identifier);
+	        MessageContext msgCtx = new MessageContext(processStatusChangeEvent, MessageType.PROCESS,
+			        AiravataUtils.getId(MessageType.PROCESS.name()), processContext.getGatewayId());
+	        msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
 	        processContext.getStatusPublisher().publish(msgCtx);
         } catch (Exception e) {
             throw new GFacException("Error persisting process status"
