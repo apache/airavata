@@ -599,6 +599,7 @@ public class Utils {
         if (o != null){
             taskStatusResource.setTaskId(o.getTaskId());
             taskStatusResource.setState(o.getState());
+	        taskStatusResource.setStatusId(o.getStatusId());
             taskStatusResource.setTimeOfStateChange(o.getTimeOfStateChange());
             taskStatusResource.setReason(o.getReason());
         }

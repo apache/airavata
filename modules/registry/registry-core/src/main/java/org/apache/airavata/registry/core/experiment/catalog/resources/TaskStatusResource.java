@@ -126,7 +126,8 @@ public class TaskStatusResource extends AbstractExpCatResource {
             taskStatus.setTaskId(taskId);
             taskStatus.setState(state);
             taskStatus.setReason(reason);
-            em.persist(taskStatus);
+            taskStatus.setTimeOfStateChange(timeOfStateChange);
+	        em.persist(taskStatus);
             em.getTransaction().commit();
             em.close();
         } catch (Exception e) {
