@@ -31,6 +31,7 @@ import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.watcher.CancelRequestWatcher;
 import org.apache.airavata.gfac.core.watcher.RedeliveryRequestWatcher;
+import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationParallelismType;
 import org.apache.airavata.model.appcatalog.computeresource.*;
@@ -248,29 +249,34 @@ public class GFacUtils {
                     processContext.getProcessId(), processContext.getProcessModel().getExperimentId(),
                     processContext.getGatewayId());
             JobStatusChangeRequestEvent jobStatusChangeRequestEvent = new JobStatusChangeRequestEvent(state, identifier);
-            processContext.getLocalEventPublisher().publish(jobStatusChangeRequestEvent);
+			MessageContext msgCtx = new MessageContext(jobStatusChangeRequestEvent, MessageType.JOB, jobModel.getJobId
+					(), taskContext.getParentProcessContext().getGatewayId());
+			processContext.getStatusPublisher().publish(msgCtx);
         } catch (Exception e) {
 			throw new GFacException("Error persisting job status"
 					+ e.getLocalizedMessage(), e);
 		}
 	}
 
-    public static void saveTaskStatus(TaskContext taskContext,
-                                      TaskState state) throws GFacException {
+    public static void saveAndPublishTaskStatus(TaskContext taskContext) throws GFacException {
         try {
-            // first we save job jobModel to the registry for sa and then save the job status.
-            ProcessContext processContext = taskContext.getParentProcessContext();
-            ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
-            TaskStatus status = new TaskStatus();
-            status.setState(state);
-            taskContext.getTaskModel().setTaskStatus(status);
-            status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-            experimentCatalog.add(ExpCatChildDataType.TASK_STATUS, status, taskContext.getTaskModel().getTaskId());
-            TaskIdentifier identifier = new TaskIdentifier(taskContext.getTaskModel().getTaskId(),
-                    processContext.getProcessId(), processContext.getProcessModel().getExperimentId(),
-                    processContext.getGatewayId());
-            TaskStatusChangeRequestEvent taskStatusChangeRequestEvent = new TaskStatusChangeRequestEvent(state, identifier);
-            processContext.getLocalEventPublisher().publish(taskStatusChangeRequestEvent);
+	        TaskState state = taskContext.getTaskState();
+	        // first we save job jobModel to the registry for sa and then save the job status.
+	        ProcessContext processContext = taskContext.getParentProcessContext();
+	        ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
+	        TaskStatus status = new TaskStatus();
+	        status.setState(state);
+	        taskContext.setTaskStatus(status);
+	        status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+	        experimentCatalog.add(ExpCatChildDataType.TASK_STATUS, status, taskContext.getTaskId());
+	        TaskIdentifier identifier = new TaskIdentifier(taskContext.getTaskId(),
+			        processContext.getProcessId(), processContext.getProcessModel().getExperimentId(),
+			        processContext.getGatewayId());
+	        TaskStatusChangeRequestEvent taskStatusChangeRequestEvent = new TaskStatusChangeRequestEvent(state,
+			        identifier);
+	        MessageContext msgCtx = new MessageContext(taskStatusChangeRequestEvent, MessageType.TASK, taskContext
+			        .getTaskId(), taskContext.getParentProcessContext().getGatewayId());
+	        processContext.getStatusPublisher().publish(msgCtx);
         } catch (Exception e) {
             throw new GFacException("Error persisting task status"
                     + e.getLocalizedMessage(), e);
@@ -291,14 +297,16 @@ public class GFacUtils {
                                                                  processContext.getProcessModel().getExperimentId(),
                                                                  processContext.getGatewayId());
             ProcessStatusChangeRequestEvent processStatusChangeRequestEvent = new ProcessStatusChangeRequestEvent(state, identifier);
-            processContext.getLocalEventPublisher().publish(processStatusChangeRequestEvent);
+	        MessageContext msgCtx = new MessageContext(processStatusChangeRequestEvent, MessageType.PROCESS,
+			        processContext.getProcessId(), processContext.getGatewayId());
+	        processContext.getStatusPublisher().publish(msgCtx);
         } catch (Exception e) {
             throw new GFacException("Error persisting process status"
                     + e.getLocalizedMessage(), e);
         }
     }
 
-    public static void saveExperimentStatus(ProcessContext processContext,
+/*    public static void saveExperimentStatus(ProcessContext processContext,
                                          ExperimentState state) throws GFacException {
         try {
             // first we save job jobModel to the registry for sa and then save the job status.
@@ -308,12 +316,13 @@ public class GFacUtils {
             status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_STATUS, status, processContext.getProcessModel().getExperimentId());
             ExperimentStatusChangeEvent experimentStatusChangeEvent = new ExperimentStatusChangeEvent(state, processContext.getProcessModel().getExperimentId(), processContext.getGatewayId());
+
             processContext.getLocalEventPublisher().publish(experimentStatusChangeEvent);
         } catch (Exception e) {
             throw new GFacException("Error persisting experiment status"
                     + e.getLocalizedMessage(), e);
         }
-    }
+    }*/
 
 //	public static void updateJobStatus(JobExecutionContext jobExecutionContext,
 //			JobDetails details, JobState state) throws GFacException {

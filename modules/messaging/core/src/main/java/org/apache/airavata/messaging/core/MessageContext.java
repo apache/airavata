@@ -35,8 +35,8 @@ public class MessageContext {
     private long deliveryTag;
 
 
-    public MessageContext(TBase message, MessageType type, String messageId, String gatewayId) {
-        this.event = message;
+    public MessageContext(TBase event, MessageType type, String messageId, String gatewayId) {
+        this.event = event;
         this.type = type;
         this.messageId = messageId;
         this.gatewayId = gatewayId;

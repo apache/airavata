@@ -50,6 +50,8 @@ import org.apache.airavata.gfac.impl.job.SlurmOutputParser;
 import org.apache.airavata.gfac.impl.job.UGEJobConfiguration;
 import org.apache.airavata.gfac.impl.job.UGEOutputParser;
 import org.apache.airavata.gfac.monitor.email.EmailBasedMonitor;
+import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.messaging.core.impl.RabbitMQStatusPublisher;
 import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
@@ -77,7 +79,7 @@ import java.util.Map;
 public abstract class Factory {
 
 	private static GFacEngine engine;
-	private static LocalEventPublisher localEventPublisher;
+	private static Publisher statusPublisher;
 	private static CuratorFramework curatorClient;
 	private static EmailBasedMonitor emailBasedMonitor;
 	private static Date startMonitorDate = Calendar.getInstance().getTime();
@@ -106,15 +108,15 @@ public abstract class Factory {
 		return RegistryFactory.getAppCatalog();
 	}
 
-	public static LocalEventPublisher getLocalEventPublisher() {
-		if (localEventPublisher == null) {
-			synchronized (LocalEventPublisher.class) {
-				if (localEventPublisher == null) {
-					localEventPublisher = new LocalEventPublisher(new EventBus());
+	public static Publisher getStatusPublisher() throws AiravataException {
+		if (statusPublisher == null) {
+			synchronized (RabbitMQStatusPublisher.class) {
+				if (statusPublisher == null) {
+					statusPublisher = new RabbitMQStatusPublisher();
 				}
 			}
 		}
-		return localEventPublisher;
+		return statusPublisher;
 	}
 
 	public static CuratorFramework getCuratorClient() throws ApplicationSettingsException {

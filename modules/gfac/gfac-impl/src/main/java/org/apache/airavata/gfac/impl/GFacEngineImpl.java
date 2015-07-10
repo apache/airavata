@@ -22,9 +22,11 @@
 package org.apache.airavata.gfac.impl;
 
 import org.apache.airavata.common.exception.AiravataException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
+import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.JobSubmissionTask;
@@ -73,9 +75,12 @@ public class GFacEngineImpl implements GFacEngine {
 		try {
 			ProcessContext processContext = new ProcessContext(processId, gatewayId, tokenId);
 			AppCatalog appCatalog = Factory.getDefaultAppCatalog();
+			processContext.setAppCatalog(appCatalog);
 			ExperimentCatalog expCatalog = Factory.getDefaultExpCatalog();
-			ProcessModel processModel = (ProcessModel) expCatalog.get(ExperimentCatalogModelType.PROCESS,
-					processId);
+			processContext.setExperimentCatalog(expCatalog);
+			processContext.setCuratorClient(Factory.getCuratorClient());
+			processContext.setStatusPublisher(Factory.getStatusPublisher());
+			ProcessModel processModel = (ProcessModel) expCatalog.get(ExperimentCatalogModelType.PROCESS, processId);
 			processContext.setProcessModel(processModel);
 			GatewayResourceProfile gatewayProfile = appCatalog.getGatewayProfile().getGatewayProfile(gatewayId);
 			processContext.setGatewayResourceProfile(gatewayProfile);
@@ -108,7 +113,7 @@ public class GFacEngineImpl implements GFacEngine {
 		// Run all environment setup tasks
 		taskCtx = getEnvSetupTaskContext(processContext);
 		saveTaskModel(taskCtx);
-		publishTaskStatus(taskCtx);
+		GFacUtils.saveAndPublishTaskStatus(taskCtx);
 		SSHEnvironmentSetupTask envSetupTask = new SSHEnvironmentSetupTask();
 		executeTask(taskCtx, envSetupTask);
 		// execute process inputs
@@ -129,8 +134,7 @@ public class GFacEngineImpl implements GFacEngine {
 						} catch (TException e) {
 							throw new GFacException("Error while serializing data staging sub task model");
 						}
-						saveTaskModel(taskCtx);
-						publishTaskStatus(taskCtx);
+						GFacUtils.saveAndPublishTaskStatus(taskCtx);
 						Task dMoveTask = Factory.getDataMovementTask(processContext.getDataMovementProtocol());
 						executeTask(taskCtx, dMoveTask);
 						break;
@@ -142,8 +146,7 @@ public class GFacEngineImpl implements GFacEngine {
 		}
 		processContext.setProcessStatus(new ProcessStatus(ProcessState.EXECUTING));
 		taskCtx = getJobSubmissionTaskContext(processContext);
-		saveTaskModel(taskCtx);
-		publishTaskStatus(taskCtx);
+		GFacUtils.saveAndPublishTaskStatus(taskCtx);
 		JobSubmissionTask jobSubmissionTask = Factory.getJobSubmissionTask(processContext.getJobSubmissionProtocol());
 		executeTask(taskCtx, jobSubmissionTask);
 		processContext.setTaskChain(taskChain);
@@ -151,18 +154,16 @@ public class GFacEngineImpl implements GFacEngine {
 
 	private void executeTask(TaskContext taskCtx, Task task) throws GFacException {
 		try {
-			taskCtx.getTaskModel().setTaskStatus(new TaskStatus(TaskState.EXECUTING));
-			updateTaskStatus(taskCtx);
-			publishTaskStatus(taskCtx);
+			taskCtx.setTaskStatus(new TaskStatus(TaskState.EXECUTING));
+			GFacUtils.saveAndPublishTaskStatus(taskCtx);
 			task.execute(taskCtx);
-			taskCtx.getTaskModel().setTaskStatus(new TaskStatus(TaskState.COMPLETED));
-			updateTaskStatus(taskCtx);
-			publishTaskStatus(taskCtx);
+			taskCtx.setTaskStatus(new TaskStatus(TaskState.COMPLETED));
+			GFacUtils.saveAndPublishTaskStatus(taskCtx);
 		} catch (TaskException e) {
 			TaskStatus status = new TaskStatus(TaskState.FAILED);
 			status.setReason(taskCtx.getTaskType().toString() + " Task Failed to execute");
 			taskCtx.setTaskStatus(status);
-			updateTaskStatus(taskCtx);
+			GFacUtils.saveAndPublishTaskStatus(taskCtx);
 		}
 
 	}
@@ -200,10 +201,6 @@ public class GFacEngineImpl implements GFacEngine {
 		return taskCtx;
 	}
 
-	private void publishTaskStatus(TaskContext taskCtx) {
-		Factory.getLocalEventPublisher().publish(taskCtx);
-	}
-
 	/**
 	 * Persist task model
 	 * @param taskContext
@@ -211,21 +208,10 @@ public class GFacEngineImpl implements GFacEngine {
 	private void saveTaskModel(TaskContext taskContext) throws GFacException {
 		try {
 			TaskModel taskModel = taskContext.getTaskModel();
-			Factory.getDefaultExpCatalog().add(ExpCatChildDataType.TASK, taskModel, taskModel.getParentProcessId ());
+			taskContext.getParentProcessContext().getExperimentCatalog().add(ExpCatChildDataType.TASK, taskModel,
+					taskModel.getParentProcessId());
 		} catch (RegistryException e) {
 			throw new GFacException("Error while saving task model", e);
-		}
-	}
-
-	private void updateTaskStatus(TaskContext taskContext) throws GFacException {
-		try {
-			TaskStatus taskStatus = taskContext.getTaskStatus();
-			Factory.getDefaultExpCatalog().update(ExperimentCatalogModelType.TASK_STATUS, taskStatus, taskContext
-					.getTaskModel().getTaskId());
-		} catch (RegistryException e) {
-			log.error("taskId: {}, taskState: {} :- Error while updating task staus", taskContext.getTaskId(),
-					taskContext.getTaskState().toString());
-			throw new GFacException("Error while updating task status", e);
 		}
 	}
 
@@ -234,7 +220,7 @@ public class GFacEngineImpl implements GFacEngine {
 		taskCtx.setParentProcessContext(processContext);
 		TaskModel taskModel = new TaskModel();
 		taskModel.setParentProcessId(processContext.getProcessId());
-		taskModel.setCreationTime(new Date().getTime());
+		taskModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
 		taskModel.setLastUpdateTime(taskModel.getCreationTime());
 		taskModel.setTaskStatus(new TaskStatus(TaskState.CREATED));
 		taskModel.setTaskType(TaskTypes.ENV_SETUP);
