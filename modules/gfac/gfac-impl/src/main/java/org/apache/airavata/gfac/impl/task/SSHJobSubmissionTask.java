@@ -22,6 +22,7 @@
 package org.apache.airavata.gfac.impl.task;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.gfac.core.*;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.context.ProcessContext;
@@ -58,6 +59,9 @@ public class SSHJobSubmissionTask implements JobSubmissionTask {
             JobModel jobModel = processContext.getJobModel();
             if (jobModel == null){
                 jobModel = new JobModel();
+	            jobModel.setWorkingDir(processContext.getWorkingDir());
+	            jobModel.setTaskId(taskContext.getTaskId());
+	            jobModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
             }
             RemoteCluster remoteCluster = processContext.getRemoteCluster();
             JobDescriptor jobDescriptor = GFacUtils.createJobDescriptor(processContext);
