@@ -21,6 +21,7 @@
 package org.apache.airavata.gfac.core;
 
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.AiravataZKUtils;
 import org.apache.airavata.common.utils.DBUtil;
 import org.apache.airavata.common.utils.ServerSettings;
@@ -241,6 +242,7 @@ public class GFacUtils {
             JobStatus status = new JobStatus();
             status.setJobState(state);
             jobModel.setJobStatus(status);
+            status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             experimentCatalog.add(ExpCatChildDataType.JOB_STATUS, status, jobModel.getJobId());
             JobIdentifier identifier = new JobIdentifier(jobModel.getJobId(), taskContext.getTaskModel().getTaskId(),
                     processContext.getProcessId(), processContext.getProcessModel().getExperimentId(),
@@ -262,6 +264,7 @@ public class GFacUtils {
             TaskStatus status = new TaskStatus();
             status.setState(state);
             taskContext.getTaskModel().setTaskStatus(status);
+            status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             experimentCatalog.add(ExpCatChildDataType.TASK_STATUS, status, taskContext.getTaskModel().getTaskId());
             TaskIdentifier identifier = new TaskIdentifier(taskContext.getTaskModel().getTaskId(),
                     processContext.getProcessId(), processContext.getProcessModel().getExperimentId(),
@@ -282,6 +285,7 @@ public class GFacUtils {
             ProcessStatus status = new ProcessStatus();
             status.setState(state);
             processContext.getProcessModel().setProcessStatus(status);
+            status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             experimentCatalog.add(ExpCatChildDataType.PROCESS_STATUS, status, processContext.getProcessId());
             ProcessIdentifier identifier = new ProcessIdentifier(processContext.getProcessId(),
                                                                  processContext.getProcessModel().getExperimentId(),
@@ -301,7 +305,7 @@ public class GFacUtils {
             ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
             ExperimentStatus status = new ExperimentStatus();
             status.setState(state);
-
+            status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             experimentCatalog.add(ExpCatChildDataType.EXPERIMENT_STATUS, status, processContext.getProcessModel().getExperimentId());
             ExperimentStatusChangeEvent experimentStatusChangeEvent = new ExperimentStatusChangeEvent(state, processContext.getProcessModel().getExperimentId(), processContext.getGatewayId());
             processContext.getLocalEventPublisher().publish(experimentStatusChangeEvent);
