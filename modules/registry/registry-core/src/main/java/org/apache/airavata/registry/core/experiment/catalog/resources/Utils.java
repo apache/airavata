@@ -524,7 +524,7 @@ public class Utils {
             processResource.setTaskDag(o.getTaskDag());
             processResource.setGatewayExecutionId(o.getGatewayExecutionId());
             processResource.setComputeResourceId(o.getComputeResourceId());
-            processResource.setApplicationInterfaceId(o.getApplicationInterfaceId());
+            processResource.setApplicationDeploymentId(o.getApplicationDeploymentId());
             processResource.setEnableEmailNotification(o.getEnableEmailNotification());
             processResource.setEmailAddresses(o.getEmailAddresses());
         }

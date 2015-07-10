@@ -23,6 +23,7 @@ package org.apache.airavata.gfac.core.context;
 
 import org.apache.airavata.common.utils.LocalEventPublisher;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
+import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
 import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
@@ -46,7 +47,7 @@ public class ProcessContext {
 	private ExperimentCatalog experimentCatalog;
 	private AppCatalog appCatalog;
 	private CuratorFramework curatorClient;
-	private LocalEventPublisher localEventPublisher;
+	private Publisher statusPublisher;
 	private final String processId;
 	private final String gatewayId;
 	private final String tokenId;
@@ -115,12 +116,12 @@ public class ProcessContext {
 		this.curatorClient = curatorClient;
 	}
 
-	public LocalEventPublisher getLocalEventPublisher() {
-		return localEventPublisher;
+	public Publisher getStatusPublisher() {
+		return statusPublisher;
 	}
 
-	public void setLocalEventPublisher(LocalEventPublisher localEventPublisher) {
-		this.localEventPublisher = localEventPublisher;
+	public void setStatusPublisher(Publisher statusPublisher) {
+		this.statusPublisher = statusPublisher;
 	}
 
 	public ProcessModel getProcessModel() {
@@ -133,7 +134,9 @@ public class ProcessContext {
 
 	public String getWorkingDir() {
 		if (workingDir == null) {
-			workingDir = computeResourcePreference.getScratchLocation();
+			String scratchLocation = computeResourcePreference.getScratchLocation();
+			workingDir = (scratchLocation.endsWith("/") ? scratchLocation + processId : scratchLocation + "/" +
+					processId);
 		}
 		return workingDir;
 	}

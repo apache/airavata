@@ -23,7 +23,6 @@ package org.apache.airavata.gfac.server;
 import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.exception.AiravataStartupException;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
-import org.apache.airavata.common.utils.LocalEventPublisher;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.common.utils.listener.AbstractActivityListener;
@@ -37,7 +36,9 @@ import org.apache.airavata.gfac.impl.GFacWorker;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.messaging.core.MessagingConstants;
+import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.impl.RabbitMQProcessLaunchConsumer;
+import org.apache.airavata.messaging.core.impl.RabbitMQStatusPublisher;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
@@ -71,7 +72,7 @@ public class GfacServerHandler implements GfacService.Iface {
     private AppCatalog appCatalog;
     private String airavataUserName;
     private CuratorFramework curatorClient;
-    private LocalEventPublisher localEventPublisher;
+    private Publisher statusPublisher;
     private String airavataServerHostPort;
     private BlockingQueue<TaskSubmitEvent> taskSubmitEvents;
     private static List<AbstractActivityListener> activityListeners = new ArrayList<AbstractActivityListener>();
@@ -83,7 +84,7 @@ public class GfacServerHandler implements GfacService.Iface {
             initZkDataStructure();
             initAMQPClient();
 	        executorService = Executors.newFixedThreadPool(ServerSettings.getGFacThreadPoolSize());
-            startStatusUpdators(experimentCatalog, curatorClient, localEventPublisher, rabbitMQProcessLaunchConsumer);
+            startStatusUpdators(experimentCatalog, curatorClient, statusPublisher, rabbitMQProcessLaunchConsumer);
         } catch (Exception e) {
             throw new AiravataStartupException("Gfac Server Initialization error ", e);
         }
@@ -165,7 +166,7 @@ public class GfacServerHandler implements GfacService.Iface {
         return false;
     }
 
-    public static void startStatusUpdators(ExperimentCatalog experimentCatalog, CuratorFramework curatorClient, LocalEventPublisher publisher,
+    public static void startStatusUpdators(ExperimentCatalog experimentCatalog, CuratorFramework curatorClient, Publisher publisher,
 
                                            RabbitMQProcessLaunchConsumer rabbitMQProcessLaunchConsumer) {
        /* try {
@@ -175,9 +176,9 @@ public class GfacServerHandler implements GfacService.Iface {
                 Class<? extends AbstractActivityListener> aClass = Class.forName(listenerClass).asSubclass(AbstractActivityListener.class);
                 AbstractActivityListener abstractActivityListener = aClass.newInstance();
                 activityListeners.add(abstractActivityListener);
-                abstractActivityListener.setup(publisher, experimentCatalog, curatorClient, rabbitMQPublisher, rabbitMQTaskLaunchConsumer);
+                abstractActivityListener.setup(statusPublisher, experimentCatalog, curatorClient, rabbitMQPublisher, rabbitMQTaskLaunchConsumer);
                 log.info("Registering listener: " + listenerClass);
-                publisher.registerListener(abstractActivityListener);
+                statusPublisher.registerListener(abstractActivityListener);
             }
         } catch (Exception e) {
             log.error("Error loading the listener classes configured in airavata-server.properties", e);

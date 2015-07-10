@@ -22,6 +22,7 @@
 package org.apache.airavata.messaging.core.impl;
 
 import com.rabbitmq.client.*;
+import org.apache.airavata.common.exception.AiravataException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,7 +106,7 @@ public class RabbitMQProducer {
         connection = null;
     }
 
-    public void open() throws Exception {
+    public void open() throws AiravataException {
         try {
             connection = createConnection();
             channel = connection.createChannel();
@@ -120,7 +121,7 @@ public class RabbitMQProducer {
             reset();
             String msg = "could not open channel for exchange " + exchangeName;
             log.error(msg);
-            throw new Exception(msg, e);
+            throw new AiravataException(msg, e);
         }
     }
 

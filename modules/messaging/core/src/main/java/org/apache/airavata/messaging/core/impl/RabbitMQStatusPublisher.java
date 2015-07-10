@@ -41,7 +41,7 @@ public class RabbitMQStatusPublisher implements Publisher {
 
 //    StatCounter statCounter = StatCounter.getInstance();
 
-    public RabbitMQStatusPublisher() throws Exception {
+    public RabbitMQStatusPublisher() throws AiravataException {
         String brokerUrl;
         String exchangeName;
         try {
