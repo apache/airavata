@@ -76,8 +76,8 @@ public class ExperimentRegistry {
                 logger.error("Project does not exist in the system..");
                 throw new Exception("Project does not exist in the system, Please create the project first...");
             }
-            experimentId = getExperimentID(experiment.getExperimentName());
-            experiment.setExperimentId(experimentId);
+	        experimentId = AiravataUtils.getId(experiment.getExperimentName());
+	        experiment.setExperimentId(experimentId);
             ExperimentResource experimentResource = new ExperimentResource();
             experimentResource.setExperimentId(experimentId);
             experimentResource.setProjectId(experiment.getProjectId());
@@ -245,8 +245,8 @@ public class ExperimentRegistry {
 
         try {
             ProcessResource processResource = new ProcessResource();
-            String processId = getProcessID(expId);
-            process.setProcessId(processId);
+	        String processId = AiravataUtils.getId("PROCESS");
+	        process.setProcessId(processId);
             processResource.setProcessId(processId);
             processResource.setExperimentId(expId);
             processResource.setCreationTime(AiravataUtils.getTime(process.getCreationTime()));
@@ -409,7 +409,7 @@ public class ExperimentRegistry {
     public String addTask(TaskModel task, String processID) throws RegistryException {
         try {
             TaskResource taskResource = new TaskResource();
-	        task.setTaskId(getTaskID(processID));
+	        task.setTaskId(AiravataUtils.getId("TASK"));
             taskResource.setTaskId(task.getTaskId());
             taskResource.setParentProcessId(task.getParentProcessId());
             taskResource.setTaskType(task.getTaskType().toString());
@@ -421,7 +421,8 @@ public class ExperimentRegistry {
 
             TaskStatus taskStatus = new TaskStatus();
             taskStatus.setState(TaskState.CREATED);
-            addTaskStatus(taskStatus, task.getTaskId());
+            taskStatus.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
+	        addTaskStatus(taskStatus, task.getTaskId());
 
             if(task.getTaskError() != null) {
                 addTaskError(task.getTaskError(), task.getTaskId());
@@ -1512,21 +1513,6 @@ public class ExperimentRegistry {
             logger.error("Error while retrieving job.....", e);
             throw new RegistryException(e);
         }
-    }
-
-    public String getExperimentID(String experimentName) {
-        String exp = experimentName.replaceAll("\\s", "");
-        return exp + "_" + UUID.randomUUID();
-    }
-
-    public String getProcessID(String experimentId) {
-        String process = experimentId.replaceAll("\\s", "");
-        return process + "_" + UUID.randomUUID();
-    }
-
-    public String getTaskID(String processId) {
-        String taskId = processId.replaceAll("\\s", "");
-        return taskId + "_" + UUID.randomUUID();
     }
 
     public String getStatusID(String parentId) {
