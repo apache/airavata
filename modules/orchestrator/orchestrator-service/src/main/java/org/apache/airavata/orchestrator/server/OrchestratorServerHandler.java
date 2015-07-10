@@ -141,6 +141,13 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
             if (executionType == ExperimentType.SINGLE_APPLICATION) {
                 //its an single application execution experiment
                 log.debug(experimentId, "Launching single application experiment {}.", experimentId);
+	            ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.LAUNCHED,
+			            experimentId,
+			            gatewayId);
+	            String messageId = AiravataUtils.getId("EXPERIMENT");
+	            MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT, messageId, gatewayId);
+	            messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
+	            publisher.publish(messageContext);
                 OrchestratorServerThreadPoolExecutor.getCachedThreadPool().execute(new SingleAppExperimentRunner(experimentId, token));
             } else if (executionType == ExperimentType.WORKFLOW) {
                 //its a workflow execution experiment
@@ -445,13 +452,7 @@ public class OrchestratorServerHandler implements OrchestratorService.Iface {
                     if (gatewayId == null || gatewayId.isEmpty()) {
                         gatewayId = ServerSettings.getDefaultUserGateway();
                     }
-                    ExperimentStatusChangeEvent event = new ExperimentStatusChangeEvent(ExperimentState.LAUNCHED,
-                            experimentId,
-                            gatewayId);
-                    String messageId = AiravataUtils.getId("EXPERIMENT");
-                    MessageContext messageContext = new MessageContext(event, MessageType.EXPERIMENT, messageId, gatewayId);
-                    messageContext.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
-                    publisher.publish(messageContext);
+
                     launchProcess(processId, airavataCredStoreToken);
                 }
 
