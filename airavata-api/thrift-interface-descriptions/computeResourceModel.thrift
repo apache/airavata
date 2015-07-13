@@ -441,6 +441,17 @@ struct ComputeResourceDescription {
     7: optional map<FileSystems, string> fileSystems,
     8: optional list<JobSubmissionInterface> jobSubmissionInterfaces,
     9: optional list<DataMovementInterface> dataMovementInterfaces,
-    10: optional i32 maxMemoryPerNode
-    11: optional bool active = 1;
+    10: optional i32 maxMemoryPerNode,
+    11: optional bool active = 1
+}
+
+struct ComputeResourceInformation {
+    1: required string name,
+    2: required string status,
+    3: required i32 CPUs,
+    4: required double peakTFlops,
+    5: required double utilization,
+    6: required i32 runningJobs,
+    7: required i32 queuedJobs,
+    8: required i32 otherJobs
 }

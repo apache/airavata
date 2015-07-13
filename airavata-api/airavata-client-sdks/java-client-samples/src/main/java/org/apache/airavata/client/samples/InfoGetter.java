@@ -50,7 +50,7 @@ public class InfoGetter {
         infoGetter.register();
 
         // get bigRed description
-        String bigRed = "bigred2.uits.iu.edu_36f9f7e2-0888-4e1b-8e8d-7b670a76a705";
+        String bigRed = "fsd-cloud15.zam.kfa-juelich.de_212e906e-6cf5-427d-94b1-8f4a10c9cca3";
         ComputeResourceDescription before = infoGetter.getDescription(bigRed);
 
         // change active
