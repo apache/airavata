@@ -159,6 +159,7 @@ public class EmailBasedMonitor implements Runnable{
             case "adm@trident.bigred2.uits.iu.edu":  // bigred2
             case "root <adm@trident.bigred2.uits.iu.edu>": // bigred2
             case "root <adm@scyld.localdomain>": // alamo
+            case "root <adm@tg-login1.blacklight.psc.xsede.org>": //blacklight
                 return ResourceJobManagerType.PBS;
             case "SDSC Admin <slurm@comet-fe3.sdsc.edu>": // comet
             case "slurm@batch1.stampede.tacc.utexas.edu": // stampede
