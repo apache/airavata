@@ -35,6 +35,12 @@ import java.io.StringWriter;
 import java.net.URL;
 
 public class CommonUtils {
+
+    public static final String PBS_JOB_MANAGER = "pbs";
+    public static final String SLURM_JOB_MANAGER = "slurm";
+    public static final String SUN_GRID_ENGINE_JOB_MANAGER = "UGE";
+    public static final String LSF_JOB_MANAGER = "lsf";
+
     /**
      * This returns true if the give job is finished
      * otherwise false
@@ -90,27 +96,42 @@ public class CommonUtils {
         return new LSFJobConfiguration("LSFTemplate.xslt", ".lsf", installedPath, new LSFOutputParser());
     }
 
-    public static String getJobFileContent (JobDescriptor jobDescriptor, String jobManagerTemplate) throws Exception{
+    public static String getJobFileContent (JobDescriptor jobDescriptor, String jobManagerTemplate, String installedParentPath) throws Exception {
         TransformerFactory factory = TransformerFactory.newInstance();
-        URL resource = CommonUtils.class.getClassLoader().getResource(jobManagerTemplate);
-
-        if (resource == null) {
-            String error = "System configuration file '" + jobManagerTemplate
-                    + "' not found in the classpath";
-            throw new SSHApiException(error);
+        JobManagerConfiguration jConfig = null;
+        if (jobManagerTemplate == null) {
+            jConfig = CommonUtils.getPBSJobManager(installedParentPath);
+        } else {
+            if (PBS_JOB_MANAGER.equalsIgnoreCase(jobManagerTemplate)) {
+                jConfig = CommonUtils.getPBSJobManager(installedParentPath);
+            } else if (SLURM_JOB_MANAGER.equalsIgnoreCase(jobManagerTemplate)) {
+                jConfig = CommonUtils.getSLURMJobManager(installedParentPath);
+            } else if (SUN_GRID_ENGINE_JOB_MANAGER.equalsIgnoreCase(jobManagerTemplate)) {
+                jConfig = CommonUtils.getUGEJobManager(installedParentPath);
+            } else if (LSF_JOB_MANAGER.equalsIgnoreCase(jobManagerTemplate)) {
+                jConfig = CommonUtils.getLSFJobManager(installedParentPath);
+            }
         }
 
-        Source xslt = new StreamSource(new File(resource.getPath()));
-        Transformer transformer;
-        StringWriter results = new StringWriter();
+        if (jConfig != null) {
+            URL resource = CommonUtils.class.getClassLoader().getResource(jConfig.getJobDescriptionTemplateName());
+
+            if (resource == null) {
+                String error = "System configuration file '" + jobManagerTemplate
+                        + "' not found in the classpath";
+                throw new SSHApiException(error);
+            }
+
+            Source xslt = new StreamSource(new File(resource.getPath()));
+            Transformer transformer;
+            StringWriter results = new StringWriter();
             // generate the pbs script using xslt
             transformer = factory.newTransformer(xslt);
             Source text = new StreamSource(new ByteArrayInputStream(jobDescriptor.toXML().getBytes()));
             transformer.transform(text, new StreamResult(results));
-            String scriptContent = results.toString().replaceAll("^[ |\t]*\n$", "");
-            if (scriptContent.startsWith("\n")) {
-                scriptContent = scriptContent.substring(1);
-            }
-            return scriptContent;
+            return results.toString();
+        }
+        return null;
     }
+
 }

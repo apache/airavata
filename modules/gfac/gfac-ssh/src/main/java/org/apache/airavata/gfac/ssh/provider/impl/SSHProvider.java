@@ -164,8 +164,10 @@ public class SSHProvider extends AbstractProvider {
                     jobDetails.setJobName(jobDescriptor.getJobName());
                     log.info(jobDescriptor.toXML());
                     String jobID = cluster.submitBatchJob(jobDescriptor);
-                    String jobFileContent = CommonUtils.getJobFileContent(jobDescriptor, jobExecutionContext.getResourceJobManager().getResourceJobManagerType().toString());
+                    ResourceJobManager resourceJobManager = jobExecutionContext.getResourceJobManager();
+                    String jobFileContent = CommonUtils.getJobFileContent(jobDescriptor, resourceJobManager.getResourceJobManagerType().toString(), resourceJobManager.getJobManagerBinPath());
                     jobDetails.setJobDescription(jobFileContent);
+                    jobDetails.setWorkingDir(jobDescriptor.getWorkingDirectory());
                     if (jobID != null && !jobID.isEmpty()) {
                         jobDetails.setJobID(jobID);
                         GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SUBMITTED, monitorPublisher);
