@@ -77,7 +77,8 @@ public class AppCatalogInitUtil {
         try {
             conn = db.connect();
             if (!DatabaseCreator.isDatabaseStructureCreated(COMPUTE_RESOURCE, conn)) {
-                DatabaseCreator.createRegistryDatabase("database_scripts/appcatalog", conn);
+//                DatabaseCreator.createRegistryDatabase("database_scripts/appcatalog", conn);
+                DatabaseCreator.createRegistryDatabase("appcatalog", conn);
                 logger.info("New Database created for App Catalog");
             } else {
                 logger.info("Database already created for App Catalog!");

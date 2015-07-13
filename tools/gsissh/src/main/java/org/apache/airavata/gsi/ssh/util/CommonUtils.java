@@ -20,8 +20,19 @@
 */
 package org.apache.airavata.gsi.ssh.util;
 
+import org.apache.airavata.gsi.ssh.api.SSHApiException;
 import org.apache.airavata.gsi.ssh.api.job.*;
 import org.apache.airavata.gsi.ssh.impl.JobStatus;
+
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.StringWriter;
+import java.net.URL;
 
 public class CommonUtils {
     /**
@@ -77,5 +88,29 @@ public class CommonUtils {
 
     public static JobManagerConfiguration getLSFJobManager(String installedPath) {
         return new LSFJobConfiguration("LSFTemplate.xslt", ".lsf", installedPath, new LSFOutputParser());
+    }
+
+    public static String getJobFileContent (JobDescriptor jobDescriptor, String jobManagerTemplate) throws Exception{
+        TransformerFactory factory = TransformerFactory.newInstance();
+        URL resource = CommonUtils.class.getClassLoader().getResource(jobManagerTemplate);
+
+        if (resource == null) {
+            String error = "System configuration file '" + jobManagerTemplate
+                    + "' not found in the classpath";
+            throw new SSHApiException(error);
+        }
+
+        Source xslt = new StreamSource(new File(resource.getPath()));
+        Transformer transformer;
+        StringWriter results = new StringWriter();
+            // generate the pbs script using xslt
+            transformer = factory.newTransformer(xslt);
+            Source text = new StreamSource(new ByteArrayInputStream(jobDescriptor.toXML().getBytes()));
+            transformer.transform(text, new StreamResult(results));
+            String scriptContent = results.toString().replaceAll("^[ |\t]*\n$", "");
+            if (scriptContent.startsWith("\n")) {
+                scriptContent = scriptContent.substring(1);
+            }
+            return scriptContent;
     }
 }

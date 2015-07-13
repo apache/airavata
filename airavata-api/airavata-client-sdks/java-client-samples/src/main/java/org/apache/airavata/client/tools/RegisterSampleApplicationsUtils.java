@@ -143,6 +143,7 @@ public class RegisterSampleApplicationsUtils {
         input.setInputOrder(order);
         input.setIsRequired(isRequired);
         input.setRequiredToAddedToCommandLine(requiredToCMD);
+        input.setDataStaged(false);
         if (description != null) input.setUserFriendlyDescription(description);
         input.setStandardInput(stdIn);
         if (metadata != null) input.setMetaData(metadata);

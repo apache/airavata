@@ -38,13 +38,13 @@ import java.io.IOException;
 public class SSHCredentialTest {
 
     public static void main(String[] args) {
-        String jdbcURL = "jdbc:mysql://gw85.iu.xsede.org:3306/airavata_dev";
+        String jdbcURL = "jdbc:mysql://gw85.iu.xsede.org:3306/airavata_prod";
         String jdbcDriver = "com.mysql.jdbc.Driver";
-        String userName = "gtaDevUser";
-        String password = "gtaDevPWD";
-        String gatewayId = "sdsc";
-        String privateKeyPath = "/Users/chathuri/Desktop/ssh_gw111/id_rsa";
-        String pubKeyPath = "/Users/chathuri/Desktop/ssh_gw111/id_rsa.pub";
+        String userName = "gtaAiravataUser";
+        String password = "gtaAiravataPWD";
+        String gatewayId = "default";
+        String privateKeyPath = "/Users/chathuri/Desktop/ssh_gw127/id_rsa";
+        String pubKeyPath = "/Users/chathuri/Desktop/ssh_gw127/id_rsa.pub";
 
         try {
             DBUtil dbUtil = new DBUtil(jdbcURL, userName, password, jdbcDriver);
@@ -53,7 +53,7 @@ public class SSHCredentialTest {
             sshCredential.setGateway(gatewayId);
             String token = TokenGenerator.generateToken(gatewayId, null);
             sshCredential.setToken(token);
-            sshCredential.setPortalUserName("kenneth");
+            sshCredential.setPortalUserName("ogce");
             FileInputStream privateKeyStream = new FileInputStream(privateKeyPath);
             File filePri = new File(privateKeyPath);
             byte[] bFilePri = new byte[(int) filePri.length()];
@@ -66,7 +66,7 @@ public class SSHCredentialTest {
             pubKeyStream.close();
             sshCredential.setPrivateKey(bFilePri);
             sshCredential.setPublicKey(bFilePub);
-            sshCredential.setPassphrase("");
+            sshCredential.setPassphrase("ultrascan");
             writer.writeCredentials(sshCredential);
             System.out.println(token);
         } catch (ClassNotFoundException e) {

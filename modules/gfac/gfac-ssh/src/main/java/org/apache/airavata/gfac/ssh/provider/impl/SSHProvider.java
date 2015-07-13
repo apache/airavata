@@ -50,6 +50,7 @@ import org.apache.airavata.gsi.ssh.api.job.JobDescriptor;
 import org.apache.airavata.gsi.ssh.impl.JobStatus;
 import org.apache.airavata.gsi.ssh.impl.RawCommandInfo;
 import org.apache.airavata.gsi.ssh.impl.StandardOutReader;
+import org.apache.airavata.gsi.ssh.util.CommonUtils;
 import org.apache.airavata.model.appcatalog.appdeployment.SetEnvPaths;
 import org.apache.airavata.model.appcatalog.appinterface.DataType;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
@@ -162,8 +163,9 @@ public class SSHProvider extends AbstractProvider {
                     JobDescriptor jobDescriptor = GFACSSHUtils.createJobDescriptor(jobExecutionContext, cluster);
                     jobDetails.setJobName(jobDescriptor.getJobName());
                     log.info(jobDescriptor.toXML());
-                    jobDetails.setJobDescription(jobDescriptor.toXML());
                     String jobID = cluster.submitBatchJob(jobDescriptor);
+                    String jobFileContent = CommonUtils.getJobFileContent(jobDescriptor, jobExecutionContext.getResourceJobManager().getResourceJobManagerType().toString());
+                    jobDetails.setJobDescription(jobFileContent);
                     if (jobID != null && !jobID.isEmpty()) {
                         jobDetails.setJobID(jobID);
                         GFacUtils.saveJobStatus(jobExecutionContext, jobDetails, JobState.SUBMITTED, monitorPublisher);

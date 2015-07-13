@@ -21,10 +21,12 @@
 package org.apache.airavata.api.server.handler;
 
 import junit.framework.Assert;
+import org.apache.airavata.api.server.util.AppCatalogInitUtil;
 import org.apache.airavata.api.server.util.RegistryInitUtil;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.model.appcatalog.appinterface.InputDataObjectType;
 import org.apache.airavata.model.appcatalog.appinterface.OutputDataObjectType;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
 import org.apache.airavata.model.workspace.experiment.*;
@@ -45,15 +47,23 @@ public class AiravataServerHandlerTest {
 
     private static AiravataServerHandler airavataServerHandler;
     private static String gatewayId = "php_reference_gateway";
+    private static  String computeResouceId = null;
 
     @BeforeClass
     public static void setupBeforeClass() throws Exception{
         RegistryInitUtil.initializeDB();
+        AppCatalogInitUtil.initializeDB();
         airavataServerHandler = new AiravataServerHandler();
 
         Gateway gateway = new Gateway();
         gateway.setGatewayId(gatewayId);
         airavataServerHandler.addGateway(gateway);
+
+        ComputeResourceDescription computeResourceDescription = new ComputeResourceDescription();
+        computeResourceDescription.setHostName("test.compute.resource");
+        computeResourceDescription.setResourceDescription("test compute resource");
+        computeResourceDescription.setEnabled(true);
+        computeResouceId = airavataServerHandler.registerComputeResource(computeResourceDescription);
     }
 
     @AfterClass
@@ -181,7 +191,7 @@ public class AiravataServerHandlerTest {
             inputDataObjectType.setValue("Hello World");
 
             ComputationalResourceScheduling scheduling = new ComputationalResourceScheduling();
-            scheduling.setResourceHostId(UUID.randomUUID().toString());
+            scheduling.setResourceHostId(computeResouceId);
             scheduling.setComputationalProjectAccount("TG-STA110014S");
             scheduling.setTotalCPUCount(1);
             scheduling.setNodeCount(1);

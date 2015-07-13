@@ -78,7 +78,8 @@ public class RegistryInitUtil {
         try {
             conn = db.connect();
             if (!DatabaseCreator.isDatabaseStructureCreated(CONFIGURATION_TABLE, conn)) {
-                DatabaseCreator.createRegistryDatabase("database_scripts/registry", conn);
+//                DatabaseCreator.createRegistryDatabase("database_scripts/registry", conn);
+                DatabaseCreator.createRegistryDatabase("registry", conn);
                 logger.info("New Database created for Registry");
             } else {
                 logger.info("Database already created for Registry!");
@@ -112,10 +113,10 @@ public class RegistryInitUtil {
                 if (!workerResource.isExists(ResourceType.PROJECT, DEFAULT_PROJECT_NAME)){
                     projectResource = workerResource.createProject(DEFAULT_PROJECT_NAME);
                     projectResource.setName(DEFAULT_PROJECT_NAME);
+                    projectResource.setId(DEFAULT_PROJECT_NAME);
                     projectResource.setGateway(gateway);
                     projectResource.save();
                 }
-
             } catch (ApplicationSettingsException e) {
                 logger.error("Unable to read airavata-server properties...", e.getMessage());
             }
