@@ -950,17 +950,7 @@ public class GFacUtils {
         ApplicationParallelismType parallelism = appDepDescription.getParallelism();
         if (parallelism != null) {
             if (parallelism == ApplicationParallelismType.MPI || parallelism == ApplicationParallelismType.OPENMP || parallelism == ApplicationParallelismType.OPENMP_MPI) {
-                if (resourceJobManager != null) {
-                    Map<JobManagerCommand, String> jobManagerCommands = resourceJobManager.getJobManagerCommands();
-                    if (jobManagerCommands != null && !jobManagerCommands.isEmpty()) {
-                        for (JobManagerCommand command : jobManagerCommands.keySet()) {
-                            if (command == JobManagerCommand.SUBMISSION) {
-                                String commandVal = jobManagerCommands.get(command);
-                                jobDescriptor.setJobSubmitter(commandVal);
-                            }
-                        }
-                    }
-                }
+	            jobDescriptor.setJobSubmitter("ibrun");
             }
         }
         return jobDescriptor;
