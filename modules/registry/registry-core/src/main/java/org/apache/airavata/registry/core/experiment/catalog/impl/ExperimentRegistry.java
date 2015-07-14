@@ -164,7 +164,7 @@ public class ExperimentRegistry {
                 resource.setApplicationArgument(input.getApplicationArgument());
                 resource.setInputOrder(input.getInputOrder());
                 resource.setIsRequired(input.isIsRequired());
-                resource.setIsRequired(input.isRequiredToAddedToCommandLine());
+                resource.setRequiredToAddedToCmd(input.isRequiredToAddedToCommandLine());
                 resource.save();
             }
         } catch (Exception e) {
@@ -326,7 +326,7 @@ public class ExperimentRegistry {
                 resource.setApplicationArgument(input.getApplicationArgument());
                 resource.setInputOrder(input.getInputOrder());
                 resource.setIsRequired(input.isIsRequired());
-                resource.setIsRequired(input.isRequiredToAddedToCommandLine());
+                resource.setRequiredToAddedToCmd(input.isRequiredToAddedToCommandLine());
                 resource.save();
             }
             return processID;
