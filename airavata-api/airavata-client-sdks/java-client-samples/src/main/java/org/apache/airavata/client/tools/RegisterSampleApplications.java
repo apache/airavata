@@ -1372,11 +1372,21 @@ public class RegisterSampleApplications {
         ResourceJobManager resourceJobManager = RegisterSampleApplicationsUtils.
                 createResourceJobManager(resourceJobManagerType, monitoringEndPoint, jobMangerBinPath, null);
 
-        if (jobManagerCommand != null) {
-            Map<JobManagerCommand, String> jobManagerCommandStringMap = new HashMap<JobManagerCommand, String>();
-            jobManagerCommandStringMap.put(JobManagerCommand.SUBMISSION, jobManagerCommand);
-            resourceJobManager.setJobManagerCommands(jobManagerCommandStringMap);
-        }
+	    Map<JobManagerCommand, String> jobManagerCommandStringMap = new HashMap<JobManagerCommand, String>();
+	    if (resourceJobManagerType == ResourceJobManagerType.SLURM) {
+		    jobManagerCommandStringMap.put(JobManagerCommand.SUBMISSION, "sbatch");
+		    jobManagerCommandStringMap.put(JobManagerCommand.JOB_MONITORING, "squeue");
+		    jobManagerCommandStringMap.put(JobManagerCommand.DELETION, "scancel");
+		    resourceJobManager.setJobManagerCommands(jobManagerCommandStringMap);
+	    } else if (resourceJobManagerType == ResourceJobManagerType.PBS) {
+		    jobManagerCommandStringMap.put(JobManagerCommand.SUBMISSION, "qsub");
+		    jobManagerCommandStringMap.put(JobManagerCommand.JOB_MONITORING, "qstat");
+		    jobManagerCommandStringMap.put(JobManagerCommand.DELETION, "qdel");
+		    resourceJobManager.setJobManagerCommands(jobManagerCommandStringMap);
+	    }
+	    // TODO - set job manage commands for UGE and LSF type compute resources.
+
+	    // TODO - set parallelism command
 
         SSHJobSubmission sshJobSubmission = new SSHJobSubmission();
         sshJobSubmission.setResourceJobManager(resourceJobManager);
