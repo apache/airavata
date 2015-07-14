@@ -20,13 +20,12 @@
 
 include "status_models.thrift"
 include "application_io_models.thrift"
+include "airavata_commons.thrift"
 
 namespace java org.apache.airavata.model.messaging.event
 namespace php Airavata.Model.Messaging.Event
 namespace cpp apache.airavata.model.messaging.event
 namespace py apache.airavata.model.messaging.event
-
-const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 
 enum MessageLevel {
     INFO,
@@ -133,7 +132,7 @@ struct JobStatusChangeRequestEvent {
 
 struct Message {
     1: required binary event;
-    2: required string messageId = DEFAULT_ID;
+    2: required string messageId = airavata_commons.DEFAULT_ID,
     3: required MessageType messageType;
     4: optional i64 updatedTime;
     5: optional MessageLevel messageLevel;

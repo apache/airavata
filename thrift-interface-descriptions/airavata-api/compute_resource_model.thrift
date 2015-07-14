@@ -18,12 +18,13 @@
  *
  */
 
+include "airavata_commons.thrift"
+
 namespace java org.apache.airavata.model.appcatalog.computeresource
 namespace php Airavata.Model.AppCatalog.ComputeResource
 namespace cpp apache.airavata.model.appcatalog.computeresource
 namespace py apache.airavata.model.appcatalog.computeresource
 
-const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 
 /**
  * Enumeration of local resource job manager types supported by Airavata
@@ -106,7 +107,7 @@ enum JobManagerCommand {
  *
 */
 struct ResourceJobManager {
-    1: required string resourceJobManagerId = DEFAULT_ID,
+    1: required string resourceJobManagerId = airavata_commons.DEFAULT_ID,
     2: required ResourceJobManagerType resourceJobManagerType,
     3: optional string pushMonitoringEndpoint,
     4: optional string jobManagerBinPath,
@@ -246,7 +247,7 @@ enum DataMovementProtocol {
  *  If a non-default port needs to used, specify it.
 */
 struct SCPDataMovement {
-    1: required string dataMovementInterfaceId = DEFAULT_ID,
+    1: required string dataMovementInterfaceId = airavata_commons.DEFAULT_ID,
     2: required SecurityProtocol securityProtocol,
     3: optional string alternativeSCPHostName,
     4: optional i32 sshPort = 22
@@ -262,7 +263,7 @@ struct SCPDataMovement {
  *  If a non-default port needs to used, specify it.
 */
 struct GridFTPDataMovement {
-    1: required string dataMovementInterfaceId = DEFAULT_ID,
+    1: required string dataMovementInterfaceId = airavata_commons.DEFAULT_ID,
     2: required SecurityProtocol securityProtocol,
     3: required list<string>  gridFTPEndPoints
 }
@@ -274,7 +275,7 @@ struct GridFTPDataMovement {
  *  unicoreGateway End Point. The provider will query this service to fetch required service end points.
 */
 struct UnicoreDataMovement {
-    1: required string dataMovementInterfaceId = DEFAULT_ID,
+    1: required string dataMovementInterfaceId = airavata_commons.DEFAULT_ID,
     2: required SecurityProtocol securityProtocol,
     3: required string unicoreEndPointURL
 }
@@ -289,7 +290,7 @@ struct UnicoreDataMovement {
  *  If a non-default port needs to used, specify it.
 */
 struct LOCALSubmission {
-    1: required string jobSubmissionInterfaceId = DEFAULT_ID,
+    1: required string jobSubmissionInterfaceId = airavata_commons.DEFAULT_ID,
     2: required ResourceJobManager resourceJobManager
 }
 
@@ -303,7 +304,7 @@ struct LOCALSubmission {
  *  If a non-defualt port needs to used, specify it.
 */
 struct LOCALDataMovement {
-    1: required string dataMovementInterfaceId = DEFAULT_ID,
+    1: required string dataMovementInterfaceId = airavata_commons.DEFAULT_ID,
 }
 
 /**
@@ -316,7 +317,7 @@ struct LOCALDataMovement {
  *  If a non-default port needs to used, specify it.
 */
 struct SSHJobSubmission {
-    1: required string jobSubmissionInterfaceId = DEFAULT_ID,
+    1: required string jobSubmissionInterfaceId = airavata_commons.DEFAULT_ID,
     2: required SecurityProtocol securityProtocol,
     3: required ResourceJobManager resourceJobManager,
     4: optional string alternativeSSHHostName,
@@ -325,7 +326,7 @@ struct SSHJobSubmission {
 }
 
 struct GlobusJobSubmission {
-    1: required string jobSubmissionInterfaceId = DEFAULT_ID,
+    1: required string jobSubmissionInterfaceId = airavata_commons.DEFAULT_ID,
     2: required SecurityProtocol securityProtocol,
     3: optional list<string> globusGateKeeperEndPoint
 }
@@ -339,7 +340,7 @@ struct GlobusJobSubmission {
  *  The authenticationMode defines the way certificate is fetched. 
 */
 struct UnicoreJobSubmission {
-    1: required string jobSubmissionInterfaceId = DEFAULT_ID,
+    1: required string jobSubmissionInterfaceId = airavata_commons.DEFAULT_ID,
     2: required SecurityProtocol securityProtocol,
     3: required string unicoreEndPointURL,
 }
@@ -361,7 +362,7 @@ enum ProviderName {
  *
 */
 struct CloudJobSubmission {
-    1: required string jobSubmissionInterfaceId = DEFAULT_ID,
+    1: required string jobSubmissionInterfaceId = airavata_commons.DEFAULT_ID,
     2: required SecurityProtocol securityProtocol,
     3: required string nodeId,
     4: required string executableType,
@@ -432,7 +433,7 @@ struct DataMovementInterface {
 */
 struct ComputeResourceDescription {
 //    1: required bool isEmpty = 0,
-    1: required string computeResourceId = DEFAULT_ID,
+    1: required string computeResourceId = airavata_commons.DEFAULT_ID,
     2: required string hostName,
     3: optional list<string> hostAliases,
     4: optional list<string> ipAddresses,
