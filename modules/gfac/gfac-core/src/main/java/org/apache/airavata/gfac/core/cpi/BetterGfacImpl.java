@@ -71,12 +71,16 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * This is the GFac CPI class for external usage, this simply have a single method to submit a job to
@@ -367,18 +371,21 @@ public class BetterGfacImpl implements GFac {
         for (OutputDataObjectType objectType : taskOutputs) {
             if (objectType.getType() == DataType.URI && objectType.getValue() != null) {
                 String filePath = objectType.getValue();
+                boolean isUrl = isURL(filePath);
+ 
                 // if output is not in working folder
-                if (objectType.getLocation() != null && !objectType.getLocation().isEmpty()) {
-                    if (objectType.getLocation().startsWith(File.separator)) {
-                        filePath = objectType.getLocation() + File.separator + filePath;
-                    } else {
-                        filePath = jobExecutionContext.getOutputDir() + File.separator + objectType.getLocation() + File.separator + filePath;
-                    }
-                } else {
-                    filePath = jobExecutionContext.getOutputDir() + File.separator + filePath;
+                if(!isUrl) {
+	                if (objectType.getLocation() != null && !objectType.getLocation().isEmpty()) {
+	                    if (objectType.getLocation().startsWith(File.separator)) {
+	                        filePath = objectType.getLocation() + File.separator + filePath;
+	                    } else {
+	                        filePath = jobExecutionContext.getOutputDir() + File.separator + objectType.getLocation() + File.separator + filePath;
+	                    }
+	                } else {
+	                    filePath = jobExecutionContext.getOutputDir() + File.separator + filePath;
+	                }
+	                objectType.setValue(filePath);
                 }
-                objectType.setValue(filePath);
-
             }
             if (objectType.getType() == DataType.STDOUT) {
                	String stdout = objectType.getValue();
@@ -409,6 +416,14 @@ public class BetterGfacImpl implements GFac {
         return jobExecutionContext;
     }
 
+    private boolean isURL(String path) {
+	    String pattern =  "^(https?|ftp|file|gsiftp|rns)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+	    Pattern p = Pattern.compile(pattern);
+		Matcher m = p.matcher(path);
+		return m.matches();
+    }
+
+    
     private void setUpWorkingLocation(JobExecutionContext jobExecutionContext, ApplicationInterfaceDescription applicationInterface, String scratchLocation) {
         /**
          * Scratch location
