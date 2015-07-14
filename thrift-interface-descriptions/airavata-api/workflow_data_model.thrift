@@ -24,6 +24,7 @@ namespace php Airavata.Model
 namespace py apache.airavata.model.workflow
 
 include "application_io_models.thrift"
+include "airavata_commons.thrift"
 
 /*
  * This file describes the definitions of the Airavata Execution Data Structures. Each of the
@@ -31,10 +32,9 @@ include "application_io_models.thrift"
  *   appropriate form for passing to the Airavata Server Execution API Calls.
 */
 
-const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 
 struct Workflow {
-    1: required string templateId = DEFAULT_ID,
+    1: required string templateId = airavata_commons.DEFAULT_ID,
     2: required string name,
     3: optional string graph,
     4: optional binary image,

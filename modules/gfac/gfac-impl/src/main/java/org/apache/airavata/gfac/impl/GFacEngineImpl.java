@@ -188,13 +188,32 @@ public class GFacEngineImpl implements GFacEngine {
 		// create new task model for this task
 		TaskModel taskModel = new TaskModel();
 		taskModel.setParentProcessId(processContext.getProcessId());
-		taskModel.setCreationTime(new Date().getTime());
+		taskModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
 		taskModel.setLastUpdateTime(taskModel.getCreationTime());
 		taskModel.setTaskStatus(new TaskStatus(TaskState.CREATED));
 		taskModel.setTaskType(TaskTypes.DATA_STAGING);
 		// create data staging sub task model
 		DataStagingTaskModel submodel = new DataStagingTaskModel();
 		submodel.setSource(processInput.getValue());
+		submodel.setDestination(processContext.getWorkingDir());
+		taskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(submodel));
+		taskCtx.setTaskModel(taskModel);
+		return taskCtx;
+	}
+
+	private TaskContext getDataStagingTaskContext(ProcessContext processContext, OutputDataObjectType processOutput) throws TException {
+		TaskContext taskCtx = new TaskContext();
+		taskCtx.setParentProcessContext(processContext);
+		// create new task model for this task
+		TaskModel taskModel = new TaskModel();
+		taskModel.setParentProcessId(processContext.getProcessId());
+		taskModel.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
+		taskModel.setLastUpdateTime(taskModel.getCreationTime());
+		taskModel.setTaskStatus(new TaskStatus(TaskState.CREATED));
+		taskModel.setTaskType(TaskTypes.DATA_STAGING);
+		// create data staging sub task model
+		DataStagingTaskModel submodel = new DataStagingTaskModel();
+		submodel.setSource(processOutput.getValue());
 		submodel.setDestination(processContext.getWorkingDir());
 		taskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(submodel));
 		taskCtx.setTaskModel(taskModel);
@@ -236,8 +255,7 @@ public class GFacEngineImpl implements GFacEngine {
 	@Override
 	public void runProcessOutflow(ProcessContext processContext) throws GFacException {
 		TaskContext taskCtx = null;
-		TaskModel taskModel = null;
-		List<TaskContext> taskChain = new ArrayList<>();
+		processContext.setProcessStatus(new ProcessStatus(ProcessState.OUTPUT_DATA_STAGING));
 		List<OutputDataObjectType> processOutputs = processContext.getProcessModel().getProcessOutputs();
 		for (OutputDataObjectType processOutput : processOutputs) {
 			DataType type = processOutput.getType();
@@ -249,26 +267,21 @@ public class GFacEngineImpl implements GFacEngine {
 				case URI:
 					// TODO : Provide data staging data model
 					try {
-						taskCtx = new TaskContext();
-						taskCtx.setParentProcessContext(processContext);
-
-						// create new task model for this task
-						taskModel = new TaskModel();
-						taskModel.setParentProcessId(processContext.getProcessId());
-						taskModel.setTaskStatus(new TaskStatus(TaskState.CREATED));
-						taskModel.setTaskType(TaskTypes.DATA_STAGING);
-						// create data staging sub task model
-						DataStagingTaskModel submodel = new DataStagingTaskModel();
-						submodel.setSource(processContext.getWorkingDir() + "/" + processOutput.getValue());
-						submodel.setDestination(processOutput.getValue());
-						taskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(submodel));
-						taskChain.add(taskCtx);
+						taskCtx = getDataStagingTaskContext(processContext, processOutput);
 					} catch (TException e) {
-						throw new GFacException("Thift model to byte[] convertion issue", e);
+						throw new GFacException("Thrift model to byte[] convertion issue", e);
 					}
+					GFacUtils.saveAndPublishTaskStatus(taskCtx);
+					Task dMoveTask = Factory.getDataMovementTask(processContext.getDataMovementProtocol());
+					executeTask(taskCtx, dMoveTask);
+					break;
+				default:
+					// nothing to do
 					break;
 			}
 		}
+		processContext.setProcessStatus(new ProcessStatus(ProcessState.POST_PROCESSING));
+//		taskCtx = getEnvCleanupTaskContext(processContext);
 
 	}
 

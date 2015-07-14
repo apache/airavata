@@ -38,6 +38,7 @@ public class SlurmOutputParser implements OutputParser {
     private static final Logger log = LoggerFactory.getLogger(SlurmOutputParser.class);
     public static final int JOB_NAME_OUTPUT_LENGTH = 8;
     public static final String STATUS = "status";
+	public static final String JOBID = "jobId";
 
     public void parseSingleJob(JobDescriptor descriptor, String rawOutput) throws SSHApiException {
         log.info(rawOutput);
@@ -105,17 +106,13 @@ public class SlurmOutputParser implements OutputParser {
      * @return
      */
     public String parseJobSubmission(String rawOutput) throws SSHApiException {
-        // FIXME : use regex to match correct jobId;
-        log.info(rawOutput);
-        String[] info = rawOutput.split("\n");
-        for (String anInfo : info) {
-            if (anInfo.contains("Submitted batch job")) {
-                String[] split = anInfo.split("Submitted batch job");
-                return split[1].trim();
-            }
-        }
-        return "";
-//        throw new SSHApiException(rawOutput);  //todo//To change body of implemented methods use File | Settings | File Templates.
+	    log.info(rawOutput);
+	    Pattern pattern = Pattern.compile("Submitted batch job (?<" + JOBID + ">[^\\s]*)");
+	    Matcher matcher = pattern.matcher(rawOutput);
+	    if (matcher.find()) {
+		    return matcher.group(JOBID);
+	    }
+	    return "";
     }
 
     public JobStatus parseJobStatus(String jobID, String rawOutput) throws SSHApiException {
@@ -123,7 +120,7 @@ public class SlurmOutputParser implements OutputParser {
         Pattern pattern = Pattern.compile(jobID + "(?=\\s+\\S+\\s+\\S+\\s+\\S+\\s+(?<" + STATUS + ">\\w+))");
         Matcher matcher = pattern.matcher(rawOutput);
         if (matcher.find()) {
-	        return new JobStatus(JobState.valueOf(matcher.group(STATUS)));
+	        return new JobStatus(JobUtil.getJobState(matcher.group(STATUS)));
         }
         return null;
     }

@@ -18,13 +18,17 @@
  *
  */
 
+include "airavata_commons.thrift"
 include "workspace_model.thrift"
 include "airavata_errors.thrift"
 include "messaging_events.thrift"
 include "security_model.thrift"
+include "experiment_model.thrift"
 include "job_model.thrift"
 include "task_model.thrift"
 include "process_model.thrift"
+include "scheduling_model.thrift"
+include "status_models.thrift"
 
 namespace java org.apache.airavata.model
 namespace php Airavata.Model

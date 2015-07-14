@@ -33,7 +33,6 @@ import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
 import org.apache.airavata.gfac.core.cluster.AbstractRemoteCluster;
 import org.apache.airavata.gfac.core.cluster.CommandInfo;
 import org.apache.airavata.gfac.core.cluster.CommandOutput;
-import org.apache.airavata.gfac.core.cluster.OutputParser;
 import org.apache.airavata.gfac.core.cluster.RawCommandInfo;
 import org.apache.airavata.gfac.core.cluster.ServerInfo;
 import org.apache.airavata.model.status.JobStatus;
