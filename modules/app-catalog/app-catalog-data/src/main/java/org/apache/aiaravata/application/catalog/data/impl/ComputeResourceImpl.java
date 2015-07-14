@@ -30,10 +30,7 @@ import org.apache.airavata.model.appcatalog.computeresource.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ComputeResourceImpl implements ComputeResource {
     private final static Logger logger = LoggerFactory.getLogger(ComputeResourceImpl.class);
@@ -460,7 +457,7 @@ public class ComputeResourceImpl implements ComputeResource {
     @Override
     public Map<String, String> getAllComputeResourceIdList() throws AppCatalogException {
         try {
-            Map<String, String> computeResourceMap = new HashMap<String, String>();
+            Map<String, String> computeResourceMap = new LinkedHashMap<String, String>();
             ComputeResourceResource resource = new ComputeResourceResource();
             List<Resource> allComputeResources = resource.getAll();
             if (allComputeResources != null && !allComputeResources.isEmpty()){
