@@ -24,13 +24,13 @@
  *
 */
 include "application_io_models.thrift"
+include "airavata_commons.thrift"
 
 namespace java org.apache.airavata.model.appcatalog.appinterface
 namespace php Airavata.Model.AppCatalog.AppInterface
 namespace cpp apache.airavata.model.appcatalog.appinterface
 namespace py apache.airavata.model.appcatalog.appinterface
 
-const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 
 /**
  * Application Interface Description
@@ -47,7 +47,7 @@ const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 */
 struct ApplicationInterfaceDescription {
 //    1: required bool isEmpty = 0,
-    1: required string applicationInterfaceId = DEFAULT_ID,
+    1: required string applicationInterfaceId = airavata_commons.DEFAULT_ID,
     2: required string applicationName,
     3: optional string applicationDescription,
     4: optional list<string> applicationModules,

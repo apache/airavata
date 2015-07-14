@@ -24,12 +24,13 @@
  *
 */
 
+include "airavata_commons.thrift"
+
 namespace java org.apache.airavata.model.appcatalog.appdeployment
 namespace php Airavata.Model.AppCatalog.AppDeployment
 namespace cpp apache.airavata.model.appcatalog.appdeployment
 namespace py apache.airavata.model.appcatalog.appdeployment
 
-const string DEFAULT_ID = "DO_NOT_SET_AT_CLIENTS"
 
 /**
  * Key Value pairs to be used to set environments
@@ -61,7 +62,7 @@ struct SetEnvPaths {
  *
 */
 struct ApplicationModule {
-    1: required string appModuleId = DEFAULT_ID,
+    1: required string appModuleId = airavata_commons.DEFAULT_ID,
     2: required string appModuleName,
     3: optional string appModuleVersion,
     4: optional string appModuleDescription
@@ -117,7 +118,7 @@ enum ApplicationParallelismType {
 */
 struct ApplicationDeploymentDescription {
 //    1: required bool isEmpty = 0,
-    1: required string appDeploymentId = DEFAULT_ID,
+    1: required string appDeploymentId = airavata_commons.DEFAULT_ID,
     2: required string appModuleId,
     3: required string computeHostId,
     4: required string executablePath,
