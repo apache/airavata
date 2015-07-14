@@ -58,10 +58,10 @@ public class CreateLaunchExperiment {
     public static final String DEFAULT_GATEWAY = "default";
     private static Airavata.Client airavataClient;
 
-    private static String echoAppId = "Echo_ce3f152e-7757-41ea-880d-cc868063fb1b";
-    private static String mpiAppId = "HelloMPI_bfd56d58-6085-4b7f-89fc-646576830518";
+    private static String echoAppId = "Echo_b730bf47-6a22-44ac-91f3-91bd463bd627";
+    private static String mpiAppId = "HelloMPI_71b6f45e-40c2-46e9-a417-160b2640fcb9";
     private static String wrfAppId = "WRF_7ad5da38-c08b-417c-a9ea-da9298839762";
-    private static String amberAppId = "Amber_357ba0ea-038c-4f14-b5f3-16bab331031b";
+    private static String amberAppId = "Amber_74ad818e-7633-476a-b861-952de9b0a529";
     private static String gromacsAppId = "GROMACS_05622038-9edd-4cb1-824e-0b7cb993364b";
     private static String espressoAppId = "ESPRESSO_10cc2820-5d0b-4c63-9546-8a8b595593c1";
     private static String lammpsAppId = "LAMMPS_2472685b-8acf-497e-aafe-cc66fe5f4cb6";
@@ -1591,3 +1591,50 @@ public class CreateLaunchExperiment {
         }
     }
 }
+
+/*
+*  #### Registering Application Interfaces ####
+
+#### Registering Echo Interface ####
+
+Local Echo Application Interface Id Echo_57a8f843-4298-46a7-bdac-801adeb77e9f
+#### Registering Echo Interface ####
+
+Echo Application Interface Id Echo_b730bf47-6a22-44ac-91f3-91bd463bd627
+#### Registering MPI Interface ####
+
+MPI Application Interface Id HelloMPI_71b6f45e-40c2-46e9-a417-160b2640fcb9
+#### Registering Amber Interface ####
+
+Amber Application Interface Id Amber_74ad818e-7633-476a-b861-952de9b0a529
+#### Registering AutoDock Interface ####
+
+AutoDock Application Interface Id AutoDock_6e1032f4-389c-4e35-bdc8-2c3955f51721
+#### Registering Espresso Interface ####
+
+Espresso Application Interface Id ESPRESSO_af507be5-5ab8-499d-b1c6-51c543968bb6
+#### Registering Gromacs Interface ####
+
+Gromacs Application Interface Id GROMACS_9476b548-72ce-4550-bde6-959fd513ead8
+#### Registering LAMMPS Interface ####
+
+LAMMPS Application Interface Id LAMMPS_73d62891-a0d6-4407-9e89-6cd7d02e5a16
+#### Registering Gamess Interface ####
+
+GAMESS Application Interface Id Gamess_2de57c7d-f806-4bb2-956a-c42bfa7851cc
+#### Registering NWChem Interface ####
+
+NWChem Application Interface Id NWChem_57cdc71b-b47b-4b88-b949-b35d57c40e0c
+#### Registering Trinity Interface ####
+
+Trinity Application Interface Id Trinity_fe1e411a-39e1-497d-b988-3b4159ce3331
+#### Registering WRF Interface ####
+
+WRF Application Interface Id WRF_434f8543-91ac-4f59-bca1-bf40be8d6f5a
+#### Registering Tinker Monte Application Interface ####
+Monte Application Interface Id Tinker_Monte_f3949619-faf5-43d8-9c52-3ace4ca9f258
+#### Registering Gaussian Application Interface ####
+Gaussian Application Interface Id Gaussian_a212c1d7-75ca-46c1-b11a-c8d431b5f05f
+#### Registering Ultrascan Application Interface ####
+Ultrascan Application Interface Id Ultrascan_3749018d-2cee-407b-a7cd-fdf86d525ca5
+*/

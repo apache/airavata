@@ -244,7 +244,8 @@ public class GFacUtils {
             status.setJobState(state);
             jobModel.setJobStatus(status);
             status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
-            experimentCatalog.add(ExpCatChildDataType.JOB_STATUS, status, jobModel.getJobId());
+            CompositeIdentifier ids = new CompositeIdentifier(taskContext.getTaskId(), jobModel.getJobId());
+			experimentCatalog.add(ExpCatChildDataType.JOB_STATUS, status, ids);
             JobIdentifier identifier = new JobIdentifier(jobModel.getJobId(), taskContext.getTaskModel().getTaskId(),
                     processContext.getProcessId(), processContext.getProcessModel().getExperimentId(),
                     processContext.getGatewayId());
