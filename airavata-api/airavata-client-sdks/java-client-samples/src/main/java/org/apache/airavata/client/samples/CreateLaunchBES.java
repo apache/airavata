@@ -25,6 +25,7 @@ import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.model.experiment.ExperimentSummaryModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
@@ -91,7 +92,7 @@ public class CreateLaunchBES {
             Gateway gateway = new Gateway();
             gateway.setGatewayId("testGatewayId2");
             gateway.setGatewayName("testGateway2");
-            gatewayId = airavataClient.addGateway(gateway);
+            gatewayId = airavataClient.addGateway(new AuthzToken(""), gateway);
             System.out.println(gatewayId);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
@@ -107,13 +108,13 @@ public class CreateLaunchBES {
 
     public static void getGateway(String gatewayId) {
         try {
-            Gateway gateway = airavataClient.getGateway(gatewayId);
+            Gateway gateway = airavataClient.getGateway(new AuthzToken(""), gatewayId);
             gateway.setDomain("testDomain");
-            airavataClient.updateGateway(gatewayId, gateway);
+            airavataClient.updateGateway(new AuthzToken(""), gatewayId, gateway);
             List<Gateway> allGateways = airavataClient.getAllGateways();
             System.out.println(allGateways.size());
             if (airavataClient.isGatewayExist(gatewayId)) {
-                Gateway gateway1 = airavataClient.getGateway(gatewayId);
+                Gateway gateway1 = airavataClient.getGateway(new AuthzToken(""), gatewayId);
                 System.out.println(gateway1.getGatewayName());
             }
             boolean b = airavataClient.deleteGateway("testGatewayId2");

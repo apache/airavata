@@ -49,17 +49,17 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getAPIVersion\n");
   }
 
-  void addGateway(std::string& _return, const  ::apache::airavata::model::workspace::Gateway& gateway) {
+  void addGateway(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Gateway& gateway) {
     // Your implementation goes here
     printf("addGateway\n");
   }
 
-  void updateGateway(const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway) {
+  void updateGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway) {
     // Your implementation goes here
     printf("updateGateway\n");
   }
 
-  void getGateway( ::apache::airavata::model::workspace::Gateway& _return, const std::string& gatewayId) {
+  void getGateway( ::apache::airavata::model::workspace::Gateway& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getGateway\n");
   }
