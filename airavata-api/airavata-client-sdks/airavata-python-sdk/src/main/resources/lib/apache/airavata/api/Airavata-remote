@@ -25,9 +25,9 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('')
   print('Functions:')
   print('  string getAPIVersion(AuthzToken authzToken)')
-  print('  string addGateway(Gateway gateway)')
-  print('  void updateGateway(string gatewayId, Gateway updatedGateway)')
-  print('  Gateway getGateway(string gatewayId)')
+  print('  string addGateway(AuthzToken authzToken, Gateway gateway)')
+  print('  void updateGateway(AuthzToken authzToken, string gatewayId, Gateway updatedGateway)')
+  print('  Gateway getGateway(AuthzToken authzToken, string gatewayId)')
   print('  bool deleteGateway(string gatewayId)')
   print('   getAllGateways()')
   print('  bool isGatewayExist(string gatewayId)')
@@ -214,22 +214,22 @@ if cmd == 'getAPIVersion':
   pp.pprint(client.getAPIVersion(eval(args[0]),))
 
 elif cmd == 'addGateway':
-  if len(args) != 1:
-    print('addGateway requires 1 args')
+  if len(args) != 2:
+    print('addGateway requires 2 args')
     sys.exit(1)
-  pp.pprint(client.addGateway(eval(args[0]),))
+  pp.pprint(client.addGateway(eval(args[0]),eval(args[1]),))
 
 elif cmd == 'updateGateway':
-  if len(args) != 2:
-    print('updateGateway requires 2 args')
+  if len(args) != 3:
+    print('updateGateway requires 3 args')
     sys.exit(1)
-  pp.pprint(client.updateGateway(args[0],eval(args[1]),))
+  pp.pprint(client.updateGateway(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'getGateway':
-  if len(args) != 1:
-    print('getGateway requires 1 args')
+  if len(args) != 2:
+    print('getGateway requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getGateway(args[0],))
+  pp.pprint(client.getGateway(eval(args[0]),args[1],))
 
 elif cmd == 'deleteGateway':
   if len(args) != 1:

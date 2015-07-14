@@ -27,24 +27,27 @@ class Iface:
     """
     pass
 
-  def addGateway(self, gateway):
+  def addGateway(self, authzToken, gateway):
     """
     Parameters:
+     - authzToken
      - gateway
     """
     pass
 
-  def updateGateway(self, gatewayId, updatedGateway):
+  def updateGateway(self, authzToken, gatewayId, updatedGateway):
     """
     Parameters:
+     - authzToken
      - gatewayId
      - updatedGateway
     """
     pass
 
-  def getGateway(self, gatewayId):
+  def getGateway(self, authzToken, gatewayId):
     """
     Parameters:
+     - authzToken
      - gatewayId
     """
     pass
@@ -2199,17 +2202,19 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getAPIVersion failed: unknown result");
 
-  def addGateway(self, gateway):
+  def addGateway(self, authzToken, gateway):
     """
     Parameters:
+     - authzToken
      - gateway
     """
-    self.send_addGateway(gateway)
+    self.send_addGateway(authzToken, gateway)
     return self.recv_addGateway()
 
-  def send_addGateway(self, gateway):
+  def send_addGateway(self, authzToken, gateway):
     self._oprot.writeMessageBegin('addGateway', TMessageType.CALL, self._seqid)
     args = addGateway_args()
+    args.authzToken = authzToken
     args.gateway = gateway
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
@@ -2234,20 +2239,24 @@ class Client(Iface):
       raise result.ace
     if result.ase is not None:
       raise result.ase
+    if result.ae is not None:
+      raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "addGateway failed: unknown result");
 
-  def updateGateway(self, gatewayId, updatedGateway):
+  def updateGateway(self, authzToken, gatewayId, updatedGateway):
     """
     Parameters:
+     - authzToken
      - gatewayId
      - updatedGateway
     """
-    self.send_updateGateway(gatewayId, updatedGateway)
+    self.send_updateGateway(authzToken, gatewayId, updatedGateway)
     self.recv_updateGateway()
 
-  def send_updateGateway(self, gatewayId, updatedGateway):
+  def send_updateGateway(self, authzToken, gatewayId, updatedGateway):
     self._oprot.writeMessageBegin('updateGateway', TMessageType.CALL, self._seqid)
     args = updateGateway_args()
+    args.authzToken = authzToken
     args.gatewayId = gatewayId
     args.updatedGateway = updatedGateway
     args.write(self._oprot)
@@ -2271,19 +2280,23 @@ class Client(Iface):
       raise result.ace
     if result.ase is not None:
       raise result.ase
+    if result.ae is not None:
+      raise result.ae
     return
 
-  def getGateway(self, gatewayId):
+  def getGateway(self, authzToken, gatewayId):
     """
     Parameters:
+     - authzToken
      - gatewayId
     """
-    self.send_getGateway(gatewayId)
+    self.send_getGateway(authzToken, gatewayId)
     return self.recv_getGateway()
 
-  def send_getGateway(self, gatewayId):
+  def send_getGateway(self, authzToken, gatewayId):
     self._oprot.writeMessageBegin('getGateway', TMessageType.CALL, self._seqid)
     args = getGateway_args()
+    args.authzToken = authzToken
     args.gatewayId = gatewayId
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
@@ -2308,6 +2321,8 @@ class Client(Iface):
       raise result.ace
     if result.ase is not None:
       raise result.ase
+    if result.ae is not None:
+      raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getGateway failed: unknown result");
 
   def deleteGateway(self, gatewayId):
@@ -8392,13 +8407,15 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = addGateway_result()
     try:
-      result.success = self._handler.addGateway(args.gateway)
+      result.success = self._handler.addGateway(args.authzToken, args.gateway)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
       result.ace = ace
     except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
       result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException, ae:
+      result.ae = ae
     oprot.writeMessageBegin("addGateway", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
@@ -8410,13 +8427,15 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = updateGateway_result()
     try:
-      self._handler.updateGateway(args.gatewayId, args.updatedGateway)
+      self._handler.updateGateway(args.authzToken, args.gatewayId, args.updatedGateway)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
       result.ace = ace
     except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
       result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException, ae:
+      result.ae = ae
     oprot.writeMessageBegin("updateGateway", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
@@ -8428,13 +8447,15 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = getGateway_result()
     try:
-      result.success = self._handler.getGateway(args.gatewayId)
+      result.success = self._handler.getGateway(args.authzToken, args.gatewayId)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
       result.ace = ace
     except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
       result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException, ae:
+      result.ae = ae
     oprot.writeMessageBegin("getGateway", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
@@ -10866,15 +10887,18 @@ class getAPIVersion_result:
 class addGateway_args:
   """
   Attributes:
+   - authzToken
    - gateway
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRUCT, 'gateway', (apache.airavata.model.workspace.ttypes.Gateway, apache.airavata.model.workspace.ttypes.Gateway.thrift_spec), None, ), # 1
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRUCT, 'gateway', (apache.airavata.model.workspace.ttypes.Gateway, apache.airavata.model.workspace.ttypes.Gateway.thrift_spec), None, ), # 2
   )
 
-  def __init__(self, gateway=None,):
+  def __init__(self, authzToken=None, gateway=None,):
+    self.authzToken = authzToken
     self.gateway = gateway
 
   def read(self, iprot):
@@ -10887,6 +10911,12 @@ class addGateway_args:
       if ftype == TType.STOP:
         break
       if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
         if ftype == TType.STRUCT:
           self.gateway = apache.airavata.model.workspace.ttypes.Gateway()
           self.gateway.read(iprot)
@@ -10902,14 +10932,20 @@ class addGateway_args:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('addGateway_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
     if self.gateway is not None:
-      oprot.writeFieldBegin('gateway', TType.STRUCT, 1)
+      oprot.writeFieldBegin('gateway', TType.STRUCT, 2)
       self.gateway.write(oprot)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
   def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
     if self.gateway is None:
       raise TProtocol.TProtocolException(message='Required field gateway is unset!')
     return
@@ -10917,6 +10953,7 @@ class addGateway_args:
 
   def __hash__(self):
     value = 17
+    value = (value * 31) ^ hash(self.authzToken)
     value = (value * 31) ^ hash(self.gateway)
     return value
 
@@ -10938,6 +10975,7 @@ class addGateway_result:
    - ire
    - ace
    - ase
+   - ae
   """
 
   thrift_spec = (
@@ -10945,13 +10983,15 @@ class addGateway_result:
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
   )
 
-  def __init__(self, success=None, ire=None, ace=None, ase=None,):
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
     self.success = success
     self.ire = ire
     self.ace = ace
     self.ase = ase
+    self.ae = ae
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -10985,6 +11025,12 @@ class addGateway_result:
           self.ase.read(iprot)
         else:
           iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -11011,6 +11057,10 @@ class addGateway_result:
       oprot.writeFieldBegin('ase', TType.STRUCT, 3)
       self.ase.write(oprot)
       oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -11024,6 +11074,7 @@ class addGateway_result:
     value = (value * 31) ^ hash(self.ire)
     value = (value * 31) ^ hash(self.ace)
     value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
     return value
 
   def __repr__(self):
@@ -11040,17 +11091,20 @@ class addGateway_result:
 class updateGateway_args:
   """
   Attributes:
+   - authzToken
    - gatewayId
    - updatedGateway
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'gatewayId', None, None, ), # 1
-    (2, TType.STRUCT, 'updatedGateway', (apache.airavata.model.workspace.ttypes.Gateway, apache.airavata.model.workspace.ttypes.Gateway.thrift_spec), None, ), # 2
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'gatewayId', None, None, ), # 2
+    (3, TType.STRUCT, 'updatedGateway', (apache.airavata.model.workspace.ttypes.Gateway, apache.airavata.model.workspace.ttypes.Gateway.thrift_spec), None, ), # 3
   )
 
-  def __init__(self, gatewayId=None, updatedGateway=None,):
+  def __init__(self, authzToken=None, gatewayId=None, updatedGateway=None,):
+    self.authzToken = authzToken
     self.gatewayId = gatewayId
     self.updatedGateway = updatedGateway
 
@@ -11064,11 +11118,17 @@ class updateGateway_args:
       if ftype == TType.STOP:
         break
       if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
         if ftype == TType.STRING:
           self.gatewayId = iprot.readString();
         else:
           iprot.skip(ftype)
-      elif fid == 2:
+      elif fid == 3:
         if ftype == TType.STRUCT:
           self.updatedGateway = apache.airavata.model.workspace.ttypes.Gateway()
           self.updatedGateway.read(iprot)
@@ -11084,18 +11144,24 @@ class updateGateway_args:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('updateGateway_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
     if self.gatewayId is not None:
-      oprot.writeFieldBegin('gatewayId', TType.STRING, 1)
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
       oprot.writeString(self.gatewayId)
       oprot.writeFieldEnd()
     if self.updatedGateway is not None:
-      oprot.writeFieldBegin('updatedGateway', TType.STRUCT, 2)
+      oprot.writeFieldBegin('updatedGateway', TType.STRUCT, 3)
       self.updatedGateway.write(oprot)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
   def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
     if self.gatewayId is None:
       raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
     if self.updatedGateway is None:
@@ -11105,6 +11171,7 @@ class updateGateway_args:
 
   def __hash__(self):
     value = 17
+    value = (value * 31) ^ hash(self.authzToken)
     value = (value * 31) ^ hash(self.gatewayId)
     value = (value * 31) ^ hash(self.updatedGateway)
     return value
@@ -11126,6 +11193,7 @@ class updateGateway_result:
    - ire
    - ace
    - ase
+   - ae
   """
 
   thrift_spec = (
@@ -11133,12 +11201,14 @@ class updateGateway_result:
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
   )
 
-  def __init__(self, ire=None, ace=None, ase=None,):
+  def __init__(self, ire=None, ace=None, ase=None, ae=None,):
     self.ire = ire
     self.ace = ace
     self.ase = ase
+    self.ae = ae
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -11167,6 +11237,12 @@ class updateGateway_result:
           self.ase.read(iprot)
         else:
           iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -11189,6 +11265,10 @@ class updateGateway_result:
       oprot.writeFieldBegin('ase', TType.STRUCT, 3)
       self.ase.write(oprot)
       oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -11201,6 +11281,7 @@ class updateGateway_result:
     value = (value * 31) ^ hash(self.ire)
     value = (value * 31) ^ hash(self.ace)
     value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
     return value
 
   def __repr__(self):
@@ -11217,15 +11298,18 @@ class updateGateway_result:
 class getGateway_args:
   """
   Attributes:
+   - authzToken
    - gatewayId
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'gatewayId', None, None, ), # 1
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'gatewayId', None, None, ), # 2
   )
 
-  def __init__(self, gatewayId=None,):
+  def __init__(self, authzToken=None, gatewayId=None,):
+    self.authzToken = authzToken
     self.gatewayId = gatewayId
 
   def read(self, iprot):
@@ -11238,6 +11322,12 @@ class getGateway_args:
       if ftype == TType.STOP:
         break
       if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
         if ftype == TType.STRING:
           self.gatewayId = iprot.readString();
         else:
@@ -11252,14 +11342,20 @@ class getGateway_args:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('getGateway_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
     if self.gatewayId is not None:
-      oprot.writeFieldBegin('gatewayId', TType.STRING, 1)
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
       oprot.writeString(self.gatewayId)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
   def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
     if self.gatewayId is None:
       raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
     return
@@ -11267,6 +11363,7 @@ class getGateway_args:
 
   def __hash__(self):
     value = 17
+    value = (value * 31) ^ hash(self.authzToken)
     value = (value * 31) ^ hash(self.gatewayId)
     return value
 
@@ -11288,6 +11385,7 @@ class getGateway_result:
    - ire
    - ace
    - ase
+   - ae
   """
 
   thrift_spec = (
@@ -11295,13 +11393,15 @@ class getGateway_result:
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
   )
 
-  def __init__(self, success=None, ire=None, ace=None, ase=None,):
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
     self.success = success
     self.ire = ire
     self.ace = ace
     self.ase = ase
+    self.ae = ae
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -11336,6 +11436,12 @@ class getGateway_result:
           self.ase.read(iprot)
         else:
           iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -11362,6 +11468,10 @@ class getGateway_result:
       oprot.writeFieldBegin('ase', TType.STRUCT, 3)
       self.ase.write(oprot)
       oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -11375,6 +11485,7 @@ class getGateway_result:
     value = (value * 31) ^ hash(self.ire)
     value = (value * 31) ^ hash(self.ace)
     value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
     return value
 
   def __repr__(self):

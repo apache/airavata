@@ -142,7 +142,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public String addGateway(Gateway gateway) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public String addGateway(AuthzToken authzToken, Gateway gateway) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        //security check
+        authenticateNAuthorize(authzToken);
         try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (!validateString(gateway.getGatewayId())){
@@ -160,7 +162,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public void updateGateway(String gatewayId, Gateway updatedGateway) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public void updateGateway(AuthzToken authzToken, String gatewayId, Gateway updatedGateway) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        //security check
+        authenticateNAuthorize(authzToken);
         try {
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.GATEWAY, gatewayId)){
@@ -180,7 +184,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public Gateway getGateway(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public Gateway getGateway(AuthzToken authzToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        //security check
+        authenticateNAuthorize(authzToken);
         try {
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.GATEWAY, gatewayId)){
