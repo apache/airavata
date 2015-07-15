@@ -111,13 +111,13 @@ public class CreateLaunchBES {
             Gateway gateway = airavataClient.getGateway(new AuthzToken(""), gatewayId);
             gateway.setDomain("testDomain");
             airavataClient.updateGateway(new AuthzToken(""), gatewayId, gateway);
-            List<Gateway> allGateways = airavataClient.getAllGateways();
+            List<Gateway> allGateways = airavataClient.getAllGateways(new AuthzToken(""));
             System.out.println(allGateways.size());
-            if (airavataClient.isGatewayExist(gatewayId)) {
+            if (airavataClient.isGatewayExist(new AuthzToken(""), gatewayId)) {
                 Gateway gateway1 = airavataClient.getGateway(new AuthzToken(""), gatewayId);
                 System.out.println(gateway1.getGatewayName());
             }
-            boolean b = airavataClient.deleteGateway("testGatewayId2");
+            boolean b = airavataClient.deleteGateway(new AuthzToken(""), "testGatewayId2");
             System.out.println(b);
         } catch (AiravataSystemException e) {
             e.printStackTrace();

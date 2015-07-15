@@ -42,9 +42,9 @@ class AiravataIf {
   virtual void addGateway(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::workspace::Gateway& gateway) = 0;
   virtual void updateGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Gateway& updatedGateway) = 0;
   virtual void getGateway( ::apache::airavata::model::workspace::Gateway& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) = 0;
-  virtual bool deleteGateway(const std::string& gatewayId) = 0;
-  virtual void getAllGateways(std::vector< ::apache::airavata::model::workspace::Gateway> & _return) = 0;
-  virtual bool isGatewayExist(const std::string& gatewayId) = 0;
+  virtual bool deleteGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) = 0;
+  virtual void getAllGateways(std::vector< ::apache::airavata::model::workspace::Gateway> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) = 0;
+  virtual bool isGatewayExist(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) = 0;
 
   /**
    * Generate and Register SSH Key Pair with Airavata Credential Store.
@@ -80,10 +80,11 @@ class AiravataIf {
    *    The Project Object described in the workspace_model
    * 
    * 
+   * @param authzToken
    * @param gatewayId
    * @param project
    */
-  virtual void createProject(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project) = 0;
+  virtual void createProject(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project) = 0;
 
   /**
    * Update a Project
@@ -1814,14 +1815,14 @@ class AiravataNull : virtual public AiravataIf {
   void getGateway( ::apache::airavata::model::workspace::Gateway& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */) {
     return;
   }
-  bool deleteGateway(const std::string& /* gatewayId */) {
+  bool deleteGateway(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */) {
     bool _return = false;
     return _return;
   }
-  void getAllGateways(std::vector< ::apache::airavata::model::workspace::Gateway> & /* _return */) {
+  void getAllGateways(std::vector< ::apache::airavata::model::workspace::Gateway> & /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */) {
     return;
   }
-  bool isGatewayExist(const std::string& /* gatewayId */) {
+  bool isGatewayExist(const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */) {
     bool _return = false;
     return _return;
   }
@@ -1834,7 +1835,7 @@ class AiravataNull : virtual public AiravataIf {
   void getAllUserSSHPubKeys(std::map<std::string, std::string> & /* _return */, const std::string& /* userName */) {
     return;
   }
-  void createProject(std::string& /* _return */, const std::string& /* gatewayId */, const  ::apache::airavata::model::workspace::Project& /* project */) {
+  void createProject(std::string& /* _return */, const  ::apache::airavata::model::security::AuthzToken& /* authzToken */, const std::string& /* gatewayId */, const  ::apache::airavata::model::workspace::Project& /* project */) {
     return;
   }
   void updateProject(const std::string& /* projectId */, const  ::apache::airavata::model::workspace::Project& /* updatedProject */) {
@@ -2824,8 +2825,8 @@ class Airavata_getGateway_presult {
 class Airavata_deleteGateway_args {
  public:
 
-  static const char* ascii_fingerprint; // = "EFB929595D312AC8F305D5A794CFEDA1";
-  static const uint8_t binary_fingerprint[16]; // = {0xEF,0xB9,0x29,0x59,0x5D,0x31,0x2A,0xC8,0xF3,0x05,0xD5,0xA7,0x94,0xCF,0xED,0xA1};
+  static const char* ascii_fingerprint; // = "5C8C4FD14D732E7EC3E0A61A8C24C7FF";
+  static const uint8_t binary_fingerprint[16]; // = {0x5C,0x8C,0x4F,0xD1,0x4D,0x73,0x2E,0x7E,0xC3,0xE0,0xA6,0x1A,0x8C,0x24,0xC7,0xFF};
 
   Airavata_deleteGateway_args(const Airavata_deleteGateway_args&);
   Airavata_deleteGateway_args& operator=(const Airavata_deleteGateway_args&);
@@ -2833,12 +2834,17 @@ class Airavata_deleteGateway_args {
   }
 
   virtual ~Airavata_deleteGateway_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
   std::string gatewayId;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
 
   void __set_gatewayId(const std::string& val);
 
   bool operator == (const Airavata_deleteGateway_args & rhs) const
   {
+    if (!(authzToken == rhs.authzToken))
+      return false;
     if (!(gatewayId == rhs.gatewayId))
       return false;
     return true;
@@ -2859,11 +2865,12 @@ class Airavata_deleteGateway_args {
 class Airavata_deleteGateway_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "EFB929595D312AC8F305D5A794CFEDA1";
-  static const uint8_t binary_fingerprint[16]; // = {0xEF,0xB9,0x29,0x59,0x5D,0x31,0x2A,0xC8,0xF3,0x05,0xD5,0xA7,0x94,0xCF,0xED,0xA1};
+  static const char* ascii_fingerprint; // = "5C8C4FD14D732E7EC3E0A61A8C24C7FF";
+  static const uint8_t binary_fingerprint[16]; // = {0x5C,0x8C,0x4F,0xD1,0x4D,0x73,0x2E,0x7E,0xC3,0xE0,0xA6,0x1A,0x8C,0x24,0xC7,0xFF};
 
 
   virtual ~Airavata_deleteGateway_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
   const std::string* gatewayId;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -2872,18 +2879,19 @@ class Airavata_deleteGateway_pargs {
 };
 
 typedef struct _Airavata_deleteGateway_result__isset {
-  _Airavata_deleteGateway_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_deleteGateway_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
+  bool ae :1;
 } _Airavata_deleteGateway_result__isset;
 
 class Airavata_deleteGateway_result {
  public:
 
-  static const char* ascii_fingerprint; // = "7B9EFBD21F2946E23A4FA136FF14760C";
-  static const uint8_t binary_fingerprint[16]; // = {0x7B,0x9E,0xFB,0xD2,0x1F,0x29,0x46,0xE2,0x3A,0x4F,0xA1,0x36,0xFF,0x14,0x76,0x0C};
+  static const char* ascii_fingerprint; // = "C0679679E26638BE0A41545C2E17B17A";
+  static const uint8_t binary_fingerprint[16]; // = {0xC0,0x67,0x96,0x79,0xE2,0x66,0x38,0xBE,0x0A,0x41,0x54,0x5C,0x2E,0x17,0xB1,0x7A};
 
   Airavata_deleteGateway_result(const Airavata_deleteGateway_result&);
   Airavata_deleteGateway_result& operator=(const Airavata_deleteGateway_result&);
@@ -2895,6 +2903,7 @@ class Airavata_deleteGateway_result {
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_deleteGateway_result__isset __isset;
 
@@ -2906,6 +2915,8 @@ class Airavata_deleteGateway_result {
 
   void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
 
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
   bool operator == (const Airavata_deleteGateway_result & rhs) const
   {
     if (!(success == rhs.success))
@@ -2915,6 +2926,8 @@ class Airavata_deleteGateway_result {
     if (!(ace == rhs.ace))
       return false;
     if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
       return false;
     return true;
   }
@@ -2931,18 +2944,19 @@ class Airavata_deleteGateway_result {
 };
 
 typedef struct _Airavata_deleteGateway_presult__isset {
-  _Airavata_deleteGateway_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_deleteGateway_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
+  bool ae :1;
 } _Airavata_deleteGateway_presult__isset;
 
 class Airavata_deleteGateway_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "7B9EFBD21F2946E23A4FA136FF14760C";
-  static const uint8_t binary_fingerprint[16]; // = {0x7B,0x9E,0xFB,0xD2,0x1F,0x29,0x46,0xE2,0x3A,0x4F,0xA1,0x36,0xFF,0x14,0x76,0x0C};
+  static const char* ascii_fingerprint; // = "C0679679E26638BE0A41545C2E17B17A";
+  static const uint8_t binary_fingerprint[16]; // = {0xC0,0x67,0x96,0x79,0xE2,0x66,0x38,0xBE,0x0A,0x41,0x54,0x5C,0x2E,0x17,0xB1,0x7A};
 
 
   virtual ~Airavata_deleteGateway_presult() throw();
@@ -2950,6 +2964,7 @@ class Airavata_deleteGateway_presult {
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_deleteGateway_presult__isset __isset;
 
@@ -2962,8 +2977,8 @@ class Airavata_deleteGateway_presult {
 class Airavata_getAllGateways_args {
  public:
 
-  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
-  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
+  static const char* ascii_fingerprint; // = "75A7E945AEBB96C8FA8998CBCEB31C27";
+  static const uint8_t binary_fingerprint[16]; // = {0x75,0xA7,0xE9,0x45,0xAE,0xBB,0x96,0xC8,0xFA,0x89,0x98,0xCB,0xCE,0xB3,0x1C,0x27};
 
   Airavata_getAllGateways_args(const Airavata_getAllGateways_args&);
   Airavata_getAllGateways_args& operator=(const Airavata_getAllGateways_args&);
@@ -2971,9 +2986,14 @@ class Airavata_getAllGateways_args {
   }
 
   virtual ~Airavata_getAllGateways_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
 
-  bool operator == (const Airavata_getAllGateways_args & /* rhs */) const
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
+
+  bool operator == (const Airavata_getAllGateways_args & rhs) const
   {
+    if (!(authzToken == rhs.authzToken))
+      return false;
     return true;
   }
   bool operator != (const Airavata_getAllGateways_args &rhs) const {
@@ -2992,11 +3012,12 @@ class Airavata_getAllGateways_args {
 class Airavata_getAllGateways_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
-  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
+  static const char* ascii_fingerprint; // = "75A7E945AEBB96C8FA8998CBCEB31C27";
+  static const uint8_t binary_fingerprint[16]; // = {0x75,0xA7,0xE9,0x45,0xAE,0xBB,0x96,0xC8,0xFA,0x89,0x98,0xCB,0xCE,0xB3,0x1C,0x27};
 
 
   virtual ~Airavata_getAllGateways_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -3004,18 +3025,19 @@ class Airavata_getAllGateways_pargs {
 };
 
 typedef struct _Airavata_getAllGateways_result__isset {
-  _Airavata_getAllGateways_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_getAllGateways_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
+  bool ae :1;
 } _Airavata_getAllGateways_result__isset;
 
 class Airavata_getAllGateways_result {
  public:
 
-  static const char* ascii_fingerprint; // = "9FBF38532C8C08BBEF927DC04BA26D19";
-  static const uint8_t binary_fingerprint[16]; // = {0x9F,0xBF,0x38,0x53,0x2C,0x8C,0x08,0xBB,0xEF,0x92,0x7D,0xC0,0x4B,0xA2,0x6D,0x19};
+  static const char* ascii_fingerprint; // = "797B839022B9DB504CEA88A61463B523";
+  static const uint8_t binary_fingerprint[16]; // = {0x79,0x7B,0x83,0x90,0x22,0xB9,0xDB,0x50,0x4C,0xEA,0x88,0xA6,0x14,0x63,0xB5,0x23};
 
   Airavata_getAllGateways_result(const Airavata_getAllGateways_result&);
   Airavata_getAllGateways_result& operator=(const Airavata_getAllGateways_result&);
@@ -3027,6 +3049,7 @@ class Airavata_getAllGateways_result {
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_getAllGateways_result__isset __isset;
 
@@ -3038,6 +3061,8 @@ class Airavata_getAllGateways_result {
 
   void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
 
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
   bool operator == (const Airavata_getAllGateways_result & rhs) const
   {
     if (!(success == rhs.success))
@@ -3047,6 +3072,8 @@ class Airavata_getAllGateways_result {
     if (!(ace == rhs.ace))
       return false;
     if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
       return false;
     return true;
   }
@@ -3063,18 +3090,19 @@ class Airavata_getAllGateways_result {
 };
 
 typedef struct _Airavata_getAllGateways_presult__isset {
-  _Airavata_getAllGateways_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_getAllGateways_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
+  bool ae :1;
 } _Airavata_getAllGateways_presult__isset;
 
 class Airavata_getAllGateways_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "9FBF38532C8C08BBEF927DC04BA26D19";
-  static const uint8_t binary_fingerprint[16]; // = {0x9F,0xBF,0x38,0x53,0x2C,0x8C,0x08,0xBB,0xEF,0x92,0x7D,0xC0,0x4B,0xA2,0x6D,0x19};
+  static const char* ascii_fingerprint; // = "797B839022B9DB504CEA88A61463B523";
+  static const uint8_t binary_fingerprint[16]; // = {0x79,0x7B,0x83,0x90,0x22,0xB9,0xDB,0x50,0x4C,0xEA,0x88,0xA6,0x14,0x63,0xB5,0x23};
 
 
   virtual ~Airavata_getAllGateways_presult() throw();
@@ -3082,6 +3110,7 @@ class Airavata_getAllGateways_presult {
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_getAllGateways_presult__isset __isset;
 
@@ -3094,8 +3123,8 @@ class Airavata_getAllGateways_presult {
 class Airavata_isGatewayExist_args {
  public:
 
-  static const char* ascii_fingerprint; // = "EFB929595D312AC8F305D5A794CFEDA1";
-  static const uint8_t binary_fingerprint[16]; // = {0xEF,0xB9,0x29,0x59,0x5D,0x31,0x2A,0xC8,0xF3,0x05,0xD5,0xA7,0x94,0xCF,0xED,0xA1};
+  static const char* ascii_fingerprint; // = "5C8C4FD14D732E7EC3E0A61A8C24C7FF";
+  static const uint8_t binary_fingerprint[16]; // = {0x5C,0x8C,0x4F,0xD1,0x4D,0x73,0x2E,0x7E,0xC3,0xE0,0xA6,0x1A,0x8C,0x24,0xC7,0xFF};
 
   Airavata_isGatewayExist_args(const Airavata_isGatewayExist_args&);
   Airavata_isGatewayExist_args& operator=(const Airavata_isGatewayExist_args&);
@@ -3103,12 +3132,17 @@ class Airavata_isGatewayExist_args {
   }
 
   virtual ~Airavata_isGatewayExist_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
   std::string gatewayId;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
 
   void __set_gatewayId(const std::string& val);
 
   bool operator == (const Airavata_isGatewayExist_args & rhs) const
   {
+    if (!(authzToken == rhs.authzToken))
+      return false;
     if (!(gatewayId == rhs.gatewayId))
       return false;
     return true;
@@ -3129,11 +3163,12 @@ class Airavata_isGatewayExist_args {
 class Airavata_isGatewayExist_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "EFB929595D312AC8F305D5A794CFEDA1";
-  static const uint8_t binary_fingerprint[16]; // = {0xEF,0xB9,0x29,0x59,0x5D,0x31,0x2A,0xC8,0xF3,0x05,0xD5,0xA7,0x94,0xCF,0xED,0xA1};
+  static const char* ascii_fingerprint; // = "5C8C4FD14D732E7EC3E0A61A8C24C7FF";
+  static const uint8_t binary_fingerprint[16]; // = {0x5C,0x8C,0x4F,0xD1,0x4D,0x73,0x2E,0x7E,0xC3,0xE0,0xA6,0x1A,0x8C,0x24,0xC7,0xFF};
 
 
   virtual ~Airavata_isGatewayExist_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
   const std::string* gatewayId;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
@@ -3142,18 +3177,19 @@ class Airavata_isGatewayExist_pargs {
 };
 
 typedef struct _Airavata_isGatewayExist_result__isset {
-  _Airavata_isGatewayExist_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_isGatewayExist_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
+  bool ae :1;
 } _Airavata_isGatewayExist_result__isset;
 
 class Airavata_isGatewayExist_result {
  public:
 
-  static const char* ascii_fingerprint; // = "7B9EFBD21F2946E23A4FA136FF14760C";
-  static const uint8_t binary_fingerprint[16]; // = {0x7B,0x9E,0xFB,0xD2,0x1F,0x29,0x46,0xE2,0x3A,0x4F,0xA1,0x36,0xFF,0x14,0x76,0x0C};
+  static const char* ascii_fingerprint; // = "C0679679E26638BE0A41545C2E17B17A";
+  static const uint8_t binary_fingerprint[16]; // = {0xC0,0x67,0x96,0x79,0xE2,0x66,0x38,0xBE,0x0A,0x41,0x54,0x5C,0x2E,0x17,0xB1,0x7A};
 
   Airavata_isGatewayExist_result(const Airavata_isGatewayExist_result&);
   Airavata_isGatewayExist_result& operator=(const Airavata_isGatewayExist_result&);
@@ -3165,6 +3201,7 @@ class Airavata_isGatewayExist_result {
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_isGatewayExist_result__isset __isset;
 
@@ -3176,6 +3213,8 @@ class Airavata_isGatewayExist_result {
 
   void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
 
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
   bool operator == (const Airavata_isGatewayExist_result & rhs) const
   {
     if (!(success == rhs.success))
@@ -3185,6 +3224,8 @@ class Airavata_isGatewayExist_result {
     if (!(ace == rhs.ace))
       return false;
     if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
       return false;
     return true;
   }
@@ -3201,18 +3242,19 @@ class Airavata_isGatewayExist_result {
 };
 
 typedef struct _Airavata_isGatewayExist_presult__isset {
-  _Airavata_isGatewayExist_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_isGatewayExist_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
+  bool ae :1;
 } _Airavata_isGatewayExist_presult__isset;
 
 class Airavata_isGatewayExist_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "7B9EFBD21F2946E23A4FA136FF14760C";
-  static const uint8_t binary_fingerprint[16]; // = {0x7B,0x9E,0xFB,0xD2,0x1F,0x29,0x46,0xE2,0x3A,0x4F,0xA1,0x36,0xFF,0x14,0x76,0x0C};
+  static const char* ascii_fingerprint; // = "C0679679E26638BE0A41545C2E17B17A";
+  static const uint8_t binary_fingerprint[16]; // = {0xC0,0x67,0x96,0x79,0xE2,0x66,0x38,0xBE,0x0A,0x41,0x54,0x5C,0x2E,0x17,0xB1,0x7A};
 
 
   virtual ~Airavata_isGatewayExist_presult() throw();
@@ -3220,6 +3262,7 @@ class Airavata_isGatewayExist_presult {
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_isGatewayExist_presult__isset __isset;
 
@@ -3652,8 +3695,8 @@ class Airavata_getAllUserSSHPubKeys_presult {
 class Airavata_createProject_args {
  public:
 
-  static const char* ascii_fingerprint; // = "20BB76567749BB84DDDDE69C2A7A0B13";
-  static const uint8_t binary_fingerprint[16]; // = {0x20,0xBB,0x76,0x56,0x77,0x49,0xBB,0x84,0xDD,0xDD,0xE6,0x9C,0x2A,0x7A,0x0B,0x13};
+  static const char* ascii_fingerprint; // = "6AD998897EEB0CD749E1E97F7A084A23";
+  static const uint8_t binary_fingerprint[16]; // = {0x6A,0xD9,0x98,0x89,0x7E,0xEB,0x0C,0xD7,0x49,0xE1,0xE9,0x7F,0x7A,0x08,0x4A,0x23};
 
   Airavata_createProject_args(const Airavata_createProject_args&);
   Airavata_createProject_args& operator=(const Airavata_createProject_args&);
@@ -3661,8 +3704,11 @@ class Airavata_createProject_args {
   }
 
   virtual ~Airavata_createProject_args() throw();
+   ::apache::airavata::model::security::AuthzToken authzToken;
   std::string gatewayId;
    ::apache::airavata::model::workspace::Project project;
+
+  void __set_authzToken(const  ::apache::airavata::model::security::AuthzToken& val);
 
   void __set_gatewayId(const std::string& val);
 
@@ -3670,6 +3716,8 @@ class Airavata_createProject_args {
 
   bool operator == (const Airavata_createProject_args & rhs) const
   {
+    if (!(authzToken == rhs.authzToken))
+      return false;
     if (!(gatewayId == rhs.gatewayId))
       return false;
     if (!(project == rhs.project))
@@ -3692,11 +3740,12 @@ class Airavata_createProject_args {
 class Airavata_createProject_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "20BB76567749BB84DDDDE69C2A7A0B13";
-  static const uint8_t binary_fingerprint[16]; // = {0x20,0xBB,0x76,0x56,0x77,0x49,0xBB,0x84,0xDD,0xDD,0xE6,0x9C,0x2A,0x7A,0x0B,0x13};
+  static const char* ascii_fingerprint; // = "6AD998897EEB0CD749E1E97F7A084A23";
+  static const uint8_t binary_fingerprint[16]; // = {0x6A,0xD9,0x98,0x89,0x7E,0xEB,0x0C,0xD7,0x49,0xE1,0xE9,0x7F,0x7A,0x08,0x4A,0x23};
 
 
   virtual ~Airavata_createProject_pargs() throw();
+  const  ::apache::airavata::model::security::AuthzToken* authzToken;
   const std::string* gatewayId;
   const  ::apache::airavata::model::workspace::Project* project;
 
@@ -3706,18 +3755,19 @@ class Airavata_createProject_pargs {
 };
 
 typedef struct _Airavata_createProject_result__isset {
-  _Airavata_createProject_result__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_createProject_result__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
+  bool ae :1;
 } _Airavata_createProject_result__isset;
 
 class Airavata_createProject_result {
  public:
 
-  static const char* ascii_fingerprint; // = "765449DB00DA08377C7E82BB71F66398";
-  static const uint8_t binary_fingerprint[16]; // = {0x76,0x54,0x49,0xDB,0x00,0xDA,0x08,0x37,0x7C,0x7E,0x82,0xBB,0x71,0xF6,0x63,0x98};
+  static const char* ascii_fingerprint; // = "21BF57A9FE5AAA661540804D4FB9F023";
+  static const uint8_t binary_fingerprint[16]; // = {0x21,0xBF,0x57,0xA9,0xFE,0x5A,0xAA,0x66,0x15,0x40,0x80,0x4D,0x4F,0xB9,0xF0,0x23};
 
   Airavata_createProject_result(const Airavata_createProject_result&);
   Airavata_createProject_result& operator=(const Airavata_createProject_result&);
@@ -3729,6 +3779,7 @@ class Airavata_createProject_result {
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_createProject_result__isset __isset;
 
@@ -3740,6 +3791,8 @@ class Airavata_createProject_result {
 
   void __set_ase(const  ::apache::airavata::api::error::AiravataSystemException& val);
 
+  void __set_ae(const  ::apache::airavata::api::error::AuthorizationException& val);
+
   bool operator == (const Airavata_createProject_result & rhs) const
   {
     if (!(success == rhs.success))
@@ -3749,6 +3802,8 @@ class Airavata_createProject_result {
     if (!(ace == rhs.ace))
       return false;
     if (!(ase == rhs.ase))
+      return false;
+    if (!(ae == rhs.ae))
       return false;
     return true;
   }
@@ -3765,18 +3820,19 @@ class Airavata_createProject_result {
 };
 
 typedef struct _Airavata_createProject_presult__isset {
-  _Airavata_createProject_presult__isset() : success(false), ire(false), ace(false), ase(false) {}
+  _Airavata_createProject_presult__isset() : success(false), ire(false), ace(false), ase(false), ae(false) {}
   bool success :1;
   bool ire :1;
   bool ace :1;
   bool ase :1;
+  bool ae :1;
 } _Airavata_createProject_presult__isset;
 
 class Airavata_createProject_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "765449DB00DA08377C7E82BB71F66398";
-  static const uint8_t binary_fingerprint[16]; // = {0x76,0x54,0x49,0xDB,0x00,0xDA,0x08,0x37,0x7C,0x7E,0x82,0xBB,0x71,0xF6,0x63,0x98};
+  static const char* ascii_fingerprint; // = "21BF57A9FE5AAA661540804D4FB9F023";
+  static const uint8_t binary_fingerprint[16]; // = {0x21,0xBF,0x57,0xA9,0xFE,0x5A,0xAA,0x66,0x15,0x40,0x80,0x4D,0x4F,0xB9,0xF0,0x23};
 
 
   virtual ~Airavata_createProject_presult() throw();
@@ -3784,6 +3840,7 @@ class Airavata_createProject_presult {
    ::apache::airavata::api::error::InvalidRequestException ire;
    ::apache::airavata::api::error::AiravataClientException ace;
    ::apache::airavata::api::error::AiravataSystemException ase;
+   ::apache::airavata::api::error::AuthorizationException ae;
 
   _Airavata_createProject_presult__isset __isset;
 
@@ -20525,14 +20582,14 @@ class AiravataClient : virtual public AiravataIf {
   void getGateway( ::apache::airavata::model::workspace::Gateway& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void send_getGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   void recv_getGateway( ::apache::airavata::model::workspace::Gateway& _return);
-  bool deleteGateway(const std::string& gatewayId);
-  void send_deleteGateway(const std::string& gatewayId);
+  bool deleteGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
+  void send_deleteGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   bool recv_deleteGateway();
-  void getAllGateways(std::vector< ::apache::airavata::model::workspace::Gateway> & _return);
-  void send_getAllGateways();
+  void getAllGateways(std::vector< ::apache::airavata::model::workspace::Gateway> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken);
+  void send_getAllGateways(const  ::apache::airavata::model::security::AuthzToken& authzToken);
   void recv_getAllGateways(std::vector< ::apache::airavata::model::workspace::Gateway> & _return);
-  bool isGatewayExist(const std::string& gatewayId);
-  void send_isGatewayExist(const std::string& gatewayId);
+  bool isGatewayExist(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
+  void send_isGatewayExist(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId);
   bool recv_isGatewayExist();
   void generateAndRegisterSSHKeys(std::string& _return, const std::string& gatewayId, const std::string& userName);
   void send_generateAndRegisterSSHKeys(const std::string& gatewayId, const std::string& userName);
@@ -20543,8 +20600,8 @@ class AiravataClient : virtual public AiravataIf {
   void getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const std::string& userName);
   void send_getAllUserSSHPubKeys(const std::string& userName);
   void recv_getAllUserSSHPubKeys(std::map<std::string, std::string> & _return);
-  void createProject(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project);
-  void send_createProject(const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project);
+  void createProject(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project);
+  void send_createProject(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project);
   void recv_createProject(std::string& _return);
   void updateProject(const std::string& projectId, const  ::apache::airavata::model::workspace::Project& updatedProject);
   void send_updateProject(const std::string& projectId, const  ::apache::airavata::model::workspace::Project& updatedProject);
@@ -21233,32 +21290,32 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  bool deleteGateway(const std::string& gatewayId) {
+  bool deleteGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->deleteGateway(gatewayId);
+      ifaces_[i]->deleteGateway(authzToken, gatewayId);
     }
-    return ifaces_[i]->deleteGateway(gatewayId);
+    return ifaces_[i]->deleteGateway(authzToken, gatewayId);
   }
 
-  void getAllGateways(std::vector< ::apache::airavata::model::workspace::Gateway> & _return) {
+  void getAllGateways(std::vector< ::apache::airavata::model::workspace::Gateway> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getAllGateways(_return);
+      ifaces_[i]->getAllGateways(_return, authzToken);
     }
-    ifaces_[i]->getAllGateways(_return);
+    ifaces_[i]->getAllGateways(_return, authzToken);
     return;
   }
 
-  bool isGatewayExist(const std::string& gatewayId) {
+  bool isGatewayExist(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->isGatewayExist(gatewayId);
+      ifaces_[i]->isGatewayExist(authzToken, gatewayId);
     }
-    return ifaces_[i]->isGatewayExist(gatewayId);
+    return ifaces_[i]->isGatewayExist(authzToken, gatewayId);
   }
 
   void generateAndRegisterSSHKeys(std::string& _return, const std::string& gatewayId, const std::string& userName) {
@@ -21291,13 +21348,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void createProject(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project) {
+  void createProject(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->createProject(_return, gatewayId, project);
+      ifaces_[i]->createProject(_return, authzToken, gatewayId, project);
     }
-    ifaces_[i]->createProject(_return, gatewayId, project);
+    ifaces_[i]->createProject(_return, authzToken, gatewayId, project);
     return;
   }
 

@@ -95,20 +95,23 @@ service Airavata {
                    3: airavata_errors.AiravataSystemException ase,
                    4: airavata_errors.AuthorizationException ae)
 
-  bool deleteGateway(1: required string gatewayId)
+  bool deleteGateway(1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
              throws (1: airavata_errors.InvalidRequestException ire,
                      2: airavata_errors.AiravataClientException ace,
-                     3: airavata_errors.AiravataSystemException ase)
+                     3: airavata_errors.AiravataSystemException ase,
+                     4: airavata_errors.AuthorizationException ae)
 
-  list<workspace_model.Gateway> getAllGateways()
+  list<workspace_model.Gateway> getAllGateways(1: required security_model.AuthzToken authzToken)
              throws (1: airavata_errors.InvalidRequestException ire,
                      2: airavata_errors.AiravataClientException ace,
-                     3: airavata_errors.AiravataSystemException ase)
+                     3: airavata_errors.AiravataSystemException ase,
+                     4: airavata_errors.AuthorizationException ae)
 
-  bool isGatewayExist(1: required string gatewayId)
+  bool isGatewayExist(1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
            throws (1: airavata_errors.InvalidRequestException ire,
                    2: airavata_errors.AiravataClientException ace,
-                   3: airavata_errors.AiravataSystemException ase)
+                   3: airavata_errors.AiravataSystemException ase,
+                   4: airavata_errors.AuthorizationException ae)
 
 
   /**
@@ -158,11 +161,13 @@ service Airavata {
    *    The Project Object described in the workspace_model
    *
   */
-  string createProject (1: required string gatewayId,
-                        2: required workspace_model.Project project)
+  string createProject (1: required security_model.AuthzToken authzToken,
+                        2: required string gatewayId,
+                        3: required workspace_model.Project project)
           throws (1: airavata_errors.InvalidRequestException ire,
                   2: airavata_errors.AiravataClientException ace,
-                  3: airavata_errors.AiravataSystemException ase)
+                  3: airavata_errors.AiravataSystemException ase,
+                  4: airavata_errors.AuthorizationException ae)
 
   /**
    * Update a Project

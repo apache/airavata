@@ -206,7 +206,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public boolean deleteGateway(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public boolean deleteGateway(AuthzToken authzToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        //security check
+        authenticateNAuthorize(authzToken);
         try {
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.GATEWAY, gatewayId)){
@@ -227,7 +229,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public List<Gateway> getAllGateways() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public List<Gateway> getAllGateways(AuthzToken authzToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        //security check
+        authenticateNAuthorize(authzToken);
         try {
             List<Gateway> gateways = new ArrayList<Gateway>();
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
@@ -246,7 +250,23 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public boolean isGatewayExist(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public boolean isGatewayExist(AuthzToken authzToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        //security check
+        authenticateNAuthorize(authzToken);
+        try {
+            experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
+            return experimentCatalog.isExist(ExperimentCatalogModelType.GATEWAY, gatewayId);
+        } catch (RegistryException e) {
+            logger.error("Error while getting gateway", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error while getting gateway. More info : " + e.getMessage());
+            throw exception;
+        }
+    }
+
+    /*Following method wraps the logic of isGatewayExist method and this is to be called by any other method of the API as needed.*/
+    private boolean isGatewayExistInternal(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException{
         try {
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             return experimentCatalog.isExist(ExperimentCatalogModelType.GATEWAY, gatewayId);
@@ -280,7 +300,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * @param project
      */
     @Override
-    public String createProject(String gatewayId, Project project) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public String createProject(AuthzToken authzToken, String gatewayId, Project project) throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        //security check
+        authenticateNAuthorize(authzToken);
         try {
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             if (!validateString(project.getName()) || !validateString(project.getOwner())){
@@ -291,7 +313,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 logger.error("Gateway ID cannot be empty...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             }
-            if (!isGatewayExist(gatewayId)){
+            if (!isGatewayExistInternal(gatewayId)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             }
@@ -410,7 +432,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setMessage("Username cannot be empty. Please provide a valid user..");
             throw exception;
         }
-        if (!isGatewayExist(gatewayId)){
+        if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
@@ -488,7 +510,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setMessage("Username cannot be empty. Please provide a valid user..");
             throw exception;
         }
-        if (!isGatewayExist(gatewayId)){
+        if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
@@ -564,7 +586,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setMessage("Username cannot be empty. Please provide a valid user..");
             throw exception;
         }
-        if (!isGatewayExist(gatewayId)){
+        if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
@@ -643,7 +665,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setMessage("Username cannot be empty. Please provide a valid user..");
             throw exception;
         }
-        if (!isGatewayExist(gatewayId)){
+        if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
@@ -721,7 +743,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setMessage("Username cannot be empty. Please provide a valid user..");
             throw exception;
         }
-        if (!isGatewayExist(gatewayId)){
+        if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
@@ -796,7 +818,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setMessage("Username cannot be empty. Please provide a valid user..");
             throw exception;
         }
-        if (!isGatewayExist(gatewayId)){
+        if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
@@ -871,7 +893,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setMessage("Username cannot be empty. Please provide a valid user..");
             throw exception;
         }
-        if (!isGatewayExist(gatewayId)){
+        if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
@@ -950,7 +972,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setMessage("Username cannot be empty. Please provide a valid user..");
             throw exception;
         }
-        if (!isGatewayExist(gatewayId)){
+        if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
@@ -1009,7 +1031,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setMessage("Username cannot be empty. Please provide a valid user..");
             throw exception;
         }
-        if (!isGatewayExist(gatewayId)){
+        if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
@@ -1072,7 +1094,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public ExperimentStatistics getExperimentStatistics(String gatewayId, long fromTime, long toTime) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        if (!isGatewayExist(gatewayId)){
+        if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
@@ -1197,7 +1219,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setMessage("Username cannot be empty. Please provide a valid user..");
             throw exception;
         }
-        if (!isGatewayExist(gatewayId)){
+        if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
@@ -1262,7 +1284,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 exception.setMessage("Cannot create experiments with empty experiment name");
                 throw exception;
             }
-            if (!isGatewayExist(gatewayId)){
+            if (!isGatewayExistInternal(gatewayId)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             }
@@ -1849,7 +1871,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public String registerApplicationModule(String gatewayId, ApplicationModule applicationModule) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        if (!isGatewayExist(gatewayId)){
+        if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
@@ -1911,7 +1933,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     public List<ApplicationModule> getAllAppModules(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        if (!isGatewayExist(gatewayId)){
+        if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
@@ -1956,7 +1978,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public String registerApplicationDeployment(String gatewayId, ApplicationDeploymentDescription applicationDeployment) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        if (!isGatewayExist(gatewayId)){
+        if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
@@ -2046,7 +2068,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public List<ApplicationDeploymentDescription> getAllApplicationDeployments(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        if (!isGatewayExist(gatewayId)){
+        if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
@@ -2098,7 +2120,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public String registerApplicationInterface(String gatewayId, ApplicationInterfaceDescription applicationInterface) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        if (!isGatewayExist(gatewayId)){
+        if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
@@ -2187,7 +2209,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public Map<String, String> getAllApplicationInterfaceNames(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        if (!isGatewayExist(gatewayId)){
+        if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
@@ -2218,7 +2240,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     public List<ApplicationInterfaceDescription> getAllApplicationInterfaces(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        if (!isGatewayExist(gatewayId)){
+        if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
@@ -3122,7 +3144,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 exception.setMessage("Cannot create gateway profile with empty gateway id");
                 throw exception;
             }
-            if (!isGatewayExist(gatewayResourceProfile.getGatewayID())){
+            if (!isGatewayExistInternal(gatewayResourceProfile.getGatewayID())){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             }
@@ -3148,7 +3170,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public GatewayResourceProfile getGatewayResourceProfile(String gatewayID) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
-            if (!isGatewayExist(gatewayID)){
+            if (!isGatewayExistInternal(gatewayID)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             }
@@ -3175,7 +3197,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public boolean updateGatewayResourceProfile(String gatewayID, GatewayResourceProfile gatewayResourceProfile) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
-            if (!isGatewayExist(gatewayID)){
+            if (!isGatewayExistInternal(gatewayID)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             }
@@ -3202,7 +3224,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public boolean deleteGatewayResourceProfile(String gatewayID) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         try {
-            if (!isGatewayExist(gatewayID)){
+            if (!isGatewayExistInternal(gatewayID)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             }
@@ -3232,7 +3254,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public boolean addGatewayComputeResourcePreference(String gatewayID, String computeResourceId, ComputeResourcePreference computeResourcePreference) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
     	try {
-            if (!isGatewayExist(gatewayID)){
+            if (!isGatewayExistInternal(gatewayID)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             }
@@ -3266,7 +3288,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public ComputeResourcePreference getGatewayComputeResourcePreference(String gatewayID, String computeResourceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
     	try {
-            if (!isGatewayExist(gatewayID)){
+            if (!isGatewayExistInternal(gatewayID)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             }
@@ -3307,7 +3329,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public List<ComputeResourcePreference> getAllGatewayComputeResourcePreferences(String gatewayID) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
     	try {
-            if (!isGatewayExist(gatewayID)){
+            if (!isGatewayExistInternal(gatewayID)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             }
@@ -3349,7 +3371,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public boolean updateGatewayComputeResourcePreference(String gatewayID, String computeResourceId, ComputeResourcePreference computeResourcePreference) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
     	try {
-            if (!isGatewayExist(gatewayID)){
+            if (!isGatewayExistInternal(gatewayID)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             }
@@ -3391,7 +3413,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public boolean deleteGatewayComputeResourcePreference(String gatewayID, String computeResourceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
     	try {
-            if (!isGatewayExist(gatewayID)){
+            if (!isGatewayExistInternal(gatewayID)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
                 throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
             }
@@ -3411,7 +3433,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 	public List<String> getAllWorkflows(String gatewayId) throws InvalidRequestException,
 			AiravataClientException, AiravataSystemException, TException {
 
-        if (!isGatewayExist(gatewayId)){
+        if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
@@ -3460,7 +3482,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 	public String registerWorkflow(String gatewayId, Workflow workflow)
 			throws InvalidRequestException, AiravataClientException,
 			AiravataSystemException, TException {
-        if (!isGatewayExist(gatewayId)){
+        if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
         }
