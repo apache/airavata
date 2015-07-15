@@ -41,12 +41,15 @@ commonTasks:
 
 fileTransferTasks:
   - transferProtocol: SCP
-    taskClass: org.apache.airavata.gfac.impl.task.SCPInputDataStageTask
-    properties:
-     - password: pwd123
-       passPhrase: test
-       privateKey: key
-       publicKey: pubkey
+    taskClass: org.apache.airavata.gfac.impl.task.SCPDataStageTask
+
+#  - transferProtocol: SCP
+#    taskClass: org.apache.airavata.gfac.impl.task.SCPInputDataStageTask
+#    properties:
+#     - password: pwd123
+#       passPhrase: test
+#       privateKey: key
+#       publicKey: pubkey
 
   #- transferProtocol: SFTP
   #  taskClass: org.apache.airavata.task.adapters.SFTPFileTransferTask

@@ -80,6 +80,7 @@ public class GfacServerHandler implements GfacService.Iface {
 
     public GfacServerHandler() throws AiravataStartupException {
         try {
+	        Factory.loadConfiguration();
             startCuratorClient();
             initZkDataStructure();
             initAMQPClient();

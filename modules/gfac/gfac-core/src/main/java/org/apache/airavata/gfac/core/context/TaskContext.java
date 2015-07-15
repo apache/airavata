@@ -72,4 +72,8 @@ public class TaskContext {
 	public String getTaskId() {
 		return taskModel.getTaskId();
 	}
+
+	public String getLocalWorkingDir() {
+		return getParentProcessContext().getLocalWorkingDir();
+	}
 }
