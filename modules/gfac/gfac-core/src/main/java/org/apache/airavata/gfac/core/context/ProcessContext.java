@@ -29,6 +29,8 @@ import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDes
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.job.JobModel;
@@ -55,6 +57,7 @@ public class ProcessContext {
 	private String workingDir;
 	private String inputDir;
 	private String outputDir;
+	private String localWorkingDir;
 	private List<TaskContext> taskChain;
 	private GatewayResourceProfile gatewayResourceProfile;
 	private ComputeResourceDescription computeResourceDescription;
@@ -68,6 +71,8 @@ public class ProcessContext {
 	private DataMovementProtocol dataMovementProtocol;
 	private JobModel jobModel;
 	private ComputeResourcePreference computeResourcePreference;
+	private MonitorMode monitorMode;
+	private ResourceJobManager resourceJobManager;
 
 	/**
 	 * Note: process context property use lazy loading approach. In runtime you will see some properties as null
@@ -291,5 +296,29 @@ public class ProcessContext {
 
 	public String getComputeResourceId() {
 		return getComputeResourceDescription().getComputeResourceId();
+	}
+
+	public void setMonitorMode(MonitorMode monitorMode) {
+		this.monitorMode = monitorMode;
+	}
+
+	public MonitorMode getMonitorMode() {
+		return monitorMode;
+	}
+
+	public void setResourceJobManager(ResourceJobManager resourceJobManager) {
+		this.resourceJobManager = resourceJobManager;
+	}
+
+	public ResourceJobManager getResourceJobManager() {
+		return resourceJobManager;
+	}
+
+	public String getLocalWorkingDir() {
+		return localWorkingDir;
+	}
+
+	public void setLocalWorkingDir(String localWorkingDir) {
+		this.localWorkingDir = localWorkingDir;
 	}
 }

@@ -23,12 +23,11 @@ package org.apache.airavata.gfac.impl.task;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.context.TaskContext;
+import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.task.TaskException;
-import org.apache.airavata.gfac.impl.Factory;
 import org.apache.airavata.gfac.impl.SSHUtils;
 import org.apache.airavata.model.status.TaskState;
 import org.apache.airavata.model.task.DataStagingTaskModel;
@@ -36,14 +35,14 @@ import org.apache.airavata.model.task.TaskTypes;
 import org.apache.thrift.TException;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
+import java.util.Map;
 
-public class SCPInputDataStageTask extends AbstractSCPTask {
+public class SCPDataStageTask implements Task {
+	@Override
+	public void init(Map<String, String> propertyMap) throws TaskException {
 
-	public SCPInputDataStageTask() {
 	}
 
 	@Override
@@ -59,28 +58,19 @@ public class SCPInputDataStageTask extends AbstractSCPTask {
 			URI sourceURI = new URI(subTaskModel.getSource());
 			URI destinationURI = new URI(subTaskModel.getDestination());
 
-			if (sourceURI.getScheme().equalsIgnoreCase("file")) {  //  local --> Airavata --> RemoteCluster
-				taskContext.getParentProcessContext().getRemoteCluster().scpTo(sourceURI.getPath(),
-						subTaskModel.getDestination());
-			} else { // PGA(client) --> Airavata --> RemoteCluster
-				// PGA(client) --> Airavata
-				JSch jsch = new JSch();
-				jsch.addIdentity(privateKeyPath, passPhrase);
-				Session session = jsch.getSession(userName, hostName, DEFAULT_SSH_PORT);
-				SSHUtils.scpFrom(sourceURI.getPath(), taskContext.getLocalWorkingDir() , session);
-
-				// Airavata --> RemoteCluster
-				taskContext.getParentProcessContext().getRemoteCluster().scpTo(destinationURI.getPath(),
-						taskContext.getLocalWorkingDir());
+			if (sourceURI.getScheme().equalsIgnoreCase("file")) {  //  Airavata --> RemoteCluster
+				taskContext.getParentProcessContext().getRemoteCluster().scpTo(sourceURI.getPath(), destinationURI
+						.getPath());
+			} else { // RemoteCluster --> Airavata
+				taskContext.getParentProcessContext().getRemoteCluster().scpFrom(sourceURI.getPath(), destinationURI
+						.getPath());
 			}
 		} catch (SSHApiException e) {
 			throw new TaskException("Scp attempt failed", e);
-		} catch (JSchException | IOException e) {
-			throw new TaskException("Scp failed", e);
 		} catch (TException e) {
 			throw new TaskException("Invalid task invocation");
 		} catch (URISyntaxException e) {
-			e.printStackTrace();
+			throw new TaskException("source or destination is not a valid URI");
 		}
 		return null;
 	}
@@ -92,8 +82,6 @@ public class SCPInputDataStageTask extends AbstractSCPTask {
 
 	@Override
 	public TaskTypes getType() {
-		return TaskTypes.DATA_STAGING;
+		return null;
 	}
-
-
 }
