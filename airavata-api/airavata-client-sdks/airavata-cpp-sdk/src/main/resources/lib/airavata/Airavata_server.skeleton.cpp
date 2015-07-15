@@ -64,17 +64,17 @@ class AiravataHandler : virtual public AiravataIf {
     printf("getGateway\n");
   }
 
-  bool deleteGateway(const std::string& gatewayId) {
+  bool deleteGateway(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
     // Your implementation goes here
     printf("deleteGateway\n");
   }
 
-  void getAllGateways(std::vector< ::apache::airavata::model::workspace::Gateway> & _return) {
+  void getAllGateways(std::vector< ::apache::airavata::model::workspace::Gateway> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) {
     // Your implementation goes here
     printf("getAllGateways\n");
   }
 
-  bool isGatewayExist(const std::string& gatewayId) {
+  bool isGatewayExist(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
     // Your implementation goes here
     printf("isGatewayExist\n");
   }
@@ -124,10 +124,11 @@ class AiravataHandler : virtual public AiravataIf {
    *    The Project Object described in the workspace_model
    * 
    * 
+   * @param authzToken
    * @param gatewayId
    * @param project
    */
-  void createProject(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project) {
+  void createProject(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project) {
     // Your implementation goes here
     printf("createProject\n");
   }

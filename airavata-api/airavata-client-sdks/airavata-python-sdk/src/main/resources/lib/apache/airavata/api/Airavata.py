@@ -52,19 +52,25 @@ class Iface:
     """
     pass
 
-  def deleteGateway(self, gatewayId):
+  def deleteGateway(self, authzToken, gatewayId):
     """
     Parameters:
+     - authzToken
      - gatewayId
     """
     pass
 
-  def getAllGateways(self):
-    pass
-
-  def isGatewayExist(self, gatewayId):
+  def getAllGateways(self, authzToken):
     """
     Parameters:
+     - authzToken
+    """
+    pass
+
+  def isGatewayExist(self, authzToken, gatewayId):
+    """
+    Parameters:
+     - authzToken
      - gatewayId
     """
     pass
@@ -106,7 +112,7 @@ class Iface:
     """
     pass
 
-  def createProject(self, gatewayId, project):
+  def createProject(self, authzToken, gatewayId, project):
     """
     Creates a Project with basic metadata.
        A Project is a container of experiments.
@@ -119,6 +125,7 @@ class Iface:
 
 
     Parameters:
+     - authzToken
      - gatewayId
      - project
     """
@@ -2325,17 +2332,19 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getGateway failed: unknown result");
 
-  def deleteGateway(self, gatewayId):
+  def deleteGateway(self, authzToken, gatewayId):
     """
     Parameters:
+     - authzToken
      - gatewayId
     """
-    self.send_deleteGateway(gatewayId)
+    self.send_deleteGateway(authzToken, gatewayId)
     return self.recv_deleteGateway()
 
-  def send_deleteGateway(self, gatewayId):
+  def send_deleteGateway(self, authzToken, gatewayId):
     self._oprot.writeMessageBegin('deleteGateway', TMessageType.CALL, self._seqid)
     args = deleteGateway_args()
+    args.authzToken = authzToken
     args.gatewayId = gatewayId
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
@@ -2360,15 +2369,22 @@ class Client(Iface):
       raise result.ace
     if result.ase is not None:
       raise result.ase
+    if result.ae is not None:
+      raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "deleteGateway failed: unknown result");
 
-  def getAllGateways(self):
-    self.send_getAllGateways()
+  def getAllGateways(self, authzToken):
+    """
+    Parameters:
+     - authzToken
+    """
+    self.send_getAllGateways(authzToken)
     return self.recv_getAllGateways()
 
-  def send_getAllGateways(self):
+  def send_getAllGateways(self, authzToken):
     self._oprot.writeMessageBegin('getAllGateways', TMessageType.CALL, self._seqid)
     args = getAllGateways_args()
+    args.authzToken = authzToken
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
@@ -2392,19 +2408,23 @@ class Client(Iface):
       raise result.ace
     if result.ase is not None:
       raise result.ase
+    if result.ae is not None:
+      raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllGateways failed: unknown result");
 
-  def isGatewayExist(self, gatewayId):
+  def isGatewayExist(self, authzToken, gatewayId):
     """
     Parameters:
+     - authzToken
      - gatewayId
     """
-    self.send_isGatewayExist(gatewayId)
+    self.send_isGatewayExist(authzToken, gatewayId)
     return self.recv_isGatewayExist()
 
-  def send_isGatewayExist(self, gatewayId):
+  def send_isGatewayExist(self, authzToken, gatewayId):
     self._oprot.writeMessageBegin('isGatewayExist', TMessageType.CALL, self._seqid)
     args = isGatewayExist_args()
+    args.authzToken = authzToken
     args.gatewayId = gatewayId
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
@@ -2429,6 +2449,8 @@ class Client(Iface):
       raise result.ace
     if result.ase is not None:
       raise result.ase
+    if result.ae is not None:
+      raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "isGatewayExist failed: unknown result");
 
   def generateAndRegisterSSHKeys(self, gatewayId, userName):
@@ -2559,7 +2581,7 @@ class Client(Iface):
       raise result.ase
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getAllUserSSHPubKeys failed: unknown result");
 
-  def createProject(self, gatewayId, project):
+  def createProject(self, authzToken, gatewayId, project):
     """
     Creates a Project with basic metadata.
        A Project is a container of experiments.
@@ -2572,15 +2594,17 @@ class Client(Iface):
 
 
     Parameters:
+     - authzToken
      - gatewayId
      - project
     """
-    self.send_createProject(gatewayId, project)
+    self.send_createProject(authzToken, gatewayId, project)
     return self.recv_createProject()
 
-  def send_createProject(self, gatewayId, project):
+  def send_createProject(self, authzToken, gatewayId, project):
     self._oprot.writeMessageBegin('createProject', TMessageType.CALL, self._seqid)
     args = createProject_args()
+    args.authzToken = authzToken
     args.gatewayId = gatewayId
     args.project = project
     args.write(self._oprot)
@@ -2606,6 +2630,8 @@ class Client(Iface):
       raise result.ace
     if result.ase is not None:
       raise result.ase
+    if result.ae is not None:
+      raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "createProject failed: unknown result");
 
   def updateProject(self, projectId, updatedProject):
@@ -8467,13 +8493,15 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = deleteGateway_result()
     try:
-      result.success = self._handler.deleteGateway(args.gatewayId)
+      result.success = self._handler.deleteGateway(args.authzToken, args.gatewayId)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
       result.ace = ace
     except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
       result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException, ae:
+      result.ae = ae
     oprot.writeMessageBegin("deleteGateway", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
@@ -8485,13 +8513,15 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = getAllGateways_result()
     try:
-      result.success = self._handler.getAllGateways()
+      result.success = self._handler.getAllGateways(args.authzToken)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
       result.ace = ace
     except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
       result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException, ae:
+      result.ae = ae
     oprot.writeMessageBegin("getAllGateways", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
@@ -8503,13 +8533,15 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = isGatewayExist_result()
     try:
-      result.success = self._handler.isGatewayExist(args.gatewayId)
+      result.success = self._handler.isGatewayExist(args.authzToken, args.gatewayId)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
       result.ace = ace
     except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
       result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException, ae:
+      result.ae = ae
     oprot.writeMessageBegin("isGatewayExist", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
@@ -8575,13 +8607,15 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = createProject_result()
     try:
-      result.success = self._handler.createProject(args.gatewayId, args.project)
+      result.success = self._handler.createProject(args.authzToken, args.gatewayId, args.project)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
       result.ace = ace
     except apache.airavata.api.error.ttypes.AiravataSystemException, ase:
       result.ase = ase
+    except apache.airavata.api.error.ttypes.AuthorizationException, ae:
+      result.ae = ae
     oprot.writeMessageBegin("createProject", TMessageType.REPLY, seqid)
     result.write(oprot)
     oprot.writeMessageEnd()
@@ -11502,15 +11536,18 @@ class getGateway_result:
 class deleteGateway_args:
   """
   Attributes:
+   - authzToken
    - gatewayId
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'gatewayId', None, None, ), # 1
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'gatewayId', None, None, ), # 2
   )
 
-  def __init__(self, gatewayId=None,):
+  def __init__(self, authzToken=None, gatewayId=None,):
+    self.authzToken = authzToken
     self.gatewayId = gatewayId
 
   def read(self, iprot):
@@ -11523,6 +11560,12 @@ class deleteGateway_args:
       if ftype == TType.STOP:
         break
       if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
         if ftype == TType.STRING:
           self.gatewayId = iprot.readString();
         else:
@@ -11537,14 +11580,20 @@ class deleteGateway_args:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('deleteGateway_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
     if self.gatewayId is not None:
-      oprot.writeFieldBegin('gatewayId', TType.STRING, 1)
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
       oprot.writeString(self.gatewayId)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
   def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
     if self.gatewayId is None:
       raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
     return
@@ -11552,6 +11601,7 @@ class deleteGateway_args:
 
   def __hash__(self):
     value = 17
+    value = (value * 31) ^ hash(self.authzToken)
     value = (value * 31) ^ hash(self.gatewayId)
     return value
 
@@ -11573,6 +11623,7 @@ class deleteGateway_result:
    - ire
    - ace
    - ase
+   - ae
   """
 
   thrift_spec = (
@@ -11580,13 +11631,15 @@ class deleteGateway_result:
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
   )
 
-  def __init__(self, success=None, ire=None, ace=None, ase=None,):
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
     self.success = success
     self.ire = ire
     self.ace = ace
     self.ase = ase
+    self.ae = ae
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -11620,6 +11673,12 @@ class deleteGateway_result:
           self.ase.read(iprot)
         else:
           iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -11646,6 +11705,10 @@ class deleteGateway_result:
       oprot.writeFieldBegin('ase', TType.STRUCT, 3)
       self.ase.write(oprot)
       oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -11659,6 +11722,7 @@ class deleteGateway_result:
     value = (value * 31) ^ hash(self.ire)
     value = (value * 31) ^ hash(self.ace)
     value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
     return value
 
   def __repr__(self):
@@ -11673,9 +11737,18 @@ class deleteGateway_result:
     return not (self == other)
 
 class getAllGateways_args:
+  """
+  Attributes:
+   - authzToken
+  """
 
   thrift_spec = (
+    None, # 0
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
   )
+
+  def __init__(self, authzToken=None,):
+    self.authzToken = authzToken
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -11686,6 +11759,12 @@ class getAllGateways_args:
       (fname, ftype, fid) = iprot.readFieldBegin()
       if ftype == TType.STOP:
         break
+      if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -11696,15 +11775,22 @@ class getAllGateways_args:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('getAllGateways_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
   def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
     return
 
 
   def __hash__(self):
     value = 17
+    value = (value * 31) ^ hash(self.authzToken)
     return value
 
   def __repr__(self):
@@ -11725,6 +11811,7 @@ class getAllGateways_result:
    - ire
    - ace
    - ase
+   - ae
   """
 
   thrift_spec = (
@@ -11732,13 +11819,15 @@ class getAllGateways_result:
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
   )
 
-  def __init__(self, success=None, ire=None, ace=None, ase=None,):
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
     self.success = success
     self.ire = ire
     self.ace = ace
     self.ase = ase
+    self.ae = ae
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -11778,6 +11867,12 @@ class getAllGateways_result:
           self.ase.read(iprot)
         else:
           iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -11807,6 +11902,10 @@ class getAllGateways_result:
       oprot.writeFieldBegin('ase', TType.STRUCT, 3)
       self.ase.write(oprot)
       oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -11820,6 +11919,7 @@ class getAllGateways_result:
     value = (value * 31) ^ hash(self.ire)
     value = (value * 31) ^ hash(self.ace)
     value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
     return value
 
   def __repr__(self):
@@ -11836,15 +11936,18 @@ class getAllGateways_result:
 class isGatewayExist_args:
   """
   Attributes:
+   - authzToken
    - gatewayId
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'gatewayId', None, None, ), # 1
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'gatewayId', None, None, ), # 2
   )
 
-  def __init__(self, gatewayId=None,):
+  def __init__(self, authzToken=None, gatewayId=None,):
+    self.authzToken = authzToken
     self.gatewayId = gatewayId
 
   def read(self, iprot):
@@ -11857,6 +11960,12 @@ class isGatewayExist_args:
       if ftype == TType.STOP:
         break
       if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
         if ftype == TType.STRING:
           self.gatewayId = iprot.readString();
         else:
@@ -11871,14 +11980,20 @@ class isGatewayExist_args:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('isGatewayExist_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
     if self.gatewayId is not None:
-      oprot.writeFieldBegin('gatewayId', TType.STRING, 1)
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
       oprot.writeString(self.gatewayId)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
   def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
     if self.gatewayId is None:
       raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
     return
@@ -11886,6 +12001,7 @@ class isGatewayExist_args:
 
   def __hash__(self):
     value = 17
+    value = (value * 31) ^ hash(self.authzToken)
     value = (value * 31) ^ hash(self.gatewayId)
     return value
 
@@ -11907,6 +12023,7 @@ class isGatewayExist_result:
    - ire
    - ace
    - ase
+   - ae
   """
 
   thrift_spec = (
@@ -11914,13 +12031,15 @@ class isGatewayExist_result:
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
   )
 
-  def __init__(self, success=None, ire=None, ace=None, ase=None,):
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
     self.success = success
     self.ire = ire
     self.ace = ace
     self.ase = ase
+    self.ae = ae
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -11954,6 +12073,12 @@ class isGatewayExist_result:
           self.ase.read(iprot)
         else:
           iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -11980,6 +12105,10 @@ class isGatewayExist_result:
       oprot.writeFieldBegin('ase', TType.STRUCT, 3)
       self.ase.write(oprot)
       oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -11993,6 +12122,7 @@ class isGatewayExist_result:
     value = (value * 31) ^ hash(self.ire)
     value = (value * 31) ^ hash(self.ace)
     value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
     return value
 
   def __repr__(self):
@@ -12553,17 +12683,20 @@ class getAllUserSSHPubKeys_result:
 class createProject_args:
   """
   Attributes:
+   - authzToken
    - gatewayId
    - project
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'gatewayId', None, None, ), # 1
-    (2, TType.STRUCT, 'project', (apache.airavata.model.workspace.ttypes.Project, apache.airavata.model.workspace.ttypes.Project.thrift_spec), None, ), # 2
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'gatewayId', None, None, ), # 2
+    (3, TType.STRUCT, 'project', (apache.airavata.model.workspace.ttypes.Project, apache.airavata.model.workspace.ttypes.Project.thrift_spec), None, ), # 3
   )
 
-  def __init__(self, gatewayId=None, project=None,):
+  def __init__(self, authzToken=None, gatewayId=None, project=None,):
+    self.authzToken = authzToken
     self.gatewayId = gatewayId
     self.project = project
 
@@ -12577,11 +12710,17 @@ class createProject_args:
       if ftype == TType.STOP:
         break
       if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
         if ftype == TType.STRING:
           self.gatewayId = iprot.readString();
         else:
           iprot.skip(ftype)
-      elif fid == 2:
+      elif fid == 3:
         if ftype == TType.STRUCT:
           self.project = apache.airavata.model.workspace.ttypes.Project()
           self.project.read(iprot)
@@ -12597,18 +12736,24 @@ class createProject_args:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('createProject_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
     if self.gatewayId is not None:
-      oprot.writeFieldBegin('gatewayId', TType.STRING, 1)
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
       oprot.writeString(self.gatewayId)
       oprot.writeFieldEnd()
     if self.project is not None:
-      oprot.writeFieldBegin('project', TType.STRUCT, 2)
+      oprot.writeFieldBegin('project', TType.STRUCT, 3)
       self.project.write(oprot)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
   def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
     if self.gatewayId is None:
       raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
     if self.project is None:
@@ -12618,6 +12763,7 @@ class createProject_args:
 
   def __hash__(self):
     value = 17
+    value = (value * 31) ^ hash(self.authzToken)
     value = (value * 31) ^ hash(self.gatewayId)
     value = (value * 31) ^ hash(self.project)
     return value
@@ -12640,6 +12786,7 @@ class createProject_result:
    - ire
    - ace
    - ase
+   - ae
   """
 
   thrift_spec = (
@@ -12647,13 +12794,15 @@ class createProject_result:
     (1, TType.STRUCT, 'ire', (apache.airavata.api.error.ttypes.InvalidRequestException, apache.airavata.api.error.ttypes.InvalidRequestException.thrift_spec), None, ), # 1
     (2, TType.STRUCT, 'ace', (apache.airavata.api.error.ttypes.AiravataClientException, apache.airavata.api.error.ttypes.AiravataClientException.thrift_spec), None, ), # 2
     (3, TType.STRUCT, 'ase', (apache.airavata.api.error.ttypes.AiravataSystemException, apache.airavata.api.error.ttypes.AiravataSystemException.thrift_spec), None, ), # 3
+    (4, TType.STRUCT, 'ae', (apache.airavata.api.error.ttypes.AuthorizationException, apache.airavata.api.error.ttypes.AuthorizationException.thrift_spec), None, ), # 4
   )
 
-  def __init__(self, success=None, ire=None, ace=None, ase=None,):
+  def __init__(self, success=None, ire=None, ace=None, ase=None, ae=None,):
     self.success = success
     self.ire = ire
     self.ace = ace
     self.ase = ase
+    self.ae = ae
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -12687,6 +12836,12 @@ class createProject_result:
           self.ase.read(iprot)
         else:
           iprot.skip(ftype)
+      elif fid == 4:
+        if ftype == TType.STRUCT:
+          self.ae = apache.airavata.api.error.ttypes.AuthorizationException()
+          self.ae.read(iprot)
+        else:
+          iprot.skip(ftype)
       else:
         iprot.skip(ftype)
       iprot.readFieldEnd()
@@ -12713,6 +12868,10 @@ class createProject_result:
       oprot.writeFieldBegin('ase', TType.STRUCT, 3)
       self.ase.write(oprot)
       oprot.writeFieldEnd()
+    if self.ae is not None:
+      oprot.writeFieldBegin('ae', TType.STRUCT, 4)
+      self.ae.write(oprot)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
@@ -12726,6 +12885,7 @@ class createProject_result:
     value = (value * 31) ^ hash(self.ire)
     value = (value * 31) ^ hash(self.ace)
     value = (value * 31) ^ hash(self.ase)
+    value = (value * 31) ^ hash(self.ae)
     return value
 
   def __repr__(self):
