@@ -35,9 +35,9 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  string getSSHPubKey(string airavataCredStoreToken)')
   print('   getAllUserSSHPubKeys(string userName)')
   print('  string createProject(AuthzToken authzToken, string gatewayId, Project project)')
-  print('  void updateProject(string projectId, Project updatedProject)')
-  print('  Project getProject(string projectId)')
-  print('  bool deleteProject(string projectId)')
+  print('  void updateProject(AuthzToken authzToken, string projectId, Project updatedProject)')
+  print('  Project getProject(AuthzToken authzToken, string projectId)')
+  print('  bool deleteProject(AuthzToken authzToken, string projectId)')
   print('   getAllUserProjects(string gatewayId, string userName)')
   print('   getAllUserProjectsWithPagination(string gatewayId, string userName, i32 limit, i32 offset)')
   print('   searchProjectsByProjectName(string gatewayId, string userName, string projectName)')
@@ -274,22 +274,22 @@ elif cmd == 'createProject':
   pp.pprint(client.createProject(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'updateProject':
-  if len(args) != 2:
-    print('updateProject requires 2 args')
+  if len(args) != 3:
+    print('updateProject requires 3 args')
     sys.exit(1)
-  pp.pprint(client.updateProject(args[0],eval(args[1]),))
+  pp.pprint(client.updateProject(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'getProject':
-  if len(args) != 1:
-    print('getProject requires 1 args')
+  if len(args) != 2:
+    print('getProject requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getProject(args[0],))
+  pp.pprint(client.getProject(eval(args[0]),args[1],))
 
 elif cmd == 'deleteProject':
-  if len(args) != 1:
-    print('deleteProject requires 1 args')
+  if len(args) != 2:
+    print('deleteProject requires 2 args')
     sys.exit(1)
-  pp.pprint(client.deleteProject(args[0],))
+  pp.pprint(client.deleteProject(eval(args[0]),args[1],))
 
 elif cmd == 'getAllUserProjects':
   if len(args) != 2:

@@ -137,10 +137,11 @@ class AiravataHandler : virtual public AiravataIf {
    * Update a Project
    * 
    * 
+   * @param authzToken
    * @param projectId
    * @param updatedProject
    */
-  void updateProject(const std::string& projectId, const  ::apache::airavata::model::workspace::Project& updatedProject) {
+  void updateProject(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId, const  ::apache::airavata::model::workspace::Project& updatedProject) {
     // Your implementation goes here
     printf("updateProject\n");
   }
@@ -149,14 +150,15 @@ class AiravataHandler : virtual public AiravataIf {
    * Get a Project by ID
    * 
    * 
+   * @param authzToken
    * @param projectId
    */
-  void getProject( ::apache::airavata::model::workspace::Project& _return, const std::string& projectId) {
+  void getProject( ::apache::airavata::model::workspace::Project& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId) {
     // Your implementation goes here
     printf("getProject\n");
   }
 
-  bool deleteProject(const std::string& projectId) {
+  bool deleteProject(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId) {
     // Your implementation goes here
     printf("deleteProject\n");
   }
