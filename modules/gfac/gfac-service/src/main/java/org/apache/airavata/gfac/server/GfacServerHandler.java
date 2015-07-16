@@ -38,7 +38,6 @@ import org.apache.airavata.messaging.core.MessageHandler;
 import org.apache.airavata.messaging.core.MessagingConstants;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.impl.RabbitMQProcessLaunchConsumer;
-import org.apache.airavata.messaging.core.impl.RabbitMQStatusPublisher;
 import org.apache.airavata.model.messaging.event.*;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
@@ -92,7 +91,7 @@ public class GfacServerHandler implements GfacService.Iface {
     }
 
     private void initAMQPClient() throws AiravataException {
-        rabbitMQProcessLaunchConsumer = new RabbitMQProcessLaunchConsumer();
+        rabbitMQProcessLaunchConsumer = Factory.getProcessLaunchConsumer();
         rabbitMQProcessLaunchConsumer.listen(new ProcessLaunchMessageHandler());
     }
 
@@ -220,7 +219,8 @@ public class GfacServerHandler implements GfacService.Iface {
                     status.setTimeOfStateChange(Calendar.getInstance().getTimeInMillis());
                     Factory.getDefaultExpCatalog().update(ExperimentCatalogModelType.PROCESS_STATUS, status, event.getProcessId());
                     try {
-	                    GFacUtils.createExperimentNode(curatorClient, gfacServerName, event.getProcessId(), message.getDeliveryTag(),
+	                    GFacUtils.createProcessZKNode(curatorClient, gfacServerName, event.getProcessId(), message
+					                    .getDeliveryTag(),
 			                    event.getTokenId());
                         submitProcess(event.getProcessId(), event.getGatewayId(), event.getTokenId());
                     } catch (Exception e) {

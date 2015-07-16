@@ -23,23 +23,19 @@ package org.apache.airavata.gfac.impl.task;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.TaskException;
-import org.apache.airavata.gfac.impl.Factory;
 import org.apache.airavata.gfac.impl.SSHUtils;
-import org.apache.airavata.model.status.TaskState;
+import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.thrift.TException;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 public class SCPInputDataStageTask extends AbstractSCPTask {
 
@@ -47,9 +43,9 @@ public class SCPInputDataStageTask extends AbstractSCPTask {
 	}
 
 	@Override
-	public TaskState execute(TaskContext taskContext) throws TaskException {
+	public TaskStatus execute(TaskContext taskContext) {
 
-		if (taskContext.getTaskModel().getTaskType() != TaskTypes.DATA_STAGING) {
+/*		if (taskContext.getTaskModel().getTaskType() != TaskTypes.DATA_STAGING) {
 			throw new TaskException("Invalid task call, expected " + TaskTypes.DATA_STAGING.toString() + " but found "
 					+ taskContext.getTaskModel().getTaskType().toString());
 		}
@@ -81,12 +77,12 @@ public class SCPInputDataStageTask extends AbstractSCPTask {
 			throw new TaskException("Invalid task invocation");
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
-		}
+		}*/
 		return null;
 	}
 
 	@Override
-	public TaskState recover(TaskContext taskContext) throws TaskException {
+	public TaskStatus recover(TaskContext taskContext) {
 		return null;
 	}
 

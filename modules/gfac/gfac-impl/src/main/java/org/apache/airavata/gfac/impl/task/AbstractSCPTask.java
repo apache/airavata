@@ -20,10 +20,8 @@
  */
 package org.apache.airavata.gfac.impl.task;
 
-import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.task.TaskException;
-import org.apache.airavata.model.status.TaskState;
 
 import java.util.Map;
 
