@@ -33,6 +33,10 @@ import org.apache.airavata.common.logger.AiravataLogger;
 import org.apache.airavata.common.logger.AiravataLoggerFactory;
 import org.apache.airavata.common.utils.AiravataUtils;
 import org.apache.airavata.common.utils.ServerSettings;
+import org.apache.airavata.credential.store.client.CredentialStoreClientFactory;
+import org.apache.airavata.credential.store.cpi.CredentialStoreService;
+import org.apache.airavata.credential.store.datamodel.SSHCredential;
+import org.apache.airavata.credential.store.exception.CredentialStoreException;
 import org.apache.airavata.messaging.core.MessageContext;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.messaging.core.PublisherFactory;
@@ -68,6 +72,7 @@ import java.util.Map;
 public class AiravataServerHandler implements Airavata.Iface {
     private static final AiravataLogger logger = AiravataLoggerFactory.getLogger(AiravataServerHandler.class);
     private Registry registry;
+    private CredentialStoreService.Client csClient;
     private AppCatalog appCatalog;
     private Publisher publisher;
 	private WorkflowCatalog workflowCatalog;
@@ -204,17 +209,54 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @Override
     public String generateAndRegisterSSHKeys(String gatewayId, String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            if (csClient == null){
+                csClient = getCredentialStoreServiceClient();
+            }
+            SSHCredential sshCredential = new SSHCredential();
+            sshCredential.setUsername(userName);
+            sshCredential.setGatewayId(gatewayId);
+            return csClient.addSSHCredential(sshCredential);
+        }catch (Exception e){
+            logger.error("Error occurred while registering SSH Credential", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error occurred while registering SSH Credential. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     @Override
-    public String getSSHPubKey(String airavataCredStoreToken) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+    public String getSSHPubKey(String airavataCredStoreToken, String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+        try {
+            if (csClient == null){
+                csClient = getCredentialStoreServiceClient();
+            }
+            SSHCredential sshCredential = csClient.getSSHCredential(airavataCredStoreToken, gatewayId);
+            return sshCredential.getPublicKey();
+        }catch (Exception e){
+            logger.error("Error occurred while retrieving SSH credential", e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error occurred while retrieving SSH credential. More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     @Override
     public Map<String, String> getAllUserSSHPubKeys(String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return null;
+        try {
+            if (csClient == null){
+                csClient = getCredentialStoreServiceClient();
+            }
+            return csClient.getAllSSHKeysForUser(userName);
+        }catch (Exception e){
+            logger.error("Error occurred while retrieving SSH public keys for user : " + userName , e);
+            AiravataSystemException exception = new AiravataSystemException();
+            exception.setAiravataErrorType(AiravataErrorType.INTERNAL_ERROR);
+            exception.setMessage("Error occurred while retrieving SSH public keys for user : " + userName + ". More info : " + e.getMessage());
+            throw exception;
+        }
     }
 
     /**
@@ -1737,6 +1779,16 @@ public class AiravataServerHandler implements Airavata.Iface {
 			throw new TException(e);
 		}
 	}
+
+    private CredentialStoreService.Client getCredentialStoreServiceClient() throws TException{
+        final int serverPort = Integer.parseInt(ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.CREDENTIAL_SERVER_HOST,"8960"));
+        final String serverHost = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.CREDENTIAL_SERVER_PORT, null);
+        try {
+            return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
+        } catch (CredentialStoreException e) {
+            throw new TException("Unable to create credential store client...", e);
+        }
+    }
 
     /**
      * Clone an specified experiment with a new name. A copy of the experiment configuration is made and is persisted with new metadata.

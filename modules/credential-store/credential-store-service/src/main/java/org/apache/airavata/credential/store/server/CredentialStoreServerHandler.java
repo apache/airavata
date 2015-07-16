@@ -45,6 +45,9 @@ import sun.security.provider.X509Factory;
 import java.io.ByteArrayInputStream;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class CredentialStoreServerHandler implements CredentialStoreService.Iface {
@@ -198,5 +201,28 @@ public class CredentialStoreServerHandler implements CredentialStoreService.Ifac
         return null;
     }
 
-
+    @Override
+    public Map<String, String> getAllSSHKeysForUser(String username) throws org.apache.airavata.credential.store.exception.CredentialStoreException, TException {
+        Map<String, String> sshKeyMap = new HashMap<>();
+        try {
+            List<Credential> allCredentials = credentialReader.getAllCredentials();
+            if (allCredentials != null && !allCredentials.isEmpty()){
+                for (Credential credential : allCredentials){
+                    if (credential.getPortalUserName().equals(username)){
+                        if (credential instanceof org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential){
+                            org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential sshCredential = (org.apache.airavata.credential.store.credential.impl.ssh.SSHCredential)credential;
+                            byte[] publicKey = sshCredential.getPublicKey();
+                            if (publicKey != null){
+                                sshKeyMap.put(sshCredential.getPortalUserName(), new String(publicKey));
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (CredentialStoreException e) {
+            log.error("Error occurred while retrieving credentials", e);
+            throw new org.apache.airavata.credential.store.exception.CredentialStoreException("Error occurred while retrieving credentials");
+        }
+        return sshKeyMap;
+    }
 }
