@@ -34,7 +34,8 @@ public class ServerSettings extends ApplicationSettings {
 
     private static final String DEFAULT_USER = "default.registry.user";
     private static final String DEFAULT_USER_PASSWORD = "default.registry.password";
-    private static final String DEFAULT_USER_GATEWAY = "default.registry.gateway";
+	private static final String DEFAULT_USER_GATEWAY = "default.registry.gateway";
+	private static final String OUTPUT_LOCATION = "out.location";
 
     private static final String SERVER_CONTEXT_ROOT = "server.context-root";
     public static final String IP = "ip";
@@ -98,8 +99,9 @@ public class ServerSettings extends ApplicationSettings {
 
     private static boolean stopAllThreads = false;
     private static boolean emailBaseNotificationEnable;
+	private static String outputLocation;
 
-    public static String getDefaultUser() throws ApplicationSettingsException {
+	public static String getDefaultUser() throws ApplicationSettingsException {
         return getSetting(DEFAULT_USER);
     }
 
@@ -346,4 +348,8 @@ public class ServerSettings extends ApplicationSettings {
     public static String getSecurityManagerClassName() throws ApplicationSettingsException {
         return getSetting(Constants.SECURITY_MANAGER_CLASS);
     }
+
+	public static String getOutputLocation() {
+		return getSetting(OUTPUT_LOCATION, System.getProperty("java.io.tmpdir"));
+	}
 }

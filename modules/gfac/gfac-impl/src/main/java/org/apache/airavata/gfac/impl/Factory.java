@@ -30,6 +30,7 @@ import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.JobManagerConfiguration;
 import org.apache.airavata.gfac.core.authentication.AuthenticationInfo;
 import org.apache.airavata.gfac.core.authentication.SSHKeyAuthentication;
+import org.apache.airavata.gfac.core.cluster.OutputParser;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.cluster.ServerInfo;
 import org.apache.airavata.gfac.core.config.DataTransferTaskConfig;
@@ -51,11 +52,13 @@ import org.apache.airavata.gfac.impl.job.UGEJobConfiguration;
 import org.apache.airavata.gfac.impl.job.UGEOutputParser;
 import org.apache.airavata.gfac.monitor.email.EmailBasedMonitor;
 import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.messaging.core.impl.RabbitMQProcessLaunchConsumer;
 import org.apache.airavata.messaging.core.impl.RabbitMQStatusPublisher;
 import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.LOCALSubmission;
+import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManagerType;
 import org.apache.airavata.model.appcatalog.computeresource.SSHJobSubmission;
@@ -68,8 +71,11 @@ import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -78,16 +84,25 @@ import java.util.Map;
 
 public abstract class Factory {
 
+	private static final Logger log = LoggerFactory.getLogger(Factory.class);
+/*	static{
+		try {
+			loadConfiguration();
+		} catch (GFacException e) {
+			log.error("Error while loading configurations");
+		}
+	}*/
+
 	private static GFacEngine engine;
 	private static Publisher statusPublisher;
 	private static CuratorFramework curatorClient;
 	private static EmailBasedMonitor emailBasedMonitor;
-	private static Date startMonitorDate = Calendar.getInstance().getTime();
 	private static Map<String, RemoteCluster> remoteClusterMap = new HashMap<>();
 	private static Map<JobSubmissionProtocol, JobSubmissionTask> jobSubmissionTask = new HashMap<>();
 	private static Map<DataMovementProtocol, Task> dataMovementTask = new HashMap<>();
 	private static Map<ResourceJobManagerType, ResourceConfig> resources = new HashMap<>();
-	private static boolean readConfig = false;
+	private static Map<MonitorMode, JobMonitor> jobMonitorServices = new HashMap<>();
+	private static RabbitMQProcessLaunchConsumer processLaunchConsumer;
 
 	public static GFacEngine getGFacEngine() throws GFacException {
 		if (engine == null) {
@@ -132,41 +147,43 @@ public abstract class Factory {
 		return curatorClient;
 	}
 
-	public static JobMonitor getJobMonitor(ResourceJobManagerType resourceJobManagerType) throws AiravataException {
-		if (resourceJobManagerType == ResourceJobManagerType.FORK) {
-			return null; // TODO write a job monitor for this.
-		} else {
-			if (emailBasedMonitor == null) {
-				synchronized (EmailBasedMonitor.class) {
-					if (emailBasedMonitor == null) {
-						emailBasedMonitor = new EmailBasedMonitor(resourceJobManagerType);
-						emailBasedMonitor.setDate(startMonitorDate);
-						new Thread(emailBasedMonitor).start();
-					}
-				}
-			}
-			return emailBasedMonitor;
+	public static RabbitMQProcessLaunchConsumer getProcessLaunchConsumer() throws AiravataException {
+		if (processLaunchConsumer == null) {
+			processLaunchConsumer = new RabbitMQProcessLaunchConsumer();
 		}
+		return processLaunchConsumer;
 	}
 
-	public static JobManagerConfiguration getJobManagerConfiguration(ResourceJobManager resourceJobManager) {
+	public static JobManagerConfiguration getJobManagerConfiguration(ResourceJobManager resourceJobManager) throws GFacException {
+		ResourceConfig resourceConfig = Factory.getResourceConfig(resourceJobManager.getResourceJobManagerType());
+		OutputParser outputParser;
+		try {
+			Class<? extends OutputParser> aClass = Class.forName(resourceConfig.getCommandOutputParser()).asSubclass
+					(OutputParser.class);
+			outputParser = aClass.getConstructor().newInstance();
+		} catch (Exception e) {
+			throw new GFacException("Error while instantiating output parser for " + resourceJobManager
+					.getResourceJobManagerType().name());
+		}
+
 		switch (resourceJobManager.getResourceJobManagerType()) {
+
 			case PBS:
 				return new PBSJobConfiguration("PBSTemplate.xslt", ".pbs", resourceJobManager.getJobManagerBinPath(),
-						resourceJobManager.getJobManagerCommands(), new PBSOutputParser());
+						resourceJobManager.getJobManagerCommands(), outputParser);
 			case SLURM:
 				return new SlurmJobConfiguration("SLURMTemplate.xslt", ".slurm", resourceJobManager
-						.getJobManagerBinPath(), resourceJobManager.getJobManagerCommands(), new SlurmOutputParser());
+						.getJobManagerBinPath(), resourceJobManager.getJobManagerCommands(), outputParser);
 			case LSF:
 				return new LSFJobConfiguration("LSFTemplate.xslt", ".lsf", resourceJobManager.getJobManagerBinPath(),
-						resourceJobManager.getJobManagerCommands(), new LSFOutputParser());
+						resourceJobManager.getJobManagerCommands(), outputParser);
 			case UGE:
 				return new UGEJobConfiguration("UGETemplate.xslt", ".pbs", resourceJobManager.getJobManagerBinPath(),
-						resourceJobManager.getJobManagerCommands(), new UGEOutputParser());
-
+						resourceJobManager.getJobManagerCommands(), outputParser);
 			default:
 				return null;
 		}
+
 	}
 
 	public static HostScheduler getHostScheduler() {
@@ -174,45 +191,27 @@ public abstract class Factory {
 	}
 
 
-	public static RemoteCluster getRemoteCluster(ProcessContext processCtx) throws GFacException,
+	/**
+	 * Factory class manage reomete cluster map, this will solve too many connections/ sessions issues with cluster
+	 * communications.
+	 * @param jobSubmissionProtocol
+	 * @param computeResourceId
+	 * @param resourceJobManager
+	 * @return
+	 * @throws GFacException
+	 * @throws AppCatalogException
+	 * @throws AiravataException
+	 */
+	public static RemoteCluster getRemoteCluster(JobSubmissionProtocol jobSubmissionProtocol, String computeResourceId,
+	                                             ResourceJobManager resourceJobManager) throws GFacException,
 			AppCatalogException, AiravataException {
 
-		String key = processCtx.getJobSubmissionProtocol().toString() + ":" + processCtx.getComputeResourceId();
+		String key = jobSubmissionProtocol.toString() + ":" + computeResourceId;
 		RemoteCluster remoteCluster = remoteClusterMap.get(key);
 		if (remoteCluster == null) {
-			String hostName = Factory.getDefaultAppCatalog().getComputeResource().getComputeResource(processCtx
-					.getComputeResourceId()).getHostName();
+			String hostName = Factory.getDefaultAppCatalog().getComputeResource().getComputeResource(computeResourceId).getHostName();
 			// fixme - read login user name from computeResourcePreference
 			ServerInfo serverInfo = new ServerInfo(ServerSettings.getSetting("ssh.username"), hostName);
-			List<JobSubmissionInterface> jobSubmissionInterfaces = Factory.getDefaultAppCatalog().getComputeResource()
-					.getComputeResource(processCtx.getComputeResourceId()) .getJobSubmissionInterfaces();
-
-			ResourceJobManager resourceJobManager = null;
-			JobSubmissionInterface jsInterface = null;
-			for (JobSubmissionInterface jobSubmissionInterface : jobSubmissionInterfaces) {
-				if (jobSubmissionInterface.getJobSubmissionProtocol() == processCtx.getJobSubmissionProtocol()) {
-					jsInterface = jobSubmissionInterface;
-					break;
-				}
-			}
-			if (jsInterface == null) {
-				// TODO: throw an exception.
-			} else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH) {
-				SSHJobSubmission sshJobSubmission = getDefaultAppCatalog().getComputeResource().getSSHJobSubmission
-						(jsInterface.getJobSubmissionInterfaceId());
-				resourceJobManager = sshJobSubmission.getResourceJobManager();
-			} else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.LOCAL) {
-				LOCALSubmission localSubmission = getDefaultAppCatalog().getComputeResource().getLocalJobSubmission
-						(jsInterface.getJobSubmissionInterfaceId());
-				resourceJobManager = localSubmission.getResourceJobManager();
-			} else {
-				// TODO : throw an not supported jobsubmission protocol exception. we only support SSH and LOCAL
-			}
-
-			if (resourceJobManager == null) {
-				// TODO throw an exception
-			}
-
 			JobManagerConfiguration jobManagerConfiguration = getJobManagerConfiguration(resourceJobManager);
 			AuthenticationInfo authenticationInfo = getSSHKeyAuthentication();
 			remoteCluster = new HPCRemoteCluster(serverInfo, jobManagerConfiguration, authenticationInfo);
@@ -236,30 +235,23 @@ public abstract class Factory {
 		return sshKA;
 	}
 
-	public static JobSubmissionTask getJobSubmissionTask(JobSubmissionProtocol jobSubmissionProtocol) throws
-			GFacException {
-		if (!readConfig) {
-			loadConfiguration();
-		}
+	public static JobSubmissionTask getJobSubmissionTask(JobSubmissionProtocol jobSubmissionProtocol) {
 		return jobSubmissionTask.get(jobSubmissionProtocol);
 	}
 
-	public static Task getDataMovementTask(DataMovementProtocol dataMovementProtocol) throws GFacException {
-		if (!readConfig) {
-			loadConfiguration();
-		}
+	public static Task getDataMovementTask(DataMovementProtocol dataMovementProtocol){
 		return dataMovementTask.get(dataMovementProtocol);
 	}
 
-	public static ResourceConfig getResourceConfig(ResourceJobManagerType resourceJobManagerType) throws
-			GFacException {
-		if (!readConfig) {
-			loadConfiguration();
-		}
+	public static ResourceConfig getResourceConfig(ResourceJobManagerType resourceJobManagerType) {
 		return resources.get(resourceJobManagerType);
 	}
 
-	private static void loadConfiguration() throws GFacException {
+	public static Map<ResourceJobManagerType, ResourceConfig> getResourceConfig() {
+		return resources;
+	}
+
+	public static void loadConfiguration() throws GFacException {
 		GFacYamlConfigruation config = new GFacYamlConfigruation();
 		try {
 			for (JobSubmitterTaskConfig jobSubmitterTaskConfig : config.getJobSbumitters()) {
@@ -283,10 +275,28 @@ public abstract class Factory {
 			for (ResourceConfig resourceConfig : config.getResourceConfiguration()) {
 				resources.put(resourceConfig.getJobManagerType(), resourceConfig);
 			}
-			readConfig = true;
 		} catch (Exception e) {
 			throw new GFacException("Gfac config issue", e);
 		}
+	}
+
+	public static JobMonitor getMonitorService(MonitorMode monitorMode) throws AiravataException {
+		JobMonitor jobMonitor = jobMonitorServices.get(monitorMode);
+		if (jobMonitor == null) {
+			synchronized (JobMonitor.class) {
+				jobMonitor = jobMonitorServices.get(monitorMode);
+				if (jobMonitor == null) {
+					switch (monitorMode) {
+						case JOB_EMAIL_NOTIFICATION_MONITOR:
+							EmailBasedMonitor emailBasedMonitor = new EmailBasedMonitor(Factory.getResourceConfig());
+							jobMonitorServices.put(MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR, emailBasedMonitor);
+							jobMonitor = ((JobMonitor) emailBasedMonitor);
+							new Thread(emailBasedMonitor).start();
+					}
+				}
+			}
+		}
+		return jobMonitor;
 	}
 
 }

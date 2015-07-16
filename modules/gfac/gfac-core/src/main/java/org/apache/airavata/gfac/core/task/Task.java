@@ -22,6 +22,7 @@ package org.apache.airavata.gfac.core.task;
 
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.model.status.TaskState;
+import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskTypes;
 
 import java.util.Map;
@@ -42,19 +43,17 @@ public interface Task {
 	 * This method will be called at the first time of task chain execution. This method should called before recover
 	 * method. For a given task chain execute method only call one time. recover method may be called more than once.
 	 * @param taskContext
-	 * @throws TaskException
-	 * @return
+	 * @return completed task status if success otherwise failed task status.
 	 */
-	public TaskState execute(TaskContext taskContext) throws TaskException;
+	public TaskStatus execute(TaskContext taskContext);
 
 	/**
 	 * This methond will be invoked at recover path.Before this method is invoked, execute method should be invoked.
 	 * This method may be called zero or few time in a process chain.
 	 * @param taskContext
-	 * @throws TaskException
-	 * @return
+	 * @return completed task status if success otherwise failed task status.
 	 */
-	public TaskState recover(TaskContext taskContext) throws TaskException;
+	public TaskStatus recover(TaskContext taskContext);
 
 	/**
 	 * Task type will be used to identify the task behaviour. eg : DATA_STAGING , JOB_SUBMISSION

@@ -28,14 +28,14 @@ import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.gfac.impl.SSHUtils;
-import org.apache.airavata.model.status.TaskState;
+import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.thrift.TException;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class SCPInputDataStageTask extends AbstractSCPTask {
 
@@ -43,44 +43,46 @@ public class SCPInputDataStageTask extends AbstractSCPTask {
 	}
 
 	@Override
-	public TaskState execute(TaskContext taskContext) throws TaskException {
+	public TaskStatus execute(TaskContext taskContext) {
 
-		if (taskContext.getTaskModel().getTaskType() != TaskTypes.DATA_STAGING) {
+/*		if (taskContext.getTaskModel().getTaskType() != TaskTypes.DATA_STAGING) {
 			throw new TaskException("Invalid task call, expected " + TaskTypes.DATA_STAGING.toString() + " but found "
 					+ taskContext.getTaskModel().getTaskType().toString());
 		}
 		try {
-			DataStagingTaskModel subTaskModel = (DataStagingTaskModel) ThriftUtils.getSubTaskModel(taskContext.getTaskModel());
-			URL sourceURL = new URL(subTaskModel.getSource());
-			URL destinationURL = new URL(subTaskModel.getDestination());
+			DataStagingTaskModel subTaskModel = (DataStagingTaskModel) ThriftUtils.getSubTaskModel(taskContext
+					.getTaskModel());
+			URI sourceURI = new URI(subTaskModel.getSource());
+			URI destinationURI = new URI(subTaskModel.getDestination());
 
-			if (sourceURL.getProtocol().equalsIgnoreCase("file")) {  //  local --> Airavata --> RemoteCluster
-				taskContext.getParentProcessContext().getRemoteCluster().scpTo(sourceURL.getPath(),
+			if (sourceURI.getScheme().equalsIgnoreCase("file")) {  //  local --> Airavata --> RemoteCluster
+				taskContext.getParentProcessContext().getRemoteCluster().scpTo(sourceURI.getPath(),
 						subTaskModel.getDestination());
 			} else { // PGA(client) --> Airavata --> RemoteCluster
 				// PGA(client) --> Airavata
 				JSch jsch = new JSch();
 				jsch.addIdentity(privateKeyPath, passPhrase);
 				Session session = jsch.getSession(userName, hostName, DEFAULT_SSH_PORT);
-				SSHUtils.scpFrom(sourceURL.getPath(), inputPath, session);
+				SSHUtils.scpFrom(sourceURI.getPath(), taskContext.getLocalWorkingDir() , session);
 
 				// Airavata --> RemoteCluster
-				taskContext.getParentProcessContext().getRemoteCluster().scpTo(destinationURL.getPath(), inputPath);
+				taskContext.getParentProcessContext().getRemoteCluster().scpTo(destinationURI.getPath(),
+						taskContext.getLocalWorkingDir());
 			}
-		} catch (MalformedURLException e) {
-			throw new TaskException("Wrong source or destination file path.", e);
 		} catch (SSHApiException e) {
 			throw new TaskException("Scp attempt failed", e);
 		} catch (JSchException | IOException e) {
 			throw new TaskException("Scp failed", e);
 		} catch (TException e) {
 			throw new TaskException("Invalid task invocation");
-		}
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}*/
 		return null;
 	}
 
 	@Override
-	public TaskState recover(TaskContext taskContext) throws TaskException {
+	public TaskStatus recover(TaskContext taskContext) {
 		return null;
 	}
 

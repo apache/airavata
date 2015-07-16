@@ -266,9 +266,7 @@ public class GFacUtils {
 	        // first we save job jobModel to the registry for sa and then save the job status.
 	        ProcessContext processContext = taskContext.getParentProcessContext();
 	        ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
-	        TaskStatus status = new TaskStatus();
-	        status.setState(state);
-	        taskContext.setTaskStatus(status);
+	        TaskStatus status = taskContext.getTaskStatus();
 	        status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
 	        experimentCatalog.add(ExpCatChildDataType.TASK_STATUS, status, taskContext.getTaskId());
 	        TaskIdentifier identifier = new TaskIdentifier(taskContext.getTaskId(),
@@ -286,20 +284,17 @@ public class GFacUtils {
         }
     }
 
-    public static void saveProcessStatus(ProcessContext processContext,
-                                      ProcessState state) throws GFacException {
+    public static void saveAndPublishProcessStatus(ProcessContext processContext) throws GFacException {
         try {
             // first we save job jobModel to the registry for sa and then save the job status.
             ExperimentCatalog experimentCatalog = processContext.getExperimentCatalog();
-            ProcessStatus status = new ProcessStatus();
-            status.setState(state);
-            processContext.getProcessModel().setProcessStatus(status);
+            ProcessStatus status = processContext.getProcessStatus();
             status.setTimeOfStateChange(AiravataUtils.getCurrentTimestamp().getTime());
             experimentCatalog.add(ExpCatChildDataType.PROCESS_STATUS, status, processContext.getProcessId());
             ProcessIdentifier identifier = new ProcessIdentifier(processContext.getProcessId(),
                                                                  processContext.getProcessModel().getExperimentId(),
                                                                  processContext.getGatewayId());
-            ProcessStatusChangeEvent processStatusChangeEvent = new ProcessStatusChangeEvent(state, identifier);
+            ProcessStatusChangeEvent processStatusChangeEvent = new ProcessStatusChangeEvent(status.getState(), identifier);
 	        MessageContext msgCtx = new MessageContext(processStatusChangeEvent, MessageType.PROCESS,
 			        AiravataUtils.getId(MessageType.PROCESS.name()), processContext.getGatewayId());
 	        msgCtx.setUpdatedTime(AiravataUtils.getCurrentTimestamp());
@@ -1094,27 +1089,35 @@ public class GFacUtils {
 		return GFacConstants.ZOOKEEPER_EXPERIMENT_NODE + File.separator + experimentId;
 	}
 
-	public static void createExperimentNode(CuratorFramework curatorClient, String gfacServerName, String
+	public static void createProcessZKNode(CuratorFramework curatorClient, String gfacServerName, String
 			processId, long deliveryTag, String token) throws Exception {
-		// create /experiments/processId node and set data - serverName, add redelivery listener
-		String experimentPath = ZKPaths.makePath(GFacConstants.ZOOKEEPER_EXPERIMENT_NODE, processId);
-		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), experimentPath);
-		curatorClient.setData().withVersion(-1).forPath(experimentPath, gfacServerName.getBytes());
-		curatorClient.getData().usingWatcher(new RedeliveryRequestWatcher()).forPath(experimentPath);
+		// TODO - To handle multiple processes per experiment, need to create a /experiment/{expId}/{processId} node
+		// create /experiments/{processId} node and set data - serverName, add redelivery listener
+		String zkProcessNodePath = ZKPaths.makePath(GFacConstants.ZOOKEEPER_EXPERIMENT_NODE, processId);
+		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), zkProcessNodePath);
+		curatorClient.setData().withVersion(-1).forPath(zkProcessNodePath, gfacServerName.getBytes());
+		curatorClient.getData().usingWatcher(new RedeliveryRequestWatcher()).forPath(zkProcessNodePath);
 
-		// create /experiments/processId/deliveryTag node and set data - deliveryTag
-		String deliveryTagPath = ZKPaths.makePath(experimentPath, GFacConstants.ZOOKEEPER_DELIVERYTAG_NODE);
+		// create /experiments/{processId}/deliveryTag node and set data - deliveryTag
+		String deliveryTagPath = ZKPaths.makePath(zkProcessNodePath, GFacConstants.ZOOKEEPER_DELIVERYTAG_NODE);
 		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), deliveryTagPath);
 		curatorClient.setData().withVersion(-1).forPath(deliveryTagPath, GFacUtils.longToBytes(deliveryTag));
 
-		// create /experiments/processId/token node and set data - token
+		// create /experiments/{processId}/token node and set data - token
 		String tokenNodePath = ZKPaths.makePath(processId, GFacConstants.ZOOKEEPER_TOKEN_NODE);
 		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), tokenNodePath);
 		curatorClient.setData().withVersion(-1).forPath(tokenNodePath, token.getBytes());
 
-		// create /experiments/processId/cancelListener node and set watcher for data changes
-		String cancelListenerNode = ZKPaths.makePath(experimentPath, GFacConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
+		// create /experiments/{processId}/cancelListener node and set watcher for data changes
+		String cancelListenerNode = ZKPaths.makePath(zkProcessNodePath, GFacConstants.ZOOKEEPER_CANCEL_LISTENER_NODE);
 		ZKPaths.mkdirs(curatorClient.getZookeeperClient().getZooKeeper(), cancelListenerNode);
 		curatorClient.getData().usingWatcher(new CancelRequestWatcher()).forPath(cancelListenerNode);
+	}
+
+	public static long getProcessDeliveryTag(CuratorFramework curatorClient, String processId) throws Exception {
+		String deliveryTagPath = GFacConstants.ZOOKEEPER_EXPERIMENT_NODE + "/" + processId + GFacConstants
+				.ZOOKEEPER_DELIVERYTAG_NODE;
+		byte[] bytes = curatorClient.getData().forPath(deliveryTagPath);
+		return GFacUtils.bytesToLong(bytes);
 	}
 }

@@ -28,7 +28,7 @@ import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.gfac.impl.SSHUtils;
-import org.apache.airavata.model.status.TaskState;
+import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.thrift.TException;
@@ -41,8 +41,8 @@ public class SCPOutputDataStatgeTask extends AbstractSCPTask {
 
 
 	@Override
-	public TaskState execute(TaskContext taskContext) throws TaskException {
-		if (taskContext.getTaskModel().getTaskType() != TaskTypes.DATA_STAGING) {
+	public TaskStatus execute(TaskContext taskContext) {
+/*		if (taskContext.getTaskModel().getTaskType() != TaskTypes.DATA_STAGING) {
 			throw new TaskException("Invalid task call, expected " + TaskTypes.DATA_STAGING.toString() + " but found "
 					+ taskContext.getTaskModel().getTaskType().toString());
 		}
@@ -69,12 +69,12 @@ public class SCPOutputDataStatgeTask extends AbstractSCPTask {
 			throw new TaskException("Scp failed", e);
 		} catch (TException e) {
 			throw new TaskException("Invalid task invocation");
-		}
+		}*/
 		return null;
 	}
 
 	@Override
-	public TaskState recover(TaskContext taskContext) throws TaskException {
+	public TaskStatus recover(TaskContext taskContext) {
 		return null;
 	}
 

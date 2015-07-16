@@ -54,6 +54,9 @@ public class TaskContext {
 	}
 
 	public void setTaskStatus(TaskStatus taskStatus) {
+		log.info("expId: {}, processId: {}, taskId: {}, type: {}:- Status changed {} -> {}", parentProcessContext
+				.getExperimentId(), parentProcessContext.getProcessId(), getTaskId(), getTaskType().name(),
+				getTaskState().name(), taskStatus .getState().name());
 		taskModel.setTaskStatus(taskStatus);
 	}
 
@@ -71,5 +74,9 @@ public class TaskContext {
 
 	public String getTaskId() {
 		return taskModel.getTaskId();
+	}
+
+	public String getLocalWorkingDir() {
+		return getParentProcessContext().getLocalWorkingDir();
 	}
 }

@@ -45,7 +45,7 @@ public class GFacYamlConfigruation {
 	private static final String JOB_MANAGER_TYPE = "jobManagerType";
 	private static final String COMMAND_OUTPUT_PARSER = "commandOutputParser";
 	private static final String EMAIL_PARSER = "emailParser";
-	private static final String RESOURCE_EMAIL_ADDRESS = "resourceEmailAddress";
+	private static final String RESOURCE_EMAIL_ADDRESS = "resourceEmailAddresses";
 	private static final String PROPERTIES = "properties";
 
 	private List<JobSubmitterTaskConfig> jobSubmitters = new ArrayList<>();

@@ -24,6 +24,7 @@ import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.gfac.core.GFacException;
 import org.apache.airavata.gfac.core.GFacThreadPoolExecutor;
+import org.apache.airavata.gfac.core.config.ResourceConfig;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.monitor.EmailParser;
 import org.apache.airavata.gfac.core.monitor.JobMonitor;
@@ -47,6 +48,7 @@ import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.search.FlagTerm;
 import javax.mail.search.SearchTerm;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -71,12 +73,15 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
     private String host, emailAddress, password, storeProtocol, folderName ;
     private Date monitorStartDate;
     private Map<ResourceJobManagerType, EmailParser> emailParserMap = new HashMap<ResourceJobManagerType, EmailParser>();
+	private Map<String, ResourceJobManagerType> addressMap = new HashMap<>();
 
-    public EmailBasedMonitor(ResourceJobManagerType type) throws AiravataException {
-        init();
-    }
 
-    private void init() throws AiravataException {
+	public EmailBasedMonitor(Map<ResourceJobManagerType, ResourceConfig> resourceConfigs) throws AiravataException {
+		init();
+		populateAddressAndParserMap(resourceConfigs);
+	}
+
+	private void init() throws AiravataException {
         host = ServerSettings.getEmailBasedMonitorHost();
         emailAddress = ServerSettings.getEmailBasedMonitorAddress();
         password = ServerSettings.getEmailBasedMonitorPassword();
@@ -90,6 +95,24 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
         properties.put("mail.store.protocol", storeProtocol);
     }
 
+	private void populateAddressAndParserMap(Map<ResourceJobManagerType, ResourceConfig> resourceConfigs) throws AiravataException {
+		for (Map.Entry<ResourceJobManagerType, ResourceConfig> resourceConfigEntry : resourceConfigs.entrySet()) {
+			ResourceJobManagerType type = resourceConfigEntry.getKey();
+			ResourceConfig config = resourceConfigEntry.getValue();
+			List<String> resourceEmailAddresses = config.getResourceEmailAddresses();
+			for (String resourceEmailAddress : resourceEmailAddresses) {
+				addressMap.put(resourceEmailAddress, type);
+			}
+			try {
+				Class<? extends EmailParser> emailParserClass = Class.forName(config.getEmailParser()).asSubclass(EmailParser.class);
+				EmailParser emailParser = emailParserClass.getConstructor().newInstance();
+				emailParserMap.put(type, emailParser);
+			} catch (Exception e) {
+				throw new AiravataException("Error while instantiation email parsers", e);
+			}
+		}
+
+	}
 	@Override
 	public void monitor(String jobId, ProcessContext processContext) {
 		log.info("[EJM]: Added monitor Id : " + jobId + " to email based monitor map");
@@ -106,52 +129,21 @@ public class EmailBasedMonitor implements JobMonitor, Runnable{
         String addressStr = fromAddress.toString();
         ResourceJobManagerType jobMonitorType = getJobMonitorType(addressStr);
         EmailParser emailParser = emailParserMap.get(jobMonitorType);
-        if (emailParser == null) {
-            switch (jobMonitorType) {
-                case PBS:
-                    emailParser = new PBSEmailParser();
-                    break;
-                case SLURM:
-                    emailParser = new SLURMEmailParser();
-                    break;
-                case LSF:
-                    emailParser = new LSFEmailParser();
-                    break;
-                case UGE:
-                    emailParser = new UGEEmailParser();
-                    break;
-                default:
-	                throw new AiravataException("[EJM]: Un-handle resource job manager type: " + jobMonitorType
-			                .toString() + " for email monitoring -->  " + addressStr);
-            }
-
-            emailParserMap.put(jobMonitorType, emailParser);
-        }
+	    if (emailParser == null) {
+		    throw new AiravataException("[EJM]: Un-handle resource job manager type: " + jobMonitorType
+				    .toString() + " for email monitoring -->  " + addressStr);
+	    }
         return emailParser.parseEmail(message);
     }
 
     private ResourceJobManagerType getJobMonitorType(String addressStr) throws AiravataException {
-        System.out.println("*********** address ******** : " + addressStr);
-        switch (addressStr) {
-            case "pbsconsult@sdsc.edu":   // trestles , gordan
-            case "adm@trident.bigred2.uits.iu.edu":  // bigred2
-            case "root <adm@trident.bigred2.uits.iu.edu>": // bigred2
-            case "root <adm@scyld.localdomain>": // alamo
-                return ResourceJobManagerType.PBS;
-            case "SDSC Admin <slurm@comet-fe3.sdsc.edu>": // comet
-            case "slurm@batch1.stampede.tacc.utexas.edu": // stampede
-            case "slurm user <slurm@tempest.dsc.soic.indiana.edu>":
-                return ResourceJobManagerType.SLURM;
-//            case "lsf":
-//                return ResourceJobManagerType.LSF;
-            default:
-                if (addressStr.contains("ls4.tacc.utexas.edu>")) { // lonestar
-                    return ResourceJobManagerType.UGE;
-                } else {
-                    throw new AiravataException("[EJM]: Couldn't identify Resource job manager type from address " + addressStr);
-                }
-        }
-
+//        System.out.println("*********** address ******** : " + addressStr);
+	    for (Map.Entry<String, ResourceJobManagerType> addressEntry : addressMap.entrySet()) {
+		    if (addressEntry.getKey().matches(addressStr)) {
+			    return addressEntry.getValue();
+		    }
+	    }
+	    throw new AiravataException("[EJM]: Couldn't identify Resource job manager type from address " + addressStr);
     }
 
     @Override

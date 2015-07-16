@@ -36,6 +36,7 @@ import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.job.JobModel;
 import org.apache.airavata.model.status.JobState;
 import org.apache.airavata.model.status.TaskState;
+import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,8 +54,8 @@ public class LocalJobSubmissionTask implements JobSubmissionTask{
     }
 
     @Override
-    public TaskState execute(TaskContext taskContext) throws TaskException {
-        try {
+    public TaskStatus execute(TaskContext taskContext) {
+     /*   try {
             ProcessContext processContext = taskContext.getParentProcessContext();
             // build command with all inputs
             List<String> cmdList = buildCommand(processContext);
@@ -97,10 +98,10 @@ public class LocalJobSubmissionTask implements JobSubmissionTask{
             standardOutWriter.join();
             standardErrorWriter.join();
 
-            /*
+            *//*
              * check return value. usually not very helpful to draw conclusions based on return values so don't bother.
              * just provide warning in the log messages
-             */
+             *//*
             if (returnValue != 0) {
                 log.error("Process finished with non zero return value. Process may have failed");
             } else {
@@ -124,12 +125,12 @@ public class LocalJobSubmissionTask implements JobSubmissionTask{
         } catch (IOException e) {
             log.error("Error while submitting local job", e);
             throw new TaskException("Error while submitting local job", e);
-        }
-        return TaskState.COMPLETED;
+        }*/
+	    return new TaskStatus(TaskState.COMPLETED);
     }
 
     @Override
-    public TaskState recover(TaskContext taskContext) throws TaskException {
+    public TaskStatus recover(TaskContext taskContext) {
         return null;
     }
 

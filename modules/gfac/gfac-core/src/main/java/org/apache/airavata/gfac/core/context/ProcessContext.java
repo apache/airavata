@@ -21,7 +21,7 @@
 
 package org.apache.airavata.gfac.core.context;
 
-import org.apache.airavata.common.utils.LocalEventPublisher;
+import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
@@ -29,6 +29,8 @@ import org.apache.airavata.model.appcatalog.appinterface.ApplicationInterfaceDes
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionProtocol;
+import org.apache.airavata.model.appcatalog.computeresource.MonitorMode;
+import org.apache.airavata.model.appcatalog.computeresource.ResourceJobManager;
 import org.apache.airavata.model.appcatalog.gatewayprofile.ComputeResourcePreference;
 import org.apache.airavata.model.appcatalog.gatewayprofile.GatewayResourceProfile;
 import org.apache.airavata.model.job.JobModel;
@@ -38,11 +40,15 @@ import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.curator.framework.CuratorFramework;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
 
 public class ProcessContext {
+
+	private static final Logger log = LoggerFactory.getLogger(ProcessContext.class);
 	// process model
 	private ExperimentCatalog experimentCatalog;
 	private AppCatalog appCatalog;
@@ -55,6 +61,7 @@ public class ProcessContext {
 	private String workingDir;
 	private String inputDir;
 	private String outputDir;
+	private String localWorkingDir;
 	private List<TaskContext> taskChain;
 	private GatewayResourceProfile gatewayResourceProfile;
 	private ComputeResourceDescription computeResourceDescription;
@@ -68,6 +75,8 @@ public class ProcessContext {
 	private DataMovementProtocol dataMovementProtocol;
 	private JobModel jobModel;
 	private ComputeResourcePreference computeResourcePreference;
+	private MonitorMode monitorMode;
+	private ResourceJobManager resourceJobManager;
 
 	/**
 	 * Note: process context property use lazy loading approach. In runtime you will see some properties as null
@@ -284,12 +293,45 @@ public class ProcessContext {
 
 	public void setProcessStatus(ProcessStatus status) {
 		if (status != null) {
+			log.info("expId: {}, processId: {} :- Status changed {} -> {}", getExperimentId(), processId,
+					getProcessState().name(), status.getState().name());
 			processModel.setProcessStatus(status);
-			// TODO publish process status change.
 		}
+	}
+
+	public ProcessStatus getProcessStatus(){
+		return processModel.getProcessStatus();
 	}
 
 	public String getComputeResourceId() {
 		return getComputeResourceDescription().getComputeResourceId();
+	}
+
+	public void setMonitorMode(MonitorMode monitorMode) {
+		this.monitorMode = monitorMode;
+	}
+
+	public MonitorMode getMonitorMode() {
+		return monitorMode;
+	}
+
+	public void setResourceJobManager(ResourceJobManager resourceJobManager) {
+		this.resourceJobManager = resourceJobManager;
+	}
+
+	public ResourceJobManager getResourceJobManager() {
+		return resourceJobManager;
+	}
+
+	public String getLocalWorkingDir() {
+		return localWorkingDir;
+	}
+
+	public void setLocalWorkingDir(String localWorkingDir) {
+		this.localWorkingDir = localWorkingDir;
+	}
+
+	public String getExperimentId() {
+		return processModel.getExperimentId();
 	}
 }
