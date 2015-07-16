@@ -56,6 +56,5 @@ service CredentialStoreService {
   credentialStoreDataModel.PasswordCredential getPasswordCredential (1: required string tokenId, 2: required string gatewayId)
                         throws (1:credentialStoreErrors.CredentialStoreException csException);
 
-
-
+  map<string,string> getAllSSHKeysForUser (1: required string username) throws (1:credentialStoreErrors.CredentialStoreException csException);
 }
