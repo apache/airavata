@@ -81,12 +81,24 @@ public class CreateLaunchExperiment {
     public static void main(String[] args) throws Exception {
         airavataClient = AiravataClientFactory.createAiravataClient(THRIFT_SERVER_HOST, THRIFT_SERVER_PORT);
         System.out.println("API version is " + airavataClient.getAPIVersion());
+//        testCredentialStore();
 //        registerApplications(); // run this only the first time
-        createAndLaunchExp();
+//        createAndLaunchExp();
     }
 
     private static String fsdResourceId;
 
+
+    public static void  testCredentialStore() throws Exception {
+//        String token = airavataClient.generateAndRegisterSSHKeys(DEFAULT_GATEWAY, "admin");
+//        System.out.println(token);
+        String sshPubKey = airavataClient.getSSHPubKey("90438471-507d-4a9f-9287-081fc816e0f2", DEFAULT_GATEWAY);
+        System.out.println(sshPubKey);
+        Map<String, String> sshPubKeys = airavataClient.getAllUserSSHPubKeys("admin");
+        for (String token : sshPubKeys.keySet()){
+            System.out.println(token + " : " + sshPubKeys.get(token));
+        }
+    }
 
     public static void getAvailableAppInterfaceComputeResources(String appInterfaceId) {
         try {
