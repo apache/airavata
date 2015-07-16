@@ -129,7 +129,7 @@ service Airavata {
                    2: airavataErrors.AiravataClientException ace,
                    3: airavataErrors.AiravataSystemException ase)
 
-   string getSSHPubKey (1: required string airavataCredStoreToken)
+   string getSSHPubKey (1: required string airavataCredStoreToken, 2: required string gatewayId)
            throws (1: airavataErrors.InvalidRequestException ire,
                    2: airavataErrors.AiravataClientException ace,
                    3: airavataErrors.AiravataSystemException ase)
