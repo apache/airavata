@@ -1781,8 +1781,8 @@ public class AiravataServerHandler implements Airavata.Iface {
 	}
 
     private CredentialStoreService.Client getCredentialStoreServiceClient() throws TException{
-        final int serverPort = Integer.parseInt(ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.CREDENTIAL_SERVER_HOST,"8960"));
-        final String serverHost = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.CREDENTIAL_SERVER_PORT, null);
+        final int serverPort = Integer.parseInt(ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.CREDENTIAL_SERVER_PORT,"8960"));
+        final String serverHost = ServerSettings.getSetting(org.apache.airavata.common.utils.Constants.CREDENTIAL_SERVER_HOST, null);
         try {
             return CredentialStoreClientFactory.createAiravataCSClient(serverHost, serverPort);
         } catch (CredentialStoreException e) {
