@@ -52,6 +52,7 @@ import org.apache.airavata.gfac.impl.job.UGEJobConfiguration;
 import org.apache.airavata.gfac.impl.job.UGEOutputParser;
 import org.apache.airavata.gfac.monitor.email.EmailBasedMonitor;
 import org.apache.airavata.messaging.core.Publisher;
+import org.apache.airavata.messaging.core.impl.RabbitMQProcessLaunchConsumer;
 import org.apache.airavata.messaging.core.impl.RabbitMQStatusPublisher;
 import org.apache.airavata.model.appcatalog.computeresource.DataMovementProtocol;
 import org.apache.airavata.model.appcatalog.computeresource.JobSubmissionInterface;
@@ -101,6 +102,7 @@ public abstract class Factory {
 	private static Map<DataMovementProtocol, Task> dataMovementTask = new HashMap<>();
 	private static Map<ResourceJobManagerType, ResourceConfig> resources = new HashMap<>();
 	private static Map<MonitorMode, JobMonitor> jobMonitorServices = new HashMap<>();
+	private static RabbitMQProcessLaunchConsumer processLaunchConsumer;
 
 	public static GFacEngine getGFacEngine() throws GFacException {
 		if (engine == null) {
@@ -143,6 +145,13 @@ public abstract class Factory {
 			}
 		}
 		return curatorClient;
+	}
+
+	public static RabbitMQProcessLaunchConsumer getProcessLaunchConsumer() throws AiravataException {
+		if (processLaunchConsumer == null) {
+			processLaunchConsumer = new RabbitMQProcessLaunchConsumer();
+		}
+		return processLaunchConsumer;
 	}
 
 	public static JobManagerConfiguration getJobManagerConfiguration(ResourceJobManager resourceJobManager) throws GFacException {

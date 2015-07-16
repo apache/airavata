@@ -25,12 +25,15 @@ import org.apache.airavata.common.exception.AiravataException;
 import org.apache.airavata.gfac.core.GFac;
 import org.apache.airavata.gfac.core.GFacEngine;
 import org.apache.airavata.gfac.core.GFacException;
+import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.context.ProcessContext;
 import org.apache.airavata.gfac.core.monitor.JobMonitor;
 import org.apache.airavata.model.status.ProcessState;
 import org.apache.airavata.model.status.ProcessStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.text.MessageFormat;
 
 public class GFacWorker implements Runnable {
 
@@ -85,11 +88,15 @@ public class GFacWorker implements Runnable {
 						// run the outflow task
 						engine.runProcessOutflow(processContext);
 						processContext.setProcessStatus(new ProcessStatus(ProcessState.COMPLETED));
+						GFacUtils.saveAndPublishProcessStatus(processContext);
+						sendAck();
 						break;
 					case RECOVER_OUTFLOW:
 						// recover  outflow task;
 						engine.recoverProcessOutflow(processContext);
 						processContext.setProcessStatus(new ProcessStatus(ProcessState.COMPLETED));
+						GFacUtils.saveAndPublishProcessStatus(processContext);
+						sendAck();
 						break;
 					default:
 						throw new GFacException("process Id : " + processId + " Couldn't identify process type");
@@ -113,6 +120,14 @@ public class GFacWorker implements Runnable {
 			}
 		} catch (GFacException e) {
 			log.error("GFac Worker throws an exception", e);
+			processContext.setProcessStatus(new ProcessStatus(ProcessState.FAILED));
+			try {
+				GFacUtils.saveAndPublishProcessStatus(processContext);
+			} catch (GFacException e1) {
+				log.error("expId: {}, processId: {} :- Couldn't save and publish process status {}", processContext
+						.getExperimentId(), processContext.getProcessId(), processContext.getProcessState());
+			}
+			sendAck();
 		}
 	}
 
@@ -139,6 +154,19 @@ public class GFacWorker implements Runnable {
 			} catch (AiravataException e) {
 				throw new GFacException("Error while retrieving moniot service", e);
 			}
+		}
+	}
+
+	private void sendAck() {
+		try {
+			long processDeliveryTag = GFacUtils.getProcessDeliveryTag(processContext.getCuratorClient(), processId);
+			Factory.getProcessLaunchConsumer().sendAck(processDeliveryTag);
+			log.info("expId: {}, procesId: {} :- Sent ack for deliveryTag {}", processContext.getExperimentId(),
+					processId, processDeliveryTag);
+		} catch (Exception e1) {
+			String format = MessageFormat.format("expId: {0}, processId: {1} :- Couldn't send ack for deliveryTag ",
+					processContext .getExperimentId(), processId);
+			log.error(format, e1);
 		}
 	}
 

@@ -21,7 +21,7 @@
 
 package org.apache.airavata.gfac.core.context;
 
-import org.apache.airavata.common.utils.LocalEventPublisher;
+import org.apache.airavata.gfac.core.GFacUtils;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.messaging.core.Publisher;
 import org.apache.airavata.model.appcatalog.appdeployment.ApplicationDeploymentDescription;
@@ -40,11 +40,15 @@ import org.apache.airavata.model.status.ProcessStatus;
 import org.apache.airavata.registry.cpi.AppCatalog;
 import org.apache.airavata.registry.cpi.ExperimentCatalog;
 import org.apache.curator.framework.CuratorFramework;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
 
 public class ProcessContext {
+
+	private static final Logger log = LoggerFactory.getLogger(ProcessContext.class);
 	// process model
 	private ExperimentCatalog experimentCatalog;
 	private AppCatalog appCatalog;
@@ -289,9 +293,14 @@ public class ProcessContext {
 
 	public void setProcessStatus(ProcessStatus status) {
 		if (status != null) {
+			log.info("expId: {}, processId: {} :- Status changed {} -> {}", getExperimentId(), processId,
+					getProcessState().name(), status.getState().name());
 			processModel.setProcessStatus(status);
-			// TODO publish process status change.
 		}
+	}
+
+	public ProcessStatus getProcessStatus(){
+		return processModel.getProcessStatus();
 	}
 
 	public String getComputeResourceId() {
@@ -320,5 +329,9 @@ public class ProcessContext {
 
 	public void setLocalWorkingDir(String localWorkingDir) {
 		this.localWorkingDir = localWorkingDir;
+	}
+
+	public String getExperimentId() {
+		return processModel.getExperimentId();
 	}
 }

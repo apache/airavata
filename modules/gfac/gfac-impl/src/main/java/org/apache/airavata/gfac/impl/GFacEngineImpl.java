@@ -124,14 +124,23 @@ public class GFacEngineImpl implements GFacEngine {
 		TaskContext taskCtx = null;
 		List<TaskContext> taskChain = new ArrayList<>();
 		processContext.setProcessStatus(new ProcessStatus(ProcessState.CONFIGURING_WORKSPACE));
+		GFacUtils.saveAndPublishProcessStatus(processContext);
 		// Run all environment setup tasks
 		taskCtx = getEnvSetupTaskContext(processContext);
 		saveTaskModel(taskCtx);
 		GFacUtils.saveAndPublishTaskStatus(taskCtx);
 		SSHEnvironmentSetupTask envSetupTask = new SSHEnvironmentSetupTask();
-		executeTask(taskCtx, envSetupTask);
+		TaskStatus taskStatus = executeTask(taskCtx, envSetupTask);
+		if (taskStatus.getState() == TaskState.FAILED) {
+			log.error("expId: {}, processId: {}, taskId: {} type: {},:- Input statging failed, " +
+					"reason:" + " {}", taskCtx.getParentProcessContext().getExperimentId(), taskCtx
+					.getParentProcessContext().getProcessId(), taskCtx.getTaskId(), envSetupTask.getType
+					().name(), taskStatus.getReason());
+			throw new GFacException("Error while environment setup");
+		}
 		// execute process inputs
 		processContext.setProcessStatus(new ProcessStatus(ProcessState.INPUT_DATA_STAGING));
+		GFacUtils.saveAndPublishProcessStatus(processContext);
 		List<InputDataObjectType> processInputs = processContext.getProcessModel().getProcessInputs();
 		sortByInputOrder(processInputs);
 		if (processInputs != null) {
@@ -151,7 +160,14 @@ public class GFacEngineImpl implements GFacEngine {
 						saveTaskModel(taskCtx);
 						GFacUtils.saveAndPublishTaskStatus(taskCtx);
 						Task dMoveTask = Factory.getDataMovementTask(processContext.getDataMovementProtocol());
-						executeTask(taskCtx, dMoveTask);
+						taskStatus = executeTask(taskCtx, dMoveTask);
+						if (taskStatus.getState() == TaskState.FAILED) {
+							log.error("expId: {}, processId: {}, taskId: {} type: {},:- Input statging failed, " +
+									"reason:" + " {}", taskCtx.getParentProcessContext().getExperimentId(), taskCtx
+									.getParentProcessContext().getProcessId(), taskCtx.getTaskId(), dMoveTask.getType
+									().name(), taskStatus.getReason());
+							throw new GFacException("Error while staging input data");
+						}
 						break;
 					default:
 						// nothing to do
@@ -160,27 +176,85 @@ public class GFacEngineImpl implements GFacEngine {
 			}
 		}
 		processContext.setProcessStatus(new ProcessStatus(ProcessState.EXECUTING));
+		GFacUtils.saveAndPublishProcessStatus(processContext);
 		taskCtx = getJobSubmissionTaskContext(processContext);
+		saveTaskModel(taskCtx);
 		GFacUtils.saveAndPublishTaskStatus(taskCtx);
 		JobSubmissionTask jobSubmissionTask = Factory.getJobSubmissionTask(processContext.getJobSubmissionProtocol());
-		executeTask(taskCtx, jobSubmissionTask);
+		taskStatus = executeTask(taskCtx, jobSubmissionTask);
+		if (taskStatus.getState() == TaskState.FAILED) {
+			throw new GFacException("Job submission task failed");
+		}
 		processContext.setTaskChain(taskChain);
 	}
 
-	private void executeTask(TaskContext taskCtx, Task task) throws GFacException {
-		try {
-			taskCtx.setTaskStatus(new TaskStatus(TaskState.EXECUTING));
-			GFacUtils.saveAndPublishTaskStatus(taskCtx);
-			task.execute(taskCtx);
-			taskCtx.setTaskStatus(new TaskStatus(TaskState.COMPLETED));
-			GFacUtils.saveAndPublishTaskStatus(taskCtx);
-		} catch (TaskException e) {
-			TaskStatus status = new TaskStatus(TaskState.FAILED);
-			status.setReason(taskCtx.getTaskType().toString() + " Task Failed to execute");
-			taskCtx.setTaskStatus(status);
-			GFacUtils.saveAndPublishTaskStatus(taskCtx);
-		}
 
+	@Override
+	public void recoverProcess(ProcessContext processContext) throws GFacException {
+
+	}
+
+	@Override
+	public void runProcessOutflow(ProcessContext processContext) throws GFacException {
+		TaskContext taskCtx = null;
+		processContext.setProcessStatus(new ProcessStatus(ProcessState.OUTPUT_DATA_STAGING));
+		GFacUtils.saveAndPublishProcessStatus(processContext);
+		List<OutputDataObjectType> processOutputs = processContext.getProcessModel().getProcessOutputs();
+		for (OutputDataObjectType processOutput : processOutputs) {
+			DataType type = processOutput.getType();
+			switch (type) {
+				case STDERR:
+					break;
+				case STDOUT:
+					break;
+				case URI:
+					try {
+						taskCtx = getDataStagingTaskContext(processContext, processOutput);
+					} catch (TException e) {
+						throw new GFacException("Thrift model to byte[] convertion issue", e);
+					}
+					File localWorkingdir = new File(taskCtx.getLocalWorkingDir());
+					localWorkingdir.mkdirs(); // make local dir if not exist
+					saveTaskModel(taskCtx);
+					GFacUtils.saveAndPublishTaskStatus(taskCtx);
+					Task dMoveTask = Factory.getDataMovementTask(processContext.getDataMovementProtocol());
+					TaskStatus taskStatus = executeTask(taskCtx, dMoveTask);
+					if (taskStatus.getState() == TaskState.FAILED) {
+						log.error("expId: {}, processId: {}, taskId: {} type: {},:- Input statging failed, " +
+								"reason:" + " {}", taskCtx.getParentProcessContext().getExperimentId(), taskCtx
+								.getParentProcessContext().getProcessId(), taskCtx.getTaskId(), dMoveTask.getType
+								().name(), taskStatus.getReason());
+						throw new GFacException("Error while staging input data");
+					}
+					break;
+				default:
+					// nothing to do
+					break;
+			}
+		}
+		processContext.setProcessStatus(new ProcessStatus(ProcessState.POST_PROCESSING));
+		GFacUtils.saveAndPublishProcessStatus(processContext);
+//		taskCtx = getEnvCleanupTaskContext(processContext);
+
+	}
+
+	@Override
+	public void recoverProcessOutflow(ProcessContext processContext) throws GFacException {
+
+	}
+
+	@Override
+	public void cancelProcess() throws GFacException {
+
+	}
+
+	private TaskStatus executeTask(TaskContext taskCtx, Task task) throws GFacException {
+		taskCtx.setTaskStatus(new TaskStatus(TaskState.EXECUTING));
+		GFacUtils.saveAndPublishTaskStatus(taskCtx);
+		TaskStatus taskStatus = task.execute(taskCtx);
+		taskCtx.setTaskStatus(taskStatus);
+		GFacUtils.saveAndPublishTaskStatus(taskCtx);
+		return taskCtx.getTaskStatus();
 	}
 
 	private TaskContext getJobSubmissionTaskContext(ProcessContext processContext) throws GFacException {
@@ -197,7 +271,8 @@ public class GFacEngineImpl implements GFacEngine {
 		return taskCtx;
 	}
 
-	private TaskContext getDataStagingTaskContext(ProcessContext processContext, InputDataObjectType processInput) throws TException {
+	private TaskContext getDataStagingTaskContext(ProcessContext processContext, InputDataObjectType processInput)
+			throws TException {
 		TaskContext taskCtx = new TaskContext();
 		taskCtx.setParentProcessContext(processContext);
 		// create new task model for this task
@@ -210,13 +285,15 @@ public class GFacEngineImpl implements GFacEngine {
 		// create data staging sub task model
 		DataStagingTaskModel submodel = new DataStagingTaskModel();
 		submodel.setSource(processInput.getValue());
-		submodel.setDestination(processContext.getDataMovementProtocol().name() + ":" + processContext.getWorkingDir());
+		submodel.setDestination(processContext.getDataMovementProtocol().name() + ":" + processContext.getWorkingDir
+				());
 		taskModel.setSubTaskModel(ThriftUtils.serializeThriftObject(submodel));
 		taskCtx.setTaskModel(taskModel);
 		return taskCtx;
 	}
 
-	private TaskContext getDataStagingTaskContext(ProcessContext processContext, OutputDataObjectType processOutput) throws TException {
+	private TaskContext getDataStagingTaskContext(ProcessContext processContext, OutputDataObjectType processOutput)
+			throws TException {
 		TaskContext taskCtx = new TaskContext();
 		taskCtx.setParentProcessContext(processContext);
 		// create new task model for this task
@@ -241,7 +318,6 @@ public class GFacEngineImpl implements GFacEngine {
 
 	/**
 	 * Persist task model
-	 * @param taskContext
 	 */
 	private void saveTaskModel(TaskContext taskContext) throws GFacException {
 		try {
@@ -266,56 +342,6 @@ public class GFacEngineImpl implements GFacEngine {
 		return taskCtx;
 	}
 
-	@Override
-	public void recoverProcess(ProcessContext processContext) throws GFacException {
-
-	}
-
-	@Override
-	public void runProcessOutflow(ProcessContext processContext) throws GFacException {
-		TaskContext taskCtx = null;
-		processContext.setProcessStatus(new ProcessStatus(ProcessState.OUTPUT_DATA_STAGING));
-		List<OutputDataObjectType> processOutputs = processContext.getProcessModel().getProcessOutputs();
-		for (OutputDataObjectType processOutput : processOutputs) {
-			DataType type = processOutput.getType();
-			switch (type) {
-				case STDERR:
-					break;
-				case STDOUT:
-					break;
-				case URI:
-					// TODO : Provide data staging data model
-					try {
-						taskCtx = getDataStagingTaskContext(processContext, processOutput);
-					} catch (TException e) {
-						throw new GFacException("Thrift model to byte[] convertion issue", e);
-					}
-					File localWorkingdir = new File(taskCtx.getLocalWorkingDir());
-					localWorkingdir.mkdirs(); // make local dir if not exist
-					saveTaskModel(taskCtx);
-					GFacUtils.saveAndPublishTaskStatus(taskCtx);
-					Task dMoveTask = Factory.getDataMovementTask(processContext.getDataMovementProtocol());
-					executeTask(taskCtx, dMoveTask);
-					break;
-				default:
-					// nothing to do
-					break;
-			}
-		}
-		processContext.setProcessStatus(new ProcessStatus(ProcessState.POST_PROCESSING));
-//		taskCtx = getEnvCleanupTaskContext(processContext);
-
-	}
-
-	@Override
-	public void recoverProcessOutflow(ProcessContext processContext) throws GFacException {
-
-	}
-
-	@Override
-	public void cancelProcess() throws GFacException {
-
-	}
 
 	/**
 	 * Sort input data type by input order.
@@ -331,7 +357,7 @@ public class GFacEngineImpl implements GFacEngine {
 
 	public static ResourceJobManager getResourceJobManager(ProcessContext processCtx) throws AppCatalogException {
 		List<JobSubmissionInterface> jobSubmissionInterfaces = Factory.getDefaultAppCatalog().getComputeResource()
-				.getComputeResource(processCtx.getComputeResourceId()) .getJobSubmissionInterfaces();
+				.getComputeResource(processCtx.getComputeResourceId()).getJobSubmissionInterfaces();
 
 		ResourceJobManager resourceJobManager = null;
 		JobSubmissionInterface jsInterface = null;
@@ -346,7 +372,8 @@ public class GFacEngineImpl implements GFacEngine {
 		} else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.SSH) {
 			SSHJobSubmission sshJobSubmission = Factory.getDefaultAppCatalog().getComputeResource().getSSHJobSubmission
 					(jsInterface.getJobSubmissionInterfaceId());
-			processCtx.setMonitorMode(sshJobSubmission.getMonitorMode()); // fixme - Move this to populate process context method.
+			processCtx.setMonitorMode(sshJobSubmission.getMonitorMode()); // fixme - Move this to populate process
+			// context method.
 			resourceJobManager = sshJobSubmission.getResourceJobManager();
 		} else if (jsInterface.getJobSubmissionProtocol() == JobSubmissionProtocol.LOCAL) {
 			LOCALSubmission localSubmission = Factory.getDefaultAppCatalog().getComputeResource().getLocalJobSubmission

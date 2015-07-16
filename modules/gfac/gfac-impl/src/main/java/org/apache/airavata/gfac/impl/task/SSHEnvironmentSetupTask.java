@@ -20,37 +20,50 @@
  */
 package org.apache.airavata.gfac.impl.task;
 
-import org.apache.airavata.gfac.core.task.TaskException;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.cluster.RemoteCluster;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.Task;
+import org.apache.airavata.gfac.core.task.TaskException;
+import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.status.TaskState;
+import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.TaskTypes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
 public class SSHEnvironmentSetupTask implements Task {
 
+	private static final Logger log = LoggerFactory.getLogger(SSHEnvironmentSetupTask.class);
 	@Override
 	public void init(Map<String, String> propertyMap) throws TaskException {
 
 	}
 
 	@Override
-	public TaskState execute(TaskContext taskContext) throws TaskException {
-
+	public TaskStatus execute(TaskContext taskContext) {
+		TaskStatus status = new TaskStatus(TaskState.COMPLETED);
 		try {
 			RemoteCluster remoteCluster = taskContext.getParentProcessContext().getRemoteCluster();
 			remoteCluster.makeDirectory(taskContext.getParentProcessContext().getWorkingDir());
+			status.setReason("Successfully createded environment");
 		} catch (SSHApiException e) {
-			throw new TaskException("Error while environment setup", e);
+			String msg = "Error while environment setup";
+			log.error(msg, e);
+			status.setState(TaskState.FAILED);
+			status.setReason(msg);
+			ErrorModel errorModel = new ErrorModel();
+			errorModel.setActualErrorMessage(e.getMessage());
+			errorModel.setUserFriendlyMessage(msg);
+			taskContext.getTaskModel().setTaskError(errorModel);
 		}
-		return null;
+		return status;
 	}
 
 	@Override
-	public TaskState recover(TaskContext taskContext) throws TaskException {
+	public TaskStatus recover(TaskContext taskContext) {
 		return execute(taskContext);
 	}
 

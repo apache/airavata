@@ -20,63 +20,88 @@
  */
 package org.apache.airavata.gfac.impl.task;
 
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
 import org.apache.airavata.common.utils.ThriftUtils;
 import org.apache.airavata.gfac.core.SSHApiException;
 import org.apache.airavata.gfac.core.context.TaskContext;
 import org.apache.airavata.gfac.core.task.Task;
 import org.apache.airavata.gfac.core.task.TaskException;
-import org.apache.airavata.gfac.impl.SSHUtils;
+import org.apache.airavata.model.commons.ErrorModel;
 import org.apache.airavata.model.status.TaskState;
+import org.apache.airavata.model.status.TaskStatus;
 import org.apache.airavata.model.task.DataStagingTaskModel;
 import org.apache.airavata.model.task.TaskTypes;
 import org.apache.thrift.TException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 
 public class SCPDataStageTask implements Task {
+	private static final Logger log = LoggerFactory.getLogger(SCPDataStageTask.class);
+
 	@Override
 	public void init(Map<String, String> propertyMap) throws TaskException {
 
 	}
 
 	@Override
-	public TaskState execute(TaskContext taskContext) throws TaskException {
-
+	public TaskStatus execute(TaskContext taskContext) {
+		TaskStatus status = new TaskStatus(TaskState.COMPLETED);
 		if (taskContext.getTaskModel().getTaskType() != TaskTypes.DATA_STAGING) {
-			throw new TaskException("Invalid task call, expected " + TaskTypes.DATA_STAGING.toString() + " but found "
+			status.setState(TaskState.FAILED);
+			status.setReason("Invalid task call, expected " + TaskTypes.DATA_STAGING.toString() + " but found "
 					+ taskContext.getTaskModel().getTaskType().toString());
-		}
-		try {
-			DataStagingTaskModel subTaskModel = (DataStagingTaskModel) ThriftUtils.getSubTaskModel(taskContext
-					.getTaskModel());
-			URI sourceURI = new URI(subTaskModel.getSource());
-			URI destinationURI = new URI(subTaskModel.getDestination());
+		} else {
+			try {
+				DataStagingTaskModel subTaskModel = (DataStagingTaskModel) ThriftUtils.getSubTaskModel(taskContext
+						.getTaskModel());
+				URI sourceURI = new URI(subTaskModel.getSource());
+				URI destinationURI = new URI(subTaskModel.getDestination());
 
-			if (sourceURI.getScheme().equalsIgnoreCase("file")) {  //  Airavata --> RemoteCluster
-				taskContext.getParentProcessContext().getRemoteCluster().scpTo(sourceURI.getPath(), destinationURI
-						.getPath());
-			} else { // RemoteCluster --> Airavata
-				taskContext.getParentProcessContext().getRemoteCluster().scpFrom(sourceURI.getPath(), destinationURI
-						.getPath());
+				if (sourceURI.getScheme().equalsIgnoreCase("file")) {  //  Airavata --> RemoteCluster
+					taskContext.getParentProcessContext().getRemoteCluster().scpTo(sourceURI.getPath(), destinationURI
+							.getPath());
+				} else { // RemoteCluster --> Airavata
+					taskContext.getParentProcessContext().getRemoteCluster().scpFrom(sourceURI.getPath(), destinationURI
+							.getPath());
+				}
+				status.setReason("Successfully staged data");
+			} catch (SSHApiException e) {
+				String msg = "Scp attempt failed";
+				log.error(msg, e);
+				status.setState(TaskState.FAILED);
+				status.setReason(msg);
+				ErrorModel errorModel = new ErrorModel();
+				errorModel.setActualErrorMessage(e.getMessage());
+				errorModel.setUserFriendlyMessage(msg);
+				taskContext.getTaskModel().setTaskError(errorModel);
+			} catch (TException e) {
+				String msg = "Invalid task invocation";
+				log.error(msg, e);
+				status.setState(TaskState.FAILED);
+				status.setReason(msg);
+				ErrorModel errorModel = new ErrorModel();
+				errorModel.setActualErrorMessage(e.getMessage());
+				errorModel.setUserFriendlyMessage(msg);
+				taskContext.getTaskModel().setTaskError(errorModel);
+			} catch (URISyntaxException e) {
+				String msg = "source or destination is not a valid URI";
+				log.error(msg, e);
+				status.setState(TaskState.FAILED);
+				status.setReason(msg);
+				ErrorModel errorModel = new ErrorModel();
+				errorModel.setActualErrorMessage(e.getMessage());
+				errorModel.setUserFriendlyMessage(msg);
+				taskContext.getTaskModel().setTaskError(errorModel);
 			}
-		} catch (SSHApiException e) {
-			throw new TaskException("Scp attempt failed", e);
-		} catch (TException e) {
-			throw new TaskException("Invalid task invocation");
-		} catch (URISyntaxException e) {
-			throw new TaskException("source or destination is not a valid URI");
 		}
-		return null;
+		return status;
 	}
 
 	@Override
-	public TaskState recover(TaskContext taskContext) throws TaskException {
+	public TaskStatus recover(TaskContext taskContext) {
 		return null;
 	}
 
