@@ -118,7 +118,7 @@ public class CreateLaunchExperiment {
             Gateway gateway = new Gateway();
             gateway.setGatewayId("testGatewayId2");
             gateway.setGatewayName("testGateway2");
-            gatewayId = airavataClient.addGateway(gateway);
+            gatewayId = airavataClient.addGateway(new AuthzToken(""), gateway);
             System.out.println(gatewayId);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
@@ -134,16 +134,16 @@ public class CreateLaunchExperiment {
 
     public static void getGateway(String gatewayId) {
         try {
-            Gateway gateway = airavataClient.getGateway(gatewayId);
+            Gateway gateway = airavataClient.getGateway(new AuthzToken(""), gatewayId);
             gateway.setDomain("testDomain");
-            airavataClient.updateGateway(gatewayId, gateway);
-            List<Gateway> allGateways = airavataClient.getAllGateways();
+            airavataClient.updateGateway(new AuthzToken(""), gatewayId, gateway);
+            List<Gateway> allGateways = airavataClient.getAllGateways(new AuthzToken(""));
             System.out.println(allGateways.size());
-            if (airavataClient.isGatewayExist(gatewayId)) {
-                Gateway gateway1 = airavataClient.getGateway(gatewayId);
+            if (airavataClient.isGatewayExist(new AuthzToken(""), gatewayId)) {
+                Gateway gateway1 = airavataClient.getGateway(new AuthzToken(""), gatewayId);
                 System.out.println(gateway1.getGatewayName());
             }
-            boolean b = airavataClient.deleteGateway("testGatewayId2");
+            boolean b = airavataClient.deleteGateway(new AuthzToken(""), "testGatewayId2");
             System.out.println(b);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
@@ -270,7 +270,7 @@ public class CreateLaunchExperiment {
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
-            String projectId = client.createProject(DEFAULT_GATEWAY, project);
+            String projectId = client.createProject(new AuthzToken(""), DEFAULT_GATEWAY, project);
 
 	        ExperimentModel simpleExperiment =
 			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, projectId, "admin", "echoExperiment",
@@ -879,7 +879,7 @@ public class CreateLaunchExperiment {
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
 
             Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
-            String projectId = client.createProject(DEFAULT_GATEWAY, project);
+            String projectId = client.createProject(new AuthzToken(""), DEFAULT_GATEWAY, project);
 
 	        ExperimentModel simpleExperiment =
 			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, projectId, "admin", "echoExperiment",
@@ -974,7 +974,7 @@ public class CreateLaunchExperiment {
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
-	        String projectId = client.createProject(DEFAULT_GATEWAY, project);
+	        String projectId = client.createProject(new AuthzToken(""), DEFAULT_GATEWAY, project);
 
             ExperimentModel simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY,projectId, "admin", "echoExperiment", "SimpleEcho3", echoAppId, exInputs);
@@ -1093,7 +1093,7 @@ public class CreateLaunchExperiment {
 
 
             Project project = ProjectModelUtil.createProject("default", "lahiru", "test project");
-            String projectId = client.createProject(DEFAULT_GATEWAY, project);
+            String projectId = client.createProject(new AuthzToken(""), DEFAULT_GATEWAY, project);
 
 	        ExperimentModel simpleExperiment =
 			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, projectId, "lahiru",
@@ -1140,7 +1140,7 @@ public class CreateLaunchExperiment {
             }
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
             Project project = ProjectModelUtil.createProject("default", "lg11w", "test project");
-            String projectId = client.createProject(DEFAULT_GATEWAY, project);
+            String projectId = client.createProject(new AuthzToken(""), DEFAULT_GATEWAY, project);
 
 
 	        ExperimentModel simpleExperiment =
@@ -1268,7 +1268,7 @@ public class CreateLaunchExperiment {
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(amberAppId);
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
-            String projectId = client.createProject(DEFAULT_GATEWAY, project);
+            String projectId = client.createProject(new AuthzToken(""), DEFAULT_GATEWAY, project);
 
 	        ExperimentModel simpleExperiment =
 			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, projectId, "admin",
@@ -1334,7 +1334,7 @@ public class CreateLaunchExperiment {
 
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
-            String projectId = client.createProject(DEFAULT_GATEWAY, project);
+            String projectId = client.createProject(new AuthzToken(""), DEFAULT_GATEWAY, project);
 
 	        ExperimentModel simpleExperiment =
 			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, projectId, "admin",
@@ -1398,7 +1398,7 @@ public class CreateLaunchExperiment {
             List<OutputDataObjectType> exOut = client.getApplicationOutputs(amberAppId);
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
-            String projectId = client.createProject(DEFAULT_GATEWAY, project);
+            String projectId = client.createProject(new AuthzToken(""), DEFAULT_GATEWAY, project);
 
 	        ExperimentModel simpleExperiment =
 			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, projectId, "admin",

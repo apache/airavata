@@ -7,6 +7,8 @@
 #
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
+import apache.airavata.model.commons.ttypes
+
 
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol, TProtocol
@@ -111,7 +113,7 @@ class Project:
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'projectID', None, None, ), # 1
+    (1, TType.STRING, 'projectID', None, "DO_NOT_SET_AT_CLIENTS", ), # 1
     (2, TType.STRING, 'owner', None, None, ), # 2
     (3, TType.STRING, 'name', None, None, ), # 3
     (4, TType.STRING, 'description', None, None, ), # 4
@@ -120,7 +122,7 @@ class Project:
     (7, TType.LIST, 'sharedGroups', (TType.STRING,None), None, ), # 7
   )
 
-  def __init__(self, projectID=None, owner=None, name=None, description=None, creationTime=None, sharedUsers=None, sharedGroups=None,):
+  def __init__(self, projectID=thrift_spec[1][4], owner=None, name=None, description=None, creationTime=None, sharedUsers=None, sharedGroups=None,):
     self.projectID = projectID
     self.owner = owner
     self.name = name

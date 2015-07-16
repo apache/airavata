@@ -27,6 +27,7 @@ import java.net.InetAddress;
 
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.server.handler.AiravataServerHandler;
+import org.apache.airavata.api.server.security.SecurityModule;
 import org.apache.airavata.api.server.util.AppCatalogInitUtil;
 import org.apache.airavata.api.server.util.Constants;
 import org.apache.airavata.api.server.util.RegistryInitUtil;
@@ -45,6 +46,8 @@ import org.apache.thrift.transport.TTransportException;
 import org.apache.thrift.transport.TSSLTransportFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 public class AiravataAPIServer implements IServer{
 
@@ -82,7 +85,7 @@ public class AiravataAPIServer implements IServer{
 				server = new TThreadPoolServer(options.processor(airavataAPIServer));
 				new Thread() {
 					public void run() {
-						server.serve();
+                        server.serve();
 						RegistryInitUtil.stopDerbyInServerMode();
 						setStatus(ServerStatus.STOPPED);
 						logger.info("Airavata API Server Stopped.");
@@ -167,14 +170,16 @@ public class AiravataAPIServer implements IServer{
 	@Override
 	public void start() throws Exception {
 		setStatus(ServerStatus.STARTING);
-		Airavata.Processor<Airavata.Iface> airavataAPIServer =
-                new Airavata.Processor<Airavata.Iface>(new AiravataServerHandler());
+        //Obtain a AiravataServerHandler object from Guice which is wrapped with interception logic.
+        Injector injector = Guice.createInjector(new SecurityModule());
+        Airavata.Processor<Airavata.Iface> airavataAPIServer =
+                new Airavata.Processor<Airavata.Iface>(injector.getInstance(AiravataServerHandler.class));
     	startAiravataServer(airavataAPIServer);
 	}
 
 	@Override
 	public void stop() throws Exception {
-		if (server.isServing()){
+		if ((!ServerSettings.isTLSEnabled()) && server.isServing()){
 			setStatus(ServerStatus.STOPING);
 			server.stop();
 		}

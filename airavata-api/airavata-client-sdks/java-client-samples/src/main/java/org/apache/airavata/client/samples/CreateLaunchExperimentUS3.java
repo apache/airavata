@@ -31,6 +31,7 @@ import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
 import org.apache.airavata.model.workspace.Project;
@@ -160,7 +161,7 @@ public class CreateLaunchExperimentUS3 {
             exOut.add(output);
 
             Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
-            String projectId = client.createProject(DEFAULT_GATEWAY, project);
+            String projectId = client.createProject(new AuthzToken(""), DEFAULT_GATEWAY, project);
 
 	        ExperimentModel simpleExperiment =
 			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, projectId, "admin",
@@ -228,7 +229,7 @@ public class CreateLaunchExperimentUS3 {
 //            exOut.add(output2);
 
             Project project = ProjectModelUtil.createProject("ultrascan", "ultrascan", "test project");
-            String projectId = client.createProject(DEFAULT_GATEWAY, project);
+            String projectId = client.createProject(new AuthzToken(""), DEFAULT_GATEWAY, project);
 
 	        ExperimentModel simpleExperiment = ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, projectId,
 			        "ultrascan", "US3ExperimentTrestles", "US3AppTrestles",
@@ -302,7 +303,7 @@ public class CreateLaunchExperimentUS3 {
 //            exOut.add(output2);
 
             Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
-            String projectId = client.createProject(DEFAULT_GATEWAY, project);
+            String projectId = client.createProject(new AuthzToken(""), DEFAULT_GATEWAY, project);
 
 	        ExperimentModel simpleExperiment = ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, projectId,
 			        "ultrascan", "US3ExperimentStampede", "US3AppStampede",
@@ -504,7 +505,7 @@ public class CreateLaunchExperimentUS3 {
             exOut.add(output);
 
             Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
-            String projectId = client.createProject(DEFAULT_GATEWAY, project);
+            String projectId = client.createProject(new AuthzToken(""), DEFAULT_GATEWAY, project);
 
             ExperimentModel simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY,projectId, "admin", "US3EchoExperimentStatus", "US3EchoStampede", "US3EchoStampede", exInputs);

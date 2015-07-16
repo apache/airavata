@@ -39,6 +39,7 @@ import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.error.AiravataClientException;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.thrift.TException;
 
@@ -95,7 +96,7 @@ public class RegisterSampleData {
         Gateway gateway = new Gateway();
         gateway.setGatewayName("Sample");
         gateway.setGatewayId("sample");
-        return airavataClient.addGateway(gateway);
+        return airavataClient.addGateway(new AuthzToken(""), gateway);
     }
 
     private void registerGatewayProfile() throws TException {
