@@ -86,10 +86,11 @@ class Iface:
     """
     pass
 
-  def getSSHPubKey(self, airavataCredStoreToken):
+  def getSSHPubKey(self, airavataCredStoreToken, gatewayId):
     """
     Parameters:
      - airavataCredStoreToken
+     - gatewayId
     """
     pass
 
@@ -2462,18 +2463,20 @@ class Client(Iface):
       raise result.ase
     raise TApplicationException(TApplicationException.MISSING_RESULT, "generateAndRegisterSSHKeys failed: unknown result");
 
-  def getSSHPubKey(self, airavataCredStoreToken):
+  def getSSHPubKey(self, airavataCredStoreToken, gatewayId):
     """
     Parameters:
      - airavataCredStoreToken
+     - gatewayId
     """
-    self.send_getSSHPubKey(airavataCredStoreToken)
+    self.send_getSSHPubKey(airavataCredStoreToken, gatewayId)
     return self.recv_getSSHPubKey()
 
-  def send_getSSHPubKey(self, airavataCredStoreToken):
+  def send_getSSHPubKey(self, airavataCredStoreToken, gatewayId):
     self._oprot.writeMessageBegin('getSSHPubKey', TMessageType.CALL, self._seqid)
     args = getSSHPubKey_args()
     args.airavataCredStoreToken = airavataCredStoreToken
+    args.gatewayId = gatewayId
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
@@ -8432,7 +8435,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = getSSHPubKey_result()
     try:
-      result.success = self._handler.getSSHPubKey(args.airavataCredStoreToken)
+      result.success = self._handler.getSSHPubKey(args.airavataCredStoreToken, args.gatewayId)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
@@ -11897,15 +11900,18 @@ class getSSHPubKey_args:
   """
   Attributes:
    - airavataCredStoreToken
+   - gatewayId
   """
 
   thrift_spec = (
     None, # 0
     (1, TType.STRING, 'airavataCredStoreToken', None, None, ), # 1
+    (2, TType.STRING, 'gatewayId', None, None, ), # 2
   )
 
-  def __init__(self, airavataCredStoreToken=None,):
+  def __init__(self, airavataCredStoreToken=None, gatewayId=None,):
     self.airavataCredStoreToken = airavataCredStoreToken
+    self.gatewayId = gatewayId
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -11919,6 +11925,11 @@ class getSSHPubKey_args:
       if fid == 1:
         if ftype == TType.STRING:
           self.airavataCredStoreToken = iprot.readString();
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
+        if ftype == TType.STRING:
+          self.gatewayId = iprot.readString();
         else:
           iprot.skip(ftype)
       else:
@@ -11935,12 +11946,18 @@ class getSSHPubKey_args:
       oprot.writeFieldBegin('airavataCredStoreToken', TType.STRING, 1)
       oprot.writeString(self.airavataCredStoreToken)
       oprot.writeFieldEnd()
+    if self.gatewayId is not None:
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
+      oprot.writeString(self.gatewayId)
+      oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
   def validate(self):
     if self.airavataCredStoreToken is None:
       raise TProtocol.TProtocolException(message='Required field airavataCredStoreToken is unset!')
+    if self.gatewayId is None:
+      raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
     return
 
 

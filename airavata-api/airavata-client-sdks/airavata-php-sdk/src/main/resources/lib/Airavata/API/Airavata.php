@@ -25,7 +25,7 @@ interface AiravataIf {
   public function getAllGateways();
   public function isGatewayExist($gatewayId);
   public function generateAndRegisterSSHKeys($gatewayId, $userName);
-  public function getSSHPubKey($airavataCredStoreToken);
+  public function getSSHPubKey($airavataCredStoreToken, $gatewayId);
   public function getAllUserSSHPubKeys($userName);
   public function createProject($gatewayId, \Airavata\Model\Workspace\Project $project);
   public function updateProject($projectId, \Airavata\Model\Workspace\Project $updatedProject);
@@ -638,16 +638,17 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("generateAndRegisterSSHKeys failed: unknown result");
   }
 
-  public function getSSHPubKey($airavataCredStoreToken)
+  public function getSSHPubKey($airavataCredStoreToken, $gatewayId)
   {
-    $this->send_getSSHPubKey($airavataCredStoreToken);
+    $this->send_getSSHPubKey($airavataCredStoreToken, $gatewayId);
     return $this->recv_getSSHPubKey();
   }
 
-  public function send_getSSHPubKey($airavataCredStoreToken)
+  public function send_getSSHPubKey($airavataCredStoreToken, $gatewayId)
   {
     $args = new \Airavata\API\Airavata_getSSHPubKey_args();
     $args->airavataCredStoreToken = $airavataCredStoreToken;
+    $args->gatewayId = $gatewayId;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
     {
@@ -9692,6 +9693,7 @@ class Airavata_getSSHPubKey_args {
   static $_TSPEC;
 
   public $airavataCredStoreToken = null;
+  public $gatewayId = null;
 
   public function __construct($vals=null) {
     if (!isset(self::$_TSPEC)) {
@@ -9700,11 +9702,18 @@ class Airavata_getSSHPubKey_args {
           'var' => 'airavataCredStoreToken',
           'type' => TType::STRING,
           ),
+        2 => array(
+          'var' => 'gatewayId',
+          'type' => TType::STRING,
+          ),
         );
     }
     if (is_array($vals)) {
       if (isset($vals['airavataCredStoreToken'])) {
         $this->airavataCredStoreToken = $vals['airavataCredStoreToken'];
+      }
+      if (isset($vals['gatewayId'])) {
+        $this->gatewayId = $vals['gatewayId'];
       }
     }
   }
@@ -9735,6 +9744,13 @@ class Airavata_getSSHPubKey_args {
             $xfer += $input->skip($ftype);
           }
           break;
+        case 2:
+          if ($ftype == TType::STRING) {
+            $xfer += $input->readString($this->gatewayId);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
         default:
           $xfer += $input->skip($ftype);
           break;
@@ -9751,6 +9767,11 @@ class Airavata_getSSHPubKey_args {
     if ($this->airavataCredStoreToken !== null) {
       $xfer += $output->writeFieldBegin('airavataCredStoreToken', TType::STRING, 1);
       $xfer += $output->writeString($this->airavataCredStoreToken);
+      $xfer += $output->writeFieldEnd();
+    }
+    if ($this->gatewayId !== null) {
+      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 2);
+      $xfer += $output->writeString($this->gatewayId);
       $xfer += $output->writeFieldEnd();
     }
     $xfer += $output->writeFieldStop();

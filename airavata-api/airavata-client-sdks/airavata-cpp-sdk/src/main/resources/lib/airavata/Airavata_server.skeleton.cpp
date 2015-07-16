@@ -79,7 +79,7 @@ class AiravataHandler : virtual public AiravataIf {
     printf("generateAndRegisterSSHKeys\n");
   }
 
-  void getSSHPubKey(std::string& _return, const std::string& airavataCredStoreToken) {
+  void getSSHPubKey(std::string& _return, const std::string& airavataCredStoreToken, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getSSHPubKey\n");
   }

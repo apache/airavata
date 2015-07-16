@@ -40,7 +40,7 @@ class AiravataIf {
   virtual void getAllGateways(std::vector< ::apache::airavata::model::workspace::Gateway> & _return) = 0;
   virtual bool isGatewayExist(const std::string& gatewayId) = 0;
   virtual void generateAndRegisterSSHKeys(std::string& _return, const std::string& gatewayId, const std::string& userName) = 0;
-  virtual void getSSHPubKey(std::string& _return, const std::string& airavataCredStoreToken) = 0;
+  virtual void getSSHPubKey(std::string& _return, const std::string& airavataCredStoreToken, const std::string& gatewayId) = 0;
   virtual void getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const std::string& userName) = 0;
   virtual void createProject(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::workspace::Project& project) = 0;
   virtual void updateProject(const std::string& projectId, const  ::apache::airavata::model::workspace::Project& updatedProject) = 0;
@@ -215,7 +215,7 @@ class AiravataNull : virtual public AiravataIf {
   void generateAndRegisterSSHKeys(std::string& /* _return */, const std::string& /* gatewayId */, const std::string& /* userName */) {
     return;
   }
-  void getSSHPubKey(std::string& /* _return */, const std::string& /* airavataCredStoreToken */) {
+  void getSSHPubKey(std::string& /* _return */, const std::string& /* airavataCredStoreToken */, const std::string& /* gatewayId */) {
     return;
   }
   void getAllUserSSHPubKeys(std::map<std::string, std::string> & /* _return */, const std::string& /* userName */) {
@@ -1670,20 +1670,27 @@ class Airavata_generateAndRegisterSSHKeys_presult {
 class Airavata_getSSHPubKey_args {
  public:
 
-  Airavata_getSSHPubKey_args() : airavataCredStoreToken() {
+  Airavata_getSSHPubKey_args() : airavataCredStoreToken(), gatewayId() {
   }
 
   virtual ~Airavata_getSSHPubKey_args() throw() {}
 
   std::string airavataCredStoreToken;
+  std::string gatewayId;
 
   void __set_airavataCredStoreToken(const std::string& val) {
     airavataCredStoreToken = val;
   }
 
+  void __set_gatewayId(const std::string& val) {
+    gatewayId = val;
+  }
+
   bool operator == (const Airavata_getSSHPubKey_args & rhs) const
   {
     if (!(airavataCredStoreToken == rhs.airavataCredStoreToken))
+      return false;
+    if (!(gatewayId == rhs.gatewayId))
       return false;
     return true;
   }
@@ -1706,6 +1713,7 @@ class Airavata_getSSHPubKey_pargs {
   virtual ~Airavata_getSSHPubKey_pargs() throw() {}
 
   const std::string* airavataCredStoreToken;
+  const std::string* gatewayId;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -18494,8 +18502,8 @@ class AiravataClient : virtual public AiravataIf {
   void generateAndRegisterSSHKeys(std::string& _return, const std::string& gatewayId, const std::string& userName);
   void send_generateAndRegisterSSHKeys(const std::string& gatewayId, const std::string& userName);
   void recv_generateAndRegisterSSHKeys(std::string& _return);
-  void getSSHPubKey(std::string& _return, const std::string& airavataCredStoreToken);
-  void send_getSSHPubKey(const std::string& airavataCredStoreToken);
+  void getSSHPubKey(std::string& _return, const std::string& airavataCredStoreToken, const std::string& gatewayId);
+  void send_getSSHPubKey(const std::string& airavataCredStoreToken, const std::string& gatewayId);
   void recv_getSSHPubKey(std::string& _return);
   void getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const std::string& userName);
   void send_getAllUserSSHPubKeys(const std::string& userName);
@@ -19233,13 +19241,13 @@ class AiravataMultiface : virtual public AiravataIf {
     return;
   }
 
-  void getSSHPubKey(std::string& _return, const std::string& airavataCredStoreToken) {
+  void getSSHPubKey(std::string& _return, const std::string& airavataCredStoreToken, const std::string& gatewayId) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->getSSHPubKey(_return, airavataCredStoreToken);
+      ifaces_[i]->getSSHPubKey(_return, airavataCredStoreToken, gatewayId);
     }
-    ifaces_[i]->getSSHPubKey(_return, airavataCredStoreToken);
+    ifaces_[i]->getSSHPubKey(_return, airavataCredStoreToken, gatewayId);
     return;
   }
 
