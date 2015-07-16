@@ -80,38 +80,32 @@ service Airavata {
   string addGateway(1: required security_model.AuthzToken authzToken, 2: required workspace_model.Gateway gateway)
          throws (1: airavata_errors.InvalidRequestException ire,
                  2: airavata_errors.AiravataClientException ace,
-                 3: airavata_errors.AiravataSystemException ase,
-                 4: airavata_errors.AuthorizationException ae)
+                 3: airavata_errors.AiravataSystemException ase)
 
   void updateGateway(1: required security_model.AuthzToken authzToken, 2: required string gatewayId, 3: required workspace_model.Gateway updatedGateway)
          throws (1: airavata_errors.InvalidRequestException ire,
                  2: airavata_errors.AiravataClientException ace,
-                 3: airavata_errors.AiravataSystemException ase,
-                 4: airavata_errors.AuthorizationException ae)
+                 3: airavata_errors.AiravataSystemException ase)
 
   workspace_model.Gateway getGateway(1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
            throws (1: airavata_errors.InvalidRequestException ire,
                    2: airavata_errors.AiravataClientException ace,
-                   3: airavata_errors.AiravataSystemException ase,
-                   4: airavata_errors.AuthorizationException ae)
+                   3: airavata_errors.AiravataSystemException ase)
 
   bool deleteGateway(1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
              throws (1: airavata_errors.InvalidRequestException ire,
                      2: airavata_errors.AiravataClientException ace,
-                     3: airavata_errors.AiravataSystemException ase,
-                     4: airavata_errors.AuthorizationException ae)
+                     3: airavata_errors.AiravataSystemException ase)
 
   list<workspace_model.Gateway> getAllGateways(1: required security_model.AuthzToken authzToken)
              throws (1: airavata_errors.InvalidRequestException ire,
                      2: airavata_errors.AiravataClientException ace,
-                     3: airavata_errors.AiravataSystemException ase,
-                     4: airavata_errors.AuthorizationException ae)
+                     3: airavata_errors.AiravataSystemException ase)
 
   bool isGatewayExist(1: required security_model.AuthzToken authzToken, 2: required string gatewayId)
            throws (1: airavata_errors.InvalidRequestException ire,
                    2: airavata_errors.AiravataClientException ace,
-                   3: airavata_errors.AiravataSystemException ase,
-                   4: airavata_errors.AuthorizationException ae)
+                   3: airavata_errors.AiravataSystemException ase)
 
 
   /**
@@ -166,15 +160,15 @@ service Airavata {
                         3: required workspace_model.Project project)
           throws (1: airavata_errors.InvalidRequestException ire,
                   2: airavata_errors.AiravataClientException ace,
-                  3: airavata_errors.AiravataSystemException ase,
-                  4: airavata_errors.AuthorizationException ae)
+                  3: airavata_errors.AiravataSystemException ase)
 
   /**
    * Update a Project
    *
   */
-  void updateProject (1: required string projectId,
-                      2: required workspace_model.Project updatedProject)
+  void updateProject (1: required security_model.AuthzToken authzToken,
+                      2: required string projectId,
+                      3: required workspace_model.Project updatedProject)
       throws (1: airavata_errors.InvalidRequestException ire,
               2: airavata_errors.AiravataClientException ace,
               3: airavata_errors.AiravataSystemException ase,
@@ -184,13 +178,13 @@ service Airavata {
    * Get a Project by ID
    *
   */
-  workspace_model.Project getProject (1: required string projectId)
+  workspace_model.Project getProject (1: required security_model.AuthzToken authzToken, 2: required string projectId)
         throws (1: airavata_errors.InvalidRequestException ire,
                 2: airavata_errors.AiravataClientException ace,
                 3: airavata_errors.AiravataSystemException ase,
                 4: airavata_errors.ProjectNotFoundException pnfe)
 
-  bool deleteProject (1: required string projectId)
+  bool deleteProject (1: required security_model.AuthzToken authzToken, 2: required string projectId)
           throws (1: airavata_errors.InvalidRequestException ire,
                   2: airavata_errors.AiravataClientException ace,
                   3: airavata_errors.AiravataSystemException ase,
