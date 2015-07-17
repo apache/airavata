@@ -146,7 +146,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     @SecurityCheck
     public String addGateway(AuthzToken authzToken, Gateway gateway) throws InvalidRequestException,
-            AiravataClientException, AiravataSystemException, TException {
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 
         try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
@@ -167,7 +167,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     @SecurityCheck
     public void updateGateway(AuthzToken authzToken, String gatewayId, Gateway updatedGateway)
-            throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 
         try {
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
@@ -190,7 +190,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     @SecurityCheck
     public Gateway getGateway(AuthzToken authzToken, String gatewayId) throws InvalidRequestException,
-            AiravataClientException, AiravataSystemException, TException {
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 
         try {
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
@@ -213,7 +213,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     @SecurityCheck
     public boolean deleteGateway(AuthzToken authzToken, String gatewayId) throws InvalidRequestException,
-            AiravataClientException, AiravataSystemException, TException {
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 
         try {
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
@@ -237,7 +237,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     @SecurityCheck
     public List<Gateway> getAllGateways(AuthzToken authzToken) throws InvalidRequestException, AiravataClientException,
-            AiravataSystemException, TException {
+            AiravataSystemException, AuthorizationException, TException {
 
         try {
             List<Gateway> gateways = new ArrayList<Gateway>();
@@ -259,7 +259,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     @SecurityCheck
     public boolean isGatewayExist(AuthzToken authzToken, String gatewayId) throws InvalidRequestException,
-            AiravataClientException, AiravataSystemException, TException {
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 
         try {
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
@@ -275,7 +275,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     /*Following method wraps the logic of isGatewayExist method and this is to be called by any other method of the API as needed.*/
     private boolean isGatewayExistInternal(String gatewayId) throws InvalidRequestException, AiravataClientException,
-            AiravataSystemException, TException{
+            AiravataSystemException, AuthorizationException, TException{
         try {
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             return experimentCatalog.isExist(ExperimentCatalogModelType.GATEWAY, gatewayId);
@@ -311,7 +311,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     @SecurityCheck
     public String createProject(AuthzToken authzToken, String gatewayId, Project project) throws InvalidRequestException,
-            AiravataClientException, AiravataSystemException, TException {
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 
         try {
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
@@ -339,7 +339,7 @@ public class AiravataServerHandler implements Airavata.Iface {
 
     @SecurityCheck
     public void updateProject(AuthzToken authzToken, String projectId, Project updatedProject) throws InvalidRequestException,
-            AiravataClientException, AiravataSystemException, ProjectNotFoundException, TException {
+            AiravataClientException, AiravataSystemException, ProjectNotFoundException, AuthorizationException, TException {
 
         if (!validateString(projectId) || !validateString(projectId)){
             logger.error("Project id cannot be empty...");
@@ -383,7 +383,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     @SecurityCheck
     public Project getProject(AuthzToken authzToken, String projectId) throws InvalidRequestException,
-            AiravataClientException, AiravataSystemException, ProjectNotFoundException, TException {
+            AiravataClientException, AiravataSystemException, ProjectNotFoundException, AuthorizationException, TException {
 
         try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
@@ -432,8 +432,10 @@ public class AiravataServerHandler implements Airavata.Iface {
      *    The starting point of the results to be fetched
      **/
     @Override
-    public List<Project> getAllUserProjectsWithPagination(String gatewayId, String userName,
-                                                          int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public List<Project> getAllUserProjectsWithPagination(AuthzToken authzToken, String gatewayId, String userName,
+                                                          int limit, int offset)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -488,10 +490,8 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Deprecated
     @Override
-    public List<Project> searchProjectsByProjectName(String gatewayId, String userName, String projectName) throws InvalidRequestException,
-                                                                                                 AiravataClientException,
-                                                                                                 AiravataSystemException,
-                                                                                                 TException {
+    public List<Project> searchProjectsByProjectName(String gatewayId, String userName, String projectName)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         return searchProjectsByProjectNameWithPagination(gatewayId, userName, projectName, -1, -1);
     }
 
@@ -511,7 +511,10 @@ public class AiravataServerHandler implements Airavata.Iface {
      *    The starting point of the results to be fetched
      */
     @Override
-    public List<Project> searchProjectsByProjectNameWithPagination(String gatewayId, String userName, String projectName, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public List<Project> searchProjectsByProjectNameWithPagination(AuthzToken authzToken, String gatewayId, String userName,
+                                                                   String projectName, int limit, int offset)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -587,7 +590,10 @@ public class AiravataServerHandler implements Airavata.Iface {
      *    The starting point of the results to be fetched
      */
     @Override
-    public List<Project> searchProjectsByProjectDescWithPagination(String gatewayId, String userName, String description, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public List<Project> searchProjectsByProjectDescWithPagination(String gatewayId, String userName, String description,
+                                                                   int limit, int offset) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -643,10 +649,8 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Deprecated
     @Override
-    public List<ExperimentSummaryModel> searchExperimentsByName(String gatewayId, String userName, String expName) throws InvalidRequestException,
-                                                                                                   AiravataClientException,
-                                                                                                   AiravataSystemException,
-                                                                                                   TException {
+    public List<ExperimentSummaryModel> searchExperimentsByName(String gatewayId, String userName, String expName)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         return searchExperimentsByNameWithPagination(gatewayId, userName, expName, -1, -1);
     }
 
@@ -666,7 +670,10 @@ public class AiravataServerHandler implements Airavata.Iface {
      *       The starting point of the results to be fetched
      */
     @Override
-    public List<ExperimentSummaryModel> searchExperimentsByNameWithPagination(String gatewayId, String userName, String expName, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public List<ExperimentSummaryModel> searchExperimentsByNameWithPagination(AuthzToken authzToken, String gatewayId, String userName,
+                                                                              String expName, int limit, int offset)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -721,10 +728,8 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Deprecated
     @Override
-    public List<ExperimentSummaryModel> searchExperimentsByDesc(String gatewayId, String userName, String description) throws InvalidRequestException,
-                                                                                                       AiravataClientException,
-                                                                                                       AiravataSystemException,
-                                                                                                       TException {
+    public List<ExperimentSummaryModel> searchExperimentsByDesc(String gatewayId, String userName, String description)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         return searchExperimentsByDescWithPagination(gatewayId, userName, description, -1, -1);
     }
 
@@ -744,7 +749,10 @@ public class AiravataServerHandler implements Airavata.Iface {
      *       The starting point of the results to be fetched
      */
     @Override
-    public List<ExperimentSummaryModel> searchExperimentsByDescWithPagination(String gatewayId, String userName, String description, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public List<ExperimentSummaryModel> searchExperimentsByDescWithPagination(AuthzToken authzToken, String gatewayId, String userName,
+                                                                              String description, int limit, int offset)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -799,7 +807,8 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Deprecated
     @Override
-    public List<ExperimentSummaryModel> searchExperimentsByApplication(String gatewayId, String userName, String applicationId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    public List<ExperimentSummaryModel> searchExperimentsByApplication(String gatewayId, String userName, String applicationId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
         return searchExperimentsByApplicationWithPagination(gatewayId, userName, applicationId, -1, -1);
     }
 
@@ -819,7 +828,11 @@ public class AiravataServerHandler implements Airavata.Iface {
      *       The starting point of the results to be fetched
      */
     @Override
-    public List<ExperimentSummaryModel> searchExperimentsByApplicationWithPagination(String gatewayId, String userName, String applicationId, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public List<ExperimentSummaryModel> searchExperimentsByApplicationWithPagination(AuthzToken authzToken, String gatewayId,
+                                                                                     String userName, String applicationId,
+                                                                                     int limit, int offset)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -894,7 +907,11 @@ public class AiravataServerHandler implements Airavata.Iface {
      *       The starting point of the results to be fetched
      */
     @Override
-    public List<ExperimentSummaryModel> searchExperimentsByStatusWithPagination(String gatewayId, String userName, ExperimentState experimentState, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public List<ExperimentSummaryModel> searchExperimentsByStatusWithPagination(AuthzToken authzToken, String gatewayId,
+                                                                                String userName, ExperimentState experimentState,
+                                                                                int limit, int offset)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -973,7 +990,11 @@ public class AiravataServerHandler implements Airavata.Iface {
      *       The starting point of the results to be fetched
      */
     @Override
-    public List<ExperimentSummaryModel> searchExperimentsByCreationTimeWithPagination(String gatewayId, String userName, long fromTime, long toTime, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public List<ExperimentSummaryModel> searchExperimentsByCreationTimeWithPagination(String gatewayId,
+                                                                                      String userName, long fromTime,
+                                                                                      long toTime, int limit, int offset)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -1031,8 +1052,10 @@ public class AiravataServerHandler implements Airavata.Iface {
      *       The starting point of the results to be fetched
      */
     @Override
-    public List<ExperimentSummaryModel> searchExperiments(String gatewayId, String userName, Map<ExperimentSearchFields, String> filters, int limit, int offset)
-            throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public List<ExperimentSummaryModel> searchExperiments(AuthzToken authzToken, String gatewayId, String userName, Map<ExperimentSearchFields,
+            String> filters, int limit, int offset)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -1102,7 +1125,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * @throws TException
      */
     @Override
-    public ExperimentStatistics getExperimentStatistics(String gatewayId, long fromTime, long toTime) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public ExperimentStatistics getExperimentStatistics(AuthzToken authzToken, String gatewayId, long fromTime, long toTime)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -1154,8 +1179,10 @@ public class AiravataServerHandler implements Airavata.Iface {
      *       The starting point of the results to be fetched
      */
     @Override
-    public List<ExperimentModel> getAllExperimentsInProjectWithPagination(String projectId, int limit, int offset)
-            throws InvalidRequestException, AiravataClientException, AiravataSystemException, ProjectNotFoundException, TException {
+    @SecurityCheck
+    public List<ExperimentModel> getAllExperimentsInProjectWithPagination(AuthzToken authzToken, String projectId, int limit, int offset)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, ProjectNotFoundException,
+            AuthorizationException, TException {
         if (!validateString(projectId)){
             logger.error("Project id cannot be empty. Please provide a valid project ID...");
             AiravataSystemException exception = new AiravataSystemException();
@@ -1220,7 +1247,10 @@ public class AiravataServerHandler implements Airavata.Iface {
      *       The starting point of the results to be fetched
      */
     @Override
-    public List<ExperimentModel> getAllUserExperimentsWithPagination(String gatewayId, String userName, int limit, int offset) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public List<ExperimentModel> getAllUserExperimentsWithPagination(AuthzToken authzToken, String gatewayId, String userName, int limit,
+                                                                     int offset) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
             AiravataSystemException exception = new AiravataSystemException();
@@ -1283,7 +1313,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      *                                                               rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
-    public String createExperiment(String gatewayId, ExperimentModel experiment) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public String createExperiment(AuthzToken authzToken, String gatewayId, ExperimentModel experiment) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             experimentCatalog = RegistryFactory.getExperimentCatalog(gatewayId);
             if (!validateString(experiment.getExperimentName())){
@@ -1341,7 +1373,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      *                                                                   rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
-    public ExperimentModel getExperiment(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public ExperimentModel getExperiment(AuthzToken authzToken, String airavataExperimentId) throws InvalidRequestException,
+            ExperimentNotFoundException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
@@ -1383,7 +1417,10 @@ public class AiravataServerHandler implements Airavata.Iface {
      *                                                                   rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
-    public void updateExperiment(String airavataExperimentId, ExperimentModel experiment) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public void updateExperiment(AuthzToken authzToken, String airavataExperimentId, ExperimentModel experiment)
+            throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException,
+            AuthorizationException, TException {
         try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)) {
@@ -1420,7 +1457,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public void updateExperimentConfiguration(String airavataExperimentId, UserConfigurationDataModel userConfiguration) throws TException {
+    @SecurityCheck
+    public void updateExperimentConfiguration(AuthzToken authzToken, String airavataExperimentId, UserConfigurationDataModel userConfiguration)
+            throws AuthorizationException, TException {
         try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
@@ -1460,7 +1499,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public void updateResourceScheduleing(String airavataExperimentId, ComputationalResourceSchedulingModel resourceScheduling) throws TException {
+    @SecurityCheck
+    public void updateResourceScheduleing(AuthzToken authzToken, String airavataExperimentId,
+                                          ComputationalResourceSchedulingModel resourceScheduling) throws AuthorizationException, TException {
         try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
@@ -1511,7 +1552,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * @param airavataExperimentId
      */
     @Override
-    public boolean validateExperiment(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean validateExperiment(AuthzToken authzToken, String airavataExperimentId) throws InvalidRequestException,
+            ExperimentNotFoundException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
      	try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
  			if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)) {
@@ -1567,11 +1610,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      *         rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
-    public ExperimentStatus getExperimentStatus(String airavataExperimentId) throws InvalidRequestException,
-                                                                                    ExperimentNotFoundException,
-                                                                                    AiravataClientException,
-                                                                                    AiravataSystemException,
-                                                                                    TException {
+    @SecurityCheck
+    public ExperimentStatus getExperimentStatus(AuthzToken authzToken, String airavataExperimentId) throws InvalidRequestException,
+            ExperimentNotFoundException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
@@ -1590,7 +1631,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public List<OutputDataObjectType> getExperimentOutputs(String airavataExperimentId) throws TException {
+    @SecurityCheck
+    public List<OutputDataObjectType> getExperimentOutputs(AuthzToken authzToken, String airavataExperimentId)
+            throws AuthorizationException, TException {
         try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
@@ -1608,11 +1651,15 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public List<OutputDataObjectType> getIntermediateOutputs(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public List<OutputDataObjectType> getIntermediateOutputs(AuthzToken authzToken, String airavataExperimentId) throws InvalidRequestException,
+            ExperimentNotFoundException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         return null;
     }
 
-    public Map<String, JobStatus> getJobStatuses(String airavataExperimentId) throws TException {
+    @SecurityCheck
+    public Map<String, JobStatus> getJobStatuses(AuthzToken authzToken, String airavataExperimentId)
+            throws AuthorizationException, TException {
         Map<String, JobStatus> jobStatus = new HashMap<String, JobStatus>();
 	    // FIXME : implement this method with new data model
 /*        try {
@@ -1651,7 +1698,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public List<JobModel> getJobDetails(String airavataExperimentId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public List<JobModel> getJobDetails(AuthzToken authzToken, String airavataExperimentId) throws InvalidRequestException,
+            ExperimentNotFoundException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         List<JobModel> jobDetailsList = new ArrayList<JobModel>();
 	    // FIXME : fix this method with new data model.
       /*  try {
@@ -1725,7 +1774,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      *          rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
-    public void launchExperiment(final String airavataExperimentId, String airavataCredStoreToken) throws TException {
+    @SecurityCheck
+    public void launchExperiment(AuthzToken authzToken, final String airavataExperimentId, String airavataCredStoreToken)
+            throws AuthorizationException, TException {
     	try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
 			if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)) {
@@ -1802,7 +1853,10 @@ public class AiravataServerHandler implements Airavata.Iface {
      * @param newExperiementName
      */
     @Override
-    public String cloneExperiment(String existingExperimentID, String newExperiementName) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public String cloneExperiment(AuthzToken authzToken, String existingExperimentID, String newExperiementName)
+            throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException,
+            AuthorizationException, TException {
         try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, existingExperimentID)){
@@ -1854,7 +1908,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      *                                                                   rather an Airavata Administrator will be notified to take corrective action.
      */
     @Override
-    public void terminateExperiment(String airavataExperimentId, String tokenId) throws InvalidRequestException, ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public void terminateExperiment(AuthzToken authzToken, String airavataExperimentId, String tokenId) throws InvalidRequestException,
+            ExperimentNotFoundException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             if (!(experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId))){
                 logger.error("Experiment does not exist.Please provide a valid experiment id...");
@@ -1879,7 +1935,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a server-side generated airavata appModule globally unique identifier.
      */
     @Override
-    public String registerApplicationModule(String gatewayId, ApplicationModule applicationModule) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public String registerApplicationModule(AuthzToken, String gatewayId, ApplicationModule applicationModule)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -1904,7 +1962,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a application Module Object.
      */
     @Override
-    public ApplicationModule getApplicationModule(String appModuleId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public ApplicationModule getApplicationModule(AuthzToken authzToken, String appModuleId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getApplicationInterface().getApplicationModule(appModuleId);
@@ -1926,7 +1986,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the update.
      */
     @Override
-    public boolean updateApplicationModule(String appModuleId, ApplicationModule applicationModule) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean updateApplicationModule(AuthzToken authzToken, String appModuleId, ApplicationModule applicationModule)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             appCatalog.getApplicationInterface().updateApplicationModule(appModuleId, applicationModule);
@@ -1941,7 +2003,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public List<ApplicationModule> getAllAppModules(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public List<ApplicationModule> getAllAppModules(AuthzToken authzToken, String gatewayId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -1966,7 +2030,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean deleteApplicationModule(String appModuleId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean deleteApplicationModule(AuthzToken authzToken, String appModuleId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getApplicationInterface().removeApplicationModule(appModuleId);
@@ -1986,7 +2052,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      *                                     Returns a server-side generated airavata appModule globally unique identifier.
      */
     @Override
-    public String registerApplicationDeployment(String gatewayId, ApplicationDeploymentDescription applicationDeployment) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public String registerApplicationDeployment(AuthzToken authzToken, String gatewayId, ApplicationDeploymentDescription applicationDeployment)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -2011,7 +2079,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a application Deployment Object.
      */
     @Override
-    public ApplicationDeploymentDescription getApplicationDeployment(String appDeploymentId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public ApplicationDeploymentDescription getApplicationDeployment(AuthzToken authzToken, String appDeploymentId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getApplicationDeployment().getApplicationDeployement(appDeploymentId);
@@ -2033,7 +2103,10 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the update.
      */
     @Override
-    public boolean updateApplicationDeployment(String appDeploymentId, ApplicationDeploymentDescription applicationDeployment) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean updateApplicationDeployment(AuthzToken authzToken, String appDeploymentId,
+                                               ApplicationDeploymentDescription applicationDeployment)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             appCatalog.getApplicationDeployment().updateApplicationDeployment(appDeploymentId, applicationDeployment);
@@ -2055,7 +2128,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean deleteApplicationDeployment(String appDeploymentId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean deleteApplicationDeployment(AuthzToken authzToken, String appDeploymentId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             appCatalog.getApplicationDeployment().removeAppDeployment(appDeploymentId);
@@ -2076,7 +2151,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns the list of all application Deployment Objects.
      */
     @Override
-    public List<ApplicationDeploymentDescription> getAllApplicationDeployments(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public List<ApplicationDeploymentDescription> getAllApplicationDeployments(AuthzToken authzToken, String gatewayId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -2101,7 +2178,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a list of Deployed Resources.
      */
     @Override
-    public List<String> getAppModuleDeployedResources(String appModuleId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public List<String> getAppModuleDeployedResources(AuthzToken authzToken, String appModuleId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             List<String> appDeployments = new ArrayList<String>();
             appCatalog = RegistryFactory.getAppCatalog();
@@ -2128,7 +2207,10 @@ public class AiravataServerHandler implements Airavata.Iface {
      *                                    Returns a server-side generated airavata application interface globally unique identifier.
      */
     @Override
-    public String registerApplicationInterface(String gatewayId, ApplicationInterfaceDescription applicationInterface) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public String registerApplicationInterface(AuthzToken authzToken, String gatewayId,
+                                               ApplicationInterfaceDescription applicationInterface) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -2153,7 +2235,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a application Interface Object.
      */
     @Override
-    public ApplicationInterfaceDescription getApplicationInterface(String appInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public ApplicationInterfaceDescription getApplicationInterface(AuthzToken authzToken, String appInterfaceId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getApplicationInterface().getApplicationInterface(appInterfaceId);
@@ -2175,7 +2259,10 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the update.
      */
     @Override
-    public boolean updateApplicationInterface(String appInterfaceId, ApplicationInterfaceDescription applicationInterface) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean updateApplicationInterface(AuthzToken authzToken, String appInterfaceId,
+                                              ApplicationInterfaceDescription applicationInterface) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException. TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             appCatalog.getApplicationInterface().updateApplicationInterface(appInterfaceId, applicationInterface);
@@ -2197,7 +2284,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean deleteApplicationInterface(String appInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean deleteApplicationInterface(AuthzToken authzToken, String appInterfaceId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getApplicationInterface().removeApplicationInterface(appInterfaceId);
@@ -2217,7 +2306,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a list of application interfaces with corresponsing id's
      */
     @Override
-    public Map<String, String> getAllApplicationInterfaceNames(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public Map<String, String> getAllApplicationInterfaceNames(AuthzToken authzToken, String gatewayId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -2248,7 +2339,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a list of application interfaces documents
      */
     @Override
-    public List<ApplicationInterfaceDescription> getAllApplicationInterfaces(String gatewayId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public List<ApplicationInterfaceDescription> getAllApplicationInterfaces(AuthzToken authzToken, String gatewayId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -2273,7 +2366,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a list of application inputs.
      */
     @Override
-    public List<InputDataObjectType> getApplicationInputs(String appInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public List<InputDataObjectType> getApplicationInputs(AuthzToken authzToken, String appInterfaceId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getApplicationInterface().getApplicationInputs(appInterfaceId);
@@ -2294,7 +2389,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a list of application outputs.
      */
     @Override
-    public List<OutputDataObjectType> getApplicationOutputs(String appInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public List<OutputDataObjectType> getApplicationOutputs(AuthzToken authzToken, String appInterfaceId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getApplicationInterface().getApplicationOutputs(appInterfaceId);
@@ -2316,7 +2413,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Deployments of each modules listed within the interfaces will be listed.
      */
     @Override
-    public Map<String, String> getAvailableAppInterfaceComputeResources(String appInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public Map<String, String> getAvailableAppInterfaceComputeResources(AuthzToken authzToken, String appInterfaceId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             ApplicationDeployment applicationDeployment = appCatalog.getApplicationDeployment();
@@ -2357,7 +2456,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a server-side generated airavata compute resource globally unique identifier.
      */
     @Override
-    public String registerComputeResource(ComputeResourceDescription computeResourceDescription) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public String registerComputeResource(AuthzToken authzToken, ComputeResourceDescription computeResourceDescription)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
     	try {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getComputeResource().addComputeResource(computeResourceDescription);
@@ -2378,7 +2479,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Compute Resource Object created from the datamodel..
      */
     @Override
-    public ComputeResourceDescription getComputeResource(String computeResourceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public ComputeResourceDescription getComputeResource(AuthzToken authzToken, String computeResourceId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
     	try {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getComputeResource().getComputeResource(computeResourceId);
@@ -2398,7 +2501,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Compute Resource Object created from the datamodel..
      */
     @Override
-    public Map<String, String> getAllComputeResourceNames() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public Map<String, String> getAllComputeResourceNames(AuthzToken authzToken) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getComputeResource().getAllComputeResourceIdList();
@@ -2420,7 +2525,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the update.
      */
     @Override
-    public boolean updateComputeResource(String computeResourceId, ComputeResourceDescription computeResourceDescription) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean updateComputeResource(AuthzToken authzToken, String computeResourceId, ComputeResourceDescription computeResourceDescription)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
     	try {
             appCatalog = RegistryFactory.getAppCatalog();
             appCatalog.getComputeResource().updateComputeResource(computeResourceId, computeResourceDescription);
@@ -2442,7 +2549,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean deleteComputeResource(String computeResourceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean deleteComputeResource(AuthzToken authzToken, String computeResourceId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
     	try {
             appCatalog = RegistryFactory.getAppCatalog();
             appCatalog.getComputeResource().removeComputeResource(computeResourceId);
@@ -2467,7 +2576,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public String addLocalSubmissionDetails(String computeResourceId, int priorityOrder, LOCALSubmission localSubmission) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public String addLocalSubmissionDetails(AuthzToken authzToken, String computeResourceId, int priorityOrder, LOCALSubmission localSubmission)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
     	try {
             appCatalog = RegistryFactory.getAppCatalog();
             ComputeResource computeResource = appCatalog.getComputeResource();
@@ -2491,7 +2602,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean updateLocalSubmissionDetails(String jobSubmissionInterfaceId, LOCALSubmission localSubmission) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean updateLocalSubmissionDetails(AuthzToken authzToken, String jobSubmissionInterfaceId, LOCALSubmission localSubmission)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
     	try {
             LocalSubmissionResource submission = AppCatalogThriftConversion.getLocalJobSubmission(localSubmission);
             submission.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
@@ -2507,7 +2620,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public LOCALSubmission getLocalJobSubmission(String jobSubmissionId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public LOCALSubmission getLocalJobSubmission(AuthzToken authzToken, String jobSubmissionId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getComputeResource().getLocalJobSubmission(jobSubmissionId);
@@ -2543,7 +2658,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public String addSSHJobSubmissionDetails(String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public String addSSHJobSubmissionDetails(AuthzToken authzToken, String computeResourceId, int priorityOrder, SSHJobSubmission sshJobSubmission)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
     	try {
             appCatalog = RegistryFactory.getAppCatalog();
             ComputeResource computeResource = appCatalog.getComputeResource();
@@ -2559,7 +2676,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public SSHJobSubmission getSSHJobSubmission(String jobSubmissionId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public SSHJobSubmission getSSHJobSubmission(AuthzToken authzToken, String jobSubmissionId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getComputeResource().getSSHJobSubmission(jobSubmissionId);
@@ -2584,7 +2703,10 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public String addCloudJobSubmissionDetails(String computeResourceId, int priorityOrder, CloudJobSubmission cloudJobSubmission) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public String addCloudJobSubmissionDetails(AuthzToken authzToken, String computeResourceId, int priorityOrder,
+                                               CloudJobSubmission cloudJobSubmission) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             ComputeResource computeResource = appCatalog.getComputeResource();
@@ -2600,7 +2722,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public CloudJobSubmission getCloudJobSubmission(String jobSubmissionId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public CloudJobSubmission getCloudJobSubmission(AuthzToken authzToken, String jobSubmissionId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getComputeResource().getCloudJobSubmission(jobSubmissionId);
@@ -2615,10 +2739,10 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-	public String addUNICOREJobSubmissionDetails(String computeResourceId,
-			int priorityOrder, UnicoreJobSubmission unicoreJobSubmission)
-			throws InvalidRequestException, AiravataClientException,
-			AiravataSystemException, TException {
+    @SecurityCheck
+	public String addUNICOREJobSubmissionDetails(AuthzToken authzToken, String computeResourceId, int priorityOrder,
+                                                 UnicoreJobSubmission unicoreJobSubmission)
+			throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 		try {
 	        appCatalog = RegistryFactory.getAppCatalog();
 	        ComputeResource computeResource = appCatalog.getComputeResource();
@@ -2634,7 +2758,9 @@ public class AiravataServerHandler implements Airavata.Iface {
 	}
 
     @Override
-    public UnicoreJobSubmission getUnicoreJobSubmission(String jobSubmissionId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public UnicoreJobSubmission getUnicoreJobSubmission(AuthzToken authzToken, String jobSubmissionId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getComputeResource().getUNICOREJobSubmission(jobSubmissionId);
@@ -2657,7 +2783,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean updateSSHJobSubmissionDetails(String jobSubmissionInterfaceId, SSHJobSubmission sshJobSubmission) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean updateSSHJobSubmissionDetails(AuthzToken authzToken, String jobSubmissionInterfaceId, SSHJobSubmission sshJobSubmission)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
     	try {
             SshJobSubmissionResource submission = AppCatalogThriftConversion.getSSHJobSubmission(sshJobSubmission);
             submission.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
@@ -2673,7 +2801,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     /**
-     * Update the given SSH Job Submission details
+     * Update the given cloud Job Submission details
      *
      * @param jobSubmissionInterfaceId The identifier of the JobSubmission Interface to be updated.
      * @param cloudJobSubmission         The SSHJobSubmission object to be updated.
@@ -2681,7 +2809,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean updateCloudJobSubmissionDetails(String jobSubmissionInterfaceId, CloudJobSubmission cloudJobSubmission) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean updateCloudJobSubmissionDetails(AuthzToken authzToken, String jobSubmissionInterfaceId, CloudJobSubmission cloudJobSubmission)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             CloudSubmissionResource submission = AppCatalogThriftConversion.getCloudJobSubmission(cloudJobSubmission);
             submission.setJobSubmissionInterfaceId(jobSubmissionInterfaceId);
@@ -2697,7 +2827,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public boolean updateUnicoreJobSubmissionDetails(String jobSubmissionInterfaceId, UnicoreJobSubmission unicoreJobSubmission) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean updateUnicoreJobSubmissionDetails(AuthzToken authzToken, String jobSubmissionInterfaceId, UnicoreJobSubmission unicoreJobSubmission)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             UnicoreJobSubmissionResource submission = AppCatalogThriftConversion.getUnicoreJobSubmission(unicoreJobSubmission);
             submission.setjobSubmissionInterfaceId(jobSubmissionInterfaceId);
@@ -2723,7 +2855,10 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public String addLocalDataMovementDetails(String computeResourceId, int priorityOrder, LOCALDataMovement localDataMovement) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public String addLocalDataMovementDetails(AuthzToken authzToken, String computeResourceId, int priorityOrder,
+                                              LOCALDataMovement localDataMovement) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
     	try {
             appCatalog = RegistryFactory.getAppCatalog();
             ComputeResource computeResource = appCatalog.getComputeResource();
@@ -2747,7 +2882,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the update.
      */
     @Override
-    public boolean updateLocalDataMovementDetails(String jobSubmissionInterfaceId, LOCALDataMovement localDataMovement) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean updateLocalDataMovementDetails(AuthzToken authzToken, String jobSubmissionInterfaceId, LOCALDataMovement localDataMovement)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
     	try {
             LocalDataMovementResource movment = AppCatalogThriftConversion.getLocalDataMovement(localDataMovement);
             movment.setDataMovementInterfaceId(jobSubmissionInterfaceId);
@@ -2763,7 +2900,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public LOCALDataMovement getLocalDataMovement(String dataMovementId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public LOCALDataMovement getLocalDataMovement(AuthzToken authzToken, String dataMovementId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getComputeResource().getLocalDataMovement(dataMovementId);
@@ -2799,7 +2938,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public String addSCPDataMovementDetails(String computeResourceId, int priorityOrder, SCPDataMovement scpDataMovement) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public String addSCPDataMovementDetails(AuthzToken authzToken, String computeResourceId, int priorityOrder, SCPDataMovement scpDataMovement)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
     	try {
             appCatalog = RegistryFactory.getAppCatalog();
             ComputeResource computeResource = appCatalog.getComputeResource();
@@ -2824,7 +2965,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the update.
      */
     @Override
-    public boolean updateSCPDataMovementDetails(String jobSubmissionInterfaceId, SCPDataMovement scpDataMovement) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean updateSCPDataMovementDetails(AuthzToken authzToken, String jobSubmissionInterfaceId, SCPDataMovement scpDataMovement)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
     	try {
             ScpDataMovementResource movment = AppCatalogThriftConversion.getSCPDataMovementDescription(scpDataMovement);
             movment.setDataMovementInterfaceId(jobSubmissionInterfaceId);
@@ -2840,7 +2983,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public SCPDataMovement getSCPDataMovement(String dataMovementId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public SCPDataMovement getSCPDataMovement(AuthzToken authzToken, String dataMovementId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getComputeResource().getSCPDataMovement(dataMovementId);
@@ -2855,7 +3000,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public String addUnicoreDataMovementDetails(String computeResourceId, int priorityOrder, UnicoreDataMovement unicoreDataMovement) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public String addUnicoreDataMovementDetails(AuthzToken authzToken, String computeResourceId, int priorityOrder, UnicoreDataMovement unicoreDataMovement)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             ComputeResource computeResource = appCatalog.getComputeResource();
@@ -2871,7 +3018,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public boolean updateUnicoreDataMovementDetails(String dataMovementInterfaceId, UnicoreDataMovement unicoreDataMovement) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean updateUnicoreDataMovementDetails(AuthzToken authzToken, String dataMovementInterfaceId, UnicoreDataMovement unicoreDataMovement)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             UnicoreDataMovementResource movment = AppCatalogThriftConversion.getUnicoreDMResource(unicoreDataMovement);
             movment.setDataMovementId(dataMovementInterfaceId);
@@ -2887,7 +3036,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public UnicoreDataMovement getUnicoreDataMovement(String dataMovementId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public UnicoreDataMovement getUnicoreDataMovement(AuthzToken authzToken, String dataMovementId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getComputeResource().getUNICOREDataMovement(dataMovementId);
@@ -2912,7 +3063,10 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public String addGridFTPDataMovementDetails(String computeResourceId, int priorityOrder, GridFTPDataMovement gridFTPDataMovement) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public String addGridFTPDataMovementDetails(AuthzToken authzToken, String computeResourceId, int priorityOrder,
+                                                GridFTPDataMovement gridFTPDataMovement) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
     	try {
             appCatalog = RegistryFactory.getAppCatalog();
             ComputeResource computeResource = appCatalog.getComputeResource();
@@ -2937,7 +3091,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the updation.
      */
     @Override
-    public boolean updateGridFTPDataMovementDetails(String jobSubmissionInterfaceId, GridFTPDataMovement gridFTPDataMovement) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean updateGridFTPDataMovementDetails(AuthzToken authzToken, String jobSubmissionInterfaceId, GridFTPDataMovement gridFTPDataMovement)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
     	try {
             GridftpDataMovementResource movment = AppCatalogThriftConversion.getGridFTPDataMovementDescription(gridFTPDataMovement);
             movment.setDataMovementInterfaceId(jobSubmissionInterfaceId);
@@ -2953,7 +3109,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public GridFTPDataMovement getGridFTPDataMovement(String dataMovementId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public GridFTPDataMovement getGridFTPDataMovement(AuthzToken authzToken, String dataMovementId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getComputeResource().getGridFTPDataMovement(dataMovementId);
@@ -2976,7 +3134,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the change.
      */
     @Override
-    public boolean changeJobSubmissionPriority(String jobSubmissionInterfaceId, int newPriorityOrder) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean changeJobSubmissionPriority(AuthzToken authzToken, String jobSubmissionInterfaceId, int newPriorityOrder) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         return false;
     }
 
@@ -2989,7 +3149,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the change.
      */
     @Override
-    public boolean changeDataMovementPriority(String dataMovementInterfaceId, int newPriorityOrder) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean changeDataMovementPriority(AuthzToken authzToken, String dataMovementInterfaceId, int newPriorityOrder)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         return false;
     }
 
@@ -3001,7 +3163,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the changes.
      */
     @Override
-    public boolean changeJobSubmissionPriorities(Map<String, Integer> jobSubmissionPriorityMap) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean changeJobSubmissionPriorities(AuthzToken authzToken, Map<String, Integer> jobSubmissionPriorityMap)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         return false;
     }
 
@@ -3013,7 +3177,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the changes.
      */
     @Override
-    public boolean changeDataMovementPriorities(Map<String, Integer> dataMovementPriorityMap) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean changeDataMovementPriorities(AuthzToken authzToken, Map<String, Integer> dataMovementPriorityMap)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         return false;
     }
 
@@ -3025,7 +3191,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean deleteJobSubmissionInterface(String computeResourceId, String jobSubmissionInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean deleteJobSubmissionInterface(AuthzToken authzToken, String computeResourceId, String jobSubmissionInterfaceId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             appCatalog.getComputeResource().removeJobSubmissionInterface(computeResourceId, jobSubmissionInterfaceId);
@@ -3047,7 +3215,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean deleteDataMovementInterface(String computeResourceId, String dataMovementInterfaceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean deleteDataMovementInterface(AuthzToken authzToken, String computeResourceId, String dataMovementInterfaceId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             appCatalog.getComputeResource().removeDataMovementInterface(computeResourceId, dataMovementInterfaceId);
@@ -3062,7 +3232,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public String registerResourceJobManager(ResourceJobManager resourceJobManager) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public String registerResourceJobManager(AuthzToken authzToken, ResourceJobManager resourceJobManager) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getComputeResource().addResourceJobManager(resourceJobManager);
@@ -3076,7 +3248,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public boolean updateResourceJobManager(String resourceJobManagerId, ResourceJobManager updatedResourceJobManager) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean updateResourceJobManager(AuthzToken authzToken, String resourceJobManagerId, ResourceJobManager updatedResourceJobManager)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             appCatalog.getComputeResource().updateResourceJobManager(resourceJobManagerId, updatedResourceJobManager);
@@ -3091,7 +3265,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public ResourceJobManager getResourceJobManager(String resourceJobManagerId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public ResourceJobManager getResourceJobManager(AuthzToken authzToken,String resourceJobManagerId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getComputeResource().getResourceJobManager(resourceJobManagerId);
@@ -3105,7 +3281,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public boolean deleteResourceJobManager(String resourceJobManagerId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean deleteResourceJobManager(AuthzToken authzToken, String resourceJobManagerId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             appCatalog.getComputeResource().deleteResourceJobManager(resourceJobManagerId);
@@ -3120,7 +3298,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public boolean deleteBatchQueue(String computeResourceId, String queueName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean deleteBatchQueue(AuthzToken authzToken, String computeResourceId, String queueName) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             appCatalog.getComputeResource().removeBatchQueue(computeResourceId, queueName);
@@ -3144,7 +3324,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the registration.
      */
     @Override
-    public String registerGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public String registerGatewayResourceProfile(AuthzToken authzToken, GatewayResourceProfile gatewayResourceProfile)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
     	try {
             if (!validateString(gatewayResourceProfile.getGatewayID())){
                 logger.error("Cannot create gateway profile with empty gateway id");
@@ -3177,7 +3359,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Gateway Resource Profile Object.
      */
     @Override
-    public GatewayResourceProfile getGatewayResourceProfile(String gatewayID) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public GatewayResourceProfile getGatewayResourceProfile(AuthzToken authzToken, String gatewayID) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             if (!isGatewayExistInternal(gatewayID)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
@@ -3204,7 +3388,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the update.
      */
     @Override
-    public boolean updateGatewayResourceProfile(String gatewayID, GatewayResourceProfile gatewayResourceProfile) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean updateGatewayResourceProfile(AuthzToken authzToken, String gatewayID, GatewayResourceProfile gatewayResourceProfile)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             if (!isGatewayExistInternal(gatewayID)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
@@ -3231,7 +3417,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean deleteGatewayResourceProfile(String gatewayID) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean deleteGatewayResourceProfile(AuthzToken authzToken, String gatewayID) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             if (!isGatewayExistInternal(gatewayID)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
@@ -3261,7 +3449,10 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Instead an update should be used.
      */
     @Override
-    public boolean addGatewayComputeResourcePreference(String gatewayID, String computeResourceId, ComputeResourcePreference computeResourcePreference) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean addGatewayComputeResourcePreference(AuthzToken authzToken, String gatewayID, String computeResourceId,
+                                                       ComputeResourcePreference computeResourcePreference) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
     	try {
             if (!isGatewayExistInternal(gatewayID)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
@@ -3295,7 +3486,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns the ComputeResourcePreference object.
      */
     @Override
-    public ComputeResourcePreference getGatewayComputeResourcePreference(String gatewayID, String computeResourceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public ComputeResourcePreference getGatewayComputeResourcePreference(AuthzToken authzToken, String gatewayID, String computeResourceId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
     	try {
             if (!isGatewayExistInternal(gatewayID)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
@@ -3336,7 +3529,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns the ComputeResourcePreference object.
      */
     @Override
-    public List<ComputeResourcePreference> getAllGatewayComputeResourcePreferences(String gatewayID) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public List<ComputeResourcePreference> getAllGatewayComputeResourcePreferences(AuthzToken authzToken, String gatewayID)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
     	try {
             if (!isGatewayExistInternal(gatewayID)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
@@ -3355,7 +3550,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-    public List<GatewayResourceProfile> getAllGatewayComputeResources() throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public List<GatewayResourceProfile> getAllGatewayComputeResources(AuthzToken authzToken) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             GwyResourceProfile gatewayProfile = appCatalog.getGatewayProfile();
@@ -3378,7 +3575,10 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the updation.
      */
     @Override
-    public boolean updateGatewayComputeResourcePreference(String gatewayID, String computeResourceId, ComputeResourcePreference computeResourcePreference) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean updateGatewayComputeResourcePreference(AuthzToken authzToken, String gatewayID, String computeResourceId,
+                                                          ComputeResourcePreference computeResourcePreference)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
     	try {
             if (!isGatewayExistInternal(gatewayID)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
@@ -3420,7 +3620,9 @@ public class AiravataServerHandler implements Airavata.Iface {
      * Returns a success/failure of the deletion.
      */
     @Override
-    public boolean deleteGatewayComputeResourcePreference(String gatewayID, String computeResourceId) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+    public boolean deleteGatewayComputeResourcePreference(AuthzToken authzToken, String gatewayID, String computeResourceId)
+            throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
     	try {
             if (!isGatewayExistInternal(gatewayID)){
                 logger.error("Gateway does not exist.Please provide a valid gateway id...");
@@ -3439,8 +3641,9 @@ public class AiravataServerHandler implements Airavata.Iface {
     }
 
     @Override
-	public List<String> getAllWorkflows(String gatewayId) throws InvalidRequestException,
-			AiravataClientException, AiravataSystemException, TException {
+    @SecurityCheck
+	public List<String> getAllWorkflows(AuthzToken authzToken, String gatewayId) throws InvalidRequestException,
+			AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 
         if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
@@ -3458,9 +3661,9 @@ public class AiravataServerHandler implements Airavata.Iface {
 	}
 
 	@Override
-	public Workflow getWorkflow(String workflowTemplateId)
-			throws InvalidRequestException, AiravataClientException,
-			AiravataSystemException, TException {
+    @SecurityCheck
+	public Workflow getWorkflow(AuthzToken authzToken, String workflowTemplateId)
+			throws InvalidRequestException, AiravataClientException, AuthorizationException, AiravataSystemException, TException {
 		try {
 			return getWorkflowCatalog().getWorkflow(workflowTemplateId);
 		} catch (AppCatalogException e) {
@@ -3473,9 +3676,9 @@ public class AiravataServerHandler implements Airavata.Iface {
 	}
 
 	@Override
-	public void deleteWorkflow(String workflowTemplateId)
-			throws InvalidRequestException, AiravataClientException,
-			AiravataSystemException, TException {
+    @SecurityCheck
+	public void deleteWorkflow(AuthzToken authzToken, String workflowTemplateId)
+			throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 		try {
 			getWorkflowCatalog().deleteWorkflow(workflowTemplateId);
 		} catch (AppCatalogException e) {
@@ -3488,9 +3691,9 @@ public class AiravataServerHandler implements Airavata.Iface {
 	}
 
 	@Override
-	public String registerWorkflow(String gatewayId, Workflow workflow)
-			throws InvalidRequestException, AiravataClientException,
-			AiravataSystemException, TException {
+    @SecurityCheck
+	public String registerWorkflow(AuthzToken authzToken, String gatewayId, Workflow workflow)
+			throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
             throw new AiravataSystemException(AiravataErrorType.INTERNAL_ERROR);
@@ -3507,9 +3710,9 @@ public class AiravataServerHandler implements Airavata.Iface {
 	}
 
 	@Override
-	public void updateWorkflow(String workflowTemplateId, Workflow workflow)
-			throws InvalidRequestException, AiravataClientException,
-			AiravataSystemException, TException {
+    @SecurityCheck
+	public void updateWorkflow(AuthzToken authzToken, String workflowTemplateId, Workflow workflow)
+			throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 		try {
 			getWorkflowCatalog().updateWorkflow(workflowTemplateId, workflow);
 		} catch (AppCatalogException e) {
@@ -3522,9 +3725,9 @@ public class AiravataServerHandler implements Airavata.Iface {
 	}
 
 	@Override
-	public String getWorkflowTemplateId(String workflowName)
-			throws InvalidRequestException, AiravataClientException,
-			AiravataSystemException, TException {
+    @SecurityCheck
+	public String getWorkflowTemplateId(AuthzToken authzToken, String workflowName)
+			throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 		try {
 			return getWorkflowCatalog().getWorkflowTemplateId(workflowName);
 		} catch (AppCatalogException e) {
@@ -3537,9 +3740,9 @@ public class AiravataServerHandler implements Airavata.Iface {
 	}
 
 	@Override
-	public boolean isWorkflowExistWithName(String workflowName)
-			throws InvalidRequestException, AiravataClientException,
-			AiravataSystemException, TException {
+    @SecurityCheck
+	public boolean isWorkflowExistWithName(AuthzToken authzToken, String workflowName)
+			throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
 		try {
 			return getWorkflowCatalog().isWorkflowExistWithName(workflowName);
 		} catch (AppCatalogException e) {
@@ -3565,7 +3768,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     @SecurityCheck
     public boolean deleteProject(AuthzToken authzToken, String projectId) throws InvalidRequestException,
-            AiravataClientException, AiravataSystemException, ProjectNotFoundException, TException {
+            AiravataClientException, AiravataSystemException, ProjectNotFoundException, AuthorizationException, TException {
 
         try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
