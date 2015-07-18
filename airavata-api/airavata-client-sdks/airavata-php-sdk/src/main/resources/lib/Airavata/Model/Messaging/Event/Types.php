@@ -1760,12 +1760,4 @@ class Message {
 
 }
 
-final class Constant extends \Thrift\Type\TConstant {
-  static protected $DEFAULT_ID;
-
-  static protected function init_DEFAULT_ID() {
-    return "DO_NOT_SET_AT_CLIENTS";
-  }
-}
-
 
