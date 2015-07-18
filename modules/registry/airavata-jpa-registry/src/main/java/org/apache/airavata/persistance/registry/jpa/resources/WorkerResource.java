@@ -747,6 +747,7 @@ public class WorkerResource extends AbstractResource {
         experimentStatisticsResource.setFailedExperiments(failedExperiments);
 
         List<ExperimentSummaryResource> cancelledExperiments = getExperimentStatisticsForState(ExperimentState.CANCELED, gatewayId, fromTime, toTime);
+        cancelledExperiments.addAll(getExperimentStatisticsForState(ExperimentState.CANCELING, gatewayId, fromTime, toTime));
         experimentStatisticsResource.setCancelledExperimentCount(cancelledExperiments.size());
         experimentStatisticsResource.setCancelledExperiments(cancelledExperiments);
 
