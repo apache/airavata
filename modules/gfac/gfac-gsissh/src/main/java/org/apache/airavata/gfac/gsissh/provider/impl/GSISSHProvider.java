@@ -55,6 +55,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -309,10 +310,15 @@ public class GSISSHProvider extends AbstractProvider {
                 }
                 return;
             }
+        } else {
+            throw new GFacException(MessageFormat.format("expId: {0} , jobId {1} :- Job monitor mode {2} is not yet " +
+                    "implemented, please change compute resource monitor mode to {3}", jobExecutionContext.getExperimentID(),
+                    jobExecutionContext.getJobDetails().getJobID(), sshJobSubmission.getMonitorMode().name(),
+                    MonitorMode.JOB_EMAIL_NOTIFICATION_MONITOR.name()));
         }
 
         // if email monitor is not activeated or not configure we use pull or push monitor
-        List<ThreadedHandler> daemonHandlers = BetterGfacImpl.getDaemonHandlers();
+        /*List<ThreadedHandler> daemonHandlers = BetterGfacImpl.getDaemonHandlers();
         if (daemonHandlers == null) {
             daemonHandlers = BetterGfacImpl.getDaemonHandlers();
         }
@@ -346,6 +352,6 @@ public class GSISSHProvider extends AbstractProvider {
             log.error("No Daemon handler is configured in gfac-config.xml, either pull or push, so monitoring will not invoked" +
                     ", execution is configured as asynchronous, so Outhandler will not be invoked");
 
-        }
+        }*/
     }
 }
