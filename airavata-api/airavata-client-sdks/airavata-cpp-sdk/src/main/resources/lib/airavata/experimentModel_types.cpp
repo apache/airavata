@@ -3408,8 +3408,8 @@ void swap(ExperimentSummary &a, ExperimentSummary &b) {
   swap(a.__isset, b.__isset);
 }
 
-const char* ExperimentStatistics::ascii_fingerprint = "30185B02179FA7FA5FE94244EB7C415D";
-const uint8_t ExperimentStatistics::binary_fingerprint[16] = {0x30,0x18,0x5B,0x02,0x17,0x9F,0xA7,0xFA,0x5F,0xE9,0x42,0x44,0xEB,0x7C,0x41,0x5D};
+const char* ExperimentStatistics::ascii_fingerprint = "AD5D3509EF72E73D31C85D699863B232";
+const uint8_t ExperimentStatistics::binary_fingerprint[16] = {0xAD,0x5D,0x35,0x09,0xEF,0x72,0xE7,0x3D,0x31,0xC8,0x5D,0x69,0x98,0x63,0xB2,0x32};
 
 uint32_t ExperimentStatistics::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -3425,6 +3425,8 @@ uint32_t ExperimentStatistics::read(::apache::thrift::protocol::TProtocol* iprot
   bool isset_allExperimentCount = false;
   bool isset_completedExperimentCount = false;
   bool isset_failedExperimentCount = false;
+  bool isset_createdExperimentCount = false;
+  bool isset_runningExperimentCount = false;
   bool isset_allExperiments = false;
 
   while (true)
@@ -3468,6 +3470,22 @@ uint32_t ExperimentStatistics::read(::apache::thrift::protocol::TProtocol* iprot
         }
         break;
       case 5:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->createdExperimentCount);
+          isset_createdExperimentCount = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 6:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->runningExperimentCount);
+          isset_runningExperimentCount = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 7:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->allExperiments.clear();
@@ -3487,7 +3505,7 @@ uint32_t ExperimentStatistics::read(::apache::thrift::protocol::TProtocol* iprot
           xfer += iprot->skip(ftype);
         }
         break;
-      case 6:
+      case 8:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->completedExperiments.clear();
@@ -3507,7 +3525,7 @@ uint32_t ExperimentStatistics::read(::apache::thrift::protocol::TProtocol* iprot
           xfer += iprot->skip(ftype);
         }
         break;
-      case 7:
+      case 9:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->failedExperiments.clear();
@@ -3527,7 +3545,7 @@ uint32_t ExperimentStatistics::read(::apache::thrift::protocol::TProtocol* iprot
           xfer += iprot->skip(ftype);
         }
         break;
-      case 8:
+      case 10:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->cancelledExperiments.clear();
@@ -3547,6 +3565,46 @@ uint32_t ExperimentStatistics::read(::apache::thrift::protocol::TProtocol* iprot
           xfer += iprot->skip(ftype);
         }
         break;
+      case 11:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->createdExperiments.clear();
+            uint32_t _size143;
+            ::apache::thrift::protocol::TType _etype146;
+            xfer += iprot->readListBegin(_etype146, _size143);
+            this->createdExperiments.resize(_size143);
+            uint32_t _i147;
+            for (_i147 = 0; _i147 < _size143; ++_i147)
+            {
+              xfer += this->createdExperiments[_i147].read(iprot);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.createdExperiments = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 12:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->runningExperiments.clear();
+            uint32_t _size148;
+            ::apache::thrift::protocol::TType _etype151;
+            xfer += iprot->readListBegin(_etype151, _size148);
+            this->runningExperiments.resize(_size148);
+            uint32_t _i152;
+            for (_i152 = 0; _i152 < _size148; ++_i152)
+            {
+              xfer += this->runningExperiments[_i152].read(iprot);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.runningExperiments = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -3561,6 +3619,10 @@ uint32_t ExperimentStatistics::read(::apache::thrift::protocol::TProtocol* iprot
   if (!isset_completedExperimentCount)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_failedExperimentCount)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_createdExperimentCount)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_runningExperimentCount)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_allExperiments)
     throw TProtocolException(TProtocolException::INVALID_DATA);
@@ -3588,52 +3650,86 @@ uint32_t ExperimentStatistics::write(::apache::thrift::protocol::TProtocol* opro
   xfer += oprot->writeI32(this->failedExperimentCount);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("allExperiments", ::apache::thrift::protocol::T_LIST, 5);
+  xfer += oprot->writeFieldBegin("createdExperimentCount", ::apache::thrift::protocol::T_I32, 5);
+  xfer += oprot->writeI32(this->createdExperimentCount);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("runningExperimentCount", ::apache::thrift::protocol::T_I32, 6);
+  xfer += oprot->writeI32(this->runningExperimentCount);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("allExperiments", ::apache::thrift::protocol::T_LIST, 7);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->allExperiments.size()));
-    std::vector<ExperimentSummary> ::const_iterator _iter143;
-    for (_iter143 = this->allExperiments.begin(); _iter143 != this->allExperiments.end(); ++_iter143)
+    std::vector<ExperimentSummary> ::const_iterator _iter153;
+    for (_iter153 = this->allExperiments.begin(); _iter153 != this->allExperiments.end(); ++_iter153)
     {
-      xfer += (*_iter143).write(oprot);
+      xfer += (*_iter153).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
   xfer += oprot->writeFieldEnd();
 
   if (this->__isset.completedExperiments) {
-    xfer += oprot->writeFieldBegin("completedExperiments", ::apache::thrift::protocol::T_LIST, 6);
+    xfer += oprot->writeFieldBegin("completedExperiments", ::apache::thrift::protocol::T_LIST, 8);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->completedExperiments.size()));
-      std::vector<ExperimentSummary> ::const_iterator _iter144;
-      for (_iter144 = this->completedExperiments.begin(); _iter144 != this->completedExperiments.end(); ++_iter144)
+      std::vector<ExperimentSummary> ::const_iterator _iter154;
+      for (_iter154 = this->completedExperiments.begin(); _iter154 != this->completedExperiments.end(); ++_iter154)
       {
-        xfer += (*_iter144).write(oprot);
+        xfer += (*_iter154).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.failedExperiments) {
-    xfer += oprot->writeFieldBegin("failedExperiments", ::apache::thrift::protocol::T_LIST, 7);
+    xfer += oprot->writeFieldBegin("failedExperiments", ::apache::thrift::protocol::T_LIST, 9);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->failedExperiments.size()));
-      std::vector<ExperimentSummary> ::const_iterator _iter145;
-      for (_iter145 = this->failedExperiments.begin(); _iter145 != this->failedExperiments.end(); ++_iter145)
+      std::vector<ExperimentSummary> ::const_iterator _iter155;
+      for (_iter155 = this->failedExperiments.begin(); _iter155 != this->failedExperiments.end(); ++_iter155)
       {
-        xfer += (*_iter145).write(oprot);
+        xfer += (*_iter155).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.cancelledExperiments) {
-    xfer += oprot->writeFieldBegin("cancelledExperiments", ::apache::thrift::protocol::T_LIST, 8);
+    xfer += oprot->writeFieldBegin("cancelledExperiments", ::apache::thrift::protocol::T_LIST, 10);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->cancelledExperiments.size()));
-      std::vector<ExperimentSummary> ::const_iterator _iter146;
-      for (_iter146 = this->cancelledExperiments.begin(); _iter146 != this->cancelledExperiments.end(); ++_iter146)
+      std::vector<ExperimentSummary> ::const_iterator _iter156;
+      for (_iter156 = this->cancelledExperiments.begin(); _iter156 != this->cancelledExperiments.end(); ++_iter156)
       {
-        xfer += (*_iter146).write(oprot);
+        xfer += (*_iter156).write(oprot);
+      }
+      xfer += oprot->writeListEnd();
+    }
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.createdExperiments) {
+    xfer += oprot->writeFieldBegin("createdExperiments", ::apache::thrift::protocol::T_LIST, 11);
+    {
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->createdExperiments.size()));
+      std::vector<ExperimentSummary> ::const_iterator _iter157;
+      for (_iter157 = this->createdExperiments.begin(); _iter157 != this->createdExperiments.end(); ++_iter157)
+      {
+        xfer += (*_iter157).write(oprot);
+      }
+      xfer += oprot->writeListEnd();
+    }
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.runningExperiments) {
+    xfer += oprot->writeFieldBegin("runningExperiments", ::apache::thrift::protocol::T_LIST, 12);
+    {
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->runningExperiments.size()));
+      std::vector<ExperimentSummary> ::const_iterator _iter158;
+      for (_iter158 = this->runningExperiments.begin(); _iter158 != this->runningExperiments.end(); ++_iter158)
+      {
+        xfer += (*_iter158).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -3650,10 +3746,14 @@ void swap(ExperimentStatistics &a, ExperimentStatistics &b) {
   swap(a.completedExperimentCount, b.completedExperimentCount);
   swap(a.cancelledExperimentCount, b.cancelledExperimentCount);
   swap(a.failedExperimentCount, b.failedExperimentCount);
+  swap(a.createdExperimentCount, b.createdExperimentCount);
+  swap(a.runningExperimentCount, b.runningExperimentCount);
   swap(a.allExperiments, b.allExperiments);
   swap(a.completedExperiments, b.completedExperiments);
   swap(a.failedExperiments, b.failedExperiments);
   swap(a.cancelledExperiments, b.cancelledExperiments);
+  swap(a.createdExperiments, b.createdExperiments);
+  swap(a.runningExperiments, b.runningExperiments);
   swap(a.__isset, b.__isset);
 }
 

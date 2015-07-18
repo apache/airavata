@@ -56,10 +56,14 @@ import org.slf4j.LoggerFactory;
   private static final org.apache.thrift.protocol.TField COMPLETED_EXPERIMENT_COUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("completedExperimentCount", org.apache.thrift.protocol.TType.I32, (short)2);
   private static final org.apache.thrift.protocol.TField CANCELLED_EXPERIMENT_COUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("cancelledExperimentCount", org.apache.thrift.protocol.TType.I32, (short)3);
   private static final org.apache.thrift.protocol.TField FAILED_EXPERIMENT_COUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("failedExperimentCount", org.apache.thrift.protocol.TType.I32, (short)4);
-  private static final org.apache.thrift.protocol.TField ALL_EXPERIMENTS_FIELD_DESC = new org.apache.thrift.protocol.TField("allExperiments", org.apache.thrift.protocol.TType.LIST, (short)5);
-  private static final org.apache.thrift.protocol.TField COMPLETED_EXPERIMENTS_FIELD_DESC = new org.apache.thrift.protocol.TField("completedExperiments", org.apache.thrift.protocol.TType.LIST, (short)6);
-  private static final org.apache.thrift.protocol.TField FAILED_EXPERIMENTS_FIELD_DESC = new org.apache.thrift.protocol.TField("failedExperiments", org.apache.thrift.protocol.TType.LIST, (short)7);
-  private static final org.apache.thrift.protocol.TField CANCELLED_EXPERIMENTS_FIELD_DESC = new org.apache.thrift.protocol.TField("cancelledExperiments", org.apache.thrift.protocol.TType.LIST, (short)8);
+  private static final org.apache.thrift.protocol.TField CREATED_EXPERIMENT_COUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("createdExperimentCount", org.apache.thrift.protocol.TType.I32, (short)5);
+  private static final org.apache.thrift.protocol.TField RUNNING_EXPERIMENT_COUNT_FIELD_DESC = new org.apache.thrift.protocol.TField("runningExperimentCount", org.apache.thrift.protocol.TType.I32, (short)6);
+  private static final org.apache.thrift.protocol.TField ALL_EXPERIMENTS_FIELD_DESC = new org.apache.thrift.protocol.TField("allExperiments", org.apache.thrift.protocol.TType.LIST, (short)7);
+  private static final org.apache.thrift.protocol.TField COMPLETED_EXPERIMENTS_FIELD_DESC = new org.apache.thrift.protocol.TField("completedExperiments", org.apache.thrift.protocol.TType.LIST, (short)8);
+  private static final org.apache.thrift.protocol.TField FAILED_EXPERIMENTS_FIELD_DESC = new org.apache.thrift.protocol.TField("failedExperiments", org.apache.thrift.protocol.TType.LIST, (short)9);
+  private static final org.apache.thrift.protocol.TField CANCELLED_EXPERIMENTS_FIELD_DESC = new org.apache.thrift.protocol.TField("cancelledExperiments", org.apache.thrift.protocol.TType.LIST, (short)10);
+  private static final org.apache.thrift.protocol.TField CREATED_EXPERIMENTS_FIELD_DESC = new org.apache.thrift.protocol.TField("createdExperiments", org.apache.thrift.protocol.TType.LIST, (short)11);
+  private static final org.apache.thrift.protocol.TField RUNNING_EXPERIMENTS_FIELD_DESC = new org.apache.thrift.protocol.TField("runningExperiments", org.apache.thrift.protocol.TType.LIST, (short)12);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -71,10 +75,14 @@ import org.slf4j.LoggerFactory;
   private int completedExperimentCount; // required
   private int cancelledExperimentCount; // optional
   private int failedExperimentCount; // required
+  private int createdExperimentCount; // required
+  private int runningExperimentCount; // required
   private List<ExperimentSummary> allExperiments; // required
   private List<ExperimentSummary> completedExperiments; // optional
   private List<ExperimentSummary> failedExperiments; // optional
   private List<ExperimentSummary> cancelledExperiments; // optional
+  private List<ExperimentSummary> createdExperiments; // optional
+  private List<ExperimentSummary> runningExperiments; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   @SuppressWarnings("all") public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -82,10 +90,14 @@ import org.slf4j.LoggerFactory;
     COMPLETED_EXPERIMENT_COUNT((short)2, "completedExperimentCount"),
     CANCELLED_EXPERIMENT_COUNT((short)3, "cancelledExperimentCount"),
     FAILED_EXPERIMENT_COUNT((short)4, "failedExperimentCount"),
-    ALL_EXPERIMENTS((short)5, "allExperiments"),
-    COMPLETED_EXPERIMENTS((short)6, "completedExperiments"),
-    FAILED_EXPERIMENTS((short)7, "failedExperiments"),
-    CANCELLED_EXPERIMENTS((short)8, "cancelledExperiments");
+    CREATED_EXPERIMENT_COUNT((short)5, "createdExperimentCount"),
+    RUNNING_EXPERIMENT_COUNT((short)6, "runningExperimentCount"),
+    ALL_EXPERIMENTS((short)7, "allExperiments"),
+    COMPLETED_EXPERIMENTS((short)8, "completedExperiments"),
+    FAILED_EXPERIMENTS((short)9, "failedExperiments"),
+    CANCELLED_EXPERIMENTS((short)10, "cancelledExperiments"),
+    CREATED_EXPERIMENTS((short)11, "createdExperiments"),
+    RUNNING_EXPERIMENTS((short)12, "runningExperiments");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -108,14 +120,22 @@ import org.slf4j.LoggerFactory;
           return CANCELLED_EXPERIMENT_COUNT;
         case 4: // FAILED_EXPERIMENT_COUNT
           return FAILED_EXPERIMENT_COUNT;
-        case 5: // ALL_EXPERIMENTS
+        case 5: // CREATED_EXPERIMENT_COUNT
+          return CREATED_EXPERIMENT_COUNT;
+        case 6: // RUNNING_EXPERIMENT_COUNT
+          return RUNNING_EXPERIMENT_COUNT;
+        case 7: // ALL_EXPERIMENTS
           return ALL_EXPERIMENTS;
-        case 6: // COMPLETED_EXPERIMENTS
+        case 8: // COMPLETED_EXPERIMENTS
           return COMPLETED_EXPERIMENTS;
-        case 7: // FAILED_EXPERIMENTS
+        case 9: // FAILED_EXPERIMENTS
           return FAILED_EXPERIMENTS;
-        case 8: // CANCELLED_EXPERIMENTS
+        case 10: // CANCELLED_EXPERIMENTS
           return CANCELLED_EXPERIMENTS;
+        case 11: // CREATED_EXPERIMENTS
+          return CREATED_EXPERIMENTS;
+        case 12: // RUNNING_EXPERIMENTS
+          return RUNNING_EXPERIMENTS;
         default:
           return null;
       }
@@ -160,8 +180,10 @@ import org.slf4j.LoggerFactory;
   private static final int __COMPLETEDEXPERIMENTCOUNT_ISSET_ID = 1;
   private static final int __CANCELLEDEXPERIMENTCOUNT_ISSET_ID = 2;
   private static final int __FAILEDEXPERIMENTCOUNT_ISSET_ID = 3;
+  private static final int __CREATEDEXPERIMENTCOUNT_ISSET_ID = 4;
+  private static final int __RUNNINGEXPERIMENTCOUNT_ISSET_ID = 5;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.CANCELLED_EXPERIMENT_COUNT,_Fields.COMPLETED_EXPERIMENTS,_Fields.FAILED_EXPERIMENTS,_Fields.CANCELLED_EXPERIMENTS};
+  private _Fields optionals[] = {_Fields.CANCELLED_EXPERIMENT_COUNT,_Fields.COMPLETED_EXPERIMENTS,_Fields.FAILED_EXPERIMENTS,_Fields.CANCELLED_EXPERIMENTS,_Fields.CREATED_EXPERIMENTS,_Fields.RUNNING_EXPERIMENTS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -172,6 +194,10 @@ import org.slf4j.LoggerFactory;
     tmpMap.put(_Fields.CANCELLED_EXPERIMENT_COUNT, new org.apache.thrift.meta_data.FieldMetaData("cancelledExperimentCount", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.FAILED_EXPERIMENT_COUNT, new org.apache.thrift.meta_data.FieldMetaData("failedExperimentCount", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.CREATED_EXPERIMENT_COUNT, new org.apache.thrift.meta_data.FieldMetaData("createdExperimentCount", org.apache.thrift.TFieldRequirementType.REQUIRED, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.RUNNING_EXPERIMENT_COUNT, new org.apache.thrift.meta_data.FieldMetaData("runningExperimentCount", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields.ALL_EXPERIMENTS, new org.apache.thrift.meta_data.FieldMetaData("allExperiments", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
@@ -185,6 +211,12 @@ import org.slf4j.LoggerFactory;
     tmpMap.put(_Fields.CANCELLED_EXPERIMENTS, new org.apache.thrift.meta_data.FieldMetaData("cancelledExperiments", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ExperimentSummary.class))));
+    tmpMap.put(_Fields.CREATED_EXPERIMENTS, new org.apache.thrift.meta_data.FieldMetaData("createdExperiments", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ExperimentSummary.class))));
+    tmpMap.put(_Fields.RUNNING_EXPERIMENTS, new org.apache.thrift.meta_data.FieldMetaData("runningExperiments", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, ExperimentSummary.class))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(ExperimentStatistics.class, metaDataMap);
   }
@@ -196,6 +228,8 @@ import org.slf4j.LoggerFactory;
     int allExperimentCount,
     int completedExperimentCount,
     int failedExperimentCount,
+    int createdExperimentCount,
+    int runningExperimentCount,
     List<ExperimentSummary> allExperiments)
   {
     this();
@@ -205,6 +239,10 @@ import org.slf4j.LoggerFactory;
     setCompletedExperimentCountIsSet(true);
     this.failedExperimentCount = failedExperimentCount;
     setFailedExperimentCountIsSet(true);
+    this.createdExperimentCount = createdExperimentCount;
+    setCreatedExperimentCountIsSet(true);
+    this.runningExperimentCount = runningExperimentCount;
+    setRunningExperimentCountIsSet(true);
     this.allExperiments = allExperiments;
   }
 
@@ -217,6 +255,8 @@ import org.slf4j.LoggerFactory;
     this.completedExperimentCount = other.completedExperimentCount;
     this.cancelledExperimentCount = other.cancelledExperimentCount;
     this.failedExperimentCount = other.failedExperimentCount;
+    this.createdExperimentCount = other.createdExperimentCount;
+    this.runningExperimentCount = other.runningExperimentCount;
     if (other.isSetAllExperiments()) {
       List<ExperimentSummary> __this__allExperiments = new ArrayList<ExperimentSummary>(other.allExperiments.size());
       for (ExperimentSummary other_element : other.allExperiments) {
@@ -245,6 +285,20 @@ import org.slf4j.LoggerFactory;
       }
       this.cancelledExperiments = __this__cancelledExperiments;
     }
+    if (other.isSetCreatedExperiments()) {
+      List<ExperimentSummary> __this__createdExperiments = new ArrayList<ExperimentSummary>(other.createdExperiments.size());
+      for (ExperimentSummary other_element : other.createdExperiments) {
+        __this__createdExperiments.add(new ExperimentSummary(other_element));
+      }
+      this.createdExperiments = __this__createdExperiments;
+    }
+    if (other.isSetRunningExperiments()) {
+      List<ExperimentSummary> __this__runningExperiments = new ArrayList<ExperimentSummary>(other.runningExperiments.size());
+      for (ExperimentSummary other_element : other.runningExperiments) {
+        __this__runningExperiments.add(new ExperimentSummary(other_element));
+      }
+      this.runningExperiments = __this__runningExperiments;
+    }
   }
 
   public ExperimentStatistics deepCopy() {
@@ -261,10 +315,16 @@ import org.slf4j.LoggerFactory;
     this.cancelledExperimentCount = 0;
     setFailedExperimentCountIsSet(false);
     this.failedExperimentCount = 0;
+    setCreatedExperimentCountIsSet(false);
+    this.createdExperimentCount = 0;
+    setRunningExperimentCountIsSet(false);
+    this.runningExperimentCount = 0;
     this.allExperiments = null;
     this.completedExperiments = null;
     this.failedExperiments = null;
     this.cancelledExperiments = null;
+    this.createdExperiments = null;
+    this.runningExperiments = null;
   }
 
   public int getAllExperimentCount() {
@@ -353,6 +413,50 @@ import org.slf4j.LoggerFactory;
 
   public void setFailedExperimentCountIsSet(boolean value) {
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __FAILEDEXPERIMENTCOUNT_ISSET_ID, value);
+  }
+
+  public int getCreatedExperimentCount() {
+    return this.createdExperimentCount;
+  }
+
+  public void setCreatedExperimentCount(int createdExperimentCount) {
+    this.createdExperimentCount = createdExperimentCount;
+    setCreatedExperimentCountIsSet(true);
+  }
+
+  public void unsetCreatedExperimentCount() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __CREATEDEXPERIMENTCOUNT_ISSET_ID);
+  }
+
+  /** Returns true if field createdExperimentCount is set (has been assigned a value) and false otherwise */
+  public boolean isSetCreatedExperimentCount() {
+    return EncodingUtils.testBit(__isset_bitfield, __CREATEDEXPERIMENTCOUNT_ISSET_ID);
+  }
+
+  public void setCreatedExperimentCountIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __CREATEDEXPERIMENTCOUNT_ISSET_ID, value);
+  }
+
+  public int getRunningExperimentCount() {
+    return this.runningExperimentCount;
+  }
+
+  public void setRunningExperimentCount(int runningExperimentCount) {
+    this.runningExperimentCount = runningExperimentCount;
+    setRunningExperimentCountIsSet(true);
+  }
+
+  public void unsetRunningExperimentCount() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __RUNNINGEXPERIMENTCOUNT_ISSET_ID);
+  }
+
+  /** Returns true if field runningExperimentCount is set (has been assigned a value) and false otherwise */
+  public boolean isSetRunningExperimentCount() {
+    return EncodingUtils.testBit(__isset_bitfield, __RUNNINGEXPERIMENTCOUNT_ISSET_ID);
+  }
+
+  public void setRunningExperimentCountIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __RUNNINGEXPERIMENTCOUNT_ISSET_ID, value);
   }
 
   public int getAllExperimentsSize() {
@@ -507,6 +611,82 @@ import org.slf4j.LoggerFactory;
     }
   }
 
+  public int getCreatedExperimentsSize() {
+    return (this.createdExperiments == null) ? 0 : this.createdExperiments.size();
+  }
+
+  public java.util.Iterator<ExperimentSummary> getCreatedExperimentsIterator() {
+    return (this.createdExperiments == null) ? null : this.createdExperiments.iterator();
+  }
+
+  public void addToCreatedExperiments(ExperimentSummary elem) {
+    if (this.createdExperiments == null) {
+      this.createdExperiments = new ArrayList<ExperimentSummary>();
+    }
+    this.createdExperiments.add(elem);
+  }
+
+  public List<ExperimentSummary> getCreatedExperiments() {
+    return this.createdExperiments;
+  }
+
+  public void setCreatedExperiments(List<ExperimentSummary> createdExperiments) {
+    this.createdExperiments = createdExperiments;
+  }
+
+  public void unsetCreatedExperiments() {
+    this.createdExperiments = null;
+  }
+
+  /** Returns true if field createdExperiments is set (has been assigned a value) and false otherwise */
+  public boolean isSetCreatedExperiments() {
+    return this.createdExperiments != null;
+  }
+
+  public void setCreatedExperimentsIsSet(boolean value) {
+    if (!value) {
+      this.createdExperiments = null;
+    }
+  }
+
+  public int getRunningExperimentsSize() {
+    return (this.runningExperiments == null) ? 0 : this.runningExperiments.size();
+  }
+
+  public java.util.Iterator<ExperimentSummary> getRunningExperimentsIterator() {
+    return (this.runningExperiments == null) ? null : this.runningExperiments.iterator();
+  }
+
+  public void addToRunningExperiments(ExperimentSummary elem) {
+    if (this.runningExperiments == null) {
+      this.runningExperiments = new ArrayList<ExperimentSummary>();
+    }
+    this.runningExperiments.add(elem);
+  }
+
+  public List<ExperimentSummary> getRunningExperiments() {
+    return this.runningExperiments;
+  }
+
+  public void setRunningExperiments(List<ExperimentSummary> runningExperiments) {
+    this.runningExperiments = runningExperiments;
+  }
+
+  public void unsetRunningExperiments() {
+    this.runningExperiments = null;
+  }
+
+  /** Returns true if field runningExperiments is set (has been assigned a value) and false otherwise */
+  public boolean isSetRunningExperiments() {
+    return this.runningExperiments != null;
+  }
+
+  public void setRunningExperimentsIsSet(boolean value) {
+    if (!value) {
+      this.runningExperiments = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case ALL_EXPERIMENT_COUNT:
@@ -538,6 +718,22 @@ import org.slf4j.LoggerFactory;
         unsetFailedExperimentCount();
       } else {
         setFailedExperimentCount((Integer)value);
+      }
+      break;
+
+    case CREATED_EXPERIMENT_COUNT:
+      if (value == null) {
+        unsetCreatedExperimentCount();
+      } else {
+        setCreatedExperimentCount((Integer)value);
+      }
+      break;
+
+    case RUNNING_EXPERIMENT_COUNT:
+      if (value == null) {
+        unsetRunningExperimentCount();
+      } else {
+        setRunningExperimentCount((Integer)value);
       }
       break;
 
@@ -573,6 +769,22 @@ import org.slf4j.LoggerFactory;
       }
       break;
 
+    case CREATED_EXPERIMENTS:
+      if (value == null) {
+        unsetCreatedExperiments();
+      } else {
+        setCreatedExperiments((List<ExperimentSummary>)value);
+      }
+      break;
+
+    case RUNNING_EXPERIMENTS:
+      if (value == null) {
+        unsetRunningExperiments();
+      } else {
+        setRunningExperiments((List<ExperimentSummary>)value);
+      }
+      break;
+
     }
   }
 
@@ -590,6 +802,12 @@ import org.slf4j.LoggerFactory;
     case FAILED_EXPERIMENT_COUNT:
       return Integer.valueOf(getFailedExperimentCount());
 
+    case CREATED_EXPERIMENT_COUNT:
+      return Integer.valueOf(getCreatedExperimentCount());
+
+    case RUNNING_EXPERIMENT_COUNT:
+      return Integer.valueOf(getRunningExperimentCount());
+
     case ALL_EXPERIMENTS:
       return getAllExperiments();
 
@@ -601,6 +819,12 @@ import org.slf4j.LoggerFactory;
 
     case CANCELLED_EXPERIMENTS:
       return getCancelledExperiments();
+
+    case CREATED_EXPERIMENTS:
+      return getCreatedExperiments();
+
+    case RUNNING_EXPERIMENTS:
+      return getRunningExperiments();
 
     }
     throw new IllegalStateException();
@@ -621,6 +845,10 @@ import org.slf4j.LoggerFactory;
       return isSetCancelledExperimentCount();
     case FAILED_EXPERIMENT_COUNT:
       return isSetFailedExperimentCount();
+    case CREATED_EXPERIMENT_COUNT:
+      return isSetCreatedExperimentCount();
+    case RUNNING_EXPERIMENT_COUNT:
+      return isSetRunningExperimentCount();
     case ALL_EXPERIMENTS:
       return isSetAllExperiments();
     case COMPLETED_EXPERIMENTS:
@@ -629,6 +857,10 @@ import org.slf4j.LoggerFactory;
       return isSetFailedExperiments();
     case CANCELLED_EXPERIMENTS:
       return isSetCancelledExperiments();
+    case CREATED_EXPERIMENTS:
+      return isSetCreatedExperiments();
+    case RUNNING_EXPERIMENTS:
+      return isSetRunningExperiments();
     }
     throw new IllegalStateException();
   }
@@ -682,6 +914,24 @@ import org.slf4j.LoggerFactory;
         return false;
     }
 
+    boolean this_present_createdExperimentCount = true;
+    boolean that_present_createdExperimentCount = true;
+    if (this_present_createdExperimentCount || that_present_createdExperimentCount) {
+      if (!(this_present_createdExperimentCount && that_present_createdExperimentCount))
+        return false;
+      if (this.createdExperimentCount != that.createdExperimentCount)
+        return false;
+    }
+
+    boolean this_present_runningExperimentCount = true;
+    boolean that_present_runningExperimentCount = true;
+    if (this_present_runningExperimentCount || that_present_runningExperimentCount) {
+      if (!(this_present_runningExperimentCount && that_present_runningExperimentCount))
+        return false;
+      if (this.runningExperimentCount != that.runningExperimentCount)
+        return false;
+    }
+
     boolean this_present_allExperiments = true && this.isSetAllExperiments();
     boolean that_present_allExperiments = true && that.isSetAllExperiments();
     if (this_present_allExperiments || that_present_allExperiments) {
@@ -715,6 +965,24 @@ import org.slf4j.LoggerFactory;
       if (!(this_present_cancelledExperiments && that_present_cancelledExperiments))
         return false;
       if (!this.cancelledExperiments.equals(that.cancelledExperiments))
+        return false;
+    }
+
+    boolean this_present_createdExperiments = true && this.isSetCreatedExperiments();
+    boolean that_present_createdExperiments = true && that.isSetCreatedExperiments();
+    if (this_present_createdExperiments || that_present_createdExperiments) {
+      if (!(this_present_createdExperiments && that_present_createdExperiments))
+        return false;
+      if (!this.createdExperiments.equals(that.createdExperiments))
+        return false;
+    }
+
+    boolean this_present_runningExperiments = true && this.isSetRunningExperiments();
+    boolean that_present_runningExperiments = true && that.isSetRunningExperiments();
+    if (this_present_runningExperiments || that_present_runningExperiments) {
+      if (!(this_present_runningExperiments && that_present_runningExperiments))
+        return false;
+      if (!this.runningExperiments.equals(that.runningExperiments))
         return false;
     }
 
@@ -774,6 +1042,26 @@ import org.slf4j.LoggerFactory;
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetCreatedExperimentCount()).compareTo(other.isSetCreatedExperimentCount());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetCreatedExperimentCount()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.createdExperimentCount, other.createdExperimentCount);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetRunningExperimentCount()).compareTo(other.isSetRunningExperimentCount());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetRunningExperimentCount()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.runningExperimentCount, other.runningExperimentCount);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     lastComparison = Boolean.valueOf(isSetAllExperiments()).compareTo(other.isSetAllExperiments());
     if (lastComparison != 0) {
       return lastComparison;
@@ -810,6 +1098,26 @@ import org.slf4j.LoggerFactory;
     }
     if (isSetCancelledExperiments()) {
       lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.cancelledExperiments, other.cancelledExperiments);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetCreatedExperiments()).compareTo(other.isSetCreatedExperiments());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetCreatedExperiments()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.createdExperiments, other.createdExperiments);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetRunningExperiments()).compareTo(other.isSetRunningExperiments());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetRunningExperiments()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.runningExperiments, other.runningExperiments);
       if (lastComparison != 0) {
         return lastComparison;
       }
@@ -852,6 +1160,14 @@ import org.slf4j.LoggerFactory;
     sb.append(this.failedExperimentCount);
     first = false;
     if (!first) sb.append(", ");
+    sb.append("createdExperimentCount:");
+    sb.append(this.createdExperimentCount);
+    first = false;
+    if (!first) sb.append(", ");
+    sb.append("runningExperimentCount:");
+    sb.append(this.runningExperimentCount);
+    first = false;
+    if (!first) sb.append(", ");
     sb.append("allExperiments:");
     if (this.allExperiments == null) {
       sb.append("null");
@@ -889,6 +1205,26 @@ import org.slf4j.LoggerFactory;
       }
       first = false;
     }
+    if (isSetCreatedExperiments()) {
+      if (!first) sb.append(", ");
+      sb.append("createdExperiments:");
+      if (this.createdExperiments == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.createdExperiments);
+      }
+      first = false;
+    }
+    if (isSetRunningExperiments()) {
+      if (!first) sb.append(", ");
+      sb.append("runningExperiments:");
+      if (this.runningExperiments == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.runningExperiments);
+      }
+      first = false;
+    }
     sb.append(")");
     return sb.toString();
   }
@@ -905,6 +1241,14 @@ import org.slf4j.LoggerFactory;
 
     if (!isSetFailedExperimentCount()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field 'failedExperimentCount' is unset! Struct:" + toString());
+    }
+
+    if (!isSetCreatedExperimentCount()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'createdExperimentCount' is unset! Struct:" + toString());
+    }
+
+    if (!isSetRunningExperimentCount()) {
+      throw new org.apache.thrift.protocol.TProtocolException("Required field 'runningExperimentCount' is unset! Struct:" + toString());
     }
 
     if (!isSetAllExperiments()) {
@@ -982,7 +1326,23 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // ALL_EXPERIMENTS
+          case 5: // CREATED_EXPERIMENT_COUNT
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.createdExperimentCount = iprot.readI32();
+              struct.setCreatedExperimentCountIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 6: // RUNNING_EXPERIMENT_COUNT
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.runningExperimentCount = iprot.readI32();
+              struct.setRunningExperimentCountIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 7: // ALL_EXPERIMENTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list152 = iprot.readListBegin();
@@ -1001,7 +1361,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 6: // COMPLETED_EXPERIMENTS
+          case 8: // COMPLETED_EXPERIMENTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list155 = iprot.readListBegin();
@@ -1020,7 +1380,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 7: // FAILED_EXPERIMENTS
+          case 9: // FAILED_EXPERIMENTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list158 = iprot.readListBegin();
@@ -1039,7 +1399,7 @@ import org.slf4j.LoggerFactory;
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 8: // CANCELLED_EXPERIMENTS
+          case 10: // CANCELLED_EXPERIMENTS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
                 org.apache.thrift.protocol.TList _list161 = iprot.readListBegin();
@@ -1054,6 +1414,44 @@ import org.slf4j.LoggerFactory;
                 iprot.readListEnd();
               }
               struct.setCancelledExperimentsIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 11: // CREATED_EXPERIMENTS
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list164 = iprot.readListBegin();
+                struct.createdExperiments = new ArrayList<ExperimentSummary>(_list164.size);
+                for (int _i165 = 0; _i165 < _list164.size; ++_i165)
+                {
+                  ExperimentSummary _elem166;
+                  _elem166 = new ExperimentSummary();
+                  _elem166.read(iprot);
+                  struct.createdExperiments.add(_elem166);
+                }
+                iprot.readListEnd();
+              }
+              struct.setCreatedExperimentsIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 12: // RUNNING_EXPERIMENTS
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list167 = iprot.readListBegin();
+                struct.runningExperiments = new ArrayList<ExperimentSummary>(_list167.size);
+                for (int _i168 = 0; _i168 < _list167.size; ++_i168)
+                {
+                  ExperimentSummary _elem169;
+                  _elem169 = new ExperimentSummary();
+                  _elem169.read(iprot);
+                  struct.runningExperiments.add(_elem169);
+                }
+                iprot.readListEnd();
+              }
+              struct.setRunningExperimentsIsSet(true);
             } else { 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
@@ -1085,13 +1483,19 @@ import org.slf4j.LoggerFactory;
       oprot.writeFieldBegin(FAILED_EXPERIMENT_COUNT_FIELD_DESC);
       oprot.writeI32(struct.failedExperimentCount);
       oprot.writeFieldEnd();
+      oprot.writeFieldBegin(CREATED_EXPERIMENT_COUNT_FIELD_DESC);
+      oprot.writeI32(struct.createdExperimentCount);
+      oprot.writeFieldEnd();
+      oprot.writeFieldBegin(RUNNING_EXPERIMENT_COUNT_FIELD_DESC);
+      oprot.writeI32(struct.runningExperimentCount);
+      oprot.writeFieldEnd();
       if (struct.allExperiments != null) {
         oprot.writeFieldBegin(ALL_EXPERIMENTS_FIELD_DESC);
         {
           oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.allExperiments.size()));
-          for (ExperimentSummary _iter164 : struct.allExperiments)
+          for (ExperimentSummary _iter170 : struct.allExperiments)
           {
-            _iter164.write(oprot);
+            _iter170.write(oprot);
           }
           oprot.writeListEnd();
         }
@@ -1102,9 +1506,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(COMPLETED_EXPERIMENTS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.completedExperiments.size()));
-            for (ExperimentSummary _iter165 : struct.completedExperiments)
+            for (ExperimentSummary _iter171 : struct.completedExperiments)
             {
-              _iter165.write(oprot);
+              _iter171.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1116,9 +1520,9 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(FAILED_EXPERIMENTS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.failedExperiments.size()));
-            for (ExperimentSummary _iter166 : struct.failedExperiments)
+            for (ExperimentSummary _iter172 : struct.failedExperiments)
             {
-              _iter166.write(oprot);
+              _iter172.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1130,9 +1534,37 @@ import org.slf4j.LoggerFactory;
           oprot.writeFieldBegin(CANCELLED_EXPERIMENTS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.cancelledExperiments.size()));
-            for (ExperimentSummary _iter167 : struct.cancelledExperiments)
+            for (ExperimentSummary _iter173 : struct.cancelledExperiments)
             {
-              _iter167.write(oprot);
+              _iter173.write(oprot);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.createdExperiments != null) {
+        if (struct.isSetCreatedExperiments()) {
+          oprot.writeFieldBegin(CREATED_EXPERIMENTS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.createdExperiments.size()));
+            for (ExperimentSummary _iter174 : struct.createdExperiments)
+            {
+              _iter174.write(oprot);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.runningExperiments != null) {
+        if (struct.isSetRunningExperiments()) {
+          oprot.writeFieldBegin(RUNNING_EXPERIMENTS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.runningExperiments.size()));
+            for (ExperimentSummary _iter175 : struct.runningExperiments)
+            {
+              _iter175.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -1159,11 +1591,13 @@ import org.slf4j.LoggerFactory;
       oprot.writeI32(struct.allExperimentCount);
       oprot.writeI32(struct.completedExperimentCount);
       oprot.writeI32(struct.failedExperimentCount);
+      oprot.writeI32(struct.createdExperimentCount);
+      oprot.writeI32(struct.runningExperimentCount);
       {
         oprot.writeI32(struct.allExperiments.size());
-        for (ExperimentSummary _iter168 : struct.allExperiments)
+        for (ExperimentSummary _iter176 : struct.allExperiments)
         {
-          _iter168.write(oprot);
+          _iter176.write(oprot);
         }
       }
       BitSet optionals = new BitSet();
@@ -1179,34 +1613,58 @@ import org.slf4j.LoggerFactory;
       if (struct.isSetCancelledExperiments()) {
         optionals.set(3);
       }
-      oprot.writeBitSet(optionals, 4);
+      if (struct.isSetCreatedExperiments()) {
+        optionals.set(4);
+      }
+      if (struct.isSetRunningExperiments()) {
+        optionals.set(5);
+      }
+      oprot.writeBitSet(optionals, 6);
       if (struct.isSetCancelledExperimentCount()) {
         oprot.writeI32(struct.cancelledExperimentCount);
       }
       if (struct.isSetCompletedExperiments()) {
         {
           oprot.writeI32(struct.completedExperiments.size());
-          for (ExperimentSummary _iter169 : struct.completedExperiments)
+          for (ExperimentSummary _iter177 : struct.completedExperiments)
           {
-            _iter169.write(oprot);
+            _iter177.write(oprot);
           }
         }
       }
       if (struct.isSetFailedExperiments()) {
         {
           oprot.writeI32(struct.failedExperiments.size());
-          for (ExperimentSummary _iter170 : struct.failedExperiments)
+          for (ExperimentSummary _iter178 : struct.failedExperiments)
           {
-            _iter170.write(oprot);
+            _iter178.write(oprot);
           }
         }
       }
       if (struct.isSetCancelledExperiments()) {
         {
           oprot.writeI32(struct.cancelledExperiments.size());
-          for (ExperimentSummary _iter171 : struct.cancelledExperiments)
+          for (ExperimentSummary _iter179 : struct.cancelledExperiments)
           {
-            _iter171.write(oprot);
+            _iter179.write(oprot);
+          }
+        }
+      }
+      if (struct.isSetCreatedExperiments()) {
+        {
+          oprot.writeI32(struct.createdExperiments.size());
+          for (ExperimentSummary _iter180 : struct.createdExperiments)
+          {
+            _iter180.write(oprot);
+          }
+        }
+      }
+      if (struct.isSetRunningExperiments()) {
+        {
+          oprot.writeI32(struct.runningExperiments.size());
+          for (ExperimentSummary _iter181 : struct.runningExperiments)
+          {
+            _iter181.write(oprot);
           }
         }
       }
@@ -1221,64 +1679,96 @@ import org.slf4j.LoggerFactory;
       struct.setCompletedExperimentCountIsSet(true);
       struct.failedExperimentCount = iprot.readI32();
       struct.setFailedExperimentCountIsSet(true);
+      struct.createdExperimentCount = iprot.readI32();
+      struct.setCreatedExperimentCountIsSet(true);
+      struct.runningExperimentCount = iprot.readI32();
+      struct.setRunningExperimentCountIsSet(true);
       {
-        org.apache.thrift.protocol.TList _list172 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-        struct.allExperiments = new ArrayList<ExperimentSummary>(_list172.size);
-        for (int _i173 = 0; _i173 < _list172.size; ++_i173)
+        org.apache.thrift.protocol.TList _list182 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+        struct.allExperiments = new ArrayList<ExperimentSummary>(_list182.size);
+        for (int _i183 = 0; _i183 < _list182.size; ++_i183)
         {
-          ExperimentSummary _elem174;
-          _elem174 = new ExperimentSummary();
-          _elem174.read(iprot);
-          struct.allExperiments.add(_elem174);
+          ExperimentSummary _elem184;
+          _elem184 = new ExperimentSummary();
+          _elem184.read(iprot);
+          struct.allExperiments.add(_elem184);
         }
       }
       struct.setAllExperimentsIsSet(true);
-      BitSet incoming = iprot.readBitSet(4);
+      BitSet incoming = iprot.readBitSet(6);
       if (incoming.get(0)) {
         struct.cancelledExperimentCount = iprot.readI32();
         struct.setCancelledExperimentCountIsSet(true);
       }
       if (incoming.get(1)) {
         {
-          org.apache.thrift.protocol.TList _list175 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.completedExperiments = new ArrayList<ExperimentSummary>(_list175.size);
-          for (int _i176 = 0; _i176 < _list175.size; ++_i176)
+          org.apache.thrift.protocol.TList _list185 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.completedExperiments = new ArrayList<ExperimentSummary>(_list185.size);
+          for (int _i186 = 0; _i186 < _list185.size; ++_i186)
           {
-            ExperimentSummary _elem177;
-            _elem177 = new ExperimentSummary();
-            _elem177.read(iprot);
-            struct.completedExperiments.add(_elem177);
+            ExperimentSummary _elem187;
+            _elem187 = new ExperimentSummary();
+            _elem187.read(iprot);
+            struct.completedExperiments.add(_elem187);
           }
         }
         struct.setCompletedExperimentsIsSet(true);
       }
       if (incoming.get(2)) {
         {
-          org.apache.thrift.protocol.TList _list178 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.failedExperiments = new ArrayList<ExperimentSummary>(_list178.size);
-          for (int _i179 = 0; _i179 < _list178.size; ++_i179)
+          org.apache.thrift.protocol.TList _list188 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.failedExperiments = new ArrayList<ExperimentSummary>(_list188.size);
+          for (int _i189 = 0; _i189 < _list188.size; ++_i189)
           {
-            ExperimentSummary _elem180;
-            _elem180 = new ExperimentSummary();
-            _elem180.read(iprot);
-            struct.failedExperiments.add(_elem180);
+            ExperimentSummary _elem190;
+            _elem190 = new ExperimentSummary();
+            _elem190.read(iprot);
+            struct.failedExperiments.add(_elem190);
           }
         }
         struct.setFailedExperimentsIsSet(true);
       }
       if (incoming.get(3)) {
         {
-          org.apache.thrift.protocol.TList _list181 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.cancelledExperiments = new ArrayList<ExperimentSummary>(_list181.size);
-          for (int _i182 = 0; _i182 < _list181.size; ++_i182)
+          org.apache.thrift.protocol.TList _list191 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.cancelledExperiments = new ArrayList<ExperimentSummary>(_list191.size);
+          for (int _i192 = 0; _i192 < _list191.size; ++_i192)
           {
-            ExperimentSummary _elem183;
-            _elem183 = new ExperimentSummary();
-            _elem183.read(iprot);
-            struct.cancelledExperiments.add(_elem183);
+            ExperimentSummary _elem193;
+            _elem193 = new ExperimentSummary();
+            _elem193.read(iprot);
+            struct.cancelledExperiments.add(_elem193);
           }
         }
         struct.setCancelledExperimentsIsSet(true);
+      }
+      if (incoming.get(4)) {
+        {
+          org.apache.thrift.protocol.TList _list194 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.createdExperiments = new ArrayList<ExperimentSummary>(_list194.size);
+          for (int _i195 = 0; _i195 < _list194.size; ++_i195)
+          {
+            ExperimentSummary _elem196;
+            _elem196 = new ExperimentSummary();
+            _elem196.read(iprot);
+            struct.createdExperiments.add(_elem196);
+          }
+        }
+        struct.setCreatedExperimentsIsSet(true);
+      }
+      if (incoming.get(5)) {
+        {
+          org.apache.thrift.protocol.TList _list197 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.runningExperiments = new ArrayList<ExperimentSummary>(_list197.size);
+          for (int _i198 = 0; _i198 < _list197.size; ++_i198)
+          {
+            ExperimentSummary _elem199;
+            _elem199 = new ExperimentSummary();
+            _elem199.read(iprot);
+            struct.runningExperiments.add(_elem199);
+          }
+        }
+        struct.setRunningExperimentsIsSet(true);
       }
     }
   }

@@ -727,6 +727,17 @@ public class WorkerResource extends AbstractResource {
         experimentStatisticsResource.setAllExperimentCount(allExperiments.size());
         experimentStatisticsResource.setAllExperiments(allExperiments);
 
+        List<ExperimentSummaryResource> createdExperiments = getExperimentStatisticsForState(ExperimentState.CREATED, gatewayId, fromTime, toTime);
+        createdExperiments.addAll(getExperimentStatisticsForState(ExperimentState.VALIDATED, gatewayId, fromTime, toTime));
+        experimentStatisticsResource.setCreatedExperimentCount(createdExperiments.size());
+        experimentStatisticsResource.setCreatedExperiments(createdExperiments);
+
+        List<ExperimentSummaryResource> runningExperiments = getExperimentStatisticsForState(ExperimentState.EXECUTING, gatewayId, fromTime, toTime);
+        runningExperiments.addAll(getExperimentStatisticsForState(ExperimentState.SCHEDULED, gatewayId, fromTime, toTime));
+        runningExperiments.addAll(getExperimentStatisticsForState(ExperimentState.LAUNCHED, gatewayId, fromTime, toTime));
+        experimentStatisticsResource.setCreatedExperimentCount(runningExperiments.size());
+        experimentStatisticsResource.setCreatedExperiments(runningExperiments);
+
         List<ExperimentSummaryResource> completedExperiments = getExperimentStatisticsForState(ExperimentState.COMPLETED, gatewayId, fromTime, toTime);
         experimentStatisticsResource.setCompletedExperimentCount(completedExperiments.size());
         experimentStatisticsResource.setCompletedExperiments(completedExperiments);

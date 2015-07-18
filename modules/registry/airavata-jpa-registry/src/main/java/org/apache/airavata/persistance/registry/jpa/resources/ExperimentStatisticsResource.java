@@ -34,10 +34,14 @@ public class ExperimentStatisticsResource extends AbstractResource {
 
     private int allExperimentCount;
     private int completedExperimentCount;
+    private int createdExperimentCount;
+    private int runningExperimentCount;
     private int cancelledExperimentCount;
     private int failedExperimentCount;
 
     private List<ExperimentSummaryResource> allExperiments;
+    private List<ExperimentSummaryResource> createdExperiments;
+    private List<ExperimentSummaryResource> runningExperiments;
     private List<ExperimentSummaryResource> completedExperiments;
     private List<ExperimentSummaryResource> cancelledExperiments;
     private List<ExperimentSummaryResource> failedExperiments;
@@ -129,5 +133,37 @@ public class ExperimentStatisticsResource extends AbstractResource {
 
     public void setFailedExperiments(List<ExperimentSummaryResource> failedExperiments) {
         this.failedExperiments = failedExperiments;
+    }
+
+    public int getCreatedExperimentCount() {
+        return createdExperimentCount;
+    }
+
+    public void setCreatedExperimentCount(int createdExperimentCount) {
+        this.createdExperimentCount = createdExperimentCount;
+    }
+
+    public int getRunningExperimentCount() {
+        return runningExperimentCount;
+    }
+
+    public void setRunningExperimentCount(int runningExperimentCount) {
+        this.runningExperimentCount = runningExperimentCount;
+    }
+
+    public List<ExperimentSummaryResource> getCreatedExperiments() {
+        return createdExperiments;
+    }
+
+    public void setCreatedExperiments(List<ExperimentSummaryResource> createdExperiments) {
+        this.createdExperiments = createdExperiments;
+    }
+
+    public List<ExperimentSummaryResource> getRunningExperiments() {
+        return runningExperiments;
+    }
+
+    public void setRunningExperiments(List<ExperimentSummaryResource> runningExperiments) {
+        this.runningExperiments = runningExperiments;
     }
 }

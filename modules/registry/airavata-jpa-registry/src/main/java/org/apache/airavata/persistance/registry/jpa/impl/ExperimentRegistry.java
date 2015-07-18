@@ -2950,6 +2950,8 @@ public class ExperimentRegistry {
             );
 
             experimentStatistics.setAllExperimentCount(experimentStatisticsResource.getAllExperimentCount());
+            experimentStatistics.setCreatedExperimentCount(experimentStatisticsResource.getCreatedExperimentCount());
+            experimentStatistics.setRunningExperimentCount(experimentStatisticsResource.getRunningExperimentCount());
             experimentStatistics.setCompletedExperimentCount(experimentStatisticsResource.getCompletedExperimentCount());
             experimentStatistics.setFailedExperimentCount(experimentStatisticsResource.getFailedExperimentCount());
             experimentStatistics.setCancelledExperimentCount(experimentStatisticsResource.getCancelledExperimentCount());
@@ -2959,6 +2961,18 @@ public class ExperimentRegistry {
                 experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
             }
             experimentStatistics.setAllExperiments(experimentSummaries);
+
+            experimentSummaries = new ArrayList();
+            for (ExperimentSummaryResource ex : experimentStatisticsResource.getCreatedExperiments()) {
+                experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
+            }
+            experimentStatistics.setCreatedExperiments(experimentSummaries);
+
+            experimentSummaries = new ArrayList();
+            for (ExperimentSummaryResource ex : experimentStatisticsResource.getRunningExperiments()) {
+                experimentSummaries.add(ThriftDataModelConversion.getExperimentSummary(ex));
+            }
+            experimentStatistics.setRunningExperiments(experimentSummaries);
 
             experimentSummaries = new ArrayList();
             for (ExperimentSummaryResource ex : experimentStatisticsResource.getCompletedExperiments()) {

@@ -2128,20 +2128,22 @@ class ExperimentSummary {
 void swap(ExperimentSummary &a, ExperimentSummary &b);
 
 typedef struct _ExperimentStatistics__isset {
-  _ExperimentStatistics__isset() : cancelledExperimentCount(false), completedExperiments(false), failedExperiments(false), cancelledExperiments(false) {}
+  _ExperimentStatistics__isset() : cancelledExperimentCount(false), completedExperiments(false), failedExperiments(false), cancelledExperiments(false), createdExperiments(false), runningExperiments(false) {}
   bool cancelledExperimentCount;
   bool completedExperiments;
   bool failedExperiments;
   bool cancelledExperiments;
+  bool createdExperiments;
+  bool runningExperiments;
 } _ExperimentStatistics__isset;
 
 class ExperimentStatistics {
  public:
 
-  static const char* ascii_fingerprint; // = "30185B02179FA7FA5FE94244EB7C415D";
-  static const uint8_t binary_fingerprint[16]; // = {0x30,0x18,0x5B,0x02,0x17,0x9F,0xA7,0xFA,0x5F,0xE9,0x42,0x44,0xEB,0x7C,0x41,0x5D};
+  static const char* ascii_fingerprint; // = "AD5D3509EF72E73D31C85D699863B232";
+  static const uint8_t binary_fingerprint[16]; // = {0xAD,0x5D,0x35,0x09,0xEF,0x72,0xE7,0x3D,0x31,0xC8,0x5D,0x69,0x98,0x63,0xB2,0x32};
 
-  ExperimentStatistics() : allExperimentCount(0), completedExperimentCount(0), cancelledExperimentCount(0), failedExperimentCount(0) {
+  ExperimentStatistics() : allExperimentCount(0), completedExperimentCount(0), cancelledExperimentCount(0), failedExperimentCount(0), createdExperimentCount(0), runningExperimentCount(0) {
   }
 
   virtual ~ExperimentStatistics() throw() {}
@@ -2150,10 +2152,14 @@ class ExperimentStatistics {
   int32_t completedExperimentCount;
   int32_t cancelledExperimentCount;
   int32_t failedExperimentCount;
+  int32_t createdExperimentCount;
+  int32_t runningExperimentCount;
   std::vector<ExperimentSummary>  allExperiments;
   std::vector<ExperimentSummary>  completedExperiments;
   std::vector<ExperimentSummary>  failedExperiments;
   std::vector<ExperimentSummary>  cancelledExperiments;
+  std::vector<ExperimentSummary>  createdExperiments;
+  std::vector<ExperimentSummary>  runningExperiments;
 
   _ExperimentStatistics__isset __isset;
 
@@ -2172,6 +2178,14 @@ class ExperimentStatistics {
 
   void __set_failedExperimentCount(const int32_t val) {
     failedExperimentCount = val;
+  }
+
+  void __set_createdExperimentCount(const int32_t val) {
+    createdExperimentCount = val;
+  }
+
+  void __set_runningExperimentCount(const int32_t val) {
+    runningExperimentCount = val;
   }
 
   void __set_allExperiments(const std::vector<ExperimentSummary> & val) {
@@ -2193,6 +2207,16 @@ class ExperimentStatistics {
     __isset.cancelledExperiments = true;
   }
 
+  void __set_createdExperiments(const std::vector<ExperimentSummary> & val) {
+    createdExperiments = val;
+    __isset.createdExperiments = true;
+  }
+
+  void __set_runningExperiments(const std::vector<ExperimentSummary> & val) {
+    runningExperiments = val;
+    __isset.runningExperiments = true;
+  }
+
   bool operator == (const ExperimentStatistics & rhs) const
   {
     if (!(allExperimentCount == rhs.allExperimentCount))
@@ -2204,6 +2228,10 @@ class ExperimentStatistics {
     else if (__isset.cancelledExperimentCount && !(cancelledExperimentCount == rhs.cancelledExperimentCount))
       return false;
     if (!(failedExperimentCount == rhs.failedExperimentCount))
+      return false;
+    if (!(createdExperimentCount == rhs.createdExperimentCount))
+      return false;
+    if (!(runningExperimentCount == rhs.runningExperimentCount))
       return false;
     if (!(allExperiments == rhs.allExperiments))
       return false;
@@ -2218,6 +2246,14 @@ class ExperimentStatistics {
     if (__isset.cancelledExperiments != rhs.__isset.cancelledExperiments)
       return false;
     else if (__isset.cancelledExperiments && !(cancelledExperiments == rhs.cancelledExperiments))
+      return false;
+    if (__isset.createdExperiments != rhs.__isset.createdExperiments)
+      return false;
+    else if (__isset.createdExperiments && !(createdExperiments == rhs.createdExperiments))
+      return false;
+    if (__isset.runningExperiments != rhs.__isset.runningExperiments)
+      return false;
+    else if (__isset.runningExperiments && !(runningExperiments == rhs.runningExperiments))
       return false;
     return true;
   }
