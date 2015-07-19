@@ -196,12 +196,13 @@ class AiravataHandler : virtual public AiravataIf {
    *   *    The starting point of the results to be fetched
    * *
    * 
+   * @param authzToken
    * @param gatewayId
    * @param userName
    * @param limit
    * @param offset
    */
-  void getAllUserProjectsWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset) {
+  void getAllUserProjectsWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
     printf("getAllUserProjectsWithPagination\n");
   }
@@ -241,13 +242,14 @@ class AiravataHandler : virtual public AiravataIf {
    * @param offset
    *    The starting point of the results to be fetched
    * 
+   * @param authzToken
    * @param gatewayId
    * @param userName
    * @param projectName
    * @param limit
    * @param offset
    */
-  void searchProjectsByProjectNameWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset) {
+  void searchProjectsByProjectNameWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
     printf("searchProjectsByProjectNameWithPagination\n");
   }
@@ -286,13 +288,14 @@ class AiravataHandler : virtual public AiravataIf {
    * @param offset
    *    The starting point of the results to be fetched
    * 
+   * @param authzToken
    * @param gatewayId
    * @param userName
    * @param description
    * @param limit
    * @param offset
    */
-  void searchProjectsByProjectDescWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) {
+  void searchProjectsByProjectDescWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
     printf("searchProjectsByProjectDescWithPagination\n");
   }
@@ -334,13 +337,14 @@ class AiravataHandler : virtual public AiravataIf {
    * @param offset
    *       The starting point of the results to be fetched
    * 
+   * @param authzToken
    * @param gatewayId
    * @param userName
    * @param expName
    * @param limit
    * @param offset
    */
-  void searchExperimentsByNameWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset) {
+  void searchExperimentsByNameWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
     printf("searchExperimentsByNameWithPagination\n");
   }
@@ -381,13 +385,14 @@ class AiravataHandler : virtual public AiravataIf {
    * @param offset
    *       The starting point of the results to be fetched
    * 
+   * @param authzToken
    * @param gatewayId
    * @param userName
    * @param description
    * @param limit
    * @param offset
    */
-  void searchExperimentsByDescWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) {
+  void searchExperimentsByDescWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
     printf("searchExperimentsByDescWithPagination\n");
   }
@@ -428,13 +433,14 @@ class AiravataHandler : virtual public AiravataIf {
    * @param offset
    *       The starting point of the results to be fetched
    * 
+   * @param authzToken
    * @param gatewayId
    * @param userName
    * @param applicationId
    * @param limit
    * @param offset
    */
-  void searchExperimentsByApplicationWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset) {
+  void searchExperimentsByApplicationWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
     printf("searchExperimentsByApplicationWithPagination\n");
   }
@@ -475,13 +481,14 @@ class AiravataHandler : virtual public AiravataIf {
    * @param offset
    *       The starting point of the results to be fetched
    * 
+   * @param authzToken
    * @param gatewayId
    * @param userName
    * @param experimentState
    * @param limit
    * @param offset
    */
-  void searchExperimentsByStatusWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState, const int32_t limit, const int32_t offset) {
+  void searchExperimentsByStatusWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
     printf("searchExperimentsByStatusWithPagination\n");
   }
@@ -527,6 +534,7 @@ class AiravataHandler : virtual public AiravataIf {
    * @param offset
    *       The starting point of the results to be fetched
    * 
+   * @param authzToken
    * @param gatewayId
    * @param userName
    * @param fromTime
@@ -534,7 +542,7 @@ class AiravataHandler : virtual public AiravataIf {
    * @param limit
    * @param offset
    */
-  void searchExperimentsByCreationTimeWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset) {
+  void searchExperimentsByCreationTimeWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
     printf("searchExperimentsByCreationTimeWithPagination\n");
   }
@@ -554,13 +562,14 @@ class AiravataHandler : virtual public AiravataIf {
    * @param offset
    *       The starting point of the results to be fetched
    * 
+   * @param authzToken
    * @param gatewayId
    * @param userName
    * @param filters
    * @param limit
    * @param offset
    */
-  void searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset) {
+  void searchExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::map< ::apache::airavata::model::experiment::ExperimentSearchFields::type, std::string> & filters, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
     printf("searchExperiments\n");
   }
@@ -575,11 +584,12 @@ class AiravataHandler : virtual public AiravataIf {
    *       Ending data time
    * 
    * 
+   * @param authzToken
    * @param gatewayId
    * @param fromTime
    * @param toTime
    */
-  void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime) {
+  void getExperimentStatistics( ::apache::airavata::model::experiment::ExperimentStatistics& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const int64_t fromTime, const int64_t toTime) {
     // Your implementation goes here
     printf("getExperimentStatistics\n");
   }
@@ -610,11 +620,12 @@ class AiravataHandler : virtual public AiravataIf {
    * @param offset
    *       The starting point of the results to be fetched
    * 
+   * @param authzToken
    * @param projectId
    * @param limit
    * @param offset
    */
-  void getAllExperimentsInProjectWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const std::string& projectId, const int32_t limit, const int32_t offset) {
+  void getAllExperimentsInProjectWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
     printf("getAllExperimentsInProjectWithPagination\n");
   }
@@ -650,12 +661,13 @@ class AiravataHandler : virtual public AiravataIf {
    * @param offset
    *       The starting point of the results to be fetched
    * 
+   * @param authzToken
    * @param gatewayId
    * @param userName
    * @param limit
    * @param offset
    */
-  void getAllUserExperimentsWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset) {
+  void getAllUserExperimentsWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
     printf("getAllUserExperimentsWithPagination\n");
   }
@@ -695,10 +707,11 @@ class AiravataHandler : virtual public AiravataIf {
    *       rather an Airavata Administrator will be notified to take corrective action.
    * 
    * 
+   * @param authzToken
    * @param gatewayId
    * @param experiment
    */
-  void createExperiment(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::experiment::ExperimentModel& experiment) {
+  void createExperiment(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::experiment::ExperimentModel& experiment) {
     // Your implementation goes here
     printf("createExperiment\n");
   }
@@ -736,9 +749,10 @@ class AiravataHandler : virtual public AiravataIf {
    *       rather an Airavata Administrator will be notified to take corrective action.
    * 
    * 
+   * @param authzToken
    * @param airavataExperimentId
    */
-  void getExperiment( ::apache::airavata::model::experiment::ExperimentModel& _return, const std::string& airavataExperimentId) {
+  void getExperiment( ::apache::airavata::model::experiment::ExperimentModel& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) {
     // Your implementation goes here
     printf("getExperiment\n");
   }
@@ -782,20 +796,21 @@ class AiravataHandler : virtual public AiravataIf {
    *       rather an Airavata Administrator will be notified to take corrective action.
    * 
    * 
+   * @param authzToken
    * @param airavataExperimentId
    * @param experiment
    */
-  void updateExperiment(const std::string& airavataExperimentId, const  ::apache::airavata::model::experiment::ExperimentModel& experiment) {
+  void updateExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const  ::apache::airavata::model::experiment::ExperimentModel& experiment) {
     // Your implementation goes here
     printf("updateExperiment\n");
   }
 
-  void updateExperimentConfiguration(const std::string& airavataExperimentId, const  ::apache::airavata::model::experiment::UserConfigurationDataModel& userConfiguration) {
+  void updateExperimentConfiguration(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const  ::apache::airavata::model::experiment::UserConfigurationDataModel& userConfiguration) {
     // Your implementation goes here
     printf("updateExperimentConfiguration\n");
   }
 
-  void updateResourceScheduleing(const std::string& airavataExperimentId, const  ::apache::airavata::model::scheduling::ComputationalResourceSchedulingModel& resourceScheduling) {
+  void updateResourceScheduleing(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const  ::apache::airavata::model::scheduling::ComputationalResourceSchedulingModel& resourceScheduling) {
     // Your implementation goes here
     printf("updateResourceScheduleing\n");
   }
@@ -809,9 +824,10 @@ class AiravataHandler : virtual public AiravataIf {
    *  *
    * *
    * 
+   * @param authzToken
    * @param airavataExperimentId
    */
-  bool validateExperiment(const std::string& airavataExperimentId) {
+  bool validateExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) {
     // Your implementation goes here
     printf("validateExperiment\n");
   }
@@ -859,35 +875,36 @@ class AiravataHandler : virtual public AiravataIf {
    *       rather an Airavata Administrator will be notified to take corrective action.
    * 
    * 
+   * @param authzToken
    * @param airavataExperimentId
    * @param airavataCredStoreToken
    */
-  void launchExperiment(const std::string& airavataExperimentId, const std::string& airavataCredStoreToken) {
+  void launchExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& airavataCredStoreToken) {
     // Your implementation goes here
     printf("launchExperiment\n");
   }
 
-  void getExperimentStatus( ::apache::airavata::model::status::ExperimentStatus& _return, const std::string& airavataExperimentId) {
+  void getExperimentStatus( ::apache::airavata::model::status::ExperimentStatus& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) {
     // Your implementation goes here
     printf("getExperimentStatus\n");
   }
 
-  void getExperimentOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return, const std::string& airavataExperimentId) {
+  void getExperimentOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) {
     // Your implementation goes here
     printf("getExperimentOutputs\n");
   }
 
-  void getIntermediateOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return, const std::string& airavataExperimentId) {
+  void getIntermediateOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) {
     // Your implementation goes here
     printf("getIntermediateOutputs\n");
   }
 
-  void getJobStatuses(std::map<std::string,  ::apache::airavata::model::status::JobStatus> & _return, const std::string& airavataExperimentId) {
+  void getJobStatuses(std::map<std::string,  ::apache::airavata::model::status::JobStatus> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) {
     // Your implementation goes here
     printf("getJobStatuses\n");
   }
 
-  void getJobDetails(std::vector< ::apache::airavata::model::job::JobModel> & _return, const std::string& airavataExperimentId) {
+  void getJobDetails(std::vector< ::apache::airavata::model::job::JobModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId) {
     // Your implementation goes here
     printf("getJobDetails\n");
   }
@@ -931,10 +948,11 @@ class AiravataHandler : virtual public AiravataIf {
    *       rather an Airavata Administrator will be notified to take corrective action.
    * 
    * 
+   * @param authzToken
    * @param existingExperimentID
    * @param newExperimentName
    */
-  void cloneExperiment(std::string& _return, const std::string& existingExperimentID, const std::string& newExperimentName) {
+  void cloneExperiment(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& existingExperimentID, const std::string& newExperimentName) {
     // Your implementation goes here
     printf("cloneExperiment\n");
   }
@@ -972,10 +990,11 @@ class AiravataHandler : virtual public AiravataIf {
    *       rather an Airavata Administrator will be notified to take corrective action.
    * 
    * 
+   * @param authzToken
    * @param airavataExperimentId
    * @param tokenId
    */
-  void terminateExperiment(const std::string& airavataExperimentId, const std::string& tokenId) {
+  void terminateExperiment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataExperimentId, const std::string& tokenId) {
     // Your implementation goes here
     printf("terminateExperiment\n");
   }
@@ -990,10 +1009,11 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a server-side generated airavata appModule globally unique identifier.
    * 
    * 
+   * @param authzToken
    * @param gatewayId
    * @param applicationModule
    */
-  void registerApplicationModule(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) {
+  void registerApplicationModule(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) {
     // Your implementation goes here
     printf("registerApplicationModule\n");
   }
@@ -1008,9 +1028,10 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a application Module Object.
    * 
    * 
+   * @param authzToken
    * @param appModuleId
    */
-  void getApplicationModule( ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& _return, const std::string& appModuleId) {
+  void getApplicationModule( ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appModuleId) {
     // Your implementation goes here
     printf("getApplicationModule\n");
   }
@@ -1028,15 +1049,16 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a success/failure of the update.
    * 
    * 
+   * @param authzToken
    * @param appModuleId
    * @param applicationModule
    */
-  bool updateApplicationModule(const std::string& appModuleId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) {
+  bool updateApplicationModule(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appModuleId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule& applicationModule) {
     // Your implementation goes here
     printf("updateApplicationModule\n");
   }
 
-  void getAllAppModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return, const std::string& gatewayId) {
+  void getAllAppModules(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationModule> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getAllAppModules\n");
   }
@@ -1051,9 +1073,10 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a success/failure of the deletion.
    * 
    * 
+   * @param authzToken
    * @param appModuleId
    */
-  bool deleteApplicationModule(const std::string& appModuleId) {
+  bool deleteApplicationModule(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appModuleId) {
     // Your implementation goes here
     printf("deleteApplicationModule\n");
   }
@@ -1068,10 +1091,11 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a server-side generated airavata appDeployment globally unique identifier.
    * 
    * 
+   * @param authzToken
    * @param gatewayId
    * @param applicationDeployment
    */
-  void registerApplicationDeployment(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment) {
+  void registerApplicationDeployment(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment) {
     // Your implementation goes here
     printf("registerApplicationDeployment\n");
   }
@@ -1086,9 +1110,10 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a application Deployment Object.
    * 
    * 
+   * @param authzToken
    * @param appDeploymentId
    */
-  void getApplicationDeployment( ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& _return, const std::string& appDeploymentId) {
+  void getApplicationDeployment( ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appDeploymentId) {
     // Your implementation goes here
     printf("getApplicationDeployment\n");
   }
@@ -1106,10 +1131,11 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a success/failure of the update.
    * 
    * 
+   * @param authzToken
    * @param appDeploymentId
    * @param applicationDeployment
    */
-  bool updateApplicationDeployment(const std::string& appDeploymentId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment) {
+  bool updateApplicationDeployment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appDeploymentId, const  ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription& applicationDeployment) {
     // Your implementation goes here
     printf("updateApplicationDeployment\n");
   }
@@ -1124,9 +1150,10 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a success/failure of the deletion.
    * 
    * 
+   * @param authzToken
    * @param appDeploymentId
    */
-  bool deleteApplicationDeployment(const std::string& appDeploymentId) {
+  bool deleteApplicationDeployment(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appDeploymentId) {
     // Your implementation goes here
     printf("deleteApplicationDeployment\n");
   }
@@ -1138,9 +1165,10 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns the list of all application Deployment Objects.
    * 
    * 
+   * @param authzToken
    * @param gatewayId
    */
-  void getAllApplicationDeployments(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> & _return, const std::string& gatewayId) {
+  void getAllApplicationDeployments(std::vector< ::apache::airavata::model::appcatalog::appdeployment::ApplicationDeploymentDescription> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getAllApplicationDeployments\n");
   }
@@ -1155,9 +1183,10 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a list of Deployed Resources.
    * 
    * 
+   * @param authzToken
    * @param appModuleId
    */
-  void getAppModuleDeployedResources(std::vector<std::string> & _return, const std::string& appModuleId) {
+  void getAppModuleDeployedResources(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appModuleId) {
     // Your implementation goes here
     printf("getAppModuleDeployedResources\n");
   }
@@ -1172,10 +1201,11 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a server-side generated airavata application interface globally unique identifier.
    * 
    * 
+   * @param authzToken
    * @param gatewayId
    * @param applicationInterface
    */
-  void registerApplicationInterface(std::string& _return, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface) {
+  void registerApplicationInterface(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface) {
     // Your implementation goes here
     printf("registerApplicationInterface\n");
   }
@@ -1191,9 +1221,10 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * 
    * 
+   * @param authzToken
    * @param appInterfaceId
    */
-  void getApplicationInterface( ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& _return, const std::string& appInterfaceId) {
+  void getApplicationInterface( ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appInterfaceId) {
     // Your implementation goes here
     printf("getApplicationInterface\n");
   }
@@ -1212,10 +1243,11 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * 
    * 
+   * @param authzToken
    * @param appInterfaceId
    * @param applicationInterface
    */
-  bool updateApplicationInterface(const std::string& appInterfaceId, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface) {
+  bool updateApplicationInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appInterfaceId, const  ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription& applicationInterface) {
     // Your implementation goes here
     printf("updateApplicationInterface\n");
   }
@@ -1231,9 +1263,10 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * 
    * 
+   * @param authzToken
    * @param appInterfaceId
    */
-  bool deleteApplicationInterface(const std::string& appInterfaceId) {
+  bool deleteApplicationInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appInterfaceId) {
     // Your implementation goes here
     printf("deleteApplicationInterface\n");
   }
@@ -1246,9 +1279,10 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a list of application interfaces with corresponsing id's
    * 
    * 
+   * @param authzToken
    * @param gatewayId
    */
-  void getAllApplicationInterfaceNames(std::map<std::string, std::string> & _return, const std::string& gatewayId) {
+  void getAllApplicationInterfaceNames(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getAllApplicationInterfaceNames\n");
   }
@@ -1261,9 +1295,10 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a list of application interfaces documents
    * 
    * 
+   * @param authzToken
    * @param gatewayId
    */
-  void getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & _return, const std::string& gatewayId) {
+  void getAllApplicationInterfaces(std::vector< ::apache::airavata::model::appcatalog::appinterface::ApplicationInterfaceDescription> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getAllApplicationInterfaces\n");
   }
@@ -1278,9 +1313,10 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a list of application inputs.
    * 
    * 
+   * @param authzToken
    * @param appInterfaceId
    */
-  void getApplicationInputs(std::vector< ::apache::airavata::model::application::io::InputDataObjectType> & _return, const std::string& appInterfaceId) {
+  void getApplicationInputs(std::vector< ::apache::airavata::model::application::io::InputDataObjectType> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appInterfaceId) {
     // Your implementation goes here
     printf("getApplicationInputs\n");
   }
@@ -1295,9 +1331,10 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a list of application outputs.
    * 
    * 
+   * @param authzToken
    * @param appInterfaceId
    */
-  void getApplicationOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return, const std::string& appInterfaceId) {
+  void getApplicationOutputs(std::vector< ::apache::airavata::model::application::io::OutputDataObjectType> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appInterfaceId) {
     // Your implementation goes here
     printf("getApplicationOutputs\n");
   }
@@ -1313,9 +1350,10 @@ class AiravataHandler : virtual public AiravataIf {
    *    Deployments of each modules listed within the interfaces will be listed.
    * 
    * 
+   * @param authzToken
    * @param appInterfaceId
    */
-  void getAvailableAppInterfaceComputeResources(std::map<std::string, std::string> & _return, const std::string& appInterfaceId) {
+  void getAvailableAppInterfaceComputeResources(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& appInterfaceId) {
     // Your implementation goes here
     printf("getAvailableAppInterfaceComputeResources\n");
   }
@@ -1330,9 +1368,10 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a server-side generated airavata compute resource globally unique identifier.
    * 
    * 
+   * @param authzToken
    * @param computeResourceDescription
    */
-  void registerComputeResource(std::string& _return, const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& computeResourceDescription) {
+  void registerComputeResource(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& computeResourceDescription) {
     // Your implementation goes here
     printf("registerComputeResource\n");
   }
@@ -1347,9 +1386,10 @@ class AiravataHandler : virtual public AiravataIf {
    *    Compute Resource Object created from the datamodel..
    * 
    * 
+   * @param authzToken
    * @param computeResourceId
    */
-  void getComputeResource( ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& _return, const std::string& computeResourceId) {
+  void getComputeResource( ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId) {
     // Your implementation goes here
     printf("getComputeResource\n");
   }
@@ -1360,8 +1400,10 @@ class AiravataHandler : virtual public AiravataIf {
    * @return A map of registered compute resource id's and thier corresponding hostnames.
    *    Compute Resource Object created from the datamodel..
    * 
+   * 
+   * @param authzToken
    */
-  void getAllComputeResourceNames(std::map<std::string, std::string> & _return) {
+  void getAllComputeResourceNames(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) {
     // Your implementation goes here
     printf("getAllComputeResourceNames\n");
   }
@@ -1379,10 +1421,11 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a success/failure of the update.
    * 
    * 
+   * @param authzToken
    * @param computeResourceId
    * @param computeResourceDescription
    */
-  bool updateComputeResource(const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& computeResourceDescription) {
+  bool updateComputeResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::computeresource::ComputeResourceDescription& computeResourceDescription) {
     // Your implementation goes here
     printf("updateComputeResource\n");
   }
@@ -1397,9 +1440,10 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a success/failure of the deletion.
    * 
    * 
+   * @param authzToken
    * @param computeResourceId
    */
-  bool deleteComputeResource(const std::string& computeResourceId) {
+  bool deleteComputeResource(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId) {
     // Your implementation goes here
     printf("deleteComputeResource\n");
   }
@@ -1421,11 +1465,12 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns the unique job submission id.
    * 
    * 
+   * @param authzToken
    * @param computeResourceId
    * @param priorityOrder
    * @param localSubmission
    */
-  void addLocalSubmissionDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission) {
+  void addLocalSubmissionDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission) {
     // Your implementation goes here
     printf("addLocalSubmissionDetails\n");
   }
@@ -1443,10 +1488,11 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a success/failure of the deletion.
    * 
    * 
+   * @param authzToken
    * @param jobSubmissionInterfaceId
    * @param localSubmission
    */
-  bool updateLocalSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission) {
+  bool updateLocalSubmissionDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& localSubmission) {
     // Your implementation goes here
     printf("updateLocalSubmissionDetails\n");
   }
@@ -1458,9 +1504,10 @@ class AiravataHandler : virtual public AiravataIf {
    *  @return LOCALSubmission instance
    * 
    * 
+   * @param authzToken
    * @param jobSubmissionId
    */
-  void getLocalJobSubmission( ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& _return, const std::string& jobSubmissionId) {
+  void getLocalJobSubmission( ::apache::airavata::model::appcatalog::computeresource::LOCALSubmission& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& jobSubmissionId) {
     // Your implementation goes here
     printf("getLocalJobSubmission\n");
   }
@@ -1482,11 +1529,12 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns the unique job submission id.
    * 
    * 
+   * @param authzToken
    * @param computeResourceId
    * @param priorityOrder
    * @param sshJobSubmission
    */
-  void addSSHJobSubmissionDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission) {
+  void addSSHJobSubmissionDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission) {
     // Your implementation goes here
     printf("addSSHJobSubmissionDetails\n");
   }
@@ -1498,9 +1546,10 @@ class AiravataHandler : virtual public AiravataIf {
    *  @return SSHJobSubmission instance
    * 
    * 
+   * @param authzToken
    * @param jobSubmissionId
    */
-  void getSSHJobSubmission( ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& _return, const std::string& jobSubmissionId) {
+  void getSSHJobSubmission( ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& jobSubmissionId) {
     // Your implementation goes here
     printf("getSSHJobSubmission\n");
   }
@@ -1522,11 +1571,12 @@ class AiravataHandler : virtual public AiravataIf {
    *  Returns the unique job submission id.
    * 
    * 
+   * @param authzToken
    * @param computeResourceId
    * @param priorityOrder
    * @param unicoreJobSubmission
    */
-  void addUNICOREJobSubmissionDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& unicoreJobSubmission) {
+  void addUNICOREJobSubmissionDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& unicoreJobSubmission) {
     // Your implementation goes here
     printf("addUNICOREJobSubmissionDetails\n");
   }
@@ -1538,9 +1588,10 @@ class AiravataHandler : virtual public AiravataIf {
    *   *  @return UnicoreJobSubmission instance
    * *
    * 
+   * @param authzToken
    * @param jobSubmissionId
    */
-  void getUnicoreJobSubmission( ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& _return, const std::string& jobSubmissionId) {
+  void getUnicoreJobSubmission( ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& jobSubmissionId) {
     // Your implementation goes here
     printf("getUnicoreJobSubmission\n");
   }
@@ -1562,11 +1613,12 @@ class AiravataHandler : virtual public AiravataIf {
    *    *   Returns the unique job submission id.
    * *
    * 
+   * @param authzToken
    * @param computeResourceId
    * @param priorityOrder
    * @param cloudSubmission
    */
-  void addCloudJobSubmissionDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& cloudSubmission) {
+  void addCloudJobSubmissionDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& cloudSubmission) {
     // Your implementation goes here
     printf("addCloudJobSubmissionDetails\n");
   }
@@ -1578,9 +1630,10 @@ class AiravataHandler : virtual public AiravataIf {
    *    *  @return CloudJobSubmission instance
    * *
    * 
+   * @param authzToken
    * @param jobSubmissionId
    */
-  void getCloudJobSubmission( ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& _return, const std::string& jobSubmissionId) {
+  void getCloudJobSubmission( ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& jobSubmissionId) {
     // Your implementation goes here
     printf("getCloudJobSubmission\n");
   }
@@ -1598,16 +1651,17 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a success/failure of the deletion.
    * 
    * 
+   * @param authzToken
    * @param jobSubmissionInterfaceId
    * @param sshJobSubmission
    */
-  bool updateSSHJobSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission) {
+  bool updateSSHJobSubmissionDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SSHJobSubmission& sshJobSubmission) {
     // Your implementation goes here
     printf("updateSSHJobSubmissionDetails\n");
   }
 
   /**
-   * Update the given SSH Job Submission details
+   * Update the cloud Job Submission details
    * 
    * @param jobSubmissionInterfaceId
    *   The identifier of the JobSubmission Interface to be updated.
@@ -1619,15 +1673,16 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a success/failure of the deletion.
    * 
    * 
+   * @param authzToken
    * @param jobSubmissionInterfaceId
    * @param sshJobSubmission
    */
-  bool updateCloudJobSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& sshJobSubmission) {
+  bool updateCloudJobSubmissionDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::CloudJobSubmission& sshJobSubmission) {
     // Your implementation goes here
     printf("updateCloudJobSubmissionDetails\n");
   }
 
-  bool updateUnicoreJobSubmissionDetails(const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& unicoreJobSubmission) {
+  bool updateUnicoreJobSubmissionDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& jobSubmissionInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreJobSubmission& unicoreJobSubmission) {
     // Your implementation goes here
     printf("updateUnicoreJobSubmissionDetails\n");
   }
@@ -1649,11 +1704,12 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns the unique job submission id.
    * 
    * 
+   * @param authzToken
    * @param computeResourceId
    * @param priorityOrder
    * @param localDataMovement
    */
-  void addLocalDataMovementDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement) {
+  void addLocalDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement) {
     // Your implementation goes here
     printf("addLocalDataMovementDetails\n");
   }
@@ -1671,10 +1727,11 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a success/failure of the update.
    * 
    * 
+   * @param authzToken
    * @param dataMovementInterfaceId
    * @param localDataMovement
    */
-  bool updateLocalDataMovementDetails(const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement) {
+  bool updateLocalDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& localDataMovement) {
     // Your implementation goes here
     printf("updateLocalDataMovementDetails\n");
   }
@@ -1686,9 +1743,10 @@ class AiravataHandler : virtual public AiravataIf {
    *         *  @return LOCALDataMovement instance
    * *
    * 
+   * @param authzToken
    * @param dataMovementId
    */
-  void getLocalDataMovement( ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& _return, const std::string& dataMovementId) {
+  void getLocalDataMovement( ::apache::airavata::model::appcatalog::computeresource::LOCALDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId) {
     // Your implementation goes here
     printf("getLocalDataMovement\n");
   }
@@ -1710,11 +1768,12 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns the unique job submission id.
    * 
    * 
+   * @param authzToken
    * @param computeResourceId
    * @param priorityOrder
    * @param scpDataMovement
    */
-  void addSCPDataMovementDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement) {
+  void addSCPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement) {
     // Your implementation goes here
     printf("addSCPDataMovementDetails\n");
   }
@@ -1733,10 +1792,11 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a success/failure of the update.
    * 
    * 
+   * @param authzToken
    * @param dataMovementInterfaceId
    * @param scpDataMovement
    */
-  bool updateSCPDataMovementDetails(const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement) {
+  bool updateSCPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& scpDataMovement) {
     // Your implementation goes here
     printf("updateSCPDataMovementDetails\n");
   }
@@ -1748,24 +1808,25 @@ class AiravataHandler : virtual public AiravataIf {
    *      *  @return SCPDataMovement instance
    * *
    * 
+   * @param authzToken
    * @param dataMovementId
    */
-  void getSCPDataMovement( ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& _return, const std::string& dataMovementId) {
+  void getSCPDataMovement( ::apache::airavata::model::appcatalog::computeresource::SCPDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId) {
     // Your implementation goes here
     printf("getSCPDataMovement\n");
   }
 
-  void addUnicoreDataMovementDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreDataMovement& unicoreDataMovement) {
+  void addUnicoreDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreDataMovement& unicoreDataMovement) {
     // Your implementation goes here
     printf("addUnicoreDataMovementDetails\n");
   }
 
-  bool updateUnicoreDataMovementDetails(const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreDataMovement& unicoreDataMovement) {
+  bool updateUnicoreDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::UnicoreDataMovement& unicoreDataMovement) {
     // Your implementation goes here
     printf("updateUnicoreDataMovementDetails\n");
   }
 
-  void getUnicoreDataMovement( ::apache::airavata::model::appcatalog::computeresource::UnicoreDataMovement& _return, const std::string& dataMovementId) {
+  void getUnicoreDataMovement( ::apache::airavata::model::appcatalog::computeresource::UnicoreDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId) {
     // Your implementation goes here
     printf("getUnicoreDataMovement\n");
   }
@@ -1787,11 +1848,12 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns the unique job submission id.
    * 
    * 
+   * @param authzToken
    * @param computeResourceId
    * @param priorityOrder
    * @param gridFTPDataMovement
    */
-  void addGridFTPDataMovementDetails(std::string& _return, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement) {
+  void addGridFTPDataMovementDetails(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const int32_t priorityOrder, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement) {
     // Your implementation goes here
     printf("addGridFTPDataMovementDetails\n");
   }
@@ -1810,10 +1872,11 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a success/failure of the updation.
    * 
    * 
+   * @param authzToken
    * @param dataMovementInterfaceId
    * @param gridFTPDataMovement
    */
-  bool updateGridFTPDataMovementDetails(const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement) {
+  bool updateGridFTPDataMovementDetails(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const  ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& gridFTPDataMovement) {
     // Your implementation goes here
     printf("updateGridFTPDataMovementDetails\n");
   }
@@ -1825,9 +1888,10 @@ class AiravataHandler : virtual public AiravataIf {
    *   *  @return GridFTPDataMovement instance
    * *
    * 
+   * @param authzToken
    * @param dataMovementId
    */
-  void getGridFTPDataMovement( ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& _return, const std::string& dataMovementId) {
+  void getGridFTPDataMovement( ::apache::airavata::model::appcatalog::computeresource::GridFTPDataMovement& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementId) {
     // Your implementation goes here
     printf("getGridFTPDataMovement\n");
   }
@@ -1845,10 +1909,11 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a success/failure of the change.
    * 
    * 
+   * @param authzToken
    * @param jobSubmissionInterfaceId
    * @param newPriorityOrder
    */
-  bool changeJobSubmissionPriority(const std::string& jobSubmissionInterfaceId, const int32_t newPriorityOrder) {
+  bool changeJobSubmissionPriority(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& jobSubmissionInterfaceId, const int32_t newPriorityOrder) {
     // Your implementation goes here
     printf("changeJobSubmissionPriority\n");
   }
@@ -1866,10 +1931,11 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a success/failure of the change.
    * 
    * 
+   * @param authzToken
    * @param dataMovementInterfaceId
    * @param newPriorityOrder
    */
-  bool changeDataMovementPriority(const std::string& dataMovementInterfaceId, const int32_t newPriorityOrder) {
+  bool changeDataMovementPriority(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& dataMovementInterfaceId, const int32_t newPriorityOrder) {
     // Your implementation goes here
     printf("changeDataMovementPriority\n");
   }
@@ -1884,9 +1950,10 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a success/failure of the changes.
    * 
    * 
+   * @param authzToken
    * @param jobSubmissionPriorityMap
    */
-  bool changeJobSubmissionPriorities(const std::map<std::string, int32_t> & jobSubmissionPriorityMap) {
+  bool changeJobSubmissionPriorities(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::map<std::string, int32_t> & jobSubmissionPriorityMap) {
     // Your implementation goes here
     printf("changeJobSubmissionPriorities\n");
   }
@@ -1901,9 +1968,10 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a success/failure of the changes.
    * 
    * 
+   * @param authzToken
    * @param dataMovementPriorityMap
    */
-  bool changeDataMovementPriorities(const std::map<std::string, int32_t> & dataMovementPriorityMap) {
+  bool changeDataMovementPriorities(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::map<std::string, int32_t> & dataMovementPriorityMap) {
     // Your implementation goes here
     printf("changeDataMovementPriorities\n");
   }
@@ -1918,10 +1986,11 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a success/failure of the deletion.
    * 
    * 
+   * @param authzToken
    * @param computeResourceId
    * @param jobSubmissionInterfaceId
    */
-  bool deleteJobSubmissionInterface(const std::string& computeResourceId, const std::string& jobSubmissionInterfaceId) {
+  bool deleteJobSubmissionInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& jobSubmissionInterfaceId) {
     // Your implementation goes here
     printf("deleteJobSubmissionInterface\n");
   }
@@ -1936,35 +2005,36 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a success/failure of the deletion.
    * 
    * 
+   * @param authzToken
    * @param computeResourceId
    * @param dataMovementInterfaceId
    */
-  bool deleteDataMovementInterface(const std::string& computeResourceId, const std::string& dataMovementInterfaceId) {
+  bool deleteDataMovementInterface(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& dataMovementInterfaceId) {
     // Your implementation goes here
     printf("deleteDataMovementInterface\n");
   }
 
-  void registerResourceJobManager(std::string& _return, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& resourceJobManager) {
+  void registerResourceJobManager(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& resourceJobManager) {
     // Your implementation goes here
     printf("registerResourceJobManager\n");
   }
 
-  bool updateResourceJobManager(const std::string& resourceJobManagerId, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& updatedResourceJobManager) {
+  bool updateResourceJobManager(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceJobManagerId, const  ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& updatedResourceJobManager) {
     // Your implementation goes here
     printf("updateResourceJobManager\n");
   }
 
-  void getResourceJobManager( ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& _return, const std::string& resourceJobManagerId) {
+  void getResourceJobManager( ::apache::airavata::model::appcatalog::computeresource::ResourceJobManager& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceJobManagerId) {
     // Your implementation goes here
     printf("getResourceJobManager\n");
   }
 
-  bool deleteResourceJobManager(const std::string& resourceJobManagerId) {
+  bool deleteResourceJobManager(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& resourceJobManagerId) {
     // Your implementation goes here
     printf("deleteResourceJobManager\n");
   }
 
-  bool deleteBatchQueue(const std::string& computeResourceId, const std::string& queueName) {
+  bool deleteBatchQueue(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& computeResourceId, const std::string& queueName) {
     // Your implementation goes here
     printf("deleteBatchQueue\n");
   }
@@ -1981,9 +2051,10 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a success/failure of the update.
    * 
    * 
+   * @param authzToken
    * @param gatewayResourceProfile
    */
-  void registerGatewayResourceProfile(std::string& _return, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile) {
+  void registerGatewayResourceProfile(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile) {
     // Your implementation goes here
     printf("registerGatewayResourceProfile\n");
   }
@@ -1998,9 +2069,10 @@ class AiravataHandler : virtual public AiravataIf {
    *    Gateway Resource Profile Object.
    * 
    * 
+   * @param authzToken
    * @param gatewayID
    */
-  void getGatewayResourceProfile( ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& _return, const std::string& gatewayID) {
+  void getGatewayResourceProfile( ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID) {
     // Your implementation goes here
     printf("getGatewayResourceProfile\n");
   }
@@ -2018,10 +2090,11 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a success/failure of the update.
    * 
    * 
+   * @param authzToken
    * @param gatewayID
    * @param gatewayResourceProfile
    */
-  bool updateGatewayResourceProfile(const std::string& gatewayID, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile) {
+  bool updateGatewayResourceProfile(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const  ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile& gatewayResourceProfile) {
     // Your implementation goes here
     printf("updateGatewayResourceProfile\n");
   }
@@ -2036,9 +2109,10 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a success/failure of the deletion.
    * 
    * 
+   * @param authzToken
    * @param gatewayID
    */
-  bool deleteGatewayResourceProfile(const std::string& gatewayID) {
+  bool deleteGatewayResourceProfile(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID) {
     // Your implementation goes here
     printf("deleteGatewayResourceProfile\n");
   }
@@ -2060,11 +2134,12 @@ class AiravataHandler : virtual public AiravataIf {
    *    Instead an update should be used.
    * 
    * 
+   * @param authzToken
    * @param gatewayID
    * @param computeResourceId
    * @param computeResourcePreference
    */
-  bool addGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& computeResourcePreference) {
+  bool addGatewayComputeResourcePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& computeResourcePreference) {
     // Your implementation goes here
     printf("addGatewayComputeResourcePreference\n");
   }
@@ -2082,10 +2157,11 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns the ComputeResourcePreference object.
    * 
    * 
+   * @param authzToken
    * @param gatewayID
    * @param computeResourceId
    */
-  void getGatewayComputeResourcePreference( ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& _return, const std::string& gatewayID, const std::string& computeResourceId) {
+  void getGatewayComputeResourcePreference( ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& computeResourceId) {
     // Your implementation goes here
     printf("getGatewayComputeResourcePreference\n");
   }
@@ -2100,9 +2176,10 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns the ComputeResourcePreference object.
    * 
    * 
+   * @param authzToken
    * @param gatewayID
    */
-  void getAllGatewayComputeResourcePreferences(std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference> & _return, const std::string& gatewayID) {
+  void getAllGatewayComputeResourcePreferences(std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID) {
     // Your implementation goes here
     printf("getAllGatewayComputeResourcePreferences\n");
   }
@@ -2110,8 +2187,10 @@ class AiravataHandler : virtual public AiravataIf {
   /**
    * Fetch all gateway profiles registered
    * 
+   * 
+   * @param authzToken
    */
-  void getAllGatewayComputeResources(std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile> & _return) {
+  void getAllGatewayComputeResources(std::vector< ::apache::airavata::model::appcatalog::gatewayprofile::GatewayResourceProfile> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken) {
     // Your implementation goes here
     printf("getAllGatewayComputeResources\n");
   }
@@ -2132,11 +2211,12 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a success/failure of the updation.
    * 
    * 
+   * @param authzToken
    * @param gatewayID
    * @param computeResourceId
    * @param computeResourcePreference
    */
-  bool updateGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& computeResourcePreference) {
+  bool updateGatewayComputeResourcePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& computeResourceId, const  ::apache::airavata::model::appcatalog::gatewayprofile::ComputeResourcePreference& computeResourcePreference) {
     // Your implementation goes here
     printf("updateGatewayComputeResourcePreference\n");
   }
@@ -2154,45 +2234,46 @@ class AiravataHandler : virtual public AiravataIf {
    *   Returns a success/failure of the deletion.
    * 
    * 
+   * @param authzToken
    * @param gatewayID
    * @param computeResourceId
    */
-  bool deleteGatewayComputeResourcePreference(const std::string& gatewayID, const std::string& computeResourceId) {
+  bool deleteGatewayComputeResourcePreference(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayID, const std::string& computeResourceId) {
     // Your implementation goes here
     printf("deleteGatewayComputeResourcePreference\n");
   }
 
-  void getAllWorkflows(std::vector<std::string> & _return, const std::string& gatewayId) {
+  void getAllWorkflows(std::vector<std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId) {
     // Your implementation goes here
     printf("getAllWorkflows\n");
   }
 
-  void getWorkflow( ::Workflow& _return, const std::string& workflowTemplateId) {
+  void getWorkflow( ::Workflow& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId) {
     // Your implementation goes here
     printf("getWorkflow\n");
   }
 
-  void deleteWorkflow(const std::string& workflowTemplateId) {
+  void deleteWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId) {
     // Your implementation goes here
     printf("deleteWorkflow\n");
   }
 
-  void registerWorkflow(std::string& _return, const std::string& gatewayId, const  ::Workflow& workflow) {
+  void registerWorkflow(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const  ::Workflow& workflow) {
     // Your implementation goes here
     printf("registerWorkflow\n");
   }
 
-  void updateWorkflow(const std::string& workflowTemplateId, const  ::Workflow& workflow) {
+  void updateWorkflow(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowTemplateId, const  ::Workflow& workflow) {
     // Your implementation goes here
     printf("updateWorkflow\n");
   }
 
-  void getWorkflowTemplateId(std::string& _return, const std::string& workflowName) {
+  void getWorkflowTemplateId(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowName) {
     // Your implementation goes here
     printf("getWorkflowTemplateId\n");
   }
 
-  bool isWorkflowExistWithName(const std::string& workflowName) {
+  bool isWorkflowExistWithName(const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& workflowName) {
     // Your implementation goes here
     printf("isWorkflowExistWithName\n");
   }

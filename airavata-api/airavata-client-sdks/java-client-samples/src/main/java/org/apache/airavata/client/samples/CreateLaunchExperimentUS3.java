@@ -175,7 +175,7 @@ public class CreateLaunchExperimentUS3 {
             userConfigurationData.setOverrideManualScheduledParams(false);
             userConfigurationData.setComputationalResourceScheduling(scheduling);
             simpleExperiment.setUserConfigurationData(userConfigurationData);
-            return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+            return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
         } catch (AiravataSystemException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataSystemException(e);
@@ -249,7 +249,7 @@ public class CreateLaunchExperimentUS3 {
         
             userConfigurationData.setComputationalResourceScheduling(scheduling);
             simpleExperiment.setUserConfigurationData(userConfigurationData);
-            return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+            return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
         } catch (AiravataSystemException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataSystemException(e);
@@ -324,7 +324,7 @@ public class CreateLaunchExperimentUS3 {
             userConfigurationData.setAdvanceOutputDataHandling(dataHandling);*/
         
             simpleExperiment.setUserConfigurationData(userConfigurationData);
-            return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+            return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
         } catch (AiravataSystemException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataSystemException(e);
@@ -398,7 +398,7 @@ public class CreateLaunchExperimentUS3 {
             userConfigurationData.setAdvanceOutputDataHandling(dataHandling);*/
         
             simpleExperiment.setUserConfigurationData(userConfigurationData);
-            return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+            return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
         } catch (AiravataSystemException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataSystemException(e);
@@ -473,7 +473,7 @@ public class CreateLaunchExperimentUS3 {
             userConfigurationData.setAdvanceOutputDataHandling(dataHandling);*/
         
             simpleExperiment.setUserConfigurationData(userConfigurationData);
-            return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+            return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
         } catch (AiravataSystemException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataSystemException(e);
@@ -519,7 +519,7 @@ public class CreateLaunchExperimentUS3 {
             userConfigurationData.setOverrideManualScheduledParams(false);
             userConfigurationData.setComputationalResourceScheduling(scheduling);
             simpleExperiment.setUserConfigurationData(userConfigurationData);
-            return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+            return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
         } catch (AiravataSystemException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataSystemException(e);
@@ -538,7 +538,7 @@ public class CreateLaunchExperimentUS3 {
     public static void launchExperiment (Airavata.Client client, String expId)
             throws TException{
         try {
-            client.launchExperiment(expId, "testToken");
+            client.launchExperiment(new AuthzToken(""), expId, "testToken");
         } catch (ExperimentNotFoundException e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());
             throw new ExperimentNotFoundException(e);

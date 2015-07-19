@@ -42,6 +42,7 @@ import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.error.AiravataClientException;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -159,7 +160,7 @@ public class RegisterOGCEUS3Application {
             System.out.println("\n #### Registering Application Modules #### \n");
 
             //Register Echo
-            ultrascanModuleId = airavataClient.registerApplicationModule(DEFAULT_GATEWAY,
+            ultrascanModuleId = airavataClient.registerApplicationModule(new AuthzToken(""), DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationModule(
                             "ultrascan_ogce", "1.0", "ultrascan application"));
             System.out.println("Ultrascan Module Id " + ultrascanModuleId);
@@ -191,7 +192,7 @@ public class RegisterOGCEUS3Application {
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
 
-            ultrascanAppId = airavataClient.registerApplicationInterface(DEFAULT_GATEWAY,
+            ultrascanAppId = airavataClient.registerApplicationInterface(new AuthzToken(""), DEFAULT_GATEWAY,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("ultrascan", "ultrascan application",
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("Ultrascan Application Interface Id " + ultrascanAppId);
@@ -206,12 +207,12 @@ public class RegisterOGCEUS3Application {
 			System.out.println("#### Registering Application Deployments on Stampede #### \n");
 
 			// Register Stampede
-			String ultascanStamplede = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY, RegisterSampleApplicationsUtils.createApplicationDeployment(ultrascanModuleId,
+			String ultascanStamplede = airavataClient.registerApplicationDeployment(new AuthzToken(""), DEFAULT_GATEWAY, RegisterSampleApplicationsUtils.createApplicationDeployment(ultrascanModuleId,
 					stampedeResourceId, "/home1/01437/ogce/xsede_apps/ultrascan/bin/us_mpi_analysis",
                     ApplicationParallelismType.MPI, "ultrascan OGCE application", null, null, null));
 			System.out.println("Ultrascan on stampede deployment Id " + ultascanStamplede);
 			
-			String ultascanTrestles = airavataClient.registerApplicationDeployment(DEFAULT_GATEWAY, RegisterSampleApplicationsUtils.createApplicationDeployment(ultrascanModuleId,
+			String ultascanTrestles = airavataClient.registerApplicationDeployment(new AuthzToken(""), DEFAULT_GATEWAY, RegisterSampleApplicationsUtils.createApplicationDeployment(ultrascanModuleId,
 					trestlesResourceId, "/home/ogce/xsede_app/ultrascan/bin/us_mpi_analysis",
                     ApplicationParallelismType.MPI, "ultrascan OGCE application", null, null, null));
 			System.out.println("Ultrascan on trestles deployment Id " + ultascanTrestles);
@@ -254,7 +255,7 @@ public class RegisterOGCEUS3Application {
   //          gatewayResourceProfile.addToComputeResourcePreferences(lonestarResourcePreferences);
   //          gatewayResourceProfile.addToComputeResourcePreferences(alamoResourcePreferences);
 
-            String gatewayProfile = airavataClient.registerGatewayResourceProfile(gatewayResourceProfile);
+            String gatewayProfile = airavataClient.registerGatewayResourceProfile(new AuthzToken(""), gatewayResourceProfile);
             System.out.println("Gateway Profile is registered with Id " + gatewayProfile);
 
         } catch (TException e) {
@@ -267,7 +268,7 @@ public class RegisterOGCEUS3Application {
 		ComputeResourceDescription computeResourceDescription = RegisterSampleApplicationsUtils
 				.createComputeResourceDescription(hostName, hostDesc, null, null);
 
-		String computeResourceId = airavataClient.registerComputeResource(computeResourceDescription);
+		String computeResourceId = airavataClient.registerComputeResource(new AuthzToken(""), computeResourceDescription);
 
 		if (computeResourceId.isEmpty())
 			throw new AiravataClientException();
@@ -284,12 +285,12 @@ public class RegisterOGCEUS3Application {
 		sshJobSubmission.setResourceJobManager(resourceJobManager);
 		sshJobSubmission.setSecurityProtocol(securityProtocol);
 		sshJobSubmission.setSshPort(portNumber);
-		airavataClient.addSSHJobSubmissionDetails(computeResourceId, 1, sshJobSubmission);
+		airavataClient.addSSHJobSubmissionDetails(new AuthzToken(""), computeResourceId, 1, sshJobSubmission);
 
 		SCPDataMovement scpDataMovement = new SCPDataMovement();
 		scpDataMovement.setSecurityProtocol(securityProtocol);
 		scpDataMovement.setSshPort(portNumber);
-		airavataClient.addSCPDataMovementDetails(computeResourceId, 1, scpDataMovement);
+		airavataClient.addSCPDataMovementDetails(new AuthzToken(""), computeResourceId, 1, scpDataMovement);
 
 		return computeResourceId;
 	}
@@ -311,13 +312,14 @@ public class RegisterOGCEUS3Application {
 		sshJobSubmission.setResourceJobManager(resourceJobManager);
 		sshJobSubmission.setSecurityProtocol(securityProtocol);
 		sshJobSubmission.setSshPort(portNumber);
-		airavataClient.addSSHJobSubmissionDetails(computeResourceId, 1, sshJobSubmission);
-		ComputeResourceDescription computeResourceDescription = airavataClient.getComputeResource(computeResourceId);
+		airavataClient.addSSHJobSubmissionDetails(new AuthzToken(""), computeResourceId, 1, sshJobSubmission);
+		ComputeResourceDescription computeResourceDescription = airavataClient.getComputeResource(new AuthzToken(""),
+                computeResourceId);
 		computeResourceDescription.getJobSubmissionInterfacesIterator();
 		SCPDataMovement scpDataMovement = new SCPDataMovement();
 		scpDataMovement.setSecurityProtocol(securityProtocol);
 		scpDataMovement.setSshPort(portNumber);
-		airavataClient.addSCPDataMovementDetails(computeResourceId, 1, scpDataMovement);
+		airavataClient.addSCPDataMovementDetails(new AuthzToken(""), computeResourceId, 1, scpDataMovement);
 
 		return computeResourceId;
 	}

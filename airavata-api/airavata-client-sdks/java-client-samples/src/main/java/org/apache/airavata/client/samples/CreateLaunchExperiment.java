@@ -95,7 +95,8 @@ public class CreateLaunchExperiment {
 
     public static void getAvailableAppInterfaceComputeResources(String appInterfaceId) {
         try {
-            Map<String, String> availableAppInterfaceComputeResources = airavataClient.getAvailableAppInterfaceComputeResources(appInterfaceId);
+            Map<String, String> availableAppInterfaceComputeResources = airavataClient.
+                    getAvailableAppInterfaceComputeResources(new AuthzToken(""), appInterfaceId);
             for (String key : availableAppInterfaceComputeResources.keySet()) {
                 System.out.println("id : " + key);
                 System.out.println("name : " + availableAppInterfaceComputeResources.get(key));
@@ -194,7 +195,7 @@ public class CreateLaunchExperiment {
             while(allNotFinished) {
                 allNotFinished = false;
                 for (String exId : experimentIds) {
-                    ExperimentModel experiment = airavataClient.getExperiment(exId);
+                    ExperimentModel experiment = airavataClient.getExperiment(new AuthzToken(""), exId);
                     if(!experiment.getExperimentStatus().getState().equals(ExperimentState.COMPLETED)&&
                             !experiment.getExperimentStatus().getState().equals(ExperimentState.FAILED)
                             &&!experiment.getExperimentStatus().getState().equals(ExperimentState.CANCELED)){
@@ -244,7 +245,7 @@ public class CreateLaunchExperiment {
         ComputeResourceDescription computeResourceDescription = RegisterSampleApplicationsUtils
                 .createComputeResourceDescription(hostName, hostDesc, null, null);
 
-        fsdResourceId = airavataClient.registerComputeResource(computeResourceDescription);
+        fsdResourceId = airavataClient.registerComputeResource(new AuthzToken(""), computeResourceDescription);
 
         if (fsdResourceId.isEmpty())
             throw new AiravataClientException();
@@ -261,13 +262,13 @@ public class CreateLaunchExperiment {
 
     public static String createEchoExperimentForTrestles(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = client.getApplicationInputs(echoAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(new AuthzToken(""), echoAppId);
             for (InputDataObjectType inputDataObjectType : exInputs) {
                 if (inputDataObjectType.getName().equalsIgnoreCase("Input_to_Echo")) {
                     inputDataObjectType.setValue("Hello World");
                 }
             }
-            List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(new AuthzToken(""), echoAppId);
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
             String projectId = client.createProject(new AuthzToken(""), DEFAULT_GATEWAY, project);
@@ -277,7 +278,7 @@ public class CreateLaunchExperiment {
 					        "SimpleEcho3", echoAppId, exInputs);
 	        simpleExperiment.setExperimentOutputs(exOut);
 
-            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(echoAppId);
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(new AuthzToken(""), echoAppId);
             if (computeResources != null && computeResources.size() != 0) {
                 for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
@@ -288,7 +289,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+                        return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -311,7 +312,7 @@ public class CreateLaunchExperiment {
 
     public static String createEchoExperimentForFSD(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = client.getApplicationInputs(echoAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(new AuthzToken(""), echoAppId);
             for (InputDataObjectType inputDataObjectType : exInputs) {
                 if (inputDataObjectType.getName().equalsIgnoreCase("Input_to_Echo")) {
                     inputDataObjectType.setValue("Hello World");
@@ -321,7 +322,7 @@ public class CreateLaunchExperiment {
                     inputDataObjectType.setValue("file:///tmp/test.txt");
                 }
             }
-            List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(new AuthzToken(""), echoAppId);
 
 	        ExperimentModel simpleExperiment =
 			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, "default", "admin", "echoExperiment",
@@ -329,7 +330,7 @@ public class CreateLaunchExperiment {
 	        simpleExperiment.setExperimentOutputs(exOut);
 
 
-            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(echoAppId);
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(new AuthzToken(""), echoAppId);
             if (computeResources != null && computeResources.size() != 0) {
                 for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
@@ -343,7 +344,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setUserDN("");
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
 
-                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+                        return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -366,13 +367,13 @@ public class CreateLaunchExperiment {
 
     public static String createMPIExperimentForFSD(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = client.getApplicationInputs(mpiAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(new AuthzToken(""), mpiAppId);
             for (InputDataObjectType inputDataObjectType : exInputs) {
                 if (inputDataObjectType.getName().equalsIgnoreCase("Sample_Input")) {
                     inputDataObjectType.setValue("");
                 }
             }
-            List<OutputDataObjectType> exOut = client.getApplicationOutputs(mpiAppId);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(new AuthzToken(""), mpiAppId);
 
 
 	        ExperimentModel simpleExperiment =
@@ -381,7 +382,7 @@ public class CreateLaunchExperiment {
 	        simpleExperiment.setExperimentOutputs(exOut);
 
 
-            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(mpiAppId);
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(new AuthzToken(""), mpiAppId);
             if (computeResources != null && computeResources.size() != 0) {
                 for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
@@ -397,7 +398,7 @@ public class CreateLaunchExperiment {
 
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
 
-                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+                        return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -420,16 +421,16 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentWRFStampede(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = client.getApplicationInputs(wrfAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(new AuthzToken(""), wrfAppId);
             setWRFInputs(exInputs);
-            List<OutputDataObjectType> exOut = client.getApplicationOutputs(wrfAppId);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(new AuthzToken(""), wrfAppId);
 
 	        ExperimentModel simpleExperiment =
 			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, "default", "admin", "WRFExperiment",
 					        "Testing", wrfAppId, exInputs);
 	        simpleExperiment.setExperimentOutputs(exOut);
 
-            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(wrfAppId);
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(new AuthzToken(""), wrfAppId);
             if (computeResources != null && computeResources.size() != 0) {
                 for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
@@ -440,7 +441,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+                        return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -477,16 +478,16 @@ public class CreateLaunchExperiment {
     public static String createExperimentGROMACSStampede(Airavata.Client client) throws TException {
         try {
 
-            List<InputDataObjectType> exInputs = client.getApplicationInputs(gromacsAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(new AuthzToken(""), gromacsAppId);
             setGROMACSInputs(exInputs);
-            List<OutputDataObjectType> exOut = client.getApplicationOutputs(gromacsAppId);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(new AuthzToken(""), gromacsAppId);
 
 	        ExperimentModel simpleExperiment =
 			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, "default", "admin",
 					        "GromacsExperiment", "Testing", gromacsAppId, exInputs);
 	        simpleExperiment.setExperimentOutputs(exOut);
 
-            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(gromacsAppId);
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(new AuthzToken(""), gromacsAppId);
             if (computeResources != null && computeResources.size() != 0) {
                 for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
@@ -497,7 +498,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+                        return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -529,16 +530,16 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentESPRESSOStampede(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = client.getApplicationInputs(espressoAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(new AuthzToken(""), espressoAppId);
             setESPRESSOInputs(exInputs);
-            List<OutputDataObjectType> exOut = client.getApplicationOutputs(espressoAppId);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(new AuthzToken(""), espressoAppId);
 
 	        ExperimentModel simpleExperiment =
 			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, "default", "admin",
 					        "EspressoExperiment", "Testing", espressoAppId, exInputs);
 	        simpleExperiment.setExperimentOutputs(exOut);
 
-            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(espressoAppId);
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(new AuthzToken(""), espressoAppId);
             if (computeResources != null && computeResources.size() != 0) {
                 for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
@@ -549,7 +550,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+                        return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -581,16 +582,16 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentTRINITYStampede(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = client.getApplicationInputs(trinityAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(new AuthzToken(""), trinityAppId);
             setTRINITYInputs(exInputs);
-            List<OutputDataObjectType> exOut = client.getApplicationOutputs(trinityAppId);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(new AuthzToken(""), trinityAppId);
 
 	        ExperimentModel simpleExperiment =
 			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, "default", "admin",
 					        "TrinityExperiment", "Testing", trinityAppId, exInputs);
 	        simpleExperiment.setExperimentOutputs(exOut);
 
-            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(trinityAppId);
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(new AuthzToken(""), trinityAppId);
             if (computeResources != null && computeResources.size() != 0) {
                 for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
@@ -601,7 +602,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+                        return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -633,16 +634,16 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentLAMMPSStampede(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = client.getApplicationInputs(lammpsAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(new AuthzToken(""), lammpsAppId);
             setLAMMPSInputs(exInputs);
-            List<OutputDataObjectType> exOut = client.getApplicationOutputs(lammpsAppId);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(new AuthzToken(""), lammpsAppId);
 
 	        ExperimentModel simpleExperiment =
 			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, "default", "admin",
 					        "LAMMPSExperiment", "Testing", lammpsAppId, exInputs);
 	        simpleExperiment.setExperimentOutputs(exOut);
 
-            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(lammpsAppId);
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(new AuthzToken(""), lammpsAppId);
             if (computeResources != null && computeResources.size() != 0) {
                 for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
@@ -653,7 +654,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+                        return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -683,16 +684,16 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentNWCHEMStampede(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = client.getApplicationInputs(nwchemAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(new AuthzToken(""), nwchemAppId);
             setNWCHEMInputs(exInputs);
-            List<OutputDataObjectType> exOut = client.getApplicationOutputs(nwchemAppId);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(new AuthzToken(""), nwchemAppId);
 
 	        ExperimentModel simpleExperiment =
 			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, "default", "admin",
 					        "NWchemExperiment", "Testing", nwchemAppId, exInputs);
 	        simpleExperiment.setExperimentOutputs(exOut);
 
-            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(nwchemAppId);
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(new AuthzToken(""), nwchemAppId);
             if (computeResources != null && computeResources.size() != 0) {
                 for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
@@ -703,7 +704,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+                        return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -733,16 +734,16 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentAUTODOCKStampede(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = client.getApplicationInputs(nwchemAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(new AuthzToken(""), nwchemAppId);
             setAUTODOCKInputs(exInputs);
-            List<OutputDataObjectType> exOut = client.getApplicationOutputs(nwchemAppId);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(new AuthzToken(""), nwchemAppId);
 
 	        ExperimentModel simpleExperiment =
 			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, "default", "admin",
 					        "AutoDockExperiment", "Testing", autodockAppId, exInputs);
 	        simpleExperiment.setExperimentOutputs(exOut);
 
-            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(autodockAppId);
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(new AuthzToken(""), autodockAppId);
             if (computeResources != null && computeResources.size() != 0) {
                 for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
@@ -753,7 +754,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+                        return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -806,16 +807,16 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentWRFTrestles(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = client.getApplicationInputs(wrfAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(new AuthzToken(""), wrfAppId);
             setWRFInputs(exInputs);
-            List<OutputDataObjectType> exOut = client.getApplicationOutputs(wrfAppId);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(new AuthzToken(""), wrfAppId);
 
 	        ExperimentModel simpleExperiment =
 			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, "default", "admin", "WRFExperiment",
 					        "Testing", wrfAppId, exInputs);
 	        simpleExperiment.setExperimentOutputs(exOut);
 
-            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(wrfAppId);
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(new AuthzToken(""), wrfAppId);
             if (computeResources != null && computeResources.size() != 0) {
                 for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
@@ -826,7 +827,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+                        return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -848,7 +849,7 @@ public class CreateLaunchExperiment {
 
     public static String cloneExperiment(Airavata.Client client, String expId) throws TException {
         try {
-            return client.cloneExperiment(expId, "cloneExperiment1");
+            return client.cloneExperiment(new AuthzToken(""), expId, "cloneExperiment1");
         } catch (TException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new TException(e);
@@ -858,9 +859,9 @@ public class CreateLaunchExperiment {
 
     public static void updateExperiment(Airavata.Client client, String expId) throws TException {
         try {
-            ExperimentModel experiment = client.getExperiment(expId);
+            ExperimentModel experiment = client.getExperiment(new AuthzToken(""), expId);
             experiment.setDescription("updatedDescription");
-            client.updateExperiment(expId, experiment);
+            client.updateExperiment(new AuthzToken(""), expId, experiment);
         } catch (TException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new TException(e);
@@ -870,13 +871,13 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentEchoForLocalHost(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = client.getApplicationInputs(echoAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(new AuthzToken(""), echoAppId);
             for (InputDataObjectType inputDataObjectType : exInputs) {
                 if (inputDataObjectType.getName().equalsIgnoreCase("Input_to_Echo")) {
                     inputDataObjectType.setValue("Hello World");
                 }
             }
-            List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(new AuthzToken(""), echoAppId);
 
             Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
             String projectId = client.createProject(new AuthzToken(""), DEFAULT_GATEWAY, project);
@@ -886,7 +887,7 @@ public class CreateLaunchExperiment {
 					        "Echo Test", echoAppId, exInputs);
 	        simpleExperiment.setExperimentOutputs(exOut);
 
-            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(echoAppId);
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(new AuthzToken(""), echoAppId);
             if (computeResources != null && computeResources.size() != 0) {
                 for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
@@ -897,7 +898,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+                        return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -965,13 +966,13 @@ public class CreateLaunchExperiment {
 
     public static String createEchoExperimentForStampede(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = client.getApplicationInputs(echoAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(new AuthzToken(""), echoAppId);
             for (InputDataObjectType inputDataObjectType : exInputs) {
                 if (inputDataObjectType.getName().equalsIgnoreCase("Input_to_Echo")) {
                     inputDataObjectType.setValue("Hello World");
                 }
             }
-            List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(new AuthzToken(""), echoAppId);
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
 	        String projectId = client.createProject(new AuthzToken(""), DEFAULT_GATEWAY, project);
@@ -980,7 +981,7 @@ public class CreateLaunchExperiment {
                     ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY,projectId, "admin", "echoExperiment", "SimpleEcho3", echoAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
-            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(echoAppId);
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(new AuthzToken(""), echoAppId);
             if (computeResources != null && computeResources.size() != 0) {
                 for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
@@ -991,7 +992,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+                        return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -1083,13 +1084,13 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentForBR2(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = client.getApplicationInputs(echoAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(new AuthzToken(""), echoAppId);
             for (InputDataObjectType inputDataObjectType : exInputs) {
                 if (inputDataObjectType.getName().equalsIgnoreCase("Input_to_Echo")) {
                     inputDataObjectType.setValue("Hello World");
                 }
             }
-            List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(new AuthzToken(""), echoAppId);
 
 
             Project project = ProjectModelUtil.createProject("default", "lahiru", "test project");
@@ -1100,7 +1101,7 @@ public class CreateLaunchExperiment {
 					        "sshEchoExperiment", "SimpleEchoBR", echoAppId, exInputs);
 	        simpleExperiment.setExperimentOutputs(exOut);
 
-            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(echoAppId);
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(new AuthzToken(""), echoAppId);
             if (computeResources != null && computeResources.size() != 0) {
                 for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
@@ -1111,7 +1112,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+                        return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -1133,12 +1134,12 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentForLSF(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = client.getApplicationInputs(echoAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(new AuthzToken(""), echoAppId);
 
             for (InputDataObjectType inputDataObjectType : exInputs) {
                 inputDataObjectType.setValue("Hello World");
             }
-            List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(new AuthzToken(""), echoAppId);
             Project project = ProjectModelUtil.createProject("default", "lg11w", "test project");
             String projectId = client.createProject(new AuthzToken(""), DEFAULT_GATEWAY, project);
 
@@ -1149,7 +1150,7 @@ public class CreateLaunchExperiment {
 	        simpleExperiment.setExperimentOutputs(exOut);
             simpleExperiment.setExperimentInputs(exInputs);
 
-            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(echoAppId);
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(new AuthzToken(""), echoAppId);
             if (computeResources != null && computeResources.size() != 0) {
                 for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
@@ -1161,7 +1162,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
                         simpleExperiment.setEmailAddresses(Arrays.asList(new String[]{"test@umassmed.edu"}));
-                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+                        return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -1183,14 +1184,14 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentLAMMPSForLSF(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = client.getApplicationInputs(lammpsAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(new AuthzToken(""), lammpsAppId);
 
             for (InputDataObjectType inputDataObjectType : exInputs) {
                 inputDataObjectType.setName("Friction_Simulation_Input");
                 inputDataObjectType.setValue("/Users/lginnali/Downloads/data/in.friction");
                 inputDataObjectType.setType(DataType.URI);
             }
-            List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(new AuthzToken(""), echoAppId);
 
             /*OutputDataObjectType outputDataObjectType = exOut.get(0);
             outputDataObjectType.setName("LAMMPS_Simulation_Log");
@@ -1210,7 +1211,7 @@ public class CreateLaunchExperiment {
 					        "LAMMPSExperiment", "Testing", lammpsAppId, exInputs);
 	        simpleExperiment.setExperimentOutputs(exOut);
 
-            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(lammpsAppId);
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(new AuthzToken(""), lammpsAppId);
             if (computeResources != null && computeResources.size() != 0) {
                 for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
@@ -1221,7 +1222,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+                        return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -1244,7 +1245,7 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentForBR2Amber(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = client.getApplicationInputs(amberAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(new AuthzToken(""), amberAppId);
 //			for (InputDataObjectType inputDataObjectType : exInputs) {
 //				if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
 //					inputDataObjectType.setValue("/Users/raminder/Documents/Sample/Amber/02_Heat.rst");
@@ -1265,7 +1266,7 @@ public class CreateLaunchExperiment {
                 }
             }
 
-            List<OutputDataObjectType> exOut = client.getApplicationOutputs(amberAppId);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(new AuthzToken(""), amberAppId);
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
             String projectId = client.createProject(new AuthzToken(""), DEFAULT_GATEWAY, project);
@@ -1276,7 +1277,7 @@ public class CreateLaunchExperiment {
 	        simpleExperiment.setExperimentOutputs(exOut);
 
 
-            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(amberAppId);
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(new AuthzToken(""), amberAppId);
             if (computeResources != null && computeResources.size() != 0) {
                 for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
@@ -1287,7 +1288,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+                        return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -1309,7 +1310,7 @@ public class CreateLaunchExperiment {
 
     public static String createExperimentForStampedeAmber(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = client.getApplicationInputs(amberAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(new AuthzToken(""), amberAppId);
 //			for (InputDataObjectType inputDataObjectType : exInputs) {
 //				if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
 //					inputDataObjectType.setValue("/Users/raminder/Documents/Sample/Amber/02_Heat.rst");
@@ -1330,7 +1331,7 @@ public class CreateLaunchExperiment {
                 }
             }
 
-            List<OutputDataObjectType> exOut = client.getApplicationOutputs(amberAppId);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(new AuthzToken(""), amberAppId);
 
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
@@ -1341,7 +1342,7 @@ public class CreateLaunchExperiment {
 					        "sshEchoExperiment", "SimpleEchoBR", amberAppId, exInputs);
 	        simpleExperiment.setExperimentOutputs(exOut);
 
-            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(amberAppId);
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(new AuthzToken(""), amberAppId);
             if (computeResources != null && computeResources.size() != 0) {
                 for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
@@ -1352,7 +1353,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+                        return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -1375,7 +1376,7 @@ public class CreateLaunchExperiment {
     public static String createExperimentForTrestlesAmber(Airavata.Client client) throws TException {
         try {
 
-            List<InputDataObjectType> exInputs = client.getApplicationInputs(amberAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(new AuthzToken(""), amberAppId);
 //			for (InputDataObjectType inputDataObjectType : exInputs) {
 //				if (inputDataObjectType.getName().equalsIgnoreCase("Heat_Restart_File")) {
 //					inputDataObjectType.setValue("/Users/raminder/Documents/Sample/Amber/02_Heat.rst");
@@ -1395,7 +1396,7 @@ public class CreateLaunchExperiment {
                     inputDataObjectType.setValue("/Users/chathuri/dev/airavata/source/php/inputs/AMBER_FILES/prmtop");
                 }
             }
-            List<OutputDataObjectType> exOut = client.getApplicationOutputs(amberAppId);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(new AuthzToken(""), amberAppId);
 
             Project project = ProjectModelUtil.createProject("default", "admin", "test project");
             String projectId = client.createProject(new AuthzToken(""), DEFAULT_GATEWAY, project);
@@ -1406,7 +1407,7 @@ public class CreateLaunchExperiment {
 	        simpleExperiment.setExperimentOutputs(exOut);
             simpleExperiment.setEnableEmailNotification(true);
 //            simpleExperiment.addToEmailAddresses("raman@ogce.org");
-            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(amberAppId);
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(new AuthzToken(""), amberAppId);
             if (computeResources != null && computeResources.size() != 0) {
                 for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
@@ -1417,7 +1418,7 @@ public class CreateLaunchExperiment {
                         userConfigurationData.setOverrideManualScheduledParams(false);
                         userConfigurationData.setComputationalResourceScheduling(scheduling);
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
-                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+                        return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -1441,7 +1442,7 @@ public class CreateLaunchExperiment {
             throws TException {
         try {
             String tokenId = "-0bbb-403b-a88a-42b6dbe198e9";
-            client.launchExperiment(expId, tokenId);
+            client.launchExperiment(new AuthzToken(""), expId, tokenId);
         } catch (ExperimentNotFoundException e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());
             throw new ExperimentNotFoundException(e);
@@ -1568,7 +1569,7 @@ public class CreateLaunchExperiment {
 
     public static void getExperiment(Airavata.Client client, String expId) throws Exception {
         try {
-            ExperimentModel experiment = client.getExperiment(expId);
+            ExperimentModel experiment = client.getExperiment(new AuthzToken(""), expId);
             List<ErrorModel> errors = experiment.getErrors();
             if (errors != null && !errors.isEmpty()) {
                 for (ErrorModel error : errors) {

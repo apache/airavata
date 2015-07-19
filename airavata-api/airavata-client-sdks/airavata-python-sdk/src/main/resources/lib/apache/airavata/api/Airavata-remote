@@ -39,118 +39,118 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  Project getProject(AuthzToken authzToken, string projectId)')
   print('  bool deleteProject(AuthzToken authzToken, string projectId)')
   print('   getAllUserProjects(string gatewayId, string userName)')
-  print('   getAllUserProjectsWithPagination(string gatewayId, string userName, i32 limit, i32 offset)')
+  print('   getAllUserProjectsWithPagination(AuthzToken authzToken, string gatewayId, string userName, i32 limit, i32 offset)')
   print('   searchProjectsByProjectName(string gatewayId, string userName, string projectName)')
-  print('   searchProjectsByProjectNameWithPagination(string gatewayId, string userName, string projectName, i32 limit, i32 offset)')
+  print('   searchProjectsByProjectNameWithPagination(AuthzToken authzToken, string gatewayId, string userName, string projectName, i32 limit, i32 offset)')
   print('   searchProjectsByProjectDesc(string gatewayId, string userName, string description)')
-  print('   searchProjectsByProjectDescWithPagination(string gatewayId, string userName, string description, i32 limit, i32 offset)')
+  print('   searchProjectsByProjectDescWithPagination(AuthzToken authzToken, string gatewayId, string userName, string description, i32 limit, i32 offset)')
   print('   searchExperimentsByName(string gatewayId, string userName, string expName)')
-  print('   searchExperimentsByNameWithPagination(string gatewayId, string userName, string expName, i32 limit, i32 offset)')
+  print('   searchExperimentsByNameWithPagination(AuthzToken authzToken, string gatewayId, string userName, string expName, i32 limit, i32 offset)')
   print('   searchExperimentsByDesc(string gatewayId, string userName, string description)')
-  print('   searchExperimentsByDescWithPagination(string gatewayId, string userName, string description, i32 limit, i32 offset)')
+  print('   searchExperimentsByDescWithPagination(AuthzToken authzToken, string gatewayId, string userName, string description, i32 limit, i32 offset)')
   print('   searchExperimentsByApplication(string gatewayId, string userName, string applicationId)')
-  print('   searchExperimentsByApplicationWithPagination(string gatewayId, string userName, string applicationId, i32 limit, i32 offset)')
+  print('   searchExperimentsByApplicationWithPagination(AuthzToken authzToken, string gatewayId, string userName, string applicationId, i32 limit, i32 offset)')
   print('   searchExperimentsByStatus(string gatewayId, string userName, ExperimentState experimentState)')
-  print('   searchExperimentsByStatusWithPagination(string gatewayId, string userName, ExperimentState experimentState, i32 limit, i32 offset)')
+  print('   searchExperimentsByStatusWithPagination(AuthzToken authzToken, string gatewayId, string userName, ExperimentState experimentState, i32 limit, i32 offset)')
   print('   searchExperimentsByCreationTime(string gatewayId, string userName, i64 fromTime, i64 toTime)')
-  print('   searchExperimentsByCreationTimeWithPagination(string gatewayId, string userName, i64 fromTime, i64 toTime, i32 limit, i32 offset)')
-  print('   searchExperiments(string gatewayId, string userName,  filters, i32 limit, i32 offset)')
-  print('  ExperimentStatistics getExperimentStatistics(string gatewayId, i64 fromTime, i64 toTime)')
+  print('   searchExperimentsByCreationTimeWithPagination(AuthzToken authzToken, string gatewayId, string userName, i64 fromTime, i64 toTime, i32 limit, i32 offset)')
+  print('   searchExperiments(AuthzToken authzToken, string gatewayId, string userName,  filters, i32 limit, i32 offset)')
+  print('  ExperimentStatistics getExperimentStatistics(AuthzToken authzToken, string gatewayId, i64 fromTime, i64 toTime)')
   print('   getAllExperimentsInProject(string projectId)')
-  print('   getAllExperimentsInProjectWithPagination(string projectId, i32 limit, i32 offset)')
+  print('   getAllExperimentsInProjectWithPagination(AuthzToken authzToken, string projectId, i32 limit, i32 offset)')
   print('   getAllUserExperiments(string gatewayId, string userName)')
-  print('   getAllUserExperimentsWithPagination(string gatewayId, string userName, i32 limit, i32 offset)')
-  print('  string createExperiment(string gatewayId, ExperimentModel experiment)')
-  print('  ExperimentModel getExperiment(string airavataExperimentId)')
-  print('  void updateExperiment(string airavataExperimentId, ExperimentModel experiment)')
-  print('  void updateExperimentConfiguration(string airavataExperimentId, UserConfigurationDataModel userConfiguration)')
-  print('  void updateResourceScheduleing(string airavataExperimentId, ComputationalResourceSchedulingModel resourceScheduling)')
-  print('  bool validateExperiment(string airavataExperimentId)')
-  print('  void launchExperiment(string airavataExperimentId, string airavataCredStoreToken)')
-  print('  ExperimentStatus getExperimentStatus(string airavataExperimentId)')
-  print('   getExperimentOutputs(string airavataExperimentId)')
-  print('   getIntermediateOutputs(string airavataExperimentId)')
-  print('   getJobStatuses(string airavataExperimentId)')
-  print('   getJobDetails(string airavataExperimentId)')
-  print('  string cloneExperiment(string existingExperimentID, string newExperimentName)')
-  print('  void terminateExperiment(string airavataExperimentId, string tokenId)')
-  print('  string registerApplicationModule(string gatewayId, ApplicationModule applicationModule)')
-  print('  ApplicationModule getApplicationModule(string appModuleId)')
-  print('  bool updateApplicationModule(string appModuleId, ApplicationModule applicationModule)')
-  print('   getAllAppModules(string gatewayId)')
-  print('  bool deleteApplicationModule(string appModuleId)')
-  print('  string registerApplicationDeployment(string gatewayId, ApplicationDeploymentDescription applicationDeployment)')
-  print('  ApplicationDeploymentDescription getApplicationDeployment(string appDeploymentId)')
-  print('  bool updateApplicationDeployment(string appDeploymentId, ApplicationDeploymentDescription applicationDeployment)')
-  print('  bool deleteApplicationDeployment(string appDeploymentId)')
-  print('   getAllApplicationDeployments(string gatewayId)')
-  print('   getAppModuleDeployedResources(string appModuleId)')
-  print('  string registerApplicationInterface(string gatewayId, ApplicationInterfaceDescription applicationInterface)')
-  print('  ApplicationInterfaceDescription getApplicationInterface(string appInterfaceId)')
-  print('  bool updateApplicationInterface(string appInterfaceId, ApplicationInterfaceDescription applicationInterface)')
-  print('  bool deleteApplicationInterface(string appInterfaceId)')
-  print('   getAllApplicationInterfaceNames(string gatewayId)')
-  print('   getAllApplicationInterfaces(string gatewayId)')
-  print('   getApplicationInputs(string appInterfaceId)')
-  print('   getApplicationOutputs(string appInterfaceId)')
-  print('   getAvailableAppInterfaceComputeResources(string appInterfaceId)')
-  print('  string registerComputeResource(ComputeResourceDescription computeResourceDescription)')
-  print('  ComputeResourceDescription getComputeResource(string computeResourceId)')
-  print('   getAllComputeResourceNames()')
-  print('  bool updateComputeResource(string computeResourceId, ComputeResourceDescription computeResourceDescription)')
-  print('  bool deleteComputeResource(string computeResourceId)')
-  print('  string addLocalSubmissionDetails(string computeResourceId, i32 priorityOrder, LOCALSubmission localSubmission)')
-  print('  bool updateLocalSubmissionDetails(string jobSubmissionInterfaceId, LOCALSubmission localSubmission)')
-  print('  LOCALSubmission getLocalJobSubmission(string jobSubmissionId)')
-  print('  string addSSHJobSubmissionDetails(string computeResourceId, i32 priorityOrder, SSHJobSubmission sshJobSubmission)')
-  print('  SSHJobSubmission getSSHJobSubmission(string jobSubmissionId)')
-  print('  string addUNICOREJobSubmissionDetails(string computeResourceId, i32 priorityOrder, UnicoreJobSubmission unicoreJobSubmission)')
-  print('  UnicoreJobSubmission getUnicoreJobSubmission(string jobSubmissionId)')
-  print('  string addCloudJobSubmissionDetails(string computeResourceId, i32 priorityOrder, CloudJobSubmission cloudSubmission)')
-  print('  CloudJobSubmission getCloudJobSubmission(string jobSubmissionId)')
-  print('  bool updateSSHJobSubmissionDetails(string jobSubmissionInterfaceId, SSHJobSubmission sshJobSubmission)')
-  print('  bool updateCloudJobSubmissionDetails(string jobSubmissionInterfaceId, CloudJobSubmission sshJobSubmission)')
-  print('  bool updateUnicoreJobSubmissionDetails(string jobSubmissionInterfaceId, UnicoreJobSubmission unicoreJobSubmission)')
-  print('  string addLocalDataMovementDetails(string computeResourceId, i32 priorityOrder, LOCALDataMovement localDataMovement)')
-  print('  bool updateLocalDataMovementDetails(string dataMovementInterfaceId, LOCALDataMovement localDataMovement)')
-  print('  LOCALDataMovement getLocalDataMovement(string dataMovementId)')
-  print('  string addSCPDataMovementDetails(string computeResourceId, i32 priorityOrder, SCPDataMovement scpDataMovement)')
-  print('  bool updateSCPDataMovementDetails(string dataMovementInterfaceId, SCPDataMovement scpDataMovement)')
-  print('  SCPDataMovement getSCPDataMovement(string dataMovementId)')
-  print('  string addUnicoreDataMovementDetails(string computeResourceId, i32 priorityOrder, UnicoreDataMovement unicoreDataMovement)')
-  print('  bool updateUnicoreDataMovementDetails(string dataMovementInterfaceId, UnicoreDataMovement unicoreDataMovement)')
-  print('  UnicoreDataMovement getUnicoreDataMovement(string dataMovementId)')
-  print('  string addGridFTPDataMovementDetails(string computeResourceId, i32 priorityOrder, GridFTPDataMovement gridFTPDataMovement)')
-  print('  bool updateGridFTPDataMovementDetails(string dataMovementInterfaceId, GridFTPDataMovement gridFTPDataMovement)')
-  print('  GridFTPDataMovement getGridFTPDataMovement(string dataMovementId)')
-  print('  bool changeJobSubmissionPriority(string jobSubmissionInterfaceId, i32 newPriorityOrder)')
-  print('  bool changeDataMovementPriority(string dataMovementInterfaceId, i32 newPriorityOrder)')
-  print('  bool changeJobSubmissionPriorities( jobSubmissionPriorityMap)')
-  print('  bool changeDataMovementPriorities( dataMovementPriorityMap)')
-  print('  bool deleteJobSubmissionInterface(string computeResourceId, string jobSubmissionInterfaceId)')
-  print('  bool deleteDataMovementInterface(string computeResourceId, string dataMovementInterfaceId)')
-  print('  string registerResourceJobManager(ResourceJobManager resourceJobManager)')
-  print('  bool updateResourceJobManager(string resourceJobManagerId, ResourceJobManager updatedResourceJobManager)')
-  print('  ResourceJobManager getResourceJobManager(string resourceJobManagerId)')
-  print('  bool deleteResourceJobManager(string resourceJobManagerId)')
-  print('  bool deleteBatchQueue(string computeResourceId, string queueName)')
-  print('  string registerGatewayResourceProfile(GatewayResourceProfile gatewayResourceProfile)')
-  print('  GatewayResourceProfile getGatewayResourceProfile(string gatewayID)')
-  print('  bool updateGatewayResourceProfile(string gatewayID, GatewayResourceProfile gatewayResourceProfile)')
-  print('  bool deleteGatewayResourceProfile(string gatewayID)')
-  print('  bool addGatewayComputeResourcePreference(string gatewayID, string computeResourceId, ComputeResourcePreference computeResourcePreference)')
-  print('  ComputeResourcePreference getGatewayComputeResourcePreference(string gatewayID, string computeResourceId)')
-  print('   getAllGatewayComputeResourcePreferences(string gatewayID)')
-  print('   getAllGatewayComputeResources()')
-  print('  bool updateGatewayComputeResourcePreference(string gatewayID, string computeResourceId, ComputeResourcePreference computeResourcePreference)')
-  print('  bool deleteGatewayComputeResourcePreference(string gatewayID, string computeResourceId)')
-  print('   getAllWorkflows(string gatewayId)')
-  print('  Workflow getWorkflow(string workflowTemplateId)')
-  print('  void deleteWorkflow(string workflowTemplateId)')
-  print('  string registerWorkflow(string gatewayId, Workflow workflow)')
-  print('  void updateWorkflow(string workflowTemplateId, Workflow workflow)')
-  print('  string getWorkflowTemplateId(string workflowName)')
-  print('  bool isWorkflowExistWithName(string workflowName)')
+  print('   getAllUserExperimentsWithPagination(AuthzToken authzToken, string gatewayId, string userName, i32 limit, i32 offset)')
+  print('  string createExperiment(AuthzToken authzToken, string gatewayId, ExperimentModel experiment)')
+  print('  ExperimentModel getExperiment(AuthzToken authzToken, string airavataExperimentId)')
+  print('  void updateExperiment(AuthzToken authzToken, string airavataExperimentId, ExperimentModel experiment)')
+  print('  void updateExperimentConfiguration(AuthzToken authzToken, string airavataExperimentId, UserConfigurationDataModel userConfiguration)')
+  print('  void updateResourceScheduleing(AuthzToken authzToken, string airavataExperimentId, ComputationalResourceSchedulingModel resourceScheduling)')
+  print('  bool validateExperiment(AuthzToken authzToken, string airavataExperimentId)')
+  print('  void launchExperiment(AuthzToken authzToken, string airavataExperimentId, string airavataCredStoreToken)')
+  print('  ExperimentStatus getExperimentStatus(AuthzToken authzToken, string airavataExperimentId)')
+  print('   getExperimentOutputs(AuthzToken authzToken, string airavataExperimentId)')
+  print('   getIntermediateOutputs(AuthzToken authzToken, string airavataExperimentId)')
+  print('   getJobStatuses(AuthzToken authzToken, string airavataExperimentId)')
+  print('   getJobDetails(AuthzToken authzToken, string airavataExperimentId)')
+  print('  string cloneExperiment(AuthzToken authzToken, string existingExperimentID, string newExperimentName)')
+  print('  void terminateExperiment(AuthzToken authzToken, string airavataExperimentId, string tokenId)')
+  print('  string registerApplicationModule(AuthzToken authzToken, string gatewayId, ApplicationModule applicationModule)')
+  print('  ApplicationModule getApplicationModule(AuthzToken authzToken, string appModuleId)')
+  print('  bool updateApplicationModule(AuthzToken authzToken, string appModuleId, ApplicationModule applicationModule)')
+  print('   getAllAppModules(AuthzToken authzToken, string gatewayId)')
+  print('  bool deleteApplicationModule(AuthzToken authzToken, string appModuleId)')
+  print('  string registerApplicationDeployment(AuthzToken authzToken, string gatewayId, ApplicationDeploymentDescription applicationDeployment)')
+  print('  ApplicationDeploymentDescription getApplicationDeployment(AuthzToken authzToken, string appDeploymentId)')
+  print('  bool updateApplicationDeployment(AuthzToken authzToken, string appDeploymentId, ApplicationDeploymentDescription applicationDeployment)')
+  print('  bool deleteApplicationDeployment(AuthzToken authzToken, string appDeploymentId)')
+  print('   getAllApplicationDeployments(AuthzToken authzToken, string gatewayId)')
+  print('   getAppModuleDeployedResources(AuthzToken authzToken, string appModuleId)')
+  print('  string registerApplicationInterface(AuthzToken authzToken, string gatewayId, ApplicationInterfaceDescription applicationInterface)')
+  print('  ApplicationInterfaceDescription getApplicationInterface(AuthzToken authzToken, string appInterfaceId)')
+  print('  bool updateApplicationInterface(AuthzToken authzToken, string appInterfaceId, ApplicationInterfaceDescription applicationInterface)')
+  print('  bool deleteApplicationInterface(AuthzToken authzToken, string appInterfaceId)')
+  print('   getAllApplicationInterfaceNames(AuthzToken authzToken, string gatewayId)')
+  print('   getAllApplicationInterfaces(AuthzToken authzToken, string gatewayId)')
+  print('   getApplicationInputs(AuthzToken authzToken, string appInterfaceId)')
+  print('   getApplicationOutputs(AuthzToken authzToken, string appInterfaceId)')
+  print('   getAvailableAppInterfaceComputeResources(AuthzToken authzToken, string appInterfaceId)')
+  print('  string registerComputeResource(AuthzToken authzToken, ComputeResourceDescription computeResourceDescription)')
+  print('  ComputeResourceDescription getComputeResource(AuthzToken authzToken, string computeResourceId)')
+  print('   getAllComputeResourceNames(AuthzToken authzToken)')
+  print('  bool updateComputeResource(AuthzToken authzToken, string computeResourceId, ComputeResourceDescription computeResourceDescription)')
+  print('  bool deleteComputeResource(AuthzToken authzToken, string computeResourceId)')
+  print('  string addLocalSubmissionDetails(AuthzToken authzToken, string computeResourceId, i32 priorityOrder, LOCALSubmission localSubmission)')
+  print('  bool updateLocalSubmissionDetails(AuthzToken authzToken, string jobSubmissionInterfaceId, LOCALSubmission localSubmission)')
+  print('  LOCALSubmission getLocalJobSubmission(AuthzToken authzToken, string jobSubmissionId)')
+  print('  string addSSHJobSubmissionDetails(AuthzToken authzToken, string computeResourceId, i32 priorityOrder, SSHJobSubmission sshJobSubmission)')
+  print('  SSHJobSubmission getSSHJobSubmission(AuthzToken authzToken, string jobSubmissionId)')
+  print('  string addUNICOREJobSubmissionDetails(AuthzToken authzToken, string computeResourceId, i32 priorityOrder, UnicoreJobSubmission unicoreJobSubmission)')
+  print('  UnicoreJobSubmission getUnicoreJobSubmission(AuthzToken authzToken, string jobSubmissionId)')
+  print('  string addCloudJobSubmissionDetails(AuthzToken authzToken, string computeResourceId, i32 priorityOrder, CloudJobSubmission cloudSubmission)')
+  print('  CloudJobSubmission getCloudJobSubmission(AuthzToken authzToken, string jobSubmissionId)')
+  print('  bool updateSSHJobSubmissionDetails(AuthzToken authzToken, string jobSubmissionInterfaceId, SSHJobSubmission sshJobSubmission)')
+  print('  bool updateCloudJobSubmissionDetails(AuthzToken authzToken, string jobSubmissionInterfaceId, CloudJobSubmission sshJobSubmission)')
+  print('  bool updateUnicoreJobSubmissionDetails(AuthzToken authzToken, string jobSubmissionInterfaceId, UnicoreJobSubmission unicoreJobSubmission)')
+  print('  string addLocalDataMovementDetails(AuthzToken authzToken, string computeResourceId, i32 priorityOrder, LOCALDataMovement localDataMovement)')
+  print('  bool updateLocalDataMovementDetails(AuthzToken authzToken, string dataMovementInterfaceId, LOCALDataMovement localDataMovement)')
+  print('  LOCALDataMovement getLocalDataMovement(AuthzToken authzToken, string dataMovementId)')
+  print('  string addSCPDataMovementDetails(AuthzToken authzToken, string computeResourceId, i32 priorityOrder, SCPDataMovement scpDataMovement)')
+  print('  bool updateSCPDataMovementDetails(AuthzToken authzToken, string dataMovementInterfaceId, SCPDataMovement scpDataMovement)')
+  print('  SCPDataMovement getSCPDataMovement(AuthzToken authzToken, string dataMovementId)')
+  print('  string addUnicoreDataMovementDetails(AuthzToken authzToken, string computeResourceId, i32 priorityOrder, UnicoreDataMovement unicoreDataMovement)')
+  print('  bool updateUnicoreDataMovementDetails(AuthzToken authzToken, string dataMovementInterfaceId, UnicoreDataMovement unicoreDataMovement)')
+  print('  UnicoreDataMovement getUnicoreDataMovement(AuthzToken authzToken, string dataMovementId)')
+  print('  string addGridFTPDataMovementDetails(AuthzToken authzToken, string computeResourceId, i32 priorityOrder, GridFTPDataMovement gridFTPDataMovement)')
+  print('  bool updateGridFTPDataMovementDetails(AuthzToken authzToken, string dataMovementInterfaceId, GridFTPDataMovement gridFTPDataMovement)')
+  print('  GridFTPDataMovement getGridFTPDataMovement(AuthzToken authzToken, string dataMovementId)')
+  print('  bool changeJobSubmissionPriority(AuthzToken authzToken, string jobSubmissionInterfaceId, i32 newPriorityOrder)')
+  print('  bool changeDataMovementPriority(AuthzToken authzToken, string dataMovementInterfaceId, i32 newPriorityOrder)')
+  print('  bool changeJobSubmissionPriorities(AuthzToken authzToken,  jobSubmissionPriorityMap)')
+  print('  bool changeDataMovementPriorities(AuthzToken authzToken,  dataMovementPriorityMap)')
+  print('  bool deleteJobSubmissionInterface(AuthzToken authzToken, string computeResourceId, string jobSubmissionInterfaceId)')
+  print('  bool deleteDataMovementInterface(AuthzToken authzToken, string computeResourceId, string dataMovementInterfaceId)')
+  print('  string registerResourceJobManager(AuthzToken authzToken, ResourceJobManager resourceJobManager)')
+  print('  bool updateResourceJobManager(AuthzToken authzToken, string resourceJobManagerId, ResourceJobManager updatedResourceJobManager)')
+  print('  ResourceJobManager getResourceJobManager(AuthzToken authzToken, string resourceJobManagerId)')
+  print('  bool deleteResourceJobManager(AuthzToken authzToken, string resourceJobManagerId)')
+  print('  bool deleteBatchQueue(AuthzToken authzToken, string computeResourceId, string queueName)')
+  print('  string registerGatewayResourceProfile(AuthzToken authzToken, GatewayResourceProfile gatewayResourceProfile)')
+  print('  GatewayResourceProfile getGatewayResourceProfile(AuthzToken authzToken, string gatewayID)')
+  print('  bool updateGatewayResourceProfile(AuthzToken authzToken, string gatewayID, GatewayResourceProfile gatewayResourceProfile)')
+  print('  bool deleteGatewayResourceProfile(AuthzToken authzToken, string gatewayID)')
+  print('  bool addGatewayComputeResourcePreference(AuthzToken authzToken, string gatewayID, string computeResourceId, ComputeResourcePreference computeResourcePreference)')
+  print('  ComputeResourcePreference getGatewayComputeResourcePreference(AuthzToken authzToken, string gatewayID, string computeResourceId)')
+  print('   getAllGatewayComputeResourcePreferences(AuthzToken authzToken, string gatewayID)')
+  print('   getAllGatewayComputeResources(AuthzToken authzToken)')
+  print('  bool updateGatewayComputeResourcePreference(AuthzToken authzToken, string gatewayID, string computeResourceId, ComputeResourcePreference computeResourcePreference)')
+  print('  bool deleteGatewayComputeResourcePreference(AuthzToken authzToken, string gatewayID, string computeResourceId)')
+  print('   getAllWorkflows(AuthzToken authzToken, string gatewayId)')
+  print('  Workflow getWorkflow(AuthzToken authzToken, string workflowTemplateId)')
+  print('  void deleteWorkflow(AuthzToken authzToken, string workflowTemplateId)')
+  print('  string registerWorkflow(AuthzToken authzToken, string gatewayId, Workflow workflow)')
+  print('  void updateWorkflow(AuthzToken authzToken, string workflowTemplateId, Workflow workflow)')
+  print('  string getWorkflowTemplateId(AuthzToken authzToken, string workflowName)')
+  print('  bool isWorkflowExistWithName(AuthzToken authzToken, string workflowName)')
   print('')
   sys.exit(0)
 
@@ -298,10 +298,10 @@ elif cmd == 'getAllUserProjects':
   pp.pprint(client.getAllUserProjects(args[0],args[1],))
 
 elif cmd == 'getAllUserProjectsWithPagination':
-  if len(args) != 4:
-    print('getAllUserProjectsWithPagination requires 4 args')
+  if len(args) != 5:
+    print('getAllUserProjectsWithPagination requires 5 args')
     sys.exit(1)
-  pp.pprint(client.getAllUserProjectsWithPagination(args[0],args[1],eval(args[2]),eval(args[3]),))
+  pp.pprint(client.getAllUserProjectsWithPagination(eval(args[0]),args[1],args[2],eval(args[3]),eval(args[4]),))
 
 elif cmd == 'searchProjectsByProjectName':
   if len(args) != 3:
@@ -310,10 +310,10 @@ elif cmd == 'searchProjectsByProjectName':
   pp.pprint(client.searchProjectsByProjectName(args[0],args[1],args[2],))
 
 elif cmd == 'searchProjectsByProjectNameWithPagination':
-  if len(args) != 5:
-    print('searchProjectsByProjectNameWithPagination requires 5 args')
+  if len(args) != 6:
+    print('searchProjectsByProjectNameWithPagination requires 6 args')
     sys.exit(1)
-  pp.pprint(client.searchProjectsByProjectNameWithPagination(args[0],args[1],args[2],eval(args[3]),eval(args[4]),))
+  pp.pprint(client.searchProjectsByProjectNameWithPagination(eval(args[0]),args[1],args[2],args[3],eval(args[4]),eval(args[5]),))
 
 elif cmd == 'searchProjectsByProjectDesc':
   if len(args) != 3:
@@ -322,10 +322,10 @@ elif cmd == 'searchProjectsByProjectDesc':
   pp.pprint(client.searchProjectsByProjectDesc(args[0],args[1],args[2],))
 
 elif cmd == 'searchProjectsByProjectDescWithPagination':
-  if len(args) != 5:
-    print('searchProjectsByProjectDescWithPagination requires 5 args')
+  if len(args) != 6:
+    print('searchProjectsByProjectDescWithPagination requires 6 args')
     sys.exit(1)
-  pp.pprint(client.searchProjectsByProjectDescWithPagination(args[0],args[1],args[2],eval(args[3]),eval(args[4]),))
+  pp.pprint(client.searchProjectsByProjectDescWithPagination(eval(args[0]),args[1],args[2],args[3],eval(args[4]),eval(args[5]),))
 
 elif cmd == 'searchExperimentsByName':
   if len(args) != 3:
@@ -334,10 +334,10 @@ elif cmd == 'searchExperimentsByName':
   pp.pprint(client.searchExperimentsByName(args[0],args[1],args[2],))
 
 elif cmd == 'searchExperimentsByNameWithPagination':
-  if len(args) != 5:
-    print('searchExperimentsByNameWithPagination requires 5 args')
+  if len(args) != 6:
+    print('searchExperimentsByNameWithPagination requires 6 args')
     sys.exit(1)
-  pp.pprint(client.searchExperimentsByNameWithPagination(args[0],args[1],args[2],eval(args[3]),eval(args[4]),))
+  pp.pprint(client.searchExperimentsByNameWithPagination(eval(args[0]),args[1],args[2],args[3],eval(args[4]),eval(args[5]),))
 
 elif cmd == 'searchExperimentsByDesc':
   if len(args) != 3:
@@ -346,10 +346,10 @@ elif cmd == 'searchExperimentsByDesc':
   pp.pprint(client.searchExperimentsByDesc(args[0],args[1],args[2],))
 
 elif cmd == 'searchExperimentsByDescWithPagination':
-  if len(args) != 5:
-    print('searchExperimentsByDescWithPagination requires 5 args')
+  if len(args) != 6:
+    print('searchExperimentsByDescWithPagination requires 6 args')
     sys.exit(1)
-  pp.pprint(client.searchExperimentsByDescWithPagination(args[0],args[1],args[2],eval(args[3]),eval(args[4]),))
+  pp.pprint(client.searchExperimentsByDescWithPagination(eval(args[0]),args[1],args[2],args[3],eval(args[4]),eval(args[5]),))
 
 elif cmd == 'searchExperimentsByApplication':
   if len(args) != 3:
@@ -358,10 +358,10 @@ elif cmd == 'searchExperimentsByApplication':
   pp.pprint(client.searchExperimentsByApplication(args[0],args[1],args[2],))
 
 elif cmd == 'searchExperimentsByApplicationWithPagination':
-  if len(args) != 5:
-    print('searchExperimentsByApplicationWithPagination requires 5 args')
+  if len(args) != 6:
+    print('searchExperimentsByApplicationWithPagination requires 6 args')
     sys.exit(1)
-  pp.pprint(client.searchExperimentsByApplicationWithPagination(args[0],args[1],args[2],eval(args[3]),eval(args[4]),))
+  pp.pprint(client.searchExperimentsByApplicationWithPagination(eval(args[0]),args[1],args[2],args[3],eval(args[4]),eval(args[5]),))
 
 elif cmd == 'searchExperimentsByStatus':
   if len(args) != 3:
@@ -370,10 +370,10 @@ elif cmd == 'searchExperimentsByStatus':
   pp.pprint(client.searchExperimentsByStatus(args[0],args[1],eval(args[2]),))
 
 elif cmd == 'searchExperimentsByStatusWithPagination':
-  if len(args) != 5:
-    print('searchExperimentsByStatusWithPagination requires 5 args')
+  if len(args) != 6:
+    print('searchExperimentsByStatusWithPagination requires 6 args')
     sys.exit(1)
-  pp.pprint(client.searchExperimentsByStatusWithPagination(args[0],args[1],eval(args[2]),eval(args[3]),eval(args[4]),))
+  pp.pprint(client.searchExperimentsByStatusWithPagination(eval(args[0]),args[1],args[2],eval(args[3]),eval(args[4]),eval(args[5]),))
 
 elif cmd == 'searchExperimentsByCreationTime':
   if len(args) != 4:
@@ -382,22 +382,22 @@ elif cmd == 'searchExperimentsByCreationTime':
   pp.pprint(client.searchExperimentsByCreationTime(args[0],args[1],eval(args[2]),eval(args[3]),))
 
 elif cmd == 'searchExperimentsByCreationTimeWithPagination':
-  if len(args) != 6:
-    print('searchExperimentsByCreationTimeWithPagination requires 6 args')
+  if len(args) != 7:
+    print('searchExperimentsByCreationTimeWithPagination requires 7 args')
     sys.exit(1)
-  pp.pprint(client.searchExperimentsByCreationTimeWithPagination(args[0],args[1],eval(args[2]),eval(args[3]),eval(args[4]),eval(args[5]),))
+  pp.pprint(client.searchExperimentsByCreationTimeWithPagination(eval(args[0]),args[1],args[2],eval(args[3]),eval(args[4]),eval(args[5]),eval(args[6]),))
 
 elif cmd == 'searchExperiments':
-  if len(args) != 5:
-    print('searchExperiments requires 5 args')
+  if len(args) != 6:
+    print('searchExperiments requires 6 args')
     sys.exit(1)
-  pp.pprint(client.searchExperiments(args[0],args[1],eval(args[2]),eval(args[3]),eval(args[4]),))
+  pp.pprint(client.searchExperiments(eval(args[0]),args[1],args[2],eval(args[3]),eval(args[4]),eval(args[5]),))
 
 elif cmd == 'getExperimentStatistics':
-  if len(args) != 3:
-    print('getExperimentStatistics requires 3 args')
+  if len(args) != 4:
+    print('getExperimentStatistics requires 4 args')
     sys.exit(1)
-  pp.pprint(client.getExperimentStatistics(args[0],eval(args[1]),eval(args[2]),))
+  pp.pprint(client.getExperimentStatistics(eval(args[0]),args[1],eval(args[2]),eval(args[3]),))
 
 elif cmd == 'getAllExperimentsInProject':
   if len(args) != 1:
@@ -406,10 +406,10 @@ elif cmd == 'getAllExperimentsInProject':
   pp.pprint(client.getAllExperimentsInProject(args[0],))
 
 elif cmd == 'getAllExperimentsInProjectWithPagination':
-  if len(args) != 3:
-    print('getAllExperimentsInProjectWithPagination requires 3 args')
+  if len(args) != 4:
+    print('getAllExperimentsInProjectWithPagination requires 4 args')
     sys.exit(1)
-  pp.pprint(client.getAllExperimentsInProjectWithPagination(args[0],eval(args[1]),eval(args[2]),))
+  pp.pprint(client.getAllExperimentsInProjectWithPagination(eval(args[0]),args[1],eval(args[2]),eval(args[3]),))
 
 elif cmd == 'getAllUserExperiments':
   if len(args) != 2:
@@ -418,556 +418,556 @@ elif cmd == 'getAllUserExperiments':
   pp.pprint(client.getAllUserExperiments(args[0],args[1],))
 
 elif cmd == 'getAllUserExperimentsWithPagination':
-  if len(args) != 4:
-    print('getAllUserExperimentsWithPagination requires 4 args')
+  if len(args) != 5:
+    print('getAllUserExperimentsWithPagination requires 5 args')
     sys.exit(1)
-  pp.pprint(client.getAllUserExperimentsWithPagination(args[0],args[1],eval(args[2]),eval(args[3]),))
+  pp.pprint(client.getAllUserExperimentsWithPagination(eval(args[0]),args[1],args[2],eval(args[3]),eval(args[4]),))
 
 elif cmd == 'createExperiment':
-  if len(args) != 2:
-    print('createExperiment requires 2 args')
+  if len(args) != 3:
+    print('createExperiment requires 3 args')
     sys.exit(1)
-  pp.pprint(client.createExperiment(args[0],eval(args[1]),))
+  pp.pprint(client.createExperiment(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'getExperiment':
-  if len(args) != 1:
-    print('getExperiment requires 1 args')
+  if len(args) != 2:
+    print('getExperiment requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getExperiment(args[0],))
+  pp.pprint(client.getExperiment(eval(args[0]),args[1],))
 
 elif cmd == 'updateExperiment':
-  if len(args) != 2:
-    print('updateExperiment requires 2 args')
+  if len(args) != 3:
+    print('updateExperiment requires 3 args')
     sys.exit(1)
-  pp.pprint(client.updateExperiment(args[0],eval(args[1]),))
+  pp.pprint(client.updateExperiment(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'updateExperimentConfiguration':
-  if len(args) != 2:
-    print('updateExperimentConfiguration requires 2 args')
+  if len(args) != 3:
+    print('updateExperimentConfiguration requires 3 args')
     sys.exit(1)
-  pp.pprint(client.updateExperimentConfiguration(args[0],eval(args[1]),))
+  pp.pprint(client.updateExperimentConfiguration(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'updateResourceScheduleing':
-  if len(args) != 2:
-    print('updateResourceScheduleing requires 2 args')
+  if len(args) != 3:
+    print('updateResourceScheduleing requires 3 args')
     sys.exit(1)
-  pp.pprint(client.updateResourceScheduleing(args[0],eval(args[1]),))
+  pp.pprint(client.updateResourceScheduleing(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'validateExperiment':
-  if len(args) != 1:
-    print('validateExperiment requires 1 args')
+  if len(args) != 2:
+    print('validateExperiment requires 2 args')
     sys.exit(1)
-  pp.pprint(client.validateExperiment(args[0],))
+  pp.pprint(client.validateExperiment(eval(args[0]),args[1],))
 
 elif cmd == 'launchExperiment':
-  if len(args) != 2:
-    print('launchExperiment requires 2 args')
+  if len(args) != 3:
+    print('launchExperiment requires 3 args')
     sys.exit(1)
-  pp.pprint(client.launchExperiment(args[0],args[1],))
+  pp.pprint(client.launchExperiment(eval(args[0]),args[1],args[2],))
 
 elif cmd == 'getExperimentStatus':
-  if len(args) != 1:
-    print('getExperimentStatus requires 1 args')
+  if len(args) != 2:
+    print('getExperimentStatus requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getExperimentStatus(args[0],))
+  pp.pprint(client.getExperimentStatus(eval(args[0]),args[1],))
 
 elif cmd == 'getExperimentOutputs':
-  if len(args) != 1:
-    print('getExperimentOutputs requires 1 args')
+  if len(args) != 2:
+    print('getExperimentOutputs requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getExperimentOutputs(args[0],))
+  pp.pprint(client.getExperimentOutputs(eval(args[0]),args[1],))
 
 elif cmd == 'getIntermediateOutputs':
-  if len(args) != 1:
-    print('getIntermediateOutputs requires 1 args')
+  if len(args) != 2:
+    print('getIntermediateOutputs requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getIntermediateOutputs(args[0],))
+  pp.pprint(client.getIntermediateOutputs(eval(args[0]),args[1],))
 
 elif cmd == 'getJobStatuses':
-  if len(args) != 1:
-    print('getJobStatuses requires 1 args')
+  if len(args) != 2:
+    print('getJobStatuses requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getJobStatuses(args[0],))
+  pp.pprint(client.getJobStatuses(eval(args[0]),args[1],))
 
 elif cmd == 'getJobDetails':
-  if len(args) != 1:
-    print('getJobDetails requires 1 args')
+  if len(args) != 2:
+    print('getJobDetails requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getJobDetails(args[0],))
+  pp.pprint(client.getJobDetails(eval(args[0]),args[1],))
 
 elif cmd == 'cloneExperiment':
-  if len(args) != 2:
-    print('cloneExperiment requires 2 args')
+  if len(args) != 3:
+    print('cloneExperiment requires 3 args')
     sys.exit(1)
-  pp.pprint(client.cloneExperiment(args[0],args[1],))
+  pp.pprint(client.cloneExperiment(eval(args[0]),args[1],args[2],))
 
 elif cmd == 'terminateExperiment':
-  if len(args) != 2:
-    print('terminateExperiment requires 2 args')
+  if len(args) != 3:
+    print('terminateExperiment requires 3 args')
     sys.exit(1)
-  pp.pprint(client.terminateExperiment(args[0],args[1],))
+  pp.pprint(client.terminateExperiment(eval(args[0]),args[1],args[2],))
 
 elif cmd == 'registerApplicationModule':
-  if len(args) != 2:
-    print('registerApplicationModule requires 2 args')
+  if len(args) != 3:
+    print('registerApplicationModule requires 3 args')
     sys.exit(1)
-  pp.pprint(client.registerApplicationModule(args[0],eval(args[1]),))
+  pp.pprint(client.registerApplicationModule(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'getApplicationModule':
-  if len(args) != 1:
-    print('getApplicationModule requires 1 args')
+  if len(args) != 2:
+    print('getApplicationModule requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getApplicationModule(args[0],))
+  pp.pprint(client.getApplicationModule(eval(args[0]),args[1],))
 
 elif cmd == 'updateApplicationModule':
-  if len(args) != 2:
-    print('updateApplicationModule requires 2 args')
+  if len(args) != 3:
+    print('updateApplicationModule requires 3 args')
     sys.exit(1)
-  pp.pprint(client.updateApplicationModule(args[0],eval(args[1]),))
+  pp.pprint(client.updateApplicationModule(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'getAllAppModules':
-  if len(args) != 1:
-    print('getAllAppModules requires 1 args')
+  if len(args) != 2:
+    print('getAllAppModules requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getAllAppModules(args[0],))
+  pp.pprint(client.getAllAppModules(eval(args[0]),args[1],))
 
 elif cmd == 'deleteApplicationModule':
-  if len(args) != 1:
-    print('deleteApplicationModule requires 1 args')
+  if len(args) != 2:
+    print('deleteApplicationModule requires 2 args')
     sys.exit(1)
-  pp.pprint(client.deleteApplicationModule(args[0],))
+  pp.pprint(client.deleteApplicationModule(eval(args[0]),args[1],))
 
 elif cmd == 'registerApplicationDeployment':
-  if len(args) != 2:
-    print('registerApplicationDeployment requires 2 args')
+  if len(args) != 3:
+    print('registerApplicationDeployment requires 3 args')
     sys.exit(1)
-  pp.pprint(client.registerApplicationDeployment(args[0],eval(args[1]),))
+  pp.pprint(client.registerApplicationDeployment(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'getApplicationDeployment':
-  if len(args) != 1:
-    print('getApplicationDeployment requires 1 args')
+  if len(args) != 2:
+    print('getApplicationDeployment requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getApplicationDeployment(args[0],))
+  pp.pprint(client.getApplicationDeployment(eval(args[0]),args[1],))
 
 elif cmd == 'updateApplicationDeployment':
-  if len(args) != 2:
-    print('updateApplicationDeployment requires 2 args')
+  if len(args) != 3:
+    print('updateApplicationDeployment requires 3 args')
     sys.exit(1)
-  pp.pprint(client.updateApplicationDeployment(args[0],eval(args[1]),))
+  pp.pprint(client.updateApplicationDeployment(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'deleteApplicationDeployment':
-  if len(args) != 1:
-    print('deleteApplicationDeployment requires 1 args')
+  if len(args) != 2:
+    print('deleteApplicationDeployment requires 2 args')
     sys.exit(1)
-  pp.pprint(client.deleteApplicationDeployment(args[0],))
+  pp.pprint(client.deleteApplicationDeployment(eval(args[0]),args[1],))
 
 elif cmd == 'getAllApplicationDeployments':
-  if len(args) != 1:
-    print('getAllApplicationDeployments requires 1 args')
+  if len(args) != 2:
+    print('getAllApplicationDeployments requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getAllApplicationDeployments(args[0],))
+  pp.pprint(client.getAllApplicationDeployments(eval(args[0]),args[1],))
 
 elif cmd == 'getAppModuleDeployedResources':
-  if len(args) != 1:
-    print('getAppModuleDeployedResources requires 1 args')
+  if len(args) != 2:
+    print('getAppModuleDeployedResources requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getAppModuleDeployedResources(args[0],))
+  pp.pprint(client.getAppModuleDeployedResources(eval(args[0]),args[1],))
 
 elif cmd == 'registerApplicationInterface':
-  if len(args) != 2:
-    print('registerApplicationInterface requires 2 args')
+  if len(args) != 3:
+    print('registerApplicationInterface requires 3 args')
     sys.exit(1)
-  pp.pprint(client.registerApplicationInterface(args[0],eval(args[1]),))
+  pp.pprint(client.registerApplicationInterface(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'getApplicationInterface':
-  if len(args) != 1:
-    print('getApplicationInterface requires 1 args')
+  if len(args) != 2:
+    print('getApplicationInterface requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getApplicationInterface(args[0],))
+  pp.pprint(client.getApplicationInterface(eval(args[0]),args[1],))
 
 elif cmd == 'updateApplicationInterface':
-  if len(args) != 2:
-    print('updateApplicationInterface requires 2 args')
+  if len(args) != 3:
+    print('updateApplicationInterface requires 3 args')
     sys.exit(1)
-  pp.pprint(client.updateApplicationInterface(args[0],eval(args[1]),))
+  pp.pprint(client.updateApplicationInterface(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'deleteApplicationInterface':
-  if len(args) != 1:
-    print('deleteApplicationInterface requires 1 args')
+  if len(args) != 2:
+    print('deleteApplicationInterface requires 2 args')
     sys.exit(1)
-  pp.pprint(client.deleteApplicationInterface(args[0],))
+  pp.pprint(client.deleteApplicationInterface(eval(args[0]),args[1],))
 
 elif cmd == 'getAllApplicationInterfaceNames':
-  if len(args) != 1:
-    print('getAllApplicationInterfaceNames requires 1 args')
+  if len(args) != 2:
+    print('getAllApplicationInterfaceNames requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getAllApplicationInterfaceNames(args[0],))
+  pp.pprint(client.getAllApplicationInterfaceNames(eval(args[0]),args[1],))
 
 elif cmd == 'getAllApplicationInterfaces':
-  if len(args) != 1:
-    print('getAllApplicationInterfaces requires 1 args')
+  if len(args) != 2:
+    print('getAllApplicationInterfaces requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getAllApplicationInterfaces(args[0],))
+  pp.pprint(client.getAllApplicationInterfaces(eval(args[0]),args[1],))
 
 elif cmd == 'getApplicationInputs':
-  if len(args) != 1:
-    print('getApplicationInputs requires 1 args')
+  if len(args) != 2:
+    print('getApplicationInputs requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getApplicationInputs(args[0],))
+  pp.pprint(client.getApplicationInputs(eval(args[0]),args[1],))
 
 elif cmd == 'getApplicationOutputs':
-  if len(args) != 1:
-    print('getApplicationOutputs requires 1 args')
+  if len(args) != 2:
+    print('getApplicationOutputs requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getApplicationOutputs(args[0],))
+  pp.pprint(client.getApplicationOutputs(eval(args[0]),args[1],))
 
 elif cmd == 'getAvailableAppInterfaceComputeResources':
-  if len(args) != 1:
-    print('getAvailableAppInterfaceComputeResources requires 1 args')
+  if len(args) != 2:
+    print('getAvailableAppInterfaceComputeResources requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getAvailableAppInterfaceComputeResources(args[0],))
+  pp.pprint(client.getAvailableAppInterfaceComputeResources(eval(args[0]),args[1],))
 
 elif cmd == 'registerComputeResource':
-  if len(args) != 1:
-    print('registerComputeResource requires 1 args')
+  if len(args) != 2:
+    print('registerComputeResource requires 2 args')
     sys.exit(1)
-  pp.pprint(client.registerComputeResource(eval(args[0]),))
+  pp.pprint(client.registerComputeResource(eval(args[0]),eval(args[1]),))
 
 elif cmd == 'getComputeResource':
-  if len(args) != 1:
-    print('getComputeResource requires 1 args')
+  if len(args) != 2:
+    print('getComputeResource requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getComputeResource(args[0],))
+  pp.pprint(client.getComputeResource(eval(args[0]),args[1],))
 
 elif cmd == 'getAllComputeResourceNames':
-  if len(args) != 0:
-    print('getAllComputeResourceNames requires 0 args')
+  if len(args) != 1:
+    print('getAllComputeResourceNames requires 1 args')
     sys.exit(1)
-  pp.pprint(client.getAllComputeResourceNames())
+  pp.pprint(client.getAllComputeResourceNames(eval(args[0]),))
 
 elif cmd == 'updateComputeResource':
-  if len(args) != 2:
-    print('updateComputeResource requires 2 args')
+  if len(args) != 3:
+    print('updateComputeResource requires 3 args')
     sys.exit(1)
-  pp.pprint(client.updateComputeResource(args[0],eval(args[1]),))
+  pp.pprint(client.updateComputeResource(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'deleteComputeResource':
-  if len(args) != 1:
-    print('deleteComputeResource requires 1 args')
+  if len(args) != 2:
+    print('deleteComputeResource requires 2 args')
     sys.exit(1)
-  pp.pprint(client.deleteComputeResource(args[0],))
+  pp.pprint(client.deleteComputeResource(eval(args[0]),args[1],))
 
 elif cmd == 'addLocalSubmissionDetails':
-  if len(args) != 3:
-    print('addLocalSubmissionDetails requires 3 args')
+  if len(args) != 4:
+    print('addLocalSubmissionDetails requires 4 args')
     sys.exit(1)
-  pp.pprint(client.addLocalSubmissionDetails(args[0],eval(args[1]),eval(args[2]),))
+  pp.pprint(client.addLocalSubmissionDetails(eval(args[0]),args[1],eval(args[2]),eval(args[3]),))
 
 elif cmd == 'updateLocalSubmissionDetails':
-  if len(args) != 2:
-    print('updateLocalSubmissionDetails requires 2 args')
+  if len(args) != 3:
+    print('updateLocalSubmissionDetails requires 3 args')
     sys.exit(1)
-  pp.pprint(client.updateLocalSubmissionDetails(args[0],eval(args[1]),))
+  pp.pprint(client.updateLocalSubmissionDetails(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'getLocalJobSubmission':
-  if len(args) != 1:
-    print('getLocalJobSubmission requires 1 args')
+  if len(args) != 2:
+    print('getLocalJobSubmission requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getLocalJobSubmission(args[0],))
+  pp.pprint(client.getLocalJobSubmission(eval(args[0]),args[1],))
 
 elif cmd == 'addSSHJobSubmissionDetails':
-  if len(args) != 3:
-    print('addSSHJobSubmissionDetails requires 3 args')
+  if len(args) != 4:
+    print('addSSHJobSubmissionDetails requires 4 args')
     sys.exit(1)
-  pp.pprint(client.addSSHJobSubmissionDetails(args[0],eval(args[1]),eval(args[2]),))
+  pp.pprint(client.addSSHJobSubmissionDetails(eval(args[0]),args[1],eval(args[2]),eval(args[3]),))
 
 elif cmd == 'getSSHJobSubmission':
-  if len(args) != 1:
-    print('getSSHJobSubmission requires 1 args')
+  if len(args) != 2:
+    print('getSSHJobSubmission requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getSSHJobSubmission(args[0],))
+  pp.pprint(client.getSSHJobSubmission(eval(args[0]),args[1],))
 
 elif cmd == 'addUNICOREJobSubmissionDetails':
-  if len(args) != 3:
-    print('addUNICOREJobSubmissionDetails requires 3 args')
+  if len(args) != 4:
+    print('addUNICOREJobSubmissionDetails requires 4 args')
     sys.exit(1)
-  pp.pprint(client.addUNICOREJobSubmissionDetails(args[0],eval(args[1]),eval(args[2]),))
+  pp.pprint(client.addUNICOREJobSubmissionDetails(eval(args[0]),args[1],eval(args[2]),eval(args[3]),))
 
 elif cmd == 'getUnicoreJobSubmission':
-  if len(args) != 1:
-    print('getUnicoreJobSubmission requires 1 args')
+  if len(args) != 2:
+    print('getUnicoreJobSubmission requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getUnicoreJobSubmission(args[0],))
+  pp.pprint(client.getUnicoreJobSubmission(eval(args[0]),args[1],))
 
 elif cmd == 'addCloudJobSubmissionDetails':
-  if len(args) != 3:
-    print('addCloudJobSubmissionDetails requires 3 args')
+  if len(args) != 4:
+    print('addCloudJobSubmissionDetails requires 4 args')
     sys.exit(1)
-  pp.pprint(client.addCloudJobSubmissionDetails(args[0],eval(args[1]),eval(args[2]),))
+  pp.pprint(client.addCloudJobSubmissionDetails(eval(args[0]),args[1],eval(args[2]),eval(args[3]),))
 
 elif cmd == 'getCloudJobSubmission':
-  if len(args) != 1:
-    print('getCloudJobSubmission requires 1 args')
+  if len(args) != 2:
+    print('getCloudJobSubmission requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getCloudJobSubmission(args[0],))
+  pp.pprint(client.getCloudJobSubmission(eval(args[0]),args[1],))
 
 elif cmd == 'updateSSHJobSubmissionDetails':
-  if len(args) != 2:
-    print('updateSSHJobSubmissionDetails requires 2 args')
+  if len(args) != 3:
+    print('updateSSHJobSubmissionDetails requires 3 args')
     sys.exit(1)
-  pp.pprint(client.updateSSHJobSubmissionDetails(args[0],eval(args[1]),))
+  pp.pprint(client.updateSSHJobSubmissionDetails(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'updateCloudJobSubmissionDetails':
-  if len(args) != 2:
-    print('updateCloudJobSubmissionDetails requires 2 args')
+  if len(args) != 3:
+    print('updateCloudJobSubmissionDetails requires 3 args')
     sys.exit(1)
-  pp.pprint(client.updateCloudJobSubmissionDetails(args[0],eval(args[1]),))
+  pp.pprint(client.updateCloudJobSubmissionDetails(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'updateUnicoreJobSubmissionDetails':
-  if len(args) != 2:
-    print('updateUnicoreJobSubmissionDetails requires 2 args')
+  if len(args) != 3:
+    print('updateUnicoreJobSubmissionDetails requires 3 args')
     sys.exit(1)
-  pp.pprint(client.updateUnicoreJobSubmissionDetails(args[0],eval(args[1]),))
+  pp.pprint(client.updateUnicoreJobSubmissionDetails(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'addLocalDataMovementDetails':
-  if len(args) != 3:
-    print('addLocalDataMovementDetails requires 3 args')
+  if len(args) != 4:
+    print('addLocalDataMovementDetails requires 4 args')
     sys.exit(1)
-  pp.pprint(client.addLocalDataMovementDetails(args[0],eval(args[1]),eval(args[2]),))
+  pp.pprint(client.addLocalDataMovementDetails(eval(args[0]),args[1],eval(args[2]),eval(args[3]),))
 
 elif cmd == 'updateLocalDataMovementDetails':
-  if len(args) != 2:
-    print('updateLocalDataMovementDetails requires 2 args')
+  if len(args) != 3:
+    print('updateLocalDataMovementDetails requires 3 args')
     sys.exit(1)
-  pp.pprint(client.updateLocalDataMovementDetails(args[0],eval(args[1]),))
+  pp.pprint(client.updateLocalDataMovementDetails(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'getLocalDataMovement':
-  if len(args) != 1:
-    print('getLocalDataMovement requires 1 args')
+  if len(args) != 2:
+    print('getLocalDataMovement requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getLocalDataMovement(args[0],))
+  pp.pprint(client.getLocalDataMovement(eval(args[0]),args[1],))
 
 elif cmd == 'addSCPDataMovementDetails':
-  if len(args) != 3:
-    print('addSCPDataMovementDetails requires 3 args')
+  if len(args) != 4:
+    print('addSCPDataMovementDetails requires 4 args')
     sys.exit(1)
-  pp.pprint(client.addSCPDataMovementDetails(args[0],eval(args[1]),eval(args[2]),))
+  pp.pprint(client.addSCPDataMovementDetails(eval(args[0]),args[1],eval(args[2]),eval(args[3]),))
 
 elif cmd == 'updateSCPDataMovementDetails':
-  if len(args) != 2:
-    print('updateSCPDataMovementDetails requires 2 args')
+  if len(args) != 3:
+    print('updateSCPDataMovementDetails requires 3 args')
     sys.exit(1)
-  pp.pprint(client.updateSCPDataMovementDetails(args[0],eval(args[1]),))
+  pp.pprint(client.updateSCPDataMovementDetails(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'getSCPDataMovement':
-  if len(args) != 1:
-    print('getSCPDataMovement requires 1 args')
+  if len(args) != 2:
+    print('getSCPDataMovement requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getSCPDataMovement(args[0],))
+  pp.pprint(client.getSCPDataMovement(eval(args[0]),args[1],))
 
 elif cmd == 'addUnicoreDataMovementDetails':
-  if len(args) != 3:
-    print('addUnicoreDataMovementDetails requires 3 args')
+  if len(args) != 4:
+    print('addUnicoreDataMovementDetails requires 4 args')
     sys.exit(1)
-  pp.pprint(client.addUnicoreDataMovementDetails(args[0],eval(args[1]),eval(args[2]),))
+  pp.pprint(client.addUnicoreDataMovementDetails(eval(args[0]),args[1],eval(args[2]),eval(args[3]),))
 
 elif cmd == 'updateUnicoreDataMovementDetails':
-  if len(args) != 2:
-    print('updateUnicoreDataMovementDetails requires 2 args')
+  if len(args) != 3:
+    print('updateUnicoreDataMovementDetails requires 3 args')
     sys.exit(1)
-  pp.pprint(client.updateUnicoreDataMovementDetails(args[0],eval(args[1]),))
+  pp.pprint(client.updateUnicoreDataMovementDetails(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'getUnicoreDataMovement':
-  if len(args) != 1:
-    print('getUnicoreDataMovement requires 1 args')
+  if len(args) != 2:
+    print('getUnicoreDataMovement requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getUnicoreDataMovement(args[0],))
+  pp.pprint(client.getUnicoreDataMovement(eval(args[0]),args[1],))
 
 elif cmd == 'addGridFTPDataMovementDetails':
-  if len(args) != 3:
-    print('addGridFTPDataMovementDetails requires 3 args')
+  if len(args) != 4:
+    print('addGridFTPDataMovementDetails requires 4 args')
     sys.exit(1)
-  pp.pprint(client.addGridFTPDataMovementDetails(args[0],eval(args[1]),eval(args[2]),))
+  pp.pprint(client.addGridFTPDataMovementDetails(eval(args[0]),args[1],eval(args[2]),eval(args[3]),))
 
 elif cmd == 'updateGridFTPDataMovementDetails':
-  if len(args) != 2:
-    print('updateGridFTPDataMovementDetails requires 2 args')
+  if len(args) != 3:
+    print('updateGridFTPDataMovementDetails requires 3 args')
     sys.exit(1)
-  pp.pprint(client.updateGridFTPDataMovementDetails(args[0],eval(args[1]),))
+  pp.pprint(client.updateGridFTPDataMovementDetails(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'getGridFTPDataMovement':
-  if len(args) != 1:
-    print('getGridFTPDataMovement requires 1 args')
+  if len(args) != 2:
+    print('getGridFTPDataMovement requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getGridFTPDataMovement(args[0],))
+  pp.pprint(client.getGridFTPDataMovement(eval(args[0]),args[1],))
 
 elif cmd == 'changeJobSubmissionPriority':
-  if len(args) != 2:
-    print('changeJobSubmissionPriority requires 2 args')
+  if len(args) != 3:
+    print('changeJobSubmissionPriority requires 3 args')
     sys.exit(1)
-  pp.pprint(client.changeJobSubmissionPriority(args[0],eval(args[1]),))
+  pp.pprint(client.changeJobSubmissionPriority(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'changeDataMovementPriority':
-  if len(args) != 2:
-    print('changeDataMovementPriority requires 2 args')
+  if len(args) != 3:
+    print('changeDataMovementPriority requires 3 args')
     sys.exit(1)
-  pp.pprint(client.changeDataMovementPriority(args[0],eval(args[1]),))
+  pp.pprint(client.changeDataMovementPriority(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'changeJobSubmissionPriorities':
-  if len(args) != 1:
-    print('changeJobSubmissionPriorities requires 1 args')
+  if len(args) != 2:
+    print('changeJobSubmissionPriorities requires 2 args')
     sys.exit(1)
-  pp.pprint(client.changeJobSubmissionPriorities(eval(args[0]),))
+  pp.pprint(client.changeJobSubmissionPriorities(eval(args[0]),eval(args[1]),))
 
 elif cmd == 'changeDataMovementPriorities':
-  if len(args) != 1:
-    print('changeDataMovementPriorities requires 1 args')
+  if len(args) != 2:
+    print('changeDataMovementPriorities requires 2 args')
     sys.exit(1)
-  pp.pprint(client.changeDataMovementPriorities(eval(args[0]),))
+  pp.pprint(client.changeDataMovementPriorities(eval(args[0]),eval(args[1]),))
 
 elif cmd == 'deleteJobSubmissionInterface':
-  if len(args) != 2:
-    print('deleteJobSubmissionInterface requires 2 args')
+  if len(args) != 3:
+    print('deleteJobSubmissionInterface requires 3 args')
     sys.exit(1)
-  pp.pprint(client.deleteJobSubmissionInterface(args[0],args[1],))
+  pp.pprint(client.deleteJobSubmissionInterface(eval(args[0]),args[1],args[2],))
 
 elif cmd == 'deleteDataMovementInterface':
-  if len(args) != 2:
-    print('deleteDataMovementInterface requires 2 args')
+  if len(args) != 3:
+    print('deleteDataMovementInterface requires 3 args')
     sys.exit(1)
-  pp.pprint(client.deleteDataMovementInterface(args[0],args[1],))
+  pp.pprint(client.deleteDataMovementInterface(eval(args[0]),args[1],args[2],))
 
 elif cmd == 'registerResourceJobManager':
-  if len(args) != 1:
-    print('registerResourceJobManager requires 1 args')
+  if len(args) != 2:
+    print('registerResourceJobManager requires 2 args')
     sys.exit(1)
-  pp.pprint(client.registerResourceJobManager(eval(args[0]),))
+  pp.pprint(client.registerResourceJobManager(eval(args[0]),eval(args[1]),))
 
 elif cmd == 'updateResourceJobManager':
-  if len(args) != 2:
-    print('updateResourceJobManager requires 2 args')
+  if len(args) != 3:
+    print('updateResourceJobManager requires 3 args')
     sys.exit(1)
-  pp.pprint(client.updateResourceJobManager(args[0],eval(args[1]),))
+  pp.pprint(client.updateResourceJobManager(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'getResourceJobManager':
-  if len(args) != 1:
-    print('getResourceJobManager requires 1 args')
+  if len(args) != 2:
+    print('getResourceJobManager requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getResourceJobManager(args[0],))
+  pp.pprint(client.getResourceJobManager(eval(args[0]),args[1],))
 
 elif cmd == 'deleteResourceJobManager':
-  if len(args) != 1:
-    print('deleteResourceJobManager requires 1 args')
+  if len(args) != 2:
+    print('deleteResourceJobManager requires 2 args')
     sys.exit(1)
-  pp.pprint(client.deleteResourceJobManager(args[0],))
+  pp.pprint(client.deleteResourceJobManager(eval(args[0]),args[1],))
 
 elif cmd == 'deleteBatchQueue':
-  if len(args) != 2:
-    print('deleteBatchQueue requires 2 args')
+  if len(args) != 3:
+    print('deleteBatchQueue requires 3 args')
     sys.exit(1)
-  pp.pprint(client.deleteBatchQueue(args[0],args[1],))
+  pp.pprint(client.deleteBatchQueue(eval(args[0]),args[1],args[2],))
 
 elif cmd == 'registerGatewayResourceProfile':
-  if len(args) != 1:
-    print('registerGatewayResourceProfile requires 1 args')
+  if len(args) != 2:
+    print('registerGatewayResourceProfile requires 2 args')
     sys.exit(1)
-  pp.pprint(client.registerGatewayResourceProfile(eval(args[0]),))
+  pp.pprint(client.registerGatewayResourceProfile(eval(args[0]),eval(args[1]),))
 
 elif cmd == 'getGatewayResourceProfile':
-  if len(args) != 1:
-    print('getGatewayResourceProfile requires 1 args')
+  if len(args) != 2:
+    print('getGatewayResourceProfile requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getGatewayResourceProfile(args[0],))
+  pp.pprint(client.getGatewayResourceProfile(eval(args[0]),args[1],))
 
 elif cmd == 'updateGatewayResourceProfile':
-  if len(args) != 2:
-    print('updateGatewayResourceProfile requires 2 args')
+  if len(args) != 3:
+    print('updateGatewayResourceProfile requires 3 args')
     sys.exit(1)
-  pp.pprint(client.updateGatewayResourceProfile(args[0],eval(args[1]),))
+  pp.pprint(client.updateGatewayResourceProfile(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'deleteGatewayResourceProfile':
-  if len(args) != 1:
-    print('deleteGatewayResourceProfile requires 1 args')
+  if len(args) != 2:
+    print('deleteGatewayResourceProfile requires 2 args')
     sys.exit(1)
-  pp.pprint(client.deleteGatewayResourceProfile(args[0],))
+  pp.pprint(client.deleteGatewayResourceProfile(eval(args[0]),args[1],))
 
 elif cmd == 'addGatewayComputeResourcePreference':
-  if len(args) != 3:
-    print('addGatewayComputeResourcePreference requires 3 args')
+  if len(args) != 4:
+    print('addGatewayComputeResourcePreference requires 4 args')
     sys.exit(1)
-  pp.pprint(client.addGatewayComputeResourcePreference(args[0],args[1],eval(args[2]),))
+  pp.pprint(client.addGatewayComputeResourcePreference(eval(args[0]),args[1],args[2],eval(args[3]),))
 
 elif cmd == 'getGatewayComputeResourcePreference':
-  if len(args) != 2:
-    print('getGatewayComputeResourcePreference requires 2 args')
+  if len(args) != 3:
+    print('getGatewayComputeResourcePreference requires 3 args')
     sys.exit(1)
-  pp.pprint(client.getGatewayComputeResourcePreference(args[0],args[1],))
+  pp.pprint(client.getGatewayComputeResourcePreference(eval(args[0]),args[1],args[2],))
 
 elif cmd == 'getAllGatewayComputeResourcePreferences':
-  if len(args) != 1:
-    print('getAllGatewayComputeResourcePreferences requires 1 args')
+  if len(args) != 2:
+    print('getAllGatewayComputeResourcePreferences requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getAllGatewayComputeResourcePreferences(args[0],))
+  pp.pprint(client.getAllGatewayComputeResourcePreferences(eval(args[0]),args[1],))
 
 elif cmd == 'getAllGatewayComputeResources':
-  if len(args) != 0:
-    print('getAllGatewayComputeResources requires 0 args')
+  if len(args) != 1:
+    print('getAllGatewayComputeResources requires 1 args')
     sys.exit(1)
-  pp.pprint(client.getAllGatewayComputeResources())
+  pp.pprint(client.getAllGatewayComputeResources(eval(args[0]),))
 
 elif cmd == 'updateGatewayComputeResourcePreference':
-  if len(args) != 3:
-    print('updateGatewayComputeResourcePreference requires 3 args')
+  if len(args) != 4:
+    print('updateGatewayComputeResourcePreference requires 4 args')
     sys.exit(1)
-  pp.pprint(client.updateGatewayComputeResourcePreference(args[0],args[1],eval(args[2]),))
+  pp.pprint(client.updateGatewayComputeResourcePreference(eval(args[0]),args[1],args[2],eval(args[3]),))
 
 elif cmd == 'deleteGatewayComputeResourcePreference':
-  if len(args) != 2:
-    print('deleteGatewayComputeResourcePreference requires 2 args')
+  if len(args) != 3:
+    print('deleteGatewayComputeResourcePreference requires 3 args')
     sys.exit(1)
-  pp.pprint(client.deleteGatewayComputeResourcePreference(args[0],args[1],))
+  pp.pprint(client.deleteGatewayComputeResourcePreference(eval(args[0]),args[1],args[2],))
 
 elif cmd == 'getAllWorkflows':
-  if len(args) != 1:
-    print('getAllWorkflows requires 1 args')
+  if len(args) != 2:
+    print('getAllWorkflows requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getAllWorkflows(args[0],))
+  pp.pprint(client.getAllWorkflows(eval(args[0]),args[1],))
 
 elif cmd == 'getWorkflow':
-  if len(args) != 1:
-    print('getWorkflow requires 1 args')
+  if len(args) != 2:
+    print('getWorkflow requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getWorkflow(args[0],))
+  pp.pprint(client.getWorkflow(eval(args[0]),args[1],))
 
 elif cmd == 'deleteWorkflow':
-  if len(args) != 1:
-    print('deleteWorkflow requires 1 args')
+  if len(args) != 2:
+    print('deleteWorkflow requires 2 args')
     sys.exit(1)
-  pp.pprint(client.deleteWorkflow(args[0],))
+  pp.pprint(client.deleteWorkflow(eval(args[0]),args[1],))
 
 elif cmd == 'registerWorkflow':
-  if len(args) != 2:
-    print('registerWorkflow requires 2 args')
+  if len(args) != 3:
+    print('registerWorkflow requires 3 args')
     sys.exit(1)
-  pp.pprint(client.registerWorkflow(args[0],eval(args[1]),))
+  pp.pprint(client.registerWorkflow(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'updateWorkflow':
-  if len(args) != 2:
-    print('updateWorkflow requires 2 args')
+  if len(args) != 3:
+    print('updateWorkflow requires 3 args')
     sys.exit(1)
-  pp.pprint(client.updateWorkflow(args[0],eval(args[1]),))
+  pp.pprint(client.updateWorkflow(eval(args[0]),args[1],eval(args[2]),))
 
 elif cmd == 'getWorkflowTemplateId':
-  if len(args) != 1:
-    print('getWorkflowTemplateId requires 1 args')
+  if len(args) != 2:
+    print('getWorkflowTemplateId requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getWorkflowTemplateId(args[0],))
+  pp.pprint(client.getWorkflowTemplateId(eval(args[0]),args[1],))
 
 elif cmd == 'isWorkflowExistWithName':
-  if len(args) != 1:
-    print('isWorkflowExistWithName requires 1 args')
+  if len(args) != 2:
+    print('isWorkflowExistWithName requires 2 args')
     sys.exit(1)
-  pp.pprint(client.isWorkflowExistWithName(args[0],))
+  pp.pprint(client.isWorkflowExistWithName(eval(args[0]),args[1],))
 
 else:
   print('Unrecognized method %s' % cmd)
