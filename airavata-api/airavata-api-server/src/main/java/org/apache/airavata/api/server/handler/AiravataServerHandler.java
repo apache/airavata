@@ -415,7 +415,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public List<Project> getAllUserProjects(String gatewayId, String userName) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, TException {
-        return getAllUserProjectsWithPagination(gatewayId, userName, -1, -1);
+        return getAllUserProjectsWithPagination(new AuthzToken(""), gatewayId, userName, -1, -1);
     }
 
     /**
@@ -492,7 +492,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public List<Project> searchProjectsByProjectName(String gatewayId, String userName, String projectName)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return searchProjectsByProjectNameWithPagination(gatewayId, userName, projectName, -1, -1);
+        return searchProjectsByProjectNameWithPagination(new AuthzToken(""), gatewayId, userName, projectName, -1, -1);
     }
 
     /**
@@ -571,7 +571,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                                                                                                  AiravataClientException,
                                                                                                  AiravataSystemException,
                                                                                                  TException {
-        return searchProjectsByProjectDescWithPagination(gatewayId, userName, description, -1, -1);
+        return searchProjectsByProjectDescWithPagination(new AuthzToken(""), gatewayId, userName, description, -1, -1);
     }
 
     /**
@@ -591,8 +591,8 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public List<Project> searchProjectsByProjectDescWithPagination(String gatewayId, String userName, String description,
-                                                                   int limit, int offset) throws InvalidRequestException,
+    public List<Project> searchProjectsByProjectDescWithPagination(AuthzToken authzToken, String gatewayId, String userName,
+                                                                   String description, int limit, int offset) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!validateString(userName)){
             logger.error("Username cannot be empty. Please provide a valid user..");
@@ -651,7 +651,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public List<ExperimentSummaryModel> searchExperimentsByName(String gatewayId, String userName, String expName)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return searchExperimentsByNameWithPagination(gatewayId, userName, expName, -1, -1);
+        return searchExperimentsByNameWithPagination(new AuthzToken(""), gatewayId, userName, expName, -1, -1);
     }
 
     /**
@@ -730,7 +730,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public List<ExperimentSummaryModel> searchExperimentsByDesc(String gatewayId, String userName, String description)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return searchExperimentsByDescWithPagination(gatewayId, userName, description, -1, -1);
+        return searchExperimentsByDescWithPagination(new AuthzToken(""), gatewayId, userName, description, -1, -1);
     }
 
     /**
@@ -809,7 +809,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Override
     public List<ExperimentSummaryModel> searchExperimentsByApplication(String gatewayId, String userName, String applicationId)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return searchExperimentsByApplicationWithPagination(gatewayId, userName, applicationId, -1, -1);
+        return searchExperimentsByApplicationWithPagination(new AuthzToken(""), gatewayId, userName, applicationId, -1, -1);
     }
 
     /**
@@ -888,7 +888,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Deprecated
     @Override
     public List<ExperimentSummaryModel> searchExperimentsByStatus(String gatewayId, String userName, ExperimentState experimentState) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return searchExperimentsByStatusWithPagination(gatewayId, userName, experimentState, -1, -1);
+        return searchExperimentsByStatusWithPagination(new AuthzToken(""), gatewayId, userName, experimentState, -1, -1);
     }
 
     /**
@@ -969,7 +969,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Deprecated
     @Override
     public List<ExperimentSummaryModel> searchExperimentsByCreationTime(String gatewayId, String userName, long fromTime, long toTime) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return searchExperimentsByCreationTimeWithPagination(gatewayId, userName, fromTime, toTime, -1, -1);
+        return searchExperimentsByCreationTimeWithPagination(new AuthzToken(""), gatewayId, userName, fromTime, toTime, -1, -1);
     }
 
     /**
@@ -991,7 +991,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public List<ExperimentSummaryModel> searchExperimentsByCreationTimeWithPagination(String gatewayId,
+    public List<ExperimentSummaryModel> searchExperimentsByCreationTimeWithPagination(AuthzToken authzToken, String gatewayId,
                                                                                       String userName, long fromTime,
                                                                                       long toTime, int limit, int offset)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
@@ -1164,7 +1164,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                                                                                 AiravataSystemException,
                                                                                 ProjectNotFoundException,
                                                                                 TException {
-        return getAllExperimentsInProjectWithPagination(projectId, -1, -1);
+        return getAllExperimentsInProjectWithPagination(new AuthzToken(""), projectId, -1, -1);
     }
 
     /**
@@ -1230,7 +1230,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @Deprecated
     @Override
     public List<ExperimentModel> getAllUserExperiments(String gatewayId, String userName) throws InvalidRequestException, AiravataClientException, AiravataSystemException, TException {
-        return getAllUserExperimentsWithPagination(gatewayId, userName, -1, -1);
+        return getAllUserExperimentsWithPagination(new AuthzToken(""), gatewayId, userName, -1, -1);
     }
 
     /**
@@ -1376,6 +1376,12 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public ExperimentModel getExperiment(AuthzToken authzToken, String airavataExperimentId) throws InvalidRequestException,
             ExperimentNotFoundException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        return getExperimentInternal(airavataExperimentId);
+    }
+
+    /*This private method wraps the logic of getExperiment method as this method is called internally in the API.*/
+    private ExperimentModel getExperimentInternal(String airavataExperimentId) throws InvalidRequestException,
+            ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
         try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
@@ -1390,7 +1396,6 @@ public class AiravataServerHandler implements Airavata.Iface {
             throw exception;
         }
     }
-
 
     /**
      * Configure a previously created experiment with required inputs, scheduling and other quality of service
@@ -1427,7 +1432,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 logger.error(airavataExperimentId, "Update request failed, Experiment {} doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
-            ExperimentStatus experimentStatus = getExperimentStatus(airavataExperimentId);
+            ExperimentStatus experimentStatus = getExperimentStatusInternal(airavataExperimentId);
             if (experimentStatus != null){
                 ExperimentState experimentState = experimentStatus.getState();
                 switch (experimentState){
@@ -1466,7 +1471,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 logger.error(airavataExperimentId, "Update experiment configuration failed, experiment {} doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
-            ExperimentStatus experimentStatus = getExperimentStatus(airavataExperimentId);
+            ExperimentStatus experimentStatus = getExperimentStatusInternal(airavataExperimentId);
             if (experimentStatus != null){
                 ExperimentState experimentState = experimentStatus.getState();
                 switch (experimentState){
@@ -1508,7 +1513,7 @@ public class AiravataServerHandler implements Airavata.Iface {
                 logger.info(airavataExperimentId, "Update resource scheduling failed, experiment {} doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId + " does not exist in the system..");
             }
-            ExperimentStatus experimentStatus = getExperimentStatus(airavataExperimentId);
+            ExperimentStatus experimentStatus = getExperimentStatusInternal(airavataExperimentId);
             if (experimentStatus != null){
                 ExperimentState experimentState = experimentStatus.getState();
                 switch (experimentState){
@@ -1613,12 +1618,18 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public ExperimentStatus getExperimentStatus(AuthzToken authzToken, String airavataExperimentId) throws InvalidRequestException,
             ExperimentNotFoundException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        return getExperimentStatusInternal(airavataExperimentId);
+    }
+
+    /*Private method wraps the logic of getExperimentStatus method since this method is called internally.*/
+    private ExperimentStatus getExperimentStatusInternal(String airavataExperimentId) throws InvalidRequestException,
+            ExperimentNotFoundException, AiravataClientException, AiravataSystemException, TException {
         try {
             experimentCatalog = RegistryFactory.getDefaultExpCatalog();
             if (!experimentCatalog.isExist(ExperimentCatalogModelType.EXPERIMENT, airavataExperimentId)){
                 logger.error(airavataExperimentId, "Error while retrieving experiment status, experiment {} doesn't exist.", airavataExperimentId);
                 throw new ExperimentNotFoundException("Requested experiment id " + airavataExperimentId +
-                                                      " does not exist in the system..");
+                        " does not exist in the system..");
             }
             return (ExperimentStatus) experimentCatalog.get(ExperimentCatalogModelType.EXPERIMENT_STATUS, airavataExperimentId);
         } catch (Exception e) {
@@ -1790,7 +1801,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             exception.setMessage("Error while instantiate the registry instance. More info : " + e1.getMessage());
             throw exception;
         }
-    	ExperimentModel experiment = getExperiment(airavataExperimentId);
+    	ExperimentModel experiment = getExperimentInternal(airavataExperimentId);
     	OrchestratorService.Client orchestratorClient = getOrchestratorClient();
     	if (orchestratorClient.validateExperiment(airavataExperimentId)) {
     		orchestratorClient.launchExperiment(airavataExperimentId, airavataCredStoreToken);
@@ -1867,7 +1878,7 @@ public class AiravataServerHandler implements Airavata.Iface {
             String gatewayId = (String) experimentCatalog.getValue(ExperimentCatalogModelType.EXPERIMENT, existingExperimentID, Constants.FieldConstants.ExperimentConstants.GATEWAY_ID);
             existingExperiment.setCreationTime(AiravataUtils.getCurrentTimestamp().getTime());
             if (existingExperiment.getExecutionId() != null){
-                List<OutputDataObjectType> applicationOutputs = getApplicationOutputs(existingExperiment.getExecutionId());
+                List<OutputDataObjectType> applicationOutputs = getApplicationOutputsInternal(existingExperiment.getExecutionId());
                 existingExperiment.setExperimentOutputs(applicationOutputs);
             }
             if (validateString(newExperiementName)){
@@ -1936,7 +1947,7 @@ public class AiravataServerHandler implements Airavata.Iface {
      */
     @Override
     @SecurityCheck
-    public String registerApplicationModule(AuthzToken, String gatewayId, ApplicationModule applicationModule)
+    public String registerApplicationModule(AuthzToken authzToken, String gatewayId, ApplicationModule applicationModule)
             throws InvalidRequestException, AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         if (!isGatewayExistInternal(gatewayId)){
             logger.error("Gateway does not exist.Please provide a valid gateway id...");
@@ -2262,7 +2273,7 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public boolean updateApplicationInterface(AuthzToken authzToken, String appInterfaceId,
                                               ApplicationInterfaceDescription applicationInterface) throws InvalidRequestException,
-            AiravataClientException, AiravataSystemException, AuthorizationException. TException {
+            AiravataClientException, AiravataSystemException, AuthorizationException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             appCatalog.getApplicationInterface().updateApplicationInterface(appInterfaceId, applicationInterface);
@@ -2392,6 +2403,12 @@ public class AiravataServerHandler implements Airavata.Iface {
     @SecurityCheck
     public List<OutputDataObjectType> getApplicationOutputs(AuthzToken authzToken, String appInterfaceId) throws InvalidRequestException,
             AiravataClientException, AiravataSystemException, AuthorizationException, TException {
+        return getApplicationOutputsInternal(appInterfaceId);
+    }
+
+    /*This private method wraps the logic of getApplicationOutputs method as this method is called internally in the API.*/
+    private List<OutputDataObjectType> getApplicationOutputsInternal(String appInterfaceId) throws InvalidRequestException,
+            AiravataClientException, AiravataSystemException, TException {
         try {
             appCatalog = RegistryFactory.getAppCatalog();
             return appCatalog.getApplicationInterface().getApplicationOutputs(appInterfaceId);
@@ -2403,7 +2420,6 @@ public class AiravataServerHandler implements Airavata.Iface {
             throw exception;
         }
     }
-
     /**
      * Fetch a list of all deployed Compute Hosts for a given application interfaces.
      *
