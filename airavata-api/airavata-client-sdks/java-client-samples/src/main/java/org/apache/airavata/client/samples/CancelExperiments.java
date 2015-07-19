@@ -24,6 +24,7 @@ package org.apache.airavata.client.samples;
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.api.client.AiravataClientFactory;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +61,7 @@ public class CancelExperiments {
             throws TException {
         try {
         	String tokenId = "-0bbb-403b-a88a-42b6dbe198e9";
-            client.terminateExperiment(expId, tokenId);
+            client.terminateExperiment(new AuthzToken(""), expId, tokenId);
         } catch (ExperimentNotFoundException e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());
             throw new ExperimentNotFoundException(e);
