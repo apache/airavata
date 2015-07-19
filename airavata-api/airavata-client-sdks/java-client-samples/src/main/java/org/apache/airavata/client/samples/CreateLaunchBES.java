@@ -25,6 +25,7 @@ import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.model.experiment.ExperimentSummaryModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.model.workspace.Project;
@@ -68,7 +69,8 @@ public class CreateLaunchBES {
 
     public static void getAvailableAppInterfaceComputeResources(String appInterfaceId) {
         try {
-            Map<String, String> availableAppInterfaceComputeResources = airavataClient.getAvailableAppInterfaceComputeResources(appInterfaceId);
+            Map<String, String> availableAppInterfaceComputeResources = airavataClient.
+                    getAvailableAppInterfaceComputeResources(new AuthzToken(""), appInterfaceId);
             for (String key : availableAppInterfaceComputeResources.keySet()) {
                 System.out.println("id : " + key);
                 System.out.println("name : " + availableAppInterfaceComputeResources.get(key));
@@ -91,7 +93,7 @@ public class CreateLaunchBES {
             Gateway gateway = new Gateway();
             gateway.setGatewayId("testGatewayId2");
             gateway.setGatewayName("testGateway2");
-            gatewayId = airavataClient.addGateway(gateway);
+            gatewayId = airavataClient.addGateway(new AuthzToken(""), gateway);
             System.out.println(gatewayId);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
@@ -107,16 +109,16 @@ public class CreateLaunchBES {
 
     public static void getGateway(String gatewayId) {
         try {
-            Gateway gateway = airavataClient.getGateway(gatewayId);
+            Gateway gateway = airavataClient.getGateway(new AuthzToken(""), gatewayId);
             gateway.setDomain("testDomain");
-            airavataClient.updateGateway(gatewayId, gateway);
-            List<Gateway> allGateways = airavataClient.getAllGateways();
+            airavataClient.updateGateway(new AuthzToken(""), gatewayId, gateway);
+            List<Gateway> allGateways = airavataClient.getAllGateways(new AuthzToken(""));
             System.out.println(allGateways.size());
-            if (airavataClient.isGatewayExist(gatewayId)) {
-                Gateway gateway1 = airavataClient.getGateway(gatewayId);
+            if (airavataClient.isGatewayExist(new AuthzToken(""), gatewayId)) {
+                Gateway gateway1 = airavataClient.getGateway(new AuthzToken(""), gatewayId);
                 System.out.println(gateway1.getGatewayName());
             }
-            boolean b = airavataClient.deleteGateway("testGatewayId2");
+            boolean b = airavataClient.deleteGateway(new AuthzToken(""), "testGatewayId2");
             System.out.println(b);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
@@ -145,7 +147,7 @@ public class CreateLaunchBES {
 
             Thread.sleep(10000);
             for (String exId : experimentIds) {
-                ExperimentModel experiment = airavataClient.getExperiment(exId);
+                ExperimentModel experiment = airavataClient.getExperiment(new AuthzToken(""), exId);
                 System.out.println(experiment.getExperimentId() + " " + experiment.getExperimentStatus().getState().name());
             }
 
@@ -161,7 +163,7 @@ public class CreateLaunchBES {
             throws TException {
         try {
             String tokenId = "-0bbb-403b-a88a-42b6dbe198e9";
-            client.launchExperiment(expId, tokenId);
+            client.launchExperiment(new AuthzToken(""), expId, tokenId);
         } catch (ExperimentNotFoundException e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());
             throw new ExperimentNotFoundException(e);
@@ -205,7 +207,7 @@ public class CreateLaunchBES {
         ComputeResourceDescription computeResourceDescription = RegisterSampleApplicationsUtils
                 .createComputeResourceDescription(hostName, hostDesc, null, null);
 
-        fsdResourceId = airavataClient.registerComputeResource(computeResourceDescription);
+        fsdResourceId = airavataClient.registerComputeResource(new AuthzToken(""), computeResourceDescription);
 
         if (fsdResourceId.isEmpty())
             throw new AiravataClientException();
@@ -222,7 +224,7 @@ public class CreateLaunchBES {
 
     public static String createEchoExperimentForFSD(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = client.getApplicationInputs(echoAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(new AuthzToken(""), echoAppId);
             for (InputDataObjectType inputDataObjectType : exInputs) {
                 if (inputDataObjectType.getName().equalsIgnoreCase("Input_to_Echo")) {
                     inputDataObjectType.setValue("Hello World");
@@ -232,14 +234,14 @@ public class CreateLaunchBES {
                     inputDataObjectType.setValue("file:///tmp/test.txt");
                 }
             }
-            List<OutputDataObjectType> exOut = client.getApplicationOutputs(echoAppId);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(new AuthzToken(""), echoAppId);
 
             ExperimentModel simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY,"default", "admin", "echoExperiment", "SimpleEcho2", echoAppId, exInputs);
             simpleExperiment.setExperimentOutputs(exOut);
 
 
-            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(echoAppId);
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(new AuthzToken(""), echoAppId);
             if (computeResources != null && computeResources.size() != 0) {
                 for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
@@ -253,7 +255,7 @@ public class CreateLaunchBES {
                         userConfigurationData.setGenerateCert(false);
                         userConfigurationData.setUserDN("");
 
-                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+                        return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -276,7 +278,7 @@ public class CreateLaunchBES {
 
     public static String createMPIExperimentForFSD(Airavata.Client client) throws TException {
         try {
-            List<InputDataObjectType> exInputs = client.getApplicationInputs(mpiAppId);
+            List<InputDataObjectType> exInputs = client.getApplicationInputs(new AuthzToken(""), mpiAppId);
             for (InputDataObjectType inputDataObjectType : exInputs) {
 //                if (inputDataObjectType.getName().equalsIgnoreCase("Sample_Input")) {
 //                    inputDataObjectType.setValue("");
@@ -292,7 +294,7 @@ public class CreateLaunchBES {
                 }
             }
             
-            List<OutputDataObjectType> exOut = client.getApplicationOutputs(mpiAppId);
+            List<OutputDataObjectType> exOut = client.getApplicationOutputs(new AuthzToken(""), mpiAppId);
             
             for (OutputDataObjectType outputDataObjectType : exOut) {
             	if(outputDataObjectType.getName().equals("US3OUT")){
@@ -305,7 +307,7 @@ public class CreateLaunchBES {
             simpleExperiment.setExperimentOutputs(exOut);
 
 
-            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(mpiAppId);
+            Map<String, String> computeResources = airavataClient.getAvailableAppInterfaceComputeResources(new AuthzToken(""), mpiAppId);
             if (computeResources != null && computeResources.size() != 0) {
                 for (String id : computeResources.keySet()) {
                     String resourceName = computeResources.get(id);
@@ -321,7 +323,7 @@ public class CreateLaunchBES {
 
                         simpleExperiment.setUserConfigurationData(userConfigurationData);
 
-                        return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+                        return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
                     }
                 }
             }
@@ -450,7 +452,7 @@ public class CreateLaunchBES {
 
     public static void getExperiment(Airavata.Client client, String expId) throws Exception {
         try {
-            ExperimentModel experiment = client.getExperiment(expId);
+            ExperimentModel experiment = client.getExperiment(new AuthzToken(""), expId);
             List<ErrorModel> errors = experiment.getErrors();
             if (errors != null && !errors.isEmpty()) {
                 for (ErrorModel error : errors) {

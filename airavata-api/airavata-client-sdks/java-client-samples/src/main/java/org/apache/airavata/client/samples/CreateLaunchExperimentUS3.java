@@ -31,6 +31,7 @@ import org.apache.airavata.model.error.InvalidRequestException;
 import org.apache.airavata.model.experiment.ExperimentModel;
 import org.apache.airavata.model.experiment.UserConfigurationDataModel;
 import org.apache.airavata.model.scheduling.ComputationalResourceSchedulingModel;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.util.ExperimentModelUtil;
 import org.apache.airavata.model.util.ProjectModelUtil;
 import org.apache.airavata.model.workspace.Project;
@@ -160,7 +161,7 @@ public class CreateLaunchExperimentUS3 {
             exOut.add(output);
 
             Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
-            String projectId = client.createProject(DEFAULT_GATEWAY, project);
+            String projectId = client.createProject(new AuthzToken(""), DEFAULT_GATEWAY, project);
 
 	        ExperimentModel simpleExperiment =
 			        ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, projectId, "admin",
@@ -174,7 +175,7 @@ public class CreateLaunchExperimentUS3 {
             userConfigurationData.setOverrideManualScheduledParams(false);
             userConfigurationData.setComputationalResourceScheduling(scheduling);
             simpleExperiment.setUserConfigurationData(userConfigurationData);
-            return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+            return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
         } catch (AiravataSystemException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataSystemException(e);
@@ -228,7 +229,7 @@ public class CreateLaunchExperimentUS3 {
 //            exOut.add(output2);
 
             Project project = ProjectModelUtil.createProject("ultrascan", "ultrascan", "test project");
-            String projectId = client.createProject(DEFAULT_GATEWAY, project);
+            String projectId = client.createProject(new AuthzToken(""), DEFAULT_GATEWAY, project);
 
 	        ExperimentModel simpleExperiment = ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, projectId,
 			        "ultrascan", "US3ExperimentTrestles", "US3AppTrestles",
@@ -248,7 +249,7 @@ public class CreateLaunchExperimentUS3 {
         
             userConfigurationData.setComputationalResourceScheduling(scheduling);
             simpleExperiment.setUserConfigurationData(userConfigurationData);
-            return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+            return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
         } catch (AiravataSystemException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataSystemException(e);
@@ -302,7 +303,7 @@ public class CreateLaunchExperimentUS3 {
 //            exOut.add(output2);
 
             Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
-            String projectId = client.createProject(DEFAULT_GATEWAY, project);
+            String projectId = client.createProject(new AuthzToken(""), DEFAULT_GATEWAY, project);
 
 	        ExperimentModel simpleExperiment = ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY, projectId,
 			        "ultrascan", "US3ExperimentStampede", "US3AppStampede",
@@ -323,7 +324,7 @@ public class CreateLaunchExperimentUS3 {
             userConfigurationData.setAdvanceOutputDataHandling(dataHandling);*/
         
             simpleExperiment.setUserConfigurationData(userConfigurationData);
-            return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+            return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
         } catch (AiravataSystemException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataSystemException(e);
@@ -397,7 +398,7 @@ public class CreateLaunchExperimentUS3 {
             userConfigurationData.setAdvanceOutputDataHandling(dataHandling);*/
         
             simpleExperiment.setUserConfigurationData(userConfigurationData);
-            return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+            return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
         } catch (AiravataSystemException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataSystemException(e);
@@ -472,7 +473,7 @@ public class CreateLaunchExperimentUS3 {
             userConfigurationData.setAdvanceOutputDataHandling(dataHandling);*/
         
             simpleExperiment.setUserConfigurationData(userConfigurationData);
-            return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+            return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
         } catch (AiravataSystemException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataSystemException(e);
@@ -504,7 +505,7 @@ public class CreateLaunchExperimentUS3 {
             exOut.add(output);
 
             Project project = ProjectModelUtil.createProject("project1", "admin", "test project");
-            String projectId = client.createProject(DEFAULT_GATEWAY, project);
+            String projectId = client.createProject(new AuthzToken(""), DEFAULT_GATEWAY, project);
 
             ExperimentModel simpleExperiment =
                     ExperimentModelUtil.createSimpleExperiment(DEFAULT_GATEWAY,projectId, "admin", "US3EchoExperimentStatus", "US3EchoStampede", "US3EchoStampede", exInputs);
@@ -518,7 +519,7 @@ public class CreateLaunchExperimentUS3 {
             userConfigurationData.setOverrideManualScheduledParams(false);
             userConfigurationData.setComputationalResourceScheduling(scheduling);
             simpleExperiment.setUserConfigurationData(userConfigurationData);
-            return client.createExperiment(DEFAULT_GATEWAY, simpleExperiment);
+            return client.createExperiment(new AuthzToken(""), DEFAULT_GATEWAY, simpleExperiment);
         } catch (AiravataSystemException e) {
             logger.error("Error occured while creating the experiment...", e.getMessage());
             throw new AiravataSystemException(e);
@@ -537,7 +538,7 @@ public class CreateLaunchExperimentUS3 {
     public static void launchExperiment (Airavata.Client client, String expId)
             throws TException{
         try {
-            client.launchExperiment(expId, "testToken");
+            client.launchExperiment(new AuthzToken(""), expId, "testToken");
         } catch (ExperimentNotFoundException e) {
             logger.error("Error occured while launching the experiment...", e.getMessage());
             throw new ExperimentNotFoundException(e);
