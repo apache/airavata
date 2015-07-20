@@ -402,7 +402,7 @@ public class BetterGfacImpl implements GFac {
             	String stderr = objectType.getValue();
             	String stderrLocation = null;
             	if(stderr == null || "".equals(stderr)) {
-                    stderrLocation = jobExecutionContext.getOutputDir() + File.separator + jobExecutionContext.getApplicationName().replace("\\s+", "") + ".stderr";
+                    stderrLocation = jobExecutionContext.getOutputDir() + File.separator + jobExecutionContext.getApplicationName().replaceAll("\\s+", "") + ".stderr";
                 }
                 else {
                 		stderrLocation = jobExecutionContext.getOutputDir() + File.separator + stderr;
