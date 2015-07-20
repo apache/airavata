@@ -121,7 +121,7 @@ class Project {
   /**
    * @var string
    */
-  public $projectID = null;
+  public $projectID = "DO_NOT_SET_AT_CLIENTS";
   /**
    * @var string
    */
