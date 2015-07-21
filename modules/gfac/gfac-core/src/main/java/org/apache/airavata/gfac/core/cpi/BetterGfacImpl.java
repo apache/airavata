@@ -391,9 +391,8 @@ public class BetterGfacImpl implements GFac {
                	String stdout = objectType.getValue();
                	String stdoutLocation = null;
                 if(objectType.getValue() == null || "".equals(objectType.getValue())) {
-                	stdoutLocation = jobExecutionContext.getOutputDir() + File.separator + jobExecutionContext.getApplicationName() + ".stdout";
-            	}
-            	else {
+                    stdoutLocation = jobExecutionContext.getOutputDir() + File.separator + jobExecutionContext.getApplicationName().replaceAll("\\s+", "") + ".stdout";
+                } else {
             		stdoutLocation = jobExecutionContext.getOutputDir() + File.separator + stdout;
             	}
                 objectType.setValue(stdoutLocation);
@@ -403,7 +402,7 @@ public class BetterGfacImpl implements GFac {
             	String stderr = objectType.getValue();
             	String stderrLocation = null;
             	if(stderr == null || "".equals(stderr)) {
-            		stderrLocation = jobExecutionContext.getOutputDir() + File.separator + jobExecutionContext.getApplicationName() + ".stderr";
+                    stderrLocation = jobExecutionContext.getOutputDir() + File.separator + jobExecutionContext.getApplicationName().replaceAll("\\s+", "") + ".stderr";
                 }
                 else {
                 		stderrLocation = jobExecutionContext.getOutputDir() + File.separator + stderr;
@@ -425,6 +424,7 @@ public class BetterGfacImpl implements GFac {
 
     
     private void setUpWorkingLocation(JobExecutionContext jobExecutionContext, ApplicationInterfaceDescription applicationInterface, String scratchLocation) {
+        scratchLocation = (scratchLocation.endsWith("/") ? scratchLocation.substring(0, scratchLocation.length() - 1) : scratchLocation);
         /**
          * Scratch location
          */
@@ -439,16 +439,8 @@ public class BetterGfacImpl implements GFac {
             /*
             * Input and Output Directory
             */
-//        jobExecutionContext.setInputDir(workingDir + File.separator + Constants.INPUT_DATA_DIR_VAR_NAME);
         jobExecutionContext.setInputDir(workingDir);
-//        jobExecutionContext.setOutputDir(workingDir + File.separator + Constants.OUTPUT_DATA_DIR_VAR_NAME);
         jobExecutionContext.setOutputDir(workingDir);
-
-            /*
-            * Stdout and Stderr for Shell
-            */
-        jobExecutionContext.setStandardOutput(workingDir + File.separator + applicationInterface.getApplicationName().replaceAll("\\s+", "") + ".stdout");
-        jobExecutionContext.setStandardError(workingDir + File.separator + applicationInterface.getApplicationName().replaceAll("\\s+", "") + ".stderr");
     }
 
     private void populateDefaultComputeResourceConfiguration(JobExecutionContext jobExecutionContext, ApplicationInterfaceDescription applicationInterface, ComputeResourceDescription computeResource) {
