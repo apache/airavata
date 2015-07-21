@@ -224,8 +224,8 @@ public class AppInterfaceResource extends AbstractResource {
                 em.close();
             }
         }
-        Collections.sort(resourceList, (o1, o2) -> ((AppInterfaceResource) o1).getCreatedTime()
-                .compareTo(((AppInterfaceResource) o2).getCreatedTime()));
+        Collections.sort(resourceList, (o1, o2) -> ((AppInterfaceResource) o1).getAppName()
+                .compareTo(((AppInterfaceResource) o2).getAppName()));
         return resourceList;
     }
 
