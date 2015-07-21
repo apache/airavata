@@ -39,6 +39,7 @@ import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.error.AiravataClientException;
+import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.model.workspace.Gateway;
 import org.apache.thrift.TException;
 
@@ -95,7 +96,7 @@ public class RegisterSampleData {
         Gateway gateway = new Gateway();
         gateway.setGatewayName("Sample");
         gateway.setGatewayId("sample");
-        return airavataClient.addGateway(gateway);
+        return airavataClient.addGateway(new AuthzToken(""), gateway);
     }
 
     private void registerGatewayProfile() throws TException {
@@ -104,7 +105,7 @@ public class RegisterSampleData {
         GatewayResourceProfile gatewayResourceProfile = new GatewayResourceProfile();
         gatewayResourceProfile.setGatewayID(gatewayId);
         gatewayResourceProfile.addToComputeResourcePreferences(localhostResourcePreference);
-        airavataClient.registerGatewayResourceProfile(gatewayResourceProfile);
+        airavataClient.registerGatewayResourceProfile(new AuthzToken(""), gatewayResourceProfile);
     }
 
     private void registerLocalhost() {
@@ -118,12 +119,12 @@ public class RegisterSampleData {
             JobSubmissionInterface jobSubmissionInterface = new JobSubmissionInterface("localhost_job_submission_interface", JobSubmissionProtocol.LOCAL, 1);
             computeResourceDescription.addToJobSubmissionInterfaces(jobSubmissionInterface);
 
-            localhostId = airavataClient.registerComputeResource(computeResourceDescription);
+            localhostId = airavataClient.registerComputeResource(new AuthzToken(""), computeResourceDescription);
             ResourceJobManager resourceJobManager = RegisterSampleApplicationsUtils.
                     createResourceJobManager(ResourceJobManagerType.FORK, null, null, null);
             LOCALSubmission submission = new LOCALSubmission();
             submission.setResourceJobManager(resourceJobManager);
-            String localSubmission = airavataClient.addLocalSubmissionDetails(localhostId, 1, submission);
+            String localSubmission = airavataClient.addLocalSubmissionDetails(new AuthzToken(""), localhostId, 1, submission);
 //            if (!localSubmission) throw new AiravataClientException();
             System.out.println(localSubmission);
             System.out.println("LocalHost Resource Id is " + localhostId);
@@ -161,7 +162,7 @@ public class RegisterSampleData {
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
 
-            String addApplicationInterfaceId = airavataClient.registerApplicationInterface(gatewayId,
+            String addApplicationInterfaceId = airavataClient.registerApplicationInterface(new AuthzToken(""), gatewayId,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("Gaussian", "Gaussian application",
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("Gaussian Application Interface Id " + addApplicationInterfaceId);
@@ -209,7 +210,7 @@ public class RegisterSampleData {
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
 
-            String addApplicationInterfaceId = airavataClient.registerApplicationInterface(gatewayId,
+            String addApplicationInterfaceId = airavataClient.registerApplicationInterface(new AuthzToken(""), gatewayId,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("Tinker_Monte", "Monte application",
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("Monte Application Interface Id " + addApplicationInterfaceId);
@@ -222,42 +223,42 @@ public class RegisterSampleData {
     private void registerApplicationDeployments() throws TException {
         System.out.println("#### Registering Application Deployments on Localhost ####");
         //Register Echo
-        String echoAppDeployId = airavataClient.registerApplicationDeployment(gatewayId,
+        String echoAppDeployId = airavataClient.registerApplicationDeployment(new AuthzToken(""), gatewayId,
                 RegisterSampleApplicationsUtils.createApplicationDeployment(echoModuleId, localhostId,
                         sampleScriptDir + "/echo.sh", ApplicationParallelismType.SERIAL, "Echo application description",
                         null, null, null));
         System.out.println("Successfully registered Echo application on localhost, application Id = " + echoAppDeployId);
 
         //Register Add application
-        String addAppDeployId = airavataClient.registerApplicationDeployment(gatewayId,
+        String addAppDeployId = airavataClient.registerApplicationDeployment(new AuthzToken(""), gatewayId,
                 RegisterSampleApplicationsUtils.createApplicationDeployment(addModuleId, localhostId,
                         sampleScriptDir + "/add.sh", ApplicationParallelismType.SERIAL, "Add application description",
                         null, null, null));
         System.out.println("Successfully registered Add application on localhost, application Id = " + addAppDeployId);
 
         //Register Multiply application
-        String multiplyAppDeployId = airavataClient.registerApplicationDeployment(gatewayId,
+        String multiplyAppDeployId = airavataClient.registerApplicationDeployment(new AuthzToken(""), gatewayId,
                 RegisterSampleApplicationsUtils.createApplicationDeployment(multiplyModuleId, localhostId,
                         sampleScriptDir + "/multiply.sh", ApplicationParallelismType.SERIAL, "Multiply application description",
                         null, null, null));
         System.out.println("Successfully registered Multiply application on localhost, application Id = " + multiplyAppDeployId);
 
         //Register Subtract application
-        String subtractAppDeployId = airavataClient.registerApplicationDeployment(gatewayId,
+        String subtractAppDeployId = airavataClient.registerApplicationDeployment(new AuthzToken(""), gatewayId,
                 RegisterSampleApplicationsUtils.createApplicationDeployment(subtractModuleId, localhostId,
                         sampleScriptDir + "/subtract.sh", ApplicationParallelismType.SERIAL, "Subtract application description ",
                         null, null, null));
         System.out.println("Successfully registered Subtract application on localhost, application Id = " + subtractAppDeployId);
 
         //Register Tinker monte application
-        String tinkerMonteAppDeployId = airavataClient.registerApplicationDeployment(gatewayId,
+        String tinkerMonteAppDeployId = airavataClient.registerApplicationDeployment(new AuthzToken(""), gatewayId,
                 RegisterSampleApplicationsUtils.createApplicationDeployment(monteXModuleId, localhostId,
                         sampleScriptDir + "/monte.x", ApplicationParallelismType.SERIAL, "Grid chem tinker monte application description ",
                         null, null, null));
         System.out.println("Successfully registered tinker monte application on localhost, application Id = " + tinkerMonteAppDeployId);
 
         //Register Tinker monte application
-        String gaussianAppDeployId = airavataClient.registerApplicationDeployment(gatewayId,
+        String gaussianAppDeployId = airavataClient.registerApplicationDeployment(new AuthzToken(""), gatewayId,
                 RegisterSampleApplicationsUtils.createApplicationDeployment(gaussianModuleId, localhostId,
                         sampleScriptDir + "/gaussian.sh", ApplicationParallelismType.SERIAL, "Grid chem Gaussian application description ",
                         null, null, null));
@@ -266,28 +267,28 @@ public class RegisterSampleData {
 
     private void registerApplicationModules() throws TException {
         //Register Echo
-        echoModuleId = airavataClient.registerApplicationModule(gatewayId,
+        echoModuleId = airavataClient.registerApplicationModule(new AuthzToken(""), gatewayId,
                 RegisterSampleApplicationsUtils.createApplicationModule(
                         "Echo", "1.0", "Echo application description"));
         //Register Echo
-        addModuleId = airavataClient.registerApplicationModule(gatewayId,
+        addModuleId = airavataClient.registerApplicationModule(new AuthzToken(""), gatewayId,
                 RegisterSampleApplicationsUtils.createApplicationModule(
                         "Add", "1.0", "Add application description"));
         //Register Echo
-        multiplyModuleId = airavataClient.registerApplicationModule(gatewayId,
+        multiplyModuleId = airavataClient.registerApplicationModule(new AuthzToken(""), gatewayId,
                 RegisterSampleApplicationsUtils.createApplicationModule(
                         "Multiply", "1.0", "Multiply application description"));
         //Register Echo
-        subtractModuleId = airavataClient.registerApplicationModule(gatewayId,
+        subtractModuleId = airavataClient.registerApplicationModule(new AuthzToken(""), gatewayId,
                 RegisterSampleApplicationsUtils.createApplicationModule(
                         "Subtract", "1.0", "Subtract application description"));
         //Register Monte
-        monteXModuleId = airavataClient.registerApplicationModule(gatewayId,
+        monteXModuleId = airavataClient.registerApplicationModule(new AuthzToken(""), gatewayId,
                 RegisterSampleApplicationsUtils.createApplicationModule(
                         "Tinker Monte", "1.0", "Grid chem tinker monte application description"));
 
         // Register gaussian application
-        gaussianModuleId = airavataClient.registerApplicationModule(gatewayId,
+        gaussianModuleId = airavataClient.registerApplicationModule(new AuthzToken(""), gatewayId,
                 RegisterSampleApplicationsUtils.createApplicationModule(
                         "Gaussian", "1.0", "Grid Chem Gaussian application description"));
 
@@ -313,7 +314,7 @@ public class RegisterSampleData {
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
 
-            String echoInterfaceId = airavataClient.registerApplicationInterface(gatewayId,
+            String echoInterfaceId = airavataClient.registerApplicationInterface(new AuthzToken(""), gatewayId,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("Echo", "Echo application description",
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("Echo Application Interface Id " + echoInterfaceId);
@@ -345,7 +346,7 @@ public class RegisterSampleData {
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
 
-            String addApplicationInterfaceId = airavataClient.registerApplicationInterface(gatewayId,
+            String addApplicationInterfaceId = airavataClient.registerApplicationInterface(new AuthzToken(""), gatewayId,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("Add", "Add two numbers",
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("Add Application Interface Id " + addApplicationInterfaceId);
@@ -377,7 +378,7 @@ public class RegisterSampleData {
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
 
-            String multiplyApplicationInterfaceId = airavataClient.registerApplicationInterface(gatewayId,
+            String multiplyApplicationInterfaceId = airavataClient.registerApplicationInterface(new AuthzToken(""), gatewayId,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("Multiply", "Multiply two numbers",
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("Multiply Application Interface Id " + multiplyApplicationInterfaceId);
@@ -409,7 +410,7 @@ public class RegisterSampleData {
             List<OutputDataObjectType> applicationOutputs = new ArrayList<OutputDataObjectType>();
             applicationOutputs.add(output1);
 
-            String subtractApplicationInterfaceId = airavataClient.registerApplicationInterface(gatewayId,
+            String subtractApplicationInterfaceId = airavataClient.registerApplicationInterface(new AuthzToken(""), gatewayId,
                     RegisterSampleApplicationsUtils.createApplicationInterfaceDescription("Subtract", "Subtract two numbers",
                             appModules, applicationInputs, applicationOutputs));
             System.out.println("Subtract Application Interface Id " + subtractApplicationInterfaceId);

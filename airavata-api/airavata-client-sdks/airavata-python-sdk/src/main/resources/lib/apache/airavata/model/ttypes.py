@@ -7,13 +7,17 @@
 #
 
 from thrift.Thrift import TType, TMessageType, TException, TApplicationException
+import apache.airavata.model.commons.ttypes
 import apache.airavata.model.workspace.ttypes
 import apache.airavata.api.error.ttypes
 import apache.airavata.model.messaging.event.ttypes
 import apache.airavata.model.security.ttypes
+import apache.airavata.model.experiment.ttypes
 import apache.airavata.model.job.ttypes
 import apache.airavata.model.task.ttypes
 import apache.airavata.model.process.ttypes
+import apache.airavata.model.scheduling.ttypes
+import apache.airavata.model.status.ttypes
 
 
 from thrift.transport import TTransport
