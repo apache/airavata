@@ -46,7 +46,11 @@ fi
 #  Verify is thrift is installed, is in the path is at a specified version.
 
 REQUIRED_THRIFT_VERSION='0.9.2'
-THRIFT_EXEC=/usr/local/bin/thrift
+if hash thrift &> /dev/null; then
+  THRIFT_EXEC=$(which thrift)
+else
+  THRIFT_EXEC=/usr/local/bin/thrift
+fi
 
 VERSION=$($THRIFT_EXEC -version 2>/dev/null | grep -F "${REQUIRED_THRIFT_VERSION}" |  wc -l)
 if [ "$VERSION" -ne 1 ] ; then

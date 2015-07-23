@@ -86,7 +86,7 @@ public abstract class AbstractExpCatResource implements ExperimentCatResource {
     // Project table
     public final class ProjectUserConstants {
         public static final String USERNAME = "userName";
-        public static final String PROJECT_ID = "projectID";
+        public static final String PROJECT_ID = "projectId";
     }
 
 	// Experiment table
