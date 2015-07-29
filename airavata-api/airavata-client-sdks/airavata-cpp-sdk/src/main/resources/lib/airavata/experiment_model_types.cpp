@@ -1133,6 +1133,14 @@ void ExperimentStatistics::__set_failedExperimentCount(const int32_t val) {
   this->failedExperimentCount = val;
 }
 
+void ExperimentStatistics::__set_createdExperimentCount(const int32_t val) {
+  this->createdExperimentCount = val;
+}
+
+void ExperimentStatistics::__set_runningExperimentCount(const int32_t val) {
+  this->runningExperimentCount = val;
+}
+
 void ExperimentStatistics::__set_allExperiments(const std::vector<ExperimentSummaryModel> & val) {
   this->allExperiments = val;
 }
@@ -1152,8 +1160,18 @@ void ExperimentStatistics::__set_cancelledExperiments(const std::vector<Experime
 __isset.cancelledExperiments = true;
 }
 
-const char* ExperimentStatistics::ascii_fingerprint = "3F8AFC8DC8701278C2C7E74049E8B58B";
-const uint8_t ExperimentStatistics::binary_fingerprint[16] = {0x3F,0x8A,0xFC,0x8D,0xC8,0x70,0x12,0x78,0xC2,0xC7,0xE7,0x40,0x49,0xE8,0xB5,0x8B};
+void ExperimentStatistics::__set_createdExperiments(const std::vector<ExperimentSummaryModel> & val) {
+  this->createdExperiments = val;
+__isset.createdExperiments = true;
+}
+
+void ExperimentStatistics::__set_runningExperiments(const std::vector<ExperimentSummaryModel> & val) {
+  this->runningExperiments = val;
+__isset.runningExperiments = true;
+}
+
+const char* ExperimentStatistics::ascii_fingerprint = "053DB8287C3622EF3F365114D97877EA";
+const uint8_t ExperimentStatistics::binary_fingerprint[16] = {0x05,0x3D,0xB8,0x28,0x7C,0x36,0x22,0xEF,0x3F,0x36,0x51,0x14,0xD9,0x78,0x77,0xEA};
 
 uint32_t ExperimentStatistics::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -1169,6 +1187,8 @@ uint32_t ExperimentStatistics::read(::apache::thrift::protocol::TProtocol* iprot
   bool isset_allExperimentCount = false;
   bool isset_completedExperimentCount = false;
   bool isset_failedExperimentCount = false;
+  bool isset_createdExperimentCount = false;
+  bool isset_runningExperimentCount = false;
   bool isset_allExperiments = false;
 
   while (true)
@@ -1212,6 +1232,22 @@ uint32_t ExperimentStatistics::read(::apache::thrift::protocol::TProtocol* iprot
         }
         break;
       case 5:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->createdExperimentCount);
+          isset_createdExperimentCount = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 6:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->runningExperimentCount);
+          isset_runningExperimentCount = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 7:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->allExperiments.clear();
@@ -1231,7 +1267,7 @@ uint32_t ExperimentStatistics::read(::apache::thrift::protocol::TProtocol* iprot
           xfer += iprot->skip(ftype);
         }
         break;
-      case 6:
+      case 8:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->completedExperiments.clear();
@@ -1251,7 +1287,7 @@ uint32_t ExperimentStatistics::read(::apache::thrift::protocol::TProtocol* iprot
           xfer += iprot->skip(ftype);
         }
         break;
-      case 7:
+      case 9:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->failedExperiments.clear();
@@ -1271,7 +1307,7 @@ uint32_t ExperimentStatistics::read(::apache::thrift::protocol::TProtocol* iprot
           xfer += iprot->skip(ftype);
         }
         break;
-      case 8:
+      case 10:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->cancelledExperiments.clear();
@@ -1291,6 +1327,46 @@ uint32_t ExperimentStatistics::read(::apache::thrift::protocol::TProtocol* iprot
           xfer += iprot->skip(ftype);
         }
         break;
+      case 11:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->createdExperiments.clear();
+            uint32_t _size51;
+            ::apache::thrift::protocol::TType _etype54;
+            xfer += iprot->readListBegin(_etype54, _size51);
+            this->createdExperiments.resize(_size51);
+            uint32_t _i55;
+            for (_i55 = 0; _i55 < _size51; ++_i55)
+            {
+              xfer += this->createdExperiments[_i55].read(iprot);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.createdExperiments = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 12:
+        if (ftype == ::apache::thrift::protocol::T_LIST) {
+          {
+            this->runningExperiments.clear();
+            uint32_t _size56;
+            ::apache::thrift::protocol::TType _etype59;
+            xfer += iprot->readListBegin(_etype59, _size56);
+            this->runningExperiments.resize(_size56);
+            uint32_t _i60;
+            for (_i60 = 0; _i60 < _size56; ++_i60)
+            {
+              xfer += this->runningExperiments[_i60].read(iprot);
+            }
+            xfer += iprot->readListEnd();
+          }
+          this->__isset.runningExperiments = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -1305,6 +1381,10 @@ uint32_t ExperimentStatistics::read(::apache::thrift::protocol::TProtocol* iprot
   if (!isset_completedExperimentCount)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_failedExperimentCount)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_createdExperimentCount)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_runningExperimentCount)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_allExperiments)
     throw TProtocolException(TProtocolException::INVALID_DATA);
@@ -1333,52 +1413,86 @@ uint32_t ExperimentStatistics::write(::apache::thrift::protocol::TProtocol* opro
   xfer += oprot->writeI32(this->failedExperimentCount);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("allExperiments", ::apache::thrift::protocol::T_LIST, 5);
+  xfer += oprot->writeFieldBegin("createdExperimentCount", ::apache::thrift::protocol::T_I32, 5);
+  xfer += oprot->writeI32(this->createdExperimentCount);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("runningExperimentCount", ::apache::thrift::protocol::T_I32, 6);
+  xfer += oprot->writeI32(this->runningExperimentCount);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("allExperiments", ::apache::thrift::protocol::T_LIST, 7);
   {
     xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->allExperiments.size()));
-    std::vector<ExperimentSummaryModel> ::const_iterator _iter51;
-    for (_iter51 = this->allExperiments.begin(); _iter51 != this->allExperiments.end(); ++_iter51)
+    std::vector<ExperimentSummaryModel> ::const_iterator _iter61;
+    for (_iter61 = this->allExperiments.begin(); _iter61 != this->allExperiments.end(); ++_iter61)
     {
-      xfer += (*_iter51).write(oprot);
+      xfer += (*_iter61).write(oprot);
     }
     xfer += oprot->writeListEnd();
   }
   xfer += oprot->writeFieldEnd();
 
   if (this->__isset.completedExperiments) {
-    xfer += oprot->writeFieldBegin("completedExperiments", ::apache::thrift::protocol::T_LIST, 6);
+    xfer += oprot->writeFieldBegin("completedExperiments", ::apache::thrift::protocol::T_LIST, 8);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->completedExperiments.size()));
-      std::vector<ExperimentSummaryModel> ::const_iterator _iter52;
-      for (_iter52 = this->completedExperiments.begin(); _iter52 != this->completedExperiments.end(); ++_iter52)
+      std::vector<ExperimentSummaryModel> ::const_iterator _iter62;
+      for (_iter62 = this->completedExperiments.begin(); _iter62 != this->completedExperiments.end(); ++_iter62)
       {
-        xfer += (*_iter52).write(oprot);
+        xfer += (*_iter62).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.failedExperiments) {
-    xfer += oprot->writeFieldBegin("failedExperiments", ::apache::thrift::protocol::T_LIST, 7);
+    xfer += oprot->writeFieldBegin("failedExperiments", ::apache::thrift::protocol::T_LIST, 9);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->failedExperiments.size()));
-      std::vector<ExperimentSummaryModel> ::const_iterator _iter53;
-      for (_iter53 = this->failedExperiments.begin(); _iter53 != this->failedExperiments.end(); ++_iter53)
+      std::vector<ExperimentSummaryModel> ::const_iterator _iter63;
+      for (_iter63 = this->failedExperiments.begin(); _iter63 != this->failedExperiments.end(); ++_iter63)
       {
-        xfer += (*_iter53).write(oprot);
+        xfer += (*_iter63).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.cancelledExperiments) {
-    xfer += oprot->writeFieldBegin("cancelledExperiments", ::apache::thrift::protocol::T_LIST, 8);
+    xfer += oprot->writeFieldBegin("cancelledExperiments", ::apache::thrift::protocol::T_LIST, 10);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->cancelledExperiments.size()));
-      std::vector<ExperimentSummaryModel> ::const_iterator _iter54;
-      for (_iter54 = this->cancelledExperiments.begin(); _iter54 != this->cancelledExperiments.end(); ++_iter54)
+      std::vector<ExperimentSummaryModel> ::const_iterator _iter64;
+      for (_iter64 = this->cancelledExperiments.begin(); _iter64 != this->cancelledExperiments.end(); ++_iter64)
       {
-        xfer += (*_iter54).write(oprot);
+        xfer += (*_iter64).write(oprot);
+      }
+      xfer += oprot->writeListEnd();
+    }
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.createdExperiments) {
+    xfer += oprot->writeFieldBegin("createdExperiments", ::apache::thrift::protocol::T_LIST, 11);
+    {
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->createdExperiments.size()));
+      std::vector<ExperimentSummaryModel> ::const_iterator _iter65;
+      for (_iter65 = this->createdExperiments.begin(); _iter65 != this->createdExperiments.end(); ++_iter65)
+      {
+        xfer += (*_iter65).write(oprot);
+      }
+      xfer += oprot->writeListEnd();
+    }
+    xfer += oprot->writeFieldEnd();
+  }
+  if (this->__isset.runningExperiments) {
+    xfer += oprot->writeFieldBegin("runningExperiments", ::apache::thrift::protocol::T_LIST, 12);
+    {
+      xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->runningExperiments.size()));
+      std::vector<ExperimentSummaryModel> ::const_iterator _iter66;
+      for (_iter66 = this->runningExperiments.begin(); _iter66 != this->runningExperiments.end(); ++_iter66)
+      {
+        xfer += (*_iter66).write(oprot);
       }
       xfer += oprot->writeListEnd();
     }
@@ -1396,34 +1510,46 @@ void swap(ExperimentStatistics &a, ExperimentStatistics &b) {
   swap(a.completedExperimentCount, b.completedExperimentCount);
   swap(a.cancelledExperimentCount, b.cancelledExperimentCount);
   swap(a.failedExperimentCount, b.failedExperimentCount);
+  swap(a.createdExperimentCount, b.createdExperimentCount);
+  swap(a.runningExperimentCount, b.runningExperimentCount);
   swap(a.allExperiments, b.allExperiments);
   swap(a.completedExperiments, b.completedExperiments);
   swap(a.failedExperiments, b.failedExperiments);
   swap(a.cancelledExperiments, b.cancelledExperiments);
+  swap(a.createdExperiments, b.createdExperiments);
+  swap(a.runningExperiments, b.runningExperiments);
   swap(a.__isset, b.__isset);
 }
 
-ExperimentStatistics::ExperimentStatistics(const ExperimentStatistics& other55) {
-  allExperimentCount = other55.allExperimentCount;
-  completedExperimentCount = other55.completedExperimentCount;
-  cancelledExperimentCount = other55.cancelledExperimentCount;
-  failedExperimentCount = other55.failedExperimentCount;
-  allExperiments = other55.allExperiments;
-  completedExperiments = other55.completedExperiments;
-  failedExperiments = other55.failedExperiments;
-  cancelledExperiments = other55.cancelledExperiments;
-  __isset = other55.__isset;
+ExperimentStatistics::ExperimentStatistics(const ExperimentStatistics& other67) {
+  allExperimentCount = other67.allExperimentCount;
+  completedExperimentCount = other67.completedExperimentCount;
+  cancelledExperimentCount = other67.cancelledExperimentCount;
+  failedExperimentCount = other67.failedExperimentCount;
+  createdExperimentCount = other67.createdExperimentCount;
+  runningExperimentCount = other67.runningExperimentCount;
+  allExperiments = other67.allExperiments;
+  completedExperiments = other67.completedExperiments;
+  failedExperiments = other67.failedExperiments;
+  cancelledExperiments = other67.cancelledExperiments;
+  createdExperiments = other67.createdExperiments;
+  runningExperiments = other67.runningExperiments;
+  __isset = other67.__isset;
 }
-ExperimentStatistics& ExperimentStatistics::operator=(const ExperimentStatistics& other56) {
-  allExperimentCount = other56.allExperimentCount;
-  completedExperimentCount = other56.completedExperimentCount;
-  cancelledExperimentCount = other56.cancelledExperimentCount;
-  failedExperimentCount = other56.failedExperimentCount;
-  allExperiments = other56.allExperiments;
-  completedExperiments = other56.completedExperiments;
-  failedExperiments = other56.failedExperiments;
-  cancelledExperiments = other56.cancelledExperiments;
-  __isset = other56.__isset;
+ExperimentStatistics& ExperimentStatistics::operator=(const ExperimentStatistics& other68) {
+  allExperimentCount = other68.allExperimentCount;
+  completedExperimentCount = other68.completedExperimentCount;
+  cancelledExperimentCount = other68.cancelledExperimentCount;
+  failedExperimentCount = other68.failedExperimentCount;
+  createdExperimentCount = other68.createdExperimentCount;
+  runningExperimentCount = other68.runningExperimentCount;
+  allExperiments = other68.allExperiments;
+  completedExperiments = other68.completedExperiments;
+  failedExperiments = other68.failedExperiments;
+  cancelledExperiments = other68.cancelledExperiments;
+  createdExperiments = other68.createdExperiments;
+  runningExperiments = other68.runningExperiments;
+  __isset = other68.__isset;
   return *this;
 }
 std::ostream& operator<<(std::ostream& out, const ExperimentStatistics& obj) {
@@ -1433,10 +1559,14 @@ std::ostream& operator<<(std::ostream& out, const ExperimentStatistics& obj) {
   out << ", " << "completedExperimentCount=" << to_string(obj.completedExperimentCount);
   out << ", " << "cancelledExperimentCount="; (obj.__isset.cancelledExperimentCount ? (out << to_string(obj.cancelledExperimentCount)) : (out << "<null>"));
   out << ", " << "failedExperimentCount=" << to_string(obj.failedExperimentCount);
+  out << ", " << "createdExperimentCount=" << to_string(obj.createdExperimentCount);
+  out << ", " << "runningExperimentCount=" << to_string(obj.runningExperimentCount);
   out << ", " << "allExperiments=" << to_string(obj.allExperiments);
   out << ", " << "completedExperiments="; (obj.__isset.completedExperiments ? (out << to_string(obj.completedExperiments)) : (out << "<null>"));
   out << ", " << "failedExperiments="; (obj.__isset.failedExperiments ? (out << to_string(obj.failedExperiments)) : (out << "<null>"));
   out << ", " << "cancelledExperiments="; (obj.__isset.cancelledExperiments ? (out << to_string(obj.cancelledExperiments)) : (out << "<null>"));
+  out << ", " << "createdExperiments="; (obj.__isset.createdExperiments ? (out << to_string(obj.createdExperiments)) : (out << "<null>"));
+  out << ", " << "runningExperiments="; (obj.__isset.runningExperiments ? (out << to_string(obj.runningExperiments)) : (out << "<null>"));
   out << ")";
   return out;
 }
