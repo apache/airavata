@@ -42,4 +42,10 @@ public final class Constants {
     public static final String KEYSTORE_PATH = "keystore.path";
     public static final String KEYSTORE_PASSWORD = "keystore.password";
     public static final String TLS_CLIENT_TIMEOUT = "TLS.client.timeout";
+    public static final String API_METHOD_NAME = "api.method.name";
+
+    //Names of the attributes that could be passed in the AuthzToken's claims map.
+    public static final String USER_NAME = "userName";
+    public static final String EMAIL = "email";
+    public static final String ROLE = "role";
 }

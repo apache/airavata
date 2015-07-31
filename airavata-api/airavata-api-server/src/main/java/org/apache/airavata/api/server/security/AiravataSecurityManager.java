@@ -23,6 +23,8 @@ package org.apache.airavata.api.server.security;
 import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.security.AiravataSecurityException;
 
+import java.util.Map;
+
 public interface AiravataSecurityManager {
-    public boolean isUserAuthorized(AuthzToken authzToken) throws AiravataSecurityException;
+    public boolean isUserAuthorized(AuthzToken authzToken, Map<String, String> metaData) throws AiravataSecurityException;
 }
