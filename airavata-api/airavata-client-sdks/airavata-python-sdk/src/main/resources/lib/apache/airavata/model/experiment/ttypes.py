@@ -750,10 +750,14 @@ class ExperimentStatistics:
    - completedExperimentCount
    - cancelledExperimentCount
    - failedExperimentCount
+   - createdExperimentCount
+   - runningExperimentCount
    - allExperiments
    - completedExperiments
    - failedExperiments
    - cancelledExperiments
+   - createdExperiments
+   - runningExperiments
   """
 
   thrift_spec = (
@@ -762,21 +766,29 @@ class ExperimentStatistics:
     (2, TType.I32, 'completedExperimentCount', None, None, ), # 2
     (3, TType.I32, 'cancelledExperimentCount', None, None, ), # 3
     (4, TType.I32, 'failedExperimentCount', None, None, ), # 4
-    (5, TType.LIST, 'allExperiments', (TType.STRUCT,(ExperimentSummaryModel, ExperimentSummaryModel.thrift_spec)), None, ), # 5
-    (6, TType.LIST, 'completedExperiments', (TType.STRUCT,(ExperimentSummaryModel, ExperimentSummaryModel.thrift_spec)), None, ), # 6
-    (7, TType.LIST, 'failedExperiments', (TType.STRUCT,(ExperimentSummaryModel, ExperimentSummaryModel.thrift_spec)), None, ), # 7
-    (8, TType.LIST, 'cancelledExperiments', (TType.STRUCT,(ExperimentSummaryModel, ExperimentSummaryModel.thrift_spec)), None, ), # 8
+    (5, TType.I32, 'createdExperimentCount', None, None, ), # 5
+    (6, TType.I32, 'runningExperimentCount', None, None, ), # 6
+    (7, TType.LIST, 'allExperiments', (TType.STRUCT,(ExperimentSummaryModel, ExperimentSummaryModel.thrift_spec)), None, ), # 7
+    (8, TType.LIST, 'completedExperiments', (TType.STRUCT,(ExperimentSummaryModel, ExperimentSummaryModel.thrift_spec)), None, ), # 8
+    (9, TType.LIST, 'failedExperiments', (TType.STRUCT,(ExperimentSummaryModel, ExperimentSummaryModel.thrift_spec)), None, ), # 9
+    (10, TType.LIST, 'cancelledExperiments', (TType.STRUCT,(ExperimentSummaryModel, ExperimentSummaryModel.thrift_spec)), None, ), # 10
+    (11, TType.LIST, 'createdExperiments', (TType.STRUCT,(ExperimentSummaryModel, ExperimentSummaryModel.thrift_spec)), None, ), # 11
+    (12, TType.LIST, 'runningExperiments', (TType.STRUCT,(ExperimentSummaryModel, ExperimentSummaryModel.thrift_spec)), None, ), # 12
   )
 
-  def __init__(self, allExperimentCount=None, completedExperimentCount=None, cancelledExperimentCount=None, failedExperimentCount=None, allExperiments=None, completedExperiments=None, failedExperiments=None, cancelledExperiments=None,):
+  def __init__(self, allExperimentCount=None, completedExperimentCount=None, cancelledExperimentCount=None, failedExperimentCount=None, createdExperimentCount=None, runningExperimentCount=None, allExperiments=None, completedExperiments=None, failedExperiments=None, cancelledExperiments=None, createdExperiments=None, runningExperiments=None,):
     self.allExperimentCount = allExperimentCount
     self.completedExperimentCount = completedExperimentCount
     self.cancelledExperimentCount = cancelledExperimentCount
     self.failedExperimentCount = failedExperimentCount
+    self.createdExperimentCount = createdExperimentCount
+    self.runningExperimentCount = runningExperimentCount
     self.allExperiments = allExperiments
     self.completedExperiments = completedExperiments
     self.failedExperiments = failedExperiments
     self.cancelledExperiments = cancelledExperiments
+    self.createdExperiments = createdExperiments
+    self.runningExperiments = runningExperiments
 
   def read(self, iprot):
     if iprot.__class__ == TBinaryProtocol.TBinaryProtocolAccelerated and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None and fastbinary is not None:
@@ -808,6 +820,16 @@ class ExperimentStatistics:
         else:
           iprot.skip(ftype)
       elif fid == 5:
+        if ftype == TType.I32:
+          self.createdExperimentCount = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 6:
+        if ftype == TType.I32:
+          self.runningExperimentCount = iprot.readI32();
+        else:
+          iprot.skip(ftype)
+      elif fid == 7:
         if ftype == TType.LIST:
           self.allExperiments = []
           (_etype31, _size28) = iprot.readListBegin()
@@ -818,7 +840,7 @@ class ExperimentStatistics:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 6:
+      elif fid == 8:
         if ftype == TType.LIST:
           self.completedExperiments = []
           (_etype37, _size34) = iprot.readListBegin()
@@ -829,7 +851,7 @@ class ExperimentStatistics:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 7:
+      elif fid == 9:
         if ftype == TType.LIST:
           self.failedExperiments = []
           (_etype43, _size40) = iprot.readListBegin()
@@ -840,7 +862,7 @@ class ExperimentStatistics:
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
-      elif fid == 8:
+      elif fid == 10:
         if ftype == TType.LIST:
           self.cancelledExperiments = []
           (_etype49, _size46) = iprot.readListBegin()
@@ -848,6 +870,28 @@ class ExperimentStatistics:
             _elem51 = ExperimentSummaryModel()
             _elem51.read(iprot)
             self.cancelledExperiments.append(_elem51)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 11:
+        if ftype == TType.LIST:
+          self.createdExperiments = []
+          (_etype55, _size52) = iprot.readListBegin()
+          for _i56 in xrange(_size52):
+            _elem57 = ExperimentSummaryModel()
+            _elem57.read(iprot)
+            self.createdExperiments.append(_elem57)
+          iprot.readListEnd()
+        else:
+          iprot.skip(ftype)
+      elif fid == 12:
+        if ftype == TType.LIST:
+          self.runningExperiments = []
+          (_etype61, _size58) = iprot.readListBegin()
+          for _i62 in xrange(_size58):
+            _elem63 = ExperimentSummaryModel()
+            _elem63.read(iprot)
+            self.runningExperiments.append(_elem63)
           iprot.readListEnd()
         else:
           iprot.skip(ftype)
@@ -877,32 +921,54 @@ class ExperimentStatistics:
       oprot.writeFieldBegin('failedExperimentCount', TType.I32, 4)
       oprot.writeI32(self.failedExperimentCount)
       oprot.writeFieldEnd()
+    if self.createdExperimentCount is not None:
+      oprot.writeFieldBegin('createdExperimentCount', TType.I32, 5)
+      oprot.writeI32(self.createdExperimentCount)
+      oprot.writeFieldEnd()
+    if self.runningExperimentCount is not None:
+      oprot.writeFieldBegin('runningExperimentCount', TType.I32, 6)
+      oprot.writeI32(self.runningExperimentCount)
+      oprot.writeFieldEnd()
     if self.allExperiments is not None:
-      oprot.writeFieldBegin('allExperiments', TType.LIST, 5)
+      oprot.writeFieldBegin('allExperiments', TType.LIST, 7)
       oprot.writeListBegin(TType.STRUCT, len(self.allExperiments))
-      for iter52 in self.allExperiments:
-        iter52.write(oprot)
+      for iter64 in self.allExperiments:
+        iter64.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.completedExperiments is not None:
-      oprot.writeFieldBegin('completedExperiments', TType.LIST, 6)
+      oprot.writeFieldBegin('completedExperiments', TType.LIST, 8)
       oprot.writeListBegin(TType.STRUCT, len(self.completedExperiments))
-      for iter53 in self.completedExperiments:
-        iter53.write(oprot)
+      for iter65 in self.completedExperiments:
+        iter65.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.failedExperiments is not None:
-      oprot.writeFieldBegin('failedExperiments', TType.LIST, 7)
+      oprot.writeFieldBegin('failedExperiments', TType.LIST, 9)
       oprot.writeListBegin(TType.STRUCT, len(self.failedExperiments))
-      for iter54 in self.failedExperiments:
-        iter54.write(oprot)
+      for iter66 in self.failedExperiments:
+        iter66.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     if self.cancelledExperiments is not None:
-      oprot.writeFieldBegin('cancelledExperiments', TType.LIST, 8)
+      oprot.writeFieldBegin('cancelledExperiments', TType.LIST, 10)
       oprot.writeListBegin(TType.STRUCT, len(self.cancelledExperiments))
-      for iter55 in self.cancelledExperiments:
-        iter55.write(oprot)
+      for iter67 in self.cancelledExperiments:
+        iter67.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.createdExperiments is not None:
+      oprot.writeFieldBegin('createdExperiments', TType.LIST, 11)
+      oprot.writeListBegin(TType.STRUCT, len(self.createdExperiments))
+      for iter68 in self.createdExperiments:
+        iter68.write(oprot)
+      oprot.writeListEnd()
+      oprot.writeFieldEnd()
+    if self.runningExperiments is not None:
+      oprot.writeFieldBegin('runningExperiments', TType.LIST, 12)
+      oprot.writeListBegin(TType.STRUCT, len(self.runningExperiments))
+      for iter69 in self.runningExperiments:
+        iter69.write(oprot)
       oprot.writeListEnd()
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
@@ -915,6 +981,10 @@ class ExperimentStatistics:
       raise TProtocol.TProtocolException(message='Required field completedExperimentCount is unset!')
     if self.failedExperimentCount is None:
       raise TProtocol.TProtocolException(message='Required field failedExperimentCount is unset!')
+    if self.createdExperimentCount is None:
+      raise TProtocol.TProtocolException(message='Required field createdExperimentCount is unset!')
+    if self.runningExperimentCount is None:
+      raise TProtocol.TProtocolException(message='Required field runningExperimentCount is unset!')
     if self.allExperiments is None:
       raise TProtocol.TProtocolException(message='Required field allExperiments is unset!')
     return
@@ -926,10 +996,14 @@ class ExperimentStatistics:
     value = (value * 31) ^ hash(self.completedExperimentCount)
     value = (value * 31) ^ hash(self.cancelledExperimentCount)
     value = (value * 31) ^ hash(self.failedExperimentCount)
+    value = (value * 31) ^ hash(self.createdExperimentCount)
+    value = (value * 31) ^ hash(self.runningExperimentCount)
     value = (value * 31) ^ hash(self.allExperiments)
     value = (value * 31) ^ hash(self.completedExperiments)
     value = (value * 31) ^ hash(self.failedExperiments)
     value = (value * 31) ^ hash(self.cancelledExperiments)
+    value = (value * 31) ^ hash(self.createdExperiments)
+    value = (value * 31) ^ hash(self.runningExperiments)
     return value
 
   def __repr__(self):
