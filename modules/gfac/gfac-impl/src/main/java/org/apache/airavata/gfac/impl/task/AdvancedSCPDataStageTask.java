@@ -180,7 +180,7 @@ public class AdvancedSCPDataStageTask implements Task{
 		/**
 		 * scp local file to compute resource.
 		 */
-		taskContext.getParentProcessContext().getRemoteCluster().scpTo(destinationURI.getPath(), filePath);
+		taskContext.getParentProcessContext().getRemoteCluster().scpTo(filePath, destinationURI.getPath());
 	}
 
 	private void outputDataStaging(TaskContext taskContext, Session sshSession, URI sourceURI, URI destinationURI,
