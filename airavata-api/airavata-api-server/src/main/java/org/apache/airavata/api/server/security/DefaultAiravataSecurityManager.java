@@ -37,7 +37,7 @@ import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2TokenValidationResponseDTO
 public class DefaultAiravataSecurityManager implements AiravataSecurityManager {
     private final static Logger logger = LoggerFactory.getLogger(DefaultAiravataSecurityManager.class);
 
-    public boolean isUserAuthenticatedAndAuthorized(AuthzToken authzToken) throws AiravataSecurityException {
+    public boolean isUserAuthorized(AuthzToken authzToken) throws AiravataSecurityException {
         try {
             ConfigurationContext configContext =
                     ConfigurationContextFactory.createConfigurationContextFromFileSystem(null, null);

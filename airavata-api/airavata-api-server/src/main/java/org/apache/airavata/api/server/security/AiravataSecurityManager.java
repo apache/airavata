@@ -24,5 +24,5 @@ import org.apache.airavata.model.security.AuthzToken;
 import org.apache.airavata.security.AiravataSecurityException;
 
 public interface AiravataSecurityManager {
-    public boolean isUserAuthenticatedAndAuthorized(AuthzToken authzToken) throws AiravataSecurityException;
+    public boolean isUserAuthorized(AuthzToken authzToken) throws AiravataSecurityException;
 }
