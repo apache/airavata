@@ -19,9 +19,11 @@
  *
  */
 package org.apache.airavata.api.server.security;
+
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.airavata.common.exception.ApplicationSettingsException;
+import org.apache.airavata.common.utils.Constants;
 import org.apache.airavata.common.utils.ServerSettings;
 import org.apache.airavata.model.error.AuthorizationException;
 import org.apache.airavata.model.security.AuthzToken;
@@ -29,17 +31,24 @@ import org.apache.airavata.security.AiravataSecurityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Interceptor of Airavata API calls for the purpose of applying security.
  */
-public class SecurityInterceptor implements MethodInterceptor{
+public class SecurityInterceptor implements MethodInterceptor {
     private final static Logger logger = LoggerFactory.getLogger(SecurityInterceptor.class);
+
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
         //obtain the authz token from the input parameters
         AuthzToken authzToken = (AuthzToken) invocation.getArguments()[0];
         //authorize the API call
-        authorize(authzToken);
+        System.out.println("METHOD NAME: " + invocation.getMethod().getName());
+        HashMap<String, String> metaDataMap = new HashMap();
+        metaDataMap.put(Constants.API_METHOD_NAME, invocation.getMethod().getName());
+        authorize(authzToken, metaDataMap);
         //set the user identity info in a thread local to be used in downstream execution.
         IdentityContext.set(authzToken);
         //let the method call procees upon successful authorization
@@ -49,13 +58,13 @@ public class SecurityInterceptor implements MethodInterceptor{
         return returnObj;
     }
 
-    private void authorize(AuthzToken authzToken) throws AuthorizationException {
+    private void authorize(AuthzToken authzToken, Map<String, String> metaData) throws AuthorizationException {
         try {
             boolean isAPISecured = ServerSettings.isAPISecured();
             if (isAPISecured) {
 
                 AiravataSecurityManager securityManager = SecurityManagerFactory.getSecurityManager();
-                boolean isAuthz = securityManager.isUserAuthorized(authzToken);
+                boolean isAuthz = securityManager.isUserAuthorized(authzToken, metaData);
                 if (!isAuthz) {
                     throw new AuthorizationException("User is not authenticated or authorized.");
                 }
