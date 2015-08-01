@@ -24,7 +24,7 @@ import junit.framework.Assert;
 import org.apache.airavata.api.server.handler.utils.AppCatInit;
 import org.apache.airavata.api.server.handler.utils.ExpCatInit;
 import org.apache.airavata.api.server.util.RegistryInitUtil;
-import org.apache.airavata.common.utils.AiravataUtils;
+import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
@@ -38,8 +38,6 @@ import org.apache.airavata.model.workspace.Project;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.UUID;
@@ -48,10 +46,11 @@ import java.util.UUID;
  * Test methods for Airavata Service Handler
  */
 public class AiravataServerHandlerTest {
-    private final static Logger logger = LoggerFactory.getLogger(AiravataServerHandlerTest.class);
+//    private final static Logger logger = LoggerFactory.getLogger(AiravataServerHandlerTest.class);
 
     private static AiravataServerHandler airavataServerHandler;
     private static String gatewayId = "php_reference_gateway";
+    private static  String computeResouceId = null;
 
     @BeforeClass
     public static void setupBeforeClass() throws Exception{
@@ -64,6 +63,13 @@ public class AiravataServerHandlerTest {
         Gateway gateway = new Gateway();
         gateway.setGatewayId(gatewayId);
         airavataServerHandler.addGateway(new AuthzToken(""), gateway);
+
+        ComputeResourceDescription computeResourceDescription = new ComputeResourceDescription();
+        computeResourceDescription.setHostName("test.compute.resource");
+        computeResourceDescription.setResourceDescription("test compute resource");
+        computeResourceDescription.setEnabled(true);
+        computeResouceId = airavataServerHandler.registerComputeResource(new AuthzToken(""),
+                computeResourceDescription);
     }
 
     @AfterClass
@@ -191,7 +197,7 @@ public class AiravataServerHandlerTest {
             inputDataObjectType.setValue("Hello World");
 
             ComputationalResourceSchedulingModel scheduling = new ComputationalResourceSchedulingModel();
-            scheduling.setResourceHostId(UUID.randomUUID().toString());
+            scheduling.setResourceHostId(computeResouceId);
             scheduling.setTotalCPUCount(1);
             scheduling.setNodeCount(1);
             scheduling.setWallTimeLimit(15);

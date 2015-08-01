@@ -489,6 +489,7 @@ public class AppCatalogJPAUtils {
             computeResourceResource.setResourceId(o.getResourceId());
             computeResourceResource.setHostName(o.getHostName());
             computeResourceResource.setCreatedTime(o.getCreationTime());
+            computeResourceResource.setEnabled(o.getEnabled());
             computeResourceResource.setMaxMemoryPerNode(o.getMaxMemoryPerNode());
             if (o.getUpdateTime() != null){
                 computeResourceResource.setUpdatedTime(o.getUpdateTime());
