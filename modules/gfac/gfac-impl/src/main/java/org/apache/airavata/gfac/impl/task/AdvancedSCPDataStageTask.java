@@ -201,7 +201,8 @@ public class AdvancedSCPDataStageTask implements Task{
 			return new File(ServerSettings.getOutputLocation() + taskContext.getParentProcessContext()
 					.getProcessId());
 		} else {
-			return new File(inputPath);
+			inputPath = (inputPath.endsWith(File.separator) ? inputPath : inputPath + File.separator);
+			return new File(inputPath + taskContext.getParentProcessContext().getProcessId());
 		}
 	}
 
