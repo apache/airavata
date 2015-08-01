@@ -61,12 +61,15 @@ public class SecurityInterceptor implements MethodInterceptor {
         try {
             boolean isAPISecured = ServerSettings.isAPISecured();
             if (isAPISecured) {
+                //check in the cache
 
+                //if not in the cache, perform authorization with the authorization server
                 AiravataSecurityManager securityManager = SecurityManagerFactory.getSecurityManager();
                 boolean isAuthz = securityManager.isUserAuthorized(authzToken, metaData);
                 if (!isAuthz) {
                     throw new AuthorizationException("User is not authenticated or authorized.");
                 }
+                //put the successful authorization decision in the cache
             }
         } catch (AiravataSecurityException e) {
             logger.error(e.getMessage(), e);
