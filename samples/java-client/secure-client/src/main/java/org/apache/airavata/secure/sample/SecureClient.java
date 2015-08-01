@@ -24,6 +24,7 @@ import org.apache.airavata.api.client.AiravataClientFactory;
 import org.apache.airavata.model.error.*;
 import org.apache.airavata.api.Airavata;
 import org.apache.airavata.model.security.AuthzToken;
+import org.apache.airavata.model.workspace.Gateway;
 import org.apache.airavata.security.AiravataSecurityException;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
@@ -109,6 +110,7 @@ public class SecureClient {
                 throw e;
             }
         } else if (option == 2) {
+            System.out.println("");
             System.out.println("Enter Consumer Id: ");
             consumerId = scanner.next().trim();
             System.out.println("Enter Consumer Secret: ");
@@ -117,6 +119,7 @@ public class SecureClient {
         //obtain OAuth access token
 
         /************************Start obtaining input from user*****************************/
+        System.out.println("");
         System.out.println("Please select the preferred grant type: (or press d to use the default option" + Properties.grantType + ")");
         System.out.println("1. Resource Owner Password Credential.");
         System.out.println("2. Client Credential.");
@@ -150,10 +153,12 @@ public class SecureClient {
                 password = passwordInput.trim();
             }
         } else if (grantType == 2) {
-            System.out.println("Obtaining OAuth access token via 'Client Credential' grant type...' grant type....");
+            System.out.println("");
             System.out.println("Please enter the user name to be passed: ");
             String userNameInput = scanner.next();
             userName = userNameInput.trim();
+            System.out.println("");
+            System.out.println("Obtaining OAuth access token via 'Client Credential' grant type...' grant type....");
         }
 
         /***************************** Finish obtaining input from user*******************************************/
@@ -161,10 +166,11 @@ public class SecureClient {
             //obtain the OAuth token for the specified end user.
             String accessToken = new OAuthTokenRetrievalClient().retrieveAccessToken(consumerId, consumerSecret,
                     userName, password, grantType);
-            System.out.println("OAuth access token is: " + accessToken);
             System.out.println("");
+            System.out.println("OAuth access token is: " + accessToken);
 
             //invoke Airavata API by the SecureClient, on behalf of the user.
+            System.out.println("");
             System.out.println("Invoking Airavata API...");
             System.out.println("Enter the access token to be used: (default:" + accessToken + ", press 'd' to use default value.)");
             String accessTokenInput = scanner.next();
@@ -175,6 +181,14 @@ public class SecureClient {
                 acTk = accessTokenInput.trim();
             }
 
+            //obtain as input, the method to be invoked
+            System.out.println("");
+            System.out.println("Enter the number corresponding to the method to be invoked: ");
+            System.out.println("1. getAPIVersion");
+            System.out.println("2. addGateway");
+            String methodNumberString = scanner.next();
+            int methodNumber = Integer.valueOf(methodNumberString.trim());
+
             Airavata.Client client = createAiravataClient(Properties.SERVER_HOST, Properties.SERVER_PORT);
             AuthzToken authzToken = new AuthzToken();
             authzToken.setAccessToken(acTk);
@@ -182,9 +196,28 @@ public class SecureClient {
             claimsMap.put("userName", userName);
             claimsMap.put("email", "hasini@gmail.com");
             authzToken.setClaimsMap(claimsMap);
-            String version = client.getAPIVersion(authzToken);
-            System.out.println("Airavata API version: " + version);
-            System.out.println("");
+            if (methodNumber == 1) {
+
+                String version = client.getAPIVersion(authzToken);
+                System.out.println("");
+                System.out.println("Airavata API version: " + version);
+                System.out.println("");
+
+            } else if (methodNumber == 2) {
+                System.out.println("");
+                System.out.println("Enter the gateway id: ");
+                String gatewayId = scanner.next().trim();
+
+                Gateway gateway = new Gateway(gatewayId);
+                gateway.setDomain("airavata.org");
+                gateway.setEmailAddress("airavata@apache.org");
+                gateway.setGatewayName("airavataGW");
+                String output = client.addGateway(authzToken, gateway);
+                System.out.println("");
+                System.out.println("Output of addGateway: " + output);
+                System.out.println("");
+
+            }
         } catch (InvalidRequestException e) {
             e.printStackTrace();
         } catch (TException e) {

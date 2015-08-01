@@ -83,13 +83,10 @@ public class DefaultXACMLPEP {
             String decisionString = entitlementServiceStub.getDecisionByAttributes(subject, null, action, null);
             //parse the XML decision string and obtain the decision
             decision = parseDecisionString(decisionString);
-            if (Constants.NOT_APPLICABLE.equals(decision) || Constants.INDETERMINATE.equals(decision) ||
-                    Constants.DENY.equals(decision) || decision == null) {
-                logger.error("Authorization decision is: " + decision);
-                throw new AiravataSecurityException("Error in authorizing the user.");
-            } else if (Constants.PERMIT.equals(decision)) {
+            if (Constants.PERMIT.equals(decision)) {
                 return true;
             } else {
+                logger.error("Authorization decision is: " + decision);
                 return false;
             }
         } catch (RemoteException e) {
