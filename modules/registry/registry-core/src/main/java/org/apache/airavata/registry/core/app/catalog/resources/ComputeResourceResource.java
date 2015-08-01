@@ -45,6 +45,7 @@ public class ComputeResourceResource extends AppCatAbstractResource {
     private Timestamp createdTime;
     private Timestamp updatedTime;
     private int maxMemoryPerNode;
+    private boolean enabled;
 
     public int getMaxMemoryPerNode() {
         return maxMemoryPerNode;
@@ -68,6 +69,13 @@ public class ComputeResourceResource extends AppCatAbstractResource {
 
     public void setUpdatedTime(Timestamp updatedTime) {
         this.updatedTime = updatedTime;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     @Override
@@ -283,7 +291,8 @@ public class ComputeResourceResource extends AppCatAbstractResource {
 			computeResource.setResourceDescription(getResourceDescription());
 			computeResource.setResourceId(getResourceId());
 			computeResource.setHostName(getHostName());
-			computeResource.setMaxMemoryPerNode(getMaxMemoryPerNode());
+            computeResource.setEnabled(isEnabled());
+            computeResource.setMaxMemoryPerNode(getMaxMemoryPerNode());
 			if (existingComputeResource == null) {
 				em.persist(computeResource);
 			} else {

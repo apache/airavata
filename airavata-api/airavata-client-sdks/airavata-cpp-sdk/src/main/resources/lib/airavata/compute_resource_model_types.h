@@ -891,10 +891,11 @@ class DataMovementInterface {
 void swap(DataMovementInterface &a, DataMovementInterface &b);
 
 typedef struct _ComputeResourceDescription__isset {
-  _ComputeResourceDescription__isset() : hostAliases(false), ipAddresses(false), resourceDescription(false), batchQueues(false), fileSystems(false), jobSubmissionInterfaces(false), dataMovementInterfaces(false), maxMemoryPerNode(false) {}
+  _ComputeResourceDescription__isset() : hostAliases(false), ipAddresses(false), resourceDescription(false), enabled(false), batchQueues(false), fileSystems(false), jobSubmissionInterfaces(false), dataMovementInterfaces(false), maxMemoryPerNode(false) {}
   bool hostAliases :1;
   bool ipAddresses :1;
   bool resourceDescription :1;
+  bool enabled :1;
   bool batchQueues :1;
   bool fileSystems :1;
   bool jobSubmissionInterfaces :1;
@@ -905,12 +906,12 @@ typedef struct _ComputeResourceDescription__isset {
 class ComputeResourceDescription {
  public:
 
-  static const char* ascii_fingerprint; // = "3CD4212965217787DCD6081F1744069F";
-  static const uint8_t binary_fingerprint[16]; // = {0x3C,0xD4,0x21,0x29,0x65,0x21,0x77,0x87,0xDC,0xD6,0x08,0x1F,0x17,0x44,0x06,0x9F};
+  static const char* ascii_fingerprint; // = "FEBE7045EBC701802205EA9BA436FCE2";
+  static const uint8_t binary_fingerprint[16]; // = {0xFE,0xBE,0x70,0x45,0xEB,0xC7,0x01,0x80,0x22,0x05,0xEA,0x9B,0xA4,0x36,0xFC,0xE2};
 
   ComputeResourceDescription(const ComputeResourceDescription&);
   ComputeResourceDescription& operator=(const ComputeResourceDescription&);
-  ComputeResourceDescription() : computeResourceId("DO_NOT_SET_AT_CLIENTS"), hostName(), resourceDescription(), maxMemoryPerNode(0) {
+  ComputeResourceDescription() : computeResourceId("DO_NOT_SET_AT_CLIENTS"), hostName(), resourceDescription(), enabled(0), maxMemoryPerNode(0) {
   }
 
   virtual ~ComputeResourceDescription() throw();
@@ -919,6 +920,7 @@ class ComputeResourceDescription {
   std::vector<std::string>  hostAliases;
   std::vector<std::string>  ipAddresses;
   std::string resourceDescription;
+  bool enabled;
   std::vector<BatchQueue>  batchQueues;
   std::map<FileSystems::type, std::string>  fileSystems;
   std::vector<JobSubmissionInterface>  jobSubmissionInterfaces;
@@ -936,6 +938,8 @@ class ComputeResourceDescription {
   void __set_ipAddresses(const std::vector<std::string> & val);
 
   void __set_resourceDescription(const std::string& val);
+
+  void __set_enabled(const bool val);
 
   void __set_batchQueues(const std::vector<BatchQueue> & val);
 
@@ -964,6 +968,10 @@ class ComputeResourceDescription {
     if (__isset.resourceDescription != rhs.__isset.resourceDescription)
       return false;
     else if (__isset.resourceDescription && !(resourceDescription == rhs.resourceDescription))
+      return false;
+    if (__isset.enabled != rhs.__isset.enabled)
+      return false;
+    else if (__isset.enabled && !(enabled == rhs.enabled))
       return false;
     if (__isset.batchQueues != rhs.__isset.batchQueues)
       return false;

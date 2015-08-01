@@ -53,6 +53,7 @@ public class AppCatalogThriftConversion {
         resource.setResourceDescription(description.getResourceDescription());
         resource.setResourceId(description.getComputeResourceId());
         resource.setMaxMemoryPerNode(description.getMaxMemoryPerNode());
+        resource.setEnabled(description.isEnabled());
         return resource;
     }
 
@@ -62,6 +63,7 @@ public class AppCatalogThriftConversion {
         description.setHostName(resource.getHostName());
         description.setResourceDescription(resource.getResourceDescription());
         description.setMaxMemoryPerNode(resource.getMaxMemoryPerNode());
+        description.setEnabled(resource.isEnabled());
         HostAliasAppResource aliasResource = new HostAliasAppResource();
         List<AppCatalogResource> resources = aliasResource.get(AppCatAbstractResource.HostAliasConstants.RESOURCE_ID, resource.getResourceId());
         if (resources != null && !resources.isEmpty()){

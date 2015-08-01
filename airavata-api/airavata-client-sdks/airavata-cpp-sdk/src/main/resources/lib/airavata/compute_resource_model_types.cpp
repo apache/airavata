@@ -2270,6 +2270,11 @@ void ComputeResourceDescription::__set_resourceDescription(const std::string& va
 __isset.resourceDescription = true;
 }
 
+void ComputeResourceDescription::__set_enabled(const bool val) {
+  this->enabled = val;
+__isset.enabled = true;
+}
+
 void ComputeResourceDescription::__set_batchQueues(const std::vector<BatchQueue> & val) {
   this->batchQueues = val;
 __isset.batchQueues = true;
@@ -2295,8 +2300,8 @@ void ComputeResourceDescription::__set_maxMemoryPerNode(const int32_t val) {
 __isset.maxMemoryPerNode = true;
 }
 
-const char* ComputeResourceDescription::ascii_fingerprint = "3CD4212965217787DCD6081F1744069F";
-const uint8_t ComputeResourceDescription::binary_fingerprint[16] = {0x3C,0xD4,0x21,0x29,0x65,0x21,0x77,0x87,0xDC,0xD6,0x08,0x1F,0x17,0x44,0x06,0x9F};
+const char* ComputeResourceDescription::ascii_fingerprint = "FEBE7045EBC701802205EA9BA436FCE2";
+const uint8_t ComputeResourceDescription::binary_fingerprint[16] = {0xFE,0xBE,0x70,0x45,0xEB,0xC7,0x01,0x80,0x22,0x05,0xEA,0x9B,0xA4,0x36,0xFC,0xE2};
 
 uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -2385,6 +2390,14 @@ uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol*
         }
         break;
       case 6:
+        if (ftype == ::apache::thrift::protocol::T_BOOL) {
+          xfer += iprot->readBool(this->enabled);
+          this->__isset.enabled = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 7:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->batchQueues.clear();
@@ -2404,7 +2417,7 @@ uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol*
           xfer += iprot->skip(ftype);
         }
         break;
-      case 7:
+      case 8:
         if (ftype == ::apache::thrift::protocol::T_MAP) {
           {
             this->fileSystems.clear();
@@ -2429,7 +2442,7 @@ uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol*
           xfer += iprot->skip(ftype);
         }
         break;
-      case 8:
+      case 9:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->jobSubmissionInterfaces.clear();
@@ -2449,7 +2462,7 @@ uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol*
           xfer += iprot->skip(ftype);
         }
         break;
-      case 9:
+      case 10:
         if (ftype == ::apache::thrift::protocol::T_LIST) {
           {
             this->dataMovementInterfaces.clear();
@@ -2469,7 +2482,7 @@ uint32_t ComputeResourceDescription::read(::apache::thrift::protocol::TProtocol*
           xfer += iprot->skip(ftype);
         }
         break;
-      case 10:
+      case 11:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->maxMemoryPerNode);
           this->__isset.maxMemoryPerNode = true;
@@ -2537,8 +2550,13 @@ uint32_t ComputeResourceDescription::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeString(this->resourceDescription);
     xfer += oprot->writeFieldEnd();
   }
+  if (this->__isset.enabled) {
+    xfer += oprot->writeFieldBegin("enabled", ::apache::thrift::protocol::T_BOOL, 6);
+    xfer += oprot->writeBool(this->enabled);
+    xfer += oprot->writeFieldEnd();
+  }
   if (this->__isset.batchQueues) {
-    xfer += oprot->writeFieldBegin("batchQueues", ::apache::thrift::protocol::T_LIST, 6);
+    xfer += oprot->writeFieldBegin("batchQueues", ::apache::thrift::protocol::T_LIST, 7);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->batchQueues.size()));
       std::vector<BatchQueue> ::const_iterator _iter94;
@@ -2551,7 +2569,7 @@ uint32_t ComputeResourceDescription::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.fileSystems) {
-    xfer += oprot->writeFieldBegin("fileSystems", ::apache::thrift::protocol::T_MAP, 7);
+    xfer += oprot->writeFieldBegin("fileSystems", ::apache::thrift::protocol::T_MAP, 8);
     {
       xfer += oprot->writeMapBegin(::apache::thrift::protocol::T_I32, ::apache::thrift::protocol::T_STRING, static_cast<uint32_t>(this->fileSystems.size()));
       std::map<FileSystems::type, std::string> ::const_iterator _iter95;
@@ -2565,7 +2583,7 @@ uint32_t ComputeResourceDescription::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.jobSubmissionInterfaces) {
-    xfer += oprot->writeFieldBegin("jobSubmissionInterfaces", ::apache::thrift::protocol::T_LIST, 8);
+    xfer += oprot->writeFieldBegin("jobSubmissionInterfaces", ::apache::thrift::protocol::T_LIST, 9);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->jobSubmissionInterfaces.size()));
       std::vector<JobSubmissionInterface> ::const_iterator _iter96;
@@ -2578,7 +2596,7 @@ uint32_t ComputeResourceDescription::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.dataMovementInterfaces) {
-    xfer += oprot->writeFieldBegin("dataMovementInterfaces", ::apache::thrift::protocol::T_LIST, 9);
+    xfer += oprot->writeFieldBegin("dataMovementInterfaces", ::apache::thrift::protocol::T_LIST, 10);
     {
       xfer += oprot->writeListBegin(::apache::thrift::protocol::T_STRUCT, static_cast<uint32_t>(this->dataMovementInterfaces.size()));
       std::vector<DataMovementInterface> ::const_iterator _iter97;
@@ -2591,7 +2609,7 @@ uint32_t ComputeResourceDescription::write(::apache::thrift::protocol::TProtocol
     xfer += oprot->writeFieldEnd();
   }
   if (this->__isset.maxMemoryPerNode) {
-    xfer += oprot->writeFieldBegin("maxMemoryPerNode", ::apache::thrift::protocol::T_I32, 10);
+    xfer += oprot->writeFieldBegin("maxMemoryPerNode", ::apache::thrift::protocol::T_I32, 11);
     xfer += oprot->writeI32(this->maxMemoryPerNode);
     xfer += oprot->writeFieldEnd();
   }
@@ -2608,6 +2626,7 @@ void swap(ComputeResourceDescription &a, ComputeResourceDescription &b) {
   swap(a.hostAliases, b.hostAliases);
   swap(a.ipAddresses, b.ipAddresses);
   swap(a.resourceDescription, b.resourceDescription);
+  swap(a.enabled, b.enabled);
   swap(a.batchQueues, b.batchQueues);
   swap(a.fileSystems, b.fileSystems);
   swap(a.jobSubmissionInterfaces, b.jobSubmissionInterfaces);
@@ -2622,6 +2641,7 @@ ComputeResourceDescription::ComputeResourceDescription(const ComputeResourceDesc
   hostAliases = other98.hostAliases;
   ipAddresses = other98.ipAddresses;
   resourceDescription = other98.resourceDescription;
+  enabled = other98.enabled;
   batchQueues = other98.batchQueues;
   fileSystems = other98.fileSystems;
   jobSubmissionInterfaces = other98.jobSubmissionInterfaces;
@@ -2635,6 +2655,7 @@ ComputeResourceDescription& ComputeResourceDescription::operator=(const ComputeR
   hostAliases = other99.hostAliases;
   ipAddresses = other99.ipAddresses;
   resourceDescription = other99.resourceDescription;
+  enabled = other99.enabled;
   batchQueues = other99.batchQueues;
   fileSystems = other99.fileSystems;
   jobSubmissionInterfaces = other99.jobSubmissionInterfaces;
@@ -2651,6 +2672,7 @@ std::ostream& operator<<(std::ostream& out, const ComputeResourceDescription& ob
   out << ", " << "hostAliases="; (obj.__isset.hostAliases ? (out << to_string(obj.hostAliases)) : (out << "<null>"));
   out << ", " << "ipAddresses="; (obj.__isset.ipAddresses ? (out << to_string(obj.ipAddresses)) : (out << "<null>"));
   out << ", " << "resourceDescription="; (obj.__isset.resourceDescription ? (out << to_string(obj.resourceDescription)) : (out << "<null>"));
+  out << ", " << "enabled="; (obj.__isset.enabled ? (out << to_string(obj.enabled)) : (out << "<null>"));
   out << ", " << "batchQueues="; (obj.__isset.batchQueues ? (out << to_string(obj.batchQueues)) : (out << "<null>"));
   out << ", " << "fileSystems="; (obj.__isset.fileSystems ? (out << to_string(obj.fileSystems)) : (out << "<null>"));
   out << ", " << "jobSubmissionInterfaces="; (obj.__isset.jobSubmissionInterfaces ? (out << to_string(obj.jobSubmissionInterfaces)) : (out << "<null>"));
