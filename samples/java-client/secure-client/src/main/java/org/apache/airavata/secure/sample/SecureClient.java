@@ -151,6 +151,9 @@ public class SecureClient {
             }
         } else if (grantType == 2) {
             System.out.println("Obtaining OAuth access token via 'Client Credential' grant type...' grant type....");
+            System.out.println("Please enter the user name to be passed: ");
+            String userNameInput = scanner.next();
+            userName = userNameInput.trim();
         }
 
         /***************************** Finish obtaining input from user*******************************************/
@@ -176,7 +179,7 @@ public class SecureClient {
             AuthzToken authzToken = new AuthzToken();
             authzToken.setAccessToken(acTk);
             Map<String, String> claimsMap = new HashMap<>();
-            claimsMap.put("userName", "hasinitg");
+            claimsMap.put("userName", userName);
             claimsMap.put("email", "hasini@gmail.com");
             authzToken.setClaimsMap(claimsMap);
             String version = client.getAPIVersion(authzToken);

@@ -45,7 +45,6 @@ public class SecurityInterceptor implements MethodInterceptor {
         //obtain the authz token from the input parameters
         AuthzToken authzToken = (AuthzToken) invocation.getArguments()[0];
         //authorize the API call
-        System.out.println("METHOD NAME: " + invocation.getMethod().getName());
         HashMap<String, String> metaDataMap = new HashMap();
         metaDataMap.put(Constants.API_METHOD_NAME, invocation.getMethod().getName());
         authorize(authzToken, metaDataMap);
