@@ -25,6 +25,7 @@ import org.apache.airavata.api.server.handler.utils.AppCatInit;
 import org.apache.airavata.api.server.handler.utils.ExpCatInit;
 import org.apache.airavata.api.server.util.RegistryInitUtil;
 import org.apache.airavata.model.appcatalog.computeresource.ComputeResourceDescription;
+import org.apache.airavata.model.application.io.DataType;
 import org.apache.airavata.model.application.io.InputDataObjectType;
 import org.apache.airavata.model.application.io.OutputDataObjectType;
 import org.apache.airavata.model.experiment.ExperimentModel;
@@ -195,6 +196,7 @@ public class AiravataServerHandlerTest {
             InputDataObjectType inputDataObjectType = new InputDataObjectType();
             inputDataObjectType.setName("Input_to_Echo");
             inputDataObjectType.setValue("Hello World");
+            inputDataObjectType.setType(DataType.STRING);
 
             ComputationalResourceSchedulingModel scheduling = new ComputationalResourceSchedulingModel();
             scheduling.setResourceHostId(computeResouceId);
@@ -210,6 +212,7 @@ public class AiravataServerHandlerTest {
 
             ExperimentModel experiment = new ExperimentModel();
             experiment.setProjectId(projectId1);
+            experiment.setGatewayId(gatewayId);
             experiment.setUserName("TestUser" + TAG);
             experiment.setExperimentName("TestExperiment" + TAG);
             experiment.setDescription("experiment");
@@ -235,12 +238,14 @@ public class AiravataServerHandlerTest {
             OutputDataObjectType outputDataObjectType = new OutputDataObjectType();
             outputDataObjectType.setName("Output_to_Echo");
             outputDataObjectType.setValue("Hello World");
+            outputDataObjectType.setType(DataType.STRING);
             experiment.addToExperimentOutputs(outputDataObjectType);
             airavataServerHandler.updateExperiment(new AuthzToken(""), experimentId1, experiment);
 
             //creating more experiments
             experiment = new ExperimentModel();
             experiment.setProjectId(projectId1);
+            experiment.setGatewayId(gatewayId);
             experiment.setUserName("TestUser" + TAG);
             experiment.setExperimentName("TestExperiment2" + TAG);
             experiment.setDescription("experiment");
@@ -253,6 +258,7 @@ public class AiravataServerHandlerTest {
 
             experiment = new ExperimentModel();
             experiment.setProjectId(projectId1);
+            experiment.setGatewayId(gatewayId);
             experiment.setUserName("TestUser" + TAG);
             experiment.setExperimentName("TestExperiment3" + TAG);
             experiment.setDescription("experiment");
