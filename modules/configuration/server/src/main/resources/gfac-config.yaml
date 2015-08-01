@@ -24,8 +24,8 @@ jobSubmitters:
 #   properties:
 #     - userName: airavata
 #       passPhrase: airavata
-#       privateKey: /path/to/the/privatekey
-#       publicKey: /path/to/the/publickey
+#       privateKeyPath: /path/to/the/privatekey
+#       publicKeyPath: /path/to/the/publickey
 #       hostName: remote.client.hostName
 
   - submissionProtocol: LOCAL
@@ -55,8 +55,8 @@ fileTransferTasks:
 #    properties:
 #     - userName: airavata
 #       passPhrase: airavata
-#       privateKey: /path/to/the/privatekey
-#       publicKey: /path/to/the/publickey
+#       privateKeyPath: /path/to/the/privatekey
+#       publicKeyPath: /path/to/the/publickey
 #       hostName: remote.client.hostName
 #       inputPath: /path/to/data/dir
 ##      password: password
