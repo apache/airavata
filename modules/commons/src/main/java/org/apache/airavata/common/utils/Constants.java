@@ -44,6 +44,12 @@ public final class Constants {
     public static final String TLS_CLIENT_TIMEOUT = "TLS.client.timeout";
     public static final String API_METHOD_NAME = "api.method.name";
 
+    //constants in XACML authorization response.
+    public static final String NOT_APPLICABLE = "NotApplicable";
+    public static final String INDETERMINATE = "Indeterminate";
+    public static final String DENY = "Deny";
+    public static final String PERMIT = "Permit";
+
     //Names of the attributes that could be passed in the AuthzToken's claims map.
     public static final String USER_NAME = "userName";
     public static final String EMAIL = "email";
