@@ -346,7 +346,7 @@ public class CreateLaunchBES {
     
     public static List<ExperimentModel> getExperimentsForUser(Airavata.Client client, String user) {
         try {
-            return client.getAllUserExperiments(DEFAULT_GATEWAY, user);
+            return client.getUserExperiments(new AuthzToken(""), DEFAULT_GATEWAY, user, -1, 0);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
         } catch (InvalidRequestException e) {
@@ -361,7 +361,7 @@ public class CreateLaunchBES {
 
     public static List<Project> getAllUserProject(Airavata.Client client, String user) {
         try {
-            return client.getAllUserProjects(DEFAULT_GATEWAY, user);
+            return client.getUserProjects(new AuthzToken(""), DEFAULT_GATEWAY, user, -1, 0);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
         } catch (InvalidRequestException e) {
@@ -376,7 +376,7 @@ public class CreateLaunchBES {
 
     public static List<Project> searchProjectsByProjectName(Airavata.Client client, String user, String projectName) {
         try {
-            return client.searchProjectsByProjectName(DEFAULT_GATEWAY, user, projectName);
+            return client.searchProjectsByProjectName(new AuthzToken(""), DEFAULT_GATEWAY, user, projectName, -1, 0);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
         } catch (InvalidRequestException e) {
@@ -391,7 +391,7 @@ public class CreateLaunchBES {
 
     public static List<Project> searchProjectsByProjectDesc(Airavata.Client client, String user, String desc) {
         try {
-            return client.searchProjectsByProjectDesc(DEFAULT_GATEWAY, user, desc);
+            return client.searchProjectsByProjectDesc(new AuthzToken(""), DEFAULT_GATEWAY, user, desc, -1, 0);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
         } catch (InvalidRequestException e) {
@@ -407,7 +407,7 @@ public class CreateLaunchBES {
 
     public static List<ExperimentSummaryModel> searchExperimentsByName(Airavata.Client client, String user, String expName) {
         try {
-            return client.searchExperimentsByName(DEFAULT_GATEWAY, user, expName);
+            return client.searchExperimentsByName(new AuthzToken(""), DEFAULT_GATEWAY, user, expName, -1, 0);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
         } catch (InvalidRequestException e) {
@@ -422,7 +422,7 @@ public class CreateLaunchBES {
 
     public static List<ExperimentSummaryModel> searchExperimentsByDesc(Airavata.Client client, String user, String desc) {
         try {
-            return client.searchExperimentsByDesc(DEFAULT_GATEWAY, user, desc);
+            return client.searchExperimentsByDesc(new AuthzToken(""), DEFAULT_GATEWAY, user, desc, -1, 0);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
         } catch (InvalidRequestException e) {
@@ -437,7 +437,7 @@ public class CreateLaunchBES {
 
     public static List<ExperimentSummaryModel> searchExperimentsByApplication(Airavata.Client client, String user, String app) {
         try {
-            return client.searchExperimentsByApplication(DEFAULT_GATEWAY, user, app);
+            return client.searchExperimentsByApplication(new AuthzToken(""), DEFAULT_GATEWAY, user, app, -1, 0);
         } catch (AiravataSystemException e) {
             e.printStackTrace();
         } catch (InvalidRequestException e) {

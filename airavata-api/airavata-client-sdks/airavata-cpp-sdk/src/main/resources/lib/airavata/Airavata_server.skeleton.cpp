@@ -164,25 +164,6 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   *   * Get all Project by user
-   *   *
-   *   * @param gatewayId
-   *   *    The identifier for the requested gateway.
-   *   *
-   *   * @param userName
-   *   *    The Project Object described in the workspace_model
-   *   * @deprecated Instead use getAllUserProjectsWithPagination
-   * *
-   * 
-   * @param gatewayId
-   * @param userName
-   */
-  void getAllUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName) {
-    // Your implementation goes here
-    printf("getAllUserProjects\n");
-  }
-
-  /**
    *   * Get all Project by user with pagination. Results will be ordered based
    *   * on creation time DESC
    *   *
@@ -202,29 +183,9 @@ class AiravataHandler : virtual public AiravataIf {
    * @param limit
    * @param offset
    */
-  void getAllUserProjectsWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset) {
+  void getUserProjects(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
-    printf("getAllUserProjectsWithPagination\n");
-  }
-
-  /**
-   * Get all Project for user by project name
-   * 
-   * @param gatewayId
-   *    The identifier for the requested gateway.
-   * @param userName
-   *    The identifier of the user
-   * @param projectName
-   *    The name of the project on which the results to be fetched
-   * @deprecated Instead use searchProjectsByProjectNameWithPagination
-   * 
-   * @param gatewayId
-   * @param userName
-   * @param projectName
-   */
-  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& projectName) {
-    // Your implementation goes here
-    printf("searchProjectsByProjectName\n");
+    printf("getUserProjects\n");
   }
 
   /**
@@ -249,28 +210,9 @@ class AiravataHandler : virtual public AiravataIf {
    * @param limit
    * @param offset
    */
-  void searchProjectsByProjectNameWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset) {
+  void searchProjectsByProjectName(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& projectName, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
-    printf("searchProjectsByProjectNameWithPagination\n");
-  }
-
-  /**
-   * Get all Project for user by project description
-   * @param gatewayId
-   *    The identifier for the requested gateway.
-   * @param userName
-   *    The identifier of the user
-   * @param description
-   *    The description to be matched
-   * @deprecated Instead use searchProjectsByProjectDescWithPagination
-   * 
-   * @param gatewayId
-   * @param userName
-   * @param description
-   */
-  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description) {
-    // Your implementation goes here
-    printf("searchProjectsByProjectDesc\n");
+    printf("searchProjectsByProjectName\n");
   }
 
   /**
@@ -295,29 +237,34 @@ class AiravataHandler : virtual public AiravataIf {
    * @param limit
    * @param offset
    */
-  void searchProjectsByProjectDescWithPagination(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) {
+  void searchProjectsByProjectDesc(std::vector< ::apache::airavata::model::workspace::Project> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
-    printf("searchProjectsByProjectDescWithPagination\n");
+    printf("searchProjectsByProjectDesc\n");
   }
 
   /**
-   * Search Experiments by experiment name
+   * Search Experiments by experiment name with pagination. Results will be sorted
+   * based on creation time DESC
    * 
    * @param gatewayId
    *       Identifier of the requested gateway
-   * @param useNname
+   * @param userName
    *       Username of the requested user
    * @param expName
    *       Experiment name to be matched
-   * @deprecated
-   *       Instead use searchExperimentsByNameWithPagination
+   * @param limit
+   *       Amount of results to be fetched
+   * @param offset
+   *       The starting point of the results to be fetched
    * 
-   * 
+   * @param authzToken
    * @param gatewayId
    * @param userName
    * @param expName
+   * @param limit
+   * @param offset
    */
-  void searchExperimentsByName(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& expName) {
+  void searchExperimentsByName(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
     printf("searchExperimentsByName\n");
   }
@@ -330,8 +277,8 @@ class AiravataHandler : virtual public AiravataIf {
    *       Identifier of the requested gateway
    * @param userName
    *       Username of the requested user
-   * @param expName
-   *       Experiment name to be matched
+   * @param description
+   *       Experiment description to be matched
    * @param limit
    *       Amount of results to be fetched
    * @param offset
@@ -340,82 +287,13 @@ class AiravataHandler : virtual public AiravataIf {
    * @param authzToken
    * @param gatewayId
    * @param userName
-   * @param expName
+   * @param description
    * @param limit
    * @param offset
    */
-  void searchExperimentsByNameWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& expName, const int32_t limit, const int32_t offset) {
-    // Your implementation goes here
-    printf("searchExperimentsByNameWithPagination\n");
-  }
-
-  /**
-   * Search Experiments by experiment name
-   * 
-   * @param gatewayId
-   *       Identifier of the requested gateway
-   * @param userName
-   *       Username of the requested user
-   * @param description
-   *       Experiment description to be matched
-   * @deprecated
-   *       Instead use searchExperimentsByDescWithPagination
-   * 
-   * @param gatewayId
-   * @param userName
-   * @param description
-   */
-  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& description) {
+  void searchExperimentsByDesc(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
     printf("searchExperimentsByDesc\n");
-  }
-
-  /**
-   * Search Experiments by experiment name with pagination. Results will be sorted
-   * based on creation time DESC
-   * 
-   * @param gatewayId
-   *       Identifier of the requested gateway
-   * @param userName
-   *       Username of the requested user
-   * @param description
-   *       Experiment description to be matched
-   * @param limit
-   *       Amount of results to be fetched
-   * @param offset
-   *       The starting point of the results to be fetched
-   * 
-   * @param authzToken
-   * @param gatewayId
-   * @param userName
-   * @param description
-   * @param limit
-   * @param offset
-   */
-  void searchExperimentsByDescWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& description, const int32_t limit, const int32_t offset) {
-    // Your implementation goes here
-    printf("searchExperimentsByDescWithPagination\n");
-  }
-
-  /**
-   * Search Experiments by application id
-   * 
-   * @param gatewayId
-   *       Identifier of the requested gateway
-   * @param userName
-   *       Username of the requested user
-   * @param applicationId
-   *       Application id to be matched
-   * @deprecated
-   *       Instead use searchExperimentsByApplicationWithPagination
-   * 
-   * @param gatewayId
-   * @param userName
-   * @param applicationId
-   */
-  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const std::string& applicationId) {
-    // Your implementation goes here
-    printf("searchExperimentsByApplication\n");
   }
 
   /**
@@ -440,30 +318,9 @@ class AiravataHandler : virtual public AiravataIf {
    * @param limit
    * @param offset
    */
-  void searchExperimentsByApplicationWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset) {
+  void searchExperimentsByApplication(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const std::string& applicationId, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
-    printf("searchExperimentsByApplicationWithPagination\n");
-  }
-
-  /**
-   * Search Experiments by experiment status
-   * 
-   * @param gatewayId
-   *       Identifier of the requested gateway
-   * @param userName
-   *       Username of the requested user
-   * @param experimentState
-   *       Experiement state to be matched
-   * @deprecated
-   *       Instead use searchExperimentsByStatusWithPagination
-   * 
-   * @param gatewayId
-   * @param userName
-   * @param experimentState
-   */
-  void searchExperimentsByStatus(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState) {
-    // Your implementation goes here
-    printf("searchExperimentsByStatus\n");
+    printf("searchExperimentsByApplication\n");
   }
 
   /**
@@ -488,33 +345,9 @@ class AiravataHandler : virtual public AiravataIf {
    * @param limit
    * @param offset
    */
-  void searchExperimentsByStatusWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState, const int32_t limit, const int32_t offset) {
+  void searchExperimentsByStatus(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const  ::apache::airavata::model::status::ExperimentState::type experimentState, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
-    printf("searchExperimentsByStatusWithPagination\n");
-  }
-
-  /**
-   * Search Experiments by experiment creation time
-   * 
-   * @param gatewayId
-   *       Identifier of the requested gateway
-   * @param userName
-   *       Username of the requested user
-   * @param fromTime
-   *       Start time of the experiments creation time
-   * @param toTime
-   *       End time of the  experiement creation time
-   * @deprecated
-   *       Instead use searchExperimentsByCreationTimeWithPagination
-   * 
-   * @param gatewayId
-   * @param userName
-   * @param fromTime
-   * @param toTime
-   */
-  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime) {
-    // Your implementation goes here
-    printf("searchExperimentsByCreationTime\n");
+    printf("searchExperimentsByStatus\n");
   }
 
   /**
@@ -542,9 +375,9 @@ class AiravataHandler : virtual public AiravataIf {
    * @param limit
    * @param offset
    */
-  void searchExperimentsByCreationTimeWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset) {
+  void searchExperimentsByCreationTime(std::vector< ::apache::airavata::model::experiment::ExperimentSummaryModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int64_t fromTime, const int64_t toTime, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
-    printf("searchExperimentsByCreationTimeWithPagination\n");
+    printf("searchExperimentsByCreationTime\n");
   }
 
   /**
@@ -595,22 +428,7 @@ class AiravataHandler : virtual public AiravataIf {
   }
 
   /**
-   * Get all Experiments within a Project
-   * 
-   * @param projectId
-   *       Identifier of the project
-   * @deprecated
-   *       Instead use  getAllExperimentsInProjectWithPagination
-   * 
-   * @param projectId
-   */
-  void getAllExperimentsInProject(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const std::string& projectId) {
-    // Your implementation goes here
-    printf("getAllExperimentsInProject\n");
-  }
-
-  /**
-   * Get all Experiments within project with pagination. Results will be sorted
+   * Get Experiments within project with pagination. Results will be sorted
    * based on creation time DESC
    * 
    * @param projectId
@@ -625,31 +443,13 @@ class AiravataHandler : virtual public AiravataIf {
    * @param limit
    * @param offset
    */
-  void getAllExperimentsInProjectWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId, const int32_t limit, const int32_t offset) {
+  void getExperimentsInProject(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& projectId, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
-    printf("getAllExperimentsInProjectWithPagination\n");
+    printf("getExperimentsInProject\n");
   }
 
   /**
-   * Get all Experiments by user
-   * 
-   * @param gatewayId
-   *       Identifier of the requesting gateway
-   * @param userName
-   *       Username of the requested user
-   * @deprecated
-   *       Instead use getAllUserExperimentsWithPagination
-   * 
-   * @param gatewayId
-   * @param userName
-   */
-  void getAllUserExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const std::string& gatewayId, const std::string& userName) {
-    // Your implementation goes here
-    printf("getAllUserExperiments\n");
-  }
-
-  /**
-   * Get all Experiments by user pagination. Results will be sorted
+   * Get experiments by user with pagination. Results will be sorted
    * based on creation time DESC
    * 
    * @param gatewayId
@@ -667,9 +467,9 @@ class AiravataHandler : virtual public AiravataIf {
    * @param limit
    * @param offset
    */
-  void getAllUserExperimentsWithPagination(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset) {
+  void getUserExperiments(std::vector< ::apache::airavata::model::experiment::ExperimentModel> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName, const int32_t limit, const int32_t offset) {
     // Your implementation goes here
-    printf("getAllUserExperimentsWithPagination\n");
+    printf("getUserExperiments\n");
   }
 
   /**
