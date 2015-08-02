@@ -107,11 +107,9 @@ else
 	if $IS_DAEMON_MODE ; then
 		echo "Starting airavata server in daemon mode..."
 		nohup java $JAVA_OPTS -classpath "$XBAYA_CLASSPATH" \
-		    -Djava.endorsed.dirs="$AIRAVATA_HOME/lib/endorsed":"$JAVA_HOME/jre/lib/endorsed":"$JAVA_HOME/lib/endorsed" \
 		    org.apache.airavata.server.ServerMain $AIRAVATA_COMMAND $* > airavata-server.out & 
  	else
 		java $JAVA_OPTS -classpath "$XBAYA_CLASSPATH" \
-		    -Djava.endorsed.dirs="$AIRAVATA_HOME/lib/endorsed":"$JAVA_HOME/jre/lib/endorsed":"$JAVA_HOME/lib/endorsed" \
 		    org.apache.airavata.server.ServerMain $AIRAVATA_COMMAND $*
 	fi
 fi

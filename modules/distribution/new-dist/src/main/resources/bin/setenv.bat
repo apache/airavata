@@ -17,14 +17,6 @@ rem under the License.
 
 @echo off
 
-:checkJava
-if "%JAVA_HOME%" == "" goto noJavaHome
-if not exist "%JAVA_HOME%\bin\java.exe" goto noJavaHome
-goto initialize
-
-:noJavaHome
-echo You must set the JAVA_HOME environment variable before running Airavata.
-goto end
 
 :initialize
 if "%AIRAVATA_HOME%"=="" set AIRAVATA_HOME=%~sdp0..

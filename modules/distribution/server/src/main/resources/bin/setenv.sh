@@ -17,22 +17,6 @@
 # specific language governing permissions and limitations
 # under the License.
 
-
-# Get standard environment variables
-# if JAVA_HOME is not set we're not happy
-if [ -z "$JAVA_HOME" ]; then
-  echo "You must set the JAVA_HOME variable before running Airavata Scripts."
-  exit 1
-fi
-
-# OS specific support.  $var _must_ be set to either true or false.
-cygwin=false
-os400=false
-case "`uname`" in
-CYGWIN*) cygwin=true;;
-OS400*) os400=true;;
-esac
-
 # resolve links - $0 may be a softlink
 PRG="$0"
 
@@ -46,32 +30,19 @@ while [ -h "$PRG" ]; do
   fi
 done
 
-
 PRGDIR=`dirname "$PRG"`
 
 # Only set AIRAVATA_HOME if not already set
 [ -z "$AIRAVATA_HOME" ] && AIRAVATA_HOME=`cd "$PRGDIR/.." ; pwd`
 
-XBAYA_CLASSPATH=""
-
-
+AIRAVATA_CLASSPATH=""
 
 for f in "$AIRAVATA_HOME"/lib/*.jar
 do
-  XBAYA_CLASSPATH="$XBAYA_CLASSPATH":$f
+  AIRAVATA_CLASSPATH="$AIRAVATA_CLASSPATH":$f
 done
-
-for f in "$AIRAVATA_HOME"/repository/services/*.jar
-do
-  XBAYA_CLASSPATH="$XBAYA_CLASSPATH":$f
-done
-
-XBAYA_CLASSPATH="$XBAYA_HOME":"$XBAYA_HOME/conf":"$XBAYA_CLASSPATH":"$CLASSPATH"
-
-
-
 
 export AIRAVATA_HOME
-export XBAYA_CLASSPATH
+export AIRAVATA_CLASSPATH
 
 

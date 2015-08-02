@@ -52,7 +52,7 @@ try:
     # Connect to Airavata Server
     transport.open()
 
-    projectLists = airavataClient.getAllUserProjects("sdsc", "smarru");
+    projectLists = airavataClient.getAllUserProjects("php_reference_gateway", "smarru");
 
     print projectLists
 

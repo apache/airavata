@@ -27,17 +27,13 @@ IS_DAEMON_MODE=false
 LOGO=true
 STOP=false
 FORCE=false
-#SERVERS="--servers=apiserver,orchestrator,gfac,credentialstore"
+
 for var in "$@"
 do
     case $var in
         -xdebug)
         	AIRAVATA_COMMAND="$AIRAVATA_COMMAND"
             JAVA_OPTS="$JAVA_OPTS -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,address=8000"
-            shift
-        ;;
-        -security)
-            JAVA_OPTS="$JAVA_OPTS -Djava.security.manager -Djava.security.policy=$AIRAVATA_HOME/conf/axis2.policy -Daxis2.home=$AIRAVATA_HOME"
             shift
         ;;
 	start)
@@ -67,7 +63,6 @@ do
 	    echo "  --<key>[=<value>]  Server setting(s) to override or introduce (overrides values in airavata-server.properties)"
             echo "  -nologo            Do not show airavata logo"
             echo "  -xdebug            Start Airavata Server under JPDA debugger"
-            echo "  -security          Enable Java 2 security"
             echo "  -h                 Display this help and exit"
             shift
             exit 0
@@ -106,12 +101,10 @@ then
 else
 	if $IS_DAEMON_MODE ; then
 		echo "Starting airavata server in daemon mode..."
-		nohup java $JAVA_OPTS -classpath "$XBAYA_CLASSPATH" \
-		    -Djava.endorsed.dirs="$AIRAVATA_HOME/lib/endorsed":"$JAVA_HOME/jre/lib/endorsed":"$JAVA_HOME/lib/endorsed" \
+		nohup java $JAVA_OPTS -classpath "$AIRAVATA_CLASSPATH" \
 		    org.apache.airavata.server.ServerMain $AIRAVATA_COMMAND $* > airavata-server.out & 
  	else
-		java $JAVA_OPTS -classpath "$XBAYA_CLASSPATH" \
-		    -Djava.endorsed.dirs="$AIRAVATA_HOME/lib/endorsed":"$JAVA_HOME/jre/lib/endorsed":"$JAVA_HOME/lib/endorsed" \
+		java $JAVA_OPTS -classpath "$AIRAVATA_CLASSPATH" \
 		    org.apache.airavata.server.ServerMain $AIRAVATA_COMMAND $*
 	fi
 fi

@@ -61,8 +61,7 @@ try:
     #experiment.experimentInputs
 
 
-
-    print 'Created Experiment with Id:', airavataClient.createExperiment("sdsc", experiment)
+    print 'Created Experiment with Id:', airavataClient.createExperiment("php_reference_gateway", experiment)
 
     print 'Airavata Server Version is:', airavataClient.getAPIVersion()
 

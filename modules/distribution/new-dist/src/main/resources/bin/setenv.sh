@@ -17,14 +17,6 @@
 # specific language governing permissions and limitations
 # under the License.
 
-
-# Get standard environment variables
-# if JAVA_HOME is not set we're not happy
-if [ -z "$JAVA_HOME" ]; then
-  echo "You must set the JAVA_HOME variable before running Airavata Scripts."
-  exit 1
-fi
-
 # OS specific support.  $var _must_ be set to either true or false.
 cygwin=false
 os400=false
@@ -67,9 +59,6 @@ do
 done
 
 XBAYA_CLASSPATH="$XBAYA_HOME":"$XBAYA_HOME/conf":"$XBAYA_CLASSPATH":"$CLASSPATH"
-
-
-
 
 export AIRAVATA_HOME
 export XBAYA_CLASSPATH
