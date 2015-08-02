@@ -75,7 +75,7 @@ class Iface:
     """
     pass
 
-  def generateAndRegisterSSHKeys(self, gatewayId, userName):
+  def generateAndRegisterSSHKeys(self, authzToken, gatewayId, userName):
     """
     Generate and Register SSH Key Pair with Airavata Credential Store.
 
@@ -93,21 +93,24 @@ class Iface:
 
 
     Parameters:
+     - authzToken
      - gatewayId
      - userName
     """
     pass
 
-  def getSSHPubKey(self, airavataCredStoreToken):
+  def getSSHPubKey(self, authzToken, airavataCredStoreToken):
     """
     Parameters:
+     - authzToken
      - airavataCredStoreToken
     """
     pass
 
-  def getAllUserSSHPubKeys(self, userName):
+  def getAllUserSSHPubKeys(self, authzToken, userName):
     """
     Parameters:
+     - authzToken
      - userName
     """
     pass
@@ -2373,7 +2376,7 @@ class Client(Iface):
       raise result.ae
     raise TApplicationException(TApplicationException.MISSING_RESULT, "isGatewayExist failed: unknown result");
 
-  def generateAndRegisterSSHKeys(self, gatewayId, userName):
+  def generateAndRegisterSSHKeys(self, authzToken, gatewayId, userName):
     """
     Generate and Register SSH Key Pair with Airavata Credential Store.
 
@@ -2391,15 +2394,17 @@ class Client(Iface):
 
 
     Parameters:
+     - authzToken
      - gatewayId
      - userName
     """
-    self.send_generateAndRegisterSSHKeys(gatewayId, userName)
+    self.send_generateAndRegisterSSHKeys(authzToken, gatewayId, userName)
     return self.recv_generateAndRegisterSSHKeys()
 
-  def send_generateAndRegisterSSHKeys(self, gatewayId, userName):
+  def send_generateAndRegisterSSHKeys(self, authzToken, gatewayId, userName):
     self._oprot.writeMessageBegin('generateAndRegisterSSHKeys', TMessageType.CALL, self._seqid)
     args = generateAndRegisterSSHKeys_args()
+    args.authzToken = authzToken
     args.gatewayId = gatewayId
     args.userName = userName
     args.write(self._oprot)
@@ -2427,17 +2432,19 @@ class Client(Iface):
       raise result.ase
     raise TApplicationException(TApplicationException.MISSING_RESULT, "generateAndRegisterSSHKeys failed: unknown result");
 
-  def getSSHPubKey(self, airavataCredStoreToken):
+  def getSSHPubKey(self, authzToken, airavataCredStoreToken):
     """
     Parameters:
+     - authzToken
      - airavataCredStoreToken
     """
-    self.send_getSSHPubKey(airavataCredStoreToken)
+    self.send_getSSHPubKey(authzToken, airavataCredStoreToken)
     return self.recv_getSSHPubKey()
 
-  def send_getSSHPubKey(self, airavataCredStoreToken):
+  def send_getSSHPubKey(self, authzToken, airavataCredStoreToken):
     self._oprot.writeMessageBegin('getSSHPubKey', TMessageType.CALL, self._seqid)
     args = getSSHPubKey_args()
+    args.authzToken = authzToken
     args.airavataCredStoreToken = airavataCredStoreToken
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
@@ -2464,17 +2471,19 @@ class Client(Iface):
       raise result.ase
     raise TApplicationException(TApplicationException.MISSING_RESULT, "getSSHPubKey failed: unknown result");
 
-  def getAllUserSSHPubKeys(self, userName):
+  def getAllUserSSHPubKeys(self, authzToken, userName):
     """
     Parameters:
+     - authzToken
      - userName
     """
-    self.send_getAllUserSSHPubKeys(userName)
+    self.send_getAllUserSSHPubKeys(authzToken, userName)
     return self.recv_getAllUserSSHPubKeys()
 
-  def send_getAllUserSSHPubKeys(self, userName):
+  def send_getAllUserSSHPubKeys(self, authzToken, userName):
     self._oprot.writeMessageBegin('getAllUserSSHPubKeys', TMessageType.CALL, self._seqid)
     args = getAllUserSSHPubKeys_args()
+    args.authzToken = authzToken
     args.userName = userName
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
@@ -8382,7 +8391,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = generateAndRegisterSSHKeys_result()
     try:
-      result.success = self._handler.generateAndRegisterSSHKeys(args.gatewayId, args.userName)
+      result.success = self._handler.generateAndRegisterSSHKeys(args.authzToken, args.gatewayId, args.userName)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
@@ -8400,7 +8409,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = getSSHPubKey_result()
     try:
-      result.success = self._handler.getSSHPubKey(args.airavataCredStoreToken)
+      result.success = self._handler.getSSHPubKey(args.authzToken, args.airavataCredStoreToken)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
@@ -8418,7 +8427,7 @@ class Processor(Iface, TProcessor):
     iprot.readMessageEnd()
     result = getAllUserSSHPubKeys_result()
     try:
-      result.success = self._handler.getAllUserSSHPubKeys(args.userName)
+      result.success = self._handler.getAllUserSSHPubKeys(args.authzToken, args.userName)
     except apache.airavata.api.error.ttypes.InvalidRequestException, ire:
       result.ire = ire
     except apache.airavata.api.error.ttypes.AiravataClientException, ace:
@@ -12000,17 +12009,20 @@ class isGatewayExist_result:
 class generateAndRegisterSSHKeys_args:
   """
   Attributes:
+   - authzToken
    - gatewayId
    - userName
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'gatewayId', None, None, ), # 1
-    (2, TType.STRING, 'userName', None, None, ), # 2
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'gatewayId', None, None, ), # 2
+    (3, TType.STRING, 'userName', None, None, ), # 3
   )
 
-  def __init__(self, gatewayId=None, userName=None,):
+  def __init__(self, authzToken=None, gatewayId=None, userName=None,):
+    self.authzToken = authzToken
     self.gatewayId = gatewayId
     self.userName = userName
 
@@ -12024,11 +12036,17 @@ class generateAndRegisterSSHKeys_args:
       if ftype == TType.STOP:
         break
       if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
         if ftype == TType.STRING:
           self.gatewayId = iprot.readString();
         else:
           iprot.skip(ftype)
-      elif fid == 2:
+      elif fid == 3:
         if ftype == TType.STRING:
           self.userName = iprot.readString();
         else:
@@ -12043,18 +12061,24 @@ class generateAndRegisterSSHKeys_args:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('generateAndRegisterSSHKeys_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
     if self.gatewayId is not None:
-      oprot.writeFieldBegin('gatewayId', TType.STRING, 1)
+      oprot.writeFieldBegin('gatewayId', TType.STRING, 2)
       oprot.writeString(self.gatewayId)
       oprot.writeFieldEnd()
     if self.userName is not None:
-      oprot.writeFieldBegin('userName', TType.STRING, 2)
+      oprot.writeFieldBegin('userName', TType.STRING, 3)
       oprot.writeString(self.userName)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
   def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
     if self.gatewayId is None:
       raise TProtocol.TProtocolException(message='Required field gatewayId is unset!')
     if self.userName is None:
@@ -12064,6 +12088,7 @@ class generateAndRegisterSSHKeys_args:
 
   def __hash__(self):
     value = 17
+    value = (value * 31) ^ hash(self.authzToken)
     value = (value * 31) ^ hash(self.gatewayId)
     value = (value * 31) ^ hash(self.userName)
     return value
@@ -12188,15 +12213,18 @@ class generateAndRegisterSSHKeys_result:
 class getSSHPubKey_args:
   """
   Attributes:
+   - authzToken
    - airavataCredStoreToken
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'airavataCredStoreToken', None, None, ), # 1
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'airavataCredStoreToken', None, None, ), # 2
   )
 
-  def __init__(self, airavataCredStoreToken=None,):
+  def __init__(self, authzToken=None, airavataCredStoreToken=None,):
+    self.authzToken = authzToken
     self.airavataCredStoreToken = airavataCredStoreToken
 
   def read(self, iprot):
@@ -12209,6 +12237,12 @@ class getSSHPubKey_args:
       if ftype == TType.STOP:
         break
       if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
         if ftype == TType.STRING:
           self.airavataCredStoreToken = iprot.readString();
         else:
@@ -12223,14 +12257,20 @@ class getSSHPubKey_args:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('getSSHPubKey_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
     if self.airavataCredStoreToken is not None:
-      oprot.writeFieldBegin('airavataCredStoreToken', TType.STRING, 1)
+      oprot.writeFieldBegin('airavataCredStoreToken', TType.STRING, 2)
       oprot.writeString(self.airavataCredStoreToken)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
   def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
     if self.airavataCredStoreToken is None:
       raise TProtocol.TProtocolException(message='Required field airavataCredStoreToken is unset!')
     return
@@ -12238,6 +12278,7 @@ class getSSHPubKey_args:
 
   def __hash__(self):
     value = 17
+    value = (value * 31) ^ hash(self.authzToken)
     value = (value * 31) ^ hash(self.airavataCredStoreToken)
     return value
 
@@ -12361,15 +12402,18 @@ class getSSHPubKey_result:
 class getAllUserSSHPubKeys_args:
   """
   Attributes:
+   - authzToken
    - userName
   """
 
   thrift_spec = (
     None, # 0
-    (1, TType.STRING, 'userName', None, None, ), # 1
+    (1, TType.STRUCT, 'authzToken', (apache.airavata.model.security.ttypes.AuthzToken, apache.airavata.model.security.ttypes.AuthzToken.thrift_spec), None, ), # 1
+    (2, TType.STRING, 'userName', None, None, ), # 2
   )
 
-  def __init__(self, userName=None,):
+  def __init__(self, authzToken=None, userName=None,):
+    self.authzToken = authzToken
     self.userName = userName
 
   def read(self, iprot):
@@ -12382,6 +12426,12 @@ class getAllUserSSHPubKeys_args:
       if ftype == TType.STOP:
         break
       if fid == 1:
+        if ftype == TType.STRUCT:
+          self.authzToken = apache.airavata.model.security.ttypes.AuthzToken()
+          self.authzToken.read(iprot)
+        else:
+          iprot.skip(ftype)
+      elif fid == 2:
         if ftype == TType.STRING:
           self.userName = iprot.readString();
         else:
@@ -12396,14 +12446,20 @@ class getAllUserSSHPubKeys_args:
       oprot.trans.write(fastbinary.encode_binary(self, (self.__class__, self.thrift_spec)))
       return
     oprot.writeStructBegin('getAllUserSSHPubKeys_args')
+    if self.authzToken is not None:
+      oprot.writeFieldBegin('authzToken', TType.STRUCT, 1)
+      self.authzToken.write(oprot)
+      oprot.writeFieldEnd()
     if self.userName is not None:
-      oprot.writeFieldBegin('userName', TType.STRING, 1)
+      oprot.writeFieldBegin('userName', TType.STRING, 2)
       oprot.writeString(self.userName)
       oprot.writeFieldEnd()
     oprot.writeFieldStop()
     oprot.writeStructEnd()
 
   def validate(self):
+    if self.authzToken is None:
+      raise TProtocol.TProtocolException(message='Required field authzToken is unset!')
     if self.userName is None:
       raise TProtocol.TProtocolException(message='Required field userName is unset!')
     return
@@ -12411,6 +12467,7 @@ class getAllUserSSHPubKeys_args:
 
   def __hash__(self):
     value = 17
+    value = (value * 31) ^ hash(self.authzToken)
     value = (value * 31) ^ hash(self.userName)
     return value
 

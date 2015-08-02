@@ -31,9 +31,9 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print('  bool deleteGateway(AuthzToken authzToken, string gatewayId)')
   print('   getAllGateways(AuthzToken authzToken)')
   print('  bool isGatewayExist(AuthzToken authzToken, string gatewayId)')
-  print('  string generateAndRegisterSSHKeys(string gatewayId, string userName)')
-  print('  string getSSHPubKey(string airavataCredStoreToken)')
-  print('   getAllUserSSHPubKeys(string userName)')
+  print('  string generateAndRegisterSSHKeys(AuthzToken authzToken, string gatewayId, string userName)')
+  print('  string getSSHPubKey(AuthzToken authzToken, string airavataCredStoreToken)')
+  print('   getAllUserSSHPubKeys(AuthzToken authzToken, string userName)')
   print('  string createProject(AuthzToken authzToken, string gatewayId, Project project)')
   print('  void updateProject(AuthzToken authzToken, string projectId, Project updatedProject)')
   print('  Project getProject(AuthzToken authzToken, string projectId)')
@@ -240,22 +240,22 @@ elif cmd == 'isGatewayExist':
   pp.pprint(client.isGatewayExist(eval(args[0]),args[1],))
 
 elif cmd == 'generateAndRegisterSSHKeys':
-  if len(args) != 2:
-    print('generateAndRegisterSSHKeys requires 2 args')
+  if len(args) != 3:
+    print('generateAndRegisterSSHKeys requires 3 args')
     sys.exit(1)
-  pp.pprint(client.generateAndRegisterSSHKeys(args[0],args[1],))
+  pp.pprint(client.generateAndRegisterSSHKeys(eval(args[0]),args[1],args[2],))
 
 elif cmd == 'getSSHPubKey':
-  if len(args) != 1:
-    print('getSSHPubKey requires 1 args')
+  if len(args) != 2:
+    print('getSSHPubKey requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getSSHPubKey(args[0],))
+  pp.pprint(client.getSSHPubKey(eval(args[0]),args[1],))
 
 elif cmd == 'getAllUserSSHPubKeys':
-  if len(args) != 1:
-    print('getAllUserSSHPubKeys requires 1 args')
+  if len(args) != 2:
+    print('getAllUserSSHPubKeys requires 2 args')
     sys.exit(1)
-  pp.pprint(client.getAllUserSSHPubKeys(args[0],))
+  pp.pprint(client.getAllUserSSHPubKeys(eval(args[0]),args[1],))
 
 elif cmd == 'createProject':
   if len(args) != 3:

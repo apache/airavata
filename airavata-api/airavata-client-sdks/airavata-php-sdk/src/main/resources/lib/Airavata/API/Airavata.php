@@ -103,6 +103,7 @@ interface AiravataIf {
    * 
    * 
    * 
+   * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $gatewayId
    * @param string $userName
    * @return string
@@ -110,23 +111,25 @@ interface AiravataIf {
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    */
-  public function generateAndRegisterSSHKeys($gatewayId, $userName);
+  public function generateAndRegisterSSHKeys(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $userName);
   /**
+   * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $airavataCredStoreToken
    * @return string
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    */
-  public function getSSHPubKey($airavataCredStoreToken);
+  public function getSSHPubKey(\Airavata\Model\Security\AuthzToken $authzToken, $airavataCredStoreToken);
   /**
+   * @param \Airavata\Model\Security\AuthzToken $authzToken
    * @param string $userName
    * @return array
    * @throws \Airavata\API\Error\InvalidRequestException
    * @throws \Airavata\API\Error\AiravataClientException
    * @throws \Airavata\API\Error\AiravataSystemException
    */
-  public function getAllUserSSHPubKeys($userName);
+  public function getAllUserSSHPubKeys(\Airavata\Model\Security\AuthzToken $authzToken, $userName);
   /**
    * Creates a Project with basic metadata.
    *    A Project is a container of experiments.
@@ -2967,15 +2970,16 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("isGatewayExist failed: unknown result");
   }
 
-  public function generateAndRegisterSSHKeys($gatewayId, $userName)
+  public function generateAndRegisterSSHKeys(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $userName)
   {
-    $this->send_generateAndRegisterSSHKeys($gatewayId, $userName);
+    $this->send_generateAndRegisterSSHKeys($authzToken, $gatewayId, $userName);
     return $this->recv_generateAndRegisterSSHKeys();
   }
 
-  public function send_generateAndRegisterSSHKeys($gatewayId, $userName)
+  public function send_generateAndRegisterSSHKeys(\Airavata\Model\Security\AuthzToken $authzToken, $gatewayId, $userName)
   {
     $args = new \Airavata\API\Airavata_generateAndRegisterSSHKeys_args();
+    $args->authzToken = $authzToken;
     $args->gatewayId = $gatewayId;
     $args->userName = $userName;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
@@ -3028,15 +3032,16 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("generateAndRegisterSSHKeys failed: unknown result");
   }
 
-  public function getSSHPubKey($airavataCredStoreToken)
+  public function getSSHPubKey(\Airavata\Model\Security\AuthzToken $authzToken, $airavataCredStoreToken)
   {
-    $this->send_getSSHPubKey($airavataCredStoreToken);
+    $this->send_getSSHPubKey($authzToken, $airavataCredStoreToken);
     return $this->recv_getSSHPubKey();
   }
 
-  public function send_getSSHPubKey($airavataCredStoreToken)
+  public function send_getSSHPubKey(\Airavata\Model\Security\AuthzToken $authzToken, $airavataCredStoreToken)
   {
     $args = new \Airavata\API\Airavata_getSSHPubKey_args();
+    $args->authzToken = $authzToken;
     $args->airavataCredStoreToken = $airavataCredStoreToken;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
@@ -3088,15 +3093,16 @@ class AiravataClient implements \Airavata\API\AiravataIf {
     throw new \Exception("getSSHPubKey failed: unknown result");
   }
 
-  public function getAllUserSSHPubKeys($userName)
+  public function getAllUserSSHPubKeys(\Airavata\Model\Security\AuthzToken $authzToken, $userName)
   {
-    $this->send_getAllUserSSHPubKeys($userName);
+    $this->send_getAllUserSSHPubKeys($authzToken, $userName);
     return $this->recv_getAllUserSSHPubKeys();
   }
 
-  public function send_getAllUserSSHPubKeys($userName)
+  public function send_getAllUserSSHPubKeys(\Airavata\Model\Security\AuthzToken $authzToken, $userName)
   {
     $args = new \Airavata\API\Airavata_getAllUserSSHPubKeys_args();
+    $args->authzToken = $authzToken;
     $args->userName = $userName;
     $bin_accel = ($this->output_ instanceof TBinaryProtocolAccelerated) && function_exists('thrift_protocol_write_binary');
     if ($bin_accel)
@@ -12046,6 +12052,10 @@ class Airavata_generateAndRegisterSSHKeys_args {
   static $_TSPEC;
 
   /**
+   * @var \Airavata\Model\Security\AuthzToken
+   */
+  public $authzToken = null;
+  /**
    * @var string
    */
   public $gatewayId = null;
@@ -12058,16 +12068,24 @@ class Airavata_generateAndRegisterSSHKeys_args {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
+          'var' => 'authzToken',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Security\AuthzToken',
+          ),
+        2 => array(
           'var' => 'gatewayId',
           'type' => TType::STRING,
           ),
-        2 => array(
+        3 => array(
           'var' => 'userName',
           'type' => TType::STRING,
           ),
         );
     }
     if (is_array($vals)) {
+      if (isset($vals['authzToken'])) {
+        $this->authzToken = $vals['authzToken'];
+      }
       if (isset($vals['gatewayId'])) {
         $this->gatewayId = $vals['gatewayId'];
       }
@@ -12097,13 +12115,21 @@ class Airavata_generateAndRegisterSSHKeys_args {
       switch ($fid)
       {
         case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->authzToken = new \Airavata\Model\Security\AuthzToken();
+            $xfer += $this->authzToken->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->gatewayId);
           } else {
             $xfer += $input->skip($ftype);
           }
           break;
-        case 2:
+        case 3:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->userName);
           } else {
@@ -12123,13 +12149,21 @@ class Airavata_generateAndRegisterSSHKeys_args {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_generateAndRegisterSSHKeys_args');
+    if ($this->authzToken !== null) {
+      if (!is_object($this->authzToken)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('authzToken', TType::STRUCT, 1);
+      $xfer += $this->authzToken->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->gatewayId !== null) {
-      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 1);
+      $xfer += $output->writeFieldBegin('gatewayId', TType::STRING, 2);
       $xfer += $output->writeString($this->gatewayId);
       $xfer += $output->writeFieldEnd();
     }
     if ($this->userName !== null) {
-      $xfer += $output->writeFieldBegin('userName', TType::STRING, 2);
+      $xfer += $output->writeFieldBegin('userName', TType::STRING, 3);
       $xfer += $output->writeString($this->userName);
       $xfer += $output->writeFieldEnd();
     }
@@ -12294,6 +12328,10 @@ class Airavata_getSSHPubKey_args {
   static $_TSPEC;
 
   /**
+   * @var \Airavata\Model\Security\AuthzToken
+   */
+  public $authzToken = null;
+  /**
    * @var string
    */
   public $airavataCredStoreToken = null;
@@ -12302,12 +12340,20 @@ class Airavata_getSSHPubKey_args {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
+          'var' => 'authzToken',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Security\AuthzToken',
+          ),
+        2 => array(
           'var' => 'airavataCredStoreToken',
           'type' => TType::STRING,
           ),
         );
     }
     if (is_array($vals)) {
+      if (isset($vals['authzToken'])) {
+        $this->authzToken = $vals['authzToken'];
+      }
       if (isset($vals['airavataCredStoreToken'])) {
         $this->airavataCredStoreToken = $vals['airavataCredStoreToken'];
       }
@@ -12334,6 +12380,14 @@ class Airavata_getSSHPubKey_args {
       switch ($fid)
       {
         case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->authzToken = new \Airavata\Model\Security\AuthzToken();
+            $xfer += $this->authzToken->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->airavataCredStoreToken);
           } else {
@@ -12353,8 +12407,16 @@ class Airavata_getSSHPubKey_args {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_getSSHPubKey_args');
+    if ($this->authzToken !== null) {
+      if (!is_object($this->authzToken)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('authzToken', TType::STRUCT, 1);
+      $xfer += $this->authzToken->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->airavataCredStoreToken !== null) {
-      $xfer += $output->writeFieldBegin('airavataCredStoreToken', TType::STRING, 1);
+      $xfer += $output->writeFieldBegin('airavataCredStoreToken', TType::STRING, 2);
       $xfer += $output->writeString($this->airavataCredStoreToken);
       $xfer += $output->writeFieldEnd();
     }
@@ -12519,6 +12581,10 @@ class Airavata_getAllUserSSHPubKeys_args {
   static $_TSPEC;
 
   /**
+   * @var \Airavata\Model\Security\AuthzToken
+   */
+  public $authzToken = null;
+  /**
    * @var string
    */
   public $userName = null;
@@ -12527,12 +12593,20 @@ class Airavata_getAllUserSSHPubKeys_args {
     if (!isset(self::$_TSPEC)) {
       self::$_TSPEC = array(
         1 => array(
+          'var' => 'authzToken',
+          'type' => TType::STRUCT,
+          'class' => '\Airavata\Model\Security\AuthzToken',
+          ),
+        2 => array(
           'var' => 'userName',
           'type' => TType::STRING,
           ),
         );
     }
     if (is_array($vals)) {
+      if (isset($vals['authzToken'])) {
+        $this->authzToken = $vals['authzToken'];
+      }
       if (isset($vals['userName'])) {
         $this->userName = $vals['userName'];
       }
@@ -12559,6 +12633,14 @@ class Airavata_getAllUserSSHPubKeys_args {
       switch ($fid)
       {
         case 1:
+          if ($ftype == TType::STRUCT) {
+            $this->authzToken = new \Airavata\Model\Security\AuthzToken();
+            $xfer += $this->authzToken->read($input);
+          } else {
+            $xfer += $input->skip($ftype);
+          }
+          break;
+        case 2:
           if ($ftype == TType::STRING) {
             $xfer += $input->readString($this->userName);
           } else {
@@ -12578,8 +12660,16 @@ class Airavata_getAllUserSSHPubKeys_args {
   public function write($output) {
     $xfer = 0;
     $xfer += $output->writeStructBegin('Airavata_getAllUserSSHPubKeys_args');
+    if ($this->authzToken !== null) {
+      if (!is_object($this->authzToken)) {
+        throw new TProtocolException('Bad type in structure.', TProtocolException::INVALID_DATA);
+      }
+      $xfer += $output->writeFieldBegin('authzToken', TType::STRUCT, 1);
+      $xfer += $this->authzToken->write($output);
+      $xfer += $output->writeFieldEnd();
+    }
     if ($this->userName !== null) {
-      $xfer += $output->writeFieldBegin('userName', TType::STRING, 1);
+      $xfer += $output->writeFieldBegin('userName', TType::STRING, 2);
       $xfer += $output->writeString($this->userName);
       $xfer += $output->writeFieldEnd();
     }

@@ -95,20 +95,21 @@ class AiravataHandler : virtual public AiravataIf {
    * 
    * 
    * 
+   * @param authzToken
    * @param gatewayId
    * @param userName
    */
-  void generateAndRegisterSSHKeys(std::string& _return, const std::string& gatewayId, const std::string& userName) {
+  void generateAndRegisterSSHKeys(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& gatewayId, const std::string& userName) {
     // Your implementation goes here
     printf("generateAndRegisterSSHKeys\n");
   }
 
-  void getSSHPubKey(std::string& _return, const std::string& airavataCredStoreToken) {
+  void getSSHPubKey(std::string& _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& airavataCredStoreToken) {
     // Your implementation goes here
     printf("getSSHPubKey\n");
   }
 
-  void getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const std::string& userName) {
+  void getAllUserSSHPubKeys(std::map<std::string, std::string> & _return, const  ::apache::airavata::model::security::AuthzToken& authzToken, const std::string& userName) {
     // Your implementation goes here
     printf("getAllUserSSHPubKeys\n");
   }
